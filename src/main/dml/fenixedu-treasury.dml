@@ -1,1 +1,169 @@
 package org.fenixedu.treasury.domain;
+
+
+enum org.fenixedu.treasury.domain.VATExemptionResasonEnum                                                                    as VATExemptionResasonEnum;
+
+
+
+class FinantialEntity
+{
+	String description;
+	String code;
+} 
+
+class FinantialInstitution
+{
+	String description;
+	String code;
+	String fiscalNumber;
+	String FiscalCountryRegion;
+}
+
+class FiscalCountryRegion
+{
+	String regionCode;
+	String description;
+}
+
+class CustomerType
+{
+	String code;
+}
+
+class Customer
+{
+	String fiscalNumber;
+	String code;
+	String name;
+	String address;
+	String zipCode;
+}
+
+
+class VAT_Type
+{
+	String code;
+	String 
+}
+
+class VAT {
+	Double taxValue;
+	DateTime validFrom;
+	DateTime validTo;
+}
+
+class VATExemptionReason
+{
+	VATExemptionReasonEnum type;
+}
+
+class Product
+{
+	String code;
+	String description;
+	
+}
+
+class ProductGroup
+{
+	String code;
+	String description;
+}
+
+class Currency
+{
+	String code;
+	String description;
+	String ISOCode;
+	String symbol;
+}
+
+class debt.DebtAccount
+{
+}
+
+class document.FinantialDocument
+{
+	String documentNumber;
+	DateTime documentDate;
+	DateTime documentOperationDate;
+}
+
+class debt.DebitEntrySuspensionRequest
+{
+}
+
+class debt.DebitEntrySuspensionRequestEntry
+{
+}
+
+class Tariff
+{
+}
+
+class InterestRate
+{
+}
+
+class FixedTariff
+{
+}
+
+
+
+class document.DocumentNumberSeries
+{
+}
+
+class document.DocumentType
+{
+}
+
+class document.DocumentTemplate
+{
+}
+
+class document.Invoice extends document.FinantialDocument
+{
+}
+
+class document.CreditNote extends document.Invoice
+{
+}
+
+class document.DebitNote extends document.Invoice
+{
+}
+
+class document.DebitNoteEntry extends document.InvoiceEntry
+{
+}
+
+class document.CreditNoteEntry extends document.InvoiceEntry
+{
+}
+
+class document.Settlement
+{
+}
+
+class document.SettlementEntry
+{
+}
+
+class document.PaymentEntry
+{
+}
+
+class document.ReimbursmentEntry
+{
+}
+
+class document.PaymentReferenceCode
+{
+}
+
+class document.PaymentReferenceCodeManager
+{
+}
+
