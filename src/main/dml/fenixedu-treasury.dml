@@ -1,169 +1,694 @@
 package org.fenixedu.treasury.domain;
 
 
-enum org.fenixedu.treasury.domain.VATExemptionResasonEnum                                                                    as VATExemptionResasonEnum;
+enum org.fenixedu.treasury.domain.document.FinantialDocumentType                                         as FinantialDocumentType;
+enum org.fenixedu.treasury.domain.document.FinantialEntryType                                            as FinantialEntryType;
+enum org.fenixedu.treasury.domain.document.FinantialDocumentState                                        as FinantialDocumentState;
 
+/************
+ * ENTITIES *
+ ************/
 
+/*-------------------
+ * REFERENCE ENTITIES
+ * ------------------*/
 
-class FinantialEntity
-{
-	String description;
-	String code;
-} 
-
-class FinantialInstitution
-{
-	String description;
-	String code;
-	String fiscalNumber;
-	String FiscalCountryRegion;
-}
-
-class FiscalCountryRegion
-{
+class FiscalCountryRegion {
 	String regionCode;
-	String description;
+	LocalizedString name;
 }
 
-class CustomerType
+class CustomerType {
+	String code;
+	LocalizedString name;
+}
+
+class VatType {
+	String code;
+	LocalizedString name;
+}
+
+class Vat {
+	BigDecimal taxRate;
+	DateTime beginDate;
+	DateTime endDate;
+}
+
+class VatExemptionReason
 {
 	String code;
+	LocalizedString name;
 }
 
-class Customer
-{
-	String fiscalNumber;
+class ProductGroup {
 	String code;
-	String name;
-	String address;
-	String zipCode;
+	LocalizedString name;
 }
 
-
-class VAT_Type
-{
+class Product {
 	String code;
-	String 
+	LocalizedString name;
+	boolean active;
 }
 
-class VAT {
-	Double taxValue;
-	DateTime validFrom;
-	DateTime validTo;
-}
-
-class VATExemptionReason
-{
-	VATExemptionReasonEnum type;
-}
-
-class Product
-{
+class Currency {
 	String code;
-	String description;
-	
-}
-
-class ProductGroup
-{
-	String code;
-	String description;
-}
-
-class Currency
-{
-	String code;
-	String description;
-	String ISOCode;
+	LocalizedString name;
+	String isoCode;
 	String symbol;
 }
 
-class debt.DebtAccount
-{
+class Exemption {
+	String code;
+	LocalizedString name;
+	BigDecimal discountRate;
 }
 
-class document.FinantialDocument
-{
+class PaymentMethod {
+	String code;
+	LocalizedString name;
+}
+
+/*-----------
+ * Finantial 
+ * ----------*/
+ 
+class FinantialInstitution {
+	String code;
+	String fiscalNumber;
+	String companyId;
+	String name;
+	String companyName;
+	String address;
+	String districtSubdivision;
+	String zipCode;
+	String countryCode;
+}
+
+class FinantialEntity {
+	String code;
+	LocalizedString name;
+} 
+
+class Customer {
+	String code;
+	String fiscalNumber;
+	String name;
+	String address;
+	String districtSubdivision;
+	String zipCode;
+	String countryCode;
+}
+
+class debt.DebtAccount {
+}
+
+/*
+class document.DocumentTemplate {
+}
+*/
+
+/*-----------
+ * Documents 
+ * ----------*/
+
+class document.FinantialDocumentType {
+	String code;
+	LocalizedString name;
+	String documentNumberSeriesPrefix;
+}
+
+class document.Series {
+	String code;
+	LocalizedString name;
+	boolean external;
+	boolean certificated;
+	boolean legacy
+}
+
+class document.DocumentNumberSeries {
+	int counter;
+}
+
+class event.AccountingEvent {
+}
+
+class document.FinantialDocument {
 	String documentNumber;
 	DateTime documentDate;
-	DateTime documentOperationDate;
+	DateTime documentDueDate;
+	String originDocumentNumber;
+	FinantialDocumentState state;
 }
 
-class debt.DebitEntrySuspensionRequest
-{
+relation FinantialDocumentPendingForExportationBennu {
+	
+	FinantialDocument playsRole finantialDocumentsPendingForExportation {
+		multiplicity *;
+	}
 }
 
-class debt.DebitEntrySuspensionRequestEntry
-{
+class document.Invoice extends document.FinantialDocument {
 }
 
-class Tariff
-{
+class document.CreditNote extends document.Invoice {
 }
 
-class InterestRate
-{
+class document.DebitNote extends document.Invoice {
 }
 
-class FixedTariff
-{
+class document.SettlementNote extends document.FinantialDocument {
 }
 
-
-
-class document.DocumentNumberSeries
-{
+class document.FinantialDocumentEntry {
+FinantialEntryType finantialEntryType;
+	BigDecimal amount;
 }
 
-class document.DocumentType
-{
+class document.InvoiceEntry extends document.FinantialDocumentEntry {
+	
 }
 
-class document.DocumentTemplate
-{
+class document.DebitNoteEntry extends document.InvoiceEntry {
+	boolean eventAnnuled;
 }
 
-class document.Invoice extends document.FinantialDocument
-{
+class document.CreditNoteEntry extends document.InvoiceEntry {
 }
 
-class document.CreditNote extends document.Invoice
-{
+class document.SettlementEntry extends document.FinantialDocumentEntry {
 }
 
-class document.DebitNote extends document.Invoice
-{
+class document.PaymentEntry {
+	BigDecimal payedAmount;
 }
 
-class document.DebitNoteEntry extends document.InvoiceEntry
-{
+relation PaymentEntryPaymentMode {
+	PaymentMethod playsRole paymentMethod {
+		multiplicity 1..1;
+	}
+	
+	document.PaymentEntry playsRole paymentEntries {
+		multiplicity *;
+	}
 }
 
-class document.CreditNoteEntry extends document.InvoiceEntry
-{
+relation PaymentEntrySettlementNote {
+	document.SettlementNote playsRole settlementNote {
+		multiplicity 1..1;
+	}
+
+	document.PaymentEntry playsRole paymentEntries {
+		multiplicity *;
+	}
 }
 
-class document.Settlement
-{
+class document.ReimbursementEntry {
+	BigDecimal reimbursedAmount;
 }
 
-class document.SettlementEntry
-{
+relation ReimbursementEntrySettlementNote {
+	document.SettlementNote playsRole settlementNote {
+		multiplicity 1..1;
+	}
+
+	document.ReimbursementEntry playsRole reimbursementEntries {
+		multiplicity *;
+	}
 }
 
-class document.PaymentEntry
-{
+/*
+class debt.DebitEntrySuspensionRequest {
 }
 
-class document.ReimbursmentEntry
-{
+class debt.DebitEntrySuspensionRequestEntry {
+}
+*/
+
+/*-----------
+ * Tariff 
+ * ----------*/
+
+class tariff.Tariff {
+	DateTime beginDate;
+	DateTime endDate;
+	DueDateCalculationType dueDateCalculationType;
+	DateTime fixedDueDate;
+	int numberOfDaysAfterCreationForDueDate;
+	boolean applyInterests;
+	BigDecimal amount;
 }
 
-class document.PaymentReferenceCode
+relation TariffProduct {
+	Product playsRole product {
+		multiplicity 1..1;
+	}
+	
+	tariff.Tariff playsRole tariff {
+		multiplicity *;
+	}
+}
+
+relation TariffVat {
+	Vat playsRole vat {
+		multiplicity 1..1;
+	}
+	
+	tariff.Tariff playsRole tariff {
+		multiplicity *;
+	}
+}
+
+class tariff.InterestRate {
+	InterestType interestType;
+	int numberOfDaysAfterDueDate;
+	boolean applyInFirstWorkday;
+	int maximumDaysToApplyPenalty;
+	int maximumMonthsToApplyPenalty;
+	BigDecimal interestFixedAmount;
+	BigDecimal rate;
+	
+}
+
+relation InterestRateTariff {
+	tariff.Tariff playsRole tarrif {
+		multiplicity 0..1;
+	}
+	
+	tariff.InterestRate playsRole InterestRate {
+		multiplicity 0..1;
+	}
+}
+
+class tariff.FixedTariff extends tariff.Tariff {
+	Money amount;
+}
+
+/*
+
+ class document.PaymentReferenceCode
 {
+       String referenceCode;
 }
 
 class document.PaymentReferenceCodeManager
 {
+       String code;
+       String description;
+}
+
+class integration.Configuration
+{
+       String code;
+       String externalURL;
+       String username;
+       String password;
+}
+
+class integration.IntegrationOperation
+{
+       DateTime executionDate;
+       Boolean processed;
+       Boolean success;
+       String errorLog;
+}
+
+class integration.ExportOperation extends integration.IntegrationOperation
+{
+}
+
+class integration.ImportOperation extends integration.IntegrationOperation
+{
+}
+*/
+
+/*************
+ * RELATIONS *
+ *************/
+
+/*-------------------
+ * REFERENCE ENTITIES
+ * ------------------*/
+
+relation FiscalCountryRegionBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	FiscalCountryRegion playsRole fiscalCountryRegions {
+		multiplicity *;
+	}
+}
+
+relation CustomerTypeBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	CustomerType playsRole customerTypes {
+		multiplicity *;
+	}
+}
+
+relation VatTypeBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	VatType playsRole vatTypes {
+		multiplicity *;
+	}
+}
+
+relation VatBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	Vat playsRole vat {
+		multiplicity *;
+	}
+}
+
+relation VatVatType {
+	VatType playsRole vatTypes {
+		multiplicity 1..1;
+	}
+	
+	Vat playsRole vats {
+		multiplicity *;
+	}
+}
+
+relation VatExemptionReasonBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	VatExemptionReason playsRole vatExemptionReason {
+		multiplicity *;
+	}
+}
+
+relation VatTypeVatExemptionReason {
+	VatType playsRole vatTypes {
+		multiplicity 1..1;
+	}
+	
+	VatExemptionReason playsRole vatExemptionReason {
+		multiplicity *;
+	}
+}
+
+
+relation ProductGroupBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	ProductGroup playsRole productGroup {
+		multiplicity *;
+	}
+}
+
+relation ProductBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	Product playsRole product {
+		multiplicity *;
+	}
+}
+
+relation ProductProductGroup {
+	ProductGroup playsRole productGroup {
+		multiplicity 1..1;
+	}
+	
+	Product playsRole product {
+		multiplicity *;
+	}
+}
+
+relation ProductVatType {
+	VatType playsRole vatType {
+		multiplicity 1..1;
+	}
+	
+	Product playsRole products {
+		multiplicity *;
+	}
+}
+
+relation CurrencyBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	Currency playsRole currencies {
+		multiplicity *;
+	}
+}
+
+relation ExemptionBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	Exemption playsRole exemptions {
+		multiplicity *;
+	}	
+}
+
+relation PaymentMethodBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	PaymentMethod playsRole paymentMethod {
+		multiplicity *;
+	}
+}
+
+/*-----------
+ * Finantial 
+ * ----------*/
+
+relation FinantialInstitutionBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	FinantialInstitution playsRole finantialInstitutions {
+		multiplicity *;
+	}
+}
+
+relation ProductFinantialInstitution {
+	FinantialInstition playsRole finantialInstitution {
+		multiplicity *;
+	}
+	
+	Product playsRole availableProducts {
+		multiplicity *;
+	}
+}
+
+relation FinantialEntityBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	FinantialEntity playsRole finantialEntities {
+		multiplicity *;
+	}	
+}
+
+relation FinantialInstitutionFinantialEntity {
+	FinantialInstitution playsRole finantialInstitution {
+		multiplicity 1..1;
+	}
+	
+	FinantialEntity playsRole finantialEntities {
+		multiplicity *;
+	}
+}
+
+relation CustomerBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	Customer playsRole customers {
+		multiplicity *;
+	}
+}
+
+relation DebtAccountBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	debt.DebtAccount playsRole debtsAccounts {
+		multiplicity *;
+	}
+}
+
+relation DebtAccountCustomer {
+	Customer playsRole customer {
+		multiplicity 1..1;
+	}
+	
+	debt.DebtAccount playsRole debtAccounts {
+		multiplicity *;
+	}
+}
+
+relation DebtAccountFinantialInstitution {
+	FinantialInstitution playsRole finantialInstitution {
+		multiplicity 1..1;
+	}
+	
+	debt.DebtAccount playsRole debtAccounts {
+		multiplicity *;
+	}
+}
+
+/*-----------
+ * Documents 
+ * ----------*/
+
+relation FinantialDocumentTypeBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	FinantialDocumentType playsRole finantialDocumentTypes {
+		multiplicity *;
+	}
+}
+
+relation SeriesBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	document.Series playsRole series {
+		multiplicity *;
+	}
+}
+
+relation DocumentNumberSeriesSeries {
+	document.Series playsRole series {
+		multiplicity 1..1;
+	}
+
+	document.DocumentNumberSeries playsRole documentNumberSeries {
+		multiplicity *;
+	}
+}
+
+relation DocumentNumberSeriesFinantialDocumentType {
+	document.FinantialDocumentType playsRole finantialDocumentType {
+		multiplicity 1..1;
+	}
+	
+	document.DocumentNumberSeries playsRole documentNumberSeries {
+		multiplicity *;
+	}
+}
+
+relation AccountingEvent
+event.AccountingEvent
+
+relation FinantialDocumentFinantialDocumentType {
+	document.FinantialDocumentType playsRole finantialDocumentType {
+		multiplicity 1..1;
+	}
+	
+	document.FinantialDocument playsRole finantialDocuments {
+		multiplicity *;
+	}
+}
+
+relation FinantialDocumentDocumentNumberSeries {
+	document.DocumentNumberSeries playsRole documentNumberSeries {
+		multiplicity 1..1;
+	}
+	
+	document.FinantialDocument playsRole finantialDocuments {
+		multiplicity *;
+	}
+}
+
+relation FinantialDocumentDebtAccount {
+	debt.DebtAccount playsRole debtAccounts {
+		multiplicity 1..1;
+	}
+	
+	document.FinantialDocument playsRole finantialDocuments {
+		multiplicity *;
+	}
+}
+
+relation InvoiceEntryInvoice {
+	document.Invoice playsRole invoice {
+		multiplicity 0..1;
+	}
+	
+	document.InvoiceEntry playsRole invoiceEntry {
+		multiplicity *;
+	}
+}
+
+relation InvoiceEntryDebtAccount {
+	debts.DebtAccount playsRole debtAccount {
+		multiplicity 1..1;
+	}
+	
+	document.InvoiceEntry playsRole invoiceEntry {
+		multiplicity *;
+	}
+}
+
+relation CreditNoteEntryCreditNote {
+	document.CreditNote playsRole creditNote {
+		multiplicity 1..1;
+	}
+	
+	document.CreditNoteEntry playsRole creditNoteEntry {
+		multiplicity *;
+	}
+}
+
+relation CreditNoteEntryDebitNoteEntry {
+	document.DebitNoteEntry playsRole debitNoteEntry {
+		multiplicity 1..1;
+	}
+	
+	document.CreditNoteEntry playsRole creditNoteEntry {
+		multiplicity *;
+	}
+}
+
+relation AccountingEventProduct {
+	Product playsRole product {
+		multiplicity 1..1;
+	}
+	
+	event.AccountingEvent playsRole accountingEvents {
+		multiplicity *;
+	}
+}
+
+relation DebitNoteEntryProduct {
+	Product playsRole product {
+		multiplicity 1..1;
+	}
+	
+	document.DebitNoteEntry playsRole debitNoteEntries {
+		multiplicity *;
+	}
 }
 
