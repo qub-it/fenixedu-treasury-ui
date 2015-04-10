@@ -56,6 +56,7 @@ class ProductGroup {
 class Product {
 	String code;
 	LocalizedString name;
+	LocalizedString unitOfMeasure;
 	boolean active;
 }
 
@@ -124,6 +125,7 @@ class document.FinantialDocumentType {
 	String code;
 	LocalizedString name;
 	String documentNumberSeriesPrefix;
+	Boolean invoice;
 }
 
 class document.Series {
@@ -166,6 +168,7 @@ class document.FinantialDocument {
 class document.FinantialDocumentEntry {
 	FinantialEntryType finantialEntryType;
 	BigDecimalT amount;
+	BigDecimalT quantity;
 }
 
 	class document.InvoiceEntry extends document.FinantialDocumentEntry {
@@ -225,7 +228,7 @@ class tariff.InterestRate {
 	BigDecimalT rate;
 }
 
-/*
+
 
  class document.PaymentReferenceCode
 {
@@ -261,7 +264,7 @@ class integration.ExportOperation extends integration.IntegrationOperation
 class integration.ImportOperation extends integration.IntegrationOperation
 {
 }
-*/
+
 
 /*************
  * RELATIONS *
@@ -381,6 +384,7 @@ relation ProductVatType {
 		multiplicity *;
 	}
 }
+
 
 relation CurrencyBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
