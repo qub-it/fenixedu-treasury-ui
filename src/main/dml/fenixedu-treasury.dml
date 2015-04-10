@@ -151,12 +151,6 @@ class document.FinantialDocument {
 	FinantialDocumentState state;
 }
 
-relation FinantialDocumentPendingForExportationBennu {
-	
-	document.FinantialDocument playsRole finantialDocumentsPendingForExportation {
-		multiplicity *;
-	}
-}
 
 class document.Invoice extends document.FinantialDocument {
 }
@@ -193,39 +187,10 @@ class document.PaymentEntry {
 	BigDecimalT payedAmount;
 }
 
-relation PaymentEntryPaymentMode {
-	PaymentMethod playsRole paymentMethod {
-		multiplicity 1..1;
-	}
-	
-	document.PaymentEntry playsRole paymentEntries {
-		multiplicity *;
-	}
-}
-
-relation PaymentEntrySettlementNote {
-	document.SettlementNote playsRole settlementNote {
-		multiplicity 1..1;
-	}
-
-	document.PaymentEntry playsRole paymentEntries {
-		multiplicity *;
-	}
-}
-
 class document.ReimbursementEntry {
 	BigDecimalT reimbursedAmount;
 }
 
-relation ReimbursementEntrySettlementNote {
-	document.SettlementNote playsRole settlementNote {
-		multiplicity 1..1;
-	}
-
-	document.ReimbursementEntry playsRole reimbursementEntries {
-		multiplicity *;
-	}
-}
 
 /*
 class debt.DebitEntrySuspensionRequest {
@@ -249,26 +214,6 @@ class tariff.Tariff {
 	BigDecimalT amount;
 }
 
-relation TariffProduct {
-	Product playsRole product {
-		multiplicity 1..1;
-	}
-	
-	tariff.Tariff playsRole tariff {
-		multiplicity *;
-	}
-}
-
-relation TariffVat {
-	Vat playsRole vat {
-		multiplicity 1..1;
-	}
-	
-	tariff.Tariff playsRole tariff {
-		multiplicity *;
-	}
-}
-
 class tariff.InterestRate {
 	InterestType interestType;
 	int numberOfDaysAfterDueDate;
@@ -280,15 +225,6 @@ class tariff.InterestRate {
 	
 }
 
-relation InterestRateTariff {
-	tariff.Tariff playsRole tarrif {
-		multiplicity 0..1;
-	}
-	
-	tariff.InterestRate playsRole InterestRate {
-		multiplicity 0..1;
-	}
-}
 
 class tariff.FixedTariff extends tariff.Tariff {
 	BigDecimalT amount;
@@ -699,3 +635,69 @@ relation DebitNoteEntryProduct {
 	}
 }
 
+/* SOMETHING IS MISSING HERE
+relation FinantialDocumentPendingForExportationBennu {
+	document.FinantialDocument playsRole finantialDocumentsPendingForExportation {
+		multiplicity *;
+	}
+}
+*/
+relation PaymentEntryPaymentMode {
+	PaymentMethod playsRole paymentMethod {
+		multiplicity 1..1;
+	}
+	
+	document.PaymentEntry playsRole paymentEntries {
+		multiplicity *;
+	}
+}
+
+relation PaymentEntrySettlementNote {
+	document.SettlementNote playsRole settlementNote {
+		multiplicity 1..1;
+	}
+
+	document.PaymentEntry playsRole paymentEntries {
+		multiplicity *;
+	}
+}
+
+relation ReimbursementEntrySettlementNote {
+	document.SettlementNote playsRole settlementNote {
+		multiplicity 1..1;
+	}
+
+	document.ReimbursementEntry playsRole reimbursementEntries {
+		multiplicity *;
+	}
+}
+
+relation TariffProduct {
+	Product playsRole product {
+		multiplicity 1..1;
+	}
+	
+	tariff.Tariff playsRole tariff {
+		multiplicity *;
+	}
+}
+
+relation TariffVat {
+	Vat playsRole vat {
+		multiplicity 1..1;
+	}
+	
+	tariff.Tariff playsRole tariff {
+		multiplicity *;
+	}
+}
+
+relation InterestRateTariff {
+	tariff.Tariff playsRole tariff {
+		multiplicity 0..1;
+	}
+	
+	tariff.InterestRate playsRole InterestRate {
+		multiplicity 0..1;
+	}
+}
