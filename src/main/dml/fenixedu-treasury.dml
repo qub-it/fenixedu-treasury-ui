@@ -1,9 +1,18 @@
 package org.fenixedu.treasury.domain;
 
 
-enum org.fenixedu.treasury.domain.document.FinantialDocumentType                                         as FinantialDocumentType;
 enum org.fenixedu.treasury.domain.document.FinantialEntryType                                            as FinantialEntryType;
 enum org.fenixedu.treasury.domain.document.FinantialDocumentState                                        as FinantialDocumentState;
+enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType as DueDateCalculationType ; 
+enum org.fenixedu.treasury.domain.tariff.InterestType as InterestType ; 
+
+valueType java.math.BigDecimal as BigDecimalT
+{
+	externalizeWith{
+		String toString();
+	}
+} 
+
 
 /************
  * ENTITIES *
@@ -29,7 +38,7 @@ class VatType {
 }
 
 class Vat {
-	BigDecimal taxRate;
+	BigDecimalT taxRate;
 	DateTime beginDate;
 	DateTime endDate;
 }
@@ -61,7 +70,7 @@ class Currency {
 class Exemption {
 	String code;
 	LocalizedString name;
-	BigDecimal discountRate;
+	BigDecimalT discountRate;
 }
 
 class PaymentMethod {
@@ -121,9 +130,9 @@ class document.FinantialDocumentType {
 class document.Series {
 	String code;
 	LocalizedString name;
-	boolean external;
+	boolean externSeries;
 	boolean certificated;
-	boolean legacy
+	boolean legacy;
 }
 
 class document.DocumentNumberSeries {
@@ -131,6 +140,7 @@ class document.DocumentNumberSeries {
 }
 
 class event.AccountingEvent {
+	LocalizedString description;
 }
 
 class document.FinantialDocument {
@@ -143,7 +153,7 @@ class document.FinantialDocument {
 
 relation FinantialDocumentPendingForExportationBennu {
 	
-	FinantialDocument playsRole finantialDocumentsPendingForExportation {
+	document.FinantialDocument playsRole finantialDocumentsPendingForExportation {
 		multiplicity *;
 	}
 }
@@ -162,7 +172,7 @@ class document.SettlementNote extends document.FinantialDocument {
 
 class document.FinantialDocumentEntry {
 FinantialEntryType finantialEntryType;
-	BigDecimal amount;
+	BigDecimalT amount;
 }
 
 class document.InvoiceEntry extends document.FinantialDocumentEntry {
@@ -180,7 +190,7 @@ class document.SettlementEntry extends document.FinantialDocumentEntry {
 }
 
 class document.PaymentEntry {
-	BigDecimal payedAmount;
+	BigDecimalT payedAmount;
 }
 
 relation PaymentEntryPaymentMode {
@@ -204,7 +214,7 @@ relation PaymentEntrySettlementNote {
 }
 
 class document.ReimbursementEntry {
-	BigDecimal reimbursedAmount;
+	BigDecimalT reimbursedAmount;
 }
 
 relation ReimbursementEntrySettlementNote {
@@ -236,7 +246,7 @@ class tariff.Tariff {
 	DateTime fixedDueDate;
 	int numberOfDaysAfterCreationForDueDate;
 	boolean applyInterests;
-	BigDecimal amount;
+	BigDecimalT amount;
 }
 
 relation TariffProduct {
@@ -265,8 +275,8 @@ class tariff.InterestRate {
 	boolean applyInFirstWorkday;
 	int maximumDaysToApplyPenalty;
 	int maximumMonthsToApplyPenalty;
-	BigDecimal interestFixedAmount;
-	BigDecimal rate;
+	BigDecimalT interestFixedAmount;
+	BigDecimalT rate;
 	
 }
 
@@ -281,7 +291,7 @@ relation InterestRateTariff {
 }
 
 class tariff.FixedTariff extends tariff.Tariff {
-	Money amount;
+	BigDecimalT amount;
 }
 
 /*
@@ -486,7 +496,7 @@ relation FinantialInstitutionBennu {
 }
 
 relation ProductFinantialInstitution {
-	FinantialInstition playsRole finantialInstitution {
+	FinantialInstitution playsRole finantialInstitution {
 		multiplicity *;
 	}
 	
@@ -564,7 +574,7 @@ relation FinantialDocumentTypeBennu {
 		multiplicity 1..1;
 	}
 	
-	FinantialDocumentType playsRole finantialDocumentTypes {
+	document.FinantialDocumentType playsRole finantialDocumentTypes {
 		multiplicity *;
 	}
 }
@@ -598,9 +608,6 @@ relation DocumentNumberSeriesFinantialDocumentType {
 		multiplicity *;
 	}
 }
-
-relation AccountingEvent
-event.AccountingEvent
 
 relation FinantialDocumentFinantialDocumentType {
 	document.FinantialDocumentType playsRole finantialDocumentType {
@@ -643,7 +650,7 @@ relation InvoiceEntryInvoice {
 }
 
 relation InvoiceEntryDebtAccount {
-	debts.DebtAccount playsRole debtAccount {
+	debt.DebtAccount playsRole debtAccount {
 		multiplicity 1..1;
 	}
 	
