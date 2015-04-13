@@ -329,7 +329,7 @@ relation VatExemptionReasonBennu {
 		multiplicity 1..1;
 	}
 	
-	VatExemptionReason playsRole vatExemptionReason {
+	VatExemptionReason playsRole vatExemptionReasons {
 		multiplicity *;
 	}
 }
@@ -350,7 +350,7 @@ relation ProductGroupBennu {
 		multiplicity 1..1;
 	}
 	
-	ProductGroup playsRole productGroup {
+	ProductGroup playsRole productGroups {
 		multiplicity *;
 	}
 }
@@ -360,7 +360,7 @@ relation ProductBennu {
 		multiplicity 1..1;
 	}
 	
-	Product playsRole product {
+	Product playsRole products {
 		multiplicity *;
 	}
 }
@@ -370,7 +370,7 @@ relation ProductProductGroup {
 		multiplicity 1..1;
 	}
 	
-	Product playsRole product {
+	Product playsRole products {
 		multiplicity *;
 	}
 }
@@ -411,7 +411,7 @@ relation PaymentMethodBennu {
 		multiplicity 1..1;
 	}
 	
-	PaymentMethod playsRole paymentMethod {
+	PaymentMethod playsRole paymentMethods {
 		multiplicity *;
 	}
 }
