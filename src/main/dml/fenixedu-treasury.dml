@@ -309,13 +309,23 @@ relation VatBennu {
 		multiplicity 1..1;
 	}
 	
-	Vat playsRole vat {
+	Vat playsRole vats {
 		multiplicity *;
 	}
 }
 
 relation VatVatType {
-	VatType playsRole vatTypes {
+	VatType playsRole vatType {
+		multiplicity 1..1;
+	}
+	
+	Vat playsRole vats {
+		multiplicity *;
+	}
+}
+
+relation VatFinantialInstitution {
+	FinantialInstitution playsRole finantialInstitution {
 		multiplicity 1..1;
 	}
 	
@@ -385,7 +395,6 @@ relation ProductVatType {
 	}
 }
 
-
 relation CurrencyBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;
@@ -431,7 +440,7 @@ relation FinantialInstitutionBennu {
 }
 
 relation ProductFinantialInstitution {
-	FinantialInstitution playsRole finantialInstitution {
+	FinantialInstitution playsRole finantialInstitutions {
 		multiplicity *;
 	}
 	
