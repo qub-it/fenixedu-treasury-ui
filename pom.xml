@@ -38,6 +38,11 @@
 			<artifactId>bennu-spring</artifactId>
 			<version>${version.org.fenixedu.bennu.spring}</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -111,6 +116,31 @@
 					<source>8</source>
 					<target>8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>compile</id>
+						<phase>compile</phase>
+						<configuration>
+							<target>
+								<property name="basedir" refid="maven.project" />
+
+								<echo message="ANTRUN: copy resources and convert to UTF-8 to webapp/WEB-INF/resources" />
+
+								<copy todir="${basedir}/src/main/webapp/WEB-INF/resources" encoding="ISO-8859-15" outputencoding="UTF-8">
+									<fileset dir="${basedir}/src/main/resources/resources/" />
+								</copy>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
