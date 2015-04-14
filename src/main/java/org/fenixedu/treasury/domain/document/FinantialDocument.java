@@ -24,4 +24,9 @@ public class FinantialDocument extends FinantialDocument_Base {
     	return BigDecimal.ZERO;
     }
 
+	public Boolean getClosed() {
+		return this.getState().equals(FinantialDocumentState.CLOSED);
+	}
+	
+
 }

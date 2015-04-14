@@ -6,4 +6,6 @@ public class Invoice extends Invoice_Base {
         super();
     }
     
+    
+    
 }

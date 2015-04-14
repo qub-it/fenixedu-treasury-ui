@@ -5,5 +5,5 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     public FinantialDocumentType() {
         super();
     }
-    
+
 }

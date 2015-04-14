@@ -19,6 +19,7 @@
 	<properties>
 		<version.org.fenixedu.bennu>3.4.1</version.org.fenixedu.bennu>
 		<version.org.fenixedu.bennu.spring>1.2.0</version.org.fenixedu.bennu.spring>
+		<version.org.fenixedu.bennu.io>3.4.1</version.org.fenixedu.bennu.io>
 	</properties>
 
 	<dependencies>
@@ -33,6 +34,12 @@
 			<artifactId>bennu-core</artifactId>
 			<version>${version.org.fenixedu.bennu}</version>
 		</dependency>
+				<dependency>
+			<groupId>org.fenixedu</groupId>
+			<artifactId>bennu-io</artifactId>
+			<version>${version.org.fenixedu.bennu.io}</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>bennu-spring</artifactId>
