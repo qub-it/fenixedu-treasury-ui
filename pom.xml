@@ -138,7 +138,7 @@
 
 								<echo message="ANTRUN: copy resources and convert to UTF-8 to webapp/WEB-INF/resources" />
 
-								<copy todir="${basedir}/src/main/webapp/WEB-INF/resources" encoding="ISO-8859-15" outputencoding="UTF-8">
+								<copy todir="${basedir}/src/main/webapp/WEB-INF/resources" encoding="ISO-8859-15" outputencoding="UTF-8" overwrite="true">
 									<fileset dir="${basedir}/src/main/resources/resources/" />
 								</copy>
 							</target>
