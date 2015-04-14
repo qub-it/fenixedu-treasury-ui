@@ -10,6 +10,8 @@ import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Sets;
+
 public class FinantialEntity extends FinantialEntity_Base {
 
     protected FinantialEntity() {
@@ -17,8 +19,9 @@ public class FinantialEntity extends FinantialEntity_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected FinantialEntity(final String code, final LocalizedString name) {
+    protected FinantialEntity(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name) {
         this();
+        setFinantialInstitution(finantialInstitution);
         setCode(code);
         setName(name);
 
@@ -26,6 +29,10 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     private void checkRules() {
+        if(getFinantialInstitution() == null) {
+            throw new TreasuryDomainException("error.FinantialEntity.finantialInstitution.required");
+        }
+        
         if (StringUtils.isEmpty(getCode())) {
             throw new TreasuryDomainException("error.FinantialEntity.code.required");
         }
@@ -34,8 +41,8 @@ public class FinantialEntity extends FinantialEntity_Base {
             throw new TreasuryDomainException("error.FinantialEntity.name.required");
         }
 
-        findByCode(getCode());
-        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
+        findByCode(getFinantialInstitution(), getCode());
+        getName().getLocales().stream().forEach(l -> findByName(getFinantialInstitution(), getName().getContent(l)));
     }
 
     @Atomic
@@ -70,11 +77,23 @@ public class FinantialEntity extends FinantialEntity_Base {
     public static Set<FinantialEntity> readAll() {
         return Bennu.getInstance().getFinantialEntitiesSet();
     }
-
-    public static FinantialEntity findByCode(final String code) {
-        FinantialEntity result = null;
+    
+    public static Set<FinantialEntity> find(final FinantialInstitution finantialInstitution) {
+        Set<FinantialEntity> result = Sets.newHashSet();
 
         for (final FinantialEntity it : readAll()) {
+            if (it.getFinantialInstitution() == finantialInstitution) {
+                result.add(it);
+            }
+        }
+
+        return result;
+    }
+
+    public static FinantialEntity findByCode(final FinantialInstitution finantialInstitution, final String code) {
+        FinantialEntity result = null;
+
+        for (final FinantialEntity it : find(finantialInstitution)) {
             if (!it.getCode().equalsIgnoreCase(code)) {
                 continue;
             }
@@ -89,10 +108,10 @@ public class FinantialEntity extends FinantialEntity_Base {
         return result;
     }
 
-    public static FinantialEntity findByName(final String name) {
+    public static FinantialEntity findByName(final FinantialInstitution finantialInstitution, final String name) {
         FinantialEntity result = null;
 
-        for (final FinantialEntity it : readAll()) {
+        for (final FinantialEntity it : find(finantialInstitution)) {
 
             if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
                 continue;
@@ -109,8 +128,8 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     @Atomic
-    public static FinantialEntity create(final String code, final LocalizedString name) {
-        return new FinantialEntity(code, name);
+    public static FinantialEntity create(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name) {
+        return new FinantialEntity(finantialInstitution, code, name);
     }
 
 }

@@ -67,7 +67,7 @@ class Currency {
 	String symbol;
 }
 
-class Exemption {
+class TreasuryExemption {
 	String code;
 	LocalizedString name;
 	BigDecimalT discountRate;
@@ -100,14 +100,17 @@ class FinantialEntity {
 } 
 
 class Customer {
-	String code;
-	String fiscalNumber;
-	String name;
-	String address;
-	String districtSubdivision;
-	String zipCode;
-	String countryCode;
 }
+
+	class AdhocCustomer extends Customer {
+		String code;
+		String fiscalNumber;
+		String name;
+		String address;
+		String districtSubdivision;
+		String zipCode;
+		String countryCode;
+	}
 
 class debt.DebtAccount {
 }
@@ -125,7 +128,7 @@ class document.FinantialDocumentType {
 	String code;
 	LocalizedString name;
 	String documentNumberSeriesPrefix;
-	Boolean invoice;
+	boolean invoice;
 }
 
 class document.Series {
@@ -140,7 +143,7 @@ class document.DocumentNumberSeries {
 	int counter;
 }
 
-class event.AccountingEvent {
+class event.TreasuryEvent {
 	LocalizedString description;
 }
 
@@ -405,12 +408,12 @@ relation CurrencyBennu {
 	}
 }
 
-relation ExemptionBennu {
+relation TreasuryExemptionBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;
 	}
 	
-	Exemption playsRole exemptions {
+	TreasuryExemption playsRole treasuryExemptions {
 		multiplicity *;
 	}	
 }
@@ -563,24 +566,24 @@ relation DocumentNumberSeriesFinantialDocumentType {
 	}
 }
 
-/* --- AccountingEvent --*/
+/* --- TreasuryEvent --*/
 
-relation AccountingEventBennu {
+relation TreasuryEventBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;
 	}
 
-	event.AccountingEvent playsRole accountingEvents {
+	event.TreasuryEvent playsRole treasuryEvents {
 		multiplicity *;
 	}
 }
 
-relation AccountingEventProduct {
+relation TreasuryEventProduct {
 	Product playsRole product {
 		multiplicity 1..1;
 	}
 	
-	event.AccountingEvent playsRole accountingEvents {
+	event.TreasuryEvent playsRole treasuryEvents {
 		multiplicity *;
 	}
 }

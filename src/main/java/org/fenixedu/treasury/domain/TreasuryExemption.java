@@ -11,14 +11,14 @@ import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
-public class Exemption extends Exemption_Base {
+public class TreasuryExemption extends TreasuryExemption_Base {
 
-    protected Exemption() {
+    protected TreasuryExemption() {
         super();
         setBennu(Bennu.getInstance());
     }
 
-    protected Exemption(final String code, final LocalizedString name, final BigDecimal discountRate) {
+    protected TreasuryExemption(final String code, final LocalizedString name, final BigDecimal discountRate) {
         this();
         setCode(code);
         setName(name);
@@ -29,11 +29,11 @@ public class Exemption extends Exemption_Base {
 
     private void checkRules() {
         if (StringUtils.isEmpty(getCode())) {
-            throw new TreasuryDomainException("error.Exemption.code.required");
+            throw new TreasuryDomainException("error.TreasuryExemption.code.required");
         }
 
         if (LocalizedStringUtil.isEmpty(getName())) {
-            throw new TreasuryDomainException("error.Exemption.name.required");
+            throw new TreasuryDomainException("error.TreasuryExemption.name.required");
         }
 
         findByCode(getCode());
@@ -74,14 +74,14 @@ public class Exemption extends Exemption_Base {
      ************/
     // @formatter: on
 
-    public static Set<Exemption> readAll() {
-        return Bennu.getInstance().getExemptionsSet();
+    public static Set<TreasuryExemption> readAll() {
+        return Bennu.getInstance().getTreasuryExemptionsSet();
     }
 
-    public static Exemption findByCode(final String code) {
-        Exemption result = null;
+    public static TreasuryExemption findByCode(final String code) {
+        TreasuryExemption result = null;
 
-        for (final Exemption it : readAll()) {
+        for (final TreasuryExemption it : readAll()) {
             if (!it.getCode().equalsIgnoreCase(code)) {
                 continue;
             }
@@ -96,10 +96,10 @@ public class Exemption extends Exemption_Base {
         return result;
     }
 
-    public static Exemption findByName(final String name) {
-        Exemption result = null;
+    public static TreasuryExemption findByName(final String name) {
+        TreasuryExemption result = null;
 
-        for (final Exemption it : readAll()) {
+        for (final TreasuryExemption it : readAll()) {
 
             if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
                 continue;
@@ -116,8 +116,8 @@ public class Exemption extends Exemption_Base {
     }
 
     @Atomic
-    public static Exemption create(final String code, final LocalizedString name, final BigDecimal discountRate) {
-        return new Exemption(code, name, discountRate);
+    public static TreasuryExemption create(final String code, final LocalizedString name, final BigDecimal discountRate) {
+        return new TreasuryExemption(code, name, discountRate);
     }
 
 }
