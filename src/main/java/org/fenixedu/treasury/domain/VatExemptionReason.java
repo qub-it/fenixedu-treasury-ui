@@ -26,11 +26,11 @@ public class VatExemptionReason extends VatExemptionReason_Base {
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.VatExemptionReason.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.VatExemptionReason.name.required");
         }
 

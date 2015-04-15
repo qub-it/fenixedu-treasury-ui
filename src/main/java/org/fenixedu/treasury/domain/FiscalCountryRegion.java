@@ -26,11 +26,11 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
     }
 
 	private void checkRules() {
-		if(StringUtils.isEmpty(getRegionCode())) {
+		if(LocalizedStringUtil.isTrimmedEmpty(getRegionCode())) {
 		    throw new TreasuryDomainException("error.FiscalCountryRegion.regionCode.required");
 		}
 		
-		if(LocalizedStringUtil.isEmpty(getName())) {
+		if(LocalizedStringUtil.isTrimmedEmpty(getName())) {
 		    throw new TreasuryDomainException("error.FiscalCountryRegion.name.required");
 		}
 		

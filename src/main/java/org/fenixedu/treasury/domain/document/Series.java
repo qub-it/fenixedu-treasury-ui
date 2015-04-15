@@ -38,11 +38,11 @@ public class Series extends Series_Base {
             throw new TreasuryDomainException("error.Series.finantialInstitution.required");
         }
 
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.Series.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.Series.name.required");
         }
 

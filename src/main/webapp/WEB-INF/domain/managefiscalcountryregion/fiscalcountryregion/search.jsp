@@ -97,8 +97,8 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-<th><spring:message code="label.FiscalCountryRegion.regionCode"/></th>dsghdsgfsgfdsgfdsgsgf
-<th><spring:message code="label.FiscalCountryRegion.name"/></th>
+					<th><spring:message code="label.FiscalCountryRegion.regionCode"/></th>
+					<th><spring:message code="label.FiscalCountryRegion.name"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>

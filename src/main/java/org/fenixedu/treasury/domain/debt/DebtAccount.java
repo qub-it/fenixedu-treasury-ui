@@ -1,11 +1,12 @@
 package org.fenixedu.treasury.domain.debt;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -13,13 +14,14 @@ public class DebtAccount extends DebtAccount_Base {
 
 	public DebtAccount() {
 		super();
+        setBennu(Bennu.getInstance());
 	}
 	
 
 
 
-	protected DebtAccount(final FinantialInstitution institution, final Customer customer) {
-		this();
+    protected DebtAccount(final FinantialInstitution finantialInstitution, final Customer customer) {
+        this();
 		setCustomer(customer);
 		setFinantialInstitution(insitution);
 
@@ -113,10 +115,9 @@ public class DebtAccount extends DebtAccount_Base {
 		return result;
 	}
 
-	@Atomic
-	public static DebtAccount create(final String code,
-			final LocalizedString name) {
-		return new DebtAccount(code, name);
-	}
+    @Atomic
+    public static DebtAccount create(final FinantialInstitution finantialInstitution, final Customer customer) {
+        return new DebtAccount(finantialInstitution, customer);
+    }
 
 }

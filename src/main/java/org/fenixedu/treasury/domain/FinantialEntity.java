@@ -33,11 +33,11 @@ public class FinantialEntity extends FinantialEntity_Base {
             throw new TreasuryDomainException("error.FinantialEntity.finantialInstitution.required");
         }
         
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.FinantialEntity.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.FinantialEntity.name.required");
         }
 

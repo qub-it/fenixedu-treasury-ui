@@ -26,11 +26,11 @@ public class CustomerType extends CustomerType_Base {
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.CustomerType.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.CustomerType.name.required");
         }
 

@@ -1,8 +1,9 @@
 package org.fenixedu.treasury.domain;
 
+enum org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum                                     as FinantialDocumentTypeEnum;
 enum org.fenixedu.treasury.domain.document.FinantialEntryType                                            as FinantialEntryType;
-enum org.fenixedu.treasury.domain.document.FinantialDocumentState                                        as FinantialDocumentState;
-enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                          as DueDateCalculationType ; 
+enum org.fenixedu.treasury.domain.document.FinantialDocumentStateType                                    as FinantialDocumentStateType;
+enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                          as DueDateCalculationType;
 enum org.fenixedu.treasury.domain.tariff.InterestType                                                    as InterestType; 
 
 external class .org.fenixedu.bennu.io.domain.GenericFile;
@@ -127,10 +128,12 @@ class document.DocumentTemplate {
  * ----------*/
 
 class document.FinantialDocumentType {
+	FinantialDocumentTypeEnum type;
 	String code;
 	LocalizedString name;
 	String documentNumberSeriesPrefix;
 	boolean invoice;
+	
 }
 
 class document.Series {
@@ -154,7 +157,7 @@ class document.FinantialDocument {
 	DateTime documentDate;
 	DateTime documentDueDate;
 	String originDocumentNumber;
-	FinantialDocumentState state;
+	FinantialDocumentStateType state;
 }
 
 
@@ -232,8 +235,6 @@ class tariff.InterestRate {
 	BigDecimalT interestFixedAmount;
 	BigDecimalT rate;
 }
-
-
 
  class document.PaymentReferenceCode
 {
@@ -532,6 +533,8 @@ relation DebtAccountFinantialInstitution {
  * Documents 
  * ----------*/
 
+/* --- FinantialDocumentType --- */
+
 relation FinantialDocumentTypeBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;
@@ -541,6 +544,8 @@ relation FinantialDocumentTypeBennu {
 		multiplicity *;
 	}
 }
+
+/* --- Series --- */
 
 relation SeriesBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
@@ -558,6 +563,18 @@ relation SeriesFinantialInstitution {
 	}
 	
 	document.Series playsRole series {
+		multiplicity *;
+	}
+}
+
+/* --- DocumentNumberSeries --- */
+
+relation DocumentNumberSeriesBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	document.DocumentNumberSeries playsRole documentNumberSeries {
 		multiplicity *;
 	}
 }
@@ -582,7 +599,7 @@ relation DocumentNumberSeriesFinantialDocumentType {
 	}
 }
 
-/* --- TreasuryEvent --*/
+/* --- TreasuryEvent --- */
 
 relation TreasuryEventBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
@@ -604,8 +621,17 @@ relation TreasuryEventProduct {
 	}
 }
 
-
 /* --- FinantialDocument --- */
+
+relation FinantialDocumentBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+
+	document.FinantialDocument playsRole finantialDocuments {
+		multiplicity *;
+	}
+}
 
 relation FinantialDocumentFinantialDocumentType {
 	document.FinantialDocumentType playsRole finantialDocumentType {
@@ -737,6 +763,7 @@ relation DebitEntryDebitNote {
 	}
 }
 
+
 relation InvoiceEntryProduct {
 	Product playsRole product {
 		multiplicity 1..1;
@@ -753,10 +780,17 @@ relation InvoiceEntryVat {
 	}
 	
 	document.InvoiceEntry playsRole invoiceEntries {
+
+relation DebitEntryDebitNote {
+	document.DebitNote playsRole debitNote {
+		multiplicity 1..1;
+	}
+
+	document.DebitEntry playsRole debitEntries {
+
 		multiplicity *;
 	}
 }
-
 
 /* --- CreditEntry --- */
 
