@@ -24,7 +24,7 @@ valueType java.math.BigDecimal as BigDecimalT
  * ------------------*/
 
 class FiscalCountryRegion {
-	String regionCode;
+	String fiscalCode;
 	LocalizedString name;
 }
 
@@ -261,8 +261,8 @@ class integration.OperationFile extends .org.fenixedu.bennu.io.domain.GenericFil
 class integration.IntegrationOperation
 {
        DateTime executionDate;
-       Boolean processed;
-       Boolean success;
+       boolean processed;
+       boolean success;
        String errorLog;
 }
 
@@ -282,6 +282,16 @@ class integration.ImportOperation extends integration.IntegrationOperation
 /*-------------------
  * REFERENCE ENTITIES
  * ------------------*/
+
+relation FinantialInstitutionFiscalCountryRegion{
+	FiscalCountryRegion playsRole fiscalCountryRegion {
+		multiplicity 1..1;
+	}
+	
+	FinantialInstitution playsRole finantialInstitutions {
+		multiplicity *;
+	}
+}
 
 relation FiscalCountryRegionBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
@@ -727,12 +737,22 @@ relation DebitEntryDebitNote {
 	}
 }
 
-relation DebitEntryProduct {
+relation InvoiceEntryProduct {
 	Product playsRole product {
 		multiplicity 1..1;
 	}
 	
-	document.DebitEntry playsRole debitEntries {
+	document.InvoiceEntry playsRole invoiceEntries {
+		multiplicity *;
+	}
+}
+
+relation InvoiceEntryVat {
+	Vat playsRole vat {
+		multiplicity 1..1;
+	}
+	
+	document.InvoiceEntry playsRole invoiceEntries {
 		multiplicity *;
 	}
 }
@@ -885,6 +905,18 @@ relation IntegrationOperationBennu
 		multiplicity *;
 	}
 }
+
+relation IntegrationOperationFinantialInstitution
+{
+	FinantialInstitution playsRole finantialInstitution {
+		multiplicity 1..1;
+	}
+	
+	integration.IntegrationOperation playsRole integrationOperations {
+		multiplicity *;
+	}
+}
+
 
 relation IntegrationOperationOperationFile
 {

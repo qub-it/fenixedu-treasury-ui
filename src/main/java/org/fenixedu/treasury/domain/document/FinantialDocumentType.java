@@ -128,13 +128,10 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
 
         return result;
     }
-<<<<<<< HEAD
-=======
     
     @Atomic
     public static FinantialDocumentType create(final String code, final LocalizedString name, final String documentNumberSeriesPrefix, boolean invoice) {
         return new FinantialDocumentType(code, name, documentNumberSeriesPrefix, invoice);
     }
->>>>>>> origin/master
 
 }

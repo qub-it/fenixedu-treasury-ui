@@ -29,6 +29,7 @@ import oecd.standardauditfile_tax.pt_1.AuditFile;
 import oecd.standardauditfile_tax.pt_1.Header;
 import oecd.standardauditfile_tax.pt_1.MovementTax;
 import oecd.standardauditfile_tax.pt_1.OrderReferences;
+import oecd.standardauditfile_tax.pt_1.SAFTPTMovementTaxType;
 import oecd.standardauditfile_tax.pt_1.SAFTPTSourceBilling;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.MovementOfGoods;
@@ -52,6 +53,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 
 // ******************************************************************************************************************************
@@ -105,10 +107,9 @@ public class SAFTExporter {
 		if (generateAllCustomersAndProducts) {
 			logger.info("Reading all Customers and Products in Store "
 					+ institution.getCode());
-			
+
 			Set<Customer> allCustomers = new HashSet<Customer>();
-			for (DebtAccount debt : institution.getDebtAccountsSet())
-			{
+			for (DebtAccount debt : institution.getDebtAccountsSet()) {
 				allCustomers.add(debt.getCustomer());
 			}
 			Set<Product> allProducts = institution.getAvailableProductsSet();
@@ -159,9 +160,7 @@ public class SAFTExporter {
 		oecd.standardauditfile_tax.pt_1.TaxTable taxTable = new oecd.standardauditfile_tax.pt_1.TaxTable();
 		masterFiles.setTaxTable(taxTable);
 
-		List<VatType> allVatsInStore = institution.get();
-
-		for (VatType vat : allVatsInStore) {
+		for (Vat vat : institution.getVatsSet()) {
 			taxTable.getTaxTableEntry().add(
 					this.convertVATtoTaxTableEntry(vat, institution));
 		}
@@ -257,24 +256,24 @@ public class SAFTExporter {
 					}
 
 					// Update Counter
-//					information.setCurrentCounter(information
-//							.getCurrentCounter() + 10);
-//					if (i % 10 == 0) {
-//						try {
-//							persistenceSupport.flush();
-//							persistenceSupport.clearSession();
-//						} catch (Throwable t) {
-//							logger.error("Something gone wrong flushing state",
-//									t);
-//						}
-//						logger.info("Processing " + i + "/"
-//								+ saleDocuments.size() + " documents in Store "
-//								+ storeToProcess.getCode());
-//					}
+					// information.setCurrentCounter(information
+					// .getCurrentCounter() + 10);
+					// if (i % 10 == 0) {
+					// try {
+					// persistenceSupport.flush();
+					// persistenceSupport.clearSession();
+					// } catch (Throwable t) {
+					// logger.error("Something gone wrong flushing state",
+					// t);
+					// }
+					// logger.info("Processing " + i + "/"
+					// + saleDocuments.size() + " documents in Store "
+					// + storeToProcess.getCode());
+					// }
 					i++;
 
 				} catch (Exception ex) {
-//					persistenceSupport.flush();
+					// persistenceSupport.flush();
 					logger.error("Error processing document "
 							+ document.getUiDocumentNumber() + ": "
 							+ ex.getMessage());
@@ -288,7 +287,7 @@ public class SAFTExporter {
 
 		}
 
-//		persistenceSupport.enableAutoFlush();
+		// persistenceSupport.enableAutoFlush();
 
 		// Update the Customer Table in SAFT
 		for (oecd.standardauditfile_tax.pt_1.Customer customer : customerMap
@@ -317,13 +316,13 @@ public class SAFTExporter {
 		// Find the Customer in BaseCustomers
 		oecd.standardauditfile_tax.pt_1.Customer customer = null;
 
-		if (baseCustomers.containsKey(document.getDebtAccounts().getCustomer()
+		if (baseCustomers.containsKey(document.getDebtAccount().getCustomer()
 				.getCode())) {
-			customer = baseCustomers.get(document.getDebtAccounts()
+			customer = baseCustomers.get(document.getDebtAccount()
 					.getCustomer().getCode());
 		} else {
 			// If not found, create a new one and add it to baseCustomers
-			customer = convertToSAFTCustomer(document.getDebtAccounts()
+			customer = convertToSAFTCustomer(document.getDebtAccount()
 					.getCustomer());
 			baseCustomers.put(customer.getCustomerID(), customer);
 		}
@@ -354,7 +353,7 @@ public class SAFTExporter {
 			workDocument.setDocumentNumber(document.getUiDocumentNumber());
 
 			// CustomerID
-			workDocument.setCustomerID(document.getDebtAccounts().getCustomer()
+			workDocument.setCustomerID(document.getDebtAccount().getCustomer()
 					.getCode());
 
 			// DocumentStatus
@@ -481,7 +480,8 @@ public class SAFTExporter {
 
 		// Process individual
 		BigInteger i = BigInteger.ONE;
-		for (InvoiceEntry docLine : document.getLines()) {
+		for (FinantialDocumentEntry docLine : document
+				.getFinantialDocumentEntriesSet()) {
 			InvoiceEntry orderNoteLine = (InvoiceEntry) docLine;
 			oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line line = convertToSAFTWorkDocumentLine(
 					orderNoteLine, baseProducts);
@@ -539,12 +539,12 @@ public class SAFTExporter {
 		// Description
 		line.setDescription(currentProduct.getProductDescription());
 
-		if (!Strings.isNullOrEmpty(entry.getInvoice()
-				.getDocumentSourceReferenceNumber())) {
+		if (!Strings
+				.isNullOrEmpty(entry.getInvoice().getOriginDocumentNumber())) {
 			List<OrderReferences> orderReferences = line.getOrderReferences();
 			OrderReferences reference = new OrderReferences();
 			reference.setOriginatingON(entry.getInvoice()
-					.getDocumentSourceReferenceNumber());
+					.getOriginDocumentNumber());
 
 			reference.setOrderDate(documentDateCalendar);
 			orderReferences.add(reference);
@@ -563,7 +563,7 @@ public class SAFTExporter {
 		line.setSettlementAmount(BigDecimal.ZERO);
 
 		// Tax
-		line.setTax(getSAFTWorkingDocumentsTax(product.getVatType()));
+		line.setTax(getSAFTWorkingDocumentsTax(product));
 
 		line.setTaxPointDate(documentDateCalendar);
 
@@ -576,8 +576,9 @@ public class SAFTExporter {
 		 * . Texto 60
 		 */
 		if (line.getTax().getTaxPercentage() == BigDecimal.ZERO) {
-			VatType vat = entry.getProduct().getVatType();
-			if (vat.getVatExemptionReason() != null) {
+			Vat vat = entry.getVat();
+
+			if (vat.getVatType().getVatExemptionReason() != null) {
 				line.setTaxExemptionReason(vat.getVatExemptionReason()
 						.getCode()
 						+ "-"
@@ -592,8 +593,7 @@ public class SAFTExporter {
 		// UnitOfMeasure
 		line.setUnitOfMeasure(product.getUnitOfMeasure().getContent());
 		// UnitPrice
-		line.setUnitPrice(entry.getAmount().setScale(2,
-				RoundingMode.HALF_EVEN));
+		line.setUnitPrice(entry.getAmount().setScale(2, RoundingMode.HALF_EVEN));
 
 		return line;
 	}
@@ -622,7 +622,8 @@ public class SAFTExporter {
 		tax.setTaxCountryRegion("PT");
 
 		// Tax-TaxPercentage
-		tax.setTaxPercentage(product.getVatType());
+		product.getTariffSet().stream().filter(x->x.)
+		tax.setTaxPercentage(product.get.getVatType());
 
 		// Tax-TaxType
 		tax.setTaxType("IVA");
@@ -630,20 +631,22 @@ public class SAFTExporter {
 		return tax;
 	}
 
-	private TaxTableEntry convertVATtoTaxTableEntry(VatType vat, FinantialInstitution finantialInstitution) {
+	private TaxTableEntry convertVATtoTaxTableEntry(Vat vat,
+			FinantialInstitution finantialInstitution) {
 		TaxTableEntry entry = new TaxTableEntry();
 		entry.setTaxType("IVA");
-		entry.setTaxCode(vat.getName().getContent());
-		if (finantialInstitution.getFiscalCountryRegion() != null) {
+		entry.setTaxCode(vat.getVatType().getName().getContent());
+		if (finantialInstitution.getFiscalNumber() != null) {
 			entry.setTaxCountryRegion(finantialInstitution
 					.getFiscalCountryRegion().getFiscalCode());
 			entry.setDescription(finantialInstitution.getFiscalCountryRegion()
-					.getDescription() + "-" + vat.getName().getContent());
+					.getName().getContent()
+					+ "-" + vat.getVatType().getName().getContent());
 		} else {
 			entry.setTaxCountryRegion("PT");
-			entry.setDescription(StringUtils.EMPTY);
+			entry.setDescription("");
 		}
-		entry.setTaxCode(vat.getName().getContent());
+		entry.setTaxCode(vat.getVatType().getName().getContent());
 		entry.setTaxPercentage(vat.getTaxRate());
 
 		if (Strings.isNullOrEmpty(entry.getDescription())) {
@@ -671,8 +674,8 @@ public class SAFTExporter {
 
 			// CompanyAddress
 			AddressStructurePT companyAddress = null;
-			companyAddress = convertPhysicalAddressToAddressPT(finantialInstitution
-					.getPhysicalAddress());
+			companyAddress = convertAddressToAddressPT(finantialInstitution
+					.getAddress());
 			header.setCompanyAddress(companyAddress);
 
 			// CompanyID
@@ -682,30 +685,23 @@ public class SAFTExporter {
 			 * espa?o. Nos casos em que n?o existe o registo comercial, deve ser
 			 * indicado o NIF.
 			 */
-			if (!StringUtils.isEmpty(finantialInstitution
-					.getComercialRegistrationCode())
-					&& finantialInstitution.getStoreHeadquarter() != null) {
-				header.setCompanyID(finantialInstitution
-						.getComercialRegistrationCode());
-			} else {
-				header.setCompanyID(finantialInstitution.getFiscalNumber());
-			}
+			header.setCompanyID(finantialInstitution
+					.getComercialRegistrationCode());
 
 			// CurrencyCode
 			/*
 			 * 1.11 * C?digo de moeda (CurrencyCode) . . . . . . . Preencher com
 			 * ?EUR?
 			 */
-			StoreHeadquarter headquarter = finantialInstitution
-					.getStoreHeadquarter();
-			if (headquarter != null && headquarter.getParameters() != null
-					&& headquarter.getParameters().getDefaultCurrency() != null) {
-				Currency currency = headquarter.getParameters()
-						.getDefaultCurrency();
-				header.setCurrencyCode(currency.getTypeValue());
-			} else {
-				header.setCurrencyCode("EUR");
-			}
+			// if (finantialInstitution != null && headquarter.getParameters()
+			// != null
+			// && headquarter.getParameters().getDefaultCurrency() != null) {
+			// Currency currency = headquarter.getParameters()
+			// .getDefaultCurrency();
+			// header.setCurrencyCode(currency.getTypeValue());
+			// } else {
+			header.setCurrencyCode("EUR");
+			// }
 
 			// DateCreated
 			DateTime now = new DateTime();
@@ -795,16 +791,10 @@ public class SAFTExporter {
 			 * espa?os e sem qualquer prefixo do pa?s. Inteiro 9
 			 */
 			try {
-				if (finantialInstitution.getStoreHeadquarter() != null) {
-					header.setTaxRegistrationNumber(Integer
-							.parseInt(finantialInstitution
-									.getStoreHeadquarter().getFiscalNumber()));
-				} else {
-					header.setTaxRegistrationNumber(Integer
-							.parseInt(finantialInstitution.getFiscalNumber()));
-				}
+				header.setTaxRegistrationNumber(Integer
+						.parseInt(finantialInstitution.getFiscalNumber()));
 			} catch (Exception ex) {
-				throw new DomainException("Invalid Fiscal Number.");
+				throw new RuntimeException("Invalid Fiscal Number.");
 			}
 
 			// TODO: Telephone
@@ -821,19 +811,19 @@ public class SAFTExporter {
 		}
 	}
 
-	private AddressStructurePT convertPhysicalAddressToAddressPT(
-			PhysicalAddress address) {
+	private AddressStructurePT convertAddressToAddressPT(String addressDetail,
+			String zipCode, String zipCodeRegion, String street) {
 		AddressStructurePT companyAddress;
 		companyAddress = new AddressStructurePT();
 		companyAddress.setCountry("PT");
-		companyAddress.setAddressDetail(StringUtils.substring(
-				address.getPresentation(), 0, 59));
-		companyAddress.setCity(StringUtils.substring(
-				address.getZipCodeDescription(), 0, 49));
-		companyAddress.setPostalCode(address.getZipCodeNumber());
-		companyAddress.setRegion(address.getZipCodeDescription());
-		companyAddress.setStreetName(StringUtils.substring(
-				address.getStreetName(), 0, 49));
+		companyAddress.setAddressDetail(Splitter.fixedLength(60)
+				.splitToList(addressDetail).get(0));
+		companyAddress.setCity(Splitter.fixedLength(49)
+				.splitToList(zipCodeRegion).get(0));
+		companyAddress.setPostalCode(zipCode);
+		companyAddress.setRegion(zipCodeRegion);
+		companyAddress.setStreetName(Splitter.fixedLength(49)
+				.splitToList(street).get(0));
 		return companyAddress;
 	}
 
@@ -859,13 +849,10 @@ public class SAFTExporter {
 
 			String xml = new String(charset.encode(writer.toString()).array(),
 					"Windows-1252");
-			xml = StringUtils.replace(xml, cleanXMLAnotations,
-					StringUtils.EMPTY);
-			xml = StringUtils.replace(xml, cleanXMLAnotations2,
-					StringUtils.EMPTY);
-			xml = StringUtils.replace(xml, cleanDateTimeMiliseconds, "<");
-			xml = StringUtils.replace(xml, cleanStandaloneAnnotation,
-					StringUtils.EMPTY);
+			xml = xml.replace(cleanXMLAnotations, "");
+			xml = xml.replace(cleanXMLAnotations2, "");
+			xml = xml.replace(cleanDateTimeMiliseconds, "<");
+			xml = xml.replace(cleanStandaloneAnnotation, "");
 
 			try {
 				MessageDigest md = MessageDigest.getInstance("SHA1");
@@ -1505,7 +1492,7 @@ public class SAFTExporter {
 		// c.setBillingAddress(convertToSAFTAddressStructure(addresses.get(0)));
 		// } else {
 		// PhysicalAddress addr = new PhysicalAddress();
-		c.setBillingAddress(convertToSAFTAddressStructure(addr));
+		c.setBillingAddress(convertToSAFTAddressStructure(customer.getAddress()));
 		// }
 
 		// CompanyName
@@ -1518,7 +1505,7 @@ public class SAFTExporter {
 		c.setCustomerID(customer.getCode());
 
 		// CustomerTaxID
-		if (StringUtils.isEmpty(customer.getFiscalNumber())) {
+		if (Strings.isNullOrEmpty(customer.getFiscalNumber())) {
 			c.setCustomerTaxID(Customer.DEFAULT_FISCAL_NUMBER);
 		} else {
 			c.setCustomerTaxID(customer.getFiscalNumber());
@@ -1576,23 +1563,20 @@ public class SAFTExporter {
 		return p;
 	}
 
-	private MovementTax getSAFTMovementTax(Product product) {
+	private MovementTax getSAFTMovementTax(Product product, Vat vat) {
 		MovementTax tax = new MovementTax();
-		// ProductStore productInStore = product.getProductStoreFor(store);
-		VatType vat = product.getVatType();
-		// Tax-TaxCode
 
-		if (vat.getCode().equals("RED")) {
+		if (vat.getVatType().getCode().equals("RED")) {
 			tax.setTaxCode("INT");
-		} else if (vat.getCode().equals("2")) {
+		} else if (vat.getVatType().getCode().equals("2")) {
 			tax.setTaxCode("RED");
-		} else if (vat.getCode().equals("3")) {
+		} else if (vat.getVatType().getCode().equals("3")) {
 			tax.setTaxCode("NOR");
-		} else if (vat.getCode().equals("5")) {
+		} else if (vat.getVatType().getCode().equals("5")) {
 			tax.setTaxCode("ISE");
-		} else if (vat.getCode().equals("6")) {
+		} else if (vat.getVatType().getCode().equals("6")) {
 			tax.setTaxCode("ISE");
-		} else if (vat.getCode().equals("1")) {
+		} else if (vat.getVatType().getCode().equals("1")) {
 			tax.setTaxCode("ISE");
 		}
 
@@ -1608,23 +1592,21 @@ public class SAFTExporter {
 		return tax;
 	}
 
-	private Tax getSAFTInvoiceTax(Product product) {
+	private Tax getSAFTInvoiceTax(Product product, Vat vat) {
 		Tax tax = new Tax();
-		// ProductStore productInStore = product.getProductStoreFor(store);
-		VatType vat = product.getVatType();
 		// Tax-TaxCode
 
-		if (vat.getCode().equals("RED")) {
+		if (vat.getVatType().getCode().equals("RED")) {
 			tax.setTaxCode("INT");
-		} else if (vat.getCode().equals("2")) {
+		} else if (vat.getVatType().getCode().equals("2")) {
 			tax.setTaxCode("RED");
-		} else if (vat.getCode().equals("3")) {
+		} else if (vat.getVatType().getCode().equals("3")) {
 			tax.setTaxCode("NOR");
-		} else if (vat.getCode().equals("5")) {
+		} else if (vat.getVatType().getCode().equals("5")) {
 			tax.setTaxCode("ISE");
-		} else if (vat.getCode().equals("6")) {
+		} else if (vat.getVatType().getCode().equals("6")) {
 			tax.setTaxCode("ISE");
-		} else if (vat.getCode().equals("1")) {
+		} else if (vat.getVatType().getCode().equals("1")) {
 			tax.setTaxCode("ISE");
 		}
 
@@ -1641,54 +1623,54 @@ public class SAFTExporter {
 	}
 
 	private oecd.standardauditfile_tax.pt_1.AddressStructure convertToSAFTAddressStructure(
-			PhysicalAddress physicalAddress) {
+			String fullAddress) {
 		oecd.standardauditfile_tax.pt_1.AddressStructure address = new oecd.standardauditfile_tax.pt_1.AddressStructure();
-		if (physicalAddress.getStreetName() != null) {
-			address.setStreetName(StringUtils.substring(
-					physicalAddress.getStreetName(), 0, 19));
-		}
-		address.setRegion(physicalAddress.getArea());
-		address.setPostalCode(physicalAddress.getZipCodeNumber());
-
-		// TODO: Sendo conhecido, deve ser preenchido de acordo com a norma ISO
-		// 3166 -1 -alpha -2.
-		if (physicalAddress.getCountry() != null) {
-			address.setCountry(physicalAddress.getCountry().getCode());
-		} else {
-			address.setCountry("PT");
-		}
-
-		if (physicalAddress.getZipCodeDescription() != null) {
-			address.setCity(StringUtils.substring(
-					physicalAddress.getZipCodeDescription(), 0, 49));
-		}
-
-		if (physicalAddress.getStreetName() != null) {
-			address.setBuildingNumber(StringUtils.substring(
-					physicalAddress.getStreetNumber(), 0, 19));
-		}
-
-		if (physicalAddress.getPresentation() != null) {
-
-			address.setAddressDetail(StringUtils.substring(
-					physicalAddress.getPresentation(), 0, 19));
-		}
-
-		// Check if there is no information on city and region
-		if (address.getCity() == null
-				|| address.getCity().equals(StringUtils.EMPTY)) {
-			address.setCity(".");
-		}
-
-		if (address.getRegion() == null
-				|| address.getRegion().equals(StringUtils.EMPTY)) {
-			address.setRegion(".");
-		}
-
-		if (address.getStreetName() == null
-				|| address.getStreetName().equals(StringUtils.EMPTY)) {
-			address.setStreetName(".");
-		}
+//		if (physicalAddress.getStreetName() != null) {
+//			address.setStreetName(StringUtils.substring(
+//					physicalAddress.getStreetName(), 0, 19));
+//		}
+//		address.setRegion(physicalAddress.getArea());
+//		address.setPostalCode(physicalAddress.getZipCodeNumber());
+//
+//		// TODO: Sendo conhecido, deve ser preenchido de acordo com a norma ISO
+//		// 3166 -1 -alpha -2.
+//		if (physicalAddress.getCountry() != null) {
+//			address.setCountry(physicalAddress.getCountry().getCode());
+//		} else {
+//			address.setCountry("PT");
+//		}
+//
+//		if (physicalAddress.getZipCodeDescription() != null) {
+//			address.setCity(StringUtils.substring(
+//					physicalAddress.getZipCodeDescription(), 0, 49));
+//		}
+//
+//		if (physicalAddress.getStreetName() != null) {
+//			address.setBuildingNumber(StringUtils.substring(
+//					physicalAddress.getStreetNumber(), 0, 19));
+//		}
+//
+//		if (physicalAddress.getPresentation() != null) {
+//
+//			address.setAddressDetail(StringUtils.substring(
+//					physicalAddress.getPresentation(), 0, 19));
+//		}
+//
+//		// Check if there is no information on city and region
+//		if (address.getCity() == null
+//				|| address.getCity().equals(StringUtils.EMPTY)) {
+//			address.setCity(".");
+//		}
+//
+//		if (address.getRegion() == null
+//				|| address.getRegion().equals(StringUtils.EMPTY)) {
+//			address.setRegion(".");
+//		}
+//
+//		if (address.getStreetName() == null
+//				|| address.getStreetName().equals(StringUtils.EMPTY)) {
+//			address.setStreetName(".");
+//		}
 
 		return address;
 	}
@@ -1701,8 +1683,7 @@ public class SAFTExporter {
 				finantialInstitution, fromDate, toDate, username);
 		try {
 			SAFTExporter saftExporter = new SAFTExporter();
-			List<FinantialDocument> documents = finantialInstitution.get
-					.getDocuments(SaleNoteDocument.class, fromDate, toDate);
+			List<FinantialDocument> documents = finantialInstitution.getSeriesSet().getDocuments(SaleNoteDocument.class, fromDate, toDate);
 			logger.info("Collecting " + documents.size()
 					+ " documents to export to store "
 					+ finantialInstitution.getCode());
@@ -1723,7 +1704,7 @@ public class SAFTExporter {
 		operation.setErrorLog(out.toString());
 	}
 
-	private static ExportOperation createSaftExportOperation(String storeCode,
+	private static ExportOperation createSaftExportOperation(FinantialInstitution institution,
 			DateTime fromDate, DateTime toDate, String username) {
 		return SaftFileExportOperation.create(username, storeCode, false, null,
 				java.util.Collections.<SaftDocumentReport> emptyList(),
@@ -1738,8 +1719,7 @@ public class SAFTExporter {
 			e.printStackTrace();
 		}
 		OperationFile binaryStream = new OperationFile();
-		binaryStream.
-		createSaftFile(binaryStream, operation.getId());
+		binaryStream.createSaftFile(binaryStream, operation.getId());
 	}
 
 	@Transactional
