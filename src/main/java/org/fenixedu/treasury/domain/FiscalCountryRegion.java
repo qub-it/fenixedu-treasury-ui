@@ -17,31 +17,31 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
         setBennu(Bennu.getInstance());
     }
     
-    protected FiscalCountryRegion(final String regionCode, final LocalizedString name) {
+    protected FiscalCountryRegion(final String fiscalCode, final LocalizedString name) {
     	this();
-        setRegionCode(regionCode);
+        setFiscalCode(fiscalCode);
     	setName(name);
     	
     	checkRules();
     }
 
 	private void checkRules() {
-		if(LocalizedStringUtil.isTrimmedEmpty(getRegionCode())) {
-		    throw new TreasuryDomainException("error.FiscalCountryRegion.regionCode.required");
+		if(LocalizedStringUtil.isTrimmedEmpty(getFiscalCode())) {
+		    throw new TreasuryDomainException("error.FiscalCountryRegion.fiscalCode.required");
 		}
 		
 		if(LocalizedStringUtil.isTrimmedEmpty(getName())) {
 		    throw new TreasuryDomainException("error.FiscalCountryRegion.name.required");
 		}
 		
-		findByRegionCode(getRegionCode());
+		findByRegionCode(getFiscalCode());
 		
 		getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
 	}
 	
 	@Atomic
-	public void edit(final String regionCode, final LocalizedString name) {
-	    setRegionCode(regionCode);
+	public void edit(final String fiscalCode, final LocalizedString name) {
+	    setFiscalCode(fiscalCode);
 	    setName(name);
 	    
 	    checkRules();
@@ -72,16 +72,16 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
 	    return Bennu.getInstance().getFiscalCountryRegionsSet();
 	}
 	
-    public static FiscalCountryRegion findByRegionCode(final String regionCode) {
+    public static FiscalCountryRegion findByRegionCode(final String fiscalCode) {
         FiscalCountryRegion result = null;
         
         for (final FiscalCountryRegion it : readAll()) {
-            if(!it.getRegionCode().equalsIgnoreCase(regionCode)) {
+            if(!it.getFiscalCode().equalsIgnoreCase(fiscalCode)) {
                 continue;
             }
             
             if(result != null) {
-                throw new TreasuryDomainException("error.FiscalCountryRegion.duplicated.regionCode");
+                throw new TreasuryDomainException("error.FiscalCountryRegion.duplicated.fiscalCode");
             }
             
             result = it;
@@ -110,8 +110,8 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
     }
     
     @Atomic
-    public static FiscalCountryRegion create(final String regionCode, final LocalizedString name) {
-        return new FiscalCountryRegion(regionCode, name);
+    public static FiscalCountryRegion create(final String fiscalCode, final LocalizedString name) {
+        return new FiscalCountryRegion(fiscalCode, name);
     }
     
 }

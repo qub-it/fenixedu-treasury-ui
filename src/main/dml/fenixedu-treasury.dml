@@ -780,17 +780,10 @@ relation InvoiceEntryVat {
 	}
 	
 	document.InvoiceEntry playsRole invoiceEntries {
-
-relation DebitEntryDebitNote {
-	document.DebitNote playsRole debitNote {
-		multiplicity 1..1;
-	}
-
-	document.DebitEntry playsRole debitEntries {
-
 		multiplicity *;
 	}
 }
+
 
 /* --- CreditEntry --- */
 
@@ -935,7 +928,7 @@ relation IntegrationOperationBennu
 		multiplicity 1..1;
 	}
 	
-	integration.OperationFile playsRole integrationOperationFiles {
+	integration.IntegrationOperation playsRole integrationOperations {
 		multiplicity *;
 	}
 }

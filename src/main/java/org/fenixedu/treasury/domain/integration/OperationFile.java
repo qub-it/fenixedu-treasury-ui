@@ -7,7 +7,7 @@ public class OperationFile extends OperationFile_Base {
     
     public OperationFile() {
         super();
-    	this.setBennu(Bennu.getInstance());
+//    	this.setBennu(Bennu.getInstance());
     }
     
     public OperationFile(String fileName, byte[] content)
