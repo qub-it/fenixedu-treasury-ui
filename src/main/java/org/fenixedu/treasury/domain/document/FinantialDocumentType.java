@@ -1,6 +1,8 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -17,8 +19,10 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected FinantialDocumentType(final String code, final LocalizedString name, final String documentNumberSeriesPrefix, boolean invoice) {
+    protected FinantialDocumentType(final FinantialDocumentTypeEnum type, final String code, final LocalizedString name,
+            final String documentNumberSeriesPrefix, final boolean invoice) {
         this();
+        setType(type);
         setCode(code);
         setName(name);
         setDocumentNumberSeriesPrefix(documentNumberSeriesPrefix);
@@ -28,16 +32,20 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (getType() == null) {
+            throw new TreasuryDomainException("error.FinantialDocumentType.type.required");
+        }
+
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.FinantialDocumentType.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.FinantialDocumentType.name.required");
         }
 
         findByCode(getCode());
-        
+
         getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
     }
 
@@ -92,7 +100,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
         return result;
     }
 
-    public static FinantialDocumentType findByName(final String name) {
+    protected static FinantialDocumentType findByName(final String name) {
         FinantialDocumentType result = null;
 
         for (final FinantialDocumentType it : readAll()) {
@@ -111,7 +119,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
         return result;
     }
 
-    public static FinantialDocumentType findByDocumentNumberSeriesPrefix(final String documentNumberSeriesPrefix) {
+    protected static FinantialDocumentType findByDocumentNumberSeriesPrefix(final String documentNumberSeriesPrefix) {
         FinantialDocumentType result = null;
 
         for (final FinantialDocumentType it : readAll()) {
@@ -128,13 +136,56 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
 
         return result;
     }
-<<<<<<< HEAD
-=======
-    
-    @Atomic
-    public static FinantialDocumentType create(final String code, final LocalizedString name, final String documentNumberSeriesPrefix, boolean invoice) {
-        return new FinantialDocumentType(code, name, documentNumberSeriesPrefix, invoice);
+
+    protected static FinantialDocumentType findByFinantialDocumentType(final FinantialDocumentTypeEnum type) {
+        final Stream<FinantialDocumentType> stream =
+                readAll().stream().filter(fdt -> fdt.getType() == type);
+
+        if (stream.count() > 1) {
+            throw new TreasuryDomainException("error.FinantialDocumentType.not.unique.in.finantial.document.type");
+        }
+
+        return stream.findFirst().orElse(null);
     }
->>>>>>> origin/master
+
+    public static FinantialDocumentType findForDebitNote() {
+        return findByFinantialDocumentType(FinantialDocumentTypeEnum.DEBIT_NOTE);
+    }
+    
+    public static FinantialDocumentType findForCreditNote() {
+        return findByFinantialDocumentType(FinantialDocumentTypeEnum.CREDIT_NOTE);
+    }
+    
+    public static FinantialDocumentType findForSettlementNote() {
+        return findByFinantialDocumentType(FinantialDocumentTypeEnum.SETTLEMENT_NOTE);
+    }
+    
+    public static FinantialDocumentType findForReimbursementNote() {
+        return findByFinantialDocumentType(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE);
+    }
+
+    @Atomic 
+    public static FinantialDocumentType createForDebitNote(final String code, final LocalizedString name,
+            final String documentNumberSeriesPrefix, boolean invoice) {
+        return new FinantialDocumentType(FinantialDocumentTypeEnum.DEBIT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
+    }
+
+    @Atomic
+    public static FinantialDocumentType createForCreditNote(final String code, final LocalizedString name,
+            final String documentNumberSeriesPrefix, boolean invoice) {
+        return new FinantialDocumentType(FinantialDocumentTypeEnum.CREDIT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
+    }
+
+    @Atomic
+    public static FinantialDocumentType createForSettlementNote(final String code, final LocalizedString name,
+            final String documentNumberSeriesPrefix, boolean invoice) {
+        return new FinantialDocumentType(FinantialDocumentTypeEnum.SETTLEMENT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
+    }
+
+    @Atomic
+    public static FinantialDocumentType createForReimbursementNote(final String code, final LocalizedString name,
+            final String documentNumberSeriesPrefix, boolean invoice) {
+        return new FinantialDocumentType(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
+    }
 
 }

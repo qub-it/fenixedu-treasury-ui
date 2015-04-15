@@ -5,6 +5,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -33,15 +34,15 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.FinantialInstitution.code.required");
         }
 
-        if (StringUtils.isEmpty(getFiscalNumber())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getFiscalNumber())) {
             throw new TreasuryDomainException("error.FinantialInstitution.fiscalNumber.required");
         }
 
-        if (StringUtils.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.FinantialInstitution.name.required");
         }
 

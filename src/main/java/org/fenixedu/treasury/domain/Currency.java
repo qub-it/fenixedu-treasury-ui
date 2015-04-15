@@ -28,19 +28,19 @@ public class Currency extends Currency_Base {
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.Currency.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.Currency.name.required");
         }
         
-        if(StringUtils.isEmpty(getIsoCode())) {
+        if(LocalizedStringUtil.isTrimmedEmpty(getIsoCode())) {
             throw new TreasuryDomainException("error.Currency.isoCode.required");
         }
         
-        if(StringUtils.isEmpty(getSymbol())) {
+        if(LocalizedStringUtil.isTrimmedEmpty(getSymbol())) {
             throw new TreasuryDomainException("error.Currency.symbol.required");
         }
 

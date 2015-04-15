@@ -26,11 +26,11 @@ public class ProductGroup extends ProductGroup_Base {
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.ProductGroup.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.ProductGroup.name.required");
         }
 

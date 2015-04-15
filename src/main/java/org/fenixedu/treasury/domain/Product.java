@@ -28,18 +28,18 @@ public class Product extends Product_Base {
     }
 
     private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.Product.code.required");
         }
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new TreasuryDomainException("error.Product.name.required");
         }
 
         findByCode(getCode());
         getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
 
-        if (LocalizedStringUtil.isEmpty(getUnitOfMeasure())) {
+        if (LocalizedStringUtil.isTrimmedEmpty(getUnitOfMeasure())) {
             throw new TreasuryDomainException("error.Product.unitOfMeasure.required");
         }
     }
