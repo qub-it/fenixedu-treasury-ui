@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain;
 
-import java.util.Set;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -45,26 +45,12 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
      ************/
     // @formatter: on
 
-    public static Set<? extends Customer> readAll() {
-        return Bennu.getInstance().getCustomersSet();
+    public static Stream<? extends Customer> findAll() {
+        return Bennu.getInstance().getCustomersSet().stream();
     }
 
-    public static Customer findByCode(final String code) {
-        Customer result = null;
-
-        for (final Customer it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.Customer.duplicated.code");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<? extends Customer> findByCode(final String code) {
+        return findAll().filter(c -> c.getCode().equalsIgnoreCase(code));
     }
 
 }

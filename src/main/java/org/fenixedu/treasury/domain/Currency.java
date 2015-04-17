@@ -1,8 +1,7 @@
 package org.fenixedu.treasury.domain;
 
-import java.util.Set;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -44,8 +43,15 @@ public class Currency extends Currency_Base {
             throw new TreasuryDomainException("error.Currency.symbol.required");
         }
 
-        findByCode(getCode());
-        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
+        if(findByCode(getCode()).count() > 2) {
+            throw new TreasuryDomainException("error.Currency.code.duplicated");
+        };
+        
+        getName().getLocales().stream().forEach(l -> {
+            if(findByName(getName().getContent(l)).count() > 2) {
+                throw new TreasuryDomainException("error.Currency.name.duplicated", l.toString());
+            }
+        });
     }
 
     @Atomic
@@ -79,45 +85,16 @@ public class Currency extends Currency_Base {
      ************/
     // @formatter: on
 
-    public static Set<Currency> readAll() {
-        return Bennu.getInstance().getCurrenciesSet();
+    public static Stream<Currency> readAll() {
+        return Bennu.getInstance().getCurrenciesSet().stream();
     }
 
-    public static Currency findByCode(final String code) {
-        Currency result = null;
-
-        for (final Currency it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.Currency.duplicated.code");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<Currency> findByCode(final String code) {
+        return readAll().filter(c -> c.getCode().equalsIgnoreCase(code));
     }
 
-    public static Currency findByName(final String name) {
-        Currency result = null;
-
-        for (final Currency it : readAll()) {
-
-            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.Currency.duplicated.name");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<Currency> findByName(final String name) {
+        return readAll().filter(c -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(c.getName(), name));
     }
 
     @Atomic

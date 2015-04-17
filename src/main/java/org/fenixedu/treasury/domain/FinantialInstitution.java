@@ -1,8 +1,7 @@
 package org.fenixedu.treasury.domain;
 
-import java.util.Set;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
@@ -46,7 +45,14 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
             throw new TreasuryDomainException("error.FinantialInstitution.name.required");
         }
 
-        findByCode(getCode());
+        if (findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.FinantialInstitution.code.duplicated");
+        };
+
+        if (findByName(getName()).count() > 1) {
+            throw new TreasuryDomainException("error.FinantialInstitution.name.duplicated");
+        }
+
         IFiscalContributor.findByFiscalNumber(getFiscalNumber());
     }
 
@@ -91,45 +97,16 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
      ************/
     // @formatter: on
 
-    public static Set<FinantialInstitution> readAll() {
-        return Bennu.getInstance().getFinantialInstitutionsSet();
+    public static Stream<FinantialInstitution> findAll() {
+        return Bennu.getInstance().getFinantialInstitutionsSet().stream();
     }
 
-    public static FinantialInstitution findByCode(final String code) {
-        FinantialInstitution result = null;
-
-        for (final FinantialInstitution it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.FinantialInstitution.duplicated.code");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<FinantialInstitution> findByCode(final String code) {
+        return findAll().filter(fi -> fi.getCode().equalsIgnoreCase(code));
     }
 
-    public static FinantialInstitution findByName(final String name) {
-        FinantialInstitution result = null;
-
-        for (final FinantialInstitution it : readAll()) {
-
-            if (!it.getName().equalsIgnoreCase(name)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.FinantialInstitution.duplicated.name");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<FinantialInstitution> findByName(final String name) {
+        return findAll().filter(fi -> fi.getName().equalsIgnoreCase(name));
     }
 
     @Atomic

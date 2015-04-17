@@ -2,7 +2,6 @@ package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
 
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -13,16 +12,23 @@ import com.google.common.collect.Sets;
 
 public class DebitNote extends DebitNote_Base {
 
-    protected DebitNote() {
+    protected DebitNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         super();
+        
+        this.init(debtAccount, documentNumberSeries, documentDate);
     }
-
-    protected DebitNote(final DocumentNumberSeries documentNumberSeries, final DebtAccount debtAccount, final DateTime documentDate) {
-        this();
-        this.init(documentNumberSeries, debtAccount, documentDate);
-        checkRules();
+    
+    protected DebitNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        super();
+        
+        this.init(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
-
+    
+    @Override
+    public boolean isDebitNote() {
+        return true;
+    }
+    
     public boolean isDeletable() {
         return true;
     }
@@ -56,8 +62,13 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public static DebitNote create(final DocumentNumberSeries documentNumberSeries, final DebtAccount debtAccount, final DateTime documentDate) {
-        return new DebitNote(documentNumberSeries, debtAccount, documentDate);
+    public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        return new DebitNote(debtAccount, documentNumberSeries, documentDate);
+    }
+    
+    @Atomic
+    public static DebitNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        return new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
 
 }

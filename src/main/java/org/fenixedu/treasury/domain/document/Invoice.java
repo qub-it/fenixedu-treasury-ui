@@ -15,22 +15,27 @@ public abstract class Invoice extends Invoice_Base {
     protected Invoice() {
         super();
     }
-
-    protected void init(final DocumentNumberSeries documentNumberSeries, final DebtAccount debtAccount, final DateTime documentDate) {
-        super.init(documentNumberSeries, documentDate);
-        setDebtAccount(debtAccount);
-
-        checkRules();
+    
+    @Override
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        super.init(debtAccount, documentNumberSeries, documentDate);
     }
-
-    protected void checkRules() {
-        super.checkRules();
-
-        if (getDebtAccount() == null) {
-            throw new TreasuryDomainException("error.Invoice.debtAccount.required");
+    
+    protected void init(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        super.init(debtAccount, documentNumberSeries, documentDate);
+        
+        if(payorDebtAccount == null) {
+            throw new TreasuryDomainException("error.Invoice.payorDebtAccount.null");
         }
+        
+        setPayorDebtAccount(payorDebtAccount);
     }
 
+    @Override
+    public boolean isInvoice() {
+        return true;
+    }
+    
     public boolean isDeletable() {
         return true;
     }

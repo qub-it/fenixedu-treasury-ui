@@ -5,6 +5,7 @@ import java.util.Set;
 
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
@@ -21,7 +22,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setState(FinantialDocumentStateType.TEMPORARY);
     }
 
-    protected void init(final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        setDebtAccount(debtAccount);
         setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
         setDocumentNumberSeries(documentNumberSeries);
         setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
@@ -31,6 +33,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     protected void checkRules() {
+        if(getDebtAccount() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.debtAccount.required");
+        }
+        
         if (getFinantialDocumentType() == null) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.required");
         }
@@ -61,12 +67,32 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         return BigDecimal.ZERO;
     }
 
+    public boolean isClosed() {
+        return this.getState().isClosed();
+    }
+    
+    public boolean isInvoice() {
+        return false;
+    }
+    
+    public boolean isDebitNote() {
+        return false;
+    }
+    
+    public boolean isCreditNote() {
+        return false;
+    }
+    
+    public boolean isSettlementNote() {
+        return false;
+    }
+    
     public boolean isDeletable() {
         return true;
     }
     
     public void closeDocument() {
-        setState(FinantialDocumentStateType.FINALIZED);
+        setState(FinantialDocumentStateType.CLOSED);
     }
 
     @Atomic
@@ -151,6 +177,5 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
 
 }

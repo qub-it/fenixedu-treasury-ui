@@ -14,10 +14,10 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected AdhocCustomer(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode) {
+    protected AdhocCustomer(final String fiscalNumber, final String name, final String address, final String districtSubdivision,
+            final String zipCode, final String countryCode) {
         this();
-        setCode(code);
+        setCode(getExternalId());
         setFiscalNumber(fiscalNumber);
         setName(name);
         setAddress(address);
@@ -37,13 +37,14 @@ public class AdhocCustomer extends AdhocCustomer_Base {
             throw new TreasuryDomainException("error.AdhocCustomer.name.required");
         }
 
-        findByCode(getCode());
+        if (findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.AdhocCustomer.code.duplicated");
+        }
     }
 
     @Atomic
-    public void edit(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode) {
-        setCode(code);
+    public void edit(final String fiscalNumber, final String name, final String address, final String districtSubdivision,
+            final String zipCode, final String countryCode) {
         setFiscalNumber(fiscalNumber);
         setName(name);
         setAddress(address);
@@ -76,9 +77,9 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     // @formatter: on
 
     @Atomic
-    public static AdhocCustomer create(final String code, final String fiscalNumber, final String name, final String address,
+    public static AdhocCustomer create(final String fiscalNumber, final String name, final String address,
             final String districtSubdivision, final String zipCode, final String countryCode) {
-        return new AdhocCustomer(code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode);
+        return new AdhocCustomer(fiscalNumber, name, address, districtSubdivision, zipCode, countryCode);
     }
 
 }

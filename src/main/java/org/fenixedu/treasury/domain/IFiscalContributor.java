@@ -1,6 +1,7 @@
 package org.fenixedu.treasury.domain;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
@@ -13,7 +14,7 @@ public interface IFiscalContributor {
     public static IFiscalContributor findByFiscalNumber(final String fiscalNumber) {
         IFiscalContributor result = null;
         
-        for(IFiscalContributor it : readAll()) {
+        for(IFiscalContributor it : findAll()) {
             if(!it.getFiscalNumber().equalsIgnoreCase(fiscalNumber)) {
                 continue;
             }
@@ -28,9 +29,9 @@ public interface IFiscalContributor {
         return result;
     }
     
-    public static Set<IFiscalContributor> readAll() {
-        final Set<IFiscalContributor> iterable = Sets.newHashSet(FinantialInstitution.readAll());
-        iterable.addAll(Customer.readAll());
+    public static Set<IFiscalContributor> findAll() {
+        final Set<IFiscalContributor> iterable = Sets.newHashSet(FinantialInstitution.findAll().collect(Collectors.<IFiscalContributor> toSet()));
+        iterable.addAll(Customer.findAll().collect(Collectors.<IFiscalContributor> toSet()));
         
         return iterable;
     }

@@ -1,8 +1,7 @@
 package org.fenixedu.treasury.domain;
 
-import java.util.Set;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -34,7 +33,10 @@ public class CustomerType extends CustomerType_Base {
             throw new TreasuryDomainException("error.CustomerType.name.required");
         }
 
-        findByCode(getCode());
+        if(findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.CustomerType.code.duplicated");
+        }
+        
         getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
     }
 
@@ -67,50 +69,21 @@ public class CustomerType extends CustomerType_Base {
      ************/
     // @formatter: on
 
-    public static Set<CustomerType> readAll() {
-        return Bennu.getInstance().getCustomerTypesSet();
+    public static Stream<CustomerType> findAll() {
+        return Bennu.getInstance().getCustomerTypesSet().stream();
     }
 
-    public static CustomerType findByCode(final String code) {
-        CustomerType result = null;
-
-        for (final CustomerType it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.CustomerType.duplicated.code");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<CustomerType> findByCode(final String code) {
+        return findAll().filter(ct -> ct.getCode().equalsIgnoreCase(code));
     }
 
-    public static CustomerType findByName(final String name) {
-        CustomerType result = null;
-
-        for (final CustomerType it : readAll()) {
-
-            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.CustomerType.duplicated.name");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<CustomerType> findByName(final String name) {
+        return findAll().filter(ct -> ct.getName().equals(name));
     }
 
     @Atomic
     public static CustomerType create(final String code, final LocalizedString name) {
         return new CustomerType(code, name);
     }
-
+    
 }

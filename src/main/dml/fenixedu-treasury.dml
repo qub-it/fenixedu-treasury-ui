@@ -217,7 +217,7 @@ class tariff.Tariff {
 	DateTime beginDate;
 	DateTime endDate;
 	DueDateCalculationType dueDateCalculationType;
-	DateTime fixedDueDate;
+	LocalDate fixedDueDate;
 	int numberOfDaysAfterCreationForDueDate;
 	boolean applyInterests;
 }
@@ -721,16 +721,6 @@ relation FinantialDocumentEntryFinantialDocument {
 
 /* --- InvoiceEntry --- */
 
-relation InvoiceEntryInvoice {
-	document.Invoice playsRole invoice {
-		multiplicity 0..1;
-	}
-	
-	document.InvoiceEntry playsRole invoiceEntry {
-		multiplicity *;
-	}
-}
-
 relation InvoiceEntryDebtAccount {
 	debt.DebtAccount playsRole debtAccount {
 		multiplicity 1..1;
@@ -784,18 +774,7 @@ relation InvoiceEntryVat {
 	}
 }
 
-
 /* --- CreditEntry --- */
-
-relation CreditEntryCreditNote {
-	document.CreditNote playsRole creditNote {
-		multiplicity 1..1;
-	}
-	
-	document.CreditEntry playsRole creditEntries {
-		multiplicity *;
-	}
-}
 
 relation CreditEntryDebitEntry {
 	document.DebitEntry playsRole debitEntry {
@@ -808,16 +787,6 @@ relation CreditEntryDebitEntry {
 }
 
 /* --- SettlementEntry --- */
-
-relation SettlementEntrySettlementNote {
-	document.SettlementNote playsRole settlementNote {
-		multiplicity 1..1;
-	}
-	
-	document.SettlementEntry playsRole settlementEntries {
-		multiplicity *;
-	}
-}
 
 relation SettlementEntryInvoiceEntry {
 	document.InvoiceEntry playsRole invoiceEntry {
@@ -892,6 +861,18 @@ relation FinantialDocumentPendingForExportationBennu {
 }
 */
 
+/* --- Tariff --- */
+
+relation TariffBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	tariff.Tariff playsRole tariffs {
+		multiplicity *;
+	}
+}
+
 relation TariffProduct {
 	Product playsRole product {
 		multiplicity 1..1;
@@ -902,8 +883,8 @@ relation TariffProduct {
 	}
 }
 
-relation TariffVat {
-	Vat playsRole vat {
+relation TariffVatType {
+	VatType playsRole vatType {
 		multiplicity 1..1;
 	}
 	
@@ -912,15 +893,29 @@ relation TariffVat {
 	}
 }
 
+/* --- InterestRate --- */
+
+relation InterestRateBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	tariff.InterestRate playsRole interestRates {
+		multiplicity *;
+	}
+}
+
 relation InterestRateTariff {
 	tariff.Tariff playsRole tariff {
-		multiplicity 0..1;
+		multiplicity 1..1;
 	}
 	
 	tariff.InterestRate playsRole InterestRate {
 		multiplicity 0..1;
 	}
 }
+
+/* --- IntegrationOperation --- */
 
 relation IntegrationOperationBennu
 {
