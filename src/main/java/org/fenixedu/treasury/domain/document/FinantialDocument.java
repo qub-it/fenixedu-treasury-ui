@@ -3,7 +3,6 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.Set;
 
-
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -160,7 +159,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
 	public Boolean getClosed() {
-		return this.getState().equals(FinantialDocumentState.CLOSED);
+		return this.getState().equals(FinantialDocumentStateType.CLOSED);
 	}
 
 	public DateTime getWhenCreated() {
