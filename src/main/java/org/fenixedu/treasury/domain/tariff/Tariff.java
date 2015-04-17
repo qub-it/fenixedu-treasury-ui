@@ -41,7 +41,7 @@ public abstract class Tariff extends Tariff_Base {
         checkRules();
     }
 
-    private void checkRules() {
+    protected void checkRules() {
         if(getProduct() == null) {
             throw new TreasuryDomainException("error.Tariff.product.required");
         }

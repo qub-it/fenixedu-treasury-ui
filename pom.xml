@@ -130,8 +130,8 @@
 				<version>1.8</version>
 				<executions>
 					<execution>
-						<id>compile</id>
-						<phase>compile</phase>
+						<id>initialize</id>
+						<phase>initialize</phase>
 						<configuration>
 							<target>
 								<property name="basedir" refid="maven.project" />
