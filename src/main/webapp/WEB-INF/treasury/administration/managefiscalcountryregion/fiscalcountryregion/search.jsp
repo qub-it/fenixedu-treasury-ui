@@ -18,10 +18,13 @@
 <script src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/css/select2.min.css" rel="stylesheet" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/js/bootbox.min.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
+
+<div 
 
 <%-- TITLE --%>
 <div class="page-header">

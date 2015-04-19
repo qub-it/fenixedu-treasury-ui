@@ -1,5 +1,6 @@
 package org.fenixedu.treasury.domain;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -45,12 +46,12 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
      ************/
     // @formatter: on
 
-    public static Stream<? extends Customer> findAll() {
-        return Bennu.getInstance().getCustomersSet().stream();
-    }
+	public static Stream<? extends Customer> findAll() {
+	    return Bennu.getInstance().getCustomersSet().stream().filter(x->x instanceof AdhocCustomer).map(AdhocCustomer.class::cast);
+	}
 
-    public static Stream<? extends Customer> findByCode(final String code) {
-        return findAll().filter(c -> c.getCode().equalsIgnoreCase(code));
-    }
+	public static Stream<? extends Customer> findByCode(final java.lang.String code) {
+		return findAll().filter(i->code.equalsIgnoreCase(i.getCode()));
+	  }
 
 }

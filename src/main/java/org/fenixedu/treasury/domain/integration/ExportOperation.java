@@ -2,6 +2,7 @@ package org.fenixedu.treasury.domain.integration;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -10,113 +11,96 @@ import pt.ist.fenixframework.Atomic;
 
 public class ExportOperation extends ExportOperation_Base {
         
-
-		protected ExportOperation() {
-			super();
-//			setBennu(Bennu.getInstance());
-		}
-
-		protected ExportOperation(final String code) {
-			this();
-
-			checkRules();
-		}
+	   protected ExportOperation() {
+	        super();
+	        setBennu(Bennu.getInstance());
+	    }
+	    
+	    protected void init(final org.joda.time.DateTime executionDate,final boolean processed,final boolean success,final java.lang.String errorLog) {
+	setExecutionDate(executionDate);
+	setProcessed(processed);
+	setSuccess(success);
+	setErrorLog(errorLog);
+	    	checkRules();
+	    }
 
 		private void checkRules() {
-//			if (LocalizedStringUtil.isEmpty(getCode())) {
-//				throw new TreasuryDomainException(
-//						"error.ExportOperation.code.required");
-//			}
-//
-//			if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-//				throw new TreasuryDomainException(
-//						"error.ExportOperation.name.required");
-//			}
-//
-//			findByCode(getCode());
-//			getName().getLocales().stream()
-//					.forEach(l -> findByName(getName().getContent(l)));
+			//
+			//CHANGE_ME add more busines validations
+			//
+			
+			//CHANGE_ME In order to validate UNIQUE restrictions
+			//if (findByExecutionDate(getExecutionDate().count()>1)
+			//{
+			//	throw new TreasuryDomainException("error.ExportOperation.executionDate.duplicated");
+			//}	
+			//if (findByProcessed(getProcessed().count()>1)
+			//{
+			//	throw new TreasuryDomainException("error.ExportOperation.processed.duplicated");
+			//}	
+			//if (findBySuccess(getSuccess().count()>1)
+			//{
+			//	throw new TreasuryDomainException("error.ExportOperation.success.duplicated");
+			//}	
+			//if (findByErrorLog(getErrorLog().count()>1)
+			//{
+			//	throw new TreasuryDomainException("error.ExportOperation.errorLog.duplicated");
+			//}	
 		}
-
+		
 		@Atomic
-		public void edit() {
-//			setCode(code);
-//			setName(name);
-
-			checkRules();
+		public void edit(final org.joda.time.DateTime executionDate,final boolean processed,final boolean success,final java.lang.String errorLog) {
+		    setExecutionDate(executionDate);
+		    setProcessed(processed);
+		    setSuccess(success);
+		    setErrorLog(errorLog);
+		    checkRules();
 		}
-
+		
 		public boolean isDeletable() {
-			return true;
+		    return true;
 		}
-
+		
 		@Atomic
 		public void delete() {
-			if (!isDeletable()) {
-				throw new TreasuryDomainException(
-						"error.ExportOperation.cannot.delete");
-			}
-
-			setBennu(null);
-
-			deleteDomainObject();
+		    if(!isDeletable()) {
+		        throw new TreasuryDomainException("error.ExportOperation.cannot.delete");
+		    }
+		    
+		    setBennu(null);
+		    
+		    deleteDomainObject();
 		}
+		
+		 
+	    @Atomic
+	    public static ExportOperation create(final org.joda.time.DateTime executionDate,final boolean processed,final boolean success,final java.lang.String errorLog) {
+	    	ExportOperation exportOperation = new ExportOperation();
+	        exportOperation.init( executionDate, processed, success, errorLog);
+	        return exportOperation;
+	    }
 
 		// @formatter: off
 		/************
 		 * SERVICES *
 		 ************/
-		// @formatter: on
-
-		public static Set<ExportOperation> readAll() {
-			return Bennu.getInstance().getIntegrationOperationsSet().stream().filter(x->x instanceof ExportOperation).map(ExportOperation.class::cast).collect(Collectors.toSet());
+	    // @formatter: on
+		
+		public static Stream<ExportOperation> findAll() {
+		    return Bennu.getInstance().getIntegrationOperationsSet().stream().filter(x->x instanceof ExportOperation).map(ExportOperation.class::cast);
 		}
-
-		public static ExportOperation findByCode(final String code) {
-			ExportOperation result = null;
-
-			for (final ExportOperation it : readAll()) {
-//				if (!it.getCode().equalsIgnoreCase(code)) {
-//					continue;
-//				}
-
-				if (result != null) {
-					throw new TreasuryDomainException(
-							"error.ExportOperation.duplicated.code");
-				}
-
-				result = it;
-			}
-
-			return result;
-		}
-
-		public static ExportOperation findByName(final String name) {
-			ExportOperation result = null;
-
-			for (final ExportOperation it : readAll()) {
-
-//				if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(
-//						it.getName(), name)) {
-//					continue;
-//				}
-
-				if (result != null) {
-					throw new TreasuryDomainException(
-							"error.ExportOperation.duplicated.name");
-				}
-
-				result = it;
-			}
-
-			return result;
-		}
-
-//		@Atomic
-//		public static ExportOperation create(final String code,
-//				final LocalizedString name) {
-//			return new ExportOperation(code, name);
-//		}
-
-    
+		
+		public static Stream<ExportOperation> findByExecutionDate(final org.joda.time.DateTime executionDate) {
+			return findAll().filter(i->executionDate.equals(i.getExecutionDate()));
+		  }
+		public static Stream<ExportOperation> findByProcessed(final boolean processed) {
+			return findAll().filter(i->processed == i.getProcessed());
+		  }
+		public static Stream<ExportOperation> findBySuccess(final boolean success) {
+			return findAll().filter(i->success == i.getSuccess());
+		  }
+		public static Stream<ExportOperation> findByErrorLog(final java.lang.String errorLog) {
+			return findAll().filter(i->errorLog.equalsIgnoreCase(i.getErrorLog()));
+		  }
+	   
 }

@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.manageFiscalCountryRegion;
+package org.fenixedu.treasury.ui.administration.manageFiscalCountryRegion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,8 +6,8 @@ import java.util.List;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
-import org.fenixedu.treasury.ui.DomainBaseController;
 import org.fenixedu.treasury.ui.FenixeduTreasuryApplication;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,12 +18,12 @@ import com.google.common.collect.Lists;
 
 @SpringFunctionality(app = FenixeduTreasuryApplication.class, title = "label.title.manageFiscalCountryRegion",
         accessGroup = "anyone")
-@RequestMapping("/domain/managefiscalcountryregion/fiscalcountryregion")
-public class FiscalCountryRegionController extends DomainBaseController {
+@RequestMapping("/administration/treasury/managefiscalcountryregion/fiscalcountryregion")
+public class FiscalCountryRegionController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        return "forward:/domain/managefiscalcountryregion/fiscalcountryregion/";
+        return "forward:/administration/treasury/managefiscalcountryregion/fiscalcountryregion/";
     }
 
     private FiscalCountryRegion getFiscalCountryRegion(Model m) {
@@ -57,13 +57,13 @@ public class FiscalCountryRegionController extends DomainBaseController {
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") FiscalCountryRegion fiscalCountryRegion, Model model) {
 
-        return "redirect:/domain/managefiscalcountryregion/fiscalcountryregion/read" + "/" + fiscalCountryRegion.getExternalId();
+        return "redirect:/administration/treasury/managefiscalcountryregion/fiscalcountryregion/read" + "/" + fiscalCountryRegion.getExternalId();
     }
 
     @RequestMapping(value = "/search/delete/{oid}")
     public String processSearchToDeleteAction(@PathVariable("oid") FiscalCountryRegion fiscalCountryRegion, Model model) {
         deleteFiscalCountryRegion(fiscalCountryRegion);
-        return "redirect:/domain/managefiscalcountryregion/fiscalcountryregion/";
+        return "redirect:/administration/treasury/managefiscalcountryregion/fiscalcountryregion/";
     }
 
     @RequestMapping(value = "/read/{oid}")
@@ -96,7 +96,7 @@ public class FiscalCountryRegionController extends DomainBaseController {
         //Add the bean to be used in the View
         model.addAttribute("fiscalCountryRegion", fiscalCountryRegion);
 
-        return "redirect:/domain/managefiscalcountryregion/fiscalcountryregion/read/"
+        return "redirect:/administration/treasury/managefiscalcountryregion/fiscalcountryregion/read/"
                 + getFiscalCountryRegion(model).getExternalId();
 
         /*
@@ -149,7 +149,7 @@ public class FiscalCountryRegionController extends DomainBaseController {
          */
         updateFiscalCountryRegion(fiscalCountryRegion, regionCode, name);
 
-        return "redirect:/domain/managefiscalcountryregion/fiscalcountryregion/read/"
+        return "redirect:/administration/treasury/managefiscalcountryregion/fiscalcountryregion/read/"
                 + getFiscalCountryRegion(model).getExternalId();
 
         /*

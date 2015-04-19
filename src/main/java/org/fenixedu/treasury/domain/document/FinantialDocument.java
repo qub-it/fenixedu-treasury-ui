@@ -3,6 +3,9 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.Set;
 
+
+import java.util.stream.Collectors;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -18,10 +21,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         super();
         setBennu(Bennu.getInstance());
-        setState(FinantialDocumentStateType.TEMPORARY);
+        setState(FinantialDocumentStateType.PREPARING);
     }
 
-    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    protected void init(final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         setDebtAccount(debtAccount);
         setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
         setDocumentNumberSeries(documentNumberSeries);
@@ -116,16 +119,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public static Set<FinantialDocument> find(final FinantialDocumentType finantialDocumentType) {
-        final Set<FinantialDocument> result = Sets.newHashSet();
-
-        for (final FinantialDocument it : readAll()) {
-            if (it.getFinantialDocumentType() == finantialDocumentType) {
-                result.add(it);
-            }
-        }
-
-        return result;
+        return readAll().stream().filter(i->finantialDocumentType.equals(i.getFinantialDocumentType())).collect(Collectors.toSet());
     }
+    
+    
 
     public static Set<FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
         final Set<FinantialDocument> result = Sets.newHashSet();

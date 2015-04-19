@@ -1,5 +1,6 @@
 package org.fenixedu.treasury.domain;
 
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -11,95 +12,126 @@ import pt.ist.fenixframework.Atomic;
 
 public class Currency extends Currency_Base {
 
-    protected Currency() {
-        super();
-        setBennu(Bennu.getInstance());
-    }
+	protected Currency() {
+		super();
+		setBennu(Bennu.getInstance());
+	}
 
-    protected Currency(final String code, final LocalizedString name, final String isoCode, final String symbol) {
-        this();
-        setCode(code);
-        setName(name);
-        setIsoCode(isoCode);
-        setSymbol(symbol);
+	protected Currency(final String code, final LocalizedString name,
+			final String isoCode, final String symbol) {
+		this();
+		setCode(code);
+		setName(name);
+		setIsoCode(isoCode);
+		setSymbol(symbol);
 
-        checkRules();
-    }
+		checkRules();
+	}
 
-    private void checkRules() {
-        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-            throw new TreasuryDomainException("error.Currency.code.required");
-        }
+	private void checkRules() {
+		if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+			throw new TreasuryDomainException("error.Currency.code.required");
+		}
 
-        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-            throw new TreasuryDomainException("error.Currency.name.required");
-        }
-        
-        if(LocalizedStringUtil.isTrimmedEmpty(getIsoCode())) {
-            throw new TreasuryDomainException("error.Currency.isoCode.required");
-        }
-        
-        if(LocalizedStringUtil.isTrimmedEmpty(getSymbol())) {
-            throw new TreasuryDomainException("error.Currency.symbol.required");
-        }
+		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+			throw new TreasuryDomainException("error.Currency.name.required");
+		}
 
-        if(findByCode(getCode()).count() > 2) {
-            throw new TreasuryDomainException("error.Currency.code.duplicated");
-        };
-        
-        getName().getLocales().stream().forEach(l -> {
-            if(findByName(getName().getContent(l)).count() > 2) {
-                throw new TreasuryDomainException("error.Currency.name.duplicated", l.toString());
-            }
-        });
-    }
+		if (LocalizedStringUtil.isTrimmedEmpty(getIsoCode())) {
+			throw new TreasuryDomainException("error.Currency.isoCode.required");
+		}
 
-    @Atomic
-    public void edit(final String code, final LocalizedString name, final String isoCode, final String symbol) {
-        setCode(code);
-        setName(name);
-        setIsoCode(isoCode);
-        setSymbol(symbol);
+		if (LocalizedStringUtil.isTrimmedEmpty(getSymbol())) {
+			throw new TreasuryDomainException("error.Currency.symbol.required");
+		}
 
-        checkRules();
-    }
+		findByCode(getCode());
+		getName().getLocales().stream()
+				.forEach(l -> findByName(getName().getContent(l)));
+		
+	}
 
-    public boolean isDeletable() {
-        return true;
-    }
+	@Atomic
+	public void edit(final String code, final LocalizedString name,
+			final String isoCode, final String symbol) {
+		setCode(code);
+		setName(name);
+		setIsoCode(isoCode);
+		setSymbol(symbol);
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.Currency.cannot.delete");
-        }
+		checkRules();
+	}
 
-        setBennu(null);
+	public boolean isDeletable() {
+		return true;
+	}
 
-        deleteDomainObject();
-    }
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException("error.Currency.cannot.delete");
+		}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+		setBennu(null);
 
-    public static Stream<Currency> readAll() {
-        return Bennu.getInstance().getCurrenciesSet().stream();
-    }
+		deleteDomainObject();
+	}
 
-    public static Stream<Currency> findByCode(final String code) {
-        return readAll().filter(c -> c.getCode().equalsIgnoreCase(code));
-    }
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
 
-    public static Stream<Currency> findByName(final String name) {
-        return readAll().filter(c -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(c.getName(), name));
-    }
+	public static Set<Currency> readAll() {
+		return Bennu.getInstance().getCurrenciesSet();
+	}
 
-    @Atomic
-    public static Currency create(final String code, final LocalizedString name, final String isoCode, final String symbol) {
-        return new Currency(code, name, isoCode, symbol);
-    }
+	public static Currency findByCode(final String code) {
+		Currency result = null;
+
+		for (final Currency it : readAll()) {
+			if (!it.getCode().equalsIgnoreCase(code)) {
+				continue;
+			}
+
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.Currency.duplicated.code");
+			}
+
+			result = it;
+		}
+
+		return result;
+	}
+	
+	public static Currency findByName(final String name) {
+		Currency result = null;
+
+		for (final Currency it : readAll()) {
+
+			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
+					name)) {
+				continue;
+			}
+
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.Currency.duplicated.name");
+			}
+
+			result = it;
+		}
+
+		return result;
+	}
+
+	@Atomic
+	public static Currency create(final String code,
+			final LocalizedString name, final String isoCode,
+			final String symbol) {
+		return new Currency(code, name, isoCode, symbol);
+	}
 
 }

@@ -364,12 +364,12 @@ relation VatExemptionReasonBennu {
 	}
 }
 
-relation VatTypeVatExemptionReason {
-	VatType playsRole vatTypes {
+relation VatVatExemptionReason {
+	VatExemptionReason playsRole vatExemptionReason {
 		multiplicity 1..1;
 	}
 	
-	VatExemptionReason playsRole vatExemptionReason {
+	Vat playsRole vats {
 		multiplicity *;
 	}
 }
@@ -932,6 +932,17 @@ relation IntegrationOperationFinantialInstitution
 {
 	FinantialInstitution playsRole finantialInstitution {
 		multiplicity 1..1;
+	}
+	
+	integration.IntegrationOperation playsRole integrationOperations {
+		multiplicity *;
+	}
+}
+
+relation IntegrationOperationFinantialDocuments
+{
+    document.FinantialDocument playsRole documents {
+		multiplicity *;
 	}
 	
 	integration.IntegrationOperation playsRole integrationOperations {

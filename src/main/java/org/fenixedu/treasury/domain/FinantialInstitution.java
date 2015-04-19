@@ -1,10 +1,14 @@
 package org.fenixedu.treasury.domain;
 
-import java.util.stream.Stream;
+import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -47,7 +51,7 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
 
         if (findByCode(getCode()).count() > 1) {
             throw new TreasuryDomainException("error.FinantialInstitution.code.duplicated");
-        };
+        findByCode(getCode());
 
         if (findByName(getName()).count() > 1) {
             throw new TreasuryDomainException("error.FinantialInstitution.name.duplicated");
@@ -116,5 +120,17 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         return new FinantialInstitution(code, fiscalNumber, companyId, name, companyName, address, districtSubdivision, zipCode,
                 countryCode);
     }
+
+	public List<FinantialDocument> findPendingDocumentsNotExported(
+			DateTime fromDate, DateTime toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<FinantialDocument> getExportableDocuments(DateTime fromDate,
+			DateTime toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
