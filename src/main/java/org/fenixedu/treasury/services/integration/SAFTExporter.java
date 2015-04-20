@@ -518,7 +518,7 @@ public class SAFTExporter {
 		XMLGregorianCalendar documentDateCalendar = null;
 		try {
 			DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-			DateTime documentDate = entry.getInvoice().getWhenCreated();
+			DateTime documentDate = entry.getFinantialDocument().getWhenCreated();
 			documentDateCalendar = dataTypeFactory.newXMLGregorianCalendarDate(
 					documentDate.getYear(), documentDate.getMonthOfYear(),
 					documentDate.getDayOfMonth(),
@@ -544,10 +544,10 @@ public class SAFTExporter {
 		line.setDescription(currentProduct.getProductDescription());
 
 		if (!Strings
-				.isNullOrEmpty(entry.getInvoice().getOriginDocumentNumber())) {
+				.isNullOrEmpty(entry.getFinantialDocument().getOriginDocumentNumber())) {
 			List<OrderReferences> orderReferences = line.getOrderReferences();
 			OrderReferences reference = new OrderReferences();
-			reference.setOriginatingON(entry.getInvoice()
+			reference.setOriginatingON(entry.getFinantialDocument()
 					.getOriginDocumentNumber());
 
 			reference.setOrderDate(documentDateCalendar);

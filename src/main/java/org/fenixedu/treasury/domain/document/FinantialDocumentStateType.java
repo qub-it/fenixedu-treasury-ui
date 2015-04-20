@@ -5,8 +5,8 @@ public enum FinantialDocumentStateType {
     CLOSED,
 	ANNULED;
 	
-	public boolean isTemporary() {
-	    return this == TEMPORARY;
+	public boolean isPreparing() {
+	    return this == PREPARING;
 	}
 	
 	public boolean isClosed() {

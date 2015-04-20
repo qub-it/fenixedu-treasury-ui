@@ -30,7 +30,7 @@ public interface IFiscalContributor {
     }
     
     public static Set<IFiscalContributor> findAll() {
-        final Set<IFiscalContributor> iterable = Sets.newHashSet(FinantialInstitution.readAll());
+        final Set<IFiscalContributor> iterable = Sets.newHashSet(FinantialInstitution.findAll().collect(Collectors.toList()));
         Customer.findAll().forEach(x->iterable.add(x));
         
         return iterable;

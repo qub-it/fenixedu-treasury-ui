@@ -24,7 +24,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setState(FinantialDocumentStateType.PREPARING);
     }
 
-    protected void init(final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         setDebtAccount(debtAccount);
         setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
         setDocumentNumberSeries(documentNumberSeries);
