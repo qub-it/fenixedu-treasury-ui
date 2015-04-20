@@ -5,6 +5,7 @@ enum org.fenixedu.treasury.domain.document.FinantialEntryType                   
 enum org.fenixedu.treasury.domain.document.FinantialDocumentStateType                                    as FinantialDocumentStateType;
 enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                          as DueDateCalculationType;
 enum org.fenixedu.treasury.domain.tariff.InterestType                                                    as InterestType; 
+enum org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCodeStateType							 as PaymentReferenceCodeStateType;
 
 external class .org.fenixedu.bennu.io.domain.GenericFile;
 
@@ -236,12 +237,32 @@ class tariff.InterestRate {
 	BigDecimalT rate;
 }
 
- class document.PaymentReferenceCode
+class paymentCodes.PaymentReferenceCode
 {
        String referenceCode;
+       DateTime beginDate;
+       DateTime endDate;
+       PaymentReferenceCodeStateType state;
 }
 
-class document.PaymentReferenceCodeManager
+	class paymentCodes.pool.PaymentCodePool  {
+	  String name;
+	  Integer minPaymentCodes;
+	  Integer maxPaymentCodes;
+	  BigDecimalT minAmount;
+	  BigDecimalT maxAmount;
+	  Boolean active;
+	}
+	class paymentCodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	  LocalDate whenProcessedBySibs;
+	  BigDecimalT transactionsTotalAmount;
+	  BigDecimalT totalCost;
+	}
+	
+	class paymentCodes.SibsInputFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	}
+
+class paymentCodes.PaymentReferenceCodeManager
 {
        String code;
        String description;
@@ -962,3 +983,58 @@ relation IntegrationOperationOperationFile
 		multiplicity 1..1;
 	}
 }
+
+
+relation PaymentReferenceCodeManagerBennu {
+	  .org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+	    multiplicity 1..1;
+	  }
+	  
+	  paymentCodes.PaymentReferenceCodeManager playsRole paymentReferenceCodeManagers{
+	    multiplicity *;
+	  }
+	}
+
+relation PaymentReferenceCodeBennu {
+	  .org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+	    multiplicity 1..1;
+	  }
+	  
+	  paymentCodes.PaymentReferenceCode playsRole paymentReferenceCodes {
+	    multiplicity *;
+	  }
+	}
+
+
+relation SibsReportFileBennu {
+	  .org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+	    multiplicity 1..1;
+	  }
+	  
+	  paymentCodes.SibsReportFile playsRole sibsReportFiles {
+	    multiplicity *;
+	  }
+	}
+	
+	
+	relation SibsInputFileBennu {
+	 paymentCodes.SibsInputFile playsRole sibsInputFiles {
+	    multiplicity *;
+	  }
+	  
+	  .org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+	    multiplicity 1..1;
+	  }
+	}
+	
+	relation SibsInputFileUser {
+	  paymentCodes.SibsInputFile playsRole sibsInputFiles {
+	    multiplicity *;
+	  }
+	  
+	  .org.fenixedu.bennu.core.domain.User playsRole uploader {
+	    multiplicity 1..1;
+	  }
+	  
+	}
+	

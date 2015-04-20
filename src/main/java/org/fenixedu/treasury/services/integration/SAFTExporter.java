@@ -24,6 +24,7 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import oecd.standardauditfile_tax.pt_1.AddressStructure;
 import oecd.standardauditfile_tax.pt_1.AddressStructurePT;
 import oecd.standardauditfile_tax.pt_1.AuditFile;
 import oecd.standardauditfile_tax.pt_1.Header;
@@ -124,7 +125,7 @@ public class SAFTExporter {
 			int i = 0;
 			for (Customer customer : allCustomers) {
 				oecd.standardauditfile_tax.pt_1.Customer saftCustomer = this
-						.convertToSAFTCustomer(customer);
+						.convertCustomerToSAFTCustomer(customer);
 				// information.setCurrentCounter(information.getCurrentCounter()
 				// + 1);
 				customerMap.put(saftCustomer.getCustomerID(), saftCustomer);
@@ -139,7 +140,7 @@ public class SAFTExporter {
 			for (Product product : allProducts) {
 				if (!productCodes.contains(product.getCode())) {
 					oecd.standardauditfile_tax.pt_1.Product saftProduct = this
-							.convertToSAFTProduct(product);
+							.convertProductToSAFTProduct(product);
 					productCodes.add(product.getCode());
 					productMap.put(saftProduct.getProductCode(), saftProduct);
 				}
@@ -326,7 +327,7 @@ public class SAFTExporter {
 					.getCustomer().getCode());
 		} else {
 			// If not found, create a new one and add it to baseCustomers
-			customer = convertToSAFTCustomer(document.getDebtAccount()
+			customer = convertCustomerToSAFTCustomer(document.getDebtAccount()
 					.getCustomer());
 			baseCustomers.put(customer.getCustomerID(), customer);
 		}
@@ -512,13 +513,14 @@ public class SAFTExporter {
 				&& baseProducts.containsKey(product.getCode())) {
 			currentProduct = baseProducts.get(product.getCode());
 		} else {
-			currentProduct = convertToSAFTProduct(product);
+			currentProduct = convertProductToSAFTProduct(product);
 			baseProducts.put(currentProduct.getProductCode(), currentProduct);
 		}
 		XMLGregorianCalendar documentDateCalendar = null;
 		try {
 			DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-			DateTime documentDate = entry.getFinantialDocument().getWhenCreated();
+			DateTime documentDate = entry.getFinantialDocument()
+					.getWhenCreated();
 			documentDateCalendar = dataTypeFactory.newXMLGregorianCalendarDate(
 					documentDate.getYear(), documentDate.getMonthOfYear(),
 					documentDate.getDayOfMonth(),
@@ -543,8 +545,8 @@ public class SAFTExporter {
 		// Description
 		line.setDescription(currentProduct.getProductDescription());
 
-		if (!Strings
-				.isNullOrEmpty(entry.getFinantialDocument().getOriginDocumentNumber())) {
+		if (!Strings.isNullOrEmpty(entry.getFinantialDocument()
+				.getOriginDocumentNumber())) {
 			List<OrderReferences> orderReferences = line.getOrderReferences();
 			OrderReferences reference = new OrderReferences();
 			reference.setOriginatingON(entry.getFinantialDocument()
@@ -761,8 +763,8 @@ public class SAFTExporter {
 			header.setProductVersion(SaftConfig.PRODUCT_VERSION());
 
 			// SoftwareCertificateNumber
-			header.setSoftwareCertificateNumber(BigInteger
-					.valueOf(SaftConfig.SOFTWARE_CERTIFICATE_NUMBER()));
+			header.setSoftwareCertificateNumber(BigInteger.valueOf(SaftConfig
+					.SOFTWARE_CERTIFICATE_NUMBER()));
 
 			// StartDate
 			header.setStartDate(dataTypeFactory.newXMLGregorianCalendarDate(
@@ -1478,7 +1480,7 @@ public class SAFTExporter {
 	// return line;
 	// }
 	//
-	private oecd.standardauditfile_tax.pt_1.Customer convertToSAFTCustomer(
+	private oecd.standardauditfile_tax.pt_1.Customer convertCustomerToSAFTCustomer(
 			Customer customer) {
 		oecd.standardauditfile_tax.pt_1.Customer c = new oecd.standardauditfile_tax.pt_1.Customer();
 
@@ -1497,7 +1499,9 @@ public class SAFTExporter {
 		// c.setBillingAddress(convertToSAFTAddressStructure(addresses.get(0)));
 		// } else {
 		// PhysicalAddress addr = new PhysicalAddress();
-		c.setBillingAddress(convertToSAFTAddressStructure(customer.getAddress()));
+		c.setBillingAddress(convertAddressToSAFTAddress(customer.getAddress(),
+				customer.getZipCode(), customer.getDistrictSubdivision(),
+				customer.getAddress()));
 		// }
 
 		// CompanyName
@@ -1538,7 +1542,23 @@ public class SAFTExporter {
 		return c;
 	}
 
-	private oecd.standardauditfile_tax.pt_1.Product convertToSAFTProduct(
+	private AddressStructure convertAddressToSAFTAddress(String addressDetail,
+			String zipCode, String zipCodeRegion, String street) {
+		AddressStructure companyAddress;
+		companyAddress = new AddressStructure();
+		companyAddress.setCountry("PT");
+		companyAddress.setAddressDetail(Splitter.fixedLength(60)
+				.splitToList(addressDetail).get(0));
+		companyAddress.setCity(Splitter.fixedLength(49)
+				.splitToList(zipCodeRegion).get(0));
+		companyAddress.setPostalCode(zipCode);
+		companyAddress.setRegion(zipCodeRegion);
+		companyAddress.setStreetName(Splitter.fixedLength(49)
+				.splitToList(street).get(0));
+		return companyAddress;
+	}
+
+	private oecd.standardauditfile_tax.pt_1.Product convertProductToSAFTProduct(
 			Product product) {
 		oecd.standardauditfile_tax.pt_1.Product p = new oecd.standardauditfile_tax.pt_1.Product();
 
@@ -1627,60 +1647,6 @@ public class SAFTExporter {
 		return tax;
 	}
 
-	private oecd.standardauditfile_tax.pt_1.AddressStructure convertToSAFTAddressStructure(
-			String fullAddress) {
-		oecd.standardauditfile_tax.pt_1.AddressStructure address = new oecd.standardauditfile_tax.pt_1.AddressStructure();
-		// if (physicalAddress.getStreetName() != null) {
-		// address.setStreetName(StringUtils.substring(
-		// physicalAddress.getStreetName(), 0, 19));
-		// }
-		// address.setRegion(physicalAddress.getArea());
-		// address.setPostalCode(physicalAddress.getZipCodeNumber());
-		//
-		// // TODO: Sendo conhecido, deve ser preenchido de acordo com a norma
-		// ISO
-		// // 3166 -1 -alpha -2.
-		// if (physicalAddress.getCountry() != null) {
-		// address.setCountry(physicalAddress.getCountry().getCode());
-		// } else {
-		// address.setCountry("PT");
-		// }
-		//
-		// if (physicalAddress.getZipCodeDescription() != null) {
-		// address.setCity(StringUtils.substring(
-		// physicalAddress.getZipCodeDescription(), 0, 49));
-		// }
-		//
-		// if (physicalAddress.getStreetName() != null) {
-		// address.setBuildingNumber(StringUtils.substring(
-		// physicalAddress.getStreetNumber(), 0, 19));
-		// }
-		//
-		// if (physicalAddress.getPresentation() != null) {
-		//
-		// address.setAddressDetail(StringUtils.substring(
-		// physicalAddress.getPresentation(), 0, 19));
-		// }
-		//
-		// // Check if there is no information on city and region
-		// if (address.getCity() == null
-		// || address.getCity().equals(StringUtils.EMPTY)) {
-		// address.setCity(".");
-		// }
-		//
-		// if (address.getRegion() == null
-		// || address.getRegion().equals(StringUtils.EMPTY)) {
-		// address.setRegion(".");
-		// }
-		//
-		// if (address.getStreetName() == null
-		// || address.getStreetName().equals(StringUtils.EMPTY)) {
-		// address.setStreetName(".");
-		// }
-
-		return address;
-	}
-
 	public static ExportOperation exportFullSAFT(
 			FinantialInstitution finantialInstitution, DateTime fromDate,
 			DateTime toDate, String username, Boolean includeMovements) {
@@ -1689,8 +1655,8 @@ public class SAFTExporter {
 				finantialInstitution, fromDate, toDate, username);
 		try {
 			SAFTExporter saftExporter = new SAFTExporter();
-			List<FinantialDocument> documents = finantialInstitution.getExportableDocuments(
-							fromDate, toDate);
+			List<FinantialDocument> documents = finantialInstitution
+					.getExportableDocuments(fromDate, toDate);
 			logger.info("Collecting " + documents.size()
 					+ " documents to export to store "
 					+ finantialInstitution.getCode());
@@ -1715,9 +1681,9 @@ public class SAFTExporter {
 			FinantialInstitution institution, DateTime fromDate,
 			DateTime toDate, String username) {
 		return ExportOperation.create(new DateTime(), false, false, "");
-//		return ExportOperation.create(username, institution, false, null,
-//				java.util.Collections.<SaftDocumentReport> emptyList(),
-//				fromDate, toDate, type, null);
+		// return ExportOperation.create(username, institution, false, null,
+		// java.util.Collections.<SaftDocumentReport> emptyList(),
+		// fromDate, toDate, type, null);
 	}
 
 	@Atomic
@@ -1728,31 +1694,35 @@ public class SAFTExporter {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		OperationFile binaryStream = new OperationFile("export.xpto",bytes);
+		String fileName = operation.getFinantialInstitution().getFiscalNumber()
+				+ "_" + operation.getExecutionDate().toString("ddMMyyyy_hhmm")
+				+ ".xml";
+		OperationFile binaryStream = new OperationFile(fileName, bytes);
 		operation.setFile(binaryStream);
 	}
 
-//	@Atomic
-//	private void createSaftFile(BinaryStream binaryStream, Long operationID) {
-//		SaftFileExportOperation operation = SaftFileExportOperation
-//				.readById(operationID);
-//		long length = binaryStream.getContent().length;
-//		SaftFile.create(
-//				operation.getStoreCode() + "-" + System.currentTimeMillis()
-//						+ ".xml", length, "application/octet-stream",
-//				binaryStream, operation);
-//		operation.setProcessed(true);
-//	}
+	// @Atomic
+	// private void createSaftFile(BinaryStream binaryStream, Long operationID)
+	// {
+	// SaftFileExportOperation operation = SaftFileExportOperation
+	// .readById(operationID);
+	// long length = binaryStream.getContent().length;
+	// SaftFile.create(
+	// operation.getStoreCode() + "-" + System.currentTimeMillis()
+	// + ".xml", length, "application/octet-stream",
+	// binaryStream, operation);
+	// operation.setProcessed(true);
+	// }
 
-	public static void exportMovementOfGoods(String username, FinantialInstitution institution,
-			DateTime fromDate, DateTime toDate) {
+	public static void exportMovementOfGoods(String username,
+			FinantialInstitution institution, DateTime fromDate, DateTime toDate) {
 
 		// if (!deliveryNotesNotValidated.isEmpty()) {
 		List<FinantialDocument> pendingDocuments = institution
 				.findPendingDocumentsNotExported(fromDate, toDate);
 
-		ExportOperation operation = createSaftExportOperation(
-				institution, fromDate, toDate, username);
+		ExportOperation operation = createSaftExportOperation(institution,
+				fromDate, toDate, username);
 		try {
 			SAFTExporter saftExporter = new SAFTExporter();
 			saftExporter.generateSaft(institution, fromDate, toDate, operation,
