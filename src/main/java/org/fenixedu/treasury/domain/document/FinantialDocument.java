@@ -1,27 +1,204 @@
+/**
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * software development project between Quorum Born IT and Serviços Partilhados da
+ * Universidade de Lisboa:
+ *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
+ *
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
+ * 
+ *
+ * 
+ * This file is part of FenixEdu Treasury.
+ *
+ * FenixEdu Treasury is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FenixEdu Treasury is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
-public class FinantialDocument extends FinantialDocument_Base {
-    
-    public FinantialDocument() {
+
+import java.util.stream.Collectors;
+
+import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
+
+import pt.ist.fenixframework.Atomic;
+
+import com.google.common.collect.Sets;
+
+public abstract class FinantialDocument extends FinantialDocument_Base {
+
+    protected FinantialDocument() {
+
         super();
-    }
-    
-    public String getUiDocumentNumber()
-    {
-    	return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType(),this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
-    }
-    
-    public BigDecimal getTotalValue()
-    {
-    	return BigDecimal.ZERO;
+        setBennu(Bennu.getInstance());
+        setState(FinantialDocumentStateType.PREPARING);
     }
 
-    
-    public BigDecimal getTotalNetValue()
-    {
-    	return BigDecimal.ZERO;
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        setDebtAccount(debtAccount);
+        setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
+        setDocumentNumberSeries(documentNumberSeries);
+        setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
+        setDocumentDate(documentDate);
+        
+        checkRules();
     }
+
+    protected void checkRules() {
+        if(getDebtAccount() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.debtAccount.required");
+        }
+        
+        if (getFinantialDocumentType() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.required");
+        }
+
+        if (getDocumentNumberSeries() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentNumber.required");
+        }
+        
+        if(getDocumentDate() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentDate.required");
+        }
+        
+        if(getDocumentDueDate() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.required");
+        }
+    }
+
+    public String getUiDocumentNumber() {
+        return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
+                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
+    }
+
+    public BigDecimal getTotalValue() {
+        return BigDecimal.ZERO;
+    }
+
+    public BigDecimal getTotalNetValue() {
+        return BigDecimal.ZERO;
+    }
+
+    public boolean isClosed() {
+        return this.getState().isClosed();
+    }
+    
+    public boolean isInvoice() {
+        return false;
+    }
+    
+    public boolean isDebitNote() {
+        return false;
+    }
+    
+    public boolean isCreditNote() {
+        return false;
+    }
+    
+    public boolean isSettlementNote() {
+        return false;
+    }
+    
+    public boolean isDeletable() {
+        return true;
+    }
+    
+    public void closeDocument() {
+        setState(FinantialDocumentStateType.CLOSED);
+    }
+
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.FinantialDocument.cannot.delete");
+        }
+
+        setBennu(null);
+
+        deleteDomainObject();
+    }
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+
+    public static Set<? extends FinantialDocument> readAll() {
+        return Bennu.getInstance().getFinantialDocumentsSet();
+    }
+
+    public static Set<FinantialDocument> find(final FinantialDocumentType finantialDocumentType) {
+        return readAll().stream().filter(i->finantialDocumentType.equals(i.getFinantialDocumentType())).collect(Collectors.toSet());
+    }
+    
+    
+
+    public static Set<FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
+        final Set<FinantialDocument> result = Sets.newHashSet();
+
+        for (final FinantialDocument it : readAll()) {
+            if (it.getDocumentNumberSeries() == documentNumberSeries) {
+                result.add(it);
+            }
+        }
+
+        return result;
+    }
+
+    public static Set<FinantialDocument> find(final FinantialDocumentType FinantialDocumentType,
+            final DocumentNumberSeries documentNumberSeries) {
+        final Set<FinantialDocument> result = Sets.newHashSet();
+
+        for (final FinantialDocument it : readAll()) {
+            if (it.getFinantialDocumentType() != FinantialDocumentType) {
+                continue;
+            }
+
+            if (it.getDocumentNumberSeries() != documentNumberSeries) {
+                continue;
+            }
+
+            result.add(it);
+        }
+
+        return result;
+    }
+
+	public Boolean getClosed() {
+		return this.getState().equals(FinantialDocumentStateType.CLOSED);
+	}
+
+	public DateTime getWhenCreated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getUserChanged() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getUserCreated() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

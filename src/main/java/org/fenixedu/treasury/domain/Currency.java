@@ -1,8 +1,35 @@
+/**
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * software development project between Quorum Born IT and Serviços Partilhados da
+ * Universidade de Lisboa:
+ *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
+ *
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
+ * 
+ *
+ * 
+ * This file is part of FenixEdu Treasury.
+ *
+ * FenixEdu Treasury is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FenixEdu Treasury is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.fenixedu.treasury.domain;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -12,117 +39,126 @@ import pt.ist.fenixframework.Atomic;
 
 public class Currency extends Currency_Base {
 
-    protected Currency() {
-        super();
-        setBennu(Bennu.getInstance());
-    }
+	protected Currency() {
+		super();
+		setBennu(Bennu.getInstance());
+	}
 
-    protected Currency(final String code, final LocalizedString name, final String isoCode, final String symbol) {
-        this();
-        setCode(code);
-        setName(name);
-        setIsoCode(isoCode);
-        setSymbol(symbol);
+	protected Currency(final String code, final LocalizedString name,
+			final String isoCode, final String symbol) {
+		this();
+		setCode(code);
+		setName(name);
+		setIsoCode(isoCode);
+		setSymbol(symbol);
 
-        checkRules();
-    }
+		checkRules();
+	}
 
-    private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
-            throw new TreasuryDomainException("error.Currency.code.required");
-        }
+	private void checkRules() {
+		if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+			throw new TreasuryDomainException("error.Currency.code.required");
+		}
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
-            throw new TreasuryDomainException("error.Currency.name.required");
-        }
-        
-        if(StringUtils.isEmpty(getIsoCode())) {
-            throw new TreasuryDomainException("error.Currency.isoCode.required");
-        }
-        
-        if(StringUtils.isEmpty(getSymbol())) {
-            throw new TreasuryDomainException("error.Currency.symbol.required");
-        }
+		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+			throw new TreasuryDomainException("error.Currency.name.required");
+		}
 
-        findByCode(getCode());
-        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
-    }
+		if (LocalizedStringUtil.isTrimmedEmpty(getIsoCode())) {
+			throw new TreasuryDomainException("error.Currency.isoCode.required");
+		}
 
-    @Atomic
-    public void edit(final String code, final LocalizedString name, final String isoCode, final String symbol) {
-        setCode(code);
-        setName(name);
-        setIsoCode(isoCode);
-        setSymbol(symbol);
+		if (LocalizedStringUtil.isTrimmedEmpty(getSymbol())) {
+			throw new TreasuryDomainException("error.Currency.symbol.required");
+		}
 
-        checkRules();
-    }
+		findByCode(getCode());
+		getName().getLocales().stream()
+				.forEach(l -> findByName(getName().getContent(l)));
+		
+	}
 
-    public boolean isDeletable() {
-        return true;
-    }
+	@Atomic
+	public void edit(final String code, final LocalizedString name,
+			final String isoCode, final String symbol) {
+		setCode(code);
+		setName(name);
+		setIsoCode(isoCode);
+		setSymbol(symbol);
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.Currency.cannot.delete");
-        }
+		checkRules();
+	}
 
-        setBennu(null);
+	public boolean isDeletable() {
+		return true;
+	}
 
-        deleteDomainObject();
-    }
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException("error.Currency.cannot.delete");
+		}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+		setBennu(null);
 
-    public static Set<Currency> readAll() {
-        return Bennu.getInstance().getCurrenciesSet();
-    }
+		deleteDomainObject();
+	}
 
-    public static Currency findByCode(final String code) {
-        Currency result = null;
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
 
-        for (final Currency it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
+	public static Set<Currency> readAll() {
+		return Bennu.getInstance().getCurrenciesSet();
+	}
 
-            if (result != null) {
-                throw new TreasuryDomainException("error.Currency.duplicated.code");
-            }
+	public static Currency findByCode(final String code) {
+		Currency result = null;
 
-            result = it;
-        }
+		for (final Currency it : readAll()) {
+			if (!it.getCode().equalsIgnoreCase(code)) {
+				continue;
+			}
 
-        return result;
-    }
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.Currency.duplicated.code");
+			}
 
-    public static Currency findByName(final String name) {
-        Currency result = null;
+			result = it;
+		}
 
-        for (final Currency it : readAll()) {
+		return result;
+	}
+	
+	public static Currency findByName(final String name) {
+		Currency result = null;
 
-            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
-                continue;
-            }
+		for (final Currency it : readAll()) {
 
-            if (result != null) {
-                throw new TreasuryDomainException("error.Currency.duplicated.name");
-            }
+			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
+					name)) {
+				continue;
+			}
 
-            result = it;
-        }
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.Currency.duplicated.name");
+			}
 
-        return result;
-    }
+			result = it;
+		}
 
-    @Atomic
-    public static Currency create(final String code, final LocalizedString name, final String isoCode, final String symbol) {
-        return new Currency(code, name, isoCode, symbol);
-    }
+		return result;
+	}
+
+	@Atomic
+	public static Currency create(final String code,
+			final LocalizedString name, final String isoCode,
+			final String symbol) {
+		return new Currency(code, name, isoCode, symbol);
+	}
 
 }
