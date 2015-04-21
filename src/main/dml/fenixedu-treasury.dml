@@ -24,11 +24,11 @@ valueType java.math.BigDecimal as BigDecimalT
 class FiscalCountryRegion {
 	String regionCode;
 	LocalizedString name;
-}
+} 
 
 class CustomerType {
-	String code;
-	LocalizedString name;
+	String code (REQUIRED);
+	LocalizedString name (REQUIRED);
 }
 
 class VatType {
@@ -410,7 +410,7 @@ relation ExemptionBennu {
 		multiplicity 1..1;
 	}
 	
-	Exemption playsRole exemptions {
+	Exemption playsRole treasuryExemptions {
 		multiplicity *;
 	}	
 }
@@ -570,7 +570,7 @@ relation AccountingEventBennu {
 		multiplicity 1..1;
 	}
 
-	event.AccountingEvent playsRole accountingEvents {
+	event.AccountingEvent playsRole treasuryAccountingEvents {
 		multiplicity *;
 	}
 }

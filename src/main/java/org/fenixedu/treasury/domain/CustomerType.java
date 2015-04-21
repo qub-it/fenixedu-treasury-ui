@@ -12,105 +12,113 @@ import pt.ist.fenixframework.Atomic;
 
 public class CustomerType extends CustomerType_Base {
 
-    protected CustomerType() {
-        super();
-        setBennu(Bennu.getInstance());
-    }
+	protected CustomerType() {
+		super();
+		setBennu(Bennu.getInstance());
+	}
 
-    protected CustomerType(final String code, final LocalizedString name) {
-        this();
-        setCode(code);
-        setName(name);
+	protected CustomerType(final String code, final LocalizedString name) {
+		this();
+		setCode(code);
+		setName(name);
 
-        checkRules();
-    }
+		checkRules();
+	}
 
-    private void checkRules() {
-        if (StringUtils.isEmpty(getCode())) {
-            throw new TreasuryDomainException("error.CustomerType.code.required");
-        }
+	private void checkRules() {
+		if (StringUtils.isEmpty(getCode())) {
+			throw new TreasuryDomainException(
+					"error.CustomerType.code.required");
+		}
 
-        if (LocalizedStringUtil.isEmpty(getName())) {
-            throw new TreasuryDomainException("error.CustomerType.name.required");
-        }
+		if (LocalizedStringUtil.isEmpty(getName())) {
+			throw new TreasuryDomainException(
+					"error.CustomerType.name.required");
+		}
 
-        findByCode(getCode());
-        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
-    }
+		findByCode(getCode());
+		getName().getLocales().stream()
+				.forEach(l -> findByName(getName().getContent(l)));
+	}
 
-    @Atomic
-    public void edit(final String code, final LocalizedString name) {
-        setCode(code);
-        setName(name);
+	@Atomic
+	public void edit(final String code, final LocalizedString name) {
+		setCode(code);
+		setName(name);
 
-        checkRules();
-    }
+		checkRules();
+	}
 
-    public boolean isDeletable() {
-        return true;
-    }
+	public boolean isDeletable() {
+		return true;
+	}
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.CustomerType.cannot.delete");
-        }
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException(
+					"error.CustomerType.cannot.delete");
+		}
 
-        setBennu(null);
+		setBennu(null);
 
-        deleteDomainObject();
-    }
+		deleteDomainObject();
+	}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
 
-    public static Set<CustomerType> readAll() {
-        return Bennu.getInstance().getCustomerTypesSet();
-    }
+	public static Set<CustomerType> readAll() {
+		return Bennu.getInstance().getCustomerTypesSet();
+	}
 
-    public static CustomerType findByCode(final String code) {
-        CustomerType result = null;
+	public static CustomerType findByCode(final String code) {
+		CustomerType result = null;
 
-        for (final CustomerType it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
+		for (final CustomerType it : readAll()) {
+			if (!it.getCode().equalsIgnoreCase(code)) {
+				continue;
+			}
 
-            if (result != null) {
-                throw new TreasuryDomainException("error.CustomerType.duplicated.code");
-            }
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.CustomerType.duplicated.code");
+			}
 
-            result = it;
-        }
+			result = it;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public static CustomerType findByName(final String name) {
-        CustomerType result = null;
+	public static CustomerType findByName(final String name) {
+		CustomerType result = null;
 
-        for (final CustomerType it : readAll()) {
+		for (final CustomerType it : readAll()) {
 
-            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
-                continue;
-            }
+			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
+					name)) {
+				continue;
+			}
 
-            if (result != null) {
-                throw new TreasuryDomainException("error.CustomerType.duplicated.name");
-            }
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.CustomerType.duplicated.name");
+			}
 
-            result = it;
-        }
+			result = it;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Atomic
-    public static CustomerType create(final String code, final LocalizedString name) {
-        return new CustomerType(code, name);
-    }
+	@Atomic
+	public static CustomerType create(final String code,
+			final LocalizedString name) {
+		return new CustomerType(code, name);
+	}
 
 }

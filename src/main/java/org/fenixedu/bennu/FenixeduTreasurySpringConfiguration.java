@@ -2,8 +2,8 @@ package org.fenixedu.bennu;
 
 import org.fenixedu.bennu.spring.BennuSpringModule;
 
-@BennuSpringModule(basePackages = "org.fenixedu.treasury", bundles = "FenixeduTreasuryResources")
+@BennuSpringModule(basePackages = "org.fenixedu.treasury", bundles = "TreasuryResources")
 public class FenixeduTreasurySpringConfiguration {
     
-    public static final String BUNDLE = "resources/FenixEduSpacesResources";
+    public static final String BUNDLE = "resources/TreasuryResources";
 }

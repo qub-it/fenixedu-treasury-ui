@@ -75,7 +75,7 @@ public class Exemption extends Exemption_Base {
     // @formatter: on
 
     public static Set<Exemption> readAll() {
-        return Bennu.getInstance().getExemptionsSet();
+        return Bennu.getInstance().getTreasuryExemptionsSet();
     }
 
     public static Exemption findByCode(final String code) {
