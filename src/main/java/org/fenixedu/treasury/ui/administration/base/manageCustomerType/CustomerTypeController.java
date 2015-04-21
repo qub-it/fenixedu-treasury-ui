@@ -1,6 +1,5 @@
 package org.fenixedu.treasury.ui.administration.base.manageCustomerType;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,7 +62,7 @@ public class CustomerTypeController extends TreasuryBaseController {
         // The initialization of the result list must be done here
         //
         //
-        return new ArrayList<CustomerType>(CustomerType.readAll()); // CHANGE_ME
+        return CustomerType.findAll().collect(Collectors.toList());
 
     }
 

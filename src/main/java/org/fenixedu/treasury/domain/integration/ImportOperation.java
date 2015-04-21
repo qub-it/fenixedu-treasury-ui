@@ -29,122 +29,113 @@ package org.fenixedu.treasury.domain.integration;
 
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
 
 public class ImportOperation extends ImportOperation_Base {
-	protected ImportOperation() {
-		super();
-	}
+    protected ImportOperation() {
+        super();
+    }
 
-	protected void init(final org.joda.time.DateTime executionDate,
-			final boolean processed, final boolean success,
-			final java.lang.String errorLog) {
-		setExecutionDate(executionDate);
-		setProcessed(processed);
-		setSuccess(success);
-		setErrorLog(errorLog);
-		checkRules();
-	}
+    @Override
+    protected void init(final org.joda.time.DateTime executionDate, final boolean processed, final boolean success,
+            final java.lang.String errorLog) {
+        setExecutionDate(executionDate);
+        setProcessed(processed);
+        setSuccess(success);
+        setErrorLog(errorLog);
+        checkRules();
+    }
 
-	private void checkRules() {
-		//
-		// CHANGE_ME add more busines validations
-		//
+    private void checkRules() {
+        //
+        // CHANGE_ME add more busines validations
+        //
 
-		// CHANGE_ME In order to validate UNIQUE restrictions
-		// if (findByExecutionDate(getExecutionDate().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.ImportOperation.executionDate.duplicated");
-		// }
-		// if (findByProcessed(getProcessed().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.ImportOperation.processed.duplicated");
-		// }
-		// if (findBySuccess(getSuccess().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.ImportOperation.success.duplicated");
-		// }
-		// if (findByErrorLog(getErrorLog().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.ImportOperation.errorLog.duplicated");
-		// }
-	}
+        // CHANGE_ME In order to validate UNIQUE restrictions
+        // if (findByExecutionDate(getExecutionDate().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.ImportOperation.executionDate.duplicated");
+        // }
+        // if (findByProcessed(getProcessed().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.ImportOperation.processed.duplicated");
+        // }
+        // if (findBySuccess(getSuccess().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.ImportOperation.success.duplicated");
+        // }
+        // if (findByErrorLog(getErrorLog().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.ImportOperation.errorLog.duplicated");
+        // }
+    }
 
-	@Atomic
-	public void edit(final org.joda.time.DateTime executionDate,
-			final boolean processed, final boolean success,
-			final java.lang.String errorLog) {
-		setExecutionDate(executionDate);
-		setProcessed(processed);
-		setSuccess(success);
-		setErrorLog(errorLog);
-		checkRules();
-	}
+    @Override
+    @Atomic
+    public void edit(final org.joda.time.DateTime executionDate, final boolean processed, final boolean success,
+            final java.lang.String errorLog) {
+        setExecutionDate(executionDate);
+        setProcessed(processed);
+        setSuccess(success);
+        setErrorLog(errorLog);
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    @Override
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException(
-					"error.ImportOperation.cannot.delete");
-		}
+    @Override
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.ImportOperation.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
 
-		deleteDomainObject();
-	}
+        deleteDomainObject();
+    }
 
-	@Atomic
-	public static ImportOperation create(
-			final org.joda.time.DateTime executionDate,
-			final boolean processed, final boolean success,
-			final java.lang.String errorLog) {
-		ImportOperation importOperation = new ImportOperation();
-		importOperation.init(executionDate, processed, success, errorLog);
-		return importOperation;
-	}
+    @Atomic
+    public static ImportOperation create(final org.joda.time.DateTime executionDate, final boolean processed,
+            final boolean success, final java.lang.String errorLog) {
+        ImportOperation importOperation = new ImportOperation();
+        importOperation.init(executionDate, processed, success, errorLog);
+        return importOperation;
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<ImportOperation> findAll() {
-		return IntegrationOperation.findAll()
-				.filter(x -> x instanceof ImportOperation)
-				.map(ImportOperation.class::cast);
-	}
+    public static Stream<ImportOperation> findAllImportOperations() {
+        return IntegrationOperation.findAll().filter(x -> x instanceof ImportOperation).map(ImportOperation.class::cast);
+    }
 
-	public static Stream<ImportOperation> findByExecutionDate(
-			final org.joda.time.DateTime executionDate) {
-		return findAll()
-				.filter(i -> executionDate.equals(i.getExecutionDate()));
-	}
+    public static Stream<ImportOperation> findImportOperationsByExecutionDate(final org.joda.time.DateTime executionDate) {
+        return findAllImportOperations().filter(i -> executionDate.equals(i.getExecutionDate()));
+    }
 
-	public static Stream<ImportOperation> findByProcessed(
-			final boolean processed) {
-		return findAll().filter(i -> processed == i.getProcessed());
-	}
+    public static Stream<ImportOperation> findImportOperationsByProcessed(final boolean processed) {
+        return findAllImportOperations().filter(i -> processed == i.getProcessed());
+    }
 
-	public static Stream<ImportOperation> findBySuccess(final boolean success) {
-		return findAll().filter(i -> success == i.getSuccess());
-	}
+    public static Stream<ImportOperation> findImportOperationsBySuccess(final boolean success) {
+        return findAllImportOperations().filter(i -> success == i.getSuccess());
+    }
 
-	public static Stream<ImportOperation> findByErrorLog(
-			final java.lang.String errorLog) {
-		return findAll()
-				.filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
-	}
+    public static Stream<ImportOperation> findImportOperationsByErrorLog(final java.lang.String errorLog) {
+        return findAllImportOperations().filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
+    }
 
 }
