@@ -29,7 +29,7 @@ package org.fenixedu.treasury.domain.paymentCodes.pool;
 
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream;
+import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -42,7 +42,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
 	protected PaymentCodePool() {
 		super();
-		setBennu(Bennu.getInstance());
+//		setBennu(Bennu.getInstance());
 	}
 
 	protected void init(final java.lang.String name,
@@ -123,7 +123,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 					"error.PaymentCodePool.cannot.delete");
 		}
 
-		setBennu(null);
+//		setBennu(null);
 
 		deleteDomainObject();
 	}
@@ -146,39 +146,39 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 	 ************/
 	// @formatter: on
 
-	public static Stream<PaymentCodePool> findAll() {
-		return Bennu.getInstance().getPaymentCodePoolsSet().stream();
-	}
-
-	public static Stream<PaymentCodePool> findByName(final java.lang.String name) {
-		return findAll().filter(i -> name.equalsIgnoreCase(i.getName()));
-	}
-
-	public static Stream<PaymentCodePool> findByMinPaymentCodes(
-			final java.lang.Integer minPaymentCodes) {
-		return findAll().filter(
-				i -> minPaymentCodes.equals(i.getMinPaymentCodes()));
-	}
-
-	public static Stream<PaymentCodePool> findByMaxPaymentCodes(
-			final java.lang.Integer maxPaymentCodes) {
-		return findAll().filter(
-				i -> maxPaymentCodes.equals(i.getMaxPaymentCodes()));
-	}
-
-	public static Stream<PaymentCodePool> findByMinAmount(
-			final java.math.BigDecimal minAmount) {
-		return findAll().filter(i -> minAmount.equals(i.getMinAmount()));
-	}
-
-	public static Stream<PaymentCodePool> findByMaxAmount(
-			final java.math.BigDecimal maxAmount) {
-		return findAll().filter(i -> maxAmount.equals(i.getMaxAmount()));
-	}
-
-	public static Stream<PaymentCodePool> findByActive(
-			final java.lang.Boolean active) {
-		return findAll().filter(i -> active.equals(i.getActive()));
-	}
+//	public static Stream<PaymentCodePool> findAll() {
+//		return Bennu.getInstance().getPaymentCodePoolsSet().stream();
+//	}
+//
+//	public static Stream<PaymentCodePool> findByName(final java.lang.String name) {
+//		return findAll().filter(i -> name.equalsIgnoreCase(i.getName()));
+//	}
+//
+//	public static Stream<PaymentCodePool> findByMinPaymentCodes(
+//			final java.lang.Integer minPaymentCodes) {
+//		return findAll().filter(
+//				i -> minPaymentCodes.equals(i.getMinPaymentCodes()));
+//	}
+//
+//	public static Stream<PaymentCodePool> findByMaxPaymentCodes(
+//			final java.lang.Integer maxPaymentCodes) {
+//		return findAll().filter(
+//				i -> maxPaymentCodes.equals(i.getMaxPaymentCodes()));
+//	}
+//
+//	public static Stream<PaymentCodePool> findByMinAmount(
+//			final java.math.BigDecimal minAmount) {
+//		return findAll().filter(i -> minAmount.equals(i.getMinAmount()));
+//	}
+//
+//	public static Stream<PaymentCodePool> findByMaxAmount(
+//			final java.math.BigDecimal maxAmount) {
+//		return findAll().filter(i -> maxAmount.equals(i.getMaxAmount()));
+//	}
+//
+//	public static Stream<PaymentCodePool> findByActive(
+//			final java.lang.Boolean active) {
+//		return findAll().filter(i -> active.equals(i.getActive()));
+//	}
 
 }

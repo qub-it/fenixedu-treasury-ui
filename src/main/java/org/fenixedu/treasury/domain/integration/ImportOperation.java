@@ -120,30 +120,30 @@ public class ImportOperation extends ImportOperation_Base {
 	 ************/
 	// @formatter: on
 
-	public static Stream<ImportOperation> findAll() {
+	public static Stream<ImportOperation> findAllImportOperations() {
 		return IntegrationOperation.findAll()
 				.filter(x -> x instanceof ImportOperation)
 				.map(ImportOperation.class::cast);
 	}
 
-	public static Stream<ImportOperation> findByExecutionDate(
+	public static Stream<ImportOperation> findImportOperationsByExecutionDate(
 			final org.joda.time.DateTime executionDate) {
-		return findAll()
+		return findAllImportOperations()
 				.filter(i -> executionDate.equals(i.getExecutionDate()));
 	}
 
-	public static Stream<ImportOperation> findByProcessed(
+	public static Stream<ImportOperation> findImportOperationsByProcessed(
 			final boolean processed) {
-		return findAll().filter(i -> processed == i.getProcessed());
+		return findAllImportOperations().filter(i -> processed == i.getProcessed());
 	}
 
-	public static Stream<ImportOperation> findBySuccess(final boolean success) {
-		return findAll().filter(i -> success == i.getSuccess());
+	public static Stream<ImportOperation> findImportOperationsBySuccess(final boolean success) {
+		return findAllImportOperations().filter(i -> success == i.getSuccess());
 	}
 
-	public static Stream<ImportOperation> findByErrorLog(
+	public static Stream<ImportOperation> findImportOperationsByErrorLog(
 			final java.lang.String errorLog) {
-		return findAll()
+		return findAllImportOperations()
 				.filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
 	}
 

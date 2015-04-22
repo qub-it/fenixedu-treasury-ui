@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
@@ -126,6 +127,12 @@ setTotalCost(totalCost);
 	public static Stream<SibsReportFile> findByTotalCost(final java.math.BigDecimal totalCost) {
 		return findAll().filter(i->totalCost.equals(i.getTotalCost()));
 	  }
+
+	@Override
+	public boolean isAccessible(User arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
    
     
 }

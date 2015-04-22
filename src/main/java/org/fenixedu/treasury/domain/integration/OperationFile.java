@@ -27,14 +27,14 @@
  */
 package org.fenixedu.treasury.domain.integration;
 
-import java.org.fenixedu.treasury.domain.integration.Atomic;
-import java.org.fenixedu.treasury.domain.integration.IntegrationOperation;
-import java.org.fenixedu.treasury.domain.integration.OperationFile;
-import java.org.fenixedu.treasury.domain.integration.Stream;
-import java.org.fenixedu.treasury.domain.integration.TreasuryDomainException;
+
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+
+import pt.ist.fenixframework.Atomic;
 
 public class OperationFile extends OperationFile_Base {
 
@@ -78,15 +78,15 @@ public class OperationFile extends OperationFile_Base {
 					"error.OperationFile.cannot.delete");
 		}
 
-		setBennu(null);
+//		setBennu(null);
 
 		deleteDomainObject();
 	}
 
 	@Atomic
-	public static OperationFile create() {
+	public static OperationFile create(String fileName, byte[] bytes) {
 		OperationFile operationFile = new OperationFile();
-		operationFile.init();
+		operationFile.init(fileName, fileName, bytes);
 		return operationFile;
 	}
 
@@ -96,14 +96,14 @@ public class OperationFile extends OperationFile_Base {
 	 ************/
 	// @formatter: on
 
-	public static Stream<OperationFile> findAll() {
-		return Bennu.getInstance().getOperationFilesSet().stream();
-	}
-
-	public static Stream<OperationFile> findByIntegrationOperation(
-			final IntegrationOperation integrationOperation) {
-		return findAll().filter(
-				i -> integrationOperation.equals(i.getIntegrationOperation()));
-	}
+//	public static Stream<OperationFile> findAll() {
+//		return Bennu.getInstance().getOperationFilesSet().stream();
+//	}
+//
+//	public static Stream<OperationFile> findByIntegrationOperation(
+//			final IntegrationOperation integrationOperation) {
+//		return findAll().filter(
+//				i -> integrationOperation.equals(i.getIntegrationOperation()));
+//	}
 
 }

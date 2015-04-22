@@ -44,15 +44,15 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 
 
 @RequestMapping("/treasury")
-@SpringApplication(group = "logged", path = "treasury", title = "title.treasury")
-@SpringFunctionality(app = TreasuryController.class, title = "title.treasury")
+@SpringApplication(group = "logged", path = "treasury", title = "title.treasury", hint="Treasury Application")
+//@SpringFunctionality(app = TreasuryController.class, title = "title.treasury")
 public class TreasuryController {
 	
-//	@RequestMapping
-//	public String home(Model model) {
-//		//this is the default destination for handling request to the root of the Module 
-//      //put here the default functionality destination of your Module
-//		return "redirect:<PUT_HERE_THE_DEFAULT_CONTROLLER_MAPPING>";
-//	}
+	@RequestMapping
+	public String home(Model model) {
+		//this is the default destination for handling request to the root of the Module 
+      //put here the default functionality destination of your Module
+		return "redirect:/treasury/accounting/managecustomer/customer/";
+	}
 	
 }

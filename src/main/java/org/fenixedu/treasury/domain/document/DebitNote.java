@@ -28,7 +28,10 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -39,63 +42,239 @@ import com.google.common.collect.Sets;
 
 public class DebitNote extends DebitNote_Base {
 
-    protected DebitNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        super();
-        
-        this.init(debtAccount, documentNumberSeries, documentDate);
-    }
-    
-    protected DebitNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        super();
-        
-        this.init(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
-    }
-    
-    @Override
-    public boolean isDebitNote() {
-        return true;
-    }
-    
-    public boolean isDeletable() {
-        return true;
-    }
+	protected DebitNote() {
+		super();
+		setBennu(Bennu.getInstance());
+	}
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.DebitNote.cannot.delete");
-        }
+	protected void init(
+			final DebtAccount payorDebtAccount,
+			final FinantialDocumentType finantialDocumentType,
+			final DebtAccount debtAccount,
+			final DocumentNumberSeries documentNumberSeries,
+			final Currency currency,
+			final java.lang.String documentNumber,
+			final org.joda.time.DateTime documentDate,
+			final org.joda.time.DateTime documentDueDate,
+			final java.lang.String originDocumentNumber,
+			final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+		setPayorDebtAccount(payorDebtAccount);
+		setFinantialDocumentType(finantialDocumentType);
+		setDebtAccount(debtAccount);
+		setDocumentNumberSeries(documentNumberSeries);
+		setCurrency(currency);
+		setDocumentNumber(documentNumber);
+		setDocumentDate(documentDate);
+		setDocumentDueDate(documentDueDate);
+		setOriginDocumentNumber(originDocumentNumber);
+		setState(state);
+		checkRules();
+	}
 
-        setBennu(null);
-        deleteDomainObject();
-    }
+	protected void checkRules() {
+		//
+		// CHANGE_ME add more busines validations
+		//
+		if (getFinantialDocumentType() == null) {
+			throw new TreasuryDomainException(
+					"error.DebitNote.finantialDocumentType.required");
+		}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+		if (getDebtAccount() == null) {
+			throw new TreasuryDomainException(
+					"error.DebitNote.debtAccount.required");
+		}
 
-    public static Set<DebitNote> readAll() {
-        final Set<DebitNote> result = Sets.newHashSet();
-        
-        for (final Invoice invoice : readAll()) {
-            if(invoice instanceof DebitNote) {
-                result.add((DebitNote) invoice);
-            }
-        }
-        
-        return result;
-    }
+		if (getDocumentNumberSeries() == null) {
+			throw new TreasuryDomainException(
+					"error.DebitNote.documentNumberSeries.required");
+		}
 
-    @Atomic
-    public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        return new DebitNote(debtAccount, documentNumberSeries, documentDate);
-    }
-    
-    @Atomic
-    public static DebitNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        return new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
-    }
+		if (getCurrency() == null) {
+			throw new TreasuryDomainException(
+					"error.DebitNote.currency.required");
+		}
+
+		// CHANGE_ME In order to validate UNIQUE restrictions
+		// if (findByPayorDebtAccount(getPayorDebtAccount().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.payorDebtAccount.duplicated");
+		// }
+		// if (findByFinantialDocumentType(getFinantialDocumentType().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.finantialDocumentType.duplicated");
+		// }
+		// if (findByDebtAccount(getDebtAccount().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.debtAccount.duplicated");
+		// }
+		// if (findByDocumentNumberSeries(getDocumentNumberSeries().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.documentNumberSeries.duplicated");
+		// }
+		// if (findByCurrency(getCurrency().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.currency.duplicated");
+		// }
+		// if (findByDocumentNumber(getDocumentNumber().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.documentNumber.duplicated");
+		// }
+		// if (findByDocumentDate(getDocumentDate().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.documentDate.duplicated");
+		// }
+		// if (findByDocumentDueDate(getDocumentDueDate().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.documentDueDate.duplicated");
+		// }
+		// if (findByOriginDocumentNumber(getOriginDocumentNumber().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.originDocumentNumber.duplicated");
+		// }
+		// if (findByState(getState().count()>1)
+		// {
+		// throw new
+		// TreasuryDomainException("error.DebitNote.state.duplicated");
+		// }
+	}
+
+	@Atomic
+	public void edit(
+			final DebtAccount payorDebtAccount,
+			final FinantialDocumentType finantialDocumentType,
+			final DebtAccount debtAccount,
+			final DocumentNumberSeries documentNumberSeries,
+			final Currency currency,
+			final java.lang.String documentNumber,
+			final org.joda.time.DateTime documentDate,
+			final org.joda.time.DateTime documentDueDate,
+			final java.lang.String originDocumentNumber,
+			final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+		setPayorDebtAccount(payorDebtAccount);
+		setFinantialDocumentType(finantialDocumentType);
+		setDebtAccount(debtAccount);
+		setDocumentNumberSeries(documentNumberSeries);
+		setCurrency(currency);
+		setDocumentNumber(documentNumber);
+		setDocumentDate(documentDate);
+		setDocumentDueDate(documentDueDate);
+		setOriginDocumentNumber(originDocumentNumber);
+		setState(state);
+		checkRules();
+	}
+
+	public boolean isDeletable() {
+		return true;
+	}
+
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException("error.DebitNote.cannot.delete");
+		}
+
+		setBennu(null);
+
+		deleteDomainObject();
+	}
+
+	@Atomic
+	public static DebitNote create(
+			final DebtAccount payorDebtAccount,
+			final FinantialDocumentType finantialDocumentType,
+			final DebtAccount debtAccount,
+			final DocumentNumberSeries documentNumberSeries,
+			final Currency currency,
+			final java.lang.String documentNumber,
+			final org.joda.time.DateTime documentDate,
+			final org.joda.time.DateTime documentDueDate,
+			final java.lang.String originDocumentNumber,
+			final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+		DebitNote debitNote = new DebitNote();
+		debitNote.init(payorDebtAccount, finantialDocumentType, debtAccount,
+				documentNumberSeries, currency, documentNumber, documentDate,
+				documentDueDate, originDocumentNumber, state);
+		return debitNote;
+	}
+
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
+
+	public static Stream<? extends DebitNote> findAll() {
+		return Bennu.getInstance().getFinantialDocumentsSet().stream()
+				.filter(x -> x instanceof DebitNote)
+				.map(DebitNote.class::cast);
+
+	}
+
+	public static Stream<? extends DebitNote> findByPayorDebtAccount(
+			final DebtAccount payorDebtAccount) {
+		return findAll().filter(
+				i -> payorDebtAccount.equals(i.getPayorDebtAccount()));
+	}
+
+	public static Stream<? extends DebitNote> findByFinantialDocumentType(
+			final FinantialDocumentType finantialDocumentType) {
+		return findAll()
+				.filter(i -> finantialDocumentType.equals(i
+						.getFinantialDocumentType()));
+	}
+
+	public static Stream<? extends DebitNote> findByDebtAccount(
+			final DebtAccount debtAccount) {
+		return findAll().filter(i -> debtAccount.equals(i.getDebtAccount()));
+	}
+
+	public static Stream<? extends DebitNote> findByDocumentNumberSeries(
+			final DocumentNumberSeries documentNumberSeries) {
+		return findAll().filter(
+				i -> documentNumberSeries.equals(i.getDocumentNumberSeries()));
+	}
+
+	public static Stream<? extends DebitNote> findByCurrency(final Currency currency) {
+		return findAll().filter(i -> currency.equals(i.getCurrency()));
+	}
+
+	public static Stream<? extends DebitNote> findByDocumentNumber(
+			final java.lang.String documentNumber) {
+		return findAll().filter(
+				i -> documentNumber.equalsIgnoreCase(i.getDocumentNumber()));
+	}
+
+	public static Stream<? extends DebitNote> findByDocumentDate(
+			final org.joda.time.DateTime documentDate) {
+		return findAll().filter(i -> documentDate.equals(i.getDocumentDate()));
+	}
+
+	public static Stream<? extends DebitNote> findByDocumentDueDate(
+			final org.joda.time.DateTime documentDueDate) {
+		return findAll().filter(
+				i -> documentDueDate.equals(i.getDocumentDueDate()));
+	}
+
+	public static Stream<? extends DebitNote> findByOriginDocumentNumber(
+			final java.lang.String originDocumentNumber) {
+		return findAll().filter(
+				i -> originDocumentNumber.equalsIgnoreCase(i
+						.getOriginDocumentNumber()));
+	}
+
+	public static Stream<? extends DebitNote> findByState(
+			final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+		return findAll().filter(i -> state.equals(i.getState()));
+	}
 
 }

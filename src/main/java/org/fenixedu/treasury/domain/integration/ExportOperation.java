@@ -113,21 +113,21 @@ public class ExportOperation extends ExportOperation_Base {
 		 ************/
 	    // @formatter: on
 		
-		public static Stream<ExportOperation> findAll() {
+		public static Stream<ExportOperation> findAllExportOperations() {
 		    return Bennu.getInstance().getIntegrationOperationsSet().stream().filter(x->x instanceof ExportOperation).map(ExportOperation.class::cast);
 		}
 		
-		public static Stream<ExportOperation> findByExecutionDate(final org.joda.time.DateTime executionDate) {
-			return findAll().filter(i->executionDate.equals(i.getExecutionDate()));
+		public static Stream<ExportOperation> findExportOperationsByExecutionDate(final org.joda.time.DateTime executionDate) {
+			return findAllExportOperations().filter(i->executionDate.equals(i.getExecutionDate()));
 		  }
-		public static Stream<ExportOperation> findByProcessed(final boolean processed) {
-			return findAll().filter(i->processed == i.getProcessed());
+		public static Stream<ExportOperation> findExportOperationsByProcessed(final boolean processed) {
+			return findAllExportOperations().filter(i->processed == i.getProcessed());
 		  }
-		public static Stream<ExportOperation> findBySuccess(final boolean success) {
-			return findAll().filter(i->success == i.getSuccess());
+		public static Stream<ExportOperation> findExportOperationBySuccess(final boolean success) {
+			return findAllExportOperations().filter(i->success == i.getSuccess());
 		  }
-		public static Stream<ExportOperation> findByErrorLog(final java.lang.String errorLog) {
-			return findAll().filter(i->errorLog.equalsIgnoreCase(i.getErrorLog()));
+		public static Stream<ExportOperation> findExportOperationByErrorLog(final java.lang.String errorLog) {
+			return findAllExportOperations().filter(i->errorLog.equalsIgnoreCase(i.getErrorLog()));
 		  }
 	   
 }
