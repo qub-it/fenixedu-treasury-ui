@@ -53,7 +53,7 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageDebtEntry") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageDebtEntry",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageDebtEntry",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping("/treasury/accounting/managedebtentry/invoiceentry")

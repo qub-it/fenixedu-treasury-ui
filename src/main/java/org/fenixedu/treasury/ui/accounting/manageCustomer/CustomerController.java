@@ -53,7 +53,7 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.Customer;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping("/treasury/accounting/managecustomer/customer")
@@ -102,8 +102,8 @@ public class CustomerController extends TreasuryBaseController {
 					//The initialization of the result list must be done here
 					//
 					//
-					// return new ArrayList<Customer>(Customer.findAll().collect(Collectors.toList())); //CHANGE_ME
-					return new ArrayList<Customer>();
+					return new ArrayList<Customer>(Customer.findAll().collect(Collectors.toList())); 
+//					return new ArrayList<Customer>();
 				}
 				
 		private List<Customer> filterSearchCustomer() {

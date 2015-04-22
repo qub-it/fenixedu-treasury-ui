@@ -53,7 +53,7 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.TreasuryExemption;
 
 //@Component("org.fenixedu.treasury.ui.document.manageExemption") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemption",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemption",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping("/treasury/document/manageexemption/treasuryexemption")
@@ -185,8 +185,7 @@ return redirect("/treasury/accounting/managecustomer/customer/read/" + getTreasu
 					//The initialization of the result list must be done here
 					//
 					//
-					// return new ArrayList<TreasuryExemption>(TreasuryExemption.findAll().collect(Collectors.toList())); //CHANGE_ME
-					return new ArrayList<TreasuryExemption>();
+					 return TreasuryExemption.findAll().collect(Collectors.toList()); 
 				}
 				
 		private List<TreasuryExemption> filterSearchTreasuryExemption( java.lang.String code 

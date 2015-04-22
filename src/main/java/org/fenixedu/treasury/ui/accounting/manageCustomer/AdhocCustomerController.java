@@ -53,9 +53,9 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-//@BennuSpringController(value=TreasuryController.class) 
+@BennuSpringController(value=CustomerController.class) 
 @RequestMapping("/treasury/accounting/managecustomer/adhoccustomer")
 public class AdhocCustomerController extends TreasuryBaseController {
 	
@@ -63,12 +63,6 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
 				
 	
-				@RequestMapping
-				public String home(Model model) {
-					//this is the default behaviour, for handling in a Spring Functionality
-					return "forward:/treasury/accounting/managecustomer/adhoccustomer/";
-				}
-
 				private AdhocCustomer getAdhocCustomer(Model model)
 				{
 					return (AdhocCustomer)model.asMap().get("adhocCustomer");
