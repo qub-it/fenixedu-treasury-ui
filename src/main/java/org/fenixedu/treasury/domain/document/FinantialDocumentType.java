@@ -105,14 +105,14 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
      ************/
     // @formatter: on
 
-    public static Set<FinantialDocumentType> readAll() {
+    public static Set<FinantialDocumentType> findAll() {
         return Bennu.getInstance().getFinantialDocumentTypesSet();
     }
 
     public static FinantialDocumentType findByCode(final String code) {
         FinantialDocumentType result = null;
 
-        for (final FinantialDocumentType it : readAll()) {
+        for (final FinantialDocumentType it : findAll()) {
             if (!it.getCode().equalsIgnoreCase(code)) {
                 continue;
             }
@@ -130,7 +130,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     protected static FinantialDocumentType findByName(final String name) {
         FinantialDocumentType result = null;
 
-        for (final FinantialDocumentType it : readAll()) {
+        for (final FinantialDocumentType it : findAll()) {
 
             if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
                 continue;
@@ -149,7 +149,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     protected static FinantialDocumentType findByDocumentNumberSeriesPrefix(final String documentNumberSeriesPrefix) {
         FinantialDocumentType result = null;
 
-        for (final FinantialDocumentType it : readAll()) {
+        for (final FinantialDocumentType it : findAll()) {
             if (!it.getDocumentNumberSeriesPrefix().equalsIgnoreCase(documentNumberSeriesPrefix)) {
                 continue;
             }
@@ -166,7 +166,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
 
     protected static FinantialDocumentType findByFinantialDocumentType(final FinantialDocumentTypeEnum type) {
         final Stream<FinantialDocumentType> stream =
-                readAll().stream().filter(fdt -> fdt.getType() == type);
+        		findAll().stream().filter(fdt -> fdt.getType() == type);
 
         if (stream.count() > 1) {
             throw new TreasuryDomainException("error.FinantialDocumentType.not.unique.in.finantial.document.type");

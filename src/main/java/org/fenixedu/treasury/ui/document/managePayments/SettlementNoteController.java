@@ -6,7 +6,7 @@
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -59,343 +59,361 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
-//@BennuSpringController(value=TreasuryController.class) 
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "logged")
+// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+// or
+// @BennuSpringController(value=TreasuryController.class)
 @RequestMapping("/treasury/document/managepayments/settlementnote")
 public class SettlementNoteController extends TreasuryBaseController {
-	
-//
 
-				
-	
-				@RequestMapping
-				public String home(Model model) {
-					//this is the default behaviour, for handling in a Spring Functionality
-					return "forward:/treasury/document/managepayments/settlementnote/";
-				}
+	//
 
-				private SettlementNote getSettlementNote(Model model)
-				{
-					return (SettlementNote)model.asMap().get("settlementNote");
-				}
-								
-				private void setSettlementNote(SettlementNote settlementNote, Model model)
-				{
-					model.addAttribute("settlementNote", settlementNote);
-				}
-								
-				@Atomic
-				public void deleteSettlementNote(SettlementNote settlementNote) {
-					// CHANGE_ME: Do the processing for deleting the settlementNote
-					// Do not catch any exception here
-					
-					// settlementNote.delete();
-				}
+	@RequestMapping
+	public String home(Model model) {
+		// this is the default behaviour, for handling in a Spring Functionality
+		return "forward:/treasury/document/managepayments/settlementnote/";
+	}
 
-//				
-				@RequestMapping(value = "/create", method = RequestMethod.GET)
-				public String create(Model model) {
-					return "treasury/document/managepayments/settlementnote/create";
-				}
-						
-//				
-				@RequestMapping(value = "/create", method = RequestMethod.POST)
-				public String create(@RequestParam(value="documentdate", required=false)@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") 
-									org.joda.time.DateTime 
-									  documentDate
-				, Model model, RedirectAttributes redirectAttributes ) {
-					/*
-					*  Creation Logic
-					*/
-					
-					try
-					{
+	private SettlementNote getSettlementNote(Model model) {
+		return (SettlementNote) model.asMap().get("settlementNote");
+	}
 
-				     	SettlementNote settlementNote = createSettlementNote(   documentDate  );
-				    	
-					//Success Validation
-				     //Add the bean to be used in the View
-					model.addAttribute("settlementNote",settlementNote);
-return redirect("/treasury/accounting/managecustomer/customer/read/" + getSettlementNote(model).getExternalId(), model, redirectAttributes);
-					}
-					catch (DomainException de)
-					{
+	private void setSettlementNote(SettlementNote settlementNote, Model model) {
+		model.addAttribute("settlementNote", settlementNote);
+	}
 
-						// @formatter: off
-						/*
-						 * If there is any error in validation 
-					     *
-					     * Add a error / warning message
-					     * 
-					     * addErrorMessage(" Error creating due to " + de.getLocalizedMessage(),model);
-					     * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-						// @formatter: on
-						
-						addErrorMessage(" Error creating due to " + de.getLocalizedMessage(),model);
-				     	return create(model);
-					}
-				}
-				
-				@Atomic
-				public SettlementNote createSettlementNote( org.joda.time.DateTime documentDate 
-				) {
-					
-	// @formatter: off
-					
-						/*
-						 * Modify the creation code here if you do not want to create
-						 * the object with the default constructor and use the setter
-						 * for each field
-						 * 
-						 */
+	@Atomic
+	public void deleteSettlementNote(SettlementNote settlementNote) {
+		// CHANGE_ME: Do the processing for deleting the settlementNote
+		// Do not catch any exception here
 
-						 // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-						 //SettlementNote settlementNote = settlementNote.create(fields_to_create);
-						 
-						 //Instead, use individual SETTERS and validate "CheckRules" in the end
-	// @formatter: on
+		// settlementNote.delete();
+	}
 
-						SettlementNote settlementNote = SettlementNote.create(FinantialDocumentType.findForSettlementNote(), null, null, null, null, documentDate, documentDate, null,null);
-						 return settlementNote;
-				}
-//				
-					@RequestMapping(value = "/")
-					public String search(@RequestParam(value="finantialdocumenttype", required=false) 
-										 org.fenixedu.treasury.domain.document.FinantialDocumentType 
-					 finantialDocumentType
-					,@RequestParam(value="debtaccount", required=false) 
-										 org.fenixedu.treasury.domain.debt.DebtAccount 
-					 debtAccount
-					,@RequestParam(value="documentnumberseries", required=false) 
-										 org.fenixedu.treasury.domain.document.DocumentNumberSeries 
-					 documentNumberSeries
-					,@RequestParam(value="currency", required=false) 
-										 org.fenixedu.treasury.domain.Currency 
-					 currency
-					,@RequestParam(value="documentnumber", required=false) 
-										java.lang.String 
-										  documentNumber
-					,@RequestParam(value="documentdate", required=false)@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") 
-										org.joda.time.DateTime 
-										  documentDate
-					,@RequestParam(value="documentduedate", required=false)@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") 
-										org.joda.time.DateTime 
-										  documentDueDate
-					,@RequestParam(value="origindocumentnumber", required=false) 
-										java.lang.String 
-										  originDocumentNumber
-					,@RequestParam(value="state", required=false) 
-										org.fenixedu.treasury.domain.document.FinantialDocumentStateType 
-										  state
-					, Model model) {
-							List<SettlementNote> searchsettlementnoteResultsDataSet = filterSearchSettlementNote(   finantialDocumentType  ,   debtAccount  ,   documentNumberSeries  ,   currency  ,   documentNumber  ,   documentDate  ,   documentDueDate  ,   originDocumentNumber  ,   state  );
-						
-						//add the results dataSet to the model
-						model.addAttribute("searchsettlementnoteResultsDataSet",searchsettlementnoteResultsDataSet);
-						model.addAttribute("SettlementNote_finantialDocumentType_options", new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocumentType>()); // CHANGE_ME - MUST DEFINE RELATION
-						//model.addAttribute("SettlementNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-						model.addAttribute("SettlementNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME - MUST DEFINE RELATION
-						//model.addAttribute("SettlementNote_debtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-						model.addAttribute("SettlementNote_documentNumberSeries_options", new ArrayList<org.fenixedu.treasury.domain.document.DocumentNumberSeries>()); // CHANGE_ME - MUST DEFINE RELATION
-						//model.addAttribute("SettlementNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-						model.addAttribute("SettlementNote_currency_options", new ArrayList<org.fenixedu.treasury.domain.Currency>()); // CHANGE_ME - MUST DEFINE RELATION
-						//model.addAttribute("SettlementNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-						model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
-						return "treasury/document/managepayments/settlementnote/search";
-					}
-					
-				private List<SettlementNote> getSearchUniverseSearchSettlementNoteDataSet() {
-					//
-					//The initialization of the result list must be done here
-					//
-					//
-					// return new ArrayList<SettlementNote>(SettlementNote.findAll().collect(Collectors.toList())); //CHANGE_ME
-					return new ArrayList<SettlementNote>();
-				}
-				
-		private List<SettlementNote> filterSearchSettlementNote( org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType 
-		, org.fenixedu.treasury.domain.debt.DebtAccount debtAccount 
-		, org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries 
-		, org.fenixedu.treasury.domain.Currency currency 
-		, java.lang.String documentNumber 
-		, org.joda.time.DateTime documentDate 
-		, org.joda.time.DateTime documentDueDate 
-		, java.lang.String originDocumentNumber 
-		, org.fenixedu.treasury.domain.document.FinantialDocumentStateType state 
-		) {
-			
-			return getSearchUniverseSearchSettlementNoteDataSet().stream()
-				.filter(settlementNote -> finantialDocumentType == null || finantialDocumentType == settlementNote.getFinantialDocumentType())					
-				.filter(settlementNote -> debtAccount == null || debtAccount == settlementNote.getDebtAccount())					
-				.filter(settlementNote -> documentNumberSeries == null || documentNumberSeries == settlementNote.getDocumentNumberSeries())					
-				.filter(settlementNote -> currency == null || currency == settlementNote.getCurrency())					
-				.filter(settlementNote -> documentNumber == null || 
-					 documentNumber.length() == 0 ||  (settlementNote.getDocumentNumber() != null && settlementNote.getDocumentNumber().length() > 0 && settlementNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase())))
-				.filter(settlementNote -> documentDate == null || documentDate.equals(settlementNote.getDocumentDate()))
-				.filter(settlementNote -> documentDueDate == null || documentDueDate.equals(settlementNote.getDocumentDueDate()))
-				.filter(settlementNote -> originDocumentNumber == null || 
-					 originDocumentNumber.length() == 0 ||  (settlementNote.getOriginDocumentNumber() != null && settlementNote.getOriginDocumentNumber().length() > 0 && settlementNote.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase())))
-				.filter(settlementNote -> state == null || state.equals(settlementNote.getState()))
-				.collect(Collectors.toList());				
+	//
+	@RequestMapping(value = "/create", method = RequestMethod.GET)
+	public String create(Model model) {
+		return "treasury/document/managepayments/settlementnote/create";
+	}
+
+	//
+	@RequestMapping(value = "/create", method = RequestMethod.POST)
+	public String create(
+			@RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
+			Model model, RedirectAttributes redirectAttributes) {
+		/*
+		 * Creation Logic
+		 */
+
+		try {
+
+			SettlementNote settlementNote = createSettlementNote(documentDate);
+
+			// Success Validation
+			// Add the bean to be used in the View
+			model.addAttribute("settlementNote", settlementNote);
+			return redirect(
+					"/treasury/accounting/managecustomer/customer/read/"
+							+ getSettlementNote(model).getExternalId(), model,
+					redirectAttributes);
+		} catch (DomainException de) {
+
+			// @formatter: off
+			/*
+			 * If there is any error in validation
+			 * 
+			 * Add a error / warning message
+			 * 
+			 * addErrorMessage(" Error creating due to " +
+			 * de.getLocalizedMessage(),model);
+			 * addWarningMessage(" Warning creating due to "+
+			 * ex.getLocalizedMessage(),model);
+			 */
+			// @formatter: on
+
+			addErrorMessage(
+					" Error creating due to " + de.getLocalizedMessage(), model);
+			return create(model);
 		}
-		
-		
-				@RequestMapping(value = "/search/view/{oid}")
-				public String processSearchToViewAction(@PathVariable("oid") SettlementNote settlementNote,  Model model, RedirectAttributes redirectAttributes) {
-		
-			// CHANGE_ME Insert code here for processing viewAction
-			// If you selected multiple exists you must choose which one to use below	 
-		return redirect("/treasury/document/managepayments/settlementnote/read" + "/" + settlementNote.getExternalId(), model, redirectAttributes);
+	}
+
+	@Atomic
+	public SettlementNote createSettlementNote(
+			org.joda.time.DateTime documentDate) {
+
+		// @formatter: off
+
+		/*
+		 * Modify the creation code here if you do not want to create the object
+		 * with the default constructor and use the setter for each field
+		 */
+
+		// CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+		// SettlementNote settlementNote =
+		// settlementNote.create(fields_to_create);
+
+		// Instead, use individual SETTERS and validate "CheckRules" in the end
+		// @formatter: on
+
+		SettlementNote settlementNote = SettlementNote.create(
+				FinantialDocumentType.findForSettlementNote(), null, null,
+				null, null, documentDate, documentDate, null, null);
+		return settlementNote;
+	}
+
+	//
+	@RequestMapping(value = "/")
+	public String search(
+			@RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+			@RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+			@RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+			@RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
+			@RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
+			@RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
+			@RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
+			@RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
+			@RequestParam(value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+			Model model) {
+		List<SettlementNote> searchsettlementnoteResultsDataSet = filterSearchSettlementNote(
+				finantialDocumentType, debtAccount, documentNumberSeries,
+				currency, documentNumber, documentDate, documentDueDate,
+				originDocumentNumber, state);
+
+		// add the results dataSet to the model
+		model.addAttribute("searchsettlementnoteResultsDataSet",
+				searchsettlementnoteResultsDataSet);
+		model.addAttribute(
+				"SettlementNote_finantialDocumentType_options",FinantialDocumentType.findAll());
+
+		model.addAttribute("SettlementNote_debtAccount_options",
+				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+																					// -
+																					// MUST
+																					// DEFINE
+																					// RELATION
+		// model.addAttribute("SettlementNote_debtAccount_options",
+		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
+		// CHANGE_ME - MUST DEFINE RELATION
+		 model.addAttribute("SettlementNote_documentNumberSeries_options",
+		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
+		// // CHANGE_ME - MUST DEFINE RELATION
+
+		 model.addAttribute("SettlementNote_currency_options",
+		 org.fenixedu.treasury.domain.Currency.findAll()); 
+		model.addAttribute(
+				"stateValues",
+				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
+						.values());
+		return "treasury/document/managepayments/settlementnote/search";
+	}
+
+	private List<SettlementNote> getSearchUniverseSearchSettlementNoteDataSet() {
+		//
+		// The initialization of the result list must be done here
+		//
+		//
+		 return SettlementNote.findAll().collect(Collectors.toList());
+	}
+
+	private List<SettlementNote> filterSearchSettlementNote(
+			org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+			org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+			org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+			org.fenixedu.treasury.domain.Currency currency,
+			java.lang.String documentNumber,
+			org.joda.time.DateTime documentDate,
+			org.joda.time.DateTime documentDueDate,
+			java.lang.String originDocumentNumber,
+			org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+
+		return getSearchUniverseSearchSettlementNoteDataSet()
+				.stream()
+				.filter(settlementNote -> finantialDocumentType == null
+						|| finantialDocumentType == settlementNote
+								.getFinantialDocumentType())
+				.filter(settlementNote -> debtAccount == null
+						|| debtAccount == settlementNote.getDebtAccount())
+				.filter(settlementNote -> documentNumberSeries == null
+						|| documentNumberSeries == settlementNote
+								.getDocumentNumberSeries())
+				.filter(settlementNote -> currency == null
+						|| currency == settlementNote.getCurrency())
+				.filter(settlementNote -> documentNumber == null
+						|| documentNumber.length() == 0
+						|| (settlementNote.getDocumentNumber() != null
+								&& settlementNote.getDocumentNumber().length() > 0 && settlementNote
+								.getDocumentNumber().toLowerCase()
+								.contains(documentNumber.toLowerCase())))
+				.filter(settlementNote -> documentDate == null
+						|| documentDate.equals(settlementNote.getDocumentDate()))
+				.filter(settlementNote -> documentDueDate == null
+						|| documentDueDate.equals(settlementNote
+								.getDocumentDueDate()))
+				.filter(settlementNote -> originDocumentNumber == null
+						|| originDocumentNumber.length() == 0
+						|| (settlementNote.getOriginDocumentNumber() != null
+								&& settlementNote.getOriginDocumentNumber()
+										.length() > 0 && settlementNote
+								.getOriginDocumentNumber().toLowerCase()
+								.contains(originDocumentNumber.toLowerCase())))
+				.filter(settlementNote -> state == null
+						|| state.equals(settlementNote.getState()))
+				.collect(Collectors.toList());
+	}
+
+	@RequestMapping(value = "/search/view/{oid}")
+	public String processSearchToViewAction(
+			@PathVariable("oid") SettlementNote settlementNote, Model model,
+			RedirectAttributes redirectAttributes) {
+
+		// CHANGE_ME Insert code here for processing viewAction
+		// If you selected multiple exists you must choose which one to use
+		// below
+		return redirect("/treasury/document/managepayments/settlementnote/read"
+				+ "/" + settlementNote.getExternalId(), model,
+				redirectAttributes);
+	}
+
+	//
+	@RequestMapping(value = "/read/{oid}")
+	public String read(@PathVariable("oid") SettlementNote settlementNote,
+			Model model) {
+		setSettlementNote(settlementNote, model);
+		return "treasury/document/managepayments/settlementnote/read";
+	}
+
+	//
+	@RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+	public String delete(@PathVariable("oid") SettlementNote settlementNote,
+			Model model, RedirectAttributes redirectAttributes) {
+
+		setSettlementNote(settlementNote, model);
+		try {
+			// call the Atomic delete function
+			deleteSettlementNote(settlementNote);
+
+			addInfoMessage("Sucess deleting SettlementNote ...", model);
+			return redirect(
+					"/treasury/document/managepayments/settlementnote/", model,
+					redirectAttributes);
+		} catch (DomainException ex) {
+			// Add error messages to the list
+			addErrorMessage(
+					"Error deleting the SettlementNote due to "
+							+ ex.getLocalizedMessage(), model);
 		}
-		
-		
-		
-		
-//				
-					@RequestMapping(value = "/read/{oid}")
-					public String read(@PathVariable("oid") SettlementNote settlementNote, Model model) {
-						setSettlementNote(settlementNote,model);
-						return "treasury/document/managepayments/settlementnote/read";
-					}
 
-					
-//
-					@RequestMapping(value = "/delete/{oid}" , method = RequestMethod.POST)
-					public String delete(@PathVariable("oid") SettlementNote settlementNote, Model model, RedirectAttributes redirectAttributes) {
+		// The default mapping is the same Read View
+		return "treasury/document/managepayments/settlementnote/read/"
+				+ getSettlementNote(model).getExternalId();
+	}
 
-						setSettlementNote(settlementNote,model);
-						try{
-							//call the Atomic delete function
-							deleteSettlementNote(settlementNote);
-							
-							addInfoMessage("Sucess deleting SettlementNote ...",model);
-		return redirect("/treasury/document/managepayments/settlementnote/", model, redirectAttributes);
-						}
-						catch(DomainException ex)
-						{
-							//Add error messages to the list
-							addErrorMessage("Error deleting the SettlementNote due to " + ex.getLocalizedMessage(),model);
-						}
-						
-						//The default mapping is the same Read View
-						return "treasury/document/managepayments/settlementnote/read/" + getSettlementNote(model).getExternalId();
-					}  
-//				
-				@RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
-				public String update(@PathVariable("oid") SettlementNote settlementNote, Model model) {
-					model.addAttribute("SettlementNote_finantialDocumentType_options", new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocumentType>()); // CHANGE_ME - MUST DEFINE RELATION
-					//model.addAttribute("SettlementNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-					model.addAttribute("SettlementNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME - MUST DEFINE RELATION
-					//model.addAttribute("SettlementNote_debtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-					model.addAttribute("SettlementNote_documentNumberSeries_options", new ArrayList<org.fenixedu.treasury.domain.document.DocumentNumberSeries>()); // CHANGE_ME - MUST DEFINE RELATION
-					//model.addAttribute("SettlementNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-					model.addAttribute("SettlementNote_currency_options", new ArrayList<org.fenixedu.treasury.domain.Currency>()); // CHANGE_ME - MUST DEFINE RELATION
-					//model.addAttribute("SettlementNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-					model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
-					setSettlementNote(settlementNote, model);
-					return "treasury/document/managepayments/settlementnote/update";
-				}
-					 		
-//				
-				@RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
-				public String update(@PathVariable("oid") SettlementNote settlementNote, @RequestParam(value="finantialdocumenttype", required=false) 
-									 org.fenixedu.treasury.domain.document.FinantialDocumentType 
-				 finantialDocumentType
-				,@RequestParam(value="debtaccount", required=false) 
-									 org.fenixedu.treasury.domain.debt.DebtAccount 
-				 debtAccount
-				,@RequestParam(value="documentnumberseries", required=false) 
-									 org.fenixedu.treasury.domain.document.DocumentNumberSeries 
-				 documentNumberSeries
-				,@RequestParam(value="currency", required=false) 
-									 org.fenixedu.treasury.domain.Currency 
-				 currency
-				,@RequestParam(value="documentnumber", required=false) 
-									java.lang.String 
-									  documentNumber
-				,@RequestParam(value="documentdate", required=false)@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") 
-									org.joda.time.DateTime 
-									  documentDate
-				,@RequestParam(value="documentduedate", required=false)@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") 
-									org.joda.time.DateTime 
-									  documentDueDate
-				,@RequestParam(value="origindocumentnumber", required=false) 
-									java.lang.String 
-									  originDocumentNumber
-				,@RequestParam(value="state", required=false) 
-									org.fenixedu.treasury.domain.document.FinantialDocumentStateType 
-									  state
-				, Model model, RedirectAttributes redirectAttributes) {
-					
-					setSettlementNote(settlementNote,model);
+	//
+	@RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+	public String update(@PathVariable("oid") SettlementNote settlementNote,
+			Model model) {
+		 model.addAttribute("SettlementNote_finantialDocumentType_options",
+		 org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
+		// // CHANGE_ME - MUST DEFINE RELATION
+		model.addAttribute("SettlementNote_debtAccount_options",
+				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+																					// -
+																					// MUST
+																					// DEFINE
+																					// RELATION
+		 model.addAttribute("SettlementNote_documentNumberSeries_options",
+		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
+		 model.addAttribute("SettlementNote_currency_options",
+		 org.fenixedu.treasury.domain.Currency.findAll()); 
+		model.addAttribute(
+				"stateValues",
+				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
+						.values());
+		setSettlementNote(settlementNote, model);
+		return "treasury/document/managepayments/settlementnote/update";
+	}
 
-				     try
-				     {
-					/*
-					*  UpdateLogic here
-					*/
-				    		
-						updateSettlementNote( finantialDocumentType ,  debtAccount ,  documentNumberSeries ,  currency ,  documentNumber ,  documentDate ,  documentDueDate ,  originDocumentNumber ,  state ,  model);
+	//
+	@RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+	public String update(
+			@PathVariable("oid") SettlementNote settlementNote,
+			@RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+			@RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+			@RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+			@RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
+			@RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
+			@RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
+			@RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
+			@RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
+			@RequestParam(value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+			Model model, RedirectAttributes redirectAttributes) {
 
-					/*Succes Update */
+		setSettlementNote(settlementNote, model);
 
-return redirect("/treasury/document/managepayments/settlementnote/read/" + getSettlementNote(model).getExternalId(), model, redirectAttributes);
-					}
-					catch (DomainException de) 
-					{
-						// @formatter: off
-				
-						/*
-					 	* If there is any error in validation 
-				     	*
-				     	* Add a error / warning message
-				     	* 
-				     	* addErrorMessage(" Error updating due to " + de.getLocalizedMessage(),model);
-				     	* addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-				     	*/
-						// @formatter: on
-										     
-				     	addErrorMessage(" Error updating due to " + de.getLocalizedMessage(),model);
-				     	return update(settlementNote,model);
-					 
+		try {
+			/*
+			 * UpdateLogic here
+			 */
 
-					}
-				}
-				
-				@Atomic
-				public void updateSettlementNote(  org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType 
-				, org.fenixedu.treasury.domain.debt.DebtAccount debtAccount 
-				, org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries 
-				, org.fenixedu.treasury.domain.Currency currency 
-				, java.lang.String documentNumber 
-				, org.joda.time.DateTime documentDate 
-				, org.joda.time.DateTime documentDueDate 
-				, java.lang.String originDocumentNumber 
-				, org.fenixedu.treasury.domain.document.FinantialDocumentStateType state 
-				 ,  Model model) {
-	
-	// @formatter: off				
-						/*
-						 * Modify the update code here if you do not want to update
-						 * the object with the default setter for each field
-						 */
+			updateSettlementNote(finantialDocumentType, debtAccount,
+					documentNumberSeries, currency, documentNumber,
+					documentDate, documentDueDate, originDocumentNumber, state,
+					model);
 
-						 // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-						//getSettlementNote(model).edit(fields_to_edit);
-						
-						//Instead, use individual SETTERS and validate "CheckRules" in the end
-	// @formatter: on
-	
-						 getSettlementNote(model).setFinantialDocumentType(finantialDocumentType);
-						 getSettlementNote(model).setDebtAccount(debtAccount);
-						 getSettlementNote(model).setDocumentNumberSeries(documentNumberSeries);
-						 getSettlementNote(model).setCurrency(currency);
-						 getSettlementNote(model).setDocumentNumber(documentNumber);
-						 getSettlementNote(model).setDocumentDate(documentDate);
-						 getSettlementNote(model).setDocumentDueDate(documentDueDate);
-						 getSettlementNote(model).setOriginDocumentNumber(originDocumentNumber);
-						 getSettlementNote(model).setState(state);
-				}
-				
+			/* Succes Update */
+
+			return redirect(
+					"/treasury/document/managepayments/settlementnote/read/"
+							+ getSettlementNote(model).getExternalId(), model,
+					redirectAttributes);
+		} catch (DomainException de) {
+			// @formatter: off
+
+			/*
+			 * If there is any error in validation
+			 * 
+			 * Add a error / warning message
+			 * 
+			 * addErrorMessage(" Error updating due to " +
+			 * de.getLocalizedMessage(),model);
+			 * addWarningMessage(" Warning updating due to " +
+			 * de.getLocalizedMessage(),model);
+			 */
+			// @formatter: on
+
+			addErrorMessage(
+					" Error updating due to " + de.getLocalizedMessage(), model);
+			return update(settlementNote, model);
+
+		}
+	}
+
+	@Atomic
+	public void updateSettlementNote(
+			org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+			org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+			org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+			org.fenixedu.treasury.domain.Currency currency,
+			java.lang.String documentNumber,
+			org.joda.time.DateTime documentDate,
+			org.joda.time.DateTime documentDueDate,
+			java.lang.String originDocumentNumber,
+			org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+			Model model) {
+
+		// @formatter: off
+		/*
+		 * Modify the update code here if you do not want to update the object
+		 * with the default setter for each field
+		 */
+
+		// CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
+		// getSettlementNote(model).edit(fields_to_edit);
+
+		// Instead, use individual SETTERS and validate "CheckRules" in the end
+		// @formatter: on
+
+		getSettlementNote(model).edit(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
+	}
+
 }
