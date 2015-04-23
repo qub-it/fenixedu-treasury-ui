@@ -63,36 +63,36 @@ ${portal.toolkit()}
 
 
 
-<div class="panel panel-default">
-<form method="get" class="form-horizontal">
-<div class="panel-body">
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.Exemption.code"/></div> 
+<!-- <div class="panel panel-default"> -->
+<!-- <form method="get" class="form-horizontal"> -->
+<!-- <div class="panel-body"> -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.Exemption.code"/></div>  --%>
 
-<div class="col-sm-10">
-	<input id="exemption_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : exemption.code }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.Exemption.name"/></div> 
+<!-- <div class="col-sm-10"> -->
+<%-- 	<input id="exemption_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : exemption.code }'/>' /> --%>
+<!-- </div>	 -->
+<!-- </div>		 -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.Exemption.name"/></div>  --%>
 
-<div class="col-sm-10">
-<input id="exemption_name" class="form-control" type="text" name="name"  bennu-localized-string value='${not empty param.name ? param.name : "{}" } '/> 
-</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.Exemption.discountRate"/></div> 
+<!-- <div class="col-sm-10"> -->
+<%-- <input id="exemption_name" class="form-control" type="text" name="name"  bennu-localized-string value='${not empty param.name ? param.name : "{}" } '/>  --%>
+<!-- </div> -->
+<!-- </div>		 -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.Exemption.discountRate"/></div>  --%>
 
-<div class="col-sm-10">
-	<input id="exemption_discountRate" class="form-control" type="text" name="discountrate"  value='<c:out value='${not empty param.discountrate ? param.discountrate : exemption.discountRate }'/>' />
-</div>	
-</div>		
-</div>
-<div class="panel-footer">
-	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
-</div>
-</form>
-</div>
+<!-- <div class="col-sm-10"> -->
+<%-- 	<input id="exemption_discountRate" class="form-control" type="text" name="discountrate"  value='<c:out value='${not empty param.discountrate ? param.discountrate : exemption.discountRate }'/>' /> --%>
+<!-- </div>	 -->
+<!-- </div>		 -->
+<!-- </div> -->
+<!-- <div class="panel-footer"> -->
+<%-- 	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/> --%>
+<!-- </div> -->
+<!-- </form> -->
+<!-- </div> -->
 
 
 <c:choose>
@@ -155,8 +155,8 @@ ${portal.toolkit()}
 		],
 		"data" : searchexemptionDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
-//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {

@@ -110,25 +110,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
         return getSearchUniverseSearchFinantialDocumentTypeDataSet()
                 .stream()
-                .filter(finantialDocumentType -> type == null || type.equals(finantialDocumentType.getType()))
-                .filter(finantialDocumentType -> code == null || code.length() == 0 || finantialDocumentType.getCode() != null
-                        && finantialDocumentType.getCode().length() > 0
-                        && finantialDocumentType.getCode().toLowerCase().contains(code.toLowerCase()))
-                .filter(finantialDocumentType -> name == null
-                        || name.isEmpty()
-                        || name.getLocales()
-                                .stream()
-                                .allMatch(
-                                        locale -> finantialDocumentType.getName().getContent(locale) != null
-                                                && finantialDocumentType.getName().getContent(locale).toLowerCase()
-                                                        .contains(name.getContent(locale).toLowerCase())))
-                .filter(finantialDocumentType -> documentNumberSeriesPrefix == null
-                        || documentNumberSeriesPrefix.length() == 0
-                        || finantialDocumentType.getDocumentNumberSeriesPrefix() != null
-                        && finantialDocumentType.getDocumentNumberSeriesPrefix().length() > 0
-                        && finantialDocumentType.getDocumentNumberSeriesPrefix().toLowerCase()
-                                .contains(documentNumberSeriesPrefix.toLowerCase()))
-                .filter(finantialDocumentType -> finantialDocumentType.getInvoice() == true).collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
