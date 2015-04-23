@@ -91,9 +91,9 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <table class="table">
 		<tbody>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.FiscalCountryRegion.regionCode"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.FiscalCountryRegion.fiscalCode"/></th> 
 	<td>
-		<c:out value='${fiscalCountryRegion.regionCode}'/>
+		<c:out value='${fiscalCountryRegion.fiscalCode}'/>
 	</td> 
 </tr>
 <tr>

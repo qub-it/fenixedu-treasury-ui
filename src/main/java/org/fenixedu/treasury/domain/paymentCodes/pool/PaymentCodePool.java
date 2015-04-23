@@ -125,6 +125,10 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return paymentCodePool;
     }
 
+    public boolean isActive() {
+        return getActive();
+    }
+
     // @formatter: off
     /************
      * SERVICES *

@@ -69,7 +69,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.VatType.code"/></div> 
 
 <div class="col-sm-10">
-	<input id="vatType_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : vatType.code }'/>' />
+	<input id="vatType_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : vatType.code }'/>' required />
 </div>	
 </div>		
 <div class="form-group row">

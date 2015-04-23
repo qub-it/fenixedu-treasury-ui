@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -113,7 +112,7 @@ public class Series extends Series_Base {
     public static Set<Series> readAll() {
         return Bennu.getInstance().getSeriesSet();
     }
-    
+
     public static Set<Series> find(final FinantialInstitution finantialInstitution) {
         Set<Series> result = Sets.newHashSet();
 
@@ -169,4 +168,15 @@ public class Series extends Series_Base {
         return new Series(finantialInstitution, code, name, externSeries, certificated, legacy);
     }
 
+    public boolean isExternSeries() {
+        return getExternSeries();
+    }
+
+    public boolean isCertificated() {
+        return getCertificated();
+    }
+
+    public boolean isLegacy() {
+        return getLegacy();
+    }
 }

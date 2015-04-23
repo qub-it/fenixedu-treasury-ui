@@ -62,7 +62,7 @@ ${portal.toolkit()}
 			</c:if>
 
 
-
+<%--
 <div class="panel panel-default">
 <form method="get" class="form-horizontal">
 <div class="panel-body">
@@ -86,7 +86,7 @@ ${portal.toolkit()}
 </div>
 </form>
 </div>
-
+ --%>
 
 <c:choose>
 	<c:when test="${not empty searchcustomertypeResultsDataSet}">
@@ -106,7 +106,7 @@ ${portal.toolkit()}
 		</table>
 	</c:when>
 	<c:otherwise>
-				<div class="alert alert-info" role="alert">
+				<div class="alert alert-warning" role="alert">
 					
 					<spring:message code="label.noResultsFound"/>
 					
@@ -143,10 +143,15 @@ ${portal.toolkit()}
 			{ data: 'actions' }
 			
 		],
+		"columnDefs": [
+			       		//54
+			       		//128
+			       		               { "width": "54px", "targets": 2 } 
+			       		             ],
 		"data" : searchcustomertypeDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
-//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {

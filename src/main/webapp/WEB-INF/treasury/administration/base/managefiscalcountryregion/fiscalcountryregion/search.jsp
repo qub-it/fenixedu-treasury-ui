@@ -62,15 +62,15 @@ ${portal.toolkit()}
 			</c:if>
 
 
-
+<%--
 <div class="panel panel-default">
 <form method="get" class="form-horizontal">
 <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FiscalCountryRegion.regionCode"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.FiscalCountryRegion.fiscalCode"/></div> 
 
 <div class="col-sm-10">
-	<input id="fiscalCountryRegion_regionCode" class="form-control" type="text" name="regioncode"  value='<c:out value='${not empty param.regioncode ? param.regioncode : fiscalCountryRegion.regionCode }'/>' />
+	<input id="fiscalCountryRegion_fiscalCode" class="form-control" type="text" name="fiscalCode"  value='<c:out value='${not empty param.fiscalCode ? param.fiscalCode : fiscalCountryRegion.fiscalCode }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
@@ -86,7 +86,7 @@ ${portal.toolkit()}
 </div>
 </form>
 </div>
-
+ --%>
 
 <c:choose>
 	<c:when test="${not empty searchfiscalcountryregionResultsDataSet}">
@@ -94,7 +94,7 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-<th><spring:message code="label.FiscalCountryRegion.regionCode"/></th>
+<th><spring:message code="label.FiscalCountryRegion.fiscalCode"/></th>
 <th><spring:message code="label.FiscalCountryRegion.name"/></th>
 <%-- Operations Column --%>
 					<th></th>
@@ -106,7 +106,7 @@ ${portal.toolkit()}
 		</table>
 	</c:when>
 	<c:otherwise>
-				<div class="alert alert-info" role="alert">
+				<div class="alert alert-warning" role="alert">
 					
 					<spring:message code="label.noResultsFound"/>
 					
@@ -121,7 +121,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"regioncode" : "<c:out value='${searchResult.regionCode}'/>",
+"fiscalCode" : "<c:out value='${searchResult.fiscalCode}'/>",
 "name" : "<c:out value='${searchResult.name.content}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/base/managefiscalcountryregion/fiscalcountryregion/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
@@ -138,15 +138,20 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-			{ data: 'regioncode' },
+			{ data: 'fiscalCode' },
 			{ data: 'name' },
 			{ data: 'actions' }
 			
 		],
+		"columnDefs": [
+			       		//54
+			       		//128
+			       		               { "width": "54px", "targets": 2 } 
+			       		             ],
 		"data" : searchfiscalcountryregionDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
-//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {

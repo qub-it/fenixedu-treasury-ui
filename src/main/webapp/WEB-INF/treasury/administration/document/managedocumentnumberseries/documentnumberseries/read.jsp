@@ -18,6 +18,8 @@
 <script src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/css/select2.min.css" rel="stylesheet" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/bootbox.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
@@ -25,14 +27,36 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.manageFiscalCountryRegion.readFiscalCountryRegion" />
+	<h1><spring:message code="label.administration.document.manageDocumentNumberSeries.readDocumentNumberSeries" />
 		<small></small>
 	</h1>
 </div>
+<div class="modal fade" id="deleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form id ="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/delete/${documentNumberSeries.externalId}"   method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
+      </div>
+      <div class="modal-body">
+        <p><spring:message code = "label.administration.document.manageDocumentNumberSeries.readDocumentNumberSeries.confirmDelete"/></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
+      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/domain/managefiscalcountryregion/fiscalcountryregion/"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/domain/managefiscalcountryregion/fiscalcountryregion/update/${fiscalCountryRegion.externalId}"  ><spring:message code="label.event.update" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/"  ><spring:message code="label.event.back" /></a>
+|&nbsp;&nbsp;				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
+data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
+				|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/update/${documentNumberSeries.externalId}"  ><spring:message code="label.event.update" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -71,15 +95,27 @@ ${portal.toolkit()}
 <table class="table">
 		<tbody>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.FiscalCountryRegion.regionCode"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.counter"/></th> 
 	<td>
-		<c:out value='${fiscalCountryRegion.regionCode}'/>
+		<c:out value='${documentNumberSeries.counter}'/>
 	</td> 
 </tr>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.FiscalCountryRegion.name"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.series"/></th> 
 	<td>
-		<c:out value='${fiscalCountryRegion.name.content}'/>
+		<c:out value='${documentNumberSeries.series}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.finantialDocumentType"/></th> 
+	<td>
+		<c:out value='${documentNumberSeries.finantialDocumentType}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.bennu"/></th> 
+	<td>
+		<c:out value='${documentNumberSeries.bennu}'/>
 	</td> 
 </tr>
 </tbody>

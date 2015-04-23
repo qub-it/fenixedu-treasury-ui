@@ -69,7 +69,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.Vat.taxRate"/></div> 
 
 <div class="col-sm-10">
-	<input id="vat_taxRate" class="form-control" type="text" name="taxrate"  value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>' />
+	<input id="vat_taxRate" class="form-control" type="text" name="taxrate"  value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">
@@ -77,7 +77,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<input id="vat_beginDate" class="form-control" type="text" name="begindate"  bennu-datetime 
-	value = '<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate }'/>' />
+	value = '<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate }'/>' required/>
 </div>
 </div>		
 <div class="form-group row">
@@ -85,7 +85,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<input id="vat_endDate" class="form-control" type="text" name="enddate"  bennu-datetime 
-	value = '<c:out value='${not empty param.enddate ? param.enddate : vat.endDate }'/>' />
+	value = '<c:out value='${not empty param.enddate ? param.enddate : vat.endDate }'/>' required/>
 </div>
 </div>		
   </div>

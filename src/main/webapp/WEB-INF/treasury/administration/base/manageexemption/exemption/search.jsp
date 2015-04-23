@@ -114,7 +114,7 @@ ${portal.toolkit()}
 		</table>
 	</c:when>
 	<c:otherwise>
-				<div class="alert alert-info" role="alert">
+				<div class="alert alert-warning" role="alert">
 					
 					<spring:message code="label.noResultsFound"/>
 					

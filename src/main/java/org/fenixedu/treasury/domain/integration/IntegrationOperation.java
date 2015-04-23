@@ -37,131 +37,125 @@ import pt.ist.fenixframework.Atomic;
 
 public class IntegrationOperation extends IntegrationOperation_Base {
 
-	protected IntegrationOperation() {
-		super();
-		setBennu(Bennu.getInstance());
-	}
+    protected IntegrationOperation() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
 
-	protected void init(final org.joda.time.DateTime executionDate,
-			final boolean processed, final boolean success,
-			final java.lang.String errorLog) {
-		setExecutionDate(executionDate);
-		setProcessed(processed);
-		setSuccess(success);
-		setErrorLog(errorLog);
-		checkRules();
-	}
+    protected void init(final org.joda.time.DateTime executionDate, final boolean processed, final boolean success,
+            final java.lang.String errorLog) {
+        setExecutionDate(executionDate);
+        setProcessed(processed);
+        setSuccess(success);
+        setErrorLog(errorLog);
+        checkRules();
+    }
 
-	private void checkRules() {
-		//
-		// CHANGE_ME add more busines validations
-		//
+    private void checkRules() {
+        //
+        // CHANGE_ME add more busines validations
+        //
 
-		// CHANGE_ME In order to validate UNIQUE restrictions
-		// if (findByExecutionDate(getExecutionDate().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.IntegrationOperation.executionDate.duplicated");
-		// }
-		// if (findByProcessed(getProcessed().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.IntegrationOperation.processed.duplicated");
-		// }
-		// if (findBySuccess(getSuccess().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.IntegrationOperation.success.duplicated");
-		// }
-		// if (findByErrorLog(getErrorLog().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.IntegrationOperation.errorLog.duplicated");
-		// }
-	}
+        // CHANGE_ME In order to validate UNIQUE restrictions
+        // if (findByExecutionDate(getExecutionDate().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.IntegrationOperation.executionDate.duplicated");
+        // }
+        // if (findByProcessed(getProcessed().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.IntegrationOperation.processed.duplicated");
+        // }
+        // if (findBySuccess(getSuccess().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.IntegrationOperation.success.duplicated");
+        // }
+        // if (findByErrorLog(getErrorLog().count()>1)
+        // {
+        // throw new
+        // TreasuryDomainException("error.IntegrationOperation.errorLog.duplicated");
+        // }
+    }
 
-	@Atomic
-	public void edit(final org.joda.time.DateTime executionDate,
-			final boolean processed, final boolean success,
-			final java.lang.String errorLog) {
-		setExecutionDate(executionDate);
-		setProcessed(processed);
-		setSuccess(success);
-		setErrorLog(errorLog);
-		checkRules();
-	}
+    @Atomic
+    public void edit(final org.joda.time.DateTime executionDate, final boolean processed, final boolean success,
+            final java.lang.String errorLog) {
+        setExecutionDate(executionDate);
+        setProcessed(processed);
+        setSuccess(success);
+        setErrorLog(errorLog);
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException(
-					"error.IntegrationOperation.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.IntegrationOperation.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
 
-		deleteDomainObject();
-	}
+        deleteDomainObject();
+    }
 
-	@Atomic
-	public static IntegrationOperation create(
-			final org.joda.time.DateTime executionDate,
-			final boolean processed, final boolean success,
-			final java.lang.String errorLog) {
-		IntegrationOperation integrationOperation = new IntegrationOperation();
-		integrationOperation.init(executionDate, processed, success, errorLog);
-		return integrationOperation;
-	}
+    @Atomic
+    public static IntegrationOperation create(final org.joda.time.DateTime executionDate, final boolean processed,
+            final boolean success, final java.lang.String errorLog) {
+        IntegrationOperation integrationOperation = new IntegrationOperation();
+        integrationOperation.init(executionDate, processed, success, errorLog);
+        return integrationOperation;
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<IntegrationOperation> findAll() {
-		return Bennu.getInstance().getIntegrationOperationsSet().stream();
-	}
+    public static Stream<IntegrationOperation> findAll() {
+        return Bennu.getInstance().getIntegrationOperationsSet().stream();
+    }
 
-	public static Stream<IntegrationOperation> findByFile(
-			final OperationFile file) {
-		return findAll().filter(i -> file.equals(i.getFile()));
-	}
+    public static Stream<IntegrationOperation> findByFile(final OperationFile file) {
+        return findAll().filter(i -> file.equals(i.getFile()));
+    }
 
-	public static Stream<IntegrationOperation> findByBennu(final Bennu bennu) {
-		return findAll().filter(i -> bennu.equals(i.getBennu()));
-	}
+    public static Stream<IntegrationOperation> findByBennu(final Bennu bennu) {
+        return findAll().filter(i -> bennu.equals(i.getBennu()));
+    }
 
-	public static Stream<IntegrationOperation> findByFinantialInstitution(
-			final FinantialInstitution finantialInstitution) {
-		return findAll().filter(
-				i -> finantialInstitution.equals(i.getFinantialInstitution()));
-	}
+    public static Stream<IntegrationOperation> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
+        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
+    }
 
-	public static Stream<IntegrationOperation> findByExecutionDate(
-			final org.joda.time.DateTime executionDate) {
-		return findAll()
-				.filter(i -> executionDate.equals(i.getExecutionDate()));
-	}
+    public static Stream<IntegrationOperation> findByExecutionDate(final org.joda.time.DateTime executionDate) {
+        return findAll().filter(i -> executionDate.equals(i.getExecutionDate()));
+    }
 
-	public static Stream<IntegrationOperation> findByProcessed(
-			final boolean processed) {
-		return findAll().filter(i -> processed == i.getProcessed());
-	}
+    public static Stream<IntegrationOperation> findByProcessed(final boolean processed) {
+        return findAll().filter(i -> processed == i.getProcessed());
+    }
 
-	public static Stream<IntegrationOperation> findBySuccess(
-			final boolean success) {
-		return findAll().filter(i -> success == i.getSuccess());
-	}
+    public static Stream<IntegrationOperation> findBySuccess(final boolean success) {
+        return findAll().filter(i -> success == i.getSuccess());
+    }
 
-	public static Stream<IntegrationOperation> findByErrorLog(
-			final java.lang.String errorLog) {
-		return findAll()
-				.filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
-	}
+    public static Stream<IntegrationOperation> findByErrorLog(final java.lang.String errorLog) {
+        return findAll().filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
+    }
+
+    public boolean isProcessed() {
+        return getProcessed();
+    }
+
+    public boolean isSuccess() {
+        return getSuccess();
+    }
 
 }

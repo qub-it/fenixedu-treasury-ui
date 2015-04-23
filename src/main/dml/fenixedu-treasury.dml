@@ -426,16 +426,6 @@ relation ProductProductGroup {
 	}
 }
 
-relation ProductVatType {
-	VatType playsRole vatType {
-		multiplicity 1..1;
-	}
-	
-	Product playsRole products {
-		multiplicity *;
-	}
-}
-
 relation CurrencyBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;

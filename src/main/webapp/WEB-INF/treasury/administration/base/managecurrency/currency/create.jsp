@@ -83,14 +83,14 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.Currency.isoCode"/></div> 
 
 <div class="col-sm-10">
-	<input id="currency_isoCode" class="form-control" type="text" name="isocode"  value='<c:out value='${not empty param.isocode ? param.isocode : currency.isoCode }'/>' />
+	<input id="currency_isoCode" class="form-control" type="text" name="isocode"  value='<c:out value='${not empty param.isocode ? param.isocode : currency.isoCode }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.Currency.symbol"/></div> 
 
 <div class="col-sm-10">
-	<input id="currency_symbol" class="form-control" type="text" name="symbol"  value='<c:out value='${not empty param.symbol ? param.symbol : currency.symbol }'/>' />
+	<input id="currency_symbol" class="form-control" type="text" name="symbol"  value='<c:out value='${not empty param.symbol ? param.symbol : currency.symbol }'/>' required/>
 </div>	
 </div>		
   </div>

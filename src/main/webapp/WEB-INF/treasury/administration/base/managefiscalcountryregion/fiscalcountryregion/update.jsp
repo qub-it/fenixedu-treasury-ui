@@ -66,10 +66,10 @@ ${portal.toolkit()}
 <div class="panel panel-default">
   <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FiscalCountryRegion.regionCode"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.FiscalCountryRegion.fiscalCode"/></div> 
 
 <div class="col-sm-10">
-	<input id="fiscalCountryRegion_regionCode" class="form-control" type="text" name="regioncode"  value='<c:out value='${not empty param.regioncode ? param.regioncode : fiscalCountryRegion.regionCode }'/>' />
+	<input id="fiscalCountryRegion_fiscalCode" class="form-control" type="text" name="fiscalCode"  value='<c:out value='${not empty param.fiscalCode ? param.fiscalCode : fiscalCountryRegion.fiscalCode }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">

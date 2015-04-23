@@ -48,12 +48,13 @@ public class FinantialInstitution extends FinantialInstitution_Base implements
 		setBennu(Bennu.getInstance());
 	}
 
-	protected FinantialInstitution(String code, final String fiscalNumber,
+	protected FinantialInstitution(FiscalCountryRegion region, String code, final String fiscalNumber,
 			final String companyId, final String name,
 			final String companyName, final String address,
 			final String districtSubdivision, final String zipCode,
 			final String countryCode) {
 		this();
+		setFiscalCountryRegion(region);
 		setCode(code);
 		setFiscalNumber(fiscalNumber);
 		setCompanyId(companyId);
@@ -96,7 +97,7 @@ public class FinantialInstitution extends FinantialInstitution_Base implements
 	}
 
 	public String getComercialRegistrationCode() {
-		return this.getFiscalNumber() + " " + this.getAddress();
+		return getFiscalNumber() + " " + getAddress();
 	}
 
 	@Atomic
@@ -153,12 +154,12 @@ public class FinantialInstitution extends FinantialInstitution_Base implements
 	}
 
 	@Atomic
-	public static FinantialInstitution create(String code,
+	public static FinantialInstitution create(FiscalCountryRegion countryRegion, String code,
 			final String fiscalNumber, final String companyId,
 			final String name, final String companyName, final String address,
 			final String districtSubdivision, final String zipCode,
 			final String countryCode) {
-		return new FinantialInstitution(code, fiscalNumber, companyId, name,
+		return new FinantialInstitution(countryRegion, code, fiscalNumber, companyId, name,
 				companyName, address, districtSubdivision, zipCode, countryCode);
 	}
 

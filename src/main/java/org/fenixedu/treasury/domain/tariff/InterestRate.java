@@ -76,7 +76,7 @@ public class InterestRate extends InterestRate_Base {
             throw new TreasuryDomainException("error.InterestRate.interestFixedAmount.required");
         }
     }
-    
+
     public boolean isDeletable() {
         return true;
     }
@@ -110,4 +110,7 @@ public class InterestRate extends InterestRate_Base {
                 maximumMonthsToApplyPenalty, interestFixedAmount, rate);
     }
 
+    public boolean isApplyInFirstWorkday() {
+        return getApplyInFirstWorkday();
+    }
 }

@@ -69,7 +69,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentMethod.code"/></div> 
 
 <div class="col-sm-10">
-	<input id="paymentMethod_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : paymentMethod.code }'/>' />
+	<input id="paymentMethod_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : paymentMethod.code }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">

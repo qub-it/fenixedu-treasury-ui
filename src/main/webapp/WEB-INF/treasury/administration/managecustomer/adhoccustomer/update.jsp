@@ -71,7 +71,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.AdhocCustomer.code"/></div> 
 
 <div class="col-sm-10">
-	<input id="adhocCustomer_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : adhocCustomer.code }'/>' />
+	<input id="adhocCustomer_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : adhocCustomer.code }'/>' readonly/>
 </div>	
 </div>		
 <div class="form-group row">
@@ -85,7 +85,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.AdhocCustomer.name"/></div> 
 
 <div class="col-sm-10">
-	<input id="adhocCustomer_name" class="form-control" type="text" name="name"  value='<c:out value='${not empty param.name ? param.name : adhocCustomer.name }'/>' />
+	<input id="adhocCustomer_name" class="form-control" type="text" name="name"  value='<c:out value='${not empty param.name ? param.name : adhocCustomer.name }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">

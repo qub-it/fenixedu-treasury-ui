@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.CustomerType;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.springframework.ui.Model;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -43,7 +43,7 @@ public class CustomerTypeController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the customerType
         // Do not catch any exception here
 
-        // customerType.delete();
+        customerType.delete();
     }
 
     //
@@ -85,12 +85,15 @@ public class CustomerTypeController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/search/view/{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") CustomerType customerType, Model model) {
+    public String processSearchToViewAction(@PathVariable("oid") CustomerType customerType, Model model,
+            RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use
         // below
-        return "redirect:/treasury/administration/base/managecustomertype/customertype/read" + "/" + customerType.getExternalId();
+        return redirect(
+                "/treasury/administration/base/managecustomertype/customertype/read" + "/" + customerType.getExternalId(), model,
+                redirectAttributes);
     }
 
     //
@@ -102,7 +105,7 @@ public class CustomerTypeController extends TreasuryBaseController {
 
     //
     @RequestMapping(value = "/delete/{oid}")
-    public String delete(@PathVariable("oid") CustomerType customerType, Model model) {
+    public String delete(@PathVariable("oid") CustomerType customerType, Model model, RedirectAttributes redirectAttributes) {
 
         setCustomerType(customerType, model);
         try {
@@ -110,14 +113,20 @@ public class CustomerTypeController extends TreasuryBaseController {
             deleteCustomerType(customerType);
 
             addInfoMessage("Sucess deleting CustomerType ...", model);
-            return "redirect:/treasury/administration/base/managecustomertype/customertype/";
+            return redirect("/treasury/administration/base/managecustomertype/customertype/", model, redirectAttributes);
+
         } catch (DomainException ex) {
+            // Add error messages to the list
+            addErrorMessage("Error deleting the CustomerType due to " + ex.getMessage(), model);
+
+        } catch (Exception ex) {
             // Add error messages to the list
             addErrorMessage("Error deleting the CustomerType due to " + ex.getMessage(), model);
         }
 
         // The default mapping is the same Read View
-        return "treasury/administration/base/managecustomertype/customertype/read/" + getCustomerType(model).getExternalId();
+        return redirect("/treasury/administration/base/managecustomertype/customertype/read/"
+                + getCustomerType(model).getExternalId(), model, redirectAttributes);
     }
 
     //
@@ -129,7 +138,7 @@ public class CustomerTypeController extends TreasuryBaseController {
     //
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model) {
+            required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
         /*
          * Creation Logic
          * 
@@ -139,34 +148,27 @@ public class CustomerTypeController extends TreasuryBaseController {
         CustomerType customerType;
         try {
             customerType = createCustomerType(code, name);
-        } catch (TreasuryDomainException tde) {
+
+            /*
+             * Success Validation
+             */
+
+            // Add the bean to be used in the View
+            model.addAttribute("customerType", customerType);
+
+            return redirect("/treasury/administration/base/managecustomertype/customertype/read/"
+                    + getCustomerType(model).getExternalId(), model, redirectAttributes);
+
+        } catch (DomainException tde) {
+
+            addErrorMessage(tde.getLocalizedMessage(), model);
+            return create(model);
+
+        } catch (Exception tde) {
 
             addErrorMessage(tde.getLocalizedMessage(), model);
             return create(model);
         }
-
-        /*
-         * Success Validation
-         */
-
-        // Add the bean to be used in the View
-        model.addAttribute("customerType", customerType);
-
-        return "redirect:/treasury/administration/base/managecustomertype/customertype/read/"
-                + getCustomerType(model).getExternalId();
-
-        /*
-         * If there is any error in validation
-         * 
-         * Add a error / warning message
-         * 
-         * addErrorMessage(" Error because ...",model);
-         * addWarningMessage(" Waring becaus ...",model);
-         * 
-         * 
-         * 
-         * return create(model);
-         */
     }
 
     @Atomic
@@ -190,7 +192,8 @@ public class CustomerTypeController extends TreasuryBaseController {
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") CustomerType customerType,
             @RequestParam(value = "code", required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model) {
+            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setCustomerType(customerType, model);
 
@@ -205,24 +208,19 @@ public class CustomerTypeController extends TreasuryBaseController {
          */
         try {
             updateCustomerType(code, name, model);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(tde.getLocalizedMessage(), model);
-            return create(model);
+
+            return redirect("/treasury/administration/base/managecustomertype/customertype/read/"
+                    + getCustomerType(model).getExternalId(), model, redirectAttributes);
+
+        } catch (DomainException de) {
+            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            return update(customerType, model);
+
+        } catch (Exception de) {
+            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            return update(customerType, model);
+
         }
-
-        return "redirect:/treasury/administration/base/managecustomertype/customertype/read/"
-                + getCustomerType(model).getExternalId();
-
-        /*
-         * If there is any error in validation
-         * 
-         * Add a error / warning message
-         * 
-         * addErrorMessage(" Error because ...",model);
-         * addWarningMessage(" Waring becaus ...",model);
-         * 
-         * return update(customerType,model);
-         */
     }
 
     @Atomic

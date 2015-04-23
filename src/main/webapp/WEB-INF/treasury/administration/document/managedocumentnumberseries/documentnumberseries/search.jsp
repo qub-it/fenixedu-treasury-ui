@@ -18,23 +18,22 @@
 <script src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
 <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/css/select2.min.css" rel="stylesheet" />
 <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>
-<script src="${pageContext.request.contextPath}/static/js/bootbox.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/bootbox.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<div 
-
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.manageFiscalCountryRegion.searchFiscalCountryRegion" />
+	<h1><spring:message code="label.administration.document.manageDocumentNumberSeries.searchDocumentNumberSeries" />
 		<small></small>
 	</h1>
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/domain/managefiscalcountryregion/fiscalcountryregion/create"   ><spring:message code="label.event.create" /></a>
+	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/create"   ><spring:message code="label.event.create" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -65,43 +64,32 @@ ${portal.toolkit()}
 			</c:if>
 
 
-<script type="text/javascript">
-	function processDelete(externalId) {
-		url = "${pageContext.request.contextPath}/domain/managefiscalcountryregion/fiscalcountryregion/search/delete/" + externalId;
-		$("#deleteLink").attr("href", url);
-		$('#deleteModal').modal('toggle')
-	}
-</script>
 
+<div class="panel panel-default">
+<form method="get" class="form-horizontal">
+<div class="panel-body">
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.DocumentNumberSeries.counter"/></div> 
 
-<div class="modal fade" id="deleteModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
-      </div>
-      <div class="modal-body">
-        <p><spring:message code = "label.manageFiscalCountryRegion.searchFiscalCountryRegion.confirmDelete"/></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
-        <a id="deleteLink" class="btn btn-danger" href="#"> <spring:message code = "label.delete"/></a>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
+<div class="col-sm-10">
+	<input id="documentNumberSeries_counter" class="form-control" type="text" name="counter"  value='<c:out value='${not empty param.counter ? param.counter : documentNumberSeries.counter }'/>' />
+</div>	
+</div>		
+</div>
+<div class="panel-footer">
+	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
+</div>
+</form>
+</div>
 
 
 <c:choose>
-	<c:when test="${not empty searchfiscalcountryregionResultsDataSet}">
-		<table id="searchfiscalcountryregionTable" class="table responsive table-bordered table-hover">
+	<c:when test="${not empty searchdocumentnumberseriesResultsDataSet}">
+		<table id="searchdocumentnumberseriesTable" class="table responsive table-bordered table-hover">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-					<th><spring:message code="label.FiscalCountryRegion.regionCode"/></th>
-					<th><spring:message code="label.FiscalCountryRegion.name"/></th>
+<th><spring:message code="label.DocumentNumberSeries.counter"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -112,7 +100,7 @@ ${portal.toolkit()}
 		</table>
 	</c:when>
 	<c:otherwise>
-				<div class="alert alert-info" role="alert">
+				<div class="alert alert-warning" role="alert">
 					
 					<spring:message code="label.noResultsFound"/>
 					
@@ -122,16 +110,14 @@ ${portal.toolkit()}
 </c:choose>
 
 <script>
-	var searchfiscalcountryregionDataSet = [
-			<c:forEach items="${searchfiscalcountryregionResultsDataSet}" var="searchResult">
+	var searchdocumentnumberseriesDataSet = [
+			<c:forEach items="${searchdocumentnumberseriesResultsDataSet}" var="searchResult">
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"regioncode" : "<c:out value='${searchResult.regionCode}'/>",
-"name" : "<c:out value='${searchResult.name.content}'/>",
+"counter" : "<c:out value='${searchResult.counter}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/domain/managefiscalcountryregion/fiscalcountryregion/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-" <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },
             </c:forEach>
     ];
@@ -141,20 +127,24 @@ ${portal.toolkit()}
 	
 
 
-		var table = $('#searchfiscalcountryregionTable').DataTable({language : {
+		var table = $('#searchdocumentnumberseriesTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-			{ data: 'regioncode' },
-			{ data: 'name' },
+			{ data: 'counter' },
 			{ data: 'actions' }
 			
 		],
-		"data" : searchfiscalcountryregionDataSet,
+		//CHANGE_ME adjust the actions column width if needed
+		"columnDefs": [
+		//54
+		               { "width": "54px", "targets": 1 } 
+		             ],
+		"data" : searchdocumentnumberseriesDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
 //"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
             "sSwfPath": "//cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
@@ -162,7 +152,7 @@ ${portal.toolkit()}
 		});
 		table.columns.adjust().draw();
 		
-		  $('#searchfiscalcountryregionTable tbody').on( 'click', 'tr', function () {
+		  $('#searchdocumentnumberseriesTable tbody').on( 'click', 'tr', function () {
 		        $(this).toggleClass('selected');
 		    } );
 		  
