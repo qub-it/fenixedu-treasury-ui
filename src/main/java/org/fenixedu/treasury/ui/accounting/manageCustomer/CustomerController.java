@@ -27,10 +27,14 @@
 package org.fenixedu.treasury.ui.accounting.manageCustomer;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.List;
 import java.util.ArrayList;
+
 import org.joda.time.DateTime;
+
 import java.util.stream.Collectors;
+
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.stereotype.Component;
@@ -46,11 +50,13 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.fenixedu.bennu.core.domain.Bennu;
+
 import pt.ist.fenixframework.Atomic;
 
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer", accessGroup = "logged")
@@ -86,8 +92,13 @@ public class CustomerController extends TreasuryBaseController {
 
 	//
 	@RequestMapping(value = "/")
-	public String search(Model model) {
-		List<Customer> searchcustomerResultsDataSet = filterSearchCustomer();
+	public String search(
+			@RequestParam( value="finantialInstitution",required=false) FinantialInstitution institution,
+			Model model) {
+		List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution);
+
+		model.addAttribute("customer_finantialInstitution",
+				FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
 
 		// add the results dataSet to the model
 		model.addAttribute("searchcustomerResultsDataSet",
@@ -105,10 +116,22 @@ public class CustomerController extends TreasuryBaseController {
 		// return new ArrayList<Customer>();
 	}
 
-	private List<Customer> filterSearchCustomer() {
+	private List<Customer> filterSearchCustomer(FinantialInstitution institution) {
 
-		return getSearchUniverseSearchCustomerDataSet().stream().collect(
-				Collectors.toList());
+		if (institution == null) {
+			return getSearchUniverseSearchCustomerDataSet().stream().collect(
+					Collectors.toList());
+		} else {
+			return getSearchUniverseSearchCustomerDataSet()
+					.stream()
+					.filter(customer -> customer
+							.getDebtAccountsSet()
+							.stream()
+							.anyMatch(
+									debtAccount -> debtAccount.getFinantialInstitution().equals(
+											institution)))
+					.collect(Collectors.toList());
+		}
 	}
 
 	@RequestMapping(value = "/search/view/{oid}")

@@ -63,6 +63,25 @@ ${portal.toolkit()}
 				</div>	
 			</c:if>
 
+<div class="panel panel-default">
+<form method="get" class="form-horizontal">
+<div class="panel-body">
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.Series.finantialInstitution"/></div> 
+
+<div class="col-sm-4">
+	<%-- Relation to side 1 drop down rendered in input --%>
+		 <select id="customer_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
+		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		</select>
+				</div>
+</div>			
+</div>
+<div class="panel-footer">
+	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
+</div>
+</form>
+</div>
 
 
 
@@ -97,6 +116,17 @@ ${portal.toolkit()}
 </c:choose>
 
 <script>
+
+$("#customer_finantialInstitution").select2(
+		{
+			data : customer_finantialInstitution,
+		}	  
+		    );
+		    
+		    <%-- If it's not from parameter change param.finantialinstitution to whatever you need (it's the externalId already) --%>
+		    $("#customer_finantialInstitution").select2().select2('val', '<c:out value='${param.finantialInstitution}'/>');
+	<%-- End block for providing finantialinstitution options --%>
+	
 	var searchcustomerDataSet = [
 			<c:forEach items="${searchcustomerResultsDataSet}" var="searchResult">
 				<%-- Field access / formatting  here CHANGE_ME --%>
