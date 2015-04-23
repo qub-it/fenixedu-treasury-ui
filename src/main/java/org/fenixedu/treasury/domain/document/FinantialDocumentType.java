@@ -28,10 +28,8 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;

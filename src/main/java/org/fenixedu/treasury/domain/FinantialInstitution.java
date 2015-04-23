@@ -48,12 +48,13 @@ public class FinantialInstitution extends FinantialInstitution_Base implements
 		setBennu(Bennu.getInstance());
 	}
 
-	protected FinantialInstitution(String code, final String fiscalNumber,
+	protected FinantialInstitution(FiscalCountryRegion region, String code, final String fiscalNumber,
 			final String companyId, final String name,
 			final String companyName, final String address,
 			final String districtSubdivision, final String zipCode,
 			final String countryCode) {
 		this();
+		setFiscalCountryRegion(region);
 		setCode(code);
 		setFiscalNumber(fiscalNumber);
 		setCompanyId(companyId);
@@ -97,6 +98,81 @@ public class FinantialInstitution extends FinantialInstitution_Base implements
 
 	public String getComercialRegistrationCode() {
 		return this.getFiscalNumber() + " " + this.getAddress();
+	}
+
+	@Atomic
+	public void edit(String code, final String fiscalNumber,
+			final String companyId, final String name,
+			final String companyName, final String address,
+			final String districtSubdivision, final String zipCode,
+			final String countryCode) {
+		setCode(code);
+		setFiscalNumber(fiscalNumber);
+		setCompanyId(companyId);
+		setName(name);
+		setCompanyName(companyName);
+		setAddress(address);
+		setDistrictSubdivision(districtSubdivision);
+		setZipCode(zipCode);
+		setCountryCode(countryCode);
+
+		checkRules();
+	}
+
+	public boolean isDeletable() {
+		return true;
+	}
+
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException(
+					"error.FinantialInstitution.cannot.delete");
+		}
+
+		setBennu(null);
+
+		deleteDomainObject();
+	}
+
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
+
+	public static Stream<FinantialInstitution> findAll() {
+		return Bennu.getInstance().getFinantialInstitutionsSet().stream();
+	}
+
+	public static Stream<FinantialInstitution> findByCode(final String code) {
+		return findAll().filter(fi -> fi.getCode().equalsIgnoreCase(code));
+	}
+
+	public static Stream<FinantialInstitution> findByName(final String name) {
+		return findAll().filter(fi -> fi.getName().equalsIgnoreCase(name));
+	}
+
+	@Atomic
+	public static FinantialInstitution create(FiscalCountryRegion countryRegion, String code,
+			final String fiscalNumber, final String companyId,
+			final String name, final String companyName, final String address,
+			final String districtSubdivision, final String zipCode,
+			final String countryCode) {
+		return new FinantialInstitution(countryRegion, code, fiscalNumber, companyId, name,
+				companyName, address, districtSubdivision, zipCode, countryCode);
+	}
+
+	public List<FinantialDocument> findPendingDocumentsNotExported(
+			DateTime fromDate, DateTime toDate) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public List<FinantialDocument> getExportableDocuments(DateTime fromDate,
+			DateTime toDate) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Atomic

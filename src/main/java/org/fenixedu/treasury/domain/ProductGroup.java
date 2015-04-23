@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain;
 
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -74,7 +73,10 @@ public class ProductGroup extends ProductGroup_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        if (getProductsSet().isEmpty()) {
+            return true;
+        }
+        return false;
     }
 
     @Atomic
