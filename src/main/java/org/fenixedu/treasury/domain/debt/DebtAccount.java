@@ -27,7 +27,6 @@
  */
 package org.fenixedu.treasury.domain.debt;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -35,104 +34,117 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
 public class DebtAccount extends DebtAccount_Base {
 
-	protected DebtAccount() {
+	public DebtAccount() {
 		super();
-		setBennu(Bennu.getInstance());
+        setBennu(Bennu.getInstance());
 	}
+	
 
-	protected void init(final FinantialInstitution finantialInstitution,
-			final Customer customer) {
-		setFinantialInstitution(finantialInstitution);
+
+
+    protected DebtAccount(final FinantialInstitution finantialInstitution, final Customer customer) {
+        this();
 		setCustomer(customer);
-		checkRules();
-	}
-
-	private void checkRules() {
-		//
-		// CHANGE_ME add more busines validations
-		//
-		if (getFinantialInstitution() == null) {
-			throw new TreasuryDomainException(
-					"error.DebtAccount.finantialInstitution.required");
-		}
-
-		if (getCustomer() == null) {
-			throw new TreasuryDomainException(
-					"error.DebtAccount.customer.required");
-		}
-
-		// CHANGE_ME In order to validate UNIQUE restrictions
-		// if (findByFinantialInstitution(getFinantialInstitution().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.DebtAccount.finantialInstitution.duplicated");
-		// }
-		// if (findByCustomer(getCustomer().count()>1)
-		// {
-		// throw new
-		// TreasuryDomainException("error.DebtAccount.customer.duplicated");
-		// }
-	}
-
-	@Atomic
-	public void edit(final FinantialInstitution finantialInstitution,
-			final Customer customer) {
 		setFinantialInstitution(finantialInstitution);
-		setCustomer(customer);
-		checkRules();
+
+//		checkRules();
 	}
+//
+//	private void checkRules() {
+//		if (LocalizedStringUtil.isEmpty(getCode())) {
+//			throw new TreasuryDomainException("error.DebtAccount.code.required");
+//		}
+//
+//		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+//			throw new TreasuryDomainException("error.DebtAccount.name.required");
+//		}
+//
+//		findByCode(getCode());
+//		getName().getLocales().stream()
+//				.forEach(l -> findByName(getName().getContent(l)));
+//	}
+//
+//	@Atomic
+//	public void edit(final String code, final LocalizedString name) {
+//		setCode(code);
+//		setName(name);
+//
+//		checkRules();
+//	}
+//
+//	public boolean isDeletable() {
+//		return true;
+//	}
+//
+//	@Atomic
+//	public void delete() {
+//		if (!isDeletable()) {
+//			throw new TreasuryDomainException("error.DebtAccount.cannot.delete");
+//		}
+//
+//		setBennu(null);
+//
+//		deleteDomainObject();
+//	}
+//
+//	// @formatter: off
+//	/************
+//	 * SERVICES *
+//	 ************/
+//	// @formatter: on
+//
+//	public static Set<DebtAccount> readAll() {
+//		return Bennu.getInstance().getDebtAccountsSet();
+//	}
+//
+//	public static DebtAccount findByCode(final String code) {
+//		DebtAccount result = null;
+//
+//		for (final DebtAccount it : readAll()) {
+//			if (!it.getCode().equalsIgnoreCase(code)) {
+//				continue;
+//			}
+//
+//			if (result != null) {
+//				throw new TreasuryDomainException(
+//						"error.DebtAccount.duplicated.code");
+//			}
+//
+//			result = it;
+//		}
+//
+//		return result;
+//	}
+//
+//	public static DebtAccount findByName(final String name) {
+//		DebtAccount result = null;
+//
+//		for (final DebtAccount it : readAll()) {
+//
+//			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
+//					name)) {
+//				continue;
+//			}
+//
+//			if (result != null) {
+//				throw new TreasuryDomainException(
+//						"error.DebtAccount.duplicated.name");
+//			}
+//
+//			result = it;
+//		}
+//
+//		return result;
+//	}
 
-	public boolean isDeletable() {
-		return true;
-	}
-
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException("error.DebtAccount.cannot.delete");
-		}
-
-		setBennu(null);
-
-		deleteDomainObject();
-	}
-
-	@Atomic
-	public static DebtAccount create(
-			final FinantialInstitution finantialInstitution,
-			final Customer customer) {
-		DebtAccount debtAccount = new DebtAccount();
-		debtAccount.init(finantialInstitution, customer);
-		return debtAccount;
-	}
-
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
-
-	public static Stream<DebtAccount> findAll() {
-		Set<DebtAccount> allDebtAccounts = new HashSet<DebtAccount>();
-		Bennu.getInstance().getCustomersSet().stream()
-				.map(x -> allDebtAccounts.addAll(x.getDebtAccountsSet()));
-		return allDebtAccounts.stream();
-	}
-
-	public static Stream<DebtAccount> findByFinantialInstitution(
-			final FinantialInstitution finantialInstitution) {
-		return findAll().filter(
-				i -> finantialInstitution.equals(i.getFinantialInstitution()));
-	}
-
-	public static Stream<DebtAccount> findByCustomer(final Customer customer) {
-		return findAll().filter(i -> customer.equals(i.getCustomer()));
-	}
+    @Atomic
+    public static DebtAccount create(final FinantialInstitution finantialInstitution, final Customer customer) {
+        return new DebtAccount(finantialInstitution, customer);
+    }
 
 }

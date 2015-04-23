@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain;
 
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -44,8 +43,10 @@ public class Product extends Product_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected Product(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active) {
+    protected Product(final ProductGroup productGroup, final String code, final LocalizedString name,
+            final LocalizedString unitOfMeasure, boolean active) {
         this();
+        setProductGroup(productGroup);
         setCode(code);
         setName(name);
         setUnitOfMeasure(unitOfMeasure);
@@ -90,7 +91,7 @@ public class Product extends Product_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.Product.cannot.delete");
         }
-
+        setProductGroup(null);
         setBennu(null);
 
         deleteDomainObject();
@@ -144,8 +145,12 @@ public class Product extends Product_Base {
     }
 
     @Atomic
-    public static Product create(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active) {
-        return new Product(code, name, unitOfMeasure, active);
+    public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
+            final LocalizedString unitOfMeasure, boolean active) {
+        return new Product(productGroup, code, name, unitOfMeasure, active);
     }
 
+    public boolean isActive() {
+        return getActive();
+    }
 }

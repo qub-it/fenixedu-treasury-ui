@@ -31,8 +31,8 @@ class FiscalCountryRegion {
 }
 
 class CustomerType {
-	String code;
-	LocalizedString name;
+	String code (REQUIRED);
+	LocalizedString name (REQUIRED);
 }
 
 class VatType {
@@ -420,16 +420,6 @@ relation ProductBennu {
 
 relation ProductProductGroup {
 	ProductGroup playsRole productGroup {
-		multiplicity 1..1;
-	}
-	
-	Product playsRole products {
-		multiplicity *;
-	}
-}
-
-relation ProductVatType {
-	VatType playsRole vatType {
 		multiplicity 1..1;
 	}
 	
