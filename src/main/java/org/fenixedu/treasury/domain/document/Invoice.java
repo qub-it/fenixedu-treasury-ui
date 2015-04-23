@@ -41,57 +41,63 @@ import com.google.common.collect.Sets;
 
 public abstract class Invoice extends Invoice_Base {
 
-    protected Invoice() {
-        super();
-    }
-    
-    @Override
-    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        super.init(debtAccount, documentNumberSeries, documentDate);
-    }
-    
-    protected void init(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        super.init(debtAccount, documentNumberSeries, documentDate);
-        
-        if(payorDebtAccount == null) {
-            throw new TreasuryDomainException("error.Invoice.payorDebtAccount.null");
-        }
-        
-        setPayorDebtAccount(payorDebtAccount);
-    }
+	protected Invoice() {
+		super();
+	}
 
-    @Override
-    public boolean isInvoice() {
-        return true;
-    }
-    
-    public boolean isDeletable() {
-        return true;
-    }
+	@Override
+	protected void init(final DebtAccount debtAccount,
+			final DocumentNumberSeries documentNumberSeries,
+			final DateTime documentDate) {
+		super.init(debtAccount, documentNumberSeries, documentDate);
+	}
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.Invoice.cannot.delete");
-        }
+	protected void init(final DebtAccount debtAccount,
+			final DebtAccount payorDebtAccount,
+			final DocumentNumberSeries documentNumberSeries,
+			final DateTime documentDate) {
+		super.init(debtAccount, documentNumberSeries, documentDate);
 
-        super.delete();
-    }
+		if (payorDebtAccount == null) {
+			throw new TreasuryDomainException(
+					"error.Invoice.payorDebtAccount.null");
+		}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+		setPayorDebtAccount(payorDebtAccount);
+	}
 
-    public static Stream<? extends Invoice> findAll() {
-    	return FinantialDocument.findAll().filter(x-> x instanceof Invoice).map(Invoice.class::cast);
-    }
+	@Override
+	public boolean isInvoice() {
+		return true;
+	}
 
-    public static Set<Invoice> find(final DebtAccount debtAccount) {
-    	return findAll().filter(x->x.getDebtAccount() == debtAccount).collect(Collectors.toSet());
-    }
-    
-    
-    
+	public boolean isDeletable() {
+		return true;
+	}
+
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException("error.Invoice.cannot.delete");
+		}
+
+		super.delete();
+	}
+
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
+
+	public static Stream<? extends Invoice> findAll() {
+		return FinantialDocument.findAll().filter(x -> x instanceof Invoice)
+				.map(Invoice.class::cast);
+	}
+
+	public static Set<Invoice> find(final DebtAccount debtAccount) {
+		return findAll().filter(x -> x.getDebtAccount() == debtAccount)
+				.collect(Collectors.toSet());
+	}
+
 }

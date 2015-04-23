@@ -27,10 +27,15 @@
 package org.fenixedu.treasury.ui.accounting.manageCustomer;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.List;
 import java.util.ArrayList;
+
 import org.joda.time.DateTime;
+
 import java.util.stream.Collectors;
+
+import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.stereotype.Component;
@@ -46,6 +51,8 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+
 import pt.ist.fenixframework.Atomic;
 
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -153,7 +160,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
 			 * 
 			 * Add a error / warning message
 			 * 
-			 * addErrorMessage(" Error creating due to " +
+			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
 			 * de.getLocalizedMessage(),model);
 			 * addWarningMessage(" Warning creating due to "+
 			 * ex.getLocalizedMessage(),model);
@@ -161,7 +168,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
 			// @formatter: on
 
 			addErrorMessage(
-					" Error creating due to " + de.getLocalizedMessage(), model);
+					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
 			return create(model);
 		}
 	}
@@ -231,7 +238,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
 			 * 
 			 * Add a error / warning message
 			 * 
-			 * addErrorMessage(" Error updating due to " +
+			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update") +
 			 * de.getLocalizedMessage(),model);
 			 * addWarningMessage(" Warning updating due to " +
 			 * de.getLocalizedMessage(),model);
@@ -239,7 +246,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
 			// @formatter: on
 
 			addErrorMessage(
-					" Error updating due to " + de.getLocalizedMessage(), model);
+					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
 			return update(adhocCustomer, model);
 
 		}

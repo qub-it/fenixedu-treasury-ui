@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -163,11 +165,11 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the FinantialDocumentType due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete")+ ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the FinantialDocumentType due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -217,16 +219,16 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
              *
              * Add a error / warning message
              * 
-             * addErrorMessage(" Error creating due to " + de.getLocalizedMessage(),model);
+             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
             // @formatter: on
 
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
 
         } catch (Exception de) {
             // ACFSILVA
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
         }
     }

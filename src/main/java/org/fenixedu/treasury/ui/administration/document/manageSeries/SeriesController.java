@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.Series;
@@ -148,12 +150,12 @@ public class SeriesController extends TreasuryBaseController {
             return redirect("/treasury/administration/document/manageseries/series/", model, redirectAttributes);
 
         } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage("Error deleting the Series due to " + ex.getLocalizedMessage(), model);
+            //Add error messages to the list 
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the Series due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -204,15 +206,15 @@ public class SeriesController extends TreasuryBaseController {
              *
              * Add a error / warning message
              * 
-             * addErrorMessage(" Error creating due to " + de.getLocalizedMessage(),model);
+             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
             // @formatter: on
 
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
 
         } catch (Exception de) {
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
         }
     }

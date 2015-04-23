@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -123,10 +125,10 @@ public class CurrencyController extends TreasuryBaseController {
             return redirect("/treasury/administration/base/managecurrency/currency/", model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the Currency due to " + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(), model);
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the Currency due to " + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -166,11 +168,11 @@ public class CurrencyController extends TreasuryBaseController {
                     model, redirectAttributes);
 
         } catch (DomainException de) {
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
 
         } catch (Exception de) {
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
         }
     }

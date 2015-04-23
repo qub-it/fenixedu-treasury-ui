@@ -35,6 +35,7 @@ import org.joda.time.DateTime;
 
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.stereotype.Component;
@@ -50,6 +51,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -124,7 +126,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 			 * 
 			 * Add a error / warning message
 			 * 
-			 * addErrorMessage(" Error creating due to " +
+			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
 			 * de.getLocalizedMessage(),model);
 			 * addWarningMessage(" Warning creating due to "+
 			 * ex.getLocalizedMessage(),model);
@@ -132,7 +134,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 			// @formatter: on
 
 			addErrorMessage(
-					" Error creating due to " + de.getLocalizedMessage(), model);
+					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
 			return create(model);
 		}
 	}
@@ -299,7 +301,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 		} catch (DomainException ex) {
 			// Add error messages to the list
 			addErrorMessage(
-					"Error deleting the SettlementNote due to "
+					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete")
 							+ ex.getLocalizedMessage(), model);
 		}
 

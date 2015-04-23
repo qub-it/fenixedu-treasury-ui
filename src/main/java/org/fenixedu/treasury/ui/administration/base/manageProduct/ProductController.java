@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
@@ -129,11 +131,11 @@ public class ProductController extends TreasuryBaseController {
 
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the Product due to " + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(), model);
 
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the Product due to " + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(), model);
         }
 
         //The default mapping is the same Read View
