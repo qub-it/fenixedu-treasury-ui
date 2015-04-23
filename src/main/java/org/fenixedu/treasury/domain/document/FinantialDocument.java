@@ -99,11 +99,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 				this.getDocumentNumber());
 	}
 
-	public BigDecimal getTotalValue() {
+	public BigDecimal getTotalAmount() {
 		return BigDecimal.ZERO;
 	}
 
-	public BigDecimal getTotalNetValue() {
+	public BigDecimal getTotalNetAmount() {
 		return BigDecimal.ZERO;
 	}
 
@@ -199,6 +199,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 	public String getUserCreated() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public BigDecimal getOpenAmount() {
+		// TODO Auto-generated method stub
+		return getTotalAmount();
 	}
 
 }

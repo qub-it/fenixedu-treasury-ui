@@ -6,7 +6,7 @@
  *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright Â© 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -48,7 +48,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageFinantialDocumentType") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageFinantialDocumentType",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
@@ -101,8 +101,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-         return FinantialDocumentType.findAll().collect(Collectors.toList()); //CHANGE_ME
-//        return new ArrayList<FinantialDocumentType>(FinantialDocumentType.readAll());
+         return FinantialDocumentType.findAll().collect(Collectors.toList()); 
     }
 
     private List<FinantialDocumentType> filterSearchFinantialDocumentType(
@@ -159,7 +158,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteFinantialDocumentType(finantialDocumentType);
 
-            addInfoMessage("Sucess deleting FinantialDocumentType ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/", model,
                     redirectAttributes);
 
@@ -248,10 +247,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
          * 
          */
 
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //FinantialDocumentType finantialDocumentType = finantialDocumentType.create(fields_to_create);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
+     
         // @formatter: on
 
         FinantialDocumentType finantialDocumentType = null;

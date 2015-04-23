@@ -22,7 +22,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVatExemptionReason") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVatExemptionReason",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managevatexemptionreason/vatexemptionreason")
 public class VatExemptionReasonController extends TreasuryBaseController {
@@ -116,7 +116,7 @@ public class VatExemptionReasonController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteVatExemptionReason(vatExemptionReason);
 
-            addInfoMessage("Sucess deleting VatExemptionReason ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managevatexemptionreason/vatexemptionreason/", model,
                     redirectAttributes);
 

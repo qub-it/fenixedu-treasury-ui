@@ -258,7 +258,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
 			// call the Atomic delete function
 			deleteTreasuryExemption(treasuryExemption);
 
-			addInfoMessage("Sucess deleting TreasuryExemption ...", model);
+			addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
 			return redirect(
 					"/treasury/document/manageexemption/treasuryexemption/",
 					model, redirectAttributes);

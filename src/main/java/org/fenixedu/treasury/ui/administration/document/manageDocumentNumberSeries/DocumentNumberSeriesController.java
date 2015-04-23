@@ -6,7 +6,7 @@
  *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright Â© 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -33,10 +33,12 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.administration.document.manageSeries.SeriesController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,11 +49,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageDocumentNumberSeries") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageDocumentNumberSeries",
-        accessGroup = "anyone")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageDocumentNumberSeries",
+//        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-//@BennuSpringController(value=TreasuryController.class) 
+@BennuSpringController(value=SeriesController.class) 
 @RequestMapping("/treasury/administration/document/managedocumentnumberseries/documentnumberseries")
 public class DocumentNumberSeriesController extends TreasuryBaseController {
 
@@ -130,7 +132,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteDocumentNumberSeries(documentNumberSeries);
 
-            addInfoMessage("Sucess deleting DocumentNumberSeries ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/document/managedocumentnumberseries/documentnumberseries/", model,
                     redirectAttributes);
 

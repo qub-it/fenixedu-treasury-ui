@@ -21,7 +21,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageCustomerType") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageCustomerType",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managecustomertype/customertype")
 public class CustomerTypeController extends TreasuryBaseController {
@@ -114,7 +114,7 @@ public class CustomerTypeController extends TreasuryBaseController {
             // call the Atomic delete function
             deleteCustomerType(customerType);
 
-            addInfoMessage("Sucess deleting CustomerType ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managecustomertype/customertype/", model, redirectAttributes);
 
         } catch (DomainException ex) {

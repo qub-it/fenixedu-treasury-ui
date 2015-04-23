@@ -799,6 +799,7 @@ relation CreditEntryDebitEntry {
 	}
 }
 
+
 /* --- SettlementEntry --- */
 
 relation SettlementEntryInvoiceEntry {

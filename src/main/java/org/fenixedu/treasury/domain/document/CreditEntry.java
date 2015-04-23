@@ -68,7 +68,15 @@ public class CreditEntry extends CreditEntry_Base {
     // @formatter: on
 
     public static Stream<CreditEntry> findAll() {
-        return (Stream<CreditEntry>) FinantialDocumentEntry.findAll().filter(f -> f instanceof CreditEntry);
+        return FinantialDocumentEntry.findAll().filter(f -> f instanceof CreditEntry).map(CreditEntry.class::cast);
     }
+
+    public BigDecimal getOpenAmount() {
+		BigDecimal amount = this.getAmount();
+		for (SettlementEntry entry : this.getSettlementEntriesSet()) {
+			amount = amount.subtract(entry.getAmount());
+		}
+		return amount;
+	}
     
 }

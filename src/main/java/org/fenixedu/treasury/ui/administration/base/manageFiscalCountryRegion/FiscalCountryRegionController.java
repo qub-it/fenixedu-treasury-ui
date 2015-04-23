@@ -22,7 +22,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageFiscalCountryRegion") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageFiscalCountryRegion",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managefiscalcountryregion/fiscalcountryregion")
 public class FiscalCountryRegionController extends TreasuryBaseController {
@@ -116,7 +116,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteFiscalCountryRegion(fiscalCountryRegion);
 
-            addInfoMessage("Sucess deleting FiscalCountryRegion ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managefiscalcountryregion/fiscalcountryregion/", model,
                     redirectAttributes);
 

@@ -28,8 +28,8 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
 	<h1><spring:message code="label.accounting.manageCustomer.readCustomer" />
-		<small></small>
 	</h1>
+		<small></small>
 </div>
 <div class="modal fade" id="deleteModal">
   <div class="modal-dialog">
@@ -120,13 +120,43 @@ ${portal.toolkit()}
 </tr>
 </tbody>
 </table>
+
 </form>
 </div>
+</div>
+</br>
+<h2> Conta Corrente </h2>
+ <div id="content">
+    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+
+        <li class="active"><a href="#pending" data-toggle="tab">Docs. Pendentes</a></li>
+        <li><a href="#details" data-toggle="tab">Extracto</a></li>
+        <li><a href="#payments" data-toggle="tab">Pagamentos</a></li>
+        <li><a href="#exemptions" data-toggle="tab">Isencoes</a></li>
+    </ul>
+    <div id="my-tab-content" class="tab-content">
+        <div class="tab-pane active" id="pending">
+            <h3>Docs. Pendentes</h3>
+            <p>red red red red red red</p>
+        </div>
+        <div class="tab-pane" id="details">
+            <h3>Extracto</h3>
+            <p>orange orange orange orange orange</p>
+        </div>
+        <div class="tab-pane" id="payments">
+            <h3>Pagamentos</h3>
+            <p>yellow yellow yellow yellow yellow</p>
+        </div>
+        <div class="tab-pane" id="exemptions">
+            <h3>Isencoes</h3>
+            <p>green green green green green</p>
+        </div>
+    </div>
 </div>
 
 <script>
 $(document).ready(function() {
 
-	
+	 $('#tabs').tab();
 	});
 </script>

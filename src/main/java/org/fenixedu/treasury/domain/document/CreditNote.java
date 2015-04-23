@@ -28,7 +28,9 @@
 package org.fenixedu.treasury.domain.document;
 
 
+import java.math.BigDecimal;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -118,4 +120,14 @@ public class CreditNote extends CreditNote_Base {
 	    checkRules();
 	}
 
+	
+	@Override
+	public BigDecimal getOpenAmount() {
+		BigDecimal amount = BigDecimal.ZERO;
+    	for (CreditEntry entry : this.getFinantialDocumentEntriesSet().stream().map(CreditEntry.class::cast).collect(Collectors.toList()) )
+    	{
+    		amount = amount.add(entry.getOpenAmount());
+    	}
+    	return amount;
+	}
 }

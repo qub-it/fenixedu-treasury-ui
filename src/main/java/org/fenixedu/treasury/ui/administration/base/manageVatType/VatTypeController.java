@@ -22,7 +22,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVatType") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVatType",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managevattype/vattype")
 public class VatTypeController extends TreasuryBaseController {
@@ -113,7 +113,7 @@ public class VatTypeController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteVatType(vatType);
 
-            addInfoMessage("Sucess deleting VatType ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managevattype/vattype/", model, redirectAttributes);
 
         } catch (DomainException ex) {

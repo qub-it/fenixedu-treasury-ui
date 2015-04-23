@@ -22,7 +22,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.managePaymentMethod") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.managePaymentMethod",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managepaymentmethod/paymentmethod")
 public class PaymentMethodController extends TreasuryBaseController {
@@ -115,7 +115,7 @@ public class PaymentMethodController extends TreasuryBaseController {
             //call the Atomic delete function
             deletePaymentMethod(paymentMethod);
 
-            addInfoMessage("Sucess deleting PaymentMethod ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managepaymentmethod/paymentmethod/", model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list

@@ -22,7 +22,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVat") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVat", accessGroup = "anyone")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVat", accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managevat/vat")
 public class VatController extends TreasuryBaseController {
@@ -105,7 +105,7 @@ public class VatController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteVat(vat);
 
-            addInfoMessage("Sucess deleting Vat ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managevat/vat/", model, redirectAttributes);
 
         } catch (DomainException ex) {

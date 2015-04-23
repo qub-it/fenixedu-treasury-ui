@@ -126,15 +126,19 @@ public class SettlementNoteController extends TreasuryBaseController {
 			 * 
 			 * Add a error / warning message
 			 * 
-			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
-			 * de.getLocalizedMessage(),model);
+			 * addErrorMessage(BundleUtil.getString(
+			 * FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
+			 * + de.getLocalizedMessage(),model);
 			 * addWarningMessage(" Warning creating due to "+
 			 * ex.getLocalizedMessage(),model);
 			 */
 			// @formatter: on
 
 			addErrorMessage(
-					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+					BundleUtil.getString(
+							FenixeduTreasurySpringConfiguration.BUNDLE,
+							"label.error.create")
+							+ de.getLocalizedMessage(), model);
 			return create(model);
 		}
 	}
@@ -184,8 +188,8 @@ public class SettlementNoteController extends TreasuryBaseController {
 		// add the results dataSet to the model
 		model.addAttribute("searchsettlementnoteResultsDataSet",
 				searchsettlementnoteResultsDataSet);
-		model.addAttribute(
-				"SettlementNote_finantialDocumentType_options",FinantialDocumentType.findAll());
+		model.addAttribute("SettlementNote_finantialDocumentType_options",
+				FinantialDocumentType.findAll());
 
 		model.addAttribute("SettlementNote_debtAccount_options",
 				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
@@ -196,12 +200,15 @@ public class SettlementNoteController extends TreasuryBaseController {
 		// model.addAttribute("SettlementNote_debtAccount_options",
 		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
 		// CHANGE_ME - MUST DEFINE RELATION
-		 model.addAttribute("SettlementNote_documentNumberSeries_options",
-		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll().collect(Collectors.toList()));
+		model.addAttribute("SettlementNote_documentNumberSeries_options",
+				org.fenixedu.treasury.domain.document.DocumentNumberSeries
+						.findAll().collect(Collectors.toList()));
 		// // CHANGE_ME - MUST DEFINE RELATION
 
-		 model.addAttribute("SettlementNote_currency_options",
-		 org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList())); 
+		model.addAttribute(
+				"SettlementNote_currency_options",
+				org.fenixedu.treasury.domain.Currency.findAll().collect(
+						Collectors.toList()));
 		model.addAttribute(
 				"stateValues",
 				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
@@ -214,7 +221,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 		// The initialization of the result list must be done here
 		//
 		//
-		 return SettlementNote.findAll().collect(Collectors.toList());
+		return SettlementNote.findAll().collect(Collectors.toList());
 	}
 
 	private List<SettlementNote> filterSearchSettlementNote(
@@ -294,14 +301,16 @@ public class SettlementNoteController extends TreasuryBaseController {
 			// call the Atomic delete function
 			deleteSettlementNote(settlementNote);
 
-			addInfoMessage("Sucess deleting SettlementNote ...", model);
+			addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
 			return redirect(
 					"/treasury/document/managepayments/settlementnote/", model,
 					redirectAttributes);
 		} catch (DomainException ex) {
 			// Add error messages to the list
 			addErrorMessage(
-					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete")
+					BundleUtil.getString(
+							FenixeduTreasurySpringConfiguration.BUNDLE,
+							"label.error.delete")
 							+ ex.getLocalizedMessage(), model);
 		}
 
@@ -314,8 +323,9 @@ public class SettlementNoteController extends TreasuryBaseController {
 	@RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
 	public String update(@PathVariable("oid") SettlementNote settlementNote,
 			Model model) {
-		 model.addAttribute("SettlementNote_finantialDocumentType_options",
-		 org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
+		model.addAttribute("SettlementNote_finantialDocumentType_options",
+				org.fenixedu.treasury.domain.document.FinantialDocumentType
+						.findAll());
 		// // CHANGE_ME - MUST DEFINE RELATION
 		model.addAttribute("SettlementNote_debtAccount_options",
 				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
@@ -323,10 +333,11 @@ public class SettlementNoteController extends TreasuryBaseController {
 																					// MUST
 																					// DEFINE
 																					// RELATION
-		 model.addAttribute("SettlementNote_documentNumberSeries_options",
-		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
-		 model.addAttribute("SettlementNote_currency_options",
-		 org.fenixedu.treasury.domain.Currency.findAll()); 
+		model.addAttribute("SettlementNote_documentNumberSeries_options",
+				org.fenixedu.treasury.domain.document.DocumentNumberSeries
+						.findAll());
+		model.addAttribute("SettlementNote_currency_options",
+				org.fenixedu.treasury.domain.Currency.findAll());
 		model.addAttribute(
 				"stateValues",
 				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
@@ -415,7 +426,9 @@ public class SettlementNoteController extends TreasuryBaseController {
 		// Instead, use individual SETTERS and validate "CheckRules" in the end
 		// @formatter: on
 
-		getSettlementNote(model).edit(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
+		getSettlementNote(model).edit(finantialDocumentType, debtAccount,
+				documentNumberSeries, currency, documentNumber, documentDate,
+				documentDueDate, originDocumentNumber, state);
 	}
 
 }

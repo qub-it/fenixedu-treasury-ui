@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -107,4 +108,14 @@ public class DebitNote extends DebitNote_Base {
         return new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
 
+    
+    @Override
+    public BigDecimal getOpenAmount() {
+    	BigDecimal amount = BigDecimal.ZERO;
+    	for (DebitEntry entry : this.getDebitEntriesSet() )
+    	{
+    		amount = amount.add(entry.getOpenAmount());
+    	}
+    	return amount;
+    }
 }

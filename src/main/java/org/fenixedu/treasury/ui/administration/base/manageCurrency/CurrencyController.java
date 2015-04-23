@@ -22,7 +22,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageCurrency") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageCurrency",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managecurrency/currency")
 public class CurrencyController extends TreasuryBaseController {
@@ -121,7 +121,7 @@ public class CurrencyController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteCurrency(currency);
 
-            addInfoMessage("Sucess deleting Currency ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managecurrency/currency/", model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list

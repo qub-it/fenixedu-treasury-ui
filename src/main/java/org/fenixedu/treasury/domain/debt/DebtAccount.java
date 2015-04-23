@@ -27,12 +27,14 @@
  */
 package org.fenixedu.treasury.domain.debt;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
@@ -145,6 +147,27 @@ public class DebtAccount extends DebtAccount_Base {
     @Atomic
     public static DebtAccount create(final FinantialInstitution finantialInstitution, final Customer customer) {
         return new DebtAccount(finantialInstitution, customer);
+    }
+    
+    public BigDecimal getTotalInDebt()
+    {
+    	BigDecimal amount = BigDecimal.ZERO;
+    	for (FinantialDocument document: this.getFinantialDocumentsSet())
+    	{
+    		if (document.isClosed() == false)
+    		{
+    			if (document.isDebitNote())
+    			{
+    				amount = amount.add(document.getOpenAmount());
+    			}
+    			else if (document.isCreditNote())
+    			{
+    				amount = amount.subtract(document.getOpenAmount());
+    			}
+    		}
+    	}
+    	
+    	return amount;
     }
 
 }

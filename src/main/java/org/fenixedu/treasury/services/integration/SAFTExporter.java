@@ -407,12 +407,12 @@ public class SAFTExporter {
 
 			// DocumentTotals
 			SourceDocuments.WorkingDocuments.WorkDocument.DocumentTotals docTotals = new SourceDocuments.WorkingDocuments.WorkDocument.DocumentTotals();
-			docTotals.setGrossTotal(document.getTotalValue().setScale(2,
+			docTotals.setGrossTotal(document.getTotalAmount().setScale(2,
 					RoundingMode.HALF_EVEN));
-			docTotals.setNetTotal(document.getTotalNetValue().setScale(2,
+			docTotals.setNetTotal(document.getTotalNetAmount().setScale(2,
 					RoundingMode.HALF_EVEN));
-			docTotals.setTaxPayable(document.getTotalValue()
-					.subtract(document.getTotalNetValue())
+			docTotals.setTaxPayable(document.getTotalAmount()
+					.subtract(document.getTotalNetAmount())
 					.setScale(2, RoundingMode.HALF_EVEN));
 			workDocument.setDocumentTotals(docTotals);
 

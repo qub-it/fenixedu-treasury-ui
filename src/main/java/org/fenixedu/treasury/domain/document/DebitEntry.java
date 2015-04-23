@@ -35,43 +35,57 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 public class DebitEntry extends DebitEntry_Base {
 
-    protected DebitEntry(final FinantialDocument finantialDocument, final Product product, BigDecimal amount) {
-        init(finantialDocument, product, amount);
-    }
+	protected DebitEntry(final FinantialDocument finantialDocument,
+			final Product product, BigDecimal amount) {
+		init(finantialDocument, product, amount);
+	}
 
-    @Override
-    protected void init(FinantialDocument finantialDocument, Product product, FinantialEntryType finantialEntryType,
-            BigDecimal amount) {
-        throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
-    }
+	@Override
+	protected void init(FinantialDocument finantialDocument, Product product,
+			FinantialEntryType finantialEntryType, BigDecimal amount) {
+		throw new RuntimeException(
+				"error.CreditEntry.use.init.without.finantialEntryType");
+	}
 
-    protected void init(final FinantialDocument finantialDocument, final Product product, BigDecimal amount) {
-        super.init(finantialDocument, product, FinantialEntryType.DEBIT_ENTRY, amount);
+	protected void init(final FinantialDocument finantialDocument,
+			final Product product, BigDecimal amount) {
+		super.init(finantialDocument, product, FinantialEntryType.DEBIT_ENTRY,
+				amount);
 
-        checkRules();
-    }
+		checkRules();
+	}
 
-    @Override
-    protected void checkRules() {
-        super.checkRules();
+	@Override
+	protected void checkRules() {
+		super.checkRules();
 
-        if (!(getFinantialDocument() instanceof DebitNote)) {
-            throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
-        }
-    }
+		if (!(getFinantialDocument() instanceof DebitNote)) {
+			throw new TreasuryDomainException(
+					"error.DebitEntry.finantialDocument.not.debit.entry.type");
+		}
+	}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
 
-    public static Stream<DebitEntry> findAll() {
-        return (Stream<DebitEntry>) FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry);
-    }
+	public static Stream<DebitEntry> findAll() {
+		return FinantialDocumentEntry.findAll()
+				.filter(f -> f instanceof DebitEntry)
+				.map(DebitEntry.class::cast);
+	}
 
-    public boolean isEventAnnuled() {
-        return getEventAnnuled();
-    }
+	public boolean isEventAnnuled() {
+		return getEventAnnuled();
+	}
 
+	public BigDecimal getOpenAmount() {
+		BigDecimal amount = this.getAmount();
+		for (SettlementEntry entry : this.getSettlementEntriesSet()) {
+			amount = amount.subtract(entry.getAmount());
+		}
+		return amount;
+	}
 }

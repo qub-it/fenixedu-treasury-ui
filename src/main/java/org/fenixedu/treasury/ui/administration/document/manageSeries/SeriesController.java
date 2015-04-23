@@ -6,7 +6,7 @@
  *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright Â© 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -49,7 +49,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageSeries") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageSeries",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
@@ -146,7 +146,7 @@ public class SeriesController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteSeries(series);
 
-            addInfoMessage("Sucess deleting Series ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/document/manageseries/series/", model, redirectAttributes);
 
         } catch (DomainException ex) {

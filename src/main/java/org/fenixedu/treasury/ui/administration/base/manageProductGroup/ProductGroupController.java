@@ -22,7 +22,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageProductGroup") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageProductGroup",
-        accessGroup = "anyone")
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/manageproductgroup/productgroup")
 public class ProductGroupController extends TreasuryBaseController {
@@ -115,7 +115,7 @@ public class ProductGroupController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteProductGroup(productGroup);
 
-            addInfoMessage("Sucess deleting ProductGroup ...", model);
+            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/manageproductgroup/productgroup/", model, redirectAttributes);
 
         } catch (DomainException ex) {
