@@ -67,7 +67,7 @@ public class CurrencyController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        return new ArrayList<Currency>(Currency.readAll());
+        return Currency.findAll().collect(Collectors.toList());
     }
 
     private List<Currency> filterSearchCurrency(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,

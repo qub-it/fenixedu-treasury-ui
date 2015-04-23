@@ -195,11 +195,11 @@ public class SettlementNoteController extends TreasuryBaseController {
 		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
 		// CHANGE_ME - MUST DEFINE RELATION
 		 model.addAttribute("SettlementNote_documentNumberSeries_options",
-		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
+		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll().collect(Collectors.toList()));
 		// // CHANGE_ME - MUST DEFINE RELATION
 
 		 model.addAttribute("SettlementNote_currency_options",
-		 org.fenixedu.treasury.domain.Currency.findAll()); 
+		 org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList())); 
 		model.addAttribute(
 				"stateValues",
 				org.fenixedu.treasury.domain.document.FinantialDocumentStateType

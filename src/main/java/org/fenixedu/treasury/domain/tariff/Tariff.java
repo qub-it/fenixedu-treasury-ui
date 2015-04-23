@@ -157,5 +157,5 @@ public abstract class Tariff extends Tariff_Base {
         final Interval interval = new Interval(start, end);
         return find(product).filter(t -> t.isActive(interval));
     }
-    }
+
 }

@@ -28,6 +28,8 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -82,28 +84,12 @@ public abstract class Invoice extends Invoice_Base {
      ************/
     // @formatter: on
 
-    public static Set<? extends Invoice> readAll() {
-        final Set<Invoice> result = Sets.newHashSet();
-        
-        for (final Invoice invoice : readAll()) {
-            if(invoice instanceof Invoice) {
-                result.add(invoice);
-            }
-        }
-        
-        return result;
+    public static Stream<? extends Invoice> findAll() {
+    	return FinantialDocument.findAll().filter(x-> x instanceof Invoice).map(Invoice.class::cast);
     }
 
     public static Set<Invoice> find(final DebtAccount debtAccount) {
-        Set<Invoice> result = Sets.newHashSet();
-
-        for (final Invoice it : readAll()) {
-            if (it.getDebtAccount() == debtAccount) {
-                result.add(it);
-            }
-        }
-
-        return result;
+    	return findAll().filter(x->x.getDebtAccount() == debtAccount).collect(Collectors.toSet());
     }
     
     

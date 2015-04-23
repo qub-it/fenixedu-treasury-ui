@@ -92,8 +92,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        // return new ArrayList<DocumentNumberSeries>(DocumentNumberSeries.findAll().collect(Collectors.toList())); //CHANGE_ME
-        return new ArrayList<DocumentNumberSeries>(DocumentNumberSeries.readAll());
+        return DocumentNumberSeries.findAll().collect(Collectors.toList());
     }
 
     private List<DocumentNumberSeries> filterSearchDocumentNumberSeries(int counter) {

@@ -30,8 +30,8 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.Set;
 
-
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -44,143 +44,143 @@ import com.google.common.collect.Sets;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
-    protected FinantialDocument() {
+	protected FinantialDocument() {
 
-        super();
-        setBennu(Bennu.getInstance());
-        setState(FinantialDocumentStateType.PREPARING);
-    }
+		super();
+		setBennu(Bennu.getInstance());
+		setState(FinantialDocumentStateType.PREPARING);
+	}
 
-    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        setDebtAccount(debtAccount);
-        setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
-        setDocumentNumberSeries(documentNumberSeries);
-        setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
-        setDocumentDate(documentDate);
-        
-        checkRules();
-    }
+	protected void init(final DebtAccount debtAccount,
+			final DocumentNumberSeries documentNumberSeries,
+			final DateTime documentDate) {
+		setDebtAccount(debtAccount);
+		setFinantialDocumentType(documentNumberSeries
+				.getFinantialDocumentType());
+		setDocumentNumberSeries(documentNumberSeries);
+		setDocumentNumber(String.valueOf(documentNumberSeries
+				.getSequenceNumberAndIncrement()));
+		setDocumentDate(documentDate);
 
-    protected void checkRules() {
-        if(getDebtAccount() == null) {
-            throw new TreasuryDomainException("error.FinantialDocument.debtAccount.required");
-        }
-        
-        if (getFinantialDocumentType() == null) {
-            throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.required");
-        }
+		checkRules();
+	}
 
-        if (getDocumentNumberSeries() == null) {
-            throw new TreasuryDomainException("error.FinantialDocument.documentNumber.required");
-        }
-        
-        if(getDocumentDate() == null) {
-            throw new TreasuryDomainException("error.FinantialDocument.documentDate.required");
-        }
-        
-        if(getDocumentDueDate() == null) {
-            throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.required");
-        }
-    }
+	protected void checkRules() {
+		if (getDebtAccount() == null) {
+			throw new TreasuryDomainException(
+					"error.FinantialDocument.debtAccount.required");
+		}
 
-    public String getUiDocumentNumber() {
-        return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
-                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
-    }
+		if (getFinantialDocumentType() == null) {
+			throw new TreasuryDomainException(
+					"error.FinantialDocument.finantialDocumentType.required");
+		}
 
-    public BigDecimal getTotalValue() {
-        return BigDecimal.ZERO;
-    }
+		if (getDocumentNumberSeries() == null) {
+			throw new TreasuryDomainException(
+					"error.FinantialDocument.documentNumber.required");
+		}
 
-    public BigDecimal getTotalNetValue() {
-        return BigDecimal.ZERO;
-    }
+		if (getDocumentDate() == null) {
+			throw new TreasuryDomainException(
+					"error.FinantialDocument.documentDate.required");
+		}
 
-    public boolean isClosed() {
-        return this.getState().isClosed();
-    }
-    
-    public boolean isInvoice() {
-        return false;
-    }
-    
-    public boolean isDebitNote() {
-        return false;
-    }
-    
-    public boolean isCreditNote() {
-        return false;
-    }
-    
-    public boolean isSettlementNote() {
-        return false;
-    }
-    
-    public boolean isDeletable() {
-        return true;
-    }
-    
-    public void closeDocument() {
-        setState(FinantialDocumentStateType.CLOSED);
-    }
+		if (getDocumentDueDate() == null) {
+			throw new TreasuryDomainException(
+					"error.FinantialDocument.documentDueDate.required");
+		}
+	}
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.FinantialDocument.cannot.delete");
-        }
+	public String getUiDocumentNumber() {
+		return String.format("%s %s/%s", this.getDocumentNumberSeries()
+				.getFinantialDocumentType().getDocumentNumberSeriesPrefix(),
+				this.getDocumentNumberSeries().getSeries().getCode(),
+				this.getDocumentNumber());
+	}
 
-        setBennu(null);
+	public BigDecimal getTotalValue() {
+		return BigDecimal.ZERO;
+	}
 
-        deleteDomainObject();
-    }
+	public BigDecimal getTotalNetValue() {
+		return BigDecimal.ZERO;
+	}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+	public boolean isClosed() {
+		return this.getState().isClosed();
+	}
 
-    public static Set<? extends FinantialDocument> readAll() {
-        return Bennu.getInstance().getFinantialDocumentsSet();
-    }
+	public boolean isInvoice() {
+		return false;
+	}
 
-    public static Set<FinantialDocument> find(final FinantialDocumentType finantialDocumentType) {
-        return readAll().stream().filter(i->finantialDocumentType.equals(i.getFinantialDocumentType())).collect(Collectors.toSet());
-    }
-    
-    
+	public boolean isDebitNote() {
+		return false;
+	}
 
-    public static Set<FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
-        final Set<FinantialDocument> result = Sets.newHashSet();
+	public boolean isCreditNote() {
+		return false;
+	}
 
-        for (final FinantialDocument it : readAll()) {
-            if (it.getDocumentNumberSeries() == documentNumberSeries) {
-                result.add(it);
-            }
-        }
+	public boolean isSettlementNote() {
+		return false;
+	}
 
-        return result;
-    }
+	public boolean isDeletable() {
+		return true;
+	}
 
-    public static Set<FinantialDocument> find(final FinantialDocumentType FinantialDocumentType,
-            final DocumentNumberSeries documentNumberSeries) {
-        final Set<FinantialDocument> result = Sets.newHashSet();
+	public void closeDocument() {
+		setState(FinantialDocumentStateType.CLOSED);
+	}
 
-        for (final FinantialDocument it : readAll()) {
-            if (it.getFinantialDocumentType() != FinantialDocumentType) {
-                continue;
-            }
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException(
+					"error.FinantialDocument.cannot.delete");
+		}
 
-            if (it.getDocumentNumberSeries() != documentNumberSeries) {
-                continue;
-            }
+		setBennu(null);
 
-            result.add(it);
-        }
+		deleteDomainObject();
+	}
 
-        return result;
-    }
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
+
+	public static Stream<? extends FinantialDocument> findAll() {
+		return Bennu.getInstance().getFinantialDocumentsSet().stream();
+	}
+
+	public static Set<FinantialDocument> find(
+			final FinantialDocumentType finantialDocumentType) {
+		return findAll()
+				.filter(i -> finantialDocumentType.equals(i
+						.getFinantialDocumentType())).collect(
+						Collectors.toSet());
+	}
+
+	public static Set<FinantialDocument> find(
+			final DocumentNumberSeries documentNumberSeries) {
+		return findAll().filter(
+				x -> x.getDocumentNumberSeries() == documentNumberSeries)
+				.collect(Collectors.toSet());
+	}
+
+	public static Set<FinantialDocument> find(
+			final FinantialDocumentType finantialDocumentType,
+			final DocumentNumberSeries documentNumberSeries) {
+
+		return findAll()
+				.filter(x -> x.getDocumentNumberSeries() == documentNumberSeries
+						&& x.getFinantialDocumentType() == finantialDocumentType)
+				.collect(Collectors.toSet());
+	}
 
 	public Boolean getClosed() {
 		return this.getState().equals(FinantialDocumentStateType.CLOSED);

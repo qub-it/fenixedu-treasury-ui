@@ -27,8 +27,10 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+
 import java.util.Set;
 
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -99,5 +101,21 @@ public class CreditNote extends CreditNote_Base {
     public static CreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         return new CreditNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
-    
+
+	@Atomic
+	public void edit(final DebitNote debitNote,final DebtAccount payorDebtAccount,final FinantialDocumentType finantialDocumentType,final DebtAccount debtAccount,final DocumentNumberSeries documentNumberSeries,final Currency currency,final java.lang.String documentNumber,final org.joda.time.DateTime documentDate,final org.joda.time.DateTime documentDueDate,final java.lang.String originDocumentNumber,final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+	    setDebitNote(debitNote);
+	    setPayorDebtAccount(payorDebtAccount);
+	    setFinantialDocumentType(finantialDocumentType);
+	    setDebtAccount(debtAccount);
+	    setDocumentNumberSeries(documentNumberSeries);
+	    setCurrency(currency);
+	    setDocumentNumber(documentNumber);
+	    setDocumentDate(documentDate);
+	    setDocumentDueDate(documentDueDate);
+	    setOriginDocumentNumber(originDocumentNumber);
+	    setState(state);
+	    checkRules();
+	}
+
 }

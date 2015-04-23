@@ -115,8 +115,8 @@ public class SeriesController extends TreasuryBaseController {
                                         locale -> series.getName().getContent(locale) != null
                                                 && series.getName().getContent(locale).toLowerCase()
                                                         .contains(name.getContent(locale).toLowerCase())))
-                .filter(series -> series.isExternSeries() == true).filter(series -> series.isCertificated() == true)
-                .filter(series -> series.isLegacy() == true).collect(Collectors.toList());
+                .filter(series -> series.getExternSeries() == true).filter(series -> series.getCertificated() == true)
+                .filter(series -> series.getLegacy() == true).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")

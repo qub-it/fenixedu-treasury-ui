@@ -28,7 +28,9 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
+import java.util.stream.Stream;
 
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -76,17 +78,24 @@ public class DebitNote extends DebitNote_Base {
      ************/
     // @formatter: on
 
-    public static Set<DebitNote> readAll() {
-        final Set<DebitNote> result = Sets.newHashSet();
-        
-        for (final Invoice invoice : readAll()) {
-            if(invoice instanceof DebitNote) {
-                result.add((DebitNote) invoice);
-            }
-        }
-        
-        return result;
+    public static Stream<DebitNote> findAll() {
+    	return FinantialDocument.findAll().filter(x-> x instanceof DebitNote).map(DebitNote.class::cast); 
     }
+
+    @Atomic
+	public void edit(final DebtAccount payorDebtAccount,final FinantialDocumentType finantialDocumentType,final DebtAccount debtAccount,final DocumentNumberSeries documentNumberSeries,final Currency currency,final java.lang.String documentNumber,final org.joda.time.DateTime documentDate,final org.joda.time.DateTime documentDueDate,final java.lang.String originDocumentNumber,final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+	    setPayorDebtAccount(payorDebtAccount);
+	    setFinantialDocumentType(finantialDocumentType);
+	    setDebtAccount(debtAccount);
+	    setDocumentNumberSeries(documentNumberSeries);
+	    setCurrency(currency);
+	    setDocumentNumber(documentNumber);
+	    setDocumentDate(documentDate);
+	    setDocumentDueDate(documentDueDate);
+	    setOriginDocumentNumber(originDocumentNumber);
+	    setState(state);
+	    checkRules();
+	}
 
     @Atomic
     public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {

@@ -97,8 +97,8 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
      ************/
     // @formatter: on
 
-    public static Set<DocumentNumberSeries> readAll() {
-        return Bennu.getInstance().getDocumentNumberSeriesSet();
+    public static Stream<DocumentNumberSeries> findAll() {
+        return Bennu.getInstance().getDocumentNumberSeriesSet().stream();
     }
 
     public static DocumentNumberSeries find(final FinantialDocumentType finantialDocumentType, final Series series) {

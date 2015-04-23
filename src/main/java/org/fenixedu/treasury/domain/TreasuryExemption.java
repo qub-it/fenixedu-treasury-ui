@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;

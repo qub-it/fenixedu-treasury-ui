@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -103,14 +104,14 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
      ************/
     // @formatter: on
 
-    public static Set<FinantialDocumentType> findAll() {
-        return Bennu.getInstance().getFinantialDocumentTypesSet();
+    public static Stream<FinantialDocumentType> findAll() {
+        return Bennu.getInstance().getFinantialDocumentTypesSet().stream();
     }
 
     public static FinantialDocumentType findByCode(final String code) {
         FinantialDocumentType result = null;
 
-        for (final FinantialDocumentType it : findAll()) {
+        for (final FinantialDocumentType it : findAll().collect(Collectors.toList())) {
             if (!it.getCode().equalsIgnoreCase(code)) {
                 continue;
             }
@@ -128,7 +129,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     protected static FinantialDocumentType findByName(final String name) {
         FinantialDocumentType result = null;
 
-        for (final FinantialDocumentType it : findAll()) {
+        for (final FinantialDocumentType it : findAll().collect(Collectors.toList())) {
 
             if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
                 continue;
@@ -147,7 +148,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     protected static FinantialDocumentType findByDocumentNumberSeriesPrefix(final String documentNumberSeriesPrefix) {
         FinantialDocumentType result = null;
 
-        for (final FinantialDocumentType it : findAll()) {
+        for (final FinantialDocumentType it : findAll().collect(Collectors.toList())) {
             if (!it.getDocumentNumberSeriesPrefix().equalsIgnoreCase(documentNumberSeriesPrefix)) {
                 continue;
             }
@@ -164,7 +165,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
 
     protected static FinantialDocumentType findByFinantialDocumentType(final FinantialDocumentTypeEnum type) {
         final Stream<FinantialDocumentType> stream =
-        		findAll().stream().filter(fdt -> fdt.getType() == type);
+        		findAll().filter(fdt -> fdt.getType() == type);
 
         if (stream.count() > 1) {
             throw new TreasuryDomainException("error.FinantialDocumentType.not.unique.in.finantial.document.type");

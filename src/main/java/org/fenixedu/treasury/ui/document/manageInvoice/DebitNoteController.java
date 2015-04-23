@@ -136,9 +136,9 @@ public class DebitNoteController extends TreasuryBaseController {
 		// CHANGE_ME - MUST DEFINE RELATION
 		model.addAttribute("DebitNote_documentNumberSeries_options",
 				org.fenixedu.treasury.domain.document.DocumentNumberSeries
-						.findAll());
+						.findAll().collect(Collectors.toList()));
 		model.addAttribute("DebitNote_currency_options",
-				org.fenixedu.treasury.domain.Currency.findAll());
+				org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
 		model.addAttribute(
 				"stateValues",
 				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
@@ -323,9 +323,8 @@ public class DebitNoteController extends TreasuryBaseController {
 		// @formatter: on
 
 		DebitNote debitNote = DebitNote.create(payorDebtAccount,
-				finantialDocumentType, debtAccount, documentNumberSeries,
-				currency, documentNumber, documentDate, documentDueDate,
-				originDocumentNumber, state);
+				debtAccount, documentNumberSeries,
+				documentDate);
 
 		return debitNote;
 	}

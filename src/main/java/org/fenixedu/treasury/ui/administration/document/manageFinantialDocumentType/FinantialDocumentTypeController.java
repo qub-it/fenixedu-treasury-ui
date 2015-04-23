@@ -99,8 +99,8 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        // return new ArrayList<FinantialDocumentType>(FinantialDocumentType.findAll().collect(Collectors.toList())); //CHANGE_ME
-        return new ArrayList<FinantialDocumentType>(FinantialDocumentType.readAll());
+         return FinantialDocumentType.findAll().collect(Collectors.toList()); //CHANGE_ME
+//        return new ArrayList<FinantialDocumentType>(FinantialDocumentType.readAll());
     }
 
     private List<FinantialDocumentType> filterSearchFinantialDocumentType(
@@ -127,7 +127,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
                         && finantialDocumentType.getDocumentNumberSeriesPrefix().length() > 0
                         && finantialDocumentType.getDocumentNumberSeriesPrefix().toLowerCase()
                                 .contains(documentNumberSeriesPrefix.toLowerCase()))
-                .filter(finantialDocumentType -> finantialDocumentType.isInvoice() == true).collect(Collectors.toList());
+                .filter(finantialDocumentType -> finantialDocumentType.getInvoice() == true).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")

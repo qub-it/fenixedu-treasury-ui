@@ -400,10 +400,9 @@ public class CreditNoteController extends TreasuryBaseController {
 		// Instead, use individual SETTERS and validate "CheckRules" in the end
 		// @formatter: on
 
-		CreditNote creditNote = CreditNote.create(debitNote, payorDebtAccount,
-				finantialDocumentType, debtAccount, documentNumberSeries,
-				currency, documentNumber, documentDate, documentDueDate,
-				originDocumentNumber, state);
+		CreditNote creditNote = CreditNote.create(payorDebtAccount,
+				documentNumberSeries,
+				documentDate);
 		return creditNote;
 	}
 

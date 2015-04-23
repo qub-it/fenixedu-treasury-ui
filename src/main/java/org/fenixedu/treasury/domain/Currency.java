@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain;
 
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -111,14 +112,14 @@ public class Currency extends Currency_Base {
 	 ************/
 	// @formatter: on
 
-	public static Set<Currency> readAll() {
-		return Bennu.getInstance().getCurrenciesSet();
+	public static Stream<Currency> findAll() {
+		return Bennu.getInstance().getCurrenciesSet().stream();
 	}
 
 	public static Currency findByCode(final String code) {
 		Currency result = null;
 
-		for (final Currency it : readAll()) {
+		for (final Currency it : findAll().collect(Collectors.toList())) {
 			if (!it.getCode().equalsIgnoreCase(code)) {
 				continue;
 			}
@@ -137,7 +138,7 @@ public class Currency extends Currency_Base {
 	public static Currency findByName(final String name) {
 		Currency result = null;
 
-		for (final Currency it : readAll()) {
+		for (final Currency it : findAll().collect(Collectors.toList())) {
 
 			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
 					name)) {
