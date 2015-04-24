@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.manageCurrency;
+package org.fenixedu.treasury.ui.administration.base.managecurrency;
 
 import java.util.ArrayList;
 import java.util.List;

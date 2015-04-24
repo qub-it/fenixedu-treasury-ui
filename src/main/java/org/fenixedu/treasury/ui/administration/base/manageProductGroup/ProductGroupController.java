@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.manageProductGroup;
+package org.fenixedu.treasury.ui.administration.base.manageproductgroup;
 
 import java.util.ArrayList;
 import java.util.List;

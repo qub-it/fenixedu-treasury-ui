@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.manageVatExemptionReason;
+package org.fenixedu.treasury.ui.administration.base.managevatexemptionreason;
 
 import java.util.ArrayList;
 import java.util.List;

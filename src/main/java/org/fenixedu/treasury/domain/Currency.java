@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain;
 
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +41,19 @@ import org.fenixedu.treasury.util.LocalizedStringUtil;
 import pt.ist.fenixframework.Atomic;
 
 public class Currency extends Currency_Base {
+
+	public static String EURO_CODE = "EUR";
+	
+	
+	@Atomic
+	public static void InitializeCurrency()
+	{
+		Currency euro = Currency.findByCode(Currency.EURO_CODE);
+		if (euro == null)
+		{
+			Currency.create("EUR", new LocalizedString(Locale.getDefault(),"EUR"), "EUR", "€");
+		}
+	}
 
 	protected Currency() {
 		super();

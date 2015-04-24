@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.manageFiscalCountryRegion;
+package org.fenixedu.treasury.ui.administration.base.managefiscalcountryregion;
 
 import java.util.ArrayList;
 import java.util.List;

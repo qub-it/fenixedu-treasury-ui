@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.manageCustomerType;
+package org.fenixedu.treasury.ui.administration.base.managecustomertype;
 
 import java.util.List;
 import java.util.stream.Collectors;

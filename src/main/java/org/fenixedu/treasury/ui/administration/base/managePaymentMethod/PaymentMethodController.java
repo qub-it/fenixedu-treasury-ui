@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.managePaymentMethod;
+package org.fenixedu.treasury.ui.administration.base.managepaymentmethod;
 
 import java.util.ArrayList;
 import java.util.List;

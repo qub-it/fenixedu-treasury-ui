@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.ui.administration.document.manageSeries;
+package org.fenixedu.treasury.ui.administration.document.manageseries;
 
 import java.util.ArrayList;
 import java.util.List;

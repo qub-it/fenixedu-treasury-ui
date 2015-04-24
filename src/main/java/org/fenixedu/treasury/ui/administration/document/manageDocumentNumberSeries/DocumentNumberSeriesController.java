@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.ui.administration.document.manageDocumentNumberSeries;
+package org.fenixedu.treasury.ui.administration.document.managedocumentnumberseries;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +38,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.administration.document.manageSeries.SeriesController;
+import org.fenixedu.treasury.ui.administration.document.manageseries.SeriesController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

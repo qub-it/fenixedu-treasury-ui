@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.base.manageVat;
+package org.fenixedu.treasury.ui.administration.base.managevat;
 
 import java.util.ArrayList;
 import java.util.List;
