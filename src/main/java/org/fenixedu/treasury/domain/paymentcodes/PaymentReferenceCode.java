@@ -25,13 +25,13 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.domain.paymentCodes;
+package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCode_Base;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode_Base;
 
 import pt.ist.fenixframework.Atomic;
 

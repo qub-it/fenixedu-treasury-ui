@@ -36,7 +36,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentCodes.SibsReportFile_Base;
+import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile_Base;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
