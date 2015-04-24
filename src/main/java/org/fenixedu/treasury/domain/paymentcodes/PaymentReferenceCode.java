@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCode_Base;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -44,7 +45,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 			final java.lang.String referenceCode,
 			final org.joda.time.DateTime beginDate,
 			final org.joda.time.DateTime endDate,
-			final org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCodeStateType state) {
+			final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
 		setReferenceCode(referenceCode);
 		setBeginDate(beginDate);
 		setEndDate(endDate);
@@ -85,7 +86,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 			final java.lang.String referenceCode,
 			final org.joda.time.DateTime beginDate,
 			final org.joda.time.DateTime endDate,
-			final org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCodeStateType state) {
+			final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
 		setReferenceCode(referenceCode);
 		setBeginDate(beginDate);
 		setEndDate(endDate);
@@ -114,7 +115,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 			final java.lang.String referenceCode,
 			final org.joda.time.DateTime beginDate,
 			final org.joda.time.DateTime endDate,
-			final org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCodeStateType state) {
+			final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
 		PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
 		paymentReferenceCode.init(referenceCode, beginDate, endDate, state);
 		return paymentReferenceCode;
@@ -147,7 +148,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 	}
 
 	public static Stream<PaymentReferenceCode> findByState(
-			final org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCodeStateType state) {
+			final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
 		return findAll().filter(i -> state.equals(i.getState()));
 	}
 

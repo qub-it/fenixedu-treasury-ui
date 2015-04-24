@@ -5,7 +5,7 @@ enum org.fenixedu.treasury.domain.document.FinantialEntryType                   
 enum org.fenixedu.treasury.domain.document.FinantialDocumentStateType                                    as FinantialDocumentStateType;
 enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                          as DueDateCalculationType;
 enum org.fenixedu.treasury.domain.tariff.InterestType                                                    as InterestType; 
-enum org.fenixedu.treasury.domain.paymentCodes.PaymentReferenceCodeStateType							 as PaymentReferenceCodeStateType;
+enum org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType							 as PaymentReferenceCodeStateType;
 
 external class .org.fenixedu.bennu.io.domain.GenericFile;
 
@@ -239,7 +239,7 @@ class tariff.InterestRate {
 	BigDecimalT rate;
 }
 
-class paymentCodes.PaymentReferenceCode
+class paymentcodes.PaymentReferenceCode
 {
        String referenceCode;
        DateTime beginDate;
@@ -247,7 +247,7 @@ class paymentCodes.PaymentReferenceCode
        PaymentReferenceCodeStateType state;
 }
 
-	class paymentCodes.pool.PaymentCodePool  {
+	class paymentcodes.pool.PaymentCodePool  {
 	  String name;
 	  Integer minPaymentCodes;
 	  Integer maxPaymentCodes;
@@ -255,16 +255,16 @@ class paymentCodes.PaymentReferenceCode
 	  BigDecimalT maxAmount;
 	  Boolean active;
 	}
-	class paymentCodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	class paymentcodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 	  LocalDate whenProcessedBySibs;
 	  BigDecimalT transactionsTotalAmount;
 	  BigDecimalT totalCost;
 	}
 	
-	class paymentCodes.SibsInputFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	class paymentcodes.SibsInputFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 	}
 
-class paymentCodes.PaymentReferenceCodeManager
+class paymentcodes.PaymentReferenceCodeManager
 {
        String code;
        String description;
@@ -983,7 +983,7 @@ relation PaymentReferenceCodeManagerBennu {
 	    multiplicity 1..1;
 	  }
 	  
-	  paymentCodes.PaymentReferenceCodeManager playsRole paymentReferenceCodeManagers{
+	  paymentcodes.PaymentReferenceCodeManager playsRole paymentReferenceCodeManagers{
 	    multiplicity *;
 	  }
 	}
@@ -993,7 +993,7 @@ relation PaymentReferenceCodeBennu {
 	    multiplicity 1..1;
 	  }
 	  
-	  paymentCodes.PaymentReferenceCode playsRole paymentReferenceCodes {
+	  paymentcodes.PaymentReferenceCode playsRole paymentReferenceCodes {
 	    multiplicity *;
 	  }
 	}
@@ -1004,14 +1004,14 @@ relation SibsReportFileBennu {
 	    multiplicity 1..1;
 	  }
 	  
-	  paymentCodes.SibsReportFile playsRole sibsReportFiles {
+	  paymentcodes.SibsReportFile playsRole sibsReportFiles {
 	    multiplicity *;
 	  }
 	}
 	
 	
 	relation SibsInputFileBennu {
-	 paymentCodes.SibsInputFile playsRole sibsInputFiles {
+	 paymentcodes.SibsInputFile playsRole sibsInputFiles {
 	    multiplicity *;
 	  }
 	  
@@ -1021,7 +1021,7 @@ relation SibsReportFileBennu {
 	}
 	
 	relation SibsInputFileUser {
-	  paymentCodes.SibsInputFile playsRole sibsInputFiles {
+	  paymentcodes.SibsInputFile playsRole sibsInputFiles {
 	    multiplicity *;
 	  }
 	  

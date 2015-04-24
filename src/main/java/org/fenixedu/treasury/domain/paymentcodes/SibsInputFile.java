@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.domain.paymentCodes;
+package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,22 +33,22 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.paymentCodes.SibsInputFile_Base;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
-public class PaymentReferenceCodeManager extends PaymentReferenceCodeManager_Base {
+public class SibsInputFile extends SibsInputFile_Base {
     
-    protected PaymentReferenceCodeManager() {
+    protected SibsInputFile() {
         super();
         setBennu(Bennu.getInstance());
     }
     
-    protected void init(final java.lang.String code,final java.lang.String description) {
-setCode(code);
-setDescription(description);
+    protected void init() {
     	checkRules();
     }
 
@@ -58,20 +58,10 @@ setDescription(description);
 		//
 		
 		//CHANGE_ME In order to validate UNIQUE restrictions
-		//if (findByCode(getCode().count()>1)
-		//{
-		//	throw new TreasuryDomainException("error.PaymentReferenceCodeManager.code.duplicated");
-		//}	
-		//if (findByDescription(getDescription().count()>1)
-		//{
-		//	throw new TreasuryDomainException("error.PaymentReferenceCodeManager.description.duplicated");
-		//}	
 	}
 	
 	@Atomic
-	public void edit(final java.lang.String code,final java.lang.String description) {
-	    setCode(code);
-	    setDescription(description);
+	public void edit() {
 	    checkRules();
 	}
 	
@@ -82,7 +72,7 @@ setDescription(description);
 	@Atomic
 	public void delete() {
 	    if(!isDeletable()) {
-	        throw new TreasuryDomainException("error.PaymentReferenceCodeManager.cannot.delete");
+	        throw new TreasuryDomainException("error.SibsInputFile.cannot.delete");
 	    }
 	    
 	    setBennu(null);
@@ -92,10 +82,10 @@ setDescription(description);
 	
 	 
     @Atomic
-    public static PaymentReferenceCodeManager create(final java.lang.String code,final java.lang.String description) {
-    	PaymentReferenceCodeManager paymentReferenceCodeManager = new PaymentReferenceCodeManager();
-        paymentReferenceCodeManager.init( code, description);
-        return paymentReferenceCodeManager;
+    public static SibsInputFile create() {
+    	SibsInputFile sibsInputFile = new SibsInputFile();
+        sibsInputFile.init();
+        return sibsInputFile;
     }
 
 	// @formatter: off
@@ -104,16 +94,22 @@ setDescription(description);
 	 ************/
     // @formatter: on
 	
-	public static Stream<PaymentReferenceCodeManager> findAll() {
-	    return Bennu.getInstance().getPaymentReferenceCodeManagersSet().stream();
+	public static Stream<SibsInputFile> findAll() {
+	    return Bennu.getInstance().getSibsInputFilesSet().stream();
 	}
 	
-	public static Stream<PaymentReferenceCodeManager> findByCode(final java.lang.String code) {
-		return findAll().filter(i->code.equalsIgnoreCase(i.getCode()));
+	public static Stream<SibsInputFile> findByUploader(final User uploader) {
+		return findAll().filter(i->uploader.equals(i.getUploader()));
 	  }
-	public static Stream<PaymentReferenceCodeManager> findByDescription(final java.lang.String description) {
-		return findAll().filter(i->description.equalsIgnoreCase(i.getDescription()));
+	public static Stream<SibsInputFile> findByBennu(final Bennu bennu) {
+		return findAll().filter(i->bennu.equals(i.getBennu()));
 	  }
+
+	@Override
+	public boolean isAccessible(User arg0) {
+		// TODO Auto-generated method stub
+		return false;
+	}
    
     
 }
