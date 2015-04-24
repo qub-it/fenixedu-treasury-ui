@@ -55,9 +55,6 @@ public class TreasuryBaseController {
 	protected static final String WARNING_MESSAGES = "warningMessages";
 	protected static final String INFO_MESSAGES = "infoMessages";
 
-	// The HTTP Request that can be used internally in the controller
-	protected @Autowired HttpServletRequest request;
-
 	// The entity in the Model
 
 	// The list of INFO messages that can be showed on View
