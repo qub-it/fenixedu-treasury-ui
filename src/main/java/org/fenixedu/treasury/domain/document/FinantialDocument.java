@@ -44,166 +44,146 @@ import com.google.common.collect.Sets;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
-	protected FinantialDocument() {
+    protected FinantialDocument() {
 
-		super();
-		setBennu(Bennu.getInstance());
-		setState(FinantialDocumentStateType.PREPARING);
-	}
+        super();
+        setBennu(Bennu.getInstance());
+        setState(FinantialDocumentStateType.PREPARING);
+    }
 
-	protected void init(final DebtAccount debtAccount,
-			final DocumentNumberSeries documentNumberSeries,
-			final DateTime documentDate) {
-		setDebtAccount(debtAccount);
-		setFinantialDocumentType(documentNumberSeries
-				.getFinantialDocumentType());
-		setDocumentNumberSeries(documentNumberSeries);
-		setDocumentNumber(String.valueOf(documentNumberSeries
-				.getSequenceNumberAndIncrement()));
-		setDocumentDate(documentDate);
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate) {
+        setDebtAccount(debtAccount);
+        setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
+        setDocumentNumberSeries(documentNumberSeries);
+        setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
+        setDocumentDate(documentDate);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	protected void checkRules() {
-		if (getDebtAccount() == null) {
-			throw new TreasuryDomainException(
-					"error.FinantialDocument.debtAccount.required");
-		}
+    protected void checkRules() {
+        if (getDebtAccount() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.debtAccount.required");
+        }
 
-		if (getFinantialDocumentType() == null) {
-			throw new TreasuryDomainException(
-					"error.FinantialDocument.finantialDocumentType.required");
-		}
+        if (getFinantialDocumentType() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.required");
+        }
 
-		if (getDocumentNumberSeries() == null) {
-			throw new TreasuryDomainException(
-					"error.FinantialDocument.documentNumber.required");
-		}
+        if (getDocumentNumberSeries() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentNumber.required");
+        }
 
-		if (getDocumentDate() == null) {
-			throw new TreasuryDomainException(
-					"error.FinantialDocument.documentDate.required");
-		}
+        if (getDocumentDate() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentDate.required");
+        }
 
-		if (getDocumentDueDate() == null) {
-			throw new TreasuryDomainException(
-					"error.FinantialDocument.documentDueDate.required");
-		}
-	}
+        if (getDocumentDueDate() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.required");
+        }
+    }
 
-	public String getUiDocumentNumber() {
-		return String.format("%s %s/%s", this.getDocumentNumberSeries()
-				.getFinantialDocumentType().getDocumentNumberSeriesPrefix(),
-				this.getDocumentNumberSeries().getSeries().getCode(),
-				this.getDocumentNumber());
-	}
+    public String getUiDocumentNumber() {
+        return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
+                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
+    }
 
-	public BigDecimal getTotalAmount() {
-		return BigDecimal.ZERO;
-	}
+    public BigDecimal getTotalAmount() {
+        return BigDecimal.ZERO;
+    }
 
-	public BigDecimal getTotalNetAmount() {
-		return BigDecimal.ZERO;
-	}
+    public BigDecimal getTotalNetAmount() {
+        return BigDecimal.ZERO;
+    }
 
-	public boolean isClosed() {
-		return this.getState().isClosed();
-	}
+    public boolean isClosed() {
+        return this.getState().isClosed();
+    }
 
-	public boolean isInvoice() {
-		return false;
-	}
+    public boolean isInvoice() {
+        return false;
+    }
 
-	public boolean isDebitNote() {
-		return false;
-	}
+    public boolean isDebitNote() {
+        return false;
+    }
 
-	public boolean isCreditNote() {
-		return false;
-	}
+    public boolean isCreditNote() {
+        return false;
+    }
 
-	public boolean isSettlementNote() {
-		return false;
-	}
+    public boolean isSettlementNote() {
+        return false;
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	public void closeDocument() {
-		setState(FinantialDocumentStateType.CLOSED);
-	}
+    public void closeDocument() {
+        setState(FinantialDocumentStateType.CLOSED);
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException(
-					"error.FinantialDocument.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.FinantialDocument.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
 
-		deleteDomainObject();
-	}
+        deleteDomainObject();
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<? extends FinantialDocument> findAll() {
-		return Bennu.getInstance().getFinantialDocumentsSet().stream();
-	}
+    public static Stream<? extends FinantialDocument> findAll() {
+        return Bennu.getInstance().getFinantialDocumentsSet().stream();
+    }
 
-	public static Set<FinantialDocument> find(
-			final FinantialDocumentType finantialDocumentType) {
-		return findAll()
-				.filter(i -> finantialDocumentType.equals(i
-						.getFinantialDocumentType())).collect(
-						Collectors.toSet());
-	}
+    public static Stream<? extends FinantialDocument> find(final FinantialDocumentType finantialDocumentType) {
+        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
+    }
 
-	public static Set<FinantialDocument> find(
-			final DocumentNumberSeries documentNumberSeries) {
-		return findAll().filter(
-				x -> x.getDocumentNumberSeries() == documentNumberSeries)
-				.collect(Collectors.toSet());
-	}
+    public static Stream<? extends FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
+        return findAll().filter(x -> x.getDocumentNumberSeries() == documentNumberSeries);
+    }
 
-	public static Set<FinantialDocument> find(
-			final FinantialDocumentType finantialDocumentType,
-			final DocumentNumberSeries documentNumberSeries) {
+    public static Stream<? extends FinantialDocument> find(final FinantialDocumentType finantialDocumentType,
+            final DocumentNumberSeries documentNumberSeries) {
 
-		return findAll()
-				.filter(x -> x.getDocumentNumberSeries() == documentNumberSeries
-						&& x.getFinantialDocumentType() == finantialDocumentType)
-				.collect(Collectors.toSet());
-	}
+        return findAll()
+                .filter(x -> x.getDocumentNumberSeries() == documentNumberSeries
+                        && x.getFinantialDocumentType() == finantialDocumentType);
+    }
 
-	public Boolean getClosed() {
-		return this.getState().equals(FinantialDocumentStateType.CLOSED);
-	}
+    public Boolean getClosed() {
+        return this.getState().equals(FinantialDocumentStateType.CLOSED);
+    }
 
-	public DateTime getWhenCreated() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public DateTime getWhenCreated() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public String getUserChanged() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getUserChanged() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public String getUserCreated() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public String getUserCreated() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public BigDecimal getOpenAmount() {
-		// TODO Auto-generated method stub
-		return getTotalAmount();
-	}
+    public BigDecimal getOpenAmount() {
+        // TODO Auto-generated method stub
+        return getTotalAmount();
+    }
 
 }

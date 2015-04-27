@@ -66,150 +66,131 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 @RequestMapping("/treasury/accounting/managecustomer/customer")
 public class CustomerController extends TreasuryBaseController {
 
-	//
+    //
 
-	@RequestMapping
-	public String home(Model model) {
-		// this is the default behaviour, for handling in a Spring Functionality
-		return "forward:/treasury/accounting/managecustomer/customer/";
-	}
+    @RequestMapping
+    public String home(Model model) {
+        // this is the default behaviour, for handling in a Spring Functionality
+        return "forward:/treasury/accounting/managecustomer/customer/";
+    }
 
-	private Customer getCustomer(Model model) {
-		return (Customer) model.asMap().get("customer");
-	}
+    private Customer getCustomer(Model model) {
+        return (Customer) model.asMap().get("customer");
+    }
 
-	private void setCustomer(Customer customer, Model model) {
-		model.addAttribute("customer", customer);
-	}
+    private void setCustomer(Customer customer, Model model) {
+        model.addAttribute("customer", customer);
+    }
 
-	@Atomic
-	public void deleteCustomer(Customer customer) {
-		// CHANGE_ME: Do the processing for deleting the customer
-		// Do not catch any exception here
+    @Atomic
+    public void deleteCustomer(Customer customer) {
+        // CHANGE_ME: Do the processing for deleting the customer
+        // Do not catch any exception here
 
-		// customer.delete();
-	}
+        // customer.delete();
+    }
 
-	//
-	@RequestMapping(value = "/")
-	public String search(
-			@RequestParam( value="finantialInstitution",required=false) FinantialInstitution institution,
-			Model model) {
-		List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution);
+    //
+    @RequestMapping(value = "/")
+    public String search(@RequestParam(value = "finantialInstitution", required = false) FinantialInstitution institution,
+            Model model) {
+        List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution);
 
-		model.addAttribute("customer_finantialInstitution",
-				FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
+        model.addAttribute("customer_finantialInstitution", FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
 
-		// add the results dataSet to the model
-		model.addAttribute("searchcustomerResultsDataSet",
-				searchcustomerResultsDataSet);
-		return "treasury/accounting/managecustomer/customer/search";
-	}
+        // add the results dataSet to the model
+        model.addAttribute("searchcustomerResultsDataSet", searchcustomerResultsDataSet);
+        return "treasury/accounting/managecustomer/customer/search";
+    }
 
-	private List<Customer> getSearchUniverseSearchCustomerDataSet() {
-		//
-		// The initialization of the result list must be done here
-		//
-		//
-		return new ArrayList<Customer>(Customer.findAll().collect(
-				Collectors.toList()));
-		// return new ArrayList<Customer>();
-	}
+    private List<Customer> getSearchUniverseSearchCustomerDataSet() {
+        //
+        // The initialization of the result list must be done here
+        //
+        //
+        return new ArrayList<Customer>(Customer.findAll().collect(Collectors.<Customer> toList()));
+        // return new ArrayList<Customer>();
+    }
 
-	private List<Customer> filterSearchCustomer(FinantialInstitution institution) {
+    private List<Customer> filterSearchCustomer(FinantialInstitution institution) {
 
-		if (institution == null) {
-			return getSearchUniverseSearchCustomerDataSet().stream().collect(
-					Collectors.toList());
-		} else {
-			return getSearchUniverseSearchCustomerDataSet()
-					.stream()
-					.filter(customer -> customer
-							.getDebtAccountsSet()
-							.stream()
-							.anyMatch(
-									debtAccount -> debtAccount.getFinantialInstitution().equals(
-											institution)))
-					.collect(Collectors.toList());
-		}
-	}
+        if (institution == null) {
+            return getSearchUniverseSearchCustomerDataSet().stream().collect(Collectors.toList());
+        } else {
+            return getSearchUniverseSearchCustomerDataSet()
+                    .stream()
+                    .filter(customer -> customer.getDebtAccountsSet().stream()
+                            .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution)))
+                    .collect(Collectors.toList());
+        }
+    }
 
-	@RequestMapping(value = "/search/view/{oid}")
-	public String processSearchToViewAction(
-			@PathVariable("oid") Customer customer, Model model,
-			RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "/search/view/{oid}")
+    public String processSearchToViewAction(@PathVariable("oid") Customer customer, Model model,
+            RedirectAttributes redirectAttributes) {
 
-		// CHANGE_ME Insert code here for processing viewAction
-		// If you selected multiple exists you must choose which one to use
-		// below
-		return redirect("/treasury/accounting/managecustomer/customer/read"
-				+ "/" + customer.getExternalId(), model, redirectAttributes);
-	}
+        // CHANGE_ME Insert code here for processing viewAction
+        // If you selected multiple exists you must choose which one to use
+        // below
+        return redirect("/treasury/accounting/managecustomer/customer/read" + "/" + customer.getExternalId(), model,
+                redirectAttributes);
+    }
 
-	//
-	@RequestMapping(value = "/read/{oid}")
-	public String read(@PathVariable("oid") Customer customer, Model model) {
-		setCustomer(customer, model);
-		return "treasury/accounting/managecustomer/customer/read";
-	}
+    //
+    @RequestMapping(value = "/read/{oid}")
+    public String read(@PathVariable("oid") Customer customer, Model model) {
+        setCustomer(customer, model);
+        return "treasury/accounting/managecustomer/customer/read";
+    }
 
-	//
+    //
 
-	//
-	// This is the EventcreatePayment Method for Screen read
-	//
-	@RequestMapping(value = "/read/{oid}/createpayment")
-	public String processReadToCreatePayment(
-			@PathVariable("oid") Customer customer, Model model,
-			RedirectAttributes redirectAttributes) {
-		setCustomer(customer, model);
-		//
-		/* Put here the logic for processing Event createPayment */
-		// doSomething();
+    //
+    // This is the EventcreatePayment Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/createpayment")
+    public String processReadToCreatePayment(@PathVariable("oid") Customer customer, Model model,
+            RedirectAttributes redirectAttributes) {
+        setCustomer(customer, model);
+        //
+        /* Put here the logic for processing Event createPayment */
+        // doSomething();
 
-		// Now choose what is the Exit Screen
-		return redirect(
-				"/treasury/document/managepayments/settlementnote/create/"
-						+ getCustomer(model).getExternalId(), model,
-				redirectAttributes);
-	}
+        // Now choose what is the Exit Screen
+        return redirect("/treasury/document/managepayments/settlementnote/create/" + getCustomer(model).getExternalId(), model,
+                redirectAttributes);
+    }
 
-	//
-	// This is the EventcreateDebtEntry Method for Screen read
-	//
-	@RequestMapping(value = "/read/{oid}/createdebtentry")
-	public String processReadToCreateDebtEntry(
-			@PathVariable("oid") Customer customer, Model model,
-			RedirectAttributes redirectAttributes) {
-		setCustomer(customer, model);
-		//
-		/* Put here the logic for processing Event createDebtEntry */
-		// doSomething();
+    //
+    // This is the EventcreateDebtEntry Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/createdebtentry")
+    public String processReadToCreateDebtEntry(@PathVariable("oid") Customer customer, Model model,
+            RedirectAttributes redirectAttributes) {
+        setCustomer(customer, model);
+        //
+        /* Put here the logic for processing Event createDebtEntry */
+        // doSomething();
 
-		// Now choose what is the Exit Screen
-		return redirect(
-				"/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_createDebt>/"
-						+ getCustomer(model).getExternalId(), model,
-				redirectAttributes);
-	}
+        // Now choose what is the Exit Screen
+        return redirect("/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_createDebt>/" + getCustomer(model).getExternalId(), model,
+                redirectAttributes);
+    }
 
-	//
-	// This is the EventcreateExemption Method for Screen read
-	//
-	@RequestMapping(value = "/read/{oid}/createexemption")
-	public String processReadToCreateExemption(
-			@PathVariable("oid") Customer customer, Model model,
-			RedirectAttributes redirectAttributes) {
-		setCustomer(customer, model);
-		//
-		/* Put here the logic for processing Event createExemption */
-		// doSomething();
+    //
+    // This is the EventcreateExemption Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/createexemption")
+    public String processReadToCreateExemption(@PathVariable("oid") Customer customer, Model model,
+            RedirectAttributes redirectAttributes) {
+        setCustomer(customer, model);
+        //
+        /* Put here the logic for processing Event createExemption */
+        // doSomething();
 
-		// Now choose what is the Exit Screen
-		return redirect(
-				"/treasury/document/manageexemption/treasuryexemption/create/"
-						+ getCustomer(model).getExternalId(), model,
-				redirectAttributes);
-	}
+        // Now choose what is the Exit Screen
+        return redirect("/treasury/document/manageexemption/treasuryexemption/create/" + getCustomer(model).getExternalId(),
+                model, redirectAttributes);
+    }
 
 }

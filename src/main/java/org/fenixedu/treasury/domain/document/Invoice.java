@@ -41,63 +41,57 @@ import com.google.common.collect.Sets;
 
 public abstract class Invoice extends Invoice_Base {
 
-	protected Invoice() {
-		super();
-	}
+    protected Invoice() {
+        super();
+    }
 
-	@Override
-	protected void init(final DebtAccount debtAccount,
-			final DocumentNumberSeries documentNumberSeries,
-			final DateTime documentDate) {
-		super.init(debtAccount, documentNumberSeries, documentDate);
-	}
+    @Override
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate) {
+        super.init(debtAccount, documentNumberSeries, documentDate);
+    }
 
-	protected void init(final DebtAccount debtAccount,
-			final DebtAccount payorDebtAccount,
-			final DocumentNumberSeries documentNumberSeries,
-			final DateTime documentDate) {
-		super.init(debtAccount, documentNumberSeries, documentDate);
+    protected void init(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+        super.init(debtAccount, documentNumberSeries, documentDate);
 
-		if (payorDebtAccount == null) {
-			throw new TreasuryDomainException(
-					"error.Invoice.payorDebtAccount.null");
-		}
+        if (payorDebtAccount == null) {
+            throw new TreasuryDomainException("error.Invoice.payorDebtAccount.null");
+        }
 
-		setPayorDebtAccount(payorDebtAccount);
-	}
+        setPayorDebtAccount(payorDebtAccount);
+    }
 
-	@Override
-	public boolean isInvoice() {
-		return true;
-	}
+    @Override
+    public boolean isInvoice() {
+        return true;
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException("error.Invoice.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.Invoice.cannot.delete");
+        }
 
-		super.delete();
-	}
+        super.delete();
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<? extends Invoice> findAll() {
-		return FinantialDocument.findAll().filter(x -> x instanceof Invoice)
-				.map(Invoice.class::cast);
-	}
+    public static Stream<? extends Invoice> findAll() {
+        return FinantialDocument.findAll().filter(x -> x instanceof Invoice).map(Invoice.class::cast);
+    }
 
-	public static Set<Invoice> find(final DebtAccount debtAccount) {
-		return findAll().filter(x -> x.getDebtAccount() == debtAccount)
-				.collect(Collectors.toSet());
-	}
+    public static Stream<? extends Invoice> find(final DebtAccount debtAccount) {
+        return Invoice.findAll().filter(x -> x.getDebtAccount() == debtAccount);
+    }
 
 }

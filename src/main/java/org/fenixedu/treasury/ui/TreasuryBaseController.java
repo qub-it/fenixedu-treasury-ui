@@ -27,28 +27,27 @@
  */
 package org.fenixedu.treasury.ui;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.POST;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.List;
 
-import org.fenixedu.bennu.spring.portal.SpringApplication;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.bennu.BeanConverterService;
+import org.fenixedu.bennu.DomainObjectAdapter;
+import org.fenixedu.bennu.IBean;
+import org.fenixedu.bennu.LocalizedStringAdapter;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
 
-import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.DomainObject;
+
+import com.fatboyindustrial.gsonjodatime.Converters;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 
 public class TreasuryBaseController {
 	protected static final String ERROR_MESSAGES = "errorMessages";
@@ -113,4 +112,28 @@ public class TreasuryBaseController {
 		// ....
 	}
 
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        GenericConversionService conversionService = (GenericConversionService) binder
+                .getConversionService();
+        conversionService.addConverter(new BeanConverterService());
+    }
+    
+    protected String getBeanJson(IBean bean)
+    {
+        GsonBuilder builder = new GsonBuilder();
+        builder.registerTypeAdapter(LocalizedString.class,
+                new LocalizedStringAdapter());
+        builder.registerTypeHierarchyAdapter(DomainObject.class,
+                new DomainObjectAdapter());
+        Gson gson = Converters.registerDateTime(builder).create();
+
+        // CREATING JSON TREE TO ADD CLASSNAME ATTRIBUTE MUST DO THIS AUTOMAGICALLY
+        JsonElement jsonTree = gson.toJsonTree(bean);
+        jsonTree.getAsJsonObject().addProperty("classname",
+                bean.getClass().getName());
+        return jsonTree.toString();
+    }
+	
 }

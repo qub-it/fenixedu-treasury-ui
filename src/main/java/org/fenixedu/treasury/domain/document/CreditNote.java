@@ -27,10 +27,9 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-
 import java.math.BigDecimal;
-import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -39,29 +38,29 @@ import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
-import com.google.common.collect.Sets;
-
 public class CreditNote extends CreditNote_Base {
-    
-    protected CreditNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+
+    protected CreditNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate) {
         super();
-        
+
         init(debtAccount, documentNumberSeries, documentDate);
         checkRules();
     }
-    
-    protected CreditNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+
+    protected CreditNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         super();
-        
+
         init(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
         checkRules();
     }
-    
+
     @Override
     public boolean isCreditNote() {
         return true;
     }
-    
+
     public boolean isDeletable() {
         return true;
     }
@@ -82,52 +81,50 @@ public class CreditNote extends CreditNote_Base {
      ************/
     // @formatter: on
 
-    public static Set<CreditNote> findAll() {
-        final Set<CreditNote> result = Sets.newHashSet();
-        
-        for (final Invoice invoice : CreditNote.findAll()) {
-            if(invoice instanceof CreditNote) {
-                result.add((CreditNote) invoice);
-            }
-        }
-        
-        return result;
+    public static Stream<? extends CreditNote> findAll() {
+        return Invoice.findAll().filter(i -> i instanceof CreditNote).map(CreditNote.class::cast);
     }
 
     @Atomic
-    public static CreditNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    public static CreditNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate) {
         return new CreditNote(debtAccount, documentNumberSeries, documentDate);
     }
 
     @Atomic
-    public static CreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    public static CreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         return new CreditNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
 
-	@Atomic
-	public void edit(final DebitNote debitNote,final DebtAccount payorDebtAccount,final FinantialDocumentType finantialDocumentType,final DebtAccount debtAccount,final DocumentNumberSeries documentNumberSeries,final Currency currency,final java.lang.String documentNumber,final org.joda.time.DateTime documentDate,final org.joda.time.DateTime documentDueDate,final java.lang.String originDocumentNumber,final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
-	    setDebitNote(debitNote);
-	    setPayorDebtAccount(payorDebtAccount);
-	    setFinantialDocumentType(finantialDocumentType);
-	    setDebtAccount(debtAccount);
-	    setDocumentNumberSeries(documentNumberSeries);
-	    setCurrency(currency);
-	    setDocumentNumber(documentNumber);
-	    setDocumentDate(documentDate);
-	    setDocumentDueDate(documentDueDate);
-	    setOriginDocumentNumber(originDocumentNumber);
-	    setState(state);
-	    checkRules();
-	}
+    @Atomic
+    public void edit(final DebitNote debitNote, final DebtAccount payorDebtAccount,
+            final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
+            final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
+            final org.joda.time.DateTime documentDate, final org.joda.time.DateTime documentDueDate,
+            final java.lang.String originDocumentNumber,
+            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+        setDebitNote(debitNote);
+        setPayorDebtAccount(payorDebtAccount);
+        setFinantialDocumentType(finantialDocumentType);
+        setDebtAccount(debtAccount);
+        setDocumentNumberSeries(documentNumberSeries);
+        setCurrency(currency);
+        setDocumentNumber(documentNumber);
+        setDocumentDate(documentDate);
+        setDocumentDueDate(documentDueDate);
+        setOriginDocumentNumber(originDocumentNumber);
+        setState(state);
+        checkRules();
+    }
 
-	
-	@Override
-	public BigDecimal getOpenAmount() {
-		BigDecimal amount = BigDecimal.ZERO;
-    	for (CreditEntry entry : this.getFinantialDocumentEntriesSet().stream().map(CreditEntry.class::cast).collect(Collectors.toList()) )
-    	{
-    		amount = amount.add(entry.getOpenAmount());
-    	}
-    	return amount;
-	}
+    @Override
+    public BigDecimal getOpenAmount() {
+        BigDecimal amount = BigDecimal.ZERO;
+        for (CreditEntry entry : this.getFinantialDocumentEntriesSet().stream().map(CreditEntry.class::cast)
+                .collect(Collectors.toList())) {
+            amount = amount.add(entry.getOpenAmount());
+        }
+        return amount;
+    }
 }
