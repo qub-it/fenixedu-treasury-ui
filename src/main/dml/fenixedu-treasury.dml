@@ -16,7 +16,6 @@ valueType java.math.BigDecimal as BigDecimalT
 	}
 } 
 
-
 /************
  * ENTITIES *
  ************/
@@ -899,6 +898,16 @@ relation TariffProduct {
 
 relation TariffVatType {
 	VatType playsRole vatType {
+		multiplicity 0..1;
+	}
+	
+	tariff.Tariff playsRole tariff {
+		multiplicity *;
+	}
+}
+
+relation TariffFinantialEntity {
+	.org.fenixedu.treasury.domain.FinantialEntity playsRole finantialEntity {
 		multiplicity 1..1;
 	}
 	

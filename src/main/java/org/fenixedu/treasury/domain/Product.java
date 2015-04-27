@@ -30,8 +30,10 @@ package org.fenixedu.treasury.domain;
 import java.util.Set;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -56,6 +58,10 @@ public class Product extends Product_Base {
     }
 
     private void checkRules() {
+        if(getProductGroup() == null) {
+            throw new TreasuryDomainException("error.Product.productGroup.required");
+        }
+        
         if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.Product.code.required");
         }
@@ -142,6 +148,10 @@ public class Product extends Product_Base {
         }
 
         return result;
+    }
+    
+    public static LocalizedString defaultUnitOfMeasure() {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, "label.unitOfMeasure.default");
     }
 
     @Atomic

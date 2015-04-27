@@ -27,6 +27,10 @@
  */
 package org.fenixedu.treasury.domain.tariff;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.Constants;
+
 public enum DueDateCalculationType {
     FIXED_DATE,
     DAYS_AFTER_CREATION;
@@ -37,5 +41,9 @@ public enum DueDateCalculationType {
     
     public boolean isDaysAfterCreation() {
         return this == DAYS_AFTER_CREATION;
+    }
+    
+    public LocalizedString getDescriptionI18N() {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, String.format("label.%s.%s", getClass().getSimpleName(), name()));
     }
 }

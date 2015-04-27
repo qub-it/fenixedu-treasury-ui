@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -47,13 +48,15 @@ public abstract class Tariff extends Tariff_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final Product product, final VatType vatType, final DateTime beginDate, final DateTime endDate,
+    protected void init(final FinantialEntity finantialEntity, final Product product, final VatType vatType, final DateTime beginDate, final DateTime endDate,
             final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
             final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,
             final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
             final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+        setFinantialEntity(finantialEntity);
         setProduct(product);
-        setVatType(vatType);
+        // TODO: Initialize from product
+        setVatType(VatType.initializeExemptVatType());
         setBeginDate(beginDate);
         setEndDate(endDate);
         setDueDateCalculationType(dueDateCalculationType);
@@ -65,7 +68,6 @@ public abstract class Tariff extends Tariff_Base {
             InterestRate.create(this, interestType, numberOfDaysAfterCreationForDueDate, applyInFirstWorkday, maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
         }
         
-        checkRules();
     }
 
     protected void checkRules() {
@@ -93,7 +95,7 @@ public abstract class Tariff extends Tariff_Base {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.required");
         }
         
-        if(getFixedDueDate().toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1).isBefore(getBeginDate())) {
+        if(getFixedDueDate() != null && getFixedDueDate().toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1).isBefore(getBeginDate())) {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.must.be.after.or.equal.beginDate");
         }
         
@@ -106,7 +108,13 @@ public abstract class Tariff extends Tariff_Base {
         }
     }
     
-    public abstract BigDecimal getAmount();
+    protected Interval getInterval() {
+        return new Interval(getBeginDate(), getEndDate());
+    }
+    
+    public boolean isEndDateDefined() {
+        return getEndDate() != null;
+    }
     
     public boolean isActive(final DateTime when) {
         return new Interval(getBeginDate(), getEndDate()).contains(when);
@@ -118,6 +126,9 @@ public abstract class Tariff extends Tariff_Base {
 
     @Atomic
     public void edit(final DateTime beginDate, final DateTime endDate) {
+        super.setBeginDate(beginDate);
+        super.setEndDate(endDate);
+        
         checkRules();
     }
 
@@ -134,6 +145,26 @@ public abstract class Tariff extends Tariff_Base {
         setBennu(null);
         deleteDomainObject();
     }
+    
+
+    // @formatter: off
+    /************
+     *   UTILS  *
+     ************/
+    // @formatter: on
+    
+    protected boolean isNegative(final BigDecimal value) {
+        return !isZero(value) && !isPositive(value);
+    }
+    
+    protected boolean isZero(final BigDecimal value) {
+        return BigDecimal.ZERO.compareTo(value) == 0;
+    }
+    
+    public boolean isPositive(final BigDecimal value) {
+        return BigDecimal.ZERO.compareTo(value) < 0;
+    }
+    
 
     // @formatter: off
     /************
@@ -141,19 +172,19 @@ public abstract class Tariff extends Tariff_Base {
      ************/
     // @formatter: on
 
-    public static Stream<Tariff> findAll() {
+    public static Stream<? extends Tariff> findAll() {
         return Bennu.getInstance().getTariffsSet().stream();
     }
     
-    public static Stream<Tariff> find(final Product product) {
+    public static Stream<? extends Tariff> find(final Product product) {
         return findAll().filter(t -> t.getProduct() == product);
     }
     
-    public static Stream<Tariff> find(final Product product, final DateTime when) {
+    public static Stream<? extends Tariff> find(final Product product, final DateTime when) {
         return find(product).filter(t -> t.isActive(when));
     }
     
-    public static Stream<Tariff> findInInterval(final Product product, final DateTime start, final DateTime end) {
+    public static Stream<? extends Tariff> findInInterval(final Product product, final DateTime start, final DateTime end) {
         final Interval interval = new Interval(start, end);
         return find(product).filter(t -> t.isActive(interval));
     }

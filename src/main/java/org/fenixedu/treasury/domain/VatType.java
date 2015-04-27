@@ -29,15 +29,18 @@ package org.fenixedu.treasury.domain;
 
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
 public class VatType extends VatType_Base {
+
+    private static final String EXEMPT_CODE = "EXEMPT";
 
     protected VatType() {
         super();
@@ -140,4 +143,13 @@ public class VatType extends VatType_Base {
         return new VatType(code, name);
     }
 
+    @Atomic
+    public static VatType initializeExemptVatType() {
+        if(findByCode(EXEMPT_CODE) != null) {
+            return findByCode(EXEMPT_CODE);
+        }
+        
+        return new VatType(EXEMPT_CODE, BundleUtil.getLocalizedString(Constants.BUNDLE, "label.VatType.exempt"));
+    }
+    
 }

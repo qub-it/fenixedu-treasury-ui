@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
@@ -119,6 +120,11 @@ public class FinantialEntity extends FinantialEntity_Base {
 
     public static Stream<FinantialEntity> findByName(final FinantialInstitution finantialInstitution, final String name) {
         return findAll().filter(fe -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(fe.getName(), name));
+    }
+    
+    public static Stream<FinantialEntity> findWithPermissionsFor(final User user) {
+        // TODO: ACCESS CONTROL
+        return findAll();
     }
 
     @Atomic

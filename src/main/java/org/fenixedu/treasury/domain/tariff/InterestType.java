@@ -27,6 +27,10 @@
  */
 package org.fenixedu.treasury.domain.tariff;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.Constants;
+
 public enum InterestType {
 
     DAILY,
@@ -45,4 +49,7 @@ public enum InterestType {
         return this == FIXED_AMOUNT;
     }
     
+    public LocalizedString getDescriptionI18N() {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, String.format("label.%s.%s", getClass().getSimpleName(), name()));
+    }
 }

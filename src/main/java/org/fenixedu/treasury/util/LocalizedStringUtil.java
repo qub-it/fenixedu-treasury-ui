@@ -47,6 +47,10 @@ public class LocalizedStringUtil {
         return empty;
     }
 
+    @Deprecated
+    /**
+     * Replace with Guava
+     */
     public static boolean isTrimmedEmpty(final String content) {
         return content == null || StringUtils.isEmpty(StringUtils.trimToEmpty(content));
     }

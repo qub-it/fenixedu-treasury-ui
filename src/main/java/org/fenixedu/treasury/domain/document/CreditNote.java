@@ -82,10 +82,10 @@ public class CreditNote extends CreditNote_Base {
      ************/
     // @formatter: on
 
-    public static Set<CreditNote> readAll() {
+    public static Set<CreditNote> findAll() {
         final Set<CreditNote> result = Sets.newHashSet();
         
-        for (final Invoice invoice : readAll()) {
+        for (final Invoice invoice : CreditNote.findAll()) {
             if(invoice instanceof CreditNote) {
                 result.add((CreditNote) invoice);
             }
