@@ -57,6 +57,7 @@ import pt.ist.fenixframework.Atomic;
 
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
@@ -152,16 +153,14 @@ public class AdhocCustomerController extends TreasuryBaseController {
              * 
              * Add a error / warning message
              * 
-             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
+             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") +
              * de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning creating due to "+
              * ex.getLocalizedMessage(),model);
              */
             // @formatter: on
 
-            addErrorMessage(
-                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
-                            + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
         }
     }
@@ -223,16 +222,14 @@ public class AdhocCustomerController extends TreasuryBaseController {
              * 
              * Add a error / warning message
              * 
-             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update") +
+             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
              * de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning updating due to " +
              * de.getLocalizedMessage(),model);
              */
             // @formatter: on
 
-            addErrorMessage(
-                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update")
-                            + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(adhocCustomer, model);
 
         }

@@ -57,6 +57,7 @@ import pt.ist.fenixframework.Atomic;
 
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.document.DebitNote;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
@@ -67,396 +68,336 @@ import org.fenixedu.treasury.domain.document.DebitNote;
 @RequestMapping("/treasury/document/manageinvoice/debitnote")
 public class DebitNoteController extends TreasuryBaseController {
 
-	//
+    //
 
-	@RequestMapping
-	public String home(Model model) {
-		// this is the default behaviour, for handling in a Spring Functionality
-		return "forward:/treasury/document/manageinvoice/debitnote/";
-	}
+    @RequestMapping
+    public String home(Model model) {
+        // this is the default behaviour, for handling in a Spring Functionality
+        return "forward:/treasury/document/manageinvoice/debitnote/";
+    }
 
-	private DebitNote getDebitNote(Model model) {
-		return (DebitNote) model.asMap().get("debitNote");
-	}
+    private DebitNote getDebitNote(Model model) {
+        return (DebitNote) model.asMap().get("debitNote");
+    }
 
-	private void setDebitNote(DebitNote debitNote, Model model) {
-		model.addAttribute("debitNote", debitNote);
-	}
+    private void setDebitNote(DebitNote debitNote, Model model) {
+        model.addAttribute("debitNote", debitNote);
+    }
 
-	@Atomic
-	public void deleteDebitNote(DebitNote debitNote) {
-		// CHANGE_ME: Do the processing for deleting the debitNote
-		// Do not catch any exception here
+    @Atomic
+    public void deleteDebitNote(DebitNote debitNote) {
+        // CHANGE_ME: Do the processing for deleting the debitNote
+        // Do not catch any exception here
 
-		// debitNote.delete();
-	}
+        // debitNote.delete();
+    }
 
-	//
-	@RequestMapping(value = "/read/{oid}")
-	public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
-		setDebitNote(debitNote, model);
-		return "treasury/document/manageinvoice/debitnote/read";
-	}
+    //
+    @RequestMapping(value = "/read/{oid}")
+    public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
+        setDebitNote(debitNote, model);
+        return "treasury/document/manageinvoice/debitnote/read";
+    }
 
-	//
-	@RequestMapping(value = "/")
-	public String search(
-			@RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-			@RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-			@RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-			@RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-			@RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-			@RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-			@RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-			@RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
-			@RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
-			@RequestParam(value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-			Model model) {
-		List<DebitNote> searchdebitnoteResultsDataSet = filterSearchDebitNote(
-				payorDebtAccount, finantialDocumentType, debtAccount,
-				documentNumberSeries, currency, documentNumber, documentDate,
-				documentDueDate, originDocumentNumber, state);
+    //
+    @RequestMapping(value = "/")
+    public String search(
+            @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
+            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
+                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+            Model model) {
+        List<DebitNote> searchdebitnoteResultsDataSet =
+                filterSearchDebitNote(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency,
+                        documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
 
-		// add the results dataSet to the model
-		model.addAttribute("searchdebitnoteResultsDataSet",
-				searchdebitnoteResultsDataSet);
-		model.addAttribute("DebitNote_payorDebtAccount_options",
-				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-																					// -
-																					// MUST
-																					// DEFINE
-																					// RELATION
-		// model.addAttribute("DebitNote_payorDebtAccount_options",
-		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-		// CHANGE_ME - MUST DEFINE RELATION
-		model.addAttribute("DebitNote_finantialDocumentType_options",
-				org.fenixedu.treasury.domain.document.FinantialDocumentType
-						.findAll());
-		model.addAttribute("DebitNote_debtAccount_options",
-				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-																					// -
-																					// MUST
-																					// DEFINE
-																					// RELATION
-		// model.addAttribute("DebitNote_debtAccount_options",
-		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-		// CHANGE_ME - MUST DEFINE RELATION
-		model.addAttribute("DebitNote_documentNumberSeries_options",
-				org.fenixedu.treasury.domain.document.DocumentNumberSeries
-						.findAll().collect(Collectors.toList()));
-		model.addAttribute("DebitNote_currency_options",
-				org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
-		model.addAttribute(
-				"stateValues",
-				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
-						.values());
-		return "treasury/document/manageinvoice/debitnote/search";
-	}
+        // add the results dataSet to the model
+        model.addAttribute("searchdebitnoteResultsDataSet", searchdebitnoteResultsDataSet);
+        model.addAttribute("DebitNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+                                                                                                                                  // -
+                                                                                                                                  // MUST
+                                                                                                                                  // DEFINE
+                                                                                                                                  // RELATION
+        // model.addAttribute("DebitNote_payorDebtAccount_options",
+        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
+        // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_finantialDocumentType_options",
+                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
+        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+                                                                                                                             // -
+                                                                                                                             // MUST
+                                                                                                                             // DEFINE
+                                                                                                                             // RELATION
+        // model.addAttribute("DebitNote_debtAccount_options",
+        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
+        // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                .findAll().collect(Collectors.toList()));
+        model.addAttribute("DebitNote_currency_options",
+                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
+        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+        return "treasury/document/manageinvoice/debitnote/search";
+    }
 
-	private List<DebitNote> getSearchUniverseSearchDebitNoteDataSet() {
-		//
-		// The initialization of the result list must be done here
-		//
-		//
-		return DebitNote.findAll().collect(Collectors.toList());
-	}
+    private List<DebitNote> getSearchUniverseSearchDebitNoteDataSet() {
+        //
+        // The initialization of the result list must be done here
+        //
+        //
+        return DebitNote.findAll().collect(Collectors.toList());
+    }
 
-	private List<DebitNote> filterSearchDebitNote(
-			org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-			org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-			org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-			org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-			org.fenixedu.treasury.domain.Currency currency,
-			java.lang.String documentNumber,
-			org.joda.time.DateTime documentDate,
-			org.joda.time.DateTime documentDueDate,
-			java.lang.String originDocumentNumber,
-			org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    private List<DebitNote> filterSearchDebitNote(org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
+            org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
+            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
 
-		return getSearchUniverseSearchDebitNoteDataSet()
-				.stream()
-				.filter(debitNote -> payorDebtAccount == null
-						|| payorDebtAccount == debitNote.getPayorDebtAccount())
-				.filter(debitNote -> finantialDocumentType == null
-						|| finantialDocumentType == debitNote
-								.getFinantialDocumentType())
-				.filter(debitNote -> debtAccount == null
-						|| debtAccount == debitNote.getDebtAccount())
-				.filter(debitNote -> documentNumberSeries == null
-						|| documentNumberSeries == debitNote
-								.getDocumentNumberSeries())
-				.filter(debitNote -> currency == null
-						|| currency == debitNote.getCurrency())
-				.filter(debitNote -> documentNumber == null
-						|| documentNumber.length() == 0
-						|| (debitNote.getDocumentNumber() != null
-								&& debitNote.getDocumentNumber().length() > 0 && debitNote
-								.getDocumentNumber().toLowerCase()
-								.contains(documentNumber.toLowerCase())))
-				.filter(debitNote -> documentDate == null
-						|| documentDate.equals(debitNote.getDocumentDate()))
-				.filter(debitNote -> documentDueDate == null
-						|| documentDueDate.equals(debitNote
-								.getDocumentDueDate()))
-				.filter(debitNote -> originDocumentNumber == null
-						|| originDocumentNumber.length() == 0
-						|| (debitNote.getOriginDocumentNumber() != null
-								&& debitNote.getOriginDocumentNumber().length() > 0 && debitNote
-								.getOriginDocumentNumber().toLowerCase()
-								.contains(originDocumentNumber.toLowerCase())))
-				.filter(debitNote -> state == null
-						|| state.equals(debitNote.getState()))
-				.collect(Collectors.toList());
-	}
+        return getSearchUniverseSearchDebitNoteDataSet()
+                .stream()
+                .filter(debitNote -> payorDebtAccount == null || payorDebtAccount == debitNote.getPayorDebtAccount())
+                .filter(debitNote -> finantialDocumentType == null
+                        || finantialDocumentType == debitNote.getFinantialDocumentType())
+                .filter(debitNote -> debtAccount == null || debtAccount == debitNote.getDebtAccount())
+                .filter(debitNote -> documentNumberSeries == null || documentNumberSeries == debitNote.getDocumentNumberSeries())
+                .filter(debitNote -> currency == null || currency == debitNote.getCurrency())
+                .filter(debitNote -> documentNumber == null
+                        || documentNumber.length() == 0
+                        || (debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0 && debitNote
+                                .getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase())))
+                .filter(debitNote -> documentDate == null || documentDate.equals(debitNote.getDocumentDate()))
+                .filter(debitNote -> documentDueDate == null || documentDueDate.equals(debitNote.getDocumentDueDate()))
+                .filter(debitNote -> originDocumentNumber == null
+                        || originDocumentNumber.length() == 0
+                        || (debitNote.getOriginDocumentNumber() != null && debitNote.getOriginDocumentNumber().length() > 0 && debitNote
+                                .getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase())))
+                .filter(debitNote -> state == null || state.equals(debitNote.getState())).collect(Collectors.toList());
+    }
 
-	@RequestMapping(value = "/search/view/{oid}")
-	public String processSearchToViewAction(
-			@PathVariable("oid") DebitNote debitNote, Model model,
-			RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "/search/view/{oid}")
+    public String processSearchToViewAction(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
 
-		// CHANGE_ME Insert code here for processing viewAction
-		// If you selected multiple exists you must choose which one to use
-		// below
-		return redirect("/treasury/document/manageinvoice/debitnote/read" + "/"
-				+ debitNote.getExternalId(), model, redirectAttributes);
-	}
+        // CHANGE_ME Insert code here for processing viewAction
+        // If you selected multiple exists you must choose which one to use
+        // below
+        return redirect("/treasury/document/manageinvoice/debitnote/read" + "/" + debitNote.getExternalId(), model,
+                redirectAttributes);
+    }
 
-	//
-	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public String create(Model model) {
-		model.addAttribute("DebitNote_payorDebtAccount_options",
-				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-																					// -
-																					// MUST
-																					// DEFINE
-																					// RELATION
-		model.addAttribute("DebitNote_finantialDocumentType_options",
-				org.fenixedu.treasury.domain.document.FinantialDocumentType
-						.findAll());
-		model.addAttribute("DebitNote_debtAccount_options",
-				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-																					// -
-																					// MUST
-																					// DEFINE
-																					// RELATION
-		model.addAttribute("DebitNote_documentNumberSeries_options",
-				org.fenixedu.treasury.domain.document.DocumentNumberSeries
-						.findAll());
-		model.addAttribute("DebitNote_currency_options",
-				org.fenixedu.treasury.domain.Currency.findAll());
-		model.addAttribute(
-				"stateValues",
-				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
-						.values());
-		return "treasury/document/manageinvoice/debitnote/create";
-	}
+    //
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String create(Model model) {
+        model.addAttribute("DebitNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+                                                                                                                                  // -
+                                                                                                                                  // MUST
+                                                                                                                                  // DEFINE
+                                                                                                                                  // RELATION
+        model.addAttribute("DebitNote_finantialDocumentType_options",
+                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
+        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+                                                                                                                             // -
+                                                                                                                             // MUST
+                                                                                                                             // DEFINE
+                                                                                                                             // RELATION
+        model.addAttribute("DebitNote_documentNumberSeries_options",
+                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
+        model.addAttribute("DebitNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll());
+        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+        return "treasury/document/manageinvoice/debitnote/create";
+    }
 
-	//
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String create(
-			@RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-			@RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-			@RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-			@RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-			@RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-			@RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-			@RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-			@RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
-			@RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
-			@RequestParam(value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-			Model model, RedirectAttributes redirectAttributes) {
-		/*
-		 * Creation Logic
-		 */
+    //
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String create(
+            @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
+            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
+                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+            Model model, RedirectAttributes redirectAttributes) {
+        /*
+         * Creation Logic
+         */
 
-		try {
+        try {
 
-			DebitNote debitNote = createDebitNote(payorDebtAccount,
-					finantialDocumentType, debtAccount, documentNumberSeries,
-					currency, documentNumber, documentDate, documentDueDate,
-					originDocumentNumber, state);
+            DebitNote debitNote =
+                    createDebitNote(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency,
+                            documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
 
-			// Success Validation
-			// Add the bean to be used in the View
-			model.addAttribute("debitNote", debitNote);
-			return redirect("/treasury/document/manageinvoice/debitnote/read/"
-					+ getDebitNote(model).getExternalId(), model,
-					redirectAttributes);
-		} catch (DomainException de) {
+            // Success Validation
+            // Add the bean to be used in the View
+            model.addAttribute("debitNote", debitNote);
+            return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
+                    redirectAttributes);
+        } catch (DomainException de) {
 
-			// @formatter: off
-			/*
-			 * If there is any error in validation
-			 * 
-			 * Add a error / warning message
-			 * 
-			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
-			 * de.getLocalizedMessage(),model);
-			 * addWarningMessage(" Warning creating due to "+
-			 * ex.getLocalizedMessage(),model);
-			 */
-			// @formatter: on
+            // @formatter: off
+            /*
+             * If there is any error in validation
+             * 
+             * Add a error / warning message
+             * 
+             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") +
+             * de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning creating due to "+
+             * ex.getLocalizedMessage(),model);
+             */
+            // @formatter: on
 
-			addErrorMessage(
-					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-			return create(model);
-		}
-	}
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            return create(model);
+        }
+    }
 
-	@Atomic
-	public DebitNote createDebitNote(
-			org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-			org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-			org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-			org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-			org.fenixedu.treasury.domain.Currency currency,
-			java.lang.String documentNumber,
-			org.joda.time.DateTime documentDate,
-			org.joda.time.DateTime documentDueDate,
-			java.lang.String originDocumentNumber,
-			org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    @Atomic
+    public DebitNote createDebitNote(org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
+            org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
+            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
 
-		// @formatter: off
+        // @formatter: off
 
-		/*
-		 * Modify the creation code here if you do not want to create the object
-		 * with the default constructor and use the setter for each field
-		 */
+        /*
+         * Modify the creation code here if you do not want to create the object
+         * with the default constructor and use the setter for each field
+         */
 
-		// CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-		// DebitNote debitNote = debitNote.create(fields_to_create);
+        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+        // DebitNote debitNote = debitNote.create(fields_to_create);
 
-		// Instead, use individual SETTERS and validate "CheckRules" in the end
-		// @formatter: on
+        // Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
 
-		DebitNote debitNote = DebitNote.create(payorDebtAccount,
-				debtAccount, documentNumberSeries,
-				documentDate);
+        DebitNote debitNote = DebitNote.create(payorDebtAccount, debtAccount, documentNumberSeries, documentDate);
 
-		return debitNote;
-	}
+        return debitNote;
+    }
 
-	//
-	@RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
-	public String update(@PathVariable("oid") DebitNote debitNote, Model model) {
-		model.addAttribute("DebitNote_payorDebtAccount_options",
-				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-																					// -
-																					// MUST
-																					// DEFINE
-																					// RELATION
-		// model.addAttribute("DebitNote_payorDebtAccount_options",
-		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-		// CHANGE_ME - MUST DEFINE RELATION
-		 model.addAttribute("DebitNote_finantialDocumentType_options",
-		 org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
+    //
+    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    public String update(@PathVariable("oid") DebitNote debitNote, Model model) {
+        model.addAttribute("DebitNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+                                                                                                                                  // -
+                                                                                                                                  // MUST
+                                                                                                                                  // DEFINE
+                                                                                                                                  // RELATION
+        // model.addAttribute("DebitNote_payorDebtAccount_options",
+        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
+        // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_finantialDocumentType_options",
+                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
 
-		 model.addAttribute("DebitNote_debtAccount_options",
-				new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-																					// -
-																					// MUST
-																					// DEFINE
-																					// RELATION
-		// model.addAttribute("DebitNote_debtAccount_options",
-		// org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-		// CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+                                                                                                                             // -
+                                                                                                                             // MUST
+                                                                                                                             // DEFINE
+                                                                                                                             // RELATION
+        // model.addAttribute("DebitNote_debtAccount_options",
+        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
+        // CHANGE_ME - MUST DEFINE RELATION
 
-		  model.addAttribute("DebitNote_documentNumberSeries_options",
-		 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
-		// // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_documentNumberSeries_options",
+                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
+        // // CHANGE_ME - MUST DEFINE RELATION
 
-		   model.addAttribute("DebitNote_currency_options",
-		 org.fenixedu.treasury.domain.Currency.findAll()); 
-		model.addAttribute(
-				"stateValues",
-				org.fenixedu.treasury.domain.document.FinantialDocumentStateType
-						.values());
-		setDebitNote(debitNote, model);
-		return "treasury/document/manageinvoice/debitnote/update";
-	}
+        model.addAttribute("DebitNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll());
+        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+        setDebitNote(debitNote, model);
+        return "treasury/document/manageinvoice/debitnote/update";
+    }
 
-	//
-	@RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
-	public String update(
-			@PathVariable("oid") DebitNote debitNote,
-			@RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-			@RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-			@RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-			@RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-			@RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-			@RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-			@RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-			@RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
-			@RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
-			@RequestParam(value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-			Model model, RedirectAttributes redirectAttributes) {
+    //
+    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    public String update(
+            @PathVariable("oid") DebitNote debitNote,
+            @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
+            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
+                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+            Model model, RedirectAttributes redirectAttributes) {
 
-		setDebitNote(debitNote, model);
+        setDebitNote(debitNote, model);
 
-		try {
-			/*
-			 * UpdateLogic here
-			 */
+        try {
+            /*
+             * UpdateLogic here
+             */
 
-			updateDebitNote(payorDebtAccount, finantialDocumentType,
-					debtAccount, documentNumberSeries, currency,
-					documentNumber, documentDate, documentDueDate,
-					originDocumentNumber, state, model);
+            updateDebitNote(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
+                    documentDate, documentDueDate, originDocumentNumber, state, model);
 
-			/* Succes Update */
+            /* Succes Update */
 
-			return redirect("/treasury/document/manageinvoice/debitnote/read/"
-					+ getDebitNote(model).getExternalId(), model,
-					redirectAttributes);
-		} catch (DomainException de) {
-			// @formatter: off
+            return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
+                    redirectAttributes);
+        } catch (DomainException de) {
+            // @formatter: off
 
-			/*
-			 * If there is any error in validation
-			 * 
-			 * Add a error / warning message
-			 * 
-			 * addErrorMessage(" Error updating due to " +
-			 * de.getLocalizedMessage(),model);
-			 * addWarningMessage(" Warning updating due to " +
-			 * de.getLocalizedMessage(),model);
-			 */
-			// @formatter: on
+            /*
+             * If there is any error in validation
+             * 
+             * Add a error / warning message
+             * 
+             * addErrorMessage(" Error updating due to " +
+             * de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning updating due to " +
+             * de.getLocalizedMessage(),model);
+             */
+            // @formatter: on
 
-			addErrorMessage(
-					" Error updating due to " + de.getLocalizedMessage(), model);
-			return update(debitNote, model);
+            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            return update(debitNote, model);
 
-		}
-	}
+        }
+    }
 
-	@Atomic
-	public void updateDebitNote(
-			org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-			org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-			org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-			org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-			org.fenixedu.treasury.domain.Currency currency,
-			java.lang.String documentNumber,
-			org.joda.time.DateTime documentDate,
-			org.joda.time.DateTime documentDueDate,
-			java.lang.String originDocumentNumber,
-			org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-			Model model) {
+    @Atomic
+    public void updateDebitNote(org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
+            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
+            org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
+            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state, Model model) {
 
-		// @formatter: off
-		/*
-		 * Modify the update code here if you do not want to update the object
-		 * with the default setter for each field
-		 */
+        // @formatter: off
+        /*
+         * Modify the update code here if you do not want to update the object
+         * with the default setter for each field
+         */
 
-		// CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-		// getDebitNote(model).edit(fields_to_edit);
+        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
+        // getDebitNote(model).edit(fields_to_edit);
 
-		// Instead, use individual SETTERS and validate "CheckRules" in the end
-		// @formatter: on
+        // Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
 
-		getDebitNote(model).edit(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
-	}
+        getDebitNote(model).edit(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency,
+                documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
+    }
 
 }

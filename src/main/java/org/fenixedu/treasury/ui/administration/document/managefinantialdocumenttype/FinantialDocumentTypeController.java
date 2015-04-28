@@ -37,6 +37,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -101,16 +102,14 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-         return FinantialDocumentType.findAll().collect(Collectors.toList()); 
+        return FinantialDocumentType.findAll().collect(Collectors.toList());
     }
 
     private List<FinantialDocumentType> filterSearchFinantialDocumentType(
             org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum type, java.lang.String code,
             org.fenixedu.commons.i18n.LocalizedString name, java.lang.String documentNumberSeriesPrefix, boolean invoice) {
 
-        return getSearchUniverseSearchFinantialDocumentTypeDataSet()
-                .stream()
-                .collect(Collectors.toList());
+        return getSearchUniverseSearchFinantialDocumentTypeDataSet().stream().collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
@@ -140,17 +139,17 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteFinantialDocumentType(finantialDocumentType);
 
-            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/", model,
                     redirectAttributes);
 
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete")+ ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -200,16 +199,16 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
              *
              * Add a error / warning message
              * 
-             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
+             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
             // @formatter: on
 
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
 
         } catch (Exception de) {
             // ACFSILVA
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
         }
     }
@@ -229,7 +228,6 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
          * 
          */
 
-     
         // @formatter: on
 
         FinantialDocumentType finantialDocumentType = null;

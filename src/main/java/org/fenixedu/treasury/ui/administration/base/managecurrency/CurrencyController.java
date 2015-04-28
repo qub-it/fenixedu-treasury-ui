@@ -11,6 +11,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -120,18 +121,14 @@ public class CurrencyController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteCurrency(currency);
 
-            addInfoMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/base/managecurrency/currency/", model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage(
-                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(),
-                    model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage(
-                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(),
-                    model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -171,15 +168,11 @@ public class CurrencyController extends TreasuryBaseController {
                     model, redirectAttributes);
 
         } catch (DomainException de) {
-            addErrorMessage(
-                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
-                            + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
 
         } catch (Exception de) {
-            addErrorMessage(
-                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
-                            + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
         }
     }
@@ -230,11 +223,11 @@ public class CurrencyController extends TreasuryBaseController {
                     model, redirectAttributes);
 
         } catch (DomainException de) {
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(currency, model);
 
         } catch (Exception de) {
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(currency, model);
         }
     }
