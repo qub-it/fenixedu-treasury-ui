@@ -16,6 +16,30 @@ valueType java.math.BigDecimal as BigDecimalT
 	}
 } 
 
+valueType pt.ist.standards.geographic.Municipality as Municipality {
+    externalizeWith {
+        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
+    }
+
+    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
+}
+
+valueType pt.ist.standards.geographic.District as District {
+    externalizeWith {
+        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
+    }
+
+    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
+}
+
+valueType pt.ist.standards.geographic.Country as Country {
+    externalizeWith {
+        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
+    }
+
+    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
+}
+
 /************
  * ENTITIES *
  ************/
@@ -92,9 +116,11 @@ class FinantialInstitution {
 	String name;
 	String companyName;
 	String address;
-	String districtSubdivision;
+	Country country;
+	District district;
+	Municipality municipality;
+	String locality;
 	String zipCode;
-	String countryCode;
 }
 
 class FinantialEntity {

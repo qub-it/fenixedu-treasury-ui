@@ -28,10 +28,8 @@
 package org.fenixedu.treasury.domain;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -39,148 +37,132 @@ import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.standards.geographic.Country;
+import pt.ist.standards.geographic.District;
+import pt.ist.standards.geographic.Municipality;
 
-public class FinantialInstitution extends FinantialInstitution_Base implements
-		IFiscalContributor {
+public class FinantialInstitution extends FinantialInstitution_Base implements IFiscalContributor {
 
-	protected FinantialInstitution() {
-		super();
-		setBennu(Bennu.getInstance());
-	}
+    protected FinantialInstitution() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
 
-	protected FinantialInstitution(FiscalCountryRegion region, String code, final String fiscalNumber,
-			final String companyId, final String name,
-			final String companyName, final String address,
-			final String districtSubdivision, final String zipCode,
-			final String countryCode) {
-		this();
-		setFiscalCountryRegion(region);
-		setCode(code);
-		setFiscalNumber(fiscalNumber);
-		setCompanyId(companyId);
-		setName(name);
-		setCompanyName(companyName);
-		setAddress(address);
-		setDistrictSubdivision(districtSubdivision);
-		setZipCode(zipCode);
-		setCountryCode(countryCode);
+    protected FinantialInstitution(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
+            final String companyId, final String name, final String companyName, final String address, final Country country,
+            final District district, final Municipality municipality, final String locality, final String zipCode) {
+        this();
+        setFiscalCountryRegion(fiscalCountryRegion);
+        setCode(code);
+        setFiscalNumber(fiscalNumber);
+        setCompanyId(companyId);
+        setName(name);
+        setCompanyName(companyName);
+        setAddress(address);
+        setCountry(country);
+        setDistrict(district);
+        setMunicipality(municipality);
+        setLocality(locality);
+        setZipCode(zipCode);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	private void checkRules() {
-		if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-			throw new TreasuryDomainException(
-					"error.FinantialInstitution.code.required");
-		}
+    private void checkRules() {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+            throw new TreasuryDomainException("error.FinantialInstitution.code.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getFiscalNumber())) {
-			throw new TreasuryDomainException(
-					"error.FinantialInstitution.fiscalNumber.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getFiscalNumber())) {
+            throw new TreasuryDomainException("error.FinantialInstitution.fiscalNumber.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-			throw new TreasuryDomainException(
-					"error.FinantialInstitution.name.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.FinantialInstitution.name.required");
+        }
 
-		if (findByCode(getCode()).count() > 1) {
-			throw new TreasuryDomainException(
-					"error.FinantialInstitution.code.duplicated");
-		}
-		if (findByName(getName()).count() > 1) {
-			throw new TreasuryDomainException(
-					"error.FinantialInstitution.name.duplicated");
-		}
+        if (findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.FinantialInstitution.code.duplicated");
+        }
+        if (findByName(getName()).count() > 1) {
+            throw new TreasuryDomainException("error.FinantialInstitution.name.duplicated");
+        }
 
-		IFiscalContributor.findByFiscalNumber(getFiscalNumber());
-	}
+        IFiscalContributor.findByFiscalNumber(getFiscalNumber());
+    }
 
-	public String getComercialRegistrationCode() {
-		return this.getFiscalNumber() + " " + this.getAddress();
-	}
+    public String getComercialRegistrationCode() {
+        return this.getFiscalNumber() + " " + this.getAddress();
+    }
 
-	@Atomic
-	public void edit(String code, final String fiscalNumber,
-			final String companyId, final String name,
-			final String companyName, final String address,
-			final String districtSubdivision, final String zipCode,
-			final String countryCode) {
-		setCode(code);
-		setFiscalNumber(fiscalNumber);
-		setCompanyId(companyId);
-		setName(name);
-		setCompanyName(companyName);
-		setAddress(address);
-		setDistrictSubdivision(districtSubdivision);
-		setZipCode(zipCode);
-		setCountryCode(countryCode);
+    @Atomic
+    public void edit(String code, final String fiscalNumber, final String companyId, final String name, final String companyName,
+            final String address, final Country country, final District district, final Municipality municipality,
+            final String locality, final String zipCode) {
+        setCode(code);
+        setFiscalNumber(fiscalNumber);
+        setCompanyId(companyId);
+        setName(name);
+        setCompanyName(companyName);
+        setAddress(address);
+        setCountry(country);
+        setDistrict(district);
+        setMunicipality(municipality);
+        setLocality(locality);
+        setZipCode(zipCode);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        //TODOJN
+        return false;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException(
-					"error.FinantialInstitution.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.FinantialInstitution.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
+        deleteDomainObject();
+    }
 
-		deleteDomainObject();
-	}
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    public static Stream<FinantialInstitution> findAll() {
+        return Bennu.getInstance().getFinantialInstitutionsSet().stream();
+    }
 
-	@Atomic
-	public static FinantialInstitution create(FiscalCountryRegion countryRegion, String code,
-			final String fiscalNumber, final String companyId,
-			final String name, final String companyName, final String address,
-			final String districtSubdivision, final String zipCode,
-			final String countryCode) {
-		return new FinantialInstitution(countryRegion, code, fiscalNumber, companyId, name,
-				companyName, address, districtSubdivision, zipCode, countryCode);
-	}
+    public static Stream<FinantialInstitution> findByCode(final String code) {
+        return findAll().filter(fi -> fi.getCode().equalsIgnoreCase(code));
+    }
 
+    public static Stream<FinantialInstitution> findByName(final String name) {
+        return findAll().filter(fi -> fi.getName().equalsIgnoreCase(name));
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    @Atomic
+    public static FinantialInstitution create(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
+            final String companyId, final String name, final String companyName, final String address, final Country country,
+            final District district, final Municipality municipality, final String locality, final String zipCode) {
+        return new FinantialInstitution(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address, country,
+                district, municipality, locality, zipCode);
+    }
 
-	public static Stream<FinantialInstitution> findAll() {
-		return Bennu.getInstance().getFinantialInstitutionsSet().stream();
-	}
+    public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	public static Stream<FinantialInstitution> findByCode(final String code) {
-		return findAll().filter(fi -> fi.getCode().equalsIgnoreCase(code));
-	}
-
-	public static Stream<FinantialInstitution> findByName(final String name) {
-		return findAll().filter(fi -> fi.getName().equalsIgnoreCase(name));
-	}
-
-
-	public List<FinantialDocument> findPendingDocumentsNotExported(
-			DateTime fromDate, DateTime toDate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List<FinantialDocument> getExportableDocuments(DateTime fromDate,
-			DateTime toDate) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public List<FinantialDocument> getExportableDocuments(DateTime fromDate, DateTime toDate) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

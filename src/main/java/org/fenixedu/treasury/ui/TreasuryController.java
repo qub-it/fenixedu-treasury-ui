@@ -3,8 +3,8 @@
  * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
- *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
- *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
+ *  - Copyright \u00A9 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright \u00A9 2015 Universidade de Lisboa (after any Go-Live phase)
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  * 
@@ -31,17 +31,16 @@ import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-
 @RequestMapping("/treasury")
-@SpringApplication(group = "logged", path = "treasury", title = "title.treasury", hint="Treasury Application")
+@SpringApplication(group = "logged", path = "treasury", title = "title.treasury", hint = "Treasury Application")
 //@SpringFunctionality(app = TreasuryController.class, title = "title.treasury")
 public class TreasuryController {
-	
-	@RequestMapping
-	public String home(Model model) {
-		//this is the default destination for handling request to the root of the Module 
-      //put here the default functionality destination of your Module
-		return "redirect:/treasury/accounting/managecustomer/customer/";
-	}
-	
+
+    @RequestMapping
+    public String home(Model model) {
+        //this is the default destination for handling request to the root of the Module 
+        //put here the default functionality destination of your Module
+        return "redirect:/treasury/accounting/managecustomer/customer/";
+    }
+
 }
