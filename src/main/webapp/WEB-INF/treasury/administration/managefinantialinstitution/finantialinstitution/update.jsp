@@ -122,10 +122,10 @@ ${portal.toolkit()}
 </div>	
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FinantialInstitution.minicipality"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.FinantialInstitution.municipality"/></div> 
 
 <div class="col-sm-10">
-	<input id="finantialInstitution_minicipality" class="form-control" type="text" name="minicipality"  value='<c:out value='${not empty param.minicipality ? param.minicipality : finantialInstitution.minicipality }'/>' />
+	<input id="finantialInstitution_municipality" class="form-control" type="text" name="municipality"  value='<c:out value='${not empty param.municipality ? param.municipality : finantialInstitution.municipality }'/>' />
 </div>	
 </div>		
 <div class="form-group row">

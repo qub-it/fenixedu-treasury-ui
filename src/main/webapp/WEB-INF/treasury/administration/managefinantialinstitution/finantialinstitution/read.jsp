@@ -139,9 +139,9 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 	</td> 
 </tr>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.FinantialInstitution.minicipality"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.FinantialInstitution.municipality"/></th> 
 	<td>
-		<c:out value='${finantialInstitution.minicipality}'/>
+		<c:out value='${finantialInstitution.muicipality}'/>
 	</td> 
 </tr>
 <tr>

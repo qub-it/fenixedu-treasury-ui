@@ -134,9 +134,9 @@ class FinantialInstitution {
 	String address;
 	Country country;
 	District district;
-	Municipality minicipality;
-	Locality locality;
-	PostalCode zipCode;
+	Municipality municipality;
+	String locality;
+	String zipCode;
 }
 
 class FinantialEntity {

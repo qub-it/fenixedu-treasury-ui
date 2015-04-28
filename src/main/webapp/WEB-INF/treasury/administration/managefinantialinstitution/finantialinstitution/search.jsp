@@ -123,10 +123,10 @@ ${portal.toolkit()}
 </div>	
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FinantialInstitution.minicipality"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.FinantialInstitution.municipality"/></div> 
 
 <div class="col-sm-10">
-	<input id="finantialInstitution_minicipality" class="form-control" type="text" name="minicipality"  value='<c:out value='${not empty param.minicipality ? param.minicipality : finantialInstitution.minicipality }'/>' />
+	<input id="finantialInstitution_municipality" class="form-control" type="text" name="municipality"  value='<c:out value='${not empty param.municipality ? param.municipality : finantialInstitution.municipality }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
@@ -165,7 +165,7 @@ ${portal.toolkit()}
 <th><spring:message code="label.FinantialInstitution.address"/></th>
 <th><spring:message code="label.FinantialInstitution.country"/></th>
 <th><spring:message code="label.FinantialInstitution.district"/></th>
-<th><spring:message code="label.FinantialInstitution.minicipality"/></th>
+<th><spring:message code="label.FinantialInstitution.municipality"/></th>
 <th><spring:message code="label.FinantialInstitution.locality"/></th>
 <th><spring:message code="label.FinantialInstitution.zipCode"/></th>
 <%-- Operations Column --%>
@@ -201,7 +201,7 @@ ${portal.toolkit()}
 "address" : "<c:out value='${searchResult.address}'/>",
 "country" : "<c:out value='${searchResult.country}'/>",
 "district" : "<c:out value='${searchResult.district}'/>",
-"minicipality" : "<c:out value='${searchResult.minicipality}'/>",
+"municipality" : "<c:out value='${searchResult.municipality}'/>",
 "locality" : "<c:out value='${searchResult.locality}'/>",
 "zipcode" : "<c:out value='${searchResult.zipCode}'/>",
 "actions" :
@@ -227,7 +227,7 @@ ${portal.toolkit()}
 			{ data: 'address' },
 			{ data: 'country' },
 			{ data: 'district' },
-			{ data: 'minicipality' },
+			{ data: 'municipality' },
 			{ data: 'locality' },
 			{ data: 'zipcode' },
 			{ data: 'actions' }
