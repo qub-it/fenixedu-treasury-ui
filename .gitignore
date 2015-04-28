@@ -3,3 +3,6 @@
 .classpath
 .settings/
 /target/
+/src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources.properties
+/src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources_pt.properties
+

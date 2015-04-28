@@ -54,9 +54,6 @@ public class TreasuryBaseController {
     protected static final String WARNING_MESSAGES = "warningMessages";
     protected static final String INFO_MESSAGES = "infoMessages";
 
-    // The HTTP Request that can be used internally in the controller
-    protected @Autowired HttpServletRequest request;
-
     // The entity in the Model
 
     // The list of INFO messages that can be showed on View
@@ -119,20 +116,16 @@ public class TreasuryBaseController {
         conversionService.addConverter(new DistrictConverterService());
         conversionService.addConverter(new MunicipalityConverterService());
     }
-    
-    protected String getBeanJson(IBean bean)
-    {
+
+    protected String getBeanJson(IBean bean) {
         GsonBuilder builder = new GsonBuilder();
-        builder.registerTypeAdapter(LocalizedString.class,
-                new LocalizedStringAdapter());
-        builder.registerTypeHierarchyAdapter(DomainObject.class,
-                new DomainObjectAdapter());
+        builder.registerTypeAdapter(LocalizedString.class, new LocalizedStringAdapter());
+        builder.registerTypeHierarchyAdapter(DomainObject.class, new DomainObjectAdapter());
         Gson gson = Converters.registerDateTime(builder).create();
 
         // CREATING JSON TREE TO ADD CLASSNAME ATTRIBUTE MUST DO THIS AUTOMAGICALLY
         JsonElement jsonTree = gson.toJsonTree(bean);
-        jsonTree.getAsJsonObject().addProperty("classname",
-                bean.getClass().getName());
+        jsonTree.getAsJsonObject().addProperty("classname", bean.getClass().getName());
         return jsonTree.toString();
     }
 
