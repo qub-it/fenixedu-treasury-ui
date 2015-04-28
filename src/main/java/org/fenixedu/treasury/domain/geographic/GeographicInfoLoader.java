@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.geographic;
 
+import java.util.stream.Stream;
+
 import pt.ist.standards.geographic.Country;
 import pt.ist.standards.geographic.District;
 import pt.ist.standards.geographic.Locality;
@@ -9,6 +11,7 @@ import pt.ist.standards.geographic.PostalCode;
 
 public class GeographicInfoLoader {
 
+    public static final String PRT = "PRT";
     private static GeographicInfoLoader geographicInfoLoader;
     private final Planet earth;
 
@@ -36,6 +39,10 @@ public class GeographicInfoLoader {
         return earth.getByAlfa3(countryAlpha3).getPostalCode(postalCodeString);
     }
 
+    public Stream<Country> findAllCountries() {
+        return earth.getPlaces().stream();
+    }
+
     synchronized public static GeographicInfoLoader getInstance() {
         if (geographicInfoLoader == null) {
             geographicInfoLoader = new GeographicInfoLoader();
@@ -43,8 +50,12 @@ public class GeographicInfoLoader {
         return geographicInfoLoader;
     }
 
+    public static boolean isDefaultCountry(Country country) {
+        return country.getAlpha3().equals(PRT);
+    }
+
     public static String externalizeCountry(Country country) {
-        return country.alpha3;
+        return country.getAlpha3();
     }
 
     public static Country internalizeCountry(String countryString) {
@@ -53,7 +64,7 @@ public class GeographicInfoLoader {
     }
 
     public static String externalizeDistrict(District district) {
-        return district.parent.alpha3 + ";" + district.code;
+        return district.getParent().getAlpha3() + ";" + district.getCode();
     }
 
     public static District internalizeDistrict(String districtString) {
@@ -65,7 +76,8 @@ public class GeographicInfoLoader {
     }
 
     public static String externalizeMunicipality(Municipality municipality) {
-        return municipality.parent.parent.alpha3 + ";" + municipality.parent.code + ";" + municipality.code;
+        return municipality.getParent().getParent().getAlpha3() + ";" + municipality.getParent().getCode() + ";"
+                + municipality.getCode();
     }
 
     public static Municipality internalizeMunicipality(String municipalityString) {
@@ -78,8 +90,8 @@ public class GeographicInfoLoader {
     }
 
     public static String externalizeLocality(Locality locality) {
-        return locality.parent.parent.parent.alpha3 + ";" + locality.parent.parent.code + ";" + locality.parent.code + ";"
-                + locality.code;
+        return locality.getParent().getParent().getParent().getAlpha3() + ";" + locality.getParent().getParent().getCode() + ";"
+                + locality.getParent().getCode() + ";" + locality.getCode();
     }
 
     public static Locality internalizeLocality(String localityString) {
@@ -93,7 +105,7 @@ public class GeographicInfoLoader {
     }
 
     public static String externalizePostalCode(PostalCode postalCode) {
-        return postalCode.parent.parent.parent.parent.alpha3 + ";" + postalCode.code;
+        return postalCode.getParent().getParent().getParent().getParent().getAlpha3() + ";" + postalCode.getCode();
     }
 
     public static PostalCode internalizePostalCode(String postalCodeString) {
