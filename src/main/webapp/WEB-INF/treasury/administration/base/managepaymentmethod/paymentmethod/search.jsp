@@ -48,27 +48,30 @@ ${portal.toolkit()}
 	<div class="alert alert-info" role="alert">
 
 		<c:forEach items="${infoMessages}" var="message">
-			<p>${message}</p>
+			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+  				${message}
+  			</p>
 		</c:forEach>
-
 	</div>
 </c:if>
 <c:if test="${not empty warningMessages}">
 	<div class="alert alert-warning" role="alert">
 
 		<c:forEach items="${warningMessages}" var="message">
-			<p>${message}</p>
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+  				${message}
+  			</p>
 		</c:forEach>
-
 	</div>
 </c:if>
 <c:if test="${not empty errorMessages}">
 	<div class="alert alert-danger" role="alert">
 
 		<c:forEach items="${errorMessages}" var="message">
-			<p>${message}</p>
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+  				${message}
+  			</p>
 		</c:forEach>
-
 	</div>
 </c:if>
 
@@ -120,8 +123,9 @@ ${portal.toolkit()}
 	<c:otherwise>
 		<div class="alert alert-warning" role="alert">
 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
 			<spring:message code="label.noResultsFound" />
-
+			</p>
 		</div>
 
 	</c:otherwise>
@@ -167,7 +171,7 @@ ${portal.toolkit()}
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
-            "sSwfPath": "//cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
+            "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
         }
 		});
 		table.columns.adjust().draw();
