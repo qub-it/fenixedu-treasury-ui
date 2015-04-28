@@ -122,10 +122,7 @@ ${portal.toolkit()}
 	</c:when>
 	<c:otherwise>
 		<div class="alert alert-warning" role="alert">
-
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-			<spring:message code="label.noResultsFound" />
-			</p>
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>			<spring:message code="label.noResultsFound" /></p>
 		</div>
 
 	</c:otherwise>
