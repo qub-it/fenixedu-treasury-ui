@@ -48,7 +48,7 @@ ${portal.toolkit()}
 	<div class="alert alert-info" role="alert">
 
 		<c:forEach items="${infoMessages}" var="message">
-			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true"></span>
+			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
   				${message}
   			</p>
 		</c:forEach>
@@ -58,7 +58,7 @@ ${portal.toolkit()}
 	<div class="alert alert-warning" role="alert">
 
 		<c:forEach items="${warningMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
   				${message}
   			</p>
 		</c:forEach>
@@ -68,7 +68,7 @@ ${portal.toolkit()}
 	<div class="alert alert-danger" role="alert">
 
 		<c:forEach items="${errorMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
   				${message}
   			</p>
 		</c:forEach>
@@ -122,7 +122,7 @@ ${portal.toolkit()}
 	</c:when>
 	<c:otherwise>
 		<div class="alert alert-warning" role="alert">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>			<spring:message code="label.noResultsFound" /></p>
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
 		</div>
 
 	</c:otherwise>
