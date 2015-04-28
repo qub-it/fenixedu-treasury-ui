@@ -1,30 +1,19 @@
 package org.fenixedu.treasury.ui;
 
-import org.fenixedu.treasury.domain.geographic.GeographicInfoLoader;
 import org.springframework.core.convert.converter.Converter;
 
 import pt.ist.standards.geographic.Country;
+import pt.ist.standards.geographic.GeographicInfoLoader;
+import pt.ist.standards.geographic.Place;
 
 public class CountryConverterService implements Converter<String, Country> {
 
     @Override
     public Country convert(String source) {
-        return GeographicInfoLoader.getInstance().getCountryByAlpha3(source);
+        Place country = GeographicInfoLoader.getInstance().importPlaceFromString(source);
+        if (country instanceof Country) {
+            return (Country) country;
+        }
+        return null;
     }
-
-//    @Override
-//    public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-//        return GeographicInfoLoader.getInstance().getCountryByAlpha3((String) source);
-//    }
-//
-//    @Override
-//    public Set<ConvertiblePair> getConvertibleTypes() {
-//        return Collections.singleton(new ConvertiblePair(String.class, Country.class));
-//    }
-//
-//    @Override
-//    public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
-//        return String.class.equals(sourceType.getType()) && Country.class.isAssignableFrom(targetType.getType());
-//    }
-
 }

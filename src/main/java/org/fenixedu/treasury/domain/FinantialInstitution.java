@@ -48,10 +48,11 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         setBennu(Bennu.getInstance());
     }
 
-    protected FinantialInstitution(String code, final String fiscalNumber, final String companyId, final String name,
-            final String companyName, final String address, final Country country, final District district,
-            final Municipality municipality, final String locality, final String zipCode) {
+    protected FinantialInstitution(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
+            final String companyId, final String name, final String companyName, final String address, final Country country,
+            final District district, final Municipality municipality, final String locality, final String zipCode) {
         this();
+        setFiscalCountryRegion(fiscalCountryRegion);
         setCode(code);
         setFiscalNumber(fiscalNumber);
         setCompanyId(companyId);
@@ -114,7 +115,8 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     public boolean isDeletable() {
-        return true;
+        //TODOJN
+        return false;
     }
 
     @Atomic
@@ -124,7 +126,6 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         }
 
         setBennu(null);
-
         deleteDomainObject();
     }
 
@@ -147,11 +148,11 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     @Atomic
-    public static FinantialInstitution create(String code, final String fiscalNumber, final String companyId, final String name,
-            final String companyName, final String address, final Country country, final District district,
-            final Municipality municipality, final String locality, final String zipCode) {
-        return new FinantialInstitution(code, fiscalNumber, companyId, name, companyName, address, country, district,
-                municipality, locality, zipCode);
+    public static FinantialInstitution create(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
+            final String companyId, final String name, final String companyName, final String address, final Country country,
+            final District district, final Municipality municipality, final String locality, final String zipCode) {
+        return new FinantialInstitution(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address, country,
+                district, municipality, locality, zipCode);
     }
 
     public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {

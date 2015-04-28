@@ -16,44 +16,28 @@ valueType java.math.BigDecimal as BigDecimalT
 	}
 } 
 
-valueType pt.ist.standards.geographic.Locality as Locality {
-    externalizeWith {
-        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeLocality();
-    }
-
-    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeLocality();
-}
-
 valueType pt.ist.standards.geographic.Municipality as Municipality {
     externalizeWith {
-        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeMunicipality();
+        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
     }
 
-    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeMunicipality();
+    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
 }
 
 valueType pt.ist.standards.geographic.District as District {
     externalizeWith {
-        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeDistrict();
+        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
     }
 
-    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeDistrict();
+    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
 }
 
 valueType pt.ist.standards.geographic.Country as Country {
     externalizeWith {
-        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeCountry();
+        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
     }
 
-    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeCountry();
-}
-
-valueType pt.ist.standards.geographic.PostalCode as PostalCode {
-    externalizeWith {
-        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizePostalCode();
-    }
-
-    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizePostalCode();
+    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
 }
 
 /************

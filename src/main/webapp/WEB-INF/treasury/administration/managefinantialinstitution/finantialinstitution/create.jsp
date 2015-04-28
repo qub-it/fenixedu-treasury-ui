@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="pt.ist.standards.geographic.Municipality"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.Locale"%>
@@ -43,6 +44,7 @@
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
+<% FinantialInstitution finantialInstitution = (FinantialInstitution) request.getAttribute("finantialInstitution"); %>
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -105,13 +107,25 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 }]);
 </script>
 
-<form name='form' method="post" class="form-horizontal" ng-app="changeExample" ng-controller="ExampleController"	
+<form name='form' method="post" class="form-horizontal"
+	ng-app="changeExample" ng-controller="ExampleController"
 	action='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/create'>
-	
+
 	<input type="hidden" name="postback"
 		value='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/createpostback' />
 	<div class="panel panel-default">
 		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.FinantialInstitution.fiscalCountryRegion" />
+				</div>
+				<div class="col-sm-4">
+					<select id="finantialInstitution_fiscalCountryRegion"
+						class="js-example-basic-single" name="fiscalcountryregion">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.code" />
@@ -119,7 +133,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 				<div class="col-sm-10">
 					<input id="finantialInstitution_code" class="form-control"
-						type="text" name="code"
+						type="text" name="code" required
 						value='<c:out value='${not empty param.code ? param.code : finantialInstitution.code }'/>' />
 				</div>
 			</div>
@@ -130,7 +144,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 				<div class="col-sm-10">
 					<input id="finantialInstitution_fiscalNumber" class="form-control"
-						type="text" name="fiscalnumber"
+						type="text" name="fiscalnumber" required
 						value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : finantialInstitution.fiscalNumber }'/>' />
 				</div>
 			</div>
@@ -152,7 +166,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 				<div class="col-sm-10">
 					<input id="finantialInstitution_name" class="form-control"
-						type="text" name="name"
+						type="text" name="name" required
 						value='<c:out value='${not empty param.name ? param.name : finantialInstitution.name }'/>' />
 				</div>
 			</div>
@@ -185,7 +199,8 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<select id="finantialInstitution_country"
-						class="js-example-basic-single" name="country" ng-model="country" ng-change="change(country, '{{country}}')">
+						class="js-example-basic-single" name="country" ng-model="country"
+						ng-change="change(country, '{{country}}')">
 						<option value=""></option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
@@ -197,8 +212,9 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 					<spring:message code="label.FinantialInstitution.district" />
 				</div>
 				<div class="col-sm-4">
-						<select id="finantialInstitution_district"
-												class="js-example-basic-single" name="district" ng-model="district" ng-change="change(district, '{{district}}')">
+					<select id="finantialInstitution_district"
+						class="js-example-basic-single" name="district"
+						ng-model="district" ng-change="change(district, '{{district}}')">
 						<option value=""></option>
 					</select>
 				</div>
@@ -209,8 +225,9 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 				</div>
 
 				<div class="col-sm-4">
-						<select id="finantialInstitution_municipality"
-												class="js-example-basic-single" name="municipality" ng-model="municipality" ng-change="change(municipality, '{{municipality}}')">
+					<select id="finantialInstitution_municipality"
+						class="js-example-basic-single" name="municipality"
+						ng-model="municipality">
 						<option value=""></option>
 					</select>
 				</div>
@@ -252,7 +269,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 		      for(final Country c : countries) {%>
 		      	{
 		      		text : "<%=c.getLocalizedName(I18N.getLocale())%>",
-		      		id : "<%=c.getAlpha3()%>"
+		      		id : "<%=c.exportAsString()%>"
 		      	},
 		    <%}%>
 		];
@@ -261,7 +278,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 		        for(final District d : districts) {%>
 		      	{
 		      		text : "<%=d.getLocalizedName(I18N.getLocale())%>",
-		      		id : "${param.country};<%=d.getCode()%>"
+		      		id : "<%=d.exportAsString()%>"
 		      	},
 		    <%}%>
 		];
@@ -270,27 +287,41 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
    		        for(final Municipality m : municipalities) {%>
    		      	{
    		      		text : "<%=m.getLocalizedName(I18N.getLocale())%>",
-   		      		id : "${param.country};${param.district};<%=m.getCode()%>",
+   		      		id : "<%=m.exportAsString()%>",
    		      	},
    		    <%}%>
      	];
+		fiscalCountryRegion_options = [
+    		<c:forEach items="${finantialInstitution_fiscalCountryRegion_options}" var="fiscalCountryRegion">
+    			{
+    				"id"   : "<c:out value='${fiscalCountryRegion.externalId}'/>",
+    				"text" : "<c:out value='${fiscalCountryRegion.name.content}'/>",
+    			},
+    		</c:forEach>
+        ];		
 		$("#finantialInstitution_country").select2(
 			{
-				data : country_options,
+				data : country_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
 			}	  
 	    );
 		$("#finantialInstitution_district").select2(
 			{
-				data : district_options,
+				data : district_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
 			}	  
 	    );
 		$("#finantialInstitution_municipality").select2(
 			{
-				data : municipality_options,
+				data : municipality_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
 			}	  
 		);
+		$("#finantialInstitution_fiscalCountryRegion").select2(
+			{
+				data : fiscalCountryRegion_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
+			}	  
+		);		
 		$("#finantialInstitution_country").select2().select2('val', '${param.country}');
-		$("#finantialInstitution_district").select2().select2('val', '${param.district}')
-		$("#finantialInstitution_municipality").select2().select2('val', '${param.municipality}')
+		$("#finantialInstitution_district").select2().select2('val', '${param.district}');
+		$("#finantialInstitution_municipality").select2().select2('val', '${param.municipality}');
+		$("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${param.fiscalcountryregion}');
 	});
 </script>

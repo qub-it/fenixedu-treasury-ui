@@ -1,19 +1,20 @@
 package org.fenixedu.treasury.ui;
 
-import org.fenixedu.treasury.domain.geographic.GeographicInfoLoader;
 import org.springframework.core.convert.converter.Converter;
 
 import pt.ist.standards.geographic.District;
+import pt.ist.standards.geographic.GeographicInfoLoader;
+import pt.ist.standards.geographic.Place;
 
 public class DistrictConverterService implements Converter<String, District> {
 
     @Override
     public District convert(String source) {
-        String[] tokens = source.split(";");
-        if (tokens.length != 2) {
-            return null;
+        Place district = GeographicInfoLoader.getInstance().importPlaceFromString(source);
+        if (district instanceof District) {
+            return (District) district;
         }
-        return GeographicInfoLoader.getInstance().getCountryByAlpha3(tokens[0]).getPlace(tokens[1]);
+        return null;
     }
 
 }
