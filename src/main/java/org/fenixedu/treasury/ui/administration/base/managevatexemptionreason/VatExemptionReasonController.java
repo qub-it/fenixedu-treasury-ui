@@ -67,7 +67,7 @@ public class VatExemptionReasonController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        return new ArrayList<VatExemptionReason>(VatExemptionReason.readAll()); //CHANGE_ME
+        return VatExemptionReason.findAll().collect(Collectors.toList()); //CHANGE_ME
     }
 
     private List<VatExemptionReason> filterSearchVatExemptionReason(java.lang.String code,

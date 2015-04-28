@@ -86,10 +86,9 @@ public class TreasuryExemptionController extends TreasuryBaseController {
 
 	@Atomic
 	public void deleteTreasuryExemption(TreasuryExemption treasuryExemption) {
-		// CHANGE_ME: Do the processing for deleting the treasuryExemption
 		// Do not catch any exception here
 
-		// treasuryExemption.delete();
+		 treasuryExemption.delete();
 	}
 
 	//

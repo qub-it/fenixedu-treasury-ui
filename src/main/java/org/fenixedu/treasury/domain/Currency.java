@@ -27,15 +27,16 @@
  */
 package org.fenixedu.treasury.domain;
 
-
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -43,15 +44,12 @@ import pt.ist.fenixframework.Atomic;
 public class Currency extends Currency_Base {
 
 	public static String EURO_CODE = "EUR";
-	
-	
+
 	@Atomic
-	public static void InitializeCurrency()
-	{
-		Currency euro = Currency.findByCode(Currency.EURO_CODE);
-		if (euro == null)
-		{
-			Currency.create("EUR", new LocalizedString(Locale.getDefault(),"EUR"), "EUR", "€");
+	public static void InitializeCurrency() {
+		if (Currency.findAll().count() == 0) {
+			Currency.create("EUR", new LocalizedString(Locale.getDefault(),
+					BundleUtil.getString(Constants.BUNDLE, "label.Currency.EUR")), BundleUtil.getString(Constants.BUNDLE, "label.Currency.EUR"), "€");
 		}
 	}
 
@@ -91,7 +89,7 @@ public class Currency extends Currency_Base {
 		findByCode(getCode());
 		getName().getLocales().stream()
 				.forEach(l -> findByName(getName().getContent(l)));
-		
+
 	}
 
 	@Atomic
@@ -148,7 +146,7 @@ public class Currency extends Currency_Base {
 
 		return result;
 	}
-	
+
 	public static Currency findByName(final String name) {
 		Currency result = null;
 

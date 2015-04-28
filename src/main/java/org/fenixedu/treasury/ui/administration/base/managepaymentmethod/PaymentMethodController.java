@@ -3,6 +3,7 @@ package org.fenixedu.treasury.ui.administration.base.managepaymentmethod;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
@@ -62,18 +63,17 @@ public class PaymentMethodController extends TreasuryBaseController {
         return "treasury/administration/base/managepaymentmethod/paymentmethod/search";
     }
 
-    private List<PaymentMethod> getSearchUniverseSearchPaymentMethodDataSet() {
+    private Stream<PaymentMethod> getSearchUniverseSearchPaymentMethodDataSet() {
         //
         //The initialization of the result list must be done here
         //
         //
-        return new ArrayList<PaymentMethod>(PaymentMethod.readAll()); //CHANGE_ME
+        return PaymentMethod.findAll(); //CHANGE_ME
     }
 
     private List<PaymentMethod> filterSearchPaymentMethod(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name) {
 
         return getSearchUniverseSearchPaymentMethodDataSet()
-                .stream()
                 .filter(paymentMethod -> code == null || code.length() == 0 || paymentMethod.getCode() != null
                         && paymentMethod.getCode().length() > 0
                         && paymentMethod.getCode().toLowerCase().contains(code.toLowerCase()))

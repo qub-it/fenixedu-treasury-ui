@@ -8,14 +8,16 @@ import pt.ist.fenixframework.FenixFramework;
 
 public class RunCustomTask extends CustomTask {
 
-    @Override
-    public void runTask() throws Exception {
-        FiscalCountryRegion region = FiscalCountryRegion.readAll().iterator().next();
-        final FinantialInstitution institution =
-                FinantialInstitution.create(region, "Instituicao Financeira", "999999991", "999999991", "Instituicao Financeira",
-                        "Instituicao Financeira", "R MORADA", "LISBOA", "1234-123", "PT");
+	@Override
+	public void runTask() throws Exception {
+		FiscalCountryRegion region = FiscalCountryRegion.findAll().findFirst()
+				.orElse(null);
+		final FinantialInstitution institution = FinantialInstitution.create(
+				region, "Instituicao Financeira", "999999991", "999999991",
+				"Instituicao Financeira", "Instituicao Financeira", "R MORADA",
+				"LISBOA", "1234-123", "PT");
 
-//        AcademicTreasurySettings.getInstance().editEmolumentsProductGroup(ProductGroup.findByCode("EMOLUMENTOS"));
-    }
+		// AcademicTreasurySettings.getInstance().editEmolumentsProductGroup(ProductGroup.findByCode("EMOLUMENTOS"));
+	}
 
 }

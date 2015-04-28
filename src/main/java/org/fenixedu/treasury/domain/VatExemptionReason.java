@@ -27,7 +27,10 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.Locale;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -39,105 +42,129 @@ import pt.ist.fenixframework.Atomic;
 
 public class VatExemptionReason extends VatExemptionReason_Base {
 
-    protected VatExemptionReason() {
-        super();
-        setBennu(Bennu.getInstance());
-    }
+	protected VatExemptionReason() {
+		super();
+		setBennu(Bennu.getInstance());
+	}
 
-    protected VatExemptionReason(final String code, final LocalizedString name) {
-        this();
-        setCode(code);
-        setName(name);
+	@Atomic
+	public static void InitializeVatExemption() {
+		if (VatExemptionReason.findAll().count() == 0) {
+			String[] codes = new String[] { "M01", "M02", "M03", "M04", "M05",
+					"M06", "M07", "M08", "M09", "M10", "M11", "M12", "M13",
+					"M14", "M15", "M16" };
 
-        checkRules();
-    }
+			for (String code : codes) {
+				VatExemptionReason.create(code,
+						new LocalizedString(Locale.getDefault(), code));
+			}
+		}
+	}
 
-    private void checkRules() {
-        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-            throw new TreasuryDomainException("error.VatExemptionReason.code.required");
-        }
+	protected VatExemptionReason(final String code, final LocalizedString name) {
+		this();
+		setCode(code);
+		setName(name);
 
-        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-            throw new TreasuryDomainException("error.VatExemptionReason.name.required");
-        }
+		checkRules();
+	}
 
-        findByCode(getCode());
-        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
-    }
+	private void checkRules() {
+		if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+			throw new TreasuryDomainException(
+					"error.VatExemptionReason.code.required");
+		}
 
-    @Atomic
-    public void edit(final String code, final LocalizedString name) {
-        setCode(code);
-        setName(name);
+		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+			throw new TreasuryDomainException(
+					"error.VatExemptionReason.name.required");
+		}
 
-        checkRules();
-    }
+		findByCode(getCode());
+		getName().getLocales().stream()
+				.forEach(l -> findByName(getName().getContent(l)));
+	}
 
-    public boolean isDeletable() {
-        return true;
-    }
+	@Atomic
+	public void edit(final String code, final LocalizedString name) {
+		setCode(code);
+		setName(name);
 
-    @Atomic
-    public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.VatExemptionReason.cannot.delete");
-        }
+		checkRules();
+	}
 
-        setBennu(null);
+	public boolean isDeletable() {
+		return true;
+	}
 
-        deleteDomainObject();
-    }
+	@Atomic
+	public void delete() {
+		if (!isDeletable()) {
+			throw new TreasuryDomainException(
+					"error.VatExemptionReason.cannot.delete");
+		}
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
+		setBennu(null);
 
-    public static Set<VatExemptionReason> readAll() {
-        return Bennu.getInstance().getVatExemptionReasonsSet();
-    }
+		deleteDomainObject();
+	}
 
-    public static VatExemptionReason findByCode(final String code) {
-        VatExemptionReason result = null;
+	// @formatter: off
+	/************
+	 * SERVICES *
+	 ************/
+	// @formatter: on
 
-        for (final VatExemptionReason it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
+	public static Stream<VatExemptionReason> findAll() {
+		return Bennu.getInstance().getVatExemptionReasonsSet().stream();
+	}
 
-            if (result != null) {
-                throw new TreasuryDomainException("error.VatExemptionReason.duplicated.code");
-            }
+	public static VatExemptionReason findByCode(final String code) {
+		VatExemptionReason result = null;
 
-            result = it;
-        }
+		for (final VatExemptionReason it : findAll().collect(
+				Collectors.toList())) {
+			if (!it.getCode().equalsIgnoreCase(code)) {
+				continue;
+			}
 
-        return result;
-    }
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.VatExemptionReason.duplicated.code");
+			}
 
-    public static VatExemptionReason findByName(final String name) {
-        VatExemptionReason result = null;
+			result = it;
+		}
 
-        for (final VatExemptionReason it : readAll()) {
+		return result;
+	}
 
-            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
-                continue;
-            }
+	public static VatExemptionReason findByName(final String name) {
+		VatExemptionReason result = null;
 
-            if (result != null) {
-                throw new TreasuryDomainException("error.VatExemptionReason.duplicated.name");
-            }
+		for (final VatExemptionReason it : findAll().collect(
+				Collectors.toList())) {
 
-            result = it;
-        }
+			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
+					name)) {
+				continue;
+			}
 
-        return result;
-    }
+			if (result != null) {
+				throw new TreasuryDomainException(
+						"error.VatExemptionReason.duplicated.name");
+			}
 
-    @Atomic
-    public static VatExemptionReason create(final String code, final LocalizedString name) {
-        return new VatExemptionReason(code, name);
-    }
+			result = it;
+		}
+
+		return result;
+	}
+
+	@Atomic
+	public static VatExemptionReason create(final String code,
+			final LocalizedString name) {
+		return new VatExemptionReason(code, name);
+	}
 
 }

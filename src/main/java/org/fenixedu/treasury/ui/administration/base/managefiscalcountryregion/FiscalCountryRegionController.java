@@ -67,7 +67,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        return new ArrayList<FiscalCountryRegion>(FiscalCountryRegion.readAll()); //CHANGE_ME
+        return FiscalCountryRegion.findAll().collect(Collectors.toList()); //CHANGE_ME
     }
 
     private List<FiscalCountryRegion> filterSearchFiscalCountryRegion(java.lang.String fiscalCode,
