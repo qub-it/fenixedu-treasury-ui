@@ -16,6 +16,46 @@ valueType java.math.BigDecimal as BigDecimalT
 	}
 } 
 
+valueType pt.ist.standards.geographic.Locality as Locality {
+    externalizeWith {
+        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeLocality();
+    }
+
+    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeLocality();
+}
+
+valueType pt.ist.standards.geographic.Municipality as Municipality {
+    externalizeWith {
+        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeMunicipality();
+    }
+
+    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeMunicipality();
+}
+
+valueType pt.ist.standards.geographic.District as District {
+    externalizeWith {
+        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeDistrict();
+    }
+
+    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeDistrict();
+}
+
+valueType pt.ist.standards.geographic.Country as Country {
+    externalizeWith {
+        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizeCountry();
+    }
+
+    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizeCountry();
+}
+
+valueType pt.ist.standards.geographic.PostalCode as PostalCode {
+    externalizeWith {
+        String org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.externalizePostalCode();
+    }
+
+    internalizeWith org.fenixedu.treasury.domain.geographic.GeographicInfoLoader.internalizePostalCode();
+}
+
 /************
  * ENTITIES *
  ************/
@@ -92,9 +132,11 @@ class FinantialInstitution {
 	String name;
 	String companyName;
 	String address;
-	String districtSubdivision;
-	String zipCode;
-	String countryCode;
+	Country country;
+	District district;
+	Municipality minicipality;
+	Locality locality;
+	PostalCode zipCode;
 }
 
 class FinantialEntity {
