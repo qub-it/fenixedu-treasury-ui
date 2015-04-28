@@ -87,7 +87,7 @@ public class CustomerController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the customer
         // Do not catch any exception here
 
-        // customer.delete();
+        // customer.delete(); 
     }
 
     //
@@ -96,7 +96,7 @@ public class CustomerController extends TreasuryBaseController {
             Model model) {
         List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution);
 
-        model.addAttribute("customer_finantialInstitution", FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
+        model.addAttribute("finantialinstitution_options", FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
 
         // add the results dataSet to the model
         model.addAttribute("searchcustomerResultsDataSet", searchcustomerResultsDataSet);

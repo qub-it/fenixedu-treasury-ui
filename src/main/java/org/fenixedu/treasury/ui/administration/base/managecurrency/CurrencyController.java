@@ -26,7 +26,6 @@ import pt.ist.fenixframework.Atomic;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managecurrency/currency")
 public class CurrencyController extends TreasuryBaseController {
-
 //
 
     @RequestMapping
@@ -125,10 +124,14 @@ public class CurrencyController extends TreasuryBaseController {
             return redirect("/treasury/administration/base/managecurrency/currency/", model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+            addErrorMessage(
+                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(),
+                    model);
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+            addErrorMessage(
+                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.delete") + ex.getMessage(),
+                    model);
         }
 
         //The default mapping is the same Read View
@@ -168,11 +171,15 @@ public class CurrencyController extends TreasuryBaseController {
                     model, redirectAttributes);
 
         } catch (DomainException de) {
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(
+                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
+                            + de.getLocalizedMessage(), model);
             return create(model);
 
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(
+                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
+                            + de.getLocalizedMessage(), model);
             return create(model);
         }
     }

@@ -74,9 +74,23 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="customer_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
+		 <select id="finantialinstitution" class="js-example-basic-single" name="finantialinstitution">
 		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
+		<script>
+		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+		var finantialinstitution_options = [
+			<c:forEach items="${finantialinstitution_options}" var="element"> 
+				{
+					text :"<c:out value='${element.name}'/>", 
+					id : "<c:out value='${element.externalId}'/>"
+				},
+			</c:forEach>
+		];
+
+		//Init Select2_Options
+		initSelect2("#finantialinstitution",finantialinstitution_options, "<c:out value='${param.finantialinstitution}'/>");
+		</script>
 				</div>
 </div>			
 </div>
@@ -120,15 +134,8 @@ ${portal.toolkit()}
 
 <script>
 
-$("#customer_finantialInstitution").select2(
-		{
-			data : customer_finantialInstitution,
-		}	  
-		    );
-		    
-		    <%-- If it's not from parameter change param.finantialinstitution to whatever you need (it's the externalId already) --%>
-		    $("#customer_finantialInstitution").select2().select2('val', '<c:out value='${param.finantialInstitution}'/>');
-	<%-- End block for providing finantialinstitution options --%>
+
+
 	
 	var searchcustomerDataSet = [
 			<c:forEach items="${searchcustomerResultsDataSet}" var="searchResult">

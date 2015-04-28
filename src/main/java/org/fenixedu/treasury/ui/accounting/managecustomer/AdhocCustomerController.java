@@ -66,210 +66,195 @@ import org.fenixedu.treasury.domain.AdhocCustomer;
 @RequestMapping("/treasury/accounting/managecustomer/adhoccustomer")
 public class AdhocCustomerController extends TreasuryBaseController {
 
-	//
+    //
 
-	private AdhocCustomer getAdhocCustomer(Model model) {
-		return (AdhocCustomer) model.asMap().get("adhocCustomer");
-	}
+    private AdhocCustomer getAdhocCustomer(Model model) {
+        return (AdhocCustomer) model.asMap().get("adhocCustomer");
+    }
 
-	private void setAdhocCustomer(AdhocCustomer adhocCustomer, Model model) {
-		model.addAttribute("adhocCustomer", adhocCustomer);
-	}
+    private void setAdhocCustomer(AdhocCustomer adhocCustomer, Model model) {
+        model.addAttribute("adhocCustomer", adhocCustomer);
+    }
 
-	@Atomic
-	public void deleteAdhocCustomer(AdhocCustomer adhocCustomer) {
-		// CHANGE_ME: Do the processing for deleting the adhocCustomer
-		// Do not catch any exception here
+    @Atomic
+    public void deleteAdhocCustomer(AdhocCustomer adhocCustomer) {
+        // CHANGE_ME: Do the processing for deleting the adhocCustomer
+        // Do not catch any exception here
 
-		// adhocCustomer.delete();
-	}
+        // adhocCustomer.delete();
+    }
 
-	//
-	@RequestMapping(value = "/")
-	public String search(Model model) {
-		List<AdhocCustomer> searchadhoccustomerResultsDataSet = filterSearchAdhocCustomer();
+    //
+    @RequestMapping(value = "/")
+    public String search(Model model) {
+        List<AdhocCustomer> searchadhoccustomerResultsDataSet = filterSearchAdhocCustomer();
 
-		// add the results dataSet to the model
-		model.addAttribute("searchadhoccustomerResultsDataSet",
-				searchadhoccustomerResultsDataSet);
-		return "treasury/accounting/managecustomer/adhoccustomer/search";
-	}
+        // add the results dataSet to the model
+        model.addAttribute("searchadhoccustomerResultsDataSet", searchadhoccustomerResultsDataSet);
+        return "treasury/accounting/managecustomer/adhoccustomer/search";
+    }
 
-	private List<AdhocCustomer> getSearchUniverseSearchAdhocCustomerDataSet() {
-		//
-		// The initialization of the result list must be done here
-		//
-		//
-		 return AdhocCustomer.findAll().collect(Collectors.toList());
-	}
+    private List<AdhocCustomer> getSearchUniverseSearchAdhocCustomerDataSet() {
+        //
+        // The initialization of the result list must be done here
+        //
+        //
+        return AdhocCustomer.findAll().collect(Collectors.toList());
+    }
 
-	private List<AdhocCustomer> filterSearchAdhocCustomer() {
+    private List<AdhocCustomer> filterSearchAdhocCustomer() {
 
-		return getSearchUniverseSearchAdhocCustomerDataSet().stream().collect(
-				Collectors.toList());
-	}
+        return getSearchUniverseSearchAdhocCustomerDataSet().stream().collect(Collectors.toList());
+    }
 
-	@RequestMapping(value = "/search/view/{oid}")
-	public String processSearchToViewAction(
-			@PathVariable("oid") AdhocCustomer adhocCustomer, Model model,
-			RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "/search/view/{oid}")
+    public String processSearchToViewAction(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model,
+            RedirectAttributes redirectAttributes) {
 
-		// CHANGE_ME Insert code here for processing viewAction
-		// If you selected multiple exists you must choose which one to use
-		// below
-		return redirect("/treasury/accounting/managecustomer/customer/read"
-				+ "/" + adhocCustomer.getExternalId(), model,
-				redirectAttributes);
-	}
+        // CHANGE_ME Insert code here for processing viewAction
+        // If you selected multiple exists you must choose which one to use
+        // below
+        return redirect("/treasury/accounting/managecustomer/customer/read" + "/" + adhocCustomer.getExternalId(), model,
+                redirectAttributes);
+    }
 
-	//
-	@RequestMapping(value = "/create", method = RequestMethod.GET)
-	public String create(Model model) {
-		return "treasury/accounting/managecustomer/adhoccustomer/create";
-	}
+    //
+    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    public String create(Model model) {
+        return "treasury/accounting/managecustomer/adhoccustomer/create";
+    }
 
-	//
-	@RequestMapping(value = "/create", method = RequestMethod.POST)
-	public String create(
-			@RequestParam(value = "code", required = false) java.lang.String code,
-			@RequestParam(value = "name", required = false) java.lang.String name,
-			@RequestParam(value = "fiscalnumber", required = false) java.lang.String fiscalNumber,
-			@RequestParam(value = "identificationnumber", required = false) java.lang.String identificationNumber,
-			Model model, RedirectAttributes redirectAttributes) {
-		/*
-		 * Creation Logic
-		 */
+    //
+    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
+            required = false) java.lang.String name,
+            @RequestParam(value = "fiscalnumber", required = false) java.lang.String fiscalNumber, @RequestParam(
+                    value = "identificationnumber", required = false) java.lang.String identificationNumber, Model model,
+            RedirectAttributes redirectAttributes) {
+        /*
+         * Creation Logic
+         */
 
-		try {
+        try {
 
-			AdhocCustomer adhocCustomer = createAdhocCustomer(code, name,
-					fiscalNumber, identificationNumber);
+            AdhocCustomer adhocCustomer = createAdhocCustomer(code, name, fiscalNumber, identificationNumber);
 
-			// Success Validation
-			// Add the bean to be used in the View
-			model.addAttribute("adhocCustomer", adhocCustomer);
-			return redirect(
-					"/treasury/accounting/managecustomer/customer/read/"
-							+ getAdhocCustomer(model).getExternalId(), model,
-					redirectAttributes);
-		} catch (DomainException de) {
+            // Success Validation
+            // Add the bean to be used in the View
+            model.addAttribute("adhocCustomer", adhocCustomer);
+            return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
+                    model, redirectAttributes);
+        } catch (DomainException de) {
 
-			// @formatter: off
-			/*
-			 * If there is any error in validation
-			 * 
-			 * Add a error / warning message
-			 * 
-			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
-			 * de.getLocalizedMessage(),model);
-			 * addWarningMessage(" Warning creating due to "+
-			 * ex.getLocalizedMessage(),model);
-			 */
-			// @formatter: on
+            // @formatter: off
+            /*
+             * If there is any error in validation
+             * 
+             * Add a error / warning message
+             * 
+             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") +
+             * de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning creating due to "+
+             * ex.getLocalizedMessage(),model);
+             */
+            // @formatter: on
 
-			addErrorMessage(
-					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-			return create(model);
-		}
-	}
+            addErrorMessage(
+                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.create")
+                            + de.getLocalizedMessage(), model);
+            return create(model);
+        }
+    }
 
-	@Atomic
-	public AdhocCustomer createAdhocCustomer(java.lang.String code,
-			java.lang.String name, java.lang.String fiscalNumber,
-			java.lang.String identificationNumber) {
+    @Atomic
+    public AdhocCustomer createAdhocCustomer(java.lang.String code, java.lang.String name, java.lang.String fiscalNumber,
+            java.lang.String identificationNumber) {
 
-		// @formatter: off
+        // @formatter: off
 
-		/*
-		 * Modify the creation code here if you do not want to create the object
-		 * with the default constructor and use the setter for each field
-		 */
+        /*
+         * Modify the creation code here if you do not want to create the object
+         * with the default constructor and use the setter for each field
+         */
 
-		// CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-		// AdhocCustomer adhocCustomer = adhocCustomer.create(fields_to_create);
+        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+        // AdhocCustomer adhocCustomer = adhocCustomer.create(fields_to_create);
 
-		// Instead, use individual SETTERS and validate "CheckRules" in the end
-		// @formatter: on
+        // Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
 
-		AdhocCustomer adhocCustomer = AdhocCustomer.create(code, fiscalNumber,
-				name, "", "", "", "");
-		return adhocCustomer;
-	}
+        AdhocCustomer adhocCustomer = AdhocCustomer.create(code, fiscalNumber, name, "", "", "", "");
+        return adhocCustomer;
+    }
 
-	//
-	@RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
-	public String update(@PathVariable("oid") AdhocCustomer adhocCustomer,
-			Model model) {
-		setAdhocCustomer(adhocCustomer, model);
-		return "treasury/accounting/managecustomer/adhoccustomer/update";
-	}
+    //
+    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    public String update(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model) {
+        setAdhocCustomer(adhocCustomer, model);
+        return "treasury/accounting/managecustomer/adhoccustomer/update";
+    }
 
-	//
-	@RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
-	public String update(
-			@PathVariable("oid") AdhocCustomer adhocCustomer,
-			@RequestParam(value = "code", required = false) java.lang.String code,
-			@RequestParam(value = "name", required = false) java.lang.String name,
-			@RequestParam(value = "fiscalnumber", required = false) java.lang.String fiscalNumber,
-			@RequestParam(value = "identificationnumber", required = false) java.lang.String identificationNumber,
-			Model model, RedirectAttributes redirectAttributes) {
+    //
+    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    public String update(@PathVariable("oid") AdhocCustomer adhocCustomer,
+            @RequestParam(value = "code", required = false) java.lang.String code,
+            @RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(value = "fiscalnumber",
+                    required = false) java.lang.String fiscalNumber, @RequestParam(value = "identificationnumber",
+                    required = false) java.lang.String identificationNumber, Model model, RedirectAttributes redirectAttributes) {
 
-		setAdhocCustomer(adhocCustomer, model);
+        setAdhocCustomer(adhocCustomer, model);
 
-		try {
-			/*
-			 * UpdateLogic here
-			 */
+        try {
+            /*
+             * UpdateLogic here
+             */
 
-			updateAdhocCustomer(code, name, fiscalNumber, identificationNumber,
-					model);
+            updateAdhocCustomer(code, name, fiscalNumber, identificationNumber, model);
 
-			/* Succes Update */
+            /* Succes Update */
 
-			return redirect(
-					"/treasury/accounting/managecustomer/customer/read/"
-							+ getAdhocCustomer(model).getExternalId(), model,
-					redirectAttributes);
-		} catch (DomainException de) {
-			// @formatter: off
+            return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
+                    model, redirectAttributes);
+        } catch (DomainException de) {
+            // @formatter: off
 
-			/*
-			 * If there is any error in validation
-			 * 
-			 * Add a error / warning message
-			 * 
-			 * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update") +
-			 * de.getLocalizedMessage(),model);
-			 * addWarningMessage(" Warning updating due to " +
-			 * de.getLocalizedMessage(),model);
-			 */
-			// @formatter: on
+            /*
+             * If there is any error in validation
+             * 
+             * Add a error / warning message
+             * 
+             * addErrorMessage(BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update") +
+             * de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning updating due to " +
+             * de.getLocalizedMessage(),model);
+             */
+            // @formatter: on
 
-			addErrorMessage(
-					BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-			return update(adhocCustomer, model);
+            addErrorMessage(
+                    BundleUtil.getString(FenixeduTreasurySpringConfiguration.BUNDLE, "label.error.update")
+                            + de.getLocalizedMessage(), model);
+            return update(adhocCustomer, model);
 
-		}
-	}
+        }
+    }
 
-	@Atomic
-	public void updateAdhocCustomer(java.lang.String code,
-			java.lang.String name, java.lang.String fiscalNumber,
-			java.lang.String identificationNumber, Model model) {
+    @Atomic
+    public void updateAdhocCustomer(java.lang.String code, java.lang.String name, java.lang.String fiscalNumber,
+            java.lang.String identificationNumber, Model model) {
 
-		// @formatter: off
-		/*
-		 * Modify the update code here if you do not want to update the object
-		 * with the default setter for each field
-		 */
+        // @formatter: off
+        /*
+         * Modify the update code here if you do not want to update the object
+         * with the default setter for each field
+         */
 
-		// CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-		// getAdhocCustomer(model).edit(fields_to_edit);
+        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
+        // getAdhocCustomer(model).edit(fields_to_edit);
 
-		// Instead, use individual SETTERS and validate "CheckRules" in the end
-		// @formatter: on
+        // Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
 
-		getAdhocCustomer(model).edit(code, fiscalNumber, name, "", "", "", "");
-	}
+        getAdhocCustomer(model).edit(code, fiscalNumber, name, "", "", "", "");
+    }
 
 }
