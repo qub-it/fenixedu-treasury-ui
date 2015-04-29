@@ -24,7 +24,7 @@ public class GeographicInfoLoader {
     }
 
     public static boolean isDefaultCountry(Country country) {
-        return country.getAlpha3().equals(PRT);
+        return country.alpha3.equals(PRT);
     }
 
     public Place importPlaceFromString(final String placeString) {

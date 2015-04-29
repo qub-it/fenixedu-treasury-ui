@@ -136,7 +136,7 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.fiscalCountryRegion" /></th>
                         <td><c:out                            
-                                value='${finantialInstitution.fiscalCountryRegion.name.content}' />
+                                 value='${finantialInstitution.fiscalCountryRegion.name.content}' /> 
                         </td>
                     </tr>
                     <tr>
@@ -184,22 +184,33 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.country" /></th>
-                        <td><c:out
-                                value="<%=finantialInstitution.getCountry().getLocalizedName(I18N.getLocale())%>" />
+                        <td>
+                        <c:if test= "${not empty finantialInstitution.country}">
+                        	<c:out
+                                 value="<%=finantialInstitution.getCountry().getLocalizedName(I18N.getLocale())%>" />
+                        </c:if> 
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.district" /></th>
-                        <td><c:out
-                                value="<%=finantialInstitution.getDistrict().getLocalizedName(I18N.getLocale())%>" />
+                        <td>
+                        <c:if test= "${not empty finantialInstitution.district}">
+                        
+                        <c:out
+                                 value="<%=finantialInstitution.getDistrict().getLocalizedName(I18N.getLocale())%>" /> 
+                                 </c:if>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.municipality" /></th>
-                        <td><c:out
-                                value="<%=finantialInstitution.getMunicipality().getLocalizedName(I18N.getLocale())%>" />
+                        <td>
+                        <c:if test= "${not empty finantialInstitution.municipality}">
+                        
+                        <c:out
+                                 value="<%=finantialInstitution.getMunicipality().getLocalizedName(I18N.getLocale())%>" />
+                        </c:if> 
                         </td>
                     </tr>
                     <tr>

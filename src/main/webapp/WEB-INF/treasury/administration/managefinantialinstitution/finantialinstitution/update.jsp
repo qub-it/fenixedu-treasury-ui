@@ -319,9 +319,10 @@ $(document).ready(function() {
             data : fiscalCountryRegion_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
         }     
     );	
-	$("#finantialInstitution_country").select2().select2('val', '<%= finantialInstitution.getCountry().exportAsString() %>');
-	$("#finantialInstitution_district").select2().select2('val', '<%= finantialInstitution.getDistrict().exportAsString() %>');
-	$("#finantialInstitution_municipality").select2().select2('val', '<%= finantialInstitution.getMunicipality().exportAsString() %>');
-    $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${finantialInstitution.fiscalCountryRegion.externalId}');
+    
+	$("#finantialInstitution_country").select2().select2('val', '<%= (finantialInstitution.getCountry() != null)?finantialInstitution.getCountry().exportAsString():null %>');
+	$("#finantialInstitution_district").select2().select2('val', '<%= (finantialInstitution.getDistrict()!= null)?finantialInstitution.getDistrict().exportAsString() :null%>');
+	$("#finantialInstitution_municipality").select2().select2('val', '<%= (finantialInstitution.getMunicipality()!= null)?finantialInstitution.getMunicipality().exportAsString() :null%>');
+     $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${finantialInstitution.fiscalCountryRegion.externalId}');
 });
 </script>
