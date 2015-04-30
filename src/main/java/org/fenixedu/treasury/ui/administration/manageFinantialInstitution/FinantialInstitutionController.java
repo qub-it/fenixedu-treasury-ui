@@ -189,17 +189,17 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 //				
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
-        setFinantialInstitution(finantialInstitution, model);
-        return _update(finantialInstitution.getCode(), finantialInstitution.getFiscalNumber(),
+        //TODOJN passar para o _update o finantial institution
+        return _update(finantialInstitution, finantialInstitution.getCode(), finantialInstitution.getFiscalNumber(),
                 finantialInstitution.getCompanyId(), finantialInstitution.getName(), finantialInstitution.getCompanyName(),
                 finantialInstitution.getAddress(), finantialInstitution.getCountry(), finantialInstitution.getDistrict(),
                 finantialInstitution.getMunicipality(), finantialInstitution.getLocality(), finantialInstitution.getZipCode(),
                 model);
     }
 
-    @RequestMapping(value = "/updatepostback", method = RequestMethod.POST)
-    public String updatepostback(@RequestParam(value = "code", required = false) String code, @RequestParam(
-            value = "fiscalnumber", required = false) String fiscalNumber,
+    @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST)
+    public String updatepostback(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(value = "code",
+            required = false) String code, @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber,
             @RequestParam(value = "companyid", required = false) String companyId,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
@@ -208,19 +208,14 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     required = false) Municipality municipality,
             @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
                     required = false) String zipCode, Model model) {
-        return _update(code, fiscalNumber, companyId, name, companyName, address, country, district, municipality, locality,
-                zipCode, model);
+        return _update(finantialInstitution, code, fiscalNumber, companyId, name, companyName, address, country, district,
+                municipality, locality, zipCode, model);
     }
 
-    public String _update(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "fiscalnumber",
-            required = false) String fiscalNumber, @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
+    public String _update(FinantialInstitution finantialInstitution, String code, String fiscalNumber, String companyId,
+            String name, String companyName, String address, Country country, District district, Municipality municipality,
+            String locality, String zipCode, Model model) {
+        setFinantialInstitution(finantialInstitution, model);
         model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
         model.addAttribute("finantialInstitution_country_options",
                 GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));

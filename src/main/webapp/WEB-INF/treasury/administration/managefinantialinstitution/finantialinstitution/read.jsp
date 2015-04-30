@@ -1,8 +1,9 @@
-<%@page import="org.fenixedu.commons.i18n.I18N"%>
-<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="pf"  uri="http://example.com/placeFunctions"%>
+
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -37,7 +38,7 @@
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
-<% FinantialInstitution finantialInstitution = (FinantialInstitution) request.getAttribute("finantialInstitution"); %>
+
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -135,96 +136,85 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.fiscalCountryRegion" /></th>
-                        <td><c:out                            
-                                 value='${finantialInstitution.fiscalCountryRegion.name.content}' /> 
+                        <td>
+                            <c:out value='${finantialInstitution.fiscalCountryRegion.name.content}' /> 
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.code" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.code}' />
+                        <td>
+                            <c:out value='${finantialInstitution.code}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.fiscalNumber" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.fiscalNumber}' />
+                        <td>
+                            <c:out value='${finantialInstitution.fiscalNumber}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.companyId" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.companyId}' />
+                        <td>
+                            <c:out value='${finantialInstitution.companyId}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.name" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.name}' />
+                        <td>
+                            <c:out value='${finantialInstitution.name}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.companyName" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.companyName}' />
+                        <td>
+                            <c:out value='${finantialInstitution.companyName}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.address" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.address}' />
+                        <td>
+                            <c:out value='${finantialInstitution.address}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.country" /></th>
                         <td>
-                        <c:if test= "${not empty finantialInstitution.country}">
-                        	<c:out
-                                 value="<%=finantialInstitution.getCountry().getLocalizedName(I18N.getLocale())%>" />
-                        </c:if> 
+                            <pf:placeName place="${finantialInstitution.country}"/>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.district" /></th>
                         <td>
-                        <c:if test= "${not empty finantialInstitution.district}">
-                        
-                        <c:out
-                                 value="<%=finantialInstitution.getDistrict().getLocalizedName(I18N.getLocale())%>" /> 
-                                 </c:if>
+                            <pf:placeName place="${finantialInstitution.district}"/>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.municipality" /></th>
                         <td>
-                        <c:if test= "${not empty finantialInstitution.municipality}">
-                        
-                        <c:out
-                                 value="<%=finantialInstitution.getMunicipality().getLocalizedName(I18N.getLocale())%>" />
-                        </c:if> 
+                            <pf:placeName place="${finantialInstitution.municipality}"/>
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.locality" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.locality}' />
+                        <td>
+                            <c:out value='${finantialInstitution.locality}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.zipCode" /></th>
-                        <td><c:out
-                                value='${finantialInstitution.zipCode}' />
+                        <td>
+                            <c:out value='${finantialInstitution.zipCode}' />
                         </td>
                     </tr>
                 </tbody>
