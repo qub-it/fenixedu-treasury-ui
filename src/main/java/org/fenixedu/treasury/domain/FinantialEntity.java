@@ -54,10 +54,10 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     private void checkRules() {
-        if(getFinantialInstitution() == null) {
+        if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.FinantialEntity.finantialInstitution.required");
         }
-        
+
         if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.FinantialEntity.code.required");
         }
@@ -66,12 +66,12 @@ public class FinantialEntity extends FinantialEntity_Base {
             throw new TreasuryDomainException("error.FinantialEntity.name.required");
         }
 
-        if(findByCode(getFinantialInstitution(), getCode()).count() > 1) {
+        if (findByCode(getFinantialInstitution(), getCode()).count() > 1) {
             throw new TreasuryDomainException("error.FinantialEntity.code.duplicated");
         }
-        
+
         getName().getLocales().stream().forEach(l -> {
-            if(findByName(getFinantialInstitution(), getName().getContent(l)).count() > 1) {
+            if (findByName(getFinantialInstitution(), getName().getContent(l)).count() > 1) {
                 throw new TreasuryDomainException("error.FinantialEntity.name.duplicated", l.toString());
             };
         });
@@ -86,7 +86,8 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        //TODOJN
+        return false;
     }
 
     @Atomic
@@ -109,7 +110,7 @@ public class FinantialEntity extends FinantialEntity_Base {
     public static Stream<FinantialEntity> findAll() {
         return Bennu.getInstance().getFinantialEntitiesSet().stream();
     }
-    
+
     public static Stream<FinantialEntity> find(final FinantialInstitution finantialInstitution) {
         return findAll().filter(fe -> fe.getFinantialInstitution() == finantialInstitution);
     }
@@ -121,14 +122,15 @@ public class FinantialEntity extends FinantialEntity_Base {
     public static Stream<FinantialEntity> findByName(final FinantialInstitution finantialInstitution, final String name) {
         return findAll().filter(fe -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(fe.getName(), name));
     }
-    
+
     public static Stream<FinantialEntity> findWithPermissionsFor(final User user) {
         // TODO: ACCESS CONTROL
         return findAll();
     }
 
     @Atomic
-    public static FinantialEntity create(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name) {
+    public static FinantialEntity create(final FinantialInstitution finantialInstitution, final String code,
+            final LocalizedString name) {
         return new FinantialEntity(finantialInstitution, code, name);
     }
 

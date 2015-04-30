@@ -90,6 +90,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
+        model.addAttribute("searchfinantialentityResultsDataSet", finantialInstitution.getFinantialEntitiesSet());
         return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
     }
 

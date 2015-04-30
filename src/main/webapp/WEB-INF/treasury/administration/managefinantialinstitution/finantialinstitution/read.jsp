@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="pf"  uri="http://example.com/placeFunctions"%>
+<%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%>
 
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -62,7 +62,8 @@ ${portal.toolkit()}
             <div class="modal-body">
                 <p>
                     <spring:message
-                        code="label.administration.manageFinantialInstitution.readFinantialInstitution.confirmDelete" />
+                        code="label.administration.manageFinantialInstitution.readFinantialInstitution.confirmDelete"
+                        arguments='${finantialInstitution.name }' />
                 </p>
             </div>
             <div class="modal-footer">
@@ -136,85 +137,85 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.fiscalCountryRegion" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.fiscalCountryRegion.name.content}' /> 
+                        <td><c:out
+                                value='${finantialInstitution.fiscalCountryRegion.name.content}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.code" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.code}' />
+                        <td><c:out
+                                value='${finantialInstitution.code}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.fiscalNumber" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.fiscalNumber}' />
+                        <td><c:out
+                                value='${finantialInstitution.fiscalNumber}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.companyId" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.companyId}' />
+                        <td><c:out
+                                value='${finantialInstitution.companyId}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.name" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.name}' />
+                        <td><c:out
+                                value='${finantialInstitution.name}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.companyName" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.companyName}' />
+                        <td><c:out
+                                value='${finantialInstitution.companyName}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.address" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.address}' />
+                        <td><c:out
+                                value='${finantialInstitution.address}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.country" /></th>
-                        <td>
-                            <pf:placeName place="${finantialInstitution.country}"/>
+                        <td><pf:placeName
+                                place="${finantialInstitution.country}" />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.district" /></th>
-                        <td>
-                            <pf:placeName place="${finantialInstitution.district}"/>
+                        <td><pf:placeName
+                                place="${finantialInstitution.district}" />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.municipality" /></th>
-                        <td>
-                            <pf:placeName place="${finantialInstitution.municipality}"/>
+                        <td><pf:placeName
+                                place="${finantialInstitution.municipality}" />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.locality" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.locality}' />
+                        <td><c:out
+                                value='${finantialInstitution.locality}' />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.zipCode" /></th>
-                        <td>
-                            <c:out value='${finantialInstitution.zipCode}' />
+                        <td><c:out
+                                value='${finantialInstitution.zipCode}' />
                         </td>
                     </tr>
                 </tbody>
@@ -223,8 +224,88 @@ ${portal.toolkit()}
     </div>
 </div>
 
-<script>
-	$(document).ready(function() {
+<!-- Finantial Entity section -->
+<h2>
+    <spring:message code="label.administration.manageFinantialInstitution.searchFinantialEntity" />
+</h2>
 
-	});
+<div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+    &nbsp;
+    <a class=""
+       href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/create?finantialInstitutionId=${finantialInstitution.externalId }">
+           <spring:message code="label.event.create" />
+    </a> 
+    |&nbsp;&nbsp;
+</div>
+<c:choose>
+    <c:when
+        test="${not empty finantialInstitution.finantialEntitiesSet}">
+        <table id="searchfinantialentityTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><spring:message
+                            code="label.FinantialEntity.name" /></th>
+                    <%-- Operations Column --%>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+            <spring:message code="label.noResultsFound" />
+        </div>
+    </c:otherwise>
+</c:choose>
+
+<script>
+var searchfinantialentityDataSet = [
+    <c:forEach items="${searchfinantialentityResultsDataSet}" var="searchResult">
+    {
+        "name" : "<c:out value='${searchResult.name.content}'/>",
+        "actions" :
+             " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"
+           + " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/search/edit/${searchResult.externalId}\"><spring:message code='label.edit'/></a>"             
+    },
+    </c:forEach>
+];
+                            
+$(document).ready(function() {
+    var table = $('#searchfinantialentityTable').DataTable({
+    	language : {
+    	    url : "${datatablesI18NUrl}",           
+    	},
+        "columns": [
+            { data: 'name' },
+            { data: 'actions' }
+        ],
+        //CHANGE_ME adjust the actions column width if needed
+        "columnDefs": [
+            { "width": "70px", "targets": 1 } 
+        ],
+        "data" : searchfinantialentityDataSet,
+        //Documentation: https://datatables.net/reference/option/dom
+        "dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+        //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+        //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+        //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+        "tableTools": {
+      	    "sSwfPath": "//cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
+        }
+    });
+    
+    table.columns.adjust().draw();
+    $('#searchfinantialentityTable tbody').on( 
+	  	'click', 
+		'tr', 
+		function () {
+		    $(this).toggleClass('selected');
+        } 
+	);                                  
+}); 
 </script>

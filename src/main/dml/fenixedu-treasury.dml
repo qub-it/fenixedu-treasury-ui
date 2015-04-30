@@ -110,10 +110,10 @@ class PaymentMethod {
  * ----------*/
  
 class FinantialInstitution {
-	String code;
-	String fiscalNumber;
+	String code (REQUIRED);
+	String fiscalNumber (REQUIRED);
 	String companyId;
-	String name;
+	String name (REQUIRED);
 	String companyName;
 	String address;
 	Country country;
@@ -124,8 +124,8 @@ class FinantialInstitution {
 }
 
 class FinantialEntity {
-	String code;
-	LocalizedString name;
+	String code (REQUIRED);
+	LocalizedString name (REQUIRED);
 } 
 
 class Customer {
