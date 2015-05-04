@@ -164,11 +164,12 @@ class document.FinantialDocumentType {
 }
 
 class document.Series {
-	String code;
-	LocalizedString name;
+	String code (REQUIRED);
+	LocalizedString name (REQUIRED);
 	boolean externSeries;
 	boolean certificated;
 	boolean legacy;
+	boolean defaultSeries;
 }
 
 class document.DocumentNumberSeries {

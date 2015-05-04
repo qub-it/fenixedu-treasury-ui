@@ -44,7 +44,7 @@ ${portal.toolkit()}
 <div class="page-header">
     <h1>
         <spring:message
-            code="label.administration.manageFinantialInstitution.createFinantialEntity" />
+            code="label.administration.manageFinantialInstitution.createSeries" />
         <small></small>
     </h1>
 </div>
@@ -53,7 +53,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/'${finantialInstitutionId}'"><spring:message
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitutionId}"><spring:message
             code="label.event.back" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -91,26 +91,79 @@ ${portal.toolkit()}
                 value="${ finantialInstitutionId }" />
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.FinantialEntity.code" />
+                    <spring:message code="label.Series.code" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="finantialEntity_code"
-                        class="form-control" type="text" name="code"
-                        value='<c:out value='${not empty param.code ? param.code : finantialEntity.code }'/>'
+                    <input id="series_code" class="form-control"
+                        type="text" name="code"
+                        value='<c:out value='${not empty param.code ? param.code : series.code }'/>'
                         required />
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.FinantialEntity.name" />
+                    <spring:message code="label.Series.name" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="finantialEntity_name"
-                        class="form-control" type="text" name="name"
-                        bennu-localized-string
+                    <input id="series_name" class="form-control"
+                        type="text" name="name" bennu-localized-string
                         value='${not empty param.name ? param.name : "{}" }'  required />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.Series.externSeries" />
+                </div>
+                
+                <div class="col-sm-2">
+                    <select id="series_externSeries" name="externseries"
+                        class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
+                    $("#series_externSeries").val('<c:out value='${not empty param.externseries ? param.externseries : series.externSeries }'/>');
+                    </script>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.Series.certificated" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="series_certificated" name="certificated"
+                        class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
+                    $("#series_certificated").val('<c:out value='${not empty param.certificated ? param.certificated : series.certificated }'/>');
+                    </script>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.Series.legacy" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="series_legacy" name="legacy"
+                        class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
+                    $("#series_legacy").val('<c:out value='${not empty param.legacy ? param.legacy : series.legacy }'/>');
+                    </script>
                 </div>
             </div>
         </div>
@@ -122,7 +175,7 @@ ${portal.toolkit()}
 </form>
 
 <script>
-$(document).ready(function() {	
-
+$(document).ready(function() {
+	
 });
 </script>

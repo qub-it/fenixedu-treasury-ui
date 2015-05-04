@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -48,7 +47,7 @@ public class Series extends Series_Base {
     }
 
     protected Series(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
-            final boolean externSeries, final boolean certificated, final boolean legacy) {
+            final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries) {
         this();
         setFinantialInstitution(finantialInstitution);
         setCode(code);
@@ -56,6 +55,7 @@ public class Series extends Series_Base {
         setExternSeries(externSeries);
         setCertificated(certificated);
         setLegacy(legacy);
+        setDefaultSeries(defaultSeries);
 
         checkRules();
     }
@@ -90,7 +90,8 @@ public class Series extends Series_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        //TODOJN 
+        return false;
     }
 
     @Atomic
@@ -100,7 +101,6 @@ public class Series extends Series_Base {
         }
 
         setBennu(null);
-
         deleteDomainObject();
     }
 
@@ -113,7 +113,7 @@ public class Series extends Series_Base {
     public static Set<Series> readAll() {
         return Bennu.getInstance().getSeriesSet();
     }
-    
+
     public static Set<Series> find(final FinantialInstitution finantialInstitution) {
         Set<Series> result = Sets.newHashSet();
 
@@ -165,8 +165,8 @@ public class Series extends Series_Base {
 
     @Atomic
     public static Series create(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
-            final boolean externSeries, final boolean certificated, final boolean legacy) {
-        return new Series(finantialInstitution, code, name, externSeries, certificated, legacy);
+            final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries) {
+        return new Series(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries);
     }
 
 }

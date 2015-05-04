@@ -26,7 +26,6 @@
  */
 package org.fenixedu.treasury.ui.administration.manageFinantialInstitution;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -51,7 +50,7 @@ public class FinantialEntityController extends TreasuryBaseController {
     @RequestMapping
     public String home(Model model) {
         //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/administration/managefinantialinstitution/finantialentity/";
+        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
     }
 
     private FinantialEntity getFinantialEntity(Model model) {
@@ -88,8 +87,8 @@ public class FinantialEntityController extends TreasuryBaseController {
             deleteFinantialEntity(finantialEntity);
             addInfoMessage("Sucess deleting FinantialEntity ...", model);
             return redirect("/treasury/administration/managefinantialinstitution/finantialentity/", model, redirectAttributes);
-        } catch (DomainException ex) {
-            addErrorMessage("Error deleting the FinantialEntity due to " + ex.getLocalizedMessage(), model);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage("Error deleting the FinantialEntity due to " + tde.getLocalizedMessage(), model);
         }
         return "treasury/administration/managefinantialinstitution/finantialentity/read/"
                 + getFinantialEntity(model).getExternalId();
