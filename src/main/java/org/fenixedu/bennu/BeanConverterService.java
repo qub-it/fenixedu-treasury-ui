@@ -26,6 +26,7 @@
  */
 package org.fenixedu.bennu;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
@@ -98,7 +99,8 @@ public class BeanConverterService implements ConditionalGenericConverter {
             builder.registerTypeAdapter(Country.class, new CountryAdapter());
             builder.registerTypeAdapter(District.class, new DistrictAdapter());
             builder.registerTypeAdapter(Municipality.class, new MunicipalityAdapter());
-            Gson gson = Converters.registerDateTime(builder).create();
+            builder = Converters.registerAll(builder);
+            Gson gson = builder.create();
             Object beanObject = gson.fromJson(jsonElement, beanObjectClass);
             //throws ClassCastException if not required domain type
             return targetType.getType().cast(beanObject);
@@ -108,5 +110,4 @@ public class BeanConverterService implements ConditionalGenericConverter {
             return null;
         }
     }
-
 }

@@ -130,7 +130,7 @@ public class TreasuryBaseController {
         builder.registerTypeAdapter(District.class, new DistrictAdapter());
         builder.registerTypeAdapter(Municipality.class, new MunicipalityAdapter());
         builder.registerTypeHierarchyAdapter(DomainObject.class, new DomainObjectAdapter());
-        Gson gson = Converters.registerDateTime(builder).create();
+        Gson gson = Converters.registerAll(builder).create();
 
         // CREATING JSON TREE TO ADD CLASSNAME ATTRIBUTE MUST DO THIS AUTOMAGICALLY
         JsonElement jsonTree = gson.toJsonTree(bean);
