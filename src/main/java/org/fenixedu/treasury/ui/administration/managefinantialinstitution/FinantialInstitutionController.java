@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.manageFinantialInstitution;
+package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
 import java.util.ArrayList;
 import java.util.HashSet;
