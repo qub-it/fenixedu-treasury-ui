@@ -1,3 +1,8 @@
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.commons.i18n.I18N"%>
+<%@page import="pt.ist.standards.geographic.Municipality"%>
+<%@page import="pt.ist.standards.geographic.District"%>
+<%@page import="pt.ist.standards.geographic.Country"%>
 <%@page import="java.util.Collection"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -35,6 +40,11 @@
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
+
+<%
+    FinantialInstitution finantialInstitution = (FinantialInstitution) request
+					.getAttribute("finantialInstitution");
+%>
 
 <%-- TITLE --%>
 <div class="page-header">
