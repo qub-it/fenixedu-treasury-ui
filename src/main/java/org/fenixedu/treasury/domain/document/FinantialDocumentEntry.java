@@ -52,7 +52,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
     }
 
     protected void checkRules() {
-        if(getFinantialDocument() == null) {
+        if(isFinantialDocumentRequired() && getFinantialDocument() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.finantialDocument.required");
         }
 
@@ -67,6 +67,10 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         if(getAmount().compareTo(BigDecimal.ZERO) < 0) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.less.than.zero");
         }
+    }
+    
+    public boolean isFinantialDocumentRequired() {
+        return true;
     }
 
     public boolean isDeletable() {

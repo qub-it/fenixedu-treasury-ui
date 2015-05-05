@@ -31,23 +31,23 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 public class CreditEntry extends CreditEntry_Base {
-    
     
     protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final BigDecimal amount) {
         init(finantialDocument, product, amount);
     }
 
     @Override
-    protected void init(FinantialDocument finantialDocument, Product product, FinantialEntryType finantialEntryType,
-            BigDecimal amount) {
+    protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product, final FinantialEntryType finantialEntryType,
+            final BigDecimal amount) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
     
-    protected void init(final FinantialDocument finantialDocument, final Product product, BigDecimal amount) {
-        super.init(finantialDocument, product, FinantialEntryType.DEBIT_ENTRY, amount);
+    protected void init(final FinantialDocument finantialDocument, final Product product, final BigDecimal amount) {
+        super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.DEBIT_ENTRY, amount);
         
         checkRules();
     }
@@ -56,7 +56,7 @@ public class CreditEntry extends CreditEntry_Base {
     protected void checkRules() {
         super.checkRules();
         
-        if(!(getFinantialDocument() instanceof CreditNote)) {
+        if(getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
             throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
         }
     }

@@ -31,61 +31,75 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+
+import pt.ist.fenixframework.Atomic;
 
 public class DebitEntry extends DebitEntry_Base {
 
-	protected DebitEntry(final FinantialDocument finantialDocument,
-			final Product product, BigDecimal amount) {
-		init(finantialDocument, product, amount);
-	}
+    protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final BigDecimal amount) {
+        init(debtAccount, treasuryEvent, amount);
+    }
 
-	@Override
-	protected void init(FinantialDocument finantialDocument, Product product,
-			FinantialEntryType finantialEntryType, BigDecimal amount) {
-		throw new RuntimeException(
-				"error.CreditEntry.use.init.without.finantialEntryType");
-	}
+    protected void init(final FinantialDocument finantialDocument, final Product product, final FinantialEntryType finantialEntryType,
+            final BigDecimal amount) {
+        throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
+    }
 
-	protected void init(final FinantialDocument finantialDocument,
-			final Product product, BigDecimal amount) {
-		super.init(finantialDocument, product, FinantialEntryType.DEBIT_ENTRY,
-				amount);
+    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, BigDecimal amount) {
+        super.init(null, debtAccount, treasuryEvent.getProduct(), FinantialEntryType.DEBIT_ENTRY, amount);
+        
+        setDebtAccount(debtAccount);
+        setTreasuryEvent(treasuryEvent);
+        
+        checkRules();
+    }
 
-		checkRules();
-	}
+    @Override
+    protected void checkRules() {
+        super.checkRules();
 
-	@Override
-	protected void checkRules() {
-		super.checkRules();
+        if (getFinantialDocument() != null && !(getFinantialDocument() instanceof DebitNote)) {
+            throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
+        }
+        
+        if(getDebtAccount() == null) {
+            throw new TreasuryDomainException("error.DebitEntry.debtAccount.required");
+        }
+    }
+    
+    @Override
+    public boolean isFinantialDocumentRequired() {
+        return false;
+    }
+    
+    public boolean isEventAnnuled() {
+        return getEventAnnuled();
+    }
 
-		if (!(getFinantialDocument() instanceof DebitNote)) {
-			throw new TreasuryDomainException(
-					"error.DebitEntry.finantialDocument.not.debit.entry.type");
-		}
-	}
+    public BigDecimal getOpenAmount() {
+        BigDecimal amount = this.getAmount();
+        for (SettlementEntry entry : this.getSettlementEntriesSet()) {
+            amount = amount.subtract(entry.getAmount());
+        }
+        return amount;
+    }
+    
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<DebitEntry> findAll() {
-		return FinantialDocumentEntry.findAll()
-				.filter(f -> f instanceof DebitEntry)
-				.map(DebitEntry.class::cast);
-	}
-
-	public boolean isEventAnnuled() {
-		return getEventAnnuled();
-	}
-
-	public BigDecimal getOpenAmount() {
-		BigDecimal amount = this.getAmount();
-		for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-			amount = amount.subtract(entry.getAmount());
-		}
-		return amount;
-	}
+    public static Stream<? extends DebitEntry> findAll() {
+        return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
+    }
+    
+    public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final BigDecimal amount) {
+        return new DebitEntry(debtAccount, treasuryEvent, amount);
+    }
+    
 }

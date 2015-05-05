@@ -145,10 +145,8 @@ class Customer {
 class debt.DebtAccount {
 }
 
-/*
 class document.DocumentTemplate {
 }
-*/
 
 /*-----------
  * Documents 
@@ -543,7 +541,7 @@ relation DebtAccountBennu {
 		multiplicity 1..1;
 	}
 	
-	debt.DebtAccount playsRole debtsAccounts {
+	debt.DebtAccount playsRole debtAccounts {
 		multiplicity *;
 	}
 }
@@ -780,19 +778,6 @@ relation InvoiceEntryCurrency {
 	}
 }
 
-/* --- DebitEntry --- */
-
-relation DebitEntryDebitNote {
-	document.DebitNote playsRole debitNote {
-		multiplicity 1..1;
-	}
-
-	document.DebitEntry playsRole debitEntries {
-		multiplicity *;
-	}
-}
-
-
 relation InvoiceEntryProduct {
 	Product playsRole product {
 		multiplicity 1..1;
@@ -809,6 +794,28 @@ relation InvoiceEntryVat {
 	}
 	
 	document.InvoiceEntry playsRole invoiceEntries {
+		multiplicity *;
+	}
+}
+
+/* --- DebitEntry --- */
+
+relation DebitEntryDebitNote {
+	document.DebitNote playsRole debitNote {
+		multiplicity 1..1;
+	}
+
+	document.DebitEntry playsRole debitEntries {
+		multiplicity *;
+	}
+}
+
+relation DebitEntryTreasuryEvent {
+	event.TreasuryEvent playsRole treasuryEvent {
+		multiplicity 0..1;
+	}
+		
+	document.DebitEntry playsRole debitEntries {
 		multiplicity *;
 	}
 }

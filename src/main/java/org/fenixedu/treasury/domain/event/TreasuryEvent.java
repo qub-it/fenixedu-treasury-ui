@@ -27,7 +27,8 @@
  */
 package org.fenixedu.treasury.domain.event;
 
-import java.util.Set;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
@@ -49,12 +50,12 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         checkRules();
     }
 
-    private void checkRules() {
-        if(getProduct() == null) {
+    protected  void checkRules() {
+        if (getProduct() == null) {
             throw new TreasuryDomainException("error.TreasuryEvent.product.required");
         }
     }
-    
+
     public boolean isDeletable() {
         return true;
     }
@@ -76,8 +77,8 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
      ************/
     // @formatter: on
 
-    public static Set<TreasuryEvent> readAll() {
-        return Bennu.getInstance().getTreasuryEventsSet();
+    public static Stream<? extends TreasuryEvent> findAll() {
+        return Bennu.getInstance().getTreasuryEventsSet().stream();
     }
-
+    
 }

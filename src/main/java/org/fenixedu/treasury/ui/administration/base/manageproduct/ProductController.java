@@ -67,11 +67,7 @@ public class ProductController extends TreasuryBaseController {
     }
 
     private List<Product> getSearchUniverseSearchProductDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
-        return new ArrayList<Product>(Product.readAll()); //CHANGE_ME
+        return Product.findAll().collect(Collectors.toList());
     }
 
     private List<Product> filterSearchProduct(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,

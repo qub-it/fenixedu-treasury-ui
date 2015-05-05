@@ -145,7 +145,6 @@ public abstract class Tariff extends Tariff_Base {
         setBennu(null);
         deleteDomainObject();
     }
-    
 
     // @formatter: off
     /************
@@ -161,8 +160,12 @@ public abstract class Tariff extends Tariff_Base {
         return BigDecimal.ZERO.compareTo(value) == 0;
     }
     
-    public boolean isPositive(final BigDecimal value) {
+    protected boolean isPositive(final BigDecimal value) {
         return BigDecimal.ZERO.compareTo(value) < 0;
+    }
+    
+    protected boolean isGreaterThan(final BigDecimal v1, final BigDecimal v2) {
+        return v1.compareTo(v2) > 0;
     }
     
 

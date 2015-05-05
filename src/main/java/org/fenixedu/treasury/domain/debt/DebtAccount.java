@@ -28,7 +28,7 @@
 package org.fenixedu.treasury.domain.debt;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -41,44 +41,44 @@ import pt.ist.fenixframework.Atomic;
 
 public class DebtAccount extends DebtAccount_Base {
 
-	public DebtAccount() {
-		super();
+    public DebtAccount() {
+        super();
         setBennu(Bennu.getInstance());
-	}
-	
-
-
+    }
 
     protected DebtAccount(final FinantialInstitution finantialInstitution, final Customer customer) {
         this();
-		setCustomer(customer);
-		setFinantialInstitution(finantialInstitution);
+        setCustomer(customer);
+        setFinantialInstitution(finantialInstitution);
 
-//		checkRules();
-	}
-//
-//	private void checkRules() {
-//		if (LocalizedStringUtil.isEmpty(getCode())) {
-//			throw new TreasuryDomainException("error.DebtAccount.code.required");
-//		}
-//
-//		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-//			throw new TreasuryDomainException("error.DebtAccount.name.required");
-//		}
-//
-//		findByCode(getCode());
-//		getName().getLocales().stream()
-//				.forEach(l -> findByName(getName().getContent(l)));
-//	}
-//
-//	@Atomic
-//	public void edit(final String code, final LocalizedString name) {
-//		setCode(code);
-//		setName(name);
-//
-//		checkRules();
-//	}
-//
+        checkRules();
+    }
+
+    private void checkRules() {
+        if(getCustomer() == null) {
+            throw new TreasuryDomainException("error.DebtAccount.customer.required");
+        }
+        
+        if(getFinantialInstitution() == null) {
+            throw new TreasuryDomainException("error.DebtAccount.finantialInstitution.required");
+        }
+    }
+
+    public BigDecimal getTotalInDebt() {
+        BigDecimal amount = BigDecimal.ZERO;
+        for (FinantialDocument document : this.getFinantialDocumentsSet()) {
+            if (document.isClosed() == false) {
+                if (document.isDebitNote()) {
+                    amount = amount.add(document.getOpenAmount());
+                } else if (document.isCreditNote()) {
+                    amount = amount.subtract(document.getOpenAmount());
+                }
+            }
+        }
+
+        return amount;
+    }
+    
 //	public boolean isDeletable() {
 //		return true;
 //	}
@@ -94,80 +94,32 @@ public class DebtAccount extends DebtAccount_Base {
 //		deleteDomainObject();
 //	}
 //
-//	// @formatter: off
-//	/************
-//	 * SERVICES *
-//	 ************/
-//	// @formatter: on
-//
-//	public static Set<DebtAccount> readAll() {
-//		return Bennu.getInstance().getDebtAccountsSet();
-//	}
-//
-//	public static DebtAccount findByCode(final String code) {
-//		DebtAccount result = null;
-//
-//		for (final DebtAccount it : readAll()) {
-//			if (!it.getCode().equalsIgnoreCase(code)) {
-//				continue;
-//			}
-//
-//			if (result != null) {
-//				throw new TreasuryDomainException(
-//						"error.DebtAccount.duplicated.code");
-//			}
-//
-//			result = it;
-//		}
-//
-//		return result;
-//	}
-//
-//	public static DebtAccount findByName(final String name) {
-//		DebtAccount result = null;
-//
-//		for (final DebtAccount it : readAll()) {
-//
-//			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
-//					name)) {
-//				continue;
-//			}
-//
-//			if (result != null) {
-//				throw new TreasuryDomainException(
-//						"error.DebtAccount.duplicated.name");
-//			}
-//
-//			result = it;
-//		}
-//
-//		return result;
-//	}
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+
+    public static Stream<DebtAccount> findAll() {
+        return Bennu.getInstance().getDebtAccountsSet().stream();
+    }
+
+    public static Stream<DebtAccount> find(final FinantialInstitution finantialInstitution) {
+        return findAll().filter(d -> d.getFinantialInstitution() == finantialInstitution);
+    }
+
+    public static Stream<DebtAccount> find(final Customer customer) {
+        return findAll().filter(d -> d.getCustomer() == customer);
+    }
+
+    public static Optional<DebtAccount> findUnique(final FinantialInstitution finantialInstitution, final Customer customer) {
+        return find(finantialInstitution).filter(d -> d.getCustomer() == customer).findFirst();
+    }
 
     @Atomic
     public static DebtAccount create(final FinantialInstitution finantialInstitution, final Customer customer) {
         return new DebtAccount(finantialInstitution, customer);
-    }
-    
-    public BigDecimal getTotalInDebt()
-    {
-    	BigDecimal amount = BigDecimal.ZERO;
-    	for (FinantialDocument document: this.getFinantialDocumentsSet())
-    	{
-    		if (document.isClosed() == false)
-    		{
-    			if (document.isDebitNote())
-    			{
-    				amount = amount.add(document.getOpenAmount());
-    			}
-    			else if (document.isCreditNote())
-    			{
-    				amount = amount.subtract(document.getOpenAmount());
-    			}
-    		}
-    	}
-    	
-    	return amount;
     }
 
 }

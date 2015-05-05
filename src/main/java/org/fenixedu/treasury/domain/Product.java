@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain;
 
-import java.util.Set;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -78,6 +78,10 @@ public class Product extends Product_Base {
         }
     }
 
+    public boolean isActive() {
+        return getActive();
+    }
+
     @Atomic
     public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active) {
         setCode(code);
@@ -109,45 +113,16 @@ public class Product extends Product_Base {
      ************/
     // @formatter: on
 
-    public static Set<Product> readAll() {
-        return Bennu.getInstance().getProductsSet();
+    public static Stream<Product> findAll() {
+        return Bennu.getInstance().getProductsSet().stream();
     }
 
-    public static Product findByCode(final String code) {
-        Product result = null;
+    public static Stream<Product> findByCode(final String code) {
+        return findAll().filter(p -> p.getCode().equalsIgnoreCase(code));
+    }                
 
-        for (final Product it : readAll()) {
-            if (!it.getCode().equalsIgnoreCase(code)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.Product.duplicated.code");
-            }
-
-            result = it;
-        }
-
-        return result;
-    }
-
-    public static Product findByName(final String name) {
-        Product result = null;
-
-        for (final Product it : readAll()) {
-
-            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
-                continue;
-            }
-
-            if (result != null) {
-                throw new TreasuryDomainException("error.Product.duplicated.name");
-            }
-
-            result = it;
-        }
-
-        return result;
+    public static Stream<Product> findByName(final String name) {
+        return findAll().filter(p -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(p.getName(), name));
     }
     
     public static LocalizedString defaultUnitOfMeasure() {
@@ -158,9 +133,5 @@ public class Product extends Product_Base {
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
             final LocalizedString unitOfMeasure, boolean active) {
         return new Product(productGroup, code, name, unitOfMeasure, active);
-    }
-
-    public boolean isActive() {
-        return getActive();
     }
 }
