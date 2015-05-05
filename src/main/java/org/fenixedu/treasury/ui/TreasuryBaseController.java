@@ -31,9 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.fenixedu.bennu.BeanConverterService;
+import org.fenixedu.bennu.CountryAdapter;
+import org.fenixedu.bennu.DistrictAdapter;
 import org.fenixedu.bennu.DomainObjectAdapter;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.LocalizedStringAdapter;
+import org.fenixedu.bennu.MunicipalityAdapter;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.springframework.core.convert.support.GenericConversionService;
 import org.springframework.ui.Model;
@@ -43,6 +46,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.DomainObject;
+import pt.ist.standards.geographic.Country;
+import pt.ist.standards.geographic.District;
+import pt.ist.standards.geographic.Municipality;
 
 import com.fatboyindustrial.gsonjodatime.Converters;
 import com.google.gson.Gson;
@@ -120,6 +126,9 @@ public class TreasuryBaseController {
     protected String getBeanJson(IBean bean) {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeAdapter(LocalizedString.class, new LocalizedStringAdapter());
+        builder.registerTypeAdapter(Country.class, new CountryAdapter());
+        builder.registerTypeAdapter(District.class, new DistrictAdapter());
+        builder.registerTypeAdapter(Municipality.class, new MunicipalityAdapter());
         builder.registerTypeHierarchyAdapter(DomainObject.class, new DomainObjectAdapter());
         Gson gson = Converters.registerDateTime(builder).create();
 
