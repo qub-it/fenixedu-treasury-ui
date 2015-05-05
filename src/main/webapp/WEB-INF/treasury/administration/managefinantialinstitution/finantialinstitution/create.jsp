@@ -20,23 +20,14 @@
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<link
-	href="//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css"
-	rel="stylesheet" />
-<script
-	src="//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js"></script>
-<link
-	href="//cdn.datatables.net/tabletools/2.2.3/css/dataTables.tableTools.css"
-	rel="stylesheet" />
-<script
-	src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
-<link
-	href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/css/select2.min.css"
-	rel="stylesheet" />
-<script
-	src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>
-<script
-	src="http://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.tableTools.css" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.tableTools.min.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/static/treasury/js/select2.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/bootbox.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}

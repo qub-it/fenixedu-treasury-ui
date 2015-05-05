@@ -22,21 +22,15 @@
 <link rel="stylesheet" type="text/css"
     href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<link
-    href="//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css"
-    rel="stylesheet" />
-<script
-    src="//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js"></script>
-<link
-    href="//cdn.datatables.net/tabletools/2.2.3/css/dataTables.tableTools.css"
-    rel="stylesheet" />
-<script
-    src="//cdn.datatables.net/tabletools/2.2.3/js/dataTables.tableTools.min.js"></script>
-<link
-    href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/css/select2.min.css"
-    rel="stylesheet" />
-<script
-    src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0-rc.1/js/select2.min.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.tableTools.css" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.tableTools.min.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/static/treasury/js/select2.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/bootbox.min.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
@@ -153,9 +147,6 @@ ${portal.toolkit()}
             		//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
             		"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
             		//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
-                    "tableTools": {
-                        "sSwfPath": "//cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
-                    }
 		        });
 		table.columns.adjust().draw();
 		$('#searchfinantialinstitutionTable tbody').on( 'click', 'tr', function () {
