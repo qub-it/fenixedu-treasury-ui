@@ -48,7 +48,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/create"><spring:message
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/create"><spring:message
             code="label.event.create" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -115,7 +115,7 @@ ${portal.toolkit()}
 				"fiscalnumber" : "<c:out value='${searchResult.fiscalNumber}'/>",
 				"name" : "<c:out value='${searchResult.name}'/>",
 				"actions" : "<a  class=\"btn btn-default btn-xs\" "
-				              +" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/search/view/${searchResult.externalId}\">"
+				              +" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/search/view/${searchResult.externalId}\">"
 				              +" <spring:message code='label.view'/></a>" 
 			},
 		</c:forEach>

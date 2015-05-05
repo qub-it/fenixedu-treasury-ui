@@ -1,4 +1,5 @@
 <%@page import="java.util.Collection"%>
+<%@page import="org.fenixedu.bennu.core.util.CoreConfiguration"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -44,7 +45,7 @@ ${portal.toolkit()}
 <div class="page-header">
 	<h1>
 		<spring:message
-			code="label.administration.manageFinantialInstitution.updateFinantialInstitution" />
+			code="label.administration.manageFinantialInstitution.createFinantialInstitution" />
 		<small></small>
 	</h1>
 </div>
@@ -53,7 +54,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}"><spring:message
+		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/"><spring:message
 			code="label.event.back" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -103,22 +104,25 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 <form name='form' method="post" class="form-horizontal"
 	ng-app="changeExample" ng-controller="ExampleController"
-	action='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}'>
+	action='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/create'>
 
 	<input type="hidden" name="postback"
-		value='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/updatepostback/${finantialInstitution.externalId}' />
+		value='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/createpostback' />
+		
+	<input name="bean" type="hidden" value="{{ object }}" />
+		
 	<div class="panel panel-default">
 		<div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.FinantialInstitution.fiscalCountryRegion" />
-                </div>
-                <div class="col-sm-4">
-                    <select id="finantialInstitution_fiscalCountryRegion"
-                        class="js-example-basic-single" name="fiscalcountryregion">
-                    </select>
-                </div>
-            </div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.FinantialInstitution.fiscalCountryRegion" />
+				</div>
+				<div class="col-sm-4">
+					<select id="finantialInstitution_fiscalCountryRegion"
+						class="js-example-basic-single" name="fiscalcountryregion">
+					</select>
+				</div>
+			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.code" />
@@ -126,7 +130,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 				<div class="col-sm-10">
 					<input id="finantialInstitution_code" class="form-control"
-						type="text" name="code"
+						type="text" name="code" required
 						value='<c:out value='${not empty param.code ? param.code : finantialInstitution.code }'/>' />
 				</div>
 			</div>
@@ -137,7 +141,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 				<div class="col-sm-10">
 					<input id="finantialInstitution_fiscalNumber" class="form-control"
-						type="text" name="fiscalnumber"
+						type="text" name="fiscalnumber" required
 						value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : finantialInstitution.fiscalNumber }'/>' />
 				</div>
 			</div>
@@ -158,8 +162,8 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 				</div>
 
 				<div class="col-sm-10">
-					<input id="finantialInstitution_name" class="form-control"
-						type="text" name="name"
+					<input id="finantialInstitution_name" class="form-control"   ng-model="object.name"  
+						type="text" name="name" required
 						value='<c:out value='${not empty param.name ? param.name : finantialInstitution.name }'/>' />
 				</div>
 			</div>
@@ -189,29 +193,27 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.country" />
 				</div>
-
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="finantialInstitution_country"
-                        class="js-example-basic-single" name="country" ng-model="country"
-                        ng-change="change(country, '{{country}}')">
-                        <option value=""></option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-                    </select>
-                </div>
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<select id="finantialInstitution_country"
+						class="js-example-basic-single" name="country" ng-model="country"
+						ng-change="change(country, '{{country}}')">
+						<option value=""></option>
+						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+					</select>
+				</div>
 			</div>
 			<div class="form-group row" id="finantialInstitution_district_div">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.district" />
 				</div>
-
-                <div class="col-sm-4">
-                    <select id="finantialInstitution_district"
-                        class="js-example-basic-single" name="district"
-                        ng-model="district" ng-change="change(district, '{{district}}')">
-                        <option value=""></option>
-                    </select>
-                </div>
+				<div class="col-sm-4">
+					<select id="finantialInstitution_district"
+						class="js-example-basic-single" name="district"
+						ng-model="district" ng-change="change(district, '{{district}}')">
+						<option value=""></option>
+					</select>
+				</div>
 			</div>
 			<div class="form-group row" id="finantialInstitution_municipality_div">
 				<div class="col-sm-2 control-label">
@@ -257,72 +259,69 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 </form>
 
 <script>
-$(document).ready(function() {
-    fiscalCountryRegion_options = [
-        <c:forEach items="${finantialInstitution_fiscalCountryRegion_options}" var="fiscalCountryRegion">
-        {
-            "id"   : "<c:out value='${fiscalCountryRegion.externalId}'/>",
-            "text" : "<c:out value='${fiscalCountryRegion.name.content}'/>",
-        },
-        </c:forEach>
-    ];
-    country_options = [
-        <c:forEach items="${finantialInstitution_country_options}" var="country">
-        {
-            "id"   : "<pf:placeCode place='${country}'/>",
-            "text" : "<pf:placeName place='${country}'/>",
-        },
-        </c:forEach>
-    ];
-    district_options = [
-        <c:forEach items="${finantialInstitution_district_options}" var="district">
-        {
-            "id"   : "<pf:placeCode place='${district}'/>",
-            "text" : "<pf:placeName place='${district}'/>",
-        },
-        </c:forEach>
-    ];
-    municipality_options = [
-        <c:forEach items="${finantialInstitution_municipality_options}" var="municipality">
-        {
-            "id"   : "<pf:placeCode place='${municipality}'/>",
-            "text" : "<pf:placeName place='${municipality}'/>",
-        },
-        </c:forEach>
-    ];
-    var sortFunction = function(a,b) { return a.text.localeCompare(b.text) };
-	$("#finantialInstitution_country").select2(
-		{
-			data : country_options.sort( sortFunction ),
-		}	  
-	);
-	$("#finantialInstitution_district").select2(
-		{
-			data : district_options.sort( sortFunction ),
-		}	  
-    );
-	$("#finantialInstitution_municipality").select2(
-		{
-			data : municipality_options.sort( sortFunction ),
-		}	  
-	);
-    $("#finantialInstitution_fiscalCountryRegion").select2(
-        {
-            data : fiscalCountryRegion_options.sort( sortFunction ),
-        }     
-    );
-    <c:set var="savedCountry"><pf:placeCode place='${finantialInstitution.country}'/></c:set>
-    <c:set var="savedDistrict"><pf:placeCode place='${finantialInstitution.district}'/></c:set>
-    <c:set var="savedMunicipality"><pf:placeCode place='${finantialInstitution.municipality}'/></c:set>
-	$("#finantialInstitution_country").select2().select2('val', '${not empty param.country ? param.country : savedCountry}');
- 	$("#finantialInstitution_district").select2().select2('val', '${not empty param.country ? param.country : savedDistrict}');
- 	$("#finantialInstitution_municipality").select2().select2('val', '${not empty param.country ? param.country : savedMunicipality}');
-    $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${finantialInstitution.fiscalCountryRegion.externalId}');
-    if (district_options.length == 0) {
-        $("#finantialInstitution_district_div").hide();
-    } 
-    if (municipality_options.length == 0) {
-        $("#finantialInstitution_municipality_div").hide();
-    } 
-});
+	$(document).ready(function() {
+        fiscalCountryRegion_options = [
+            <c:forEach items="${finantialInstitution_fiscalCountryRegion_options}" var="fiscalCountryRegion">
+            {
+                "id"   : "<c:out value='${fiscalCountryRegion.externalId}'/>",
+                "text" : "<c:out value='${fiscalCountryRegion.name.content}'/>",
+            },
+            </c:forEach>
+        ];
+        country_options = [
+           <c:forEach items="${finantialInstitution_country_options}" var="country">
+           {
+               "id"   : "<pf:placeCode place='${country}'/>",
+               "text" : "<pf:placeName place='${country}'/>",
+           },
+           </c:forEach>
+        ];
+        district_options = [
+           <c:forEach items="${finantialInstitution_district_options}" var="district">
+           {
+               "id"   : "<pf:placeCode place='${district}'/>",
+               "text" : "<pf:placeName place='${district}'/>",
+           },
+           </c:forEach>
+        ];
+        municipality_options = [
+           <c:forEach items="${finantialInstitution_municipality_options}" var="municipality">
+           {
+               "id"   : "<pf:placeCode place='${municipality}'/>",
+               "text" : "<pf:placeName place='${municipality}'/>",
+           },
+           </c:forEach>
+        ];
+        var sortFunction = function(a,b) { return a.text.localeCompare(b.text) };
+		$("#finantialInstitution_fiscalCountryRegion").select2(
+			{
+				data : fiscalCountryRegion_options.sort( sortFunction ),
+			}	  
+		);		
+        $("#finantialInstitution_country").select2(
+			{
+				data : country_options.sort( sortFunction ),
+			}	  
+	    );
+		$("#finantialInstitution_district").select2(
+			{
+				data : district_options.sort( sortFunction ),
+			}	  
+	    );
+		$("#finantialInstitution_municipality").select2(
+			{
+				data : municipality_options.sort( sortFunction ),
+			}	  
+		);
+		$("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${param.fiscalcountryregion}');
+		$("#finantialInstitution_country").select2().select2('val', '${param.country}');
+		$("#finantialInstitution_district").select2().select2('val', '${param.district}');
+		$("#finantialInstitution_municipality").select2().select2('val', '${param.municipality}');
+		if (district_options.length == 0) {
+			$("#finantialInstitution_district_div").hide();
+		} 
+        if (municipality_options.length == 0) {
+            $("#finantialInstitution_municipality_div").hide();
+        } 
+	});
 </script>

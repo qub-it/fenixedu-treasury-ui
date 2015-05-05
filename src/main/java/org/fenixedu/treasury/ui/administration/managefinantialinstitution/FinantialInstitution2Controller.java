@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.administration.manageFinantialInstitution;
+package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,15 +31,15 @@ import pt.ist.standards.geographic.Municipality;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution/finantialinstitution")
-public class FinantialInstitutionController extends TreasuryBaseController {
+@RequestMapping("/treasury/administration/managefinantialinstitution/finantialinstitution2")
+public class FinantialInstitution2Controller extends TreasuryBaseController {
 
 //
 
     @RequestMapping
     public String home(Model model) {
         //this is the default behavior, for handling in a Spring Functionality
-        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
+        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution2/";
     }
 
     private FinantialInstitution getFinantialInstitution(Model m) {
@@ -70,7 +70,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
         //add the results dataSet to the model
         model.addAttribute("searchfinantialinstitutionResultsDataSet", searchfinantialinstitutionResultsDataSet);
-        return "treasury/administration/managefinantialinstitution/finantialinstitution/search";
+        return "treasury/administration/managefinantialinstitution/finantialinstitution2/search";
     }
 
     private List<FinantialInstitution> getSearchUniverseSearchFinantialInstitutionDataSet() {
@@ -82,33 +82,35 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/search/view/{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
-        return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read" + "/"
-                + finantialInstitution.getExternalId();
+    public String processSearchToViewAction(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
+            RedirectAttributes redirectAttributes) {
+        return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read" + "/"
+                + finantialInstitution.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
-        return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
+        return "treasury/administration/managefinantialinstitution/finantialinstitution2/read";
     }
 
     @RequestMapping(value = "/delete/{oid}")
-    public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
+    public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setFinantialInstitution(finantialInstitution, model);
         try {
             deleteFinantialInstitution(finantialInstitution);
 
             addInfoMessage("Sucess deleting FinantialInstitution ...", model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/";
+            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution2/";
         } catch (TreasuryDomainException ex) {
             addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getMessage(), model);
         }
 
         //The default mapping is the same Read View
-        return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                + getFinantialInstitution(model).getExternalId();
+        return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
+                + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
@@ -131,22 +133,17 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                 zipCode, model);
     }
 
-    public String _create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "fiscalnumber",
-            required = false) String fiscalNumber, @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
-        model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
-        model.addAttribute("finantialInstitution_country_options",
-                GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_district_options", (country != null) ? country.getPlaces() : new HashSet<>());
-        model.addAttribute("finantialInstitution_municipality_options",
-                (district != null) ? district.getPlaces() : new HashSet<>());
-        return "treasury/administration/managefinantialinstitution/finantialinstitution/create";
+    public String _create(FinantialInstitutionBean bean, Model model) {
+        this.setFinantialInstitutionBean(bean, model);
+        return "treasury/administration/managefinantialinstitution/finantialinstitution2/create";
+    }
+
+    private void setFinantialInstitutionBean(FinantialInstitutionBean bean, Model model) {
+        bean.updateModelLists();
+        bean.setFiscalcountryregions(getSearchUniverseFiscalCountryRegionsDataSet());
+
+        model.addAttribute("finantialInstitutionBeanJson", getBeanJson(bean));
+        model.addAttribute("finantialInstitutionBean", bean);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
@@ -167,9 +164,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             //Add the bean to be used in the View
             model.addAttribute("finantialInstitution", finantialInstitution);
             addInfoMessage("Sucess creating FinantialInstitution ...", model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + getFinantialInstitution(model).getExternalId();
-        } catch (DomainException ex) {
+            return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
+                    + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
         }
@@ -212,17 +209,23 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                 municipality, locality, zipCode, model);
     }
 
-    public String _update(FinantialInstitution finantialInstitution, String code, String fiscalNumber, String companyId,
-            String name, String companyName, String address, Country country, District district, Municipality municipality,
-            String locality, String zipCode, Model model) {
         setFinantialInstitution(finantialInstitution, model);
-        model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
-        model.addAttribute("finantialInstitution_country_options",
-                GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_district_options", (country != null) ? country.getPlaces() : new HashSet<>());
-        model.addAttribute("finantialInstitution_municipality_options",
-                (district != null) ? district.getPlaces() : new HashSet<>());
-        return "treasury/administration/managefinantialinstitution/finantialinstitution/update";
+
+        FinantialInstitutionBean bean = new FinantialInstitutionBean(finantialInstitution);
+        return _update(bean, finantialInstitution, model);
+    }
+
+    @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody String updatepostback(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(
+            value = "bean", required = false) FinantialInstitutionBean bean, Model model) {
+        this.setFinantialInstitutionBean(bean, model);
+        return getBeanJson(bean);
+    }
+
+    public String _update(FinantialInstitutionBean bean, FinantialInstitution finantialInstitution, Model model) {
+        this.setFinantialInstitution(finantialInstitution, model);
+        this.setFinantialInstitutionBean(bean, model);
+        return "treasury/administration/managefinantialinstitution/finantialinstitution2/update";
     }
 
 //				
@@ -245,9 +248,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     municipality, locality, zipCode, model);
 
             addInfoMessage("Sucess updating FinantialInstitution ...", model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + getFinantialInstitution(model).getExternalId();
-        } catch (DomainException ex) {
+            return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
+                    + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
         }

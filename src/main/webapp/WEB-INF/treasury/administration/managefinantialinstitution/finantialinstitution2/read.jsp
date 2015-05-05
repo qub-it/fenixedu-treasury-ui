@@ -72,7 +72,7 @@ ${portal.toolkit()}
                     <spring:message code="label.close" />
                 </button>
                 <a class="btn btn-danger"
-                    href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/delete/${finantialInstitution.externalId}">
+                    href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/delete/${finantialInstitution.externalId}">
                     <spring:message code="label.delete" />
                 </a>
             </div>
@@ -86,14 +86,14 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/"><spring:message
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/"><spring:message
             code="label.event.back" /></a> |&nbsp;&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> |&nbsp;&nbsp; <span
         class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/update/${finantialInstitution.externalId}"><spring:message
             code="label.event.update" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
