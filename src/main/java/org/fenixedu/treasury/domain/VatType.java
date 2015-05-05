@@ -102,7 +102,7 @@ public class VatType extends VatType_Base {
 	 ************/
 	// @formatter: on
 	@Atomic
-	public static void InitializeVatType() {
+	public static void initializeVatType() {
 
 		if (VatType.findAll().count() == 0) {
 			VatType.create(

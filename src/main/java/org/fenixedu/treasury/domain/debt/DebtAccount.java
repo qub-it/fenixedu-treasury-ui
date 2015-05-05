@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.debt;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -35,6 +36,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
@@ -55,11 +57,11 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     private void checkRules() {
-        if(getCustomer() == null) {
+        if (getCustomer() == null) {
             throw new TreasuryDomainException("error.DebtAccount.customer.required");
         }
-        
-        if(getFinantialInstitution() == null) {
+
+        if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.DebtAccount.finantialInstitution.required");
         }
     }
@@ -78,7 +80,7 @@ public class DebtAccount extends DebtAccount_Base {
 
         return amount;
     }
-    
+
 //	public boolean isDeletable() {
 //		return true;
 //	}
@@ -120,6 +122,11 @@ public class DebtAccount extends DebtAccount_Base {
     @Atomic
     public static DebtAccount create(final FinantialInstitution finantialInstitution, final Customer customer) {
         return new DebtAccount(finantialInstitution, customer);
+    }
+
+    public Stream<? extends InvoiceEntry> getPendingInvoiceEntries() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

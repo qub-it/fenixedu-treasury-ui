@@ -28,100 +28,109 @@
 package org.fenixedu.treasury.domain;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
 public class TreasuryExemption extends TreasuryExemption_Base {
-	  protected TreasuryExemption() {
-	        super();
-	        setBennu(Bennu.getInstance());
-	    }
-	    
-	    protected void init(final java.lang.String code,final org.fenixedu.commons.i18n.LocalizedString name,final java.math.BigDecimal discountRate) {
-	setCode(code);
-	setName(name);
-	setDiscountRate(discountRate);
-	    	checkRules();
-	    }
+    protected TreasuryExemption() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
 
-		private void checkRules() {
-			//
-			//CHANGE_ME add more busines validations
-			//
-			
-			//CHANGE_ME In order to validate UNIQUE restrictions
-			//if (findByCode(getCode().count()>1)
-			//{
-			//	throw new TreasuryDomainException("error.TreasuryExemption.code.duplicated");
-			//}	
-			//if (findByName(getName().count()>1)
-			//{
-			//	throw new TreasuryDomainException("error.TreasuryExemption.name.duplicated");
-			//}	
-			//if (findByDiscountRate(getDiscountRate().count()>1)
-			//{
-			//	throw new TreasuryDomainException("error.TreasuryExemption.discountRate.duplicated");
-			//}	
-		}
-		
-		@Atomic
-		public void edit(final java.lang.String code,final org.fenixedu.commons.i18n.LocalizedString name,final java.math.BigDecimal discountRate) {
-		    setCode(code);
-		    setName(name);
-		    setDiscountRate(discountRate);
-		    checkRules();
-		}
-		
-		public boolean isDeletable() {
-		    return true;
-		}
-		
-		@Atomic
-		public void delete() {
-		    if(!isDeletable()) {
-		        throw new TreasuryDomainException("error.TreasuryExemption.cannot.delete");
-		    }
-		    
-		    setBennu(null);
-		    
-		    deleteDomainObject();
-		}
-		
-		 
-	    @Atomic
-	    public static TreasuryExemption create(final java.lang.String code,final org.fenixedu.commons.i18n.LocalizedString name,final java.math.BigDecimal discountRate) {
-	    	TreasuryExemption treasuryExemption = new TreasuryExemption();
-	        treasuryExemption.init( code, name, discountRate);
-	        return treasuryExemption;
-	    }
+    protected void init(final java.lang.String code, final org.fenixedu.commons.i18n.LocalizedString name,
+            final java.math.BigDecimal discountRate) {
+        setCode(code);
+        setName(name);
+        setDiscountRate(discountRate);
+        checkRules();
+    }
 
-		// @formatter: off
-		/************
-		 * SERVICES *
-		 ************/
-	    // @formatter: on
-		
-		public static Stream<TreasuryExemption> findAll() {
-		    return Bennu.getInstance().getTreasuryExemptionsSet().stream();
-		}
-		
-		public static Stream<TreasuryExemption> findByCode(final java.lang.String code) {
-			return findAll().filter(i->code.equalsIgnoreCase(i.getCode()));
-		  }
-		public static Stream<TreasuryExemption> findByName(final org.fenixedu.commons.i18n.LocalizedString name) {
-			return findAll().filter(i->name.equals(i.getName()));
-		  }
-		public static Stream<TreasuryExemption> findByDiscountRate(final java.math.BigDecimal discountRate) {
-			return findAll().filter(i->discountRate.equals(i.getDiscountRate()));
-		  }
-	   
-	    
+    private void checkRules() {
+        //
+        //CHANGE_ME add more busines validations
+        //
+
+        //CHANGE_ME In order to validate UNIQUE restrictions
+        //if (findByCode(getCode().count()>1)
+        //{
+        //	throw new TreasuryDomainException("error.TreasuryExemption.code.duplicated");
+        //}	
+        //if (findByName(getName().count()>1)
+        //{
+        //	throw new TreasuryDomainException("error.TreasuryExemption.name.duplicated");
+        //}	
+        //if (findByDiscountRate(getDiscountRate().count()>1)
+        //{
+        //	throw new TreasuryDomainException("error.TreasuryExemption.discountRate.duplicated");
+        //}	
+    }
+
+    @Atomic
+    public void edit(final java.lang.String code, final org.fenixedu.commons.i18n.LocalizedString name,
+            final java.math.BigDecimal discountRate) {
+        setCode(code);
+        setName(name);
+        setDiscountRate(discountRate);
+        checkRules();
+    }
+
+    public boolean isDeletable() {
+        return true;
+    }
+
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.TreasuryExemption.cannot.delete");
+        }
+
+        setBennu(null);
+
+        deleteDomainObject();
+    }
+
+    @Atomic
+    public static TreasuryExemption create(final java.lang.String code, final org.fenixedu.commons.i18n.LocalizedString name,
+            final java.math.BigDecimal discountRate) {
+        TreasuryExemption treasuryExemption = new TreasuryExemption();
+        treasuryExemption.init(code, name, discountRate);
+        return treasuryExemption;
+    }
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+
+    public static Stream<TreasuryExemption> findAll() {
+        return Bennu.getInstance().getTreasuryExemptionsSet().stream();
+    }
+
+    public static Stream<TreasuryExemption> findByCode(final java.lang.String code) {
+        return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
+    }
+
+    public static Stream<TreasuryExemption> findByName(final org.fenixedu.commons.i18n.LocalizedString name) {
+        return findAll().filter(i -> name.equals(i.getName()));
+    }
+
+    public static Stream<TreasuryExemption> findByDiscountRate(final java.math.BigDecimal discountRate) {
+        return findAll().filter(i -> discountRate.equals(i.getDiscountRate()));
+    }
+
+    public static Stream<TreasuryExemption> findByDebtAccount(DebtAccount debtAccount) {
+        return findAll().filter(x -> x.getDebitEntry().getDebtAccount().equals(debtAccount));
+    }
+
 }

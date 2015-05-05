@@ -1,7 +1,34 @@
+/**
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * software development project between Quorum Born IT and Serviços Partilhados da
+ * Universidade de Lisboa:
+ *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
+ *
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
+ *
+ * 
+ * This file is part of FenixEdu Treasury.
+ *
+ * FenixEdu Treasury is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FenixEdu Treasury is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.fenixedu.treasury.ui.administration.base.managevat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
@@ -56,8 +83,8 @@ public class VatController extends TreasuryBaseController {
     @RequestMapping(value = "/")
     public String search(
             @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             Model model) {
         List<Vat> searchvatResultsDataSet = filterSearchVat(taxRate, beginDate, endDate);
 
@@ -66,12 +93,12 @@ public class VatController extends TreasuryBaseController {
         return "treasury/administration/base/managevat/vat/search";
     }
 
-    private List<Vat> getSearchUniverseSearchVatDataSet() {
+    private Set<Vat> getSearchUniverseSearchVatDataSet() {
         //
         //The initialization of the result list must be done here
         //
         //
-        return new ArrayList<Vat>(Vat.readAll()); //CHANGE_ME
+        return Vat.readAll();
     }
 
     private List<Vat> filterSearchVat(java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate,
@@ -133,20 +160,10 @@ public class VatController extends TreasuryBaseController {
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(
             @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
-//        if (binding.hasErrors()) {
-//            addErrorMessage(binding.getErrorCount() + " errors...", model);
-//            return create(model);
-//        }
-        /*
-        *  Creation Logic
-        *	
-        	do something();
-        *    		
-        */
         try {
             Vat vat = createVat(taxRate, beginDate, endDate);
 
@@ -162,18 +179,6 @@ public class VatController extends TreasuryBaseController {
 
         } catch (DomainException de) {
 
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(" Error because ...",model);
-             * addWarningMessage(" Waring becaus ...",model);
-             
-             
-             * 
-             * return create(model);
-             */
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
 
@@ -186,11 +191,6 @@ public class VatController extends TreasuryBaseController {
 
     @Atomic
     public Vat createVat(java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate) {
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         */
         Vat vat = Vat.create(null, null, taxRate, beginDate, endDate);
         return vat;
     }
@@ -233,16 +233,6 @@ public class VatController extends TreasuryBaseController {
         } catch (DomainException de) {
             // @formatter: off
 
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(" Error updating due to " +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning updating due to " +
-             * de.getLocalizedMessage(),model);
-             */
             // @formatter: on
 
             addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);

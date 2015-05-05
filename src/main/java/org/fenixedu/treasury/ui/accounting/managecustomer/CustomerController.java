@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 
@@ -57,6 +58,12 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.TreasuryExemption;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.PaymentEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer", accessGroup = "logged")
@@ -140,6 +147,24 @@ public class CustomerController extends TreasuryBaseController {
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") Customer customer, Model model) {
         setCustomer(customer, model);
+
+        List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
+        List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
+        List<SettlementEntry> paymentEntries = new ArrayList<SettlementEntry>();
+        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
+        for (DebtAccount debtAccount : customer.getDebtAccountsSet()) {
+            pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntries().collect(Collectors.toList()));
+            allInvoiceEntries.addAll(debtAccount.getInvoiceEntrySet());
+            SettlementNote.findByDebtAccount(debtAccount).map(
+                    x -> paymentEntries.addAll(x.getSettlemetEntriesSet().collect(Collectors.toList())));
+
+            exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
+        }
+        model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
+        model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
+        model.addAttribute("paymentsDataSet", paymentEntries);
+        model.addAttribute("exemptionDataSet", exemptionEntries);
+
         return "treasury/accounting/managecustomer/customer/read";
     }
 

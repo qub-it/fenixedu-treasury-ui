@@ -101,7 +101,7 @@ public class PaymentMethod extends PaymentMethod_Base {
 
     
 	@Atomic
-	public static void InitializePaymentMethod()
+	public static void initializePaymentMethod()
 	{
 		if (PaymentMethod.findAll().count() == 0)
 		{

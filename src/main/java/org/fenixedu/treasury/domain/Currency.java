@@ -43,136 +43,129 @@ import pt.ist.fenixframework.Atomic;
 
 public class Currency extends Currency_Base {
 
-	public static String EURO_CODE = "EUR";
+    public static String EURO_CODE = "EUR";
 
-	@Atomic
-	public static void InitializeCurrency() {
-		if (Currency.findAll().count() == 0) {
-			Currency.create("EUR", new LocalizedString(Locale.getDefault(),
-					BundleUtil.getString(Constants.BUNDLE, "label.Currency.EUR")), BundleUtil.getString(Constants.BUNDLE, "label.Currency.EUR"), "€");
-		}
-	}
+    @Atomic
+    public static void initializeCurrency() {
+        if (Currency.findAll().count() == 0) {
+            Currency.create("EUR",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.Currency.EUR")),
+                    BundleUtil.getString(Constants.BUNDLE, "label.Currency.EUR"), "€");
+        }
+    }
 
-	protected Currency() {
-		super();
-		setBennu(Bennu.getInstance());
-	}
+    protected Currency() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
 
-	protected Currency(final String code, final LocalizedString name,
-			final String isoCode, final String symbol) {
-		this();
-		setCode(code);
-		setName(name);
-		setIsoCode(isoCode);
-		setSymbol(symbol);
+    protected Currency(final String code, final LocalizedString name, final String isoCode, final String symbol) {
+        this();
+        setCode(code);
+        setName(name);
+        setIsoCode(isoCode);
+        setSymbol(symbol);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	private void checkRules() {
-		if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-			throw new TreasuryDomainException("error.Currency.code.required");
-		}
+    private void checkRules() {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+            throw new TreasuryDomainException("error.Currency.code.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-			throw new TreasuryDomainException("error.Currency.name.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.Currency.name.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getIsoCode())) {
-			throw new TreasuryDomainException("error.Currency.isoCode.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getIsoCode())) {
+            throw new TreasuryDomainException("error.Currency.isoCode.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getSymbol())) {
-			throw new TreasuryDomainException("error.Currency.symbol.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getSymbol())) {
+            throw new TreasuryDomainException("error.Currency.symbol.required");
+        }
 
-		findByCode(getCode());
-		getName().getLocales().stream()
-				.forEach(l -> findByName(getName().getContent(l)));
+        findByCode(getCode());
+        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
 
-	}
+    }
 
-	@Atomic
-	public void edit(final String code, final LocalizedString name,
-			final String isoCode, final String symbol) {
-		setCode(code);
-		setName(name);
-		setIsoCode(isoCode);
-		setSymbol(symbol);
+    @Atomic
+    public void edit(final String code, final LocalizedString name, final String isoCode, final String symbol) {
+        setCode(code);
+        setName(name);
+        setIsoCode(isoCode);
+        setSymbol(symbol);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException("error.Currency.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.Currency.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
 
-		deleteDomainObject();
-	}
+        deleteDomainObject();
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<Currency> findAll() {
-		return Bennu.getInstance().getCurrenciesSet().stream();
-	}
+    public static Stream<Currency> findAll() {
+        return Bennu.getInstance().getCurrenciesSet().stream();
+    }
 
-	public static Currency findByCode(final String code) {
-		Currency result = null;
+    public static Currency findByCode(final String code) {
+        Currency result = null;
 
-		for (final Currency it : findAll().collect(Collectors.toList())) {
-			if (!it.getCode().equalsIgnoreCase(code)) {
-				continue;
-			}
+        for (final Currency it : findAll().collect(Collectors.toList())) {
+            if (!it.getCode().equalsIgnoreCase(code)) {
+                continue;
+            }
 
-			if (result != null) {
-				throw new TreasuryDomainException(
-						"error.Currency.duplicated.code");
-			}
+            if (result != null) {
+                throw new TreasuryDomainException("error.Currency.duplicated.code");
+            }
 
-			result = it;
-		}
+            result = it;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static Currency findByName(final String name) {
-		Currency result = null;
+    public static Currency findByName(final String name) {
+        Currency result = null;
 
-		for (final Currency it : findAll().collect(Collectors.toList())) {
+        for (final Currency it : findAll().collect(Collectors.toList())) {
 
-			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
-					name)) {
-				continue;
-			}
+            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
+                continue;
+            }
 
-			if (result != null) {
-				throw new TreasuryDomainException(
-						"error.Currency.duplicated.name");
-			}
+            if (result != null) {
+                throw new TreasuryDomainException("error.Currency.duplicated.name");
+            }
 
-			result = it;
-		}
+            result = it;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Atomic
-	public static Currency create(final String code,
-			final LocalizedString name, final String isoCode,
-			final String symbol) {
-		return new Currency(code, name, isoCode, symbol);
-	}
+    @Atomic
+    public static Currency create(final String code, final LocalizedString name, final String isoCode, final String symbol) {
+        return new Currency(code, name, isoCode, symbol);
+    }
 
 }

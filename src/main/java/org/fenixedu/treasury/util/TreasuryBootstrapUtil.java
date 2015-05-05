@@ -13,15 +13,13 @@ import org.fenixedu.treasury.domain.VatType;
 import pt.ist.fenixframework.Atomic;
 
 public class TreasuryBootstrapUtil {
-	
-	
-	public static void InitializeDomain()
-	{
-		//HACK: This should be done elsewhere. 
-    	VatType.InitializeVatType();
-    	VatExemptionReason.InitializeVatExemption();
-    	FiscalCountryRegion.InitializeFiscalRegion();
-    	PaymentMethod.InitializePaymentMethod();
-    	Currency.InitializeCurrency();
-	}
+
+    public static void InitializeDomain() {
+        //HACK: This should be done elsewhere. 
+        VatType.initializeVatType();
+        VatExemptionReason.initializeVatExemption();
+        FiscalCountryRegion.initializeFiscalRegion();
+        PaymentMethod.initializePaymentMethod();
+        Currency.initializeCurrency();
+    }
 }

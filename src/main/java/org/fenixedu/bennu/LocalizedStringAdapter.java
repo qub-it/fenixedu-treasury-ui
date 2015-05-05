@@ -1,26 +1,28 @@
-/*
- * GSON Joda Time Serialisers
+/**
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * software development project between Quorum Born IT and Serviços Partilhados da
+ * Universidade de Lisboa:
+ *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Copyright 2013-2014 Greg Kopff
- * All rights reserved.
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ * 
+ * This file is part of FenixEdu Treasury.
  *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
+ * FenixEdu Treasury is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
+ * FenixEdu Treasury is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.fenixedu.bennu;
@@ -47,23 +49,23 @@ import java.lang.reflect.Type;
 /**
  * GSON serialiser/deserialiser for converting LocalizedString objects.
  */
-public class LocalizedStringAdapter implements JsonSerializer<LocalizedString>,
-		JsonDeserializer<LocalizedString> {
-	@Override
-	public JsonElement serialize(LocalizedString src, Type typeOfSrc,
-			JsonSerializationContext context) {
+public class LocalizedStringAdapter implements JsonSerializer<LocalizedString>, JsonDeserializer<LocalizedString> {
+    @Override
+    public JsonElement serialize(LocalizedString src, Type typeOfSrc, JsonSerializationContext context) {
 
-		return new JsonPrimitive(src.json().toString());
-	}
+        return new JsonPrimitive(src.json().toString());
+    }
 
-	@Override
-	public LocalizedString deserialize(JsonElement json, Type typeOfT,
-			JsonDeserializationContext context) throws JsonParseException {
-		if (json instanceof JsonArray) {
-			return LocalizedString.fromJson(json);
-		} else {
-			JsonObject parsed = new JsonParser().parse(json.toString().replace("\\","").replace("\"{","{").replace("}\"","}")).getAsJsonObject();
-			return LocalizedString.fromJson(parsed);
-		}
-	}
+    @Override
+    public LocalizedString deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+            throws JsonParseException {
+        if (json instanceof JsonArray) {
+            return LocalizedString.fromJson(json);
+        } else {
+            JsonObject parsed =
+                    new JsonParser().parse(json.toString().replace("\\", "").replace("\"{", "{").replace("}\"", "}"))
+                            .getAsJsonObject();
+            return LocalizedString.fromJson(parsed);
+        }
+    }
 }

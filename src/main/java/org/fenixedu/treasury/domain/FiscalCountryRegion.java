@@ -59,7 +59,7 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
 	}
 
 	@Atomic
-	public static void InitializeFiscalRegion() {
+	public static void initializeFiscalRegion() {
 		if (FiscalCountryRegion.findAll().count() == 0) {
 			FiscalCountryRegion.create("PT",
 					new LocalizedString(Locale.getDefault(),BundleUtil

@@ -472,6 +472,18 @@ relation TreasuryExemptionBennu {
 	}	
 }
 
+
+relation TreasuryExemptionDebitEntry
+{
+	document.DebitEntry playsRole debitEntry{
+		multiplicity 1..1;
+	}
+	
+	TreasuryExemption playsRole treasuryExemptions{
+		multiplicity 1..1;
+	}
+}
+
 relation PaymentMethodBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;
