@@ -1,8 +1,9 @@
-<%@page import="org.fenixedu.commons.i18n.I18N"%>
-<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%>
+
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -37,7 +38,7 @@
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
-<% FinantialInstitution finantialInstitution = (FinantialInstitution) request.getAttribute("finantialInstitution"); %>
+
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -61,7 +62,8 @@ ${portal.toolkit()}
             <div class="modal-body">
                 <p>
                     <spring:message
-                        code="label.administration.manageFinantialInstitution.readFinantialInstitution.confirmDelete" />
+                        code="label.administration.manageFinantialInstitution.readFinantialInstitution.confirmDelete"
+                        arguments='${finantialInstitution.name }' />
                 </p>
             </div>
             <div class="modal-footer">
@@ -135,8 +137,8 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.fiscalCountryRegion" /></th>
-                        <td><c:out                            
-                                 value='${finantialInstitution.fiscalCountryRegion.name.content}' /> 
+                        <td><c:out
+                                value='${finantialInstitution.fiscalCountryRegion.name.content}' />
                         </td>
                     </tr>
                     <tr>
@@ -184,33 +186,22 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.country" /></th>
-                        <td>
-                        <c:if test= "${not empty finantialInstitution.country}">
-                        	<c:out
-                                 value="<%=finantialInstitution.getCountry().getLocalizedName(I18N.getLocale())%>" />
-                        </c:if> 
+                        <td><pf:placeName
+                                place="${finantialInstitution.country}" />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.district" /></th>
-                        <td>
-                        <c:if test= "${not empty finantialInstitution.district}">
-                        
-                        <c:out
-                                 value="<%=finantialInstitution.getDistrict().getLocalizedName(I18N.getLocale())%>" /> 
-                                 </c:if>
+                        <td><pf:placeName
+                                place="${finantialInstitution.district}" />
                         </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.municipality" /></th>
-                        <td>
-                        <c:if test= "${not empty finantialInstitution.municipality}">
-                        
-                        <c:out
-                                 value="<%=finantialInstitution.getMunicipality().getLocalizedName(I18N.getLocale())%>" />
-                        </c:if> 
+                        <td><pf:placeName
+                                place="${finantialInstitution.municipality}" />
                         </td>
                     </tr>
                     <tr>
@@ -233,8 +224,189 @@ ${portal.toolkit()}
     </div>
 </div>
 
-<script>
-	$(document).ready(function() {
+<!-- Finantial Entity section -->
+<h2>
+    <spring:message code="label.administration.manageFinantialInstitution.searchFinantialEntity" />
+</h2>
 
-	});
+<div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+    &nbsp;
+    <a class=""
+       href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/create?finantialInstitutionId=${finantialInstitution.externalId }">
+           <spring:message code="label.event.create" />
+    </a> 
+    |&nbsp;&nbsp;
+</div>
+<c:choose>
+    <c:when
+        test="${not empty finantialInstitution.finantialEntitiesSet}">
+        <table id="searchfinantialentityTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><spring:message
+                            code="label.FinantialEntity.name" /></th>
+                    <%-- Operations Column --%>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+            <spring:message code="label.noResultsFound" />
+        </div>
+    </c:otherwise>
+</c:choose>
+
+<!-- Documents Series section -->
+<h2>
+    <spring:message code="label.administration.manageFinantialInstitution.searchSeries" />
+</h2>
+
+<div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+    &nbsp;
+    <a class=""
+       href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/create?finantialInstitutionId=${finantialInstitution.externalId }">
+           <spring:message code="label.event.create" />
+    </a> 
+    |&nbsp;&nbsp;
+</div>
+<c:choose>
+    <c:when test="${not empty finantialInstitution.seriesSet}">
+        <table id="searchseriesTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><spring:message code="label.Series.code" /></th>
+                    <th><spring:message code="label.Series.name" /></th>
+                    <th><spring:message
+                            code="label.Series.externSeries" /></th>
+                    <th><spring:message
+                            code="label.Series.defaultSeries" /></th>
+                    <%-- Operations Column --%>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+            <spring:message code="label.noResultsFound" />
+        </div>
+    </c:otherwise>
+</c:choose>
+
+<script>
+var searchfinantialentityDataSet = [
+    <c:forEach items="${finantialInstitution.finantialEntitiesSet}" var="searchResult">
+    {
+        "name" : "<c:out value='${searchResult.name.content}'/>",
+        "actions" :
+             " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"
+           + " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/search/edit/${searchResult.externalId}\"><spring:message code='label.edit'/></a>"             
+    },
+    </c:forEach>
+];
+
+var searchseriesDataSet = [
+    <c:forEach items="${finantialInstitution.seriesSet}" var="searchResult">
+    {
+        "code" : "<c:out value='${searchResult.code}'/>",
+        "name" : "<c:out value='${searchResult.name.content}'/>",
+        "externSeries" : <c:if test="${searchResult.externSeries}">
+                              "<spring:message code='label.true' />"
+                          </c:if>
+                          <c:if test="${not searchResult.externSeries}">
+                              "<spring:message code='label.false' />"
+                          </c:if>,
+        "defaultSeries" :<c:if test="${searchResult.defaultSeries}">
+                              "<spring:message code='label.Series.defaultSeries' />"
+                          </c:if>
+                          <c:if test="${not searchResult.defaultSeries}">
+                              "<a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.defaultSeries'/></a>"
+                          </c:if>,
+        "actions" :
+             " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"
+           + " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/edit/${searchResult.externalId}\"><spring:message code='label.edit'/></a>"             
+    },
+    </c:forEach>
+];
+
+
+
+$(document).ready(function() {
+    var table = $('#searchfinantialentityTable').DataTable({
+    	language : {
+    	    url : "${datatablesI18NUrl}",           
+    	},
+        "columns": [
+            { data: 'name' },
+            { data: 'actions' }
+        ],
+        //CHANGE_ME adjust the actions column width if needed
+        "columnDefs": [
+            { "width": "70px", "targets": 1 } 
+        ],
+        "data" : searchfinantialentityDataSet,
+        //Documentation: https://datatables.net/reference/option/dom
+        "dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+        //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+        //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+        //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+        "tableTools": {
+      	    "sSwfPath": "//cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
+        }
+    });
+    var table2 = $('#searchseriesTable').DataTable({
+        language : {
+            url : "${datatablesI18NUrl}",           
+        },
+        "columns": [
+            { data: 'code' },
+            { data: 'name' },
+            { data: 'externSeries' },
+            { data: 'defaultSeries' },
+            { data: 'actions' }                    
+        ],
+        //CHANGE_ME adjust the actions column width if needed
+        "columnDefs": [
+            { "width": "70px", "targets": 4 } 
+        ],
+        "data" : searchseriesDataSet,
+        //Documentation: https://datatables.net/reference/option/dom
+        "dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+        //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+        //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+        //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+        "tableTools": {
+            "sSwfPath": "//cdn.datatables.net/tabletools/2.2.3/swf/copy_csv_xls_pdf.swf"
+        }
+    });
+    
+    table.columns.adjust().draw();
+    $('#searchfinantialentityTable tbody').on( 
+	  	'click', 
+		'tr', 
+		function () {
+		    $(this).toggleClass('selected');
+        } 
+	);    
+    table.columns.adjust().draw();
+    $('#searchseriesTable tbody').on( 
+        'click', 
+        'tr', 
+        function () {
+            $(this).toggleClass('selected');
+        } 
+    );  
+}); 
 </script>

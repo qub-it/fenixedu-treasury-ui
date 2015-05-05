@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -240,7 +239,7 @@ public class SeriesController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        Series series = Series.create(finantialInstitution, code, name, externSeries, certificated, legacy);
+        Series series = Series.create(finantialInstitution, code, name, externSeries, certificated, legacy, false);
 
         return series;
     }

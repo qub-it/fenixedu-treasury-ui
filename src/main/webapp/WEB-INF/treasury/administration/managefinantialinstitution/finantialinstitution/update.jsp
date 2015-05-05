@@ -1,12 +1,9 @@
-<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
-<%@page import="pt.ist.standards.geographic.Municipality"%>
-<%@page import="pt.ist.standards.geographic.District"%>
-<%@page import="org.fenixedu.commons.i18n.I18N"%>
-<%@page import="pt.ist.standards.geographic.Country"%>
 <%@page import="java.util.Collection"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="pf"  uri="http://example.com/placeFunctions"%>
+
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -43,7 +40,6 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<% FinantialInstitution finantialInstitution = (FinantialInstitution) request.getAttribute("finantialInstitution"); %>
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
@@ -107,10 +103,10 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 <form name='form' method="post" class="form-horizontal"
 	ng-app="changeExample" ng-controller="ExampleController"
-	action='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update'>
+	action='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}'>
 
 	<input type="hidden" name="postback"
-		value='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/updatepostback' />
+		value='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/updatepostback/${finantialInstitution.externalId}' />
 	<div class="panel panel-default">
 		<div class="panel-body">
             <div class="form-group row">
@@ -120,7 +116,6 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
                 <div class="col-sm-4">
                     <select id="finantialInstitution_fiscalCountryRegion"
                         class="js-example-basic-single" name="fiscalcountryregion">
-                        <option value=""></option>
                     </select>
                 </div>
             </div>
@@ -190,7 +185,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 						value='<c:out value='${not empty param.address ? param.address : finantialInstitution.address }'/>' />
 				</div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group row" id="finantialInstitution_country_div">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.country" />
 				</div>
@@ -205,7 +200,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
                     </select>
                 </div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group row" id="finantialInstitution_district_div">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.district" />
 				</div>
@@ -218,7 +213,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
                     </select>
                 </div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group row" id="finantialInstitution_municipality_div">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.municipality" />
 				</div>
@@ -263,66 +258,71 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 <script>
 $(document).ready(function() {
-	country_options = [
-	    <%Collection<Country> countries = (Collection<Country>) request.getAttribute("finantialInstitution_country_options");
-	      for(final Country c : countries) {%>
-	      	{
-	      		text : "<%=c.getLocalizedName(I18N.getLocale())%>",
-	      		id : "<%=c.exportAsString()%>"
-	      	},
-	    <%}%>
-	];
-	district_options = [
-	    <%Collection<District> districts = (Collection<District>) request.getAttribute("finantialInstitution_district_options");
-	        for(final District d : districts) {%>
-	      	{
-	      		text : "<%=d.getLocalizedName(I18N.getLocale())%>",
-	      		id : "<%=d.exportAsString()%>"
-	      	},
-	    <%}%>
-	];
-	municipality_options = [
-	   <%Collection<Municipality> municipalities = (Collection<Municipality>) request.getAttribute("finantialInstitution_municipality_options");
-	       for(final Municipality m : municipalities) {%>
-	     	{
-	     		text : "<%=m.getLocalizedName(I18N.getLocale())%>",
-	     		id : "<%=m.exportAsString()%>",
-	     	},
-	   <%}%>
-   	];
     fiscalCountryRegion_options = [
         <c:forEach items="${finantialInstitution_fiscalCountryRegion_options}" var="fiscalCountryRegion">
-        <%-- Field access / formatting  here CHANGE_ME --%>
-            {
-                "id"   : "<c:out value='${fiscalCountryRegion.externalId}'/>",
-                "text" : "<c:out value='${fiscalCountryRegion.name.content}'/>",
-            },
+        {
+            "id"   : "<c:out value='${fiscalCountryRegion.externalId}'/>",
+            "text" : "<c:out value='${fiscalCountryRegion.name.content}'/>",
+        },
         </c:forEach>
-    ];  
+    ];
+    country_options = [
+        <c:forEach items="${finantialInstitution_country_options}" var="country">
+        {
+            "id"   : "<pf:placeCode place='${country}'/>",
+            "text" : "<pf:placeName place='${country}'/>",
+        },
+        </c:forEach>
+    ];
+    district_options = [
+        <c:forEach items="${finantialInstitution_district_options}" var="district">
+        {
+            "id"   : "<pf:placeCode place='${district}'/>",
+            "text" : "<pf:placeName place='${district}'/>",
+        },
+        </c:forEach>
+    ];
+    municipality_options = [
+        <c:forEach items="${finantialInstitution_municipality_options}" var="municipality">
+        {
+            "id"   : "<pf:placeCode place='${municipality}'/>",
+            "text" : "<pf:placeName place='${municipality}'/>",
+        },
+        </c:forEach>
+    ];
+    var sortFunction = function(a,b) { return a.text.localeCompare(b.text) };
 	$("#finantialInstitution_country").select2(
 		{
-			data : country_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
+			data : country_options.sort( sortFunction ),
 		}	  
 	);
 	$("#finantialInstitution_district").select2(
 		{
-			data : district_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
+			data : district_options.sort( sortFunction ),
 		}	  
     );
 	$("#finantialInstitution_municipality").select2(
 		{
-			data : municipality_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
+			data : municipality_options.sort( sortFunction ),
 		}	  
 	);
     $("#finantialInstitution_fiscalCountryRegion").select2(
         {
-            data : fiscalCountryRegion_options.sort(function(a,b) { return a.text.localeCompare(b.text) } ),
+            data : fiscalCountryRegion_options.sort( sortFunction ),
         }     
-    );	
-    
-	$("#finantialInstitution_country").select2().select2('val', '<%= (finantialInstitution.getCountry() != null)?finantialInstitution.getCountry().exportAsString():null %>');
-	$("#finantialInstitution_district").select2().select2('val', '<%= (finantialInstitution.getDistrict()!= null)?finantialInstitution.getDistrict().exportAsString() :null%>');
-	$("#finantialInstitution_municipality").select2().select2('val', '<%= (finantialInstitution.getMunicipality()!= null)?finantialInstitution.getMunicipality().exportAsString() :null%>');
-     $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${finantialInstitution.fiscalCountryRegion.externalId}');
+    );
+    <c:set var="savedCountry"><pf:placeCode place='${finantialInstitution.country}'/></c:set>
+    <c:set var="savedDistrict"><pf:placeCode place='${finantialInstitution.district}'/></c:set>
+    <c:set var="savedMunicipality"><pf:placeCode place='${finantialInstitution.municipality}'/></c:set>
+	$("#finantialInstitution_country").select2().select2('val', '${not empty param.country ? param.country : savedCountry}');
+ 	$("#finantialInstitution_district").select2().select2('val', '${not empty param.country ? param.country : savedDistrict}');
+ 	$("#finantialInstitution_municipality").select2().select2('val', '${not empty param.country ? param.country : savedMunicipality}');
+    $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${finantialInstitution.fiscalCountryRegion.externalId}');
+    if (district_options.length == 0) {
+        $("#finantialInstitution_district_div").hide();
+    } 
+    if (municipality_options.length == 0) {
+        $("#finantialInstitution_municipality_div").hide();
+    } 
 });
 </script>
