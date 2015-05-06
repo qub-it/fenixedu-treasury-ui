@@ -49,9 +49,10 @@ ${portal.toolkit()}
 	<div class="alert alert-info" role="alert">
 
 		<c:forEach items="${infoMessages}" var="message">
-			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
+			<p>
+				<span class="glyphicon glyphicon glyphicon-ok-sign"
+					aria-hidden="true">&nbsp;</span> ${message}
+			</p>
 		</c:forEach>
 	</div>
 </c:if>
@@ -59,9 +60,10 @@ ${portal.toolkit()}
 	<div class="alert alert-warning" role="alert">
 
 		<c:forEach items="${warningMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign"
+					aria-hidden="true">&nbsp;</span> ${message}
+			</p>
 		</c:forEach>
 	</div>
 </c:if>
@@ -69,9 +71,10 @@ ${portal.toolkit()}
 	<div class="alert alert-danger" role="alert">
 
 		<c:forEach items="${errorMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign"
+					aria-hidden="true">&nbsp;</span> ${message}
+			</p>
 		</c:forEach>
 	</div>
 </c:if>
@@ -79,26 +82,6 @@ ${portal.toolkit()}
 <form method="post" class="form-horizontal">
 	<div class="panel panel-default">
 		<div class="panel-body">
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.FinantialDocumentType.type" />
-				</div>
-
-				<div class="col-sm-4">
-					<select id="finantialDocumentType_type" class="form-control"
-						name="type">
-						<option value=""></option>
-						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-						<c:forEach items="${typeValues}" var="field">
-							<option value='<c:out value='${field}'/>'><c:out
-									value='${field}' /></option>
-						</c:forEach>
-					</select>
-					<script>
-		$("#finantialDocumentType_type").val('<c:out value='${not empty param.type ? param.type : finantialDocumentType.type }'/>');
-	</script>
-				</div>
-			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialDocumentType.code" />
@@ -121,46 +104,6 @@ ${portal.toolkit()}
 						value='${not empty param.name ? param.name : finantialDocumentType.name.json() } ' />
 				</div>
 			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message
-						code="label.FinantialDocumentType.documentNumberSeriesPrefix" />
-				</div>
-
-				<div class="col-sm-10">
-					<input id="finantialDocumentType_documentNumberSeriesPrefix"
-						class="form-control" type="text" name="documentnumberseriesprefix"
-						value='<c:out value='${not empty param.documentnumberseriesprefix ? param.documentnumberseriesprefix : finantialDocumentType.documentNumberSeriesPrefix }'/>' />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.FinantialDocumentType.invoice" />
-				</div>
-
-				<div class="col-sm-2">
-					<select id="finantialDocumentType_invoice" name="invoice"
-						class="form-control">
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
-					</select>
-					<script>
-		$("#finantialDocumentType_invoice").val('<c:out value='${not empty param.invoice ? param.invoice : finantialDocumentType.invoice }'/>');
-	</script>
-				</div>
-			</div>
-			<%--	
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FinantialDocumentType.bennu"/></div> 
-
-<div class="col-sm-4">	
-		 <select id="finantialDocumentType_bennu" class="js-example-basic-single" name="bennu">
-		 <option value=""></option>  
-		</select>
-				</div>
-</div>
- --%>
-
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"
@@ -172,27 +115,5 @@ ${portal.toolkit()}
 <script>
 $(document).ready(function() {
 
-	<%-- Block for providing bennu options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	bennu_options = [
-		<c:forEach items="${FinantialDocumentType_bennu_options}" var="element"> 
-			{
-				text : "<c:out value='${element}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	
-	$("#finantialDocumentType_bennu").select2(
-		{
-			data : bennu_options,
-		}	  
-		    );
-		    
-		    
-		    $("#finantialDocumentType_bennu").select2().select2('val', '<c:out value='${not empty param.bennu ? param.bennu : finantialDocumentType.bennu.externalId }'/>');
-		    <%-- End block for providing bennu options --%>
-	
-	
 	});
 </script>
