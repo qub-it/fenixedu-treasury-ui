@@ -12,12 +12,23 @@ function messageAlert(title, message)
 });
 }
 
-angular.isUndefinedOrNull = function(val) {
-	alert(val);
-    return angular.isUndefined(val) || val == null 
-}
 	
+window.jQueryClosures = []
 
+function initSelect2(element_id, elements_data_source,  element_init_val )
+{
+	var func = function(){
+		$(element_id).select2({data : elements_data_source}).select2('val',element_init_val);
+	};
+	window.jQueryClosures.push(func);
+}
+
+$(document).ready(function() {
+	for (var i = 0; i < window.jQueryClosures.length; i++)
+	{
+		window.jQueryClosures[i].call();
+	}
+});
 
 function createAngularPostbackFunction(angular_scope){
 	return function(model) {
@@ -51,3 +62,4 @@ function createAngularPostbackFunction(angular_scope){
         	form.attr("action", previousActionURL);		
 	};
 }
+

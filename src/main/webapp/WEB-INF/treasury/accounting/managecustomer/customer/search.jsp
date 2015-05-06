@@ -14,11 +14,11 @@
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.tableTools.css" rel="stylesheet"/>
-<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.tableTools.min.js"></script>
-<link href="${pageContext.request.contextPath}/static/treasury/css/select2.min.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/static/treasury/js/select2.min.js"></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/bootbox.min.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet"/>
+<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>						
+<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
@@ -74,7 +74,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="finantialinstitution" class="js-example-basic-single" name="finantialinstitution">
+		 <select id="finantialinstitution" class="js-example-basic-single" name="finantialInstitution">
 		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
 		<script>
@@ -90,6 +90,7 @@ ${portal.toolkit()}
 
 		//Init Select2_Options
 		initSelect2("#finantialinstitution",finantialinstitution_options, "<c:out value='${param.finantialinstitution}'/>");
+
 		</script>
 				</div>
 </div>			
@@ -181,7 +182,7 @@ ${portal.toolkit()}
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
-            "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
+            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
         }
 		});
 		table.columns.adjust().draw();
@@ -189,6 +190,8 @@ ${portal.toolkit()}
 		  $('#searchcustomerTable tbody').on( 'click', 'tr', function () {
 		        $(this).toggleClass('selected');
 		    } );
+
+			$("#finantialinstitution").select2().select2('val', '${param.finantialInstitution}');
 		  
 	}); 
 </script>

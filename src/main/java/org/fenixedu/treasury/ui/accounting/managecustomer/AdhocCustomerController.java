@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -59,6 +60,8 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.dto.AdhocCustomerBean;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -83,6 +86,15 @@ public class AdhocCustomerController extends TreasuryBaseController {
         // Do not catch any exception here
 
         // adhocCustomer.delete();
+    }
+
+    private AdhocCustomer getAdhocCustomerBean(Model model) {
+        return (AdhocCustomer) model.asMap().get("adhocCustomerBean");
+    }
+
+    private void setAdhocCustomerBean(AdhocCustomerBean bean, Model model) {
+        model.addAttribute("adhocCustomerBeanJson", getBeanJson(bean));
+        model.addAttribute("adhocCustomerBean", bean);
     }
 
     //
@@ -122,43 +134,45 @@ public class AdhocCustomerController extends TreasuryBaseController {
     //
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String create(Model model) {
+        this.setAdhocCustomerBean(new AdhocCustomerBean(), model);
         return "treasury/accounting/managecustomer/adhoccustomer/create";
     }
 
-    //
+    @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model) {
+
+        // Do validation logic ?!?!
+        this.setAdhocCustomerBean(bean, model);
+        return getBeanJson(bean);
+    }
+
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) java.lang.String name,
-            @RequestParam(value = "fiscalnumber", required = false) java.lang.String fiscalNumber, @RequestParam(
-                    value = "identificationnumber", required = false) java.lang.String identificationNumber, Model model,
+    public String create(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
             RedirectAttributes redirectAttributes) {
+
         /*
-         * Creation Logic
-         */
+        *  Creation Logic
+        */
 
         try {
 
-            AdhocCustomer adhocCustomer = createAdhocCustomer(code, name, fiscalNumber, identificationNumber);
+            AdhocCustomer adhocCustomer =
+                    createAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber());
 
-            // Success Validation
-            // Add the bean to be used in the View
+            //Success Validation
+            //Add the bean to be used in the View
             model.addAttribute("adhocCustomer", adhocCustomer);
             return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
                     model, redirectAttributes);
         } catch (DomainException de) {
 
-            // @formatter: off
             /*
-             * If there is any error in validation
-             * 
+             * If there is any error in validation 
+             *
              * Add a error / warning message
              * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+
-             * ex.getLocalizedMessage(),model);
-             */
-            // @formatter: on
+             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
@@ -193,41 +207,42 @@ public class AdhocCustomerController extends TreasuryBaseController {
         return "treasury/accounting/managecustomer/adhoccustomer/update";
     }
 
-    //
+    @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody String updatepostback(@PathVariable("oid") AdhocCustomer adhocCustomer, @RequestParam(value = "bean",
+            required = false) AdhocCustomerBean bean, Model model) {
+
+        // Do validation logic ?!?!
+        this.setAdhocCustomerBean(bean, model);
+        return getBeanJson(bean);
+    }
+
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") AdhocCustomer adhocCustomer,
-            @RequestParam(value = "code", required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(value = "fiscalnumber",
-                    required = false) java.lang.String fiscalNumber, @RequestParam(value = "identificationnumber",
-                    required = false) java.lang.String identificationNumber, Model model, RedirectAttributes redirectAttributes) {
-
+            @RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
+            RedirectAttributes redirectAttributes) {
         setAdhocCustomer(adhocCustomer, model);
 
         try {
             /*
-             * UpdateLogic here
-             */
+            *  UpdateLogic here
+            */
 
-            updateAdhocCustomer(code, name, fiscalNumber, identificationNumber, model);
+            updateAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber(), model);
 
-            /* Succes Update */
+            /*Succes Update */
 
             return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
                     model, redirectAttributes);
         } catch (DomainException de) {
-            // @formatter: off
 
             /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning updating due to " +
-             * de.getLocalizedMessage(),model);
-             */
-            // @formatter: on
+            * If there is any error in validation 
+            *
+            * Add a error / warning message
+            * 
+            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
+            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
+            */
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(adhocCustomer, model);
