@@ -33,12 +33,15 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,6 +119,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
+        model.addAttribute("finantialDocumentTypeSet", FinantialDocumentType.findAll().collect(Collectors.toList()));
         return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
     }
 
@@ -126,7 +130,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         try {
             deleteFinantialInstitution(finantialInstitution);
 
-            addInfoMessage("Sucess deleting FinantialInstitution ...", model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/";
         } catch (TreasuryDomainException ex) {
             addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getMessage(), model);

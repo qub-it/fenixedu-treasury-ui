@@ -131,22 +131,26 @@ class FinantialEntity {
 class Customer {
 }
 
-	class AdhocCustomer extends Customer {
-		String code;
-		String fiscalNumber;
-		String identificationNumber;
-		String name;
-		String address;
-		String districtSubdivision;
-		String zipCode;
-		String countryCode;
-	}
+class AdhocCustomer extends Customer {
+	String code;
+	String fiscalNumber;
+	String identificationNumber;
+	String name;
+	String address;
+	String districtSubdivision;
+	String zipCode;
+	String countryCode;
+}
 
 class debt.DebtAccount {
 	boolean closed;
 }
 
 class document.DocumentTemplate {
+}
+
+class document.DocumentTemplateFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+    boolean active;
 }
 
 /*-----------
@@ -577,6 +581,60 @@ relation DebtAccountFinantialInstitution {
 	debt.DebtAccount playsRole debtAccounts {
 		multiplicity *;
 	}
+}
+
+/* --- Document Template --- */
+
+relation DocumentTemplateFinantialDocumentType {
+    document.FinantialDocumentType playsRole finantialDocumentType {
+        multiplicity 1..1;
+    }
+
+    document.DocumentTemplate playsRole documentTemplates {
+        multiplicity *;
+    }
+}
+
+relation DocumentTemplateBennu {
+    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+        multiplicity 1..1;
+    }
+    
+    document.DocumentTemplate playsRole documentTemplates {
+        multiplicity *;
+    }
+}
+
+relation DocumentTemplateFinantialEntity {
+    FinantialEntity playsRole finantialEntity {
+        multiplicity 1..1;
+    }
+    
+    document.DocumentTemplate playsRole documentTemplates {
+        multiplicity *;
+    }
+}
+
+relation DocumentTemplateDocumentTemplateFile {
+    document.DocumentTemplate playsRole documentTemplate {
+        multiplicity 1..1;
+    }
+    
+    document.DocumentTemplateFile playsRole documentTemplateFiles {
+        multiplicity *;
+    }
+}
+
+/* --- Document Template File --- */
+
+relation DocumentTemplateFileBennu {
+    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+        multiplicity 1..1;
+    }
+    
+    document.DocumentTemplateFile playsRole documentTemplateFiles {
+        multiplicity *;
+    }
 }
 
 /*-----------
