@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.ui.administration.manageFinantialInstitution;
+package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
 import java.io.IOException;
 import java.net.URLEncoder;
