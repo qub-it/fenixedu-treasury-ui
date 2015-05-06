@@ -143,6 +143,7 @@ class Customer {
 	}
 
 class debt.DebtAccount {
+	boolean closed;
 }
 
 class document.DocumentTemplate {

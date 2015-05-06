@@ -66,7 +66,7 @@ import pt.ist.standards.geographic.Municipality;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution/finantialinstitution2")
+@RequestMapping("/treasury/administration/managefinantialinstitution2/finantialinstitution2")
 public class FinantialInstitution2Controller extends TreasuryBaseController {
 
 //

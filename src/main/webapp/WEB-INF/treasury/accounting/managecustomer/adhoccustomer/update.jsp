@@ -125,6 +125,23 @@ angular.module('angularAppAdhocCustomer', ['ngSanitize', 'ui.select']).controlle
 	<input id="adhocCustomer_identificationNumber" class="form-control" type="text" ng-model="object.identificationNumber" name="identificationnumber"  value='<c:out value='${not empty param.identificationnumber ? param.identificationnumber : adhocCustomer.identificationNumber }'/>' />
 </div>	
 </div>		
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AdhocCustomer.code" />
+				</div>
+				<div class="col-sm-4">
+				 <ui-select id="adhocCustomer_finantialInstitutions" ng-model="$parent.object.finantialInstitutions" theme="bootstrap"  ng-disabled="disabled" multiple>
+    					<ui-select-match >{{$item.text}}</ui-select-match>
+    					<ui-select-choices repeat="institution.id as institution in object.finantialInstitutionsDataSource| filter: $select.search">
+      						<span ng-bind-html="institution.text | highlight: $select.search"></span>
+    					</ui-select-choices>
+  				</ui-select>
+  				
+				</div>
+			</div>
+
   </div>
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

@@ -24,7 +24,8 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
- */package org.fenixedu.treasury.domain;
+ */
+package org.fenixedu.treasury.domain;
 
 import java.util.Set;
 import java.util.stream.Stream;
@@ -35,20 +36,27 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import pt.ist.fenixframework.Atomic;
 
 public abstract class Customer extends Customer_Base implements IFiscalContributor {
-    
+
     public static final String DEFAULT_FISCAL_NUMBER = "9999999990";
 
     protected Customer() {
         super();
         setBennu(Bennu.getInstance());
+
     }
-    
+
     public abstract String getCode();
+
     public abstract String getFiscalNumber();
+
     public abstract String getName();
+
     public abstract String getAddress();
+
     public abstract String getDistrictSubdivision();
+
     public abstract String getZipCode();
+
     public abstract String getCountryCode();
 
     public boolean isDeletable() {
@@ -72,12 +80,13 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
      ************/
     // @formatter: on
 
-	public static Stream<? extends Customer> findAll() {
-	    return Bennu.getInstance().getCustomersSet().stream().filter(x->x instanceof AdhocCustomer).map(AdhocCustomer.class::cast);
-	}
+    public static Stream<? extends Customer> findAll() {
+        return Bennu.getInstance().getCustomersSet().stream().filter(x -> x instanceof AdhocCustomer)
+                .map(AdhocCustomer.class::cast);
+    }
 
-	public static Stream<? extends Customer> findByCode(final java.lang.String code) {
-		return findAll().filter(i->code.equalsIgnoreCase(i.getCode()));
-	  }
+    public static Stream<? extends Customer> findByCode(final java.lang.String code) {
+        return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
+    }
 
 }

@@ -12,6 +12,10 @@
 
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
+<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
+${portal.angularToolkit()} 
+<%-- ${portal.toolkit()}--%>
+
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
 <link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet"/>
@@ -21,15 +25,10 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<script src="${pageContext.request.contextPath}/static/treasury/js/angular.min.js"></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/angular-sanitize.js"></script>
+<script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
+<script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/static/treasury/webjars/angular-ui-select/0.11.2/select.min.css" />
-<script src="${pageContext.request.contextPath}/static/treasury/webjars/angular-ui-select/0.11.2/select.min.js"></script>
-
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">

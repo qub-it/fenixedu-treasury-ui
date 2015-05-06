@@ -121,12 +121,26 @@ public class DebtAccount extends DebtAccount_Base {
 
     @Atomic
     public static DebtAccount create(final FinantialInstitution finantialInstitution, final Customer customer) {
+        //Find if already exists
+        DebtAccount existing = DebtAccount.findUnique(finantialInstitution, customer).orElse(null);
+        if (existing != null) {
+            existing.setClosed(false);
+            return existing;
+        }
+        //return a new DebtAccount
         return new DebtAccount(finantialInstitution, customer);
     }
 
     public Stream<? extends InvoiceEntry> getPendingInvoiceEntries() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.getInvoiceEntrySet().stream().filter(x -> x.isPending());
+    }
+
+    public void closeDebtAccount() {
+        if (this.getFinantialDocumentsSet().size() > 0) {
+            throw new TreasuryDomainException("label.customer.error.debtaccountwithdocuments");
+        } else {
+            this.setClosed(true);
+        }
     }
 
 }

@@ -30,6 +30,9 @@ package org.fenixedu.treasury.ui;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+
 import org.fenixedu.bennu.BeanConverterService;
 import org.fenixedu.bennu.CountryAdapter;
 import org.fenixedu.bennu.DistrictAdapter;
@@ -38,12 +41,17 @@ import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.LocalizedStringAdapter;
 import org.fenixedu.bennu.MunicipalityAdapter;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.convert.support.GenericConversionService;
+import org.springframework.http.HttpRequest;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.standards.geographic.Country;
@@ -98,7 +106,7 @@ public class TreasuryBaseController {
     }
 
     @ModelAttribute
-    protected void addModelProperties(Model model) {
+    protected void addModelProperties(Model model, HttpServletRequest request) {
         if (!model.containsAttribute(INFO_MESSAGES)) {
             model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
         }
@@ -109,6 +117,11 @@ public class TreasuryBaseController {
             model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
         }
 
+        WebApplicationContext webAppContext = RequestContextUtils.getWebApplicationContext(request);
+        MessageSource messageSource = (MessageSource) webAppContext.getBean("messageSource");
+        if (messageSource != null && messageSource instanceof ReloadableResourceBundleMessageSource) {
+            ((ReloadableResourceBundleMessageSource) messageSource).setUseCodeAsDefaultMessage(true);
+        }
         // Add here more attributes to the Model
         // model.addAttribute(<attr1Key>, <attr1Value>);
         // ....
@@ -121,6 +134,7 @@ public class TreasuryBaseController {
         conversionService.addConverter(new CountryConverterService());
         conversionService.addConverter(new DistrictConverterService());
         conversionService.addConverter(new MunicipalityConverterService());
+
     }
 
     protected String getBeanJson(IBean bean) {

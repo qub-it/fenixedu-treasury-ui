@@ -127,6 +127,29 @@ ${portal.toolkit()}
 </form>
 </div>
 </div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title"><spring:message code="label.Customer."/></h3>
+	</div>
+	<div class="panel-body">
+<form method="post" class="form-horizontal">
+<table class="table">
+		<tbody>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.Customer.identificationNumber"/></th> 
+	<td>
+	<c:forEach var="debtAccount" items='${customer.debtAccountsSet}' >
+   			<p><c:out value="${debtAccount.finantialInstitution.name}"/> - <c:out value="${debtAccount.totalInDebt}"/> </p>  
+		</c:forEach>
+	</td> 
+</tr>
+</tbody>
+</table>
+
+</form>
+</div>
+</div>
 </br>
 <h2> Conta Corrente </h2>
  <div id="content">
@@ -140,6 +163,7 @@ ${portal.toolkit()}
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="pending">
 <!--             <h3>Docs. Pendentes</h3> -->
+<p></p>
 <c:choose>
 	<c:when test="${not empty pendingDocumentsDataSet}">
 		<table id="pendingDocumentsTable" class="table responsive table-bordered table-hover">
@@ -173,6 +197,7 @@ ${portal.toolkit()}
         </div>
         <div class="tab-pane" id="details">
 <!--             <h3>Extracto</h3> -->
+<p></p>
 <c:choose>
 	<c:when test="${not empty allDocumentsDataSet}">
 		<table id="allDocumentsTable" class="table responsive table-bordered table-hover">
@@ -206,6 +231,7 @@ ${portal.toolkit()}
         </div>
         <div class="tab-pane" id="payments">
 <!--             <h3>Pagamentos</h3> -->
+<p></p>
 <c:choose>
 	<c:when test="${not empty paymentsDataSet}">
 		<table id="paymentsTable" class="table responsive table-bordered table-hover">
@@ -238,6 +264,7 @@ ${portal.toolkit()}
         </div>
         <div class="tab-pane" id="exemptions">
 <!--             <h3>Isencoes</h3> -->
+<p></p>
 <c:choose>
 	<c:when test="${not empty exemptionsDataSet}">
 		<table id="exemptionsTable" class="table responsive table-bordered table-hover">

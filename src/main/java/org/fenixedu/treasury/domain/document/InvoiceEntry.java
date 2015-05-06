@@ -47,7 +47,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
         this.setDebtAccount(debtAccount);
         this.setProduct(product);
-        
+
     }
 
     @Override
@@ -61,14 +61,21 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.InvoiceEntry.product.required");
         }
-        
-        if(getDebtAccount() == null) {
+
+        if (getDebtAccount() == null) {
             throw new TreasuryDomainException("error.InvoiceEntry.debtAccount.required");
         }
     }
 
     public static Stream<? extends InvoiceEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof InvoiceEntry).map(InvoiceEntry.class::cast);
+    }
+
+    public boolean isPending() {
+        BigDecimal totalAmount = this.getAmount();
+        BigDecimal totalPayed = BigDecimal.ZERO;
+        this.getSettlementEntriesSet().stream().map(x -> totalPayed.add(x.getAmount()));
+        return !totalAmount.equals(totalPayed);
     }
 
 }

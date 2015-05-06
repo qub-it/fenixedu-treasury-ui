@@ -27,10 +27,14 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -111,32 +115,70 @@ public class AdhocCustomer extends AdhocCustomer_Base {
      ************/
     // @formatter: on
 
-	public static Stream<AdhocCustomer> findAll() {
-	    return Bennu.getInstance().getCustomersSet().stream().filter(x->x instanceof AdhocCustomer).map(AdhocCustomer.class::cast);
-	}
-	
-	
-	public static Stream<AdhocCustomer> findByFiscalNumber(final java.lang.String fiscalNumber) {
-		return findAll().filter(i->fiscalNumber.equalsIgnoreCase(i.getFiscalNumber()));
-	  }
-	public static Stream<AdhocCustomer> findByName(final java.lang.String name) {
-		return findAll().filter(i->name.equalsIgnoreCase(i.getName()));
-	  }
-	public static Stream<AdhocCustomer> findByAddress(final java.lang.String address) {
-		return findAll().filter(i->address.equalsIgnoreCase(i.getAddress()));
-	  }
-	public static Stream<AdhocCustomer> findByDistrictSubdivision(final java.lang.String districtSubdivision) {
-		return findAll().filter(i->districtSubdivision.equalsIgnoreCase(i.getDistrictSubdivision()));
-	  }
-	public static Stream<AdhocCustomer> findByZipCode(final java.lang.String zipCode) {
-		return findAll().filter(i->zipCode.equalsIgnoreCase(i.getZipCode()));
-	  }
-	public static Stream<AdhocCustomer> findByCountryCode(final java.lang.String countryCode) {
-		return findAll().filter(i->countryCode.equalsIgnoreCase(i.getCountryCode()));
-	  }
+    public static Stream<AdhocCustomer> findAll() {
+        return Bennu.getInstance().getCustomersSet().stream().filter(x -> x instanceof AdhocCustomer)
+                .map(AdhocCustomer.class::cast);
+    }
 
-	public static Stream<AdhocCustomer> findByCode(final java.lang.String code) {
-		return findAll().filter(i->code.equalsIgnoreCase(i.getCode()));
-	  }
+    public static Stream<AdhocCustomer> findByFiscalNumber(final java.lang.String fiscalNumber) {
+        return findAll().filter(i -> fiscalNumber.equalsIgnoreCase(i.getFiscalNumber()));
+    }
+
+    public static Stream<AdhocCustomer> findByName(final java.lang.String name) {
+        return findAll().filter(i -> name.equalsIgnoreCase(i.getName()));
+    }
+
+    public static Stream<AdhocCustomer> findByAddress(final java.lang.String address) {
+        return findAll().filter(i -> address.equalsIgnoreCase(i.getAddress()));
+    }
+
+    public static Stream<AdhocCustomer> findByDistrictSubdivision(final java.lang.String districtSubdivision) {
+        return findAll().filter(i -> districtSubdivision.equalsIgnoreCase(i.getDistrictSubdivision()));
+    }
+
+    public static Stream<AdhocCustomer> findByZipCode(final java.lang.String zipCode) {
+        return findAll().filter(i -> zipCode.equalsIgnoreCase(i.getZipCode()));
+    }
+
+    public static Stream<AdhocCustomer> findByCountryCode(final java.lang.String countryCode) {
+        return findAll().filter(i -> countryCode.equalsIgnoreCase(i.getCountryCode()));
+    }
+
+    public static Stream<AdhocCustomer> findByCode(final java.lang.String code) {
+        return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
+    }
+
+    public Set<FinantialInstitution> getFinantialInstitutions() {
+        return this.getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution()).collect(Collectors.toSet());
+    }
+
+    public DebtAccount getDebtAccountFor(FinantialInstitution institution) {
+        return this.getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
+                .orElse(null);
+    }
+
+    @Atomic
+    public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
+
+        Set<FinantialInstitution> actualInstitutions = getFinantialInstitutions();
+        for (FinantialInstitution newInst : newFinantialInstitutions) {
+            if (actualInstitutions.contains(newInst)) {
+                //do nothing
+            } else {
+                //Create a new DebtAccount for this institution
+                DebtAccount.create(newInst, this);
+            }
+        }
+
+        for (FinantialInstitution actualInst : actualInstitutions) {
+            if (newFinantialInstitutions.contains(actualInst)) {
+                //do nothing
+            } else {
+                DebtAccount account = getDebtAccountFor(actualInst);
+                account.closeDebtAccount();
+            }
+        }
+
+    }
 
 }

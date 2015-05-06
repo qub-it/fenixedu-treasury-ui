@@ -158,7 +158,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
             AdhocCustomer adhocCustomer =
                     createAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber());
-
+            adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("adhocCustomer", adhocCustomer);
@@ -204,6 +204,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model) {
         setAdhocCustomer(adhocCustomer, model);
+        setAdhocCustomerBean(new AdhocCustomerBean(adhocCustomer), model);
         return "treasury/accounting/managecustomer/adhoccustomer/update";
     }
 
@@ -227,6 +228,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
+            adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             updateAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber(), model);
 
             /*Succes Update */
