@@ -70,6 +70,40 @@ ${portal.toolkit()}
 <form method="post" class="form-horizontal">
 <div class="panel panel-default">
   <div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.Vat.vatType" />
+				</div>
+
+				<div class="col-sm-10">
+					<select id="vat_vatType" class="js-example-basic-single"
+						name="vatType" required>
+					</select>
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.Vat.finantialInstitution" />
+				</div>
+
+				<div class="col-sm-10">
+					<select id="vat_finantialInstitution" class="js-example-basic-single"
+						name="finantialInstitution" required>
+					</select>
+				</div>
+			</div>	
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.Vat.vatExemptionReason" />
+				</div>
+
+				<div class="col-sm-10">
+					<select id="vat_vatExemptionReason" class="js-example-basic-single"
+						name="vatExemptionReason">
+						<option value=""></option>
+					</select>
+				</div>
+			</div>					  
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.Vat.taxRate"/></div> 
 
@@ -102,8 +136,58 @@ ${portal.toolkit()}
 
 <script>
 $(document).ready(function() {
-
+	<%-- Block for providing administrativeOffice options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	vatType_options = [
+		<c:forEach items="${vatTypeList}" var="element"> 
+			{
+				text : "<c:out value='${element.name.content}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
+	$("#vat_vatType").select2(
+		{
+			data : vatType_options,
+		}	  
+    );
+	
+	$("#vat_vatType").select2().select2('val','${param.vatType}');
+	
+	finantialInstitution_options = [
+		<c:forEach items="${finantialInstitutionList}" var="element"> 
+			{
+				text : "<c:out value='${element.name}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+	
+	$("#vat_finantialInstitution").select2(
+		{
+			data : finantialInstitution_options,
+		}	  
+    );
+	
+	$("#vat_finantialInstitution").select2().select2('val','${param.finantialInstitution}');
+	
+	vatExemptionReason_options = [
+	                        		<c:forEach items="${vatExemptionReasonList}" var="element"> 
+	                        			{
+	                        				text : "<c:out value='${element.name.content}'/>",  
+	                        				id : "<c:out value='${element.externalId}'/>"
+	                        			},
+	                        		</c:forEach>
+	                        	];
+	                        	
+	                        	$("#vat_vatExemptionReason").select2(
+	                        		{
+	                        			data : vatExemptionReason_options,
+	                        		}	  
+	                            );
+	                        	
+	                        	$("#vat_vatExemptionReason").select2().select2('val','${param.vatExemptionReason}');
 	
 	});
 </script>

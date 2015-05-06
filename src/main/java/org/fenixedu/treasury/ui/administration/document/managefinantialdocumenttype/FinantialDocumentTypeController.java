@@ -30,10 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -262,13 +262,9 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") FinantialDocumentType finantialDocumentType, @RequestParam(value = "type",
-            required = false) org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum type, @RequestParam(value = "code",
+    public String update(@PathVariable("oid") FinantialDocumentType finantialDocumentType, @RequestParam(value = "code",
             required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(
-                    value = "documentnumberseriesprefix", required = false) java.lang.String documentNumberSeriesPrefix,
-            @RequestParam(value = "invoice", required = false) boolean invoice,
-            @RequestParam(value = "bennu", required = false) org.fenixedu.bennu.core.domain.Bennu bennu, Model model,
+            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,
             RedirectAttributes redirectAttributes) {
 
         setFinantialDocumentType(finantialDocumentType, model);
@@ -278,7 +274,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateFinantialDocumentType(type, code, name, documentNumberSeriesPrefix, invoice, bennu, model);
+            updateFinantialDocumentType(code, name, model);
 
             /*Succes Update */
 
@@ -309,28 +305,9 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateFinantialDocumentType(org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum type,
-            java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, java.lang.String documentNumberSeriesPrefix,
-            boolean invoice, org.fenixedu.bennu.core.domain.Bennu bennu, Model model) {
+    public void updateFinantialDocumentType(String code, LocalizedString name, Model model) {
 
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getFinantialDocumentType(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
-        getFinantialDocumentType(model).setType(type);
-        getFinantialDocumentType(model).setCode(code);
-        getFinantialDocumentType(model).setName(name);
-        getFinantialDocumentType(model).setDocumentNumberSeriesPrefix(documentNumberSeriesPrefix);
-        getFinantialDocumentType(model).setInvoice(invoice);
-        getFinantialDocumentType(model).setBennu(bennu);
+        getFinantialDocumentType(model).edit(code, name);
     }
 
 }

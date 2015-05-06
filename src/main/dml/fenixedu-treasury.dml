@@ -413,7 +413,7 @@ relation VatExemptionReasonBennu {
 
 relation VatVatExemptionReason {
 	VatExemptionReason playsRole vatExemptionReason {
-		multiplicity 1..1;
+		multiplicity 0..1;
 	}
 	
 	Vat playsRole vats {
