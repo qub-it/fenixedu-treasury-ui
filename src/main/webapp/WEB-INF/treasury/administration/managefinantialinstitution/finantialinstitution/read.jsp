@@ -1,7 +1,9 @@
 
+<%@page import="org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum"%>
+<%@page import="org.fenixedu.treasury.domain.document.FinantialDocumentType"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%>
 
 <spring:url var="datatablesUrl"
@@ -40,6 +42,35 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+
+<script type="text/javascript">
+      function processUpload(externalId) {
+        url = "${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/search/upload/" + externalId;
+        $("#uploadForm").attr("action", url);
+        $('#uploadModal').modal('toggle')
+      }
+</script>
+
+<div class="modal fade" id="uploadModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form id ="uploadForm" action="#" method="POST" enctype="multipart/form-data">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><spring:message code="label.DocumentTemplateFile.upload"/></h4>
+      </div>
+      <div class="modal-body">
+        <input type="file" name="documentTemplateFile" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+        <button id="uploadButton" class="btn btn-default" type="submit"> <spring:message code = "label.upload"/></button>
+      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -257,6 +288,7 @@ ${portal.toolkit()}
 </c:choose>
 
 <!-- Documents Series section -->
+
 <h2>
     <spring:message code="label.administration.manageFinantialInstitution.searchSeries" />
 </h2>
@@ -297,6 +329,81 @@ ${portal.toolkit()}
         </div>
     </c:otherwise>
 </c:choose>
+
+<!-- Document Templates section -->
+
+<h2>
+    <spring:message code="label.administration.manageFinantialInstitution.searchDocumentTemplate" />
+</h2>
+<table id="searchseriesTable"
+    class="table responsive table-bordered table-hover">
+    <thead>
+        <tr>
+            <th><spring:message code="label.DocumentTemplate.finantialDocumentTypes" /></th>
+            <th><spring:message code="label.DocumentTemplate.finantialEntity" /></th>
+            <%-- Operations Column --%>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <c:forEach items="${finantialDocumentTypeSet}" var="type">
+        <tr>
+            <td>
+                <c:out value="${ type.type.descriptionI18N.content }" />
+            </td>
+            <td>
+                <table>
+                    <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
+                        <c:set var="aaa" value="${ entity.hasDocumentTemplate(type) }" />
+                        <c:set var="aaaa" value="${ aaa.ativeDocumentTemplateFile }" />
+                        
+                        <c:set var="documentTemplateFile" value="${ entity.hasDocumentTemplate(type).ativeDocumentTemplateFile }" />
+                        <tr>
+                            <th><c:out value="${ entity.name.content }" /><th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <c:if test="${not empty documentTemplateFile }" >
+                                    <a href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/search/download/${documentTemplateFile.externalId}">
+                                        <c:out value="${ documentTemplateFile.filename }" />
+                                    </a>
+                                    &nbsp;-&nbsp;
+                                    <fmt:formatNumber var="documentTemplateFileSize" value="${ documentTemplateFile.size / 1024 }" maxFractionDigits="1" />
+                                    <c:out value="${ documentTemplateFileSize }" />
+                                    KB
+                                </c:if>
+                                <c:if test="${empty documentTemplateFile }" >
+                                    <span style="color:red;font-style:italic">
+                                        <spring:message code="label.DocumentTemplate.not.defined" />                                  
+                                    </span>
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </td>
+            <td>
+                <table>
+                    <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
+                        <c:set var="documentTemplate" value="${ entity.hasDocumentTemplate(type) }" />
+                        <tr>
+                            <td>
+                                <c:if test="${ empty documentTemplate }">
+                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message code='label.create'/></a>
+                                </c:if>
+                                <c:if test="${ not empty documentTemplate }">
+                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/search/view/${documentTemplate.externalId}"><spring:message code='label.view'/></a>
+                                    <a class="btn btn-default btn-xs" href="#" onClick="javascript:processUpload('${documentTemplate.externalId}')"><spring:message code='label.upload'/></a> 
+                                </c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </td>
+        </tr>
+        </c:forEach>
+    </tbody>
+</table>
 
 <script>
 var searchfinantialentityDataSet = [

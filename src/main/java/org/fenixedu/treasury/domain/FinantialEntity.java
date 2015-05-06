@@ -32,6 +32,8 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.document.DocumentTemplate;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -99,6 +101,15 @@ public class FinantialEntity extends FinantialEntity_Base {
         setBennu(null);
 
         deleteDomainObject();
+    }
+
+    public DocumentTemplate hasDocumentTemplate(FinantialDocumentType type) {
+        for (DocumentTemplate documentTemplate : getDocumentTemplatesSet()) {
+            if (documentTemplate.getFinantialDocumentType().getType().equals(type.getType())) {
+                return documentTemplate;
+            }
+        }
+        return null;
     }
 
     // @formatter: off

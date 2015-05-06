@@ -26,12 +26,14 @@
  */
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,6 +54,10 @@ public class SeriesController extends TreasuryBaseController {
     @RequestMapping
     public String home(Model model) {
         //this is the default behaviour, for handling in a Spring Functionality
+        if (model.containsAttribute("finantialInstitutionId")) {
+            return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
+                    + model.asMap().get("finantialInstitutionId");
+        }
         return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
     }
 
@@ -85,7 +91,7 @@ public class SeriesController extends TreasuryBaseController {
         setSeries(series, model);
         try {
             deleteSeries(series);
-            addInfoMessage("Sucess deleting Series ...", model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/managefinantialinstitution/series/", model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage("Error deleting the Series due to " + tde.getLocalizedMessage(), model);

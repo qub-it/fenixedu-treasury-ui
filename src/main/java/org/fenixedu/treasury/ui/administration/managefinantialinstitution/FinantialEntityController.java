@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -33,6 +34,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.stereotype.Component;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,6 +53,10 @@ public class FinantialEntityController extends TreasuryBaseController {
     @RequestMapping
     public String home(Model model) {
         //this is the default behaviour, for handling in a Spring Functionality
+        if (model.containsAttribute("finantialInstitutionId")) {
+            return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
+                    + model.asMap().get("finantialInstitutionId");
+        }
         return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
     }
 
@@ -86,7 +92,7 @@ public class FinantialEntityController extends TreasuryBaseController {
         setFinantialEntity(finantialEntity, model);
         try {
             deleteFinantialEntity(finantialEntity);
-            addInfoMessage("Sucess deleting FinantialEntity ...", model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/managefinantialinstitution/finantialentity/", model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage("Error deleting the FinantialEntity due to " + tde.getLocalizedMessage(), model);
