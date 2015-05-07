@@ -27,17 +27,11 @@
  */
 package org.fenixedu.treasury.domain;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -56,23 +50,11 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
 
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByCode(getCode().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.TreasuryExemption.code.duplicated");
-        //}	
-        //if (findByName(getName().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.TreasuryExemption.name.duplicated");
-        //}	
-        //if (findByDiscountRate(getDiscountRate().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.TreasuryExemption.discountRate.duplicated");
-        //}	
+        if (findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.TreasuryExemption.code.duplicated");
+        }
+
     }
 
     @Atomic
@@ -130,7 +112,8 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     }
 
     public static Stream<TreasuryExemption> findByDebtAccount(DebtAccount debtAccount) {
-        return findAll().filter(x -> x.getDebitEntry() != null && debtAccount.equals(x.getDebitEntry().getDebtAccount()));
+        //return findAll().filter(x -> x.getDebitEntry() != null && debtAccount.equals(x.getDebitEntry().getDebtAccount()));
+        return Stream.empty();
     }
 
 }

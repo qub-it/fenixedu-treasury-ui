@@ -26,39 +26,24 @@
  */
 package org.fenixedu.treasury.ui.document.manageexemption;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
-import java.util.ArrayList;
-
-import org.joda.time.DateTime;
-
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
-import org.fenixedu.bennu.spring.portal.SpringApplication;
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.stereotype.Component;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.fenixedu.treasury.domain.TreasuryExemption;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 import pt.ist.fenixframework.Atomic;
-
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.Constants;
-import org.fenixedu.treasury.domain.TreasuryExemption;
 
 //@Component("org.fenixedu.treasury.ui.document.manageExemption") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemption", accessGroup = "logged")
@@ -113,8 +98,8 @@ public class TreasuryExemptionController extends TreasuryBaseController {
             // Success Validation
             // Add the bean to be used in the View
             model.addAttribute("treasuryExemption", treasuryExemption);
-            return redirect("/treasury/accounting/managecustomer/customer/read/" + getTreasuryExemption(model).getExternalId(),
-                    model, redirectAttributes);
+            return redirect("/treasury/document/manageexemption/treasuryexemption/read/"
+                    + getTreasuryExemption(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -182,10 +167,9 @@ public class TreasuryExemptionController extends TreasuryBaseController {
 
         return getSearchUniverseSearchTreasuryExemptionDataSet()
                 .stream()
-                .filter(treasuryExemption -> code == null
-                        || code.length() == 0
-                        || (treasuryExemption.getCode() != null && treasuryExemption.getCode().length() > 0 && treasuryExemption
-                                .getCode().toLowerCase().contains(code.toLowerCase())))
+                .filter(treasuryExemption -> code == null || code.length() == 0 || treasuryExemption.getCode() != null
+                        && treasuryExemption.getCode().length() > 0
+                        && treasuryExemption.getCode().toLowerCase().contains(code.toLowerCase()))
                 .filter(treasuryExemption -> name == null
                         || name.isEmpty()
                         || name.getLocales()

@@ -136,8 +136,8 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "taxrate" : "<c:out value='${searchResult.taxRate}'/>",
-"begindate" : "<c:out value='${searchResult.beginDate}'/>",
-"enddate" : "<c:out value='${searchResult.endDate}'/>",
+"begindate" : "<c:out value='${searchResult.beginDate.toString(\'yyyy-MM-dd\')}'/>",
+"enddate" : "<c:out value='${searchResult.endDate.toString(\'yyyy-MM-dd\')}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/base/managevat/vat/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },

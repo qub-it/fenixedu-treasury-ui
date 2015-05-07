@@ -26,7 +26,6 @@
  */
 package org.fenixedu.treasury.ui.administration.base.managevat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -164,13 +163,12 @@ public class VatController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "vatType", required = false) VatType vatType,
-            @RequestParam(value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution,
-            @RequestParam(value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason,
-            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
+    public String create(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
+            value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
+            value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, @RequestParam(
+            value = "taxrate", required = false) java.math.BigDecimal taxRate, @RequestParam(value = "begindate",
+            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate, @RequestParam(
+            value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
@@ -223,14 +221,12 @@ public class VatController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
-    public String update(
-            @RequestParam(value = "vatType", required = false) VatType vatType,
-            @RequestParam(value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution,
-            @RequestParam(value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason,
-            @PathVariable("oid") Vat vat,
-            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
+    public String update(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
+            value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
+            value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, @PathVariable("oid") Vat vat,
+            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate, @RequestParam(value = "begindate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate, @RequestParam(
+                    value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         setVat(vat, model);

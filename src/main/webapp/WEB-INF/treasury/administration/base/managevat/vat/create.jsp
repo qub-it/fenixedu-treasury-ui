@@ -138,8 +138,8 @@ ${portal.toolkit()}
 
 				<div class="col-sm-4">
 					<input id="vat_beginDate" class="form-control" type="text"
-						name="begindate" bennu-datetime
-						value='<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate }'/>'
+						name="begindate" bennu-date
+						value='<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate.toString("yyyy-MM-dd") }'/>'
 						required />
 				</div>
 			</div>
@@ -150,8 +150,8 @@ ${portal.toolkit()}
 
 				<div class="col-sm-4">
 					<input id="vat_endDate" class="form-control" type="text"
-						name="enddate" bennu-datetime
-						value='<c:out value='${not empty param.enddate ? param.enddate : vat.endDate }'/>'
+						name="enddate" bennu-date
+						value='<c:out value='${not empty param.enddate ? param.enddate : vat.endDate.toString("yyyy-MM-dd") }'/>'
 						required />
 				</div>
 			</div>
