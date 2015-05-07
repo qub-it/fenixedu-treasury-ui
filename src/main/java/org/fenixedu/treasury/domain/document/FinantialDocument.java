@@ -29,13 +29,13 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.Set;
-
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -53,12 +53,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate) {
+
         setDebtAccount(debtAccount);
         setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
         setDocumentNumberSeries(documentNumberSeries);
         setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
         setDocumentDate(documentDate);
-
+        setCurrency(TreasurySettings.getInstance().getDefaultCurrency());
+        
         checkRules();
     }
 
@@ -81,6 +83,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         if (getDocumentDueDate() == null) {
             throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.required");
+        }
+        
+        if(getCurrency() == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.currency.required");
         }
     }
 

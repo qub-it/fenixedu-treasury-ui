@@ -42,23 +42,25 @@ import com.google.common.collect.Sets;
 
 public class DebitNote extends DebitNote_Base {
 
-    protected DebitNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    protected DebitNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate) {
         super();
-        
+
         this.init(debtAccount, documentNumberSeries, documentDate);
     }
-    
-    protected DebitNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+
+    protected DebitNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         super();
-        
+
         this.init(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
-    
+
     @Override
     public boolean isDebitNote() {
         return true;
     }
-    
+
     public boolean isDeletable() {
         return true;
     }
@@ -73,6 +75,11 @@ public class DebitNote extends DebitNote_Base {
         deleteDomainObject();
     }
 
+    @Override
+    public BigDecimal getOpenAmount() {
+        return DebitEntry.find(this).map(x -> x.getOpenAmount()).reduce((x, y) -> x.add(y)).get();
+    }
+
     // @formatter: off
     /************
      * SERVICES *
@@ -80,42 +87,38 @@ public class DebitNote extends DebitNote_Base {
     // @formatter: on
 
     public static Stream<DebitNote> findAll() {
-    	return FinantialDocument.findAll().filter(x-> x instanceof DebitNote).map(DebitNote.class::cast); 
+        return FinantialDocument.findAll().filter(x -> x instanceof DebitNote).map(DebitNote.class::cast);
     }
 
     @Atomic
-	public void edit(final DebtAccount payorDebtAccount,final FinantialDocumentType finantialDocumentType,final DebtAccount debtAccount,final DocumentNumberSeries documentNumberSeries,final Currency currency,final java.lang.String documentNumber,final org.joda.time.DateTime documentDate,final org.joda.time.DateTime documentDueDate,final java.lang.String originDocumentNumber,final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
-	    setPayorDebtAccount(payorDebtAccount);
-	    setFinantialDocumentType(finantialDocumentType);
-	    setDebtAccount(debtAccount);
-	    setDocumentNumberSeries(documentNumberSeries);
-	    setCurrency(currency);
-	    setDocumentNumber(documentNumber);
-	    setDocumentDate(documentDate);
-	    setDocumentDueDate(documentDueDate);
-	    setOriginDocumentNumber(originDocumentNumber);
-	    setState(state);
-	    checkRules();
-	}
+    public void edit(final DebtAccount payorDebtAccount, final FinantialDocumentType finantialDocumentType,
+            final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final Currency currency,
+            final java.lang.String documentNumber, final org.joda.time.DateTime documentDate,
+            final org.joda.time.DateTime documentDueDate, final java.lang.String originDocumentNumber,
+            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+        setPayorDebtAccount(payorDebtAccount);
+        setFinantialDocumentType(finantialDocumentType);
+        setDebtAccount(debtAccount);
+        setDocumentNumberSeries(documentNumberSeries);
+        setCurrency(currency);
+        setDocumentNumber(documentNumber);
+        setDocumentDate(documentDate);
+        setDocumentDueDate(documentDueDate);
+        setOriginDocumentNumber(originDocumentNumber);
+        setState(state);
+        checkRules();
+    }
 
     @Atomic
-    public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate) {
         return new DebitNote(debtAccount, documentNumberSeries, documentDate);
     }
-    
+
     @Atomic
-    public static DebitNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount, final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+    public static DebitNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         return new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
     }
-
     
-    @Override
-    public BigDecimal getOpenAmount() {
-    	BigDecimal amount = BigDecimal.ZERO;
-    	for (DebitEntry entry : this.getDebitEntriesSet() )
-    	{
-    		amount = amount.add(entry.getOpenAmount());
-    	}
-    	return amount;
-    }
 }

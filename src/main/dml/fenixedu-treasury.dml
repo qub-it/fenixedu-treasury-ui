@@ -216,6 +216,7 @@ class document.FinantialDocumentEntry {
 
 		class document.DebitEntry extends document.InvoiceEntry {
 			boolean eventAnnuled;
+			LocalDate dueDate;
 		}
 		
 		class document.CreditEntry extends document.InvoiceEntry {
@@ -267,6 +268,11 @@ class tariff.InterestRate {
 	BigDecimalT interestFixedAmount;
 	BigDecimalT rate;
 }
+
+/* ----
+ * SIBS
+ * ----
+ */
 
 class paymentcodes.PaymentReferenceCode
 {
@@ -327,6 +333,44 @@ class integration.ImportOperation extends integration.IntegrationOperation
 {
 }
 
+/*------------------
+ * TREASURY SETTINGS
+ * -----------------*/
+
+class settings.TreasurySettings {
+}
+
+relation TreasurySettingsBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	settings.TreasurySettings playsRole treasurySettings {
+		multiplicity *;
+	}
+}
+
+relation TreasurySettingsCurrency {
+	
+	settings.TreasurySettings playsRole treasurySettings {
+		multiplicity 0..1;
+	}
+	
+	Currency playsRole defaultCurrency {
+		multiplicity 0..1;
+	}
+}
+
+relation TreasurySettingsVatType {
+
+	settings.TreasurySettings playsRole treasurySettings {
+		multiplicity 0..1;
+	}
+	
+	VatType playsRole defaultVatType {
+		multiplicity 0..1;
+	}
+}
 
 /*************
  * RELATIONS *
@@ -819,7 +863,7 @@ relation FinantialDocumentEntryBennu {
 
 relation FinantialDocumentEntryFinantialDocument {
 	document.FinantialDocument playsRole finantialDocument {
-		multiplicity 1..1;
+		multiplicity 0..1;
 	}
 	
 	document.FinantialDocumentEntry playsRole finantialDocumentEntries {
@@ -870,16 +914,6 @@ relation InvoiceEntryVat {
 }
 
 /* --- DebitEntry --- */
-
-relation DebitEntryDebitNote {
-	document.DebitNote playsRole debitNote {
-		multiplicity 1..1;
-	}
-
-	document.DebitEntry playsRole debitEntries {
-		multiplicity *;
-	}
-}
 
 relation DebitEntryTreasuryEvent {
 	event.TreasuryEvent playsRole treasuryEvent {

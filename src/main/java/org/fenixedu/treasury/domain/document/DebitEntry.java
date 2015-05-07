@@ -31,29 +31,31 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-
-import pt.ist.fenixframework.Atomic;
+import org.joda.time.LocalDate;
 
 public class DebitEntry extends DebitEntry_Base {
 
-    protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final BigDecimal amount) {
-        init(debtAccount, treasuryEvent, amount);
+    protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType, final BigDecimal amount, final LocalDate dueDate) {
+        init(debtAccount, treasuryEvent, vatType, amount, dueDate);
     }
 
-    protected void init(final FinantialDocument finantialDocument, final Product product, final FinantialEntryType finantialEntryType,
-            final BigDecimal amount) {
+    @Override
+    protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
+            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, BigDecimal amount) {
-        super.init(null, debtAccount, treasuryEvent.getProduct(), FinantialEntryType.DEBIT_ENTRY, amount);
-        
+    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType, final BigDecimal amount, final LocalDate dueDate) {
+        super.init(null, debtAccount, treasuryEvent.getProduct(), FinantialEntryType.DEBIT_ENTRY, vatType, amount);
+
         setDebtAccount(debtAccount);
         setTreasuryEvent(treasuryEvent);
-        
+        setDueDate(dueDate);
+
         checkRules();
     }
 
@@ -64,29 +66,33 @@ public class DebitEntry extends DebitEntry_Base {
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof DebitNote)) {
             throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
         }
-        
-        if(getDebtAccount() == null) {
+
+        if (getDebtAccount() == null) {
             throw new TreasuryDomainException("error.DebitEntry.debtAccount.required");
         }
+        
+        if(getDueDate() == null) {
+            throw new TreasuryDomainException("error.DebitEntry.dueDate.required");
+        }
     }
-    
+
     @Override
     public boolean isFinantialDocumentRequired() {
         return false;
     }
-    
+
     public boolean isEventAnnuled() {
         return getEventAnnuled();
     }
 
     public BigDecimal getOpenAmount() {
-        BigDecimal amount = this.getAmount();
-        for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-            amount = amount.subtract(entry.getAmount());
-        }
-        return amount;
+        final BigDecimal openAmount =
+                this.getAmount().subtract(
+                        getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).get());
+        
+        
+        return isPositive(openAmount) ? openAmount : BigDecimal.ZERO;
     }
-    
 
     // @formatter: off
     /************
@@ -97,9 +103,13 @@ public class DebitEntry extends DebitEntry_Base {
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
     }
-    
-    public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final BigDecimal amount) {
-        return new DebitEntry(debtAccount, treasuryEvent, amount);
+
+    public static Stream<? extends DebitEntry> find(final DebitNote debitNote) {
+        return findAll().filter(d -> d.getFinantialDocument() == debitNote);
     }
-    
+
+    public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType, final BigDecimal amount, final LocalDate dueDate) {
+        return new DebitEntry(debtAccount, treasuryEvent, vatType, amount, dueDate);
+    }
+
 }

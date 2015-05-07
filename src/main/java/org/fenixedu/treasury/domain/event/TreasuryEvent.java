@@ -27,7 +27,6 @@
  */
 package org.fenixedu.treasury.domain.event;
 
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -43,11 +42,8 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected TreasuryEvent(final Product product) {
-        this();
-        setProduct(product);
-
-        checkRules();
+    protected void init(final Product product) {
+        this.setProduct(product);
     }
 
     protected  void checkRules() {

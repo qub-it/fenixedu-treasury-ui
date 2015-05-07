@@ -47,8 +47,6 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         setFinantialEntryType(finantialEntryType);
         setAmount(amount);
         setQuantity(BigDecimal.ONE);
-        
-        checkRules();
     }
 
     protected void checkRules() {
@@ -88,6 +86,29 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         deleteDomainObject();
     }
 
+    
+    // @formatter: off
+    /************
+     *   UTILS  *
+     ************/
+    // @formatter: on
+    
+    protected boolean isNegative(final BigDecimal value) {
+        return !isZero(value) && !isPositive(value);
+    }
+    
+    protected boolean isZero(final BigDecimal value) {
+        return BigDecimal.ZERO.compareTo(value) == 0;
+    }
+    
+    protected boolean isPositive(final BigDecimal value) {
+        return BigDecimal.ZERO.compareTo(value) < 0;
+    }
+    
+    protected boolean isGreaterThan(final BigDecimal v1, final BigDecimal v2) {
+        return v1.compareTo(v2) > 0;
+    }
+    
     // @formatter: off
     /************
      * SERVICES *

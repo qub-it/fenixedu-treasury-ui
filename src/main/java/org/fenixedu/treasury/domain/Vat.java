@@ -28,7 +28,8 @@
 package org.fenixedu.treasury.domain;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -36,8 +37,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public class Vat extends Vat_Base {
 
@@ -81,26 +80,12 @@ public class Vat extends Vat_Base {
             throw new TreasuryDomainException("error.Vat.beginDate.required");
         }
 
-        if (!getEndDate().isAfter(getBeginDate())) {
+        if (getEndDate() != null && !getEndDate().isAfter(getBeginDate())) {
             throw new TreasuryDomainException("error.Vat.endDate.end.date.must.be.after.begin.date");
         }
 
-        checkPeriodsOverlap();
-
-    }
-
-    private void checkPeriodsOverlap() {
-        for (final Vat vat : find(getVatType())) {
-            if (vat == this) {
-                continue;
-            }
-
-            final Interval vatInterval = new Interval(vat.getBeginDate(), vat.getEndDate());
-            final Interval thisInterval = new Interval(getBeginDate(), getEndDate());
-
-            if (vatInterval.overlaps(thisInterval)) {
-                throw new TreasuryDomainException("error.Vat.date.interval.overlap.with.another");
-            }
+        if(findActive(getVatType(), getBeginDate(), getEndDate()).count() > 1) {
+            throw new TreasuryDomainException("error.Vat.date.interval.overlap.with.another");
         }
     }
 
@@ -137,22 +122,27 @@ public class Vat extends Vat_Base {
      ************/
     // @formatter: on
 
-    public static Set<Vat> readAll() {
-        return Bennu.getInstance().getVatsSet();
+    public static Stream<Vat> findAll() {
+        return Bennu.getInstance().getVatsSet().stream();
     }
 
-    public static Set<Vat> find(final VatType vatType) {
-        final Set<Vat> result = Sets.newHashSet();
-
-        for (final Vat it : readAll()) {
-            if (it.getVatType() == vatType) {
-                result.add(it);
-            }
-        }
-
-        return result;
+    public static Stream<Vat> find(final VatType vatType) {
+        return findAll().filter(v -> v.getVatType() == vatType);
     }
 
+    protected static Stream<Vat> findActive(final VatType vatType, final DateTime when) {
+        return find(vatType).filter(v -> v.interval().contains(when));
+    }
+    
+    protected static Stream<Vat> findActive(final VatType vatType, final DateTime begin, final DateTime end) {
+        final Interval interval = new Interval(begin, end);
+        return find(vatType).filter(v -> v.interval().overlaps(interval));
+    }
+    
+    public static Optional<Vat> findActiveUnique(final VatType vatType, final DateTime when) {
+        return findActive(vatType, when).findFirst();
+    }
+    
     @Atomic
     public static Vat create(final VatType vatType, final FinantialInstitution finantialInstitution,
             final VatExemptionReason vatExemptionReason, final BigDecimal taxRate, final DateTime beginDate,
@@ -160,4 +150,13 @@ public class Vat extends Vat_Base {
         return new Vat(vatType, finantialInstitution, vatExemptionReason, taxRate, beginDate, endDate);
     }
 
+    /* -----
+     * UTILS
+     * -----
+     */
+
+    private Interval interval() {
+        return new Interval(getBeginDate(), getEndDate() != null ? getEndDate() : new DateTime().plusYears(10));
+    }
+    
 }

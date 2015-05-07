@@ -28,11 +28,16 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.Vat;
+import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.joda.time.DateTime;
 
 public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
@@ -42,12 +47,13 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
-            final FinantialEntryType finantialEntryType, final BigDecimal amount) {
+            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount) {
         super.init(finantialDocument, finantialEntryType, amount);
 
+        this.setCurrency(TreasurySettings.getInstance().getDefaultCurrency());
         this.setDebtAccount(debtAccount);
         this.setProduct(product);
-
+        this.setVat(Vat.findActiveUnique(vatType, new DateTime()).orElse(null));
     }
 
     @Override
@@ -64,6 +70,14 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
         if (getDebtAccount() == null) {
             throw new TreasuryDomainException("error.InvoiceEntry.debtAccount.required");
+        }
+
+        if (getCurrency() == null) {
+            throw new TreasuryDomainException("error.InvoiceEntry.currency.required");
+        }
+
+        if (getVat() == null) {
+            throw new TreasuryDomainException("error.InvoiceEntry.vat.required");
         }
     }
 

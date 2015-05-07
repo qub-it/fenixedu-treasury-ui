@@ -44,144 +44,122 @@ import pt.ist.fenixframework.Atomic;
 
 public class VatType extends VatType_Base {
 
-	private static final String EXEMPT_CODE = "EXEMPT";
+    private static final String EXEMPT_CODE = "EXEMPT";
 
-	protected VatType() {
-		super();
-		setBennu(Bennu.getInstance());
-	}
+    protected VatType() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
 
-	protected VatType(final String code, final LocalizedString name) {
-		this();
-		setCode(code);
-		setName(name);
+    protected VatType(final String code, final LocalizedString name) {
+        this();
+        setCode(code);
+        setName(name);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	private void checkRules() {
-		if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-			throw new TreasuryDomainException("error.VatType.code.required");
-		}
+    private void checkRules() {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+            throw new TreasuryDomainException("error.VatType.code.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-			throw new TreasuryDomainException("error.VatType.name.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.VatType.name.required");
+        }
 
-		findByCode(getCode());
-		getName().getLocales().stream()
-				.forEach(l -> findByName(getName().getContent(l)));
-	}
+        findByCode(getCode());
+        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
+    }
 
-	@Atomic
-	public void edit(final String code, final LocalizedString name) {
-		setCode(code);
-		setName(name);
+    @Atomic
+    public void edit(final String code, final LocalizedString name) {
+        setCode(code);
+        setName(name);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException("error.VatType.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.VatType.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
 
-		deleteDomainObject();
-	}
+        deleteDomainObject();
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
-	@Atomic
-	public static void initializeVatType() {
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+    @Atomic
+    public static void InitializeVatType() {
 
-		if (VatType.findAll().count() == 0) {
-			VatType.create(
-					"RED",
-					new LocalizedString(Locale.getDefault(), BundleUtil
-							.getString(Constants.BUNDLE, "lable.VatType.RED")));
+        if (VatType.findAll().count() == 0) {
+            VatType.create("RED",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "lable.VatType.RED")));
 
-			VatType.create(
-					"INT",
-					new LocalizedString(Locale.getDefault(), BundleUtil
-							.getString(Constants.BUNDLE, "lable.VatType.INT")));
-			VatType.create(
-					"NOR",
-					new LocalizedString(Locale.getDefault(), BundleUtil
-							.getString(Constants.BUNDLE, "lable.VatType.NOR")));
-			VatType.create(
-					"ISE",
-					new LocalizedString(Locale.getDefault(), BundleUtil
-							.getString(Constants.BUNDLE, "lable.VatType.ISE")));
-		}
-	}
+            VatType.create("INT",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "lable.VatType.INT")));
+            VatType.create("NOR",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "lable.VatType.NOR")));
+            VatType.create("ISE",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "lable.VatType.ISE")));
+        }
+    }
 
-	public static Stream<VatType> findAll() {
-		return Bennu.getInstance().getVatTypesSet().stream();
-	}
+    public static Stream<VatType> findAll() {
+        return Bennu.getInstance().getVatTypesSet().stream();
+    }
 
-	public static VatType findByCode(final String code) {
-		VatType result = null;
+    public static VatType findByCode(final String code) {
+        VatType result = null;
 
-		for (final VatType it : findAll().collect(Collectors.toList())) {
-			if (!it.getCode().equalsIgnoreCase(code)) {
-				continue;
-			}
+        for (final VatType it : findAll().collect(Collectors.toList())) {
+            if (!it.getCode().equalsIgnoreCase(code)) {
+                continue;
+            }
 
-			if (result != null) {
-				throw new TreasuryDomainException(
-						"error.VatType.duplicated.code");
-			}
+            if (result != null) {
+                throw new TreasuryDomainException("error.VatType.duplicated.code");
+            }
 
-			result = it;
-		}
+            result = it;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static VatType findByName(final String name) {
-		VatType result = null;
+    public static VatType findByName(final String name) {
+        VatType result = null;
 
-		for (final VatType it : findAll().collect(Collectors.toList())) {
+        for (final VatType it : findAll().collect(Collectors.toList())) {
 
-			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
-					name)) {
-				continue;
-			}
+            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
+                continue;
+            }
 
-			if (result != null) {
-				throw new TreasuryDomainException(
-						"error.VatType.duplicated.name");
-			}
+            if (result != null) {
+                throw new TreasuryDomainException("error.VatType.duplicated.name");
+            }
 
-			result = it;
-		}
+            result = it;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Atomic
-	public static VatType create(final String code, final LocalizedString name) {
-		return new VatType(code, name);
-	}
-
-	@Atomic
-	public static VatType initializeExemptVatType() {
-		if (findByCode(EXEMPT_CODE) != null) {
-			return findByCode(EXEMPT_CODE);
-		}
-
-		return new VatType(EXEMPT_CODE, BundleUtil.getLocalizedString(
-				Constants.BUNDLE, "label.VatType.exempt"));
-	}
+    @Atomic
+    public static VatType create(final String code, final LocalizedString name) {
+        return new VatType(code, name);
+    }
 
 }

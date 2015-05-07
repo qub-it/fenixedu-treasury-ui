@@ -35,6 +35,7 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -55,8 +56,7 @@ public abstract class Tariff extends Tariff_Base {
             final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
         setFinantialEntity(finantialEntity);
         setProduct(product);
-        // TODO: Initialize from product
-        setVatType(VatType.initializeExemptVatType());
+        setVatType(TreasurySettings.getInstance().getDefaultVatType());
         setBeginDate(beginDate);
         setEndDate(endDate);
         setDueDateCalculationType(dueDateCalculationType);
