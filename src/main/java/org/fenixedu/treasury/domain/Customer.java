@@ -50,6 +50,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getFiscalNumber();
 
     public abstract String getName();
+    
+    public abstract String getIdentificationNumber();
 
     public abstract String getAddress();
 

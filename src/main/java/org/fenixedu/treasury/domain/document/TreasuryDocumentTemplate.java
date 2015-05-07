@@ -35,14 +35,14 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
 
-public class DocumentTemplate extends DocumentTemplate_Base {
+public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base {
 
-    protected DocumentTemplate() {
+    protected TreasuryDocumentTemplate() {
         super();
         setBennu(Bennu.getInstance());
     }
 
-    protected DocumentTemplate(final FinantialDocumentType finantialDocumentTypes, final FinantialEntity finantialEntity) {
+    protected TreasuryDocumentTemplate(final FinantialDocumentType finantialDocumentTypes, final FinantialEntity finantialEntity) {
         this();
         setFinantialDocumentType(finantialDocumentTypes);
         setFinantialEntity(finantialEntity);
@@ -52,14 +52,14 @@ public class DocumentTemplate extends DocumentTemplate_Base {
 
     private void checkRules() {
         if (getFinantialDocumentType() == null) {
-            throw new TreasuryDomainException("error.DocumentTemplate.finantialDocumentTypes.required");
+            throw new TreasuryDomainException("error.TreasuryDocumentTemplate.finantialDocumentTypes.required");
         }
 
         if (getFinantialEntity() == null) {
-            throw new TreasuryDomainException("error.DocumentTemplate.finantialEntity.required");
+            throw new TreasuryDomainException("error.TreasuryDocumentTemplate.finantialEntity.required");
         }
         if (findByFinantialDocumentTypeAndFinantialEntity(getFinantialDocumentType(), getFinantialEntity()).count() > 1) {
-            throw new TreasuryDomainException("error.DocumentTemplate.duplicated");
+            throw new TreasuryDomainException("error.TreasuryDocumentTemplate.duplicated");
         }
     }
 
@@ -79,15 +79,15 @@ public class DocumentTemplate extends DocumentTemplate_Base {
     @Atomic
     public void delete() {
         if (!isDeletable()) {
-            throw new TreasuryDomainException("error.DocumentTemplate.cannot.delete");
+            throw new TreasuryDomainException("error.TreasuryDocumentTemplate.cannot.delete");
         }
 
         setBennu(null);
         deleteDomainObject();
     }
 
-    public DocumentTemplateFile getAtiveDocumentTemplateFile() {
-        for (DocumentTemplateFile documentTemplateFile : getDocumentTemplateFilesSet()) {
+    public TreasuryDocumentTemplateFile getAtiveDocumentTemplateFile() {
+        for (TreasuryDocumentTemplateFile documentTemplateFile : getTreasuryDocumentTemplateFilesSet()) {
             if (documentTemplateFile.getActive()) {
                 return documentTemplateFile;
             }
@@ -95,34 +95,49 @@ public class DocumentTemplate extends DocumentTemplate_Base {
         return null;
     }
 
-    @Override
-    public void addDocumentTemplateFiles(DocumentTemplateFile documentTemplateFile) {
-        for (DocumentTemplateFile file : getDocumentTemplateFilesSet()) {
+    @Atomic
+    public TreasuryDocumentTemplateFile addFile(final TreasuryDocumentTemplate documentTemplate, final String displayName,
+            final String fileName, final byte[] content) {
+        TreasuryDocumentTemplateFile treasuryDocumentTemplateFile =
+                TreasuryDocumentTemplateFile.create(this, displayName, fileName, content);
+
+        activateFile(treasuryDocumentTemplateFile);
+
+        return treasuryDocumentTemplateFile;
+    }
+
+    /**
+     * 
+     * Activate document template file
+     */
+    void activateFile(TreasuryDocumentTemplateFile treasuryDocumentTemplateFile) {
+        for (TreasuryDocumentTemplateFile file : getTreasuryDocumentTemplateFilesSet()) {
             file.setActive(false);
         }
-        super.addDocumentTemplateFiles(documentTemplateFile);
+
+        treasuryDocumentTemplateFile.setActive(true);
     }
 
     @Atomic
-    public static DocumentTemplate create(final FinantialDocumentType finantialDocumentTypes,
+    public static TreasuryDocumentTemplate create(final FinantialDocumentType finantialDocumentTypes,
             final FinantialEntity finantialEntity) {
-        DocumentTemplate documentTemplate = new DocumentTemplate(finantialDocumentTypes, finantialEntity);
+        TreasuryDocumentTemplate documentTemplate = new TreasuryDocumentTemplate(finantialDocumentTypes, finantialEntity);
         return documentTemplate;
     }
 
-    public static Stream<DocumentTemplate> findAll() {
-        return Bennu.getInstance().getDocumentTemplatesSet().stream();
+    public static Stream<TreasuryDocumentTemplate> findAll() {
+        return Bennu.getInstance().getTreasuryDocumentTemplatesSet().stream();
     }
 
-    public static Stream<DocumentTemplate> findByFinantialDocumentType(final FinantialDocumentType finantialDocumentType) {
+    public static Stream<TreasuryDocumentTemplate> findByFinantialDocumentType(final FinantialDocumentType finantialDocumentType) {
         return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
     }
 
-    public static Stream<DocumentTemplate> findByFinantialEntity(final FinantialEntity finantialEntity) {
+    public static Stream<TreasuryDocumentTemplate> findByFinantialEntity(final FinantialEntity finantialEntity) {
         return findAll().filter(i -> finantialEntity.equals(i.getFinantialEntity()));
     }
 
-    public static Stream<DocumentTemplate> findByFinantialDocumentTypeAndFinantialEntity(
+    public static Stream<TreasuryDocumentTemplate> findByFinantialDocumentTypeAndFinantialEntity(
             final FinantialDocumentType finantialDocumentType, final FinantialEntity finantialEntity) {
         return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType())).filter(
                 i -> finantialEntity.equals(i.getFinantialEntity()));

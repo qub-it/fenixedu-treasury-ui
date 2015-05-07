@@ -35,8 +35,8 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialEntity;
-import org.fenixedu.treasury.domain.document.DocumentTemplate;
-import org.fenixedu.treasury.domain.document.DocumentTemplateFile;
+import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
+import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -51,12 +51,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 @BennuSpringController(value = FinantialInstitutionController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution/documenttemplate")
-public class DocumentTemplateController extends TreasuryBaseController {
+@RequestMapping("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate")
+public class TreasuryDocumentTemplateController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
@@ -68,46 +65,46 @@ public class DocumentTemplateController extends TreasuryBaseController {
         return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
     }
 
-    private DocumentTemplate getDocumentTemplate(Model model) {
-        return (DocumentTemplate) model.asMap().get("documentTemplate");
+    private TreasuryDocumentTemplate getDocumentTemplate(Model model) {
+        return (TreasuryDocumentTemplate) model.asMap().get("documentTemplate");
     }
 
-    private void setDocumentTemplate(DocumentTemplate documentTemplate, Model model) {
+    private void setDocumentTemplate(TreasuryDocumentTemplate documentTemplate, Model model) {
         model.addAttribute("documentTemplate", documentTemplate);
     }
 
     @Atomic
-    public void deleteDocumentTemplate(DocumentTemplate documentTemplate) {
+    public void deleteDocumentTemplate(TreasuryDocumentTemplate documentTemplate) {
         documentTemplate.delete();
     }
 
     @RequestMapping(value = "/search/view/{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") DocumentTemplate documentTemplate, Model model,
+    public String processSearchToViewAction(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect(
-                "/treasury/administration/managefinantialinstitution/documenttemplate/read" + "/"
-                        + documentTemplate.getExternalId(), model, redirectAttributes);
+        return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read" + "/"
+                + documentTemplate.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}")
-    public String read(@PathVariable("oid") DocumentTemplate documentTemplate, Model model) {
+    public String read(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, Model model) {
         setDocumentTemplate(documentTemplate, model);
-        return "treasury/administration/managefinantialinstitution/documenttemplate/read";
+        return "treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read";
     }
 
     @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") DocumentTemplate documentTemplate, Model model,
+    public String delete(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, Model model,
             RedirectAttributes redirectAttributes) {
         setDocumentTemplate(documentTemplate, model);
         try {
             deleteDocumentTemplate(documentTemplate);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/managefinantialinstitution/documenttemplate/", model, redirectAttributes);
+            return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/", model,
+                    redirectAttributes);
         } catch (TreasuryDomainException tde) {
             //Add error messages to the list
-            addErrorMessage("Error deleting the DocumentTemplate due to " + tde.getLocalizedMessage(), model);
+            addErrorMessage("Error deleting the TreasuryDocumentTemplate due to " + tde.getLocalizedMessage(), model);
         }
-        return "treasury/administration/managefinantialinstitution/documenttemplate/read/"
+        return "treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
                 + getDocumentTemplate(model).getExternalId();
     }
 
@@ -117,13 +114,12 @@ public class DocumentTemplateController extends TreasuryBaseController {
             @RequestParam(value = "finantialentityid", required = true) FinantialEntity finantialEntity, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            DocumentTemplate documentTemplate = createDocumentTemplate(finantialDocumentTypes, finantialEntity);
+            TreasuryDocumentTemplate documentTemplate = createDocumentTemplate(finantialDocumentTypes, finantialEntity);
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("documentTemplate", documentTemplate);
-            return redirect(
-                    "/treasury/administration/managefinantialinstitution/documenttemplate/read/"
-                            + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
+            return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
+                    + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(" Error creating due to " + tde.getLocalizedMessage(), model);
             return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
@@ -132,13 +128,14 @@ public class DocumentTemplateController extends TreasuryBaseController {
     }
 
     @Atomic
-    public DocumentTemplate createDocumentTemplate(FinantialDocumentType finantialDocumentTypes, FinantialEntity finantialEntity) {
-        DocumentTemplate documentTemplate = DocumentTemplate.create(finantialDocumentTypes, finantialEntity);
+    public TreasuryDocumentTemplate createDocumentTemplate(FinantialDocumentType finantialDocumentTypes,
+            FinantialEntity finantialEntity) {
+        TreasuryDocumentTemplate documentTemplate = TreasuryDocumentTemplate.create(finantialDocumentTypes, finantialEntity);
         return documentTemplate;
     }
 
     @RequestMapping(value = "/search/upload/{oid}", method = RequestMethod.POST)
-    public String processSearchToUploadAction(@PathVariable("oid") DocumentTemplate documentTemplate, @RequestParam(
+    public String processSearchToUploadAction(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, @RequestParam(
             value = "documentTemplateFile", required = true) MultipartFile documentTemplateFile, Model model,
             RedirectAttributes redirectAttributes) {
         setDocumentTemplate(documentTemplate, model);
@@ -148,19 +145,17 @@ public class DocumentTemplateController extends TreasuryBaseController {
         } catch (TreasuryDomainException tde) {
             addErrorMessage(" Error updating due to " + tde.getLocalizedMessage(), model);
         }
-        return redirect("/treasury/administration/managefinantialinstitution/documenttemplate/read/"
+        return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
                 + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
     }
 
-    @Atomic
-    public void uploadDocumentTemplateFile(DocumentTemplate documentTemplate, MultipartFile requestFile, Model model) {
-        if (!requestFile.getContentType().equals(DocumentTemplateFile.CONTENT_TYPE)) {
+    public void uploadDocumentTemplateFile(TreasuryDocumentTemplate documentTemplate, MultipartFile requestFile, Model model) {
+        if (!requestFile.getContentType().equals(TreasuryDocumentTemplateFile.CONTENT_TYPE)) {
             throw new TreasuryDomainException("error.file.different.content.type");
         }
-        DocumentTemplateFile documentTemplateFile =
-                DocumentTemplateFile.create(documentTemplate, true, requestFile.getName(), requestFile.getOriginalFilename(),
-                        getContent(requestFile));
-        getDocumentTemplate(model).addDocumentTemplateFiles(documentTemplateFile);
+
+        documentTemplate.addFile(documentTemplate, requestFile.getName(), requestFile.getOriginalFilename(),
+                getContent(requestFile));
     }
 
     //TODOJN - how to handle this exception
@@ -173,7 +168,8 @@ public class DocumentTemplateController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/search/download/{documentTemplateFileId}", method = RequestMethod.GET)
-    public void processSearchToDownloadAction(@PathVariable("documentTemplateFileId") DocumentTemplateFile documentTemplateFile,
+    public void processSearchToDownloadAction(
+            @PathVariable("documentTemplateFileId") TreasuryDocumentTemplateFile documentTemplateFile,
             HttpServletResponse response) {
         try {
             response.setContentType(documentTemplateFile.getContentType());

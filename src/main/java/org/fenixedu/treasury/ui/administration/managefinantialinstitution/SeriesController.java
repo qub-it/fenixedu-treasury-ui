@@ -176,18 +176,13 @@ public class SeriesController extends TreasuryBaseController {
         }
     }
 
-    @Atomic
     public void updateSeries(String code, LocalizedString name, boolean externSeries, boolean certificated, boolean legacy,
             Model model) {
         getSeries(model).edit(code, name, externSeries, certificated, legacy);
     }
 
-    @Atomic
     public void setSeriesDefault(Model model) {
-        for (Series series : getSeries(model).getFinantialInstitution().getSeriesSet()) {
-            series.setDefaultSeries(false);
-        }
-        getSeries(model).setDefaultSeries(true);
+        getSeries(model).getFinantialInstitution().markSeriesAsDefault(getSeries(model));
     }
 
 }

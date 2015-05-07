@@ -32,6 +32,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
@@ -127,6 +128,15 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
 
         setBennu(null);
         deleteDomainObject();
+    }
+    
+    @Atomic
+    public void markSeriesAsDefault(final Series series) {
+        for (final Series s : getSeriesSet()) {
+            s.setDefaultSeries(false);
+        }
+        
+        series.setDefaultSeries(true);
     }
 
     // @formatter: off

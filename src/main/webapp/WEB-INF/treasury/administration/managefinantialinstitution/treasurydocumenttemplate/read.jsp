@@ -52,7 +52,7 @@ ${portal.toolkit()}
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/delete/${documentTemplate.externalId}"
+                action="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/delete/${documentTemplate.externalId}"
                 method="POST">
                 <div class="modal-header">
                     <button type="button" class="close"
@@ -155,7 +155,7 @@ ${portal.toolkit()}
 </div>
 
 <c:choose>
-    <c:when test="${ not empty documentTemplate.documentTemplateFilesSet }">
+    <c:when test="${ not empty documentTemplate.treasuryDocumentTemplateFilesSet }">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
@@ -170,7 +170,7 @@ ${portal.toolkit()}
                                 <th><spring:message code="label.DocumentTemplateFile.date" /></th>
                                 <th><spring:message code="label.DocumentTemplateFile.name" /></th>                                                
                             </tr>
-                            <c:forEach items="${ documentTemplate.documentTemplateFilesSet }" var="submittedFile">
+                            <c:forEach items="${ documentTemplate.treasuryDocumentTemplateFilesSet }" var="submittedFile">
                                 <tr>
                                     <td><c:out
                                             value='${submittedFile.creationDate.toString("yyyy-MM-dd")}' />

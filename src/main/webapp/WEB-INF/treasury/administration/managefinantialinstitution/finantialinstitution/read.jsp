@@ -45,7 +45,7 @@ ${portal.toolkit()}
 
 <script type="text/javascript">
       function processUpload(externalId) {
-        url = "${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/search/upload/" + externalId;
+        url = "${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/upload/" + externalId;
         $("#uploadForm").attr("action", url);
         $('#uploadModal').modal('toggle')
       }
@@ -364,7 +364,7 @@ ${portal.toolkit()}
                         <tr>
                             <td>
                                 <c:if test="${not empty documentTemplateFile }" >
-                                    <a href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/search/download/${documentTemplateFile.externalId}">
+                                    <a href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/download/${documentTemplateFile.externalId}">
                                         <c:out value="${ documentTemplateFile.filename }" />
                                     </a>
                                     &nbsp;-&nbsp;
@@ -389,10 +389,10 @@ ${portal.toolkit()}
                         <tr>
                             <td>
                                 <c:if test="${ empty documentTemplate }">
-                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message code='label.create'/></a>
+                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message code='label.create'/></a>
                                 </c:if>
                                 <c:if test="${ not empty documentTemplate }">
-                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documenttemplate/search/view/${documentTemplate.externalId}"><spring:message code='label.view'/></a>
+                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/view/${documentTemplate.externalId}"><spring:message code='label.view'/></a>
                                     <a class="btn btn-default btn-xs" href="#" onClick="javascript:processUpload('${documentTemplate.externalId}')"><spring:message code='label.upload'/></a> 
                                 </c:if>
                             </td>

@@ -35,34 +35,36 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
 
-public class DocumentTemplateFile extends DocumentTemplateFile_Base {
+public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_Base {
 
     public static final String CONTENT_TYPE = "application/vnd.oasis.opendocument.text";
 
-    protected DocumentTemplateFile() {
+    protected TreasuryDocumentTemplateFile() {
         super();
         setBennu(Bennu.getInstance());
     }
 
-    protected DocumentTemplateFile(final DocumentTemplate documentTemplate, final boolean active, final String displayName,
+    protected TreasuryDocumentTemplateFile(final TreasuryDocumentTemplate documentTemplate, final boolean active, final String displayName,
             final String fileName, final byte[] content) {
         this();
         this.init(displayName, fileName, content);
-        setDocumentTemplate(documentTemplate);
+        setTreasuryDocumentTemplate(documentTemplate);
         setActive(active);
-
+        
+        documentTemplate.activateFile(this);
+        
         checkRules();
     }
 
     private void checkRules() {
-        if (getDocumentTemplate() == null) {
-            throw new TreasuryDomainException("error.DocumentTemplateFile.documentTemplate.required");
+        if (getTreasuryDocumentTemplate() == null) {
+            throw new TreasuryDomainException("error.TreasuryDocumentTemplateFile.documentTemplate.required");
         }
     }
 
     @Atomic
-    public void edit(final DocumentTemplate documentTemplate, final boolean active) {
-        setDocumentTemplate(documentTemplate);
+    public void edit(final TreasuryDocumentTemplate documentTemplate, final boolean active) {
+        setTreasuryDocumentTemplate(documentTemplate);
         setActive(active);
 
         checkRules();
@@ -77,7 +79,7 @@ public class DocumentTemplateFile extends DocumentTemplateFile_Base {
     @Atomic
     public void delete() {
         if (!isDeletable()) {
-            throw new TreasuryDomainException("error.DocumentTemplateFile.cannot.delete");
+            throw new TreasuryDomainException("error.TreasuryDocumentTemplateFile.cannot.delete");
         }
 
         setBennu(null);
@@ -85,19 +87,19 @@ public class DocumentTemplateFile extends DocumentTemplateFile_Base {
     }
 
     @Atomic
-    public static DocumentTemplateFile create(final DocumentTemplate documentTemplate, final boolean active,
+    static TreasuryDocumentTemplateFile create(final TreasuryDocumentTemplate documentTemplate, 
             final String displayName, final String fileName, final byte[] content) {
-        DocumentTemplateFile documentTemplateFile =
-                new DocumentTemplateFile(documentTemplate, active, displayName, fileName, content);
+        TreasuryDocumentTemplateFile documentTemplateFile =
+                new TreasuryDocumentTemplateFile(documentTemplate, false, displayName, fileName, content);
         return documentTemplateFile;
     }
 
-    public static Stream<DocumentTemplateFile> findAll() {
-        return Bennu.getInstance().getDocumentTemplateFilesSet().stream();
+    public static Stream<TreasuryDocumentTemplateFile> findAll() {
+        return Bennu.getInstance().getTreasuryDocumentTemplateFilesSet().stream();
     }
 
-    public static Stream<DocumentTemplateFile> findByDocumentTemplate(final DocumentTemplate documentTemplate) {
-        return findAll().filter(i -> documentTemplate.equals(i.getDocumentTemplate()));
+    public static Stream<TreasuryDocumentTemplateFile> findByDocumentTemplate(final TreasuryDocumentTemplate documentTemplate) {
+        return findAll().filter(i -> documentTemplate.equals(i.getTreasuryDocumentTemplate()));
     }
 
     @Override
