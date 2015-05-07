@@ -130,20 +130,20 @@ ${portal.toolkit()}
 
 <div class="panel panel-primary">
 	<div class="panel-heading">
-		<h3 class="panel-title"><spring:message code="label.Customer."/></h3>
+		<h3 class="panel-title"><spring:message code="label.Customer.debtAccountsBalances"/></h3>
 	</div>
 	<div class="panel-body">
 <form method="post" class="form-horizontal">
 <table class="table">
 		<tbody>
-<tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.Customer.identificationNumber"/></th> 
-	<td>
 	<c:forEach var="debtAccount" items='${customer.debtAccountsSet}' >
-   			<p><c:out value="${debtAccount.finantialInstitution.name}"/> - <c:out value="${debtAccount.totalInDebt}"/> </p>  
-		</c:forEach>
+<tr>
+	<th scope="row" class="col-xs-3"><c:out value="${debtAccount.finantialInstitution.name}"/></th> 
+	<td>
+   			 <c:out value="${debtAccount.totalInDebt}"/> <c:out value="${debtAccount.finantialInstitution.currency.symbol}"/>
 	</td> 
 </tr>
+		</c:forEach>
 </tbody>
 </table>
 

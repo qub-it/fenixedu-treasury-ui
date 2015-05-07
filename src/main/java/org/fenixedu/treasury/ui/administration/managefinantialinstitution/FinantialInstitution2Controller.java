@@ -36,6 +36,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.I18N;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -66,7 +67,7 @@ import pt.ist.standards.geographic.Municipality;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution2/finantialinstitution2")
+@RequestMapping("/treasury/administration/managefinantialinstitution/finantialinstitution2")
 public class FinantialInstitution2Controller extends TreasuryBaseController {
 
 //
@@ -175,7 +176,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             FinantialInstitution finantialInstitution =
                     createFinantialInstitution(bean.getFiscalcountryregion(), bean.getCode(), bean.getFiscalNumber(),
                             bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(), bean.getCountry(),
-                            bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode());
+                            bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode(), bean.getCurrency());
             //Add the bean to be used in the View
             this.setFinantialInstitution(finantialInstitution, model);
             this.setFinantialInstitutionBean(bean, model);
@@ -192,10 +193,10 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
     @Atomic
     public FinantialInstitution createFinantialInstitution(FiscalCountryRegion fiscalCountryRegion, String code,
             String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
-            District district, Municipality municipality, String locality, String zipCode) {
+            District district, Municipality municipality, String locality, String zipCode, Currency currency) {
         FinantialInstitution finantialInstitution =
                 FinantialInstitution.create(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address,
-                        country, district, municipality, locality, zipCode);
+                        country, district, municipality, locality, zipCode, currency);
         return finantialInstitution;
     }
 
@@ -232,7 +233,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
         try {
             updateFinantialInstitution(bean.getFiscalcountryregion(), bean.getCode(), bean.getFiscalNumber(),
                     bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(), bean.getCountry(),
-                    bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode(), model);
+                    bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode(), bean.getCurrency(), model);
 
             addInfoMessage("Sucess updating FinantialInstitution ...", model);
             return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
@@ -248,9 +249,10 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
     @Atomic
     public void updateFinantialInstitution(FiscalCountryRegion region, String code, String fiscalNumber, String companyId,
             String name, String companyName, String address, Country country, District district, Municipality municipality,
-            String locality, String zipCode, Model m) {
+            String locality, String zipCode, Currency currency, Model m) {
 
         getFinantialInstitution(m).setFiscalCountryRegion(region);
+        getFinantialInstitution(m).setCurrency(currency);
         getFinantialInstitution(m).edit(code, fiscalNumber, companyId, name, companyName, address, country, district,
                 municipality, locality, zipCode);
     }

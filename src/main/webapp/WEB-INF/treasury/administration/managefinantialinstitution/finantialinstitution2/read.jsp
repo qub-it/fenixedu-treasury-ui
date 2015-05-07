@@ -136,6 +136,13 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
+                                code="label.FinantialInstitution.currency" /></th>
+                        <td><c:out
+                                value='${finantialInstitution.currency.isoCode}' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
                                 code="label.FinantialInstitution.code" /></th>
                         <td><c:out
                                 value='${finantialInstitution.code}' />

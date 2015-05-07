@@ -117,6 +117,7 @@ public class TreasuryBaseController {
             model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
         }
 
+        //HACK: Forcing the "Messages AS DEFAULT CODE"
         WebApplicationContext webAppContext = RequestContextUtils.getWebApplicationContext(request);
         MessageSource messageSource = (MessageSource) webAppContext.getBean("messageSource");
         if (messageSource != null && messageSource instanceof ReloadableResourceBundleMessageSource) {

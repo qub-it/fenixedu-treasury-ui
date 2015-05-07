@@ -60,11 +60,11 @@ ${portal.toolkit()}
         <h4 class="modal-title"><spring:message code="label.DocumentTemplateFile.upload"/></h4>
       </div>
       <div class="modal-body">
-        <input type="file" name="documentTemplateFile" />
+        <input type="file" name="documentTemplateFile" accept="${ allowedFileType}" />
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
-        <button id="uploadButton" class="btn btn-default" type="submit"> <spring:message code = "label.upload"/></button>
+        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.cancel"/></button>
+        <button id="uploadButton" class="btn btn-primary" type="submit"> <spring:message code = "label.upload"/></button>
       </div>
       </form>
     </div><!-- /.modal-content -->
@@ -163,6 +163,13 @@ ${portal.toolkit()}
                                 code="label.FinantialInstitution.fiscalCountryRegion" /></th>
                         <td><c:out
                                 value='${finantialInstitution.fiscalCountryRegion.name.content}' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.FinantialInstitution.currency" /></th>
+                        <td><c:out
+                                value='${finantialInstitution.currency.isoCode}' />
                         </td>
                     </tr>
                     <tr>
@@ -335,7 +342,7 @@ ${portal.toolkit()}
 <h2>
     <spring:message code="label.administration.manageFinantialInstitution.searchDocumentTemplate" />
 </h2>
-<table id="searchseriesTable"
+<table id="searchDocumentTemplateTable"
     class="table responsive table-bordered table-hover">
     <thead>
         <tr>
@@ -460,7 +467,7 @@ $(document).ready(function() {
         //Documentation: https://datatables.net/reference/option/dom
         //"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
         //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-        "dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+        "dom": '', 
         //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
     });
     var table2 = $('#searchseriesTable').DataTable({
@@ -476,17 +483,30 @@ $(document).ready(function() {
         ],
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [
-            { "width": "70px", "targets": 4 } 
+            { "width": "105px", "targets": 4 } 
         ],
         "data" : searchseriesDataSet,
         //Documentation: https://datatables.net/reference/option/dom
-        "dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+        "dom": '', 
         //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
         //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
         //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
     });
+    table2.columns.adjust().draw();
     
-    table.columns.adjust().draw();
+    var table3 = $('#searchDocumentTemplateTable').DataTable({
+        language : {
+            url : "${datatablesI18NUrl}",           
+        },
+        //CHANGE_ME adjust the actions column width if needed
+        "columnDefs": [
+			{ "width": "205px", "targets": 0 }, 
+            { "width": "115px", "targets": 2 } 
+        ],
+        "dom": '', 
+    });
+
+    table3.columns.adjust().draw();
     $('#searchfinantialentityTable tbody').on( 
 	  	'click', 
 		'tr', 

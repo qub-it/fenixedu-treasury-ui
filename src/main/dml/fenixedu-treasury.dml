@@ -390,6 +390,16 @@ relation FinantialInstitutionFiscalCountryRegion{
 	}
 }
 
+relation FinantialInstitutionCurrency{
+	Currency playsRole currency {
+		multiplicity 1..1;
+	}
+	
+	FinantialInstitution playsRole finantialInstitutions {
+		multiplicity *;
+	}
+}
+
 relation FiscalCountryRegionBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;

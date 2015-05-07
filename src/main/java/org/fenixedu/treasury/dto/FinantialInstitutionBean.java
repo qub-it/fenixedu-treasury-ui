@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.commons.i18n.I18N;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
 
@@ -67,6 +68,9 @@ public class FinantialInstitutionBean implements IBean, Serializable {
     private List<TupleDataSourceBean> municipalities;
 
     private List<TupleDataSourceBean> fiscalcountryregions;
+    private List<TupleDataSourceBean> currenciesDataSource;
+
+    private Currency currency;
 
     private String code;
     private String companyId;
@@ -78,6 +82,7 @@ public class FinantialInstitutionBean implements IBean, Serializable {
 
     public FinantialInstitutionBean() {
         this.updateModelLists();
+        this.setCurrenciesDataSource(Currency.findAll().collect(Collectors.toList()));
     }
 
     public FinantialInstitutionBean(FinantialInstitution finantialInstitution) {
@@ -93,7 +98,9 @@ public class FinantialInstitutionBean implements IBean, Serializable {
         this.municipality = finantialInstitution.getMunicipality();
         this.name = finantialInstitution.getName();
         this.zipCode = finantialInstitution.getZipCode();
+        this.setCurrency(finantialInstitution.getCurrency());
         this.updateModelLists();
+        this.setCurrenciesDataSource(Currency.findAll().collect(Collectors.toList()));
     }
 
     public Country getCountry() {
@@ -266,6 +273,27 @@ public class FinantialInstitutionBean implements IBean, Serializable {
             }).collect(Collectors.toList()));
         }
 
+    }
+
+    public List<TupleDataSourceBean> getCurrenciesDataSource() {
+        return currenciesDataSource;
+    }
+
+    public void setCurrenciesDataSource(List<Currency> currencies) {
+        this.currenciesDataSource = currencies.stream().map(x -> {
+            TupleDataSourceBean tuple = new TupleDataSourceBean();
+            tuple.setText(x.getIsoCode() + "-" + x.getSymbol());
+            tuple.setId(x.getExternalId());
+            return tuple;
+        }).collect(Collectors.toList());
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
 }

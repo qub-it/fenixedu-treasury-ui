@@ -51,7 +51,8 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
 
     protected FinantialInstitution(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
             final String companyId, final String name, final String companyName, final String address, final Country country,
-            final District district, final Municipality municipality, final String locality, final String zipCode) {
+            final District district, final Municipality municipality, final String locality, final String zipCode,
+            final Currency currency) {
         this();
         setFiscalCountryRegion(fiscalCountryRegion);
         setCode(code);
@@ -65,7 +66,7 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         setMunicipality(municipality);
         setLocality(locality);
         setZipCode(zipCode);
-
+        setCurrency(currency);
         checkRules();
     }
 
@@ -160,9 +161,10 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     @Atomic
     public static FinantialInstitution create(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
             final String companyId, final String name, final String companyName, final String address, final Country country,
-            final District district, final Municipality municipality, final String locality, final String zipCode) {
+            final District district, final Municipality municipality, final String locality, final String zipCode,
+            final Currency currency) {
         return new FinantialInstitution(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address, country,
-                district, municipality, locality, zipCode);
+                district, municipality, locality, zipCode, currency);
     }
 
     public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {
