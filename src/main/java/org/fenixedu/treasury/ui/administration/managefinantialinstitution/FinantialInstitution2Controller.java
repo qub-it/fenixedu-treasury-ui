@@ -31,7 +31,6 @@ import java.util.List;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
@@ -186,8 +185,8 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
             District district, Municipality municipality, String locality, String zipCode, Currency currency) {
         FinantialInstitution finantialInstitution =
-                FinantialInstitution.create(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address,
-                        country, district, municipality, locality, zipCode, currency);
+                FinantialInstitution.create(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName,
+                        address, country, district, municipality, locality, zipCode);
         return finantialInstitution;
     }
 
@@ -244,8 +243,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
 
         getFinantialInstitution(m).setFiscalCountryRegion(region);
         getFinantialInstitution(m).setCurrency(currency);
-        getFinantialInstitution(m).edit(code, fiscalNumber, companyId, name, companyName, address, country, district,
-                municipality, locality, zipCode);
+        getFinantialInstitution(m).edit(region, currency, code, fiscalNumber, companyId, name, companyName, address, country,
+                district, municipality, locality, zipCode);
     }
-
 }
