@@ -37,7 +37,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
-import org.fenixedu.treasury.domain.document.DocumentTemplateFile;
+import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -121,7 +121,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     public String read(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
         model.addAttribute("finantialDocumentTypeSet", FinantialDocumentType.findAll().collect(Collectors.toList()));
-        model.addAttribute("allowedFileType", DocumentTemplateFile.CONTENT_TYPE);
+        model.addAttribute("allowedFileType", TreasuryDocumentTemplateFile.CONTENT_TYPE);
         return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
     }
 

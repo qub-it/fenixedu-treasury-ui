@@ -75,7 +75,7 @@ ${portal.toolkit()}
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		 <select id="finantialinstitution" class="js-example-basic-single" name="finantialInstitution">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		 <option value="">&nbsp; </option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
 		<script>
 		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
@@ -177,7 +177,7 @@ ${portal.toolkit()}
 		             ],
 		"data" : searchcustomerDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
-"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
 //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO

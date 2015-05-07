@@ -28,6 +28,10 @@ package org.fenixedu.treasury.ui.administration.document.manageseries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.Series;
@@ -74,20 +78,20 @@ public class SeriesController extends TreasuryBaseController {
 //				
     @RequestMapping(value = "/")
     public String search(Model model) {
-        List<Series> searchseriesResultsDataSet = getSearchUniverseSearchSeriesDataSet();
+        Set<Series> searchseriesResultsDataSet = getSearchUniverseSearchSeriesDataSet();
 
         //add the results dataSet to the model
         model.addAttribute("searchseriesResultsDataSet", searchseriesResultsDataSet);
         return "treasury/administration/document/manageseries/series/search";
     }
 
-    private List<Series> getSearchUniverseSearchSeriesDataSet() {
+    private Set<Series> getSearchUniverseSearchSeriesDataSet() {
         //
         //The initialization of the result list must be done here
         //
         //
         // return new ArrayList<Series>(Series.findAll().collect(Collectors.toList())); //CHANGE_ME
-        return new ArrayList<Series>(Series.readAll());
+        return Series.readAll();
     }
 
 //    private List<Series> filterSearchSeries(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,

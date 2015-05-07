@@ -129,7 +129,7 @@ angular.module('angularAppAdhocCustomer', ['ngSanitize', 'ui.select']).controlle
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message
-						code="label.AdhocCustomer.code" />
+						code="label.Series.finantialInstitution" />
 				</div>
 				<div class="col-sm-4">
 				 <ui-select id="adhocCustomer_finantialInstitutions" ng-model="$parent.object.finantialInstitutions" theme="bootstrap"  ng-disabled="disabled" multiple>

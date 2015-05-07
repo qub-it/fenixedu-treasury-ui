@@ -53,10 +53,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"  ><spring:message code="label.event.update" /></a>
-|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${customer.externalId}/createpayment"  ><spring:message code="label.event.accounting.manageCustomer.createPayment" /></a>	&nbsp;|&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${customer.externalId}/createdebtentry"  ><spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a>	&nbsp;|&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${customer.externalId}/createexemption"  ><spring:message code="label.event.accounting.manageCustomer.createExemption" /></a>	
+|&nbsp;&nbsp;	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"  ><spring:message code="label.event.update" /></a>	
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -138,9 +135,11 @@ ${portal.toolkit()}
 		<tbody>
 	<c:forEach var="debtAccount" items='${customer.debtAccountsSet}' >
 <tr>
-	<th scope="row" class="col-xs-3"><c:out value="${debtAccount.finantialInstitution.name}"/></th> 
+	<th scope="row" class="col-xs-3">
+
+	<c:out value="${debtAccount.finantialInstitution.name}"/></th> 
 	<td>
-   			 <c:out value="${debtAccount.totalInDebt}"/> <c:out value="${debtAccount.finantialInstitution.currency.symbol}"/>
+   			 <c:out value="${debtAccount.totalInDebt}"/> <c:out value="${debtAccount.finantialInstitution.currency.symbol}"/> &nbsp;&nbsp;<a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message code="label.customer.read.showdebtaccount"></spring:message></a> 
 	</td> 
 </tr>
 		</c:forEach>
@@ -151,17 +150,8 @@ ${portal.toolkit()}
 </div>
 </div>
 </br>
-<h2> Conta Corrente </h2>
+<h2> Documentos Pendentes </h2>
  <div id="content">
-    <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-
-        <li class="active"><a href="#pending" data-toggle="tab">Docs. Pendentes</a></li>
-        <li><a href="#details" data-toggle="tab">Extracto</a></li>
-        <li><a href="#payments" data-toggle="tab">Pagamentos</a></li>
-        <li><a href="#exemptions" data-toggle="tab">Isencoes</a></li>
-    </ul>
-    <div id="my-tab-content" class="tab-content">
-        <div class="tab-pane active" id="pending">
 <!--             <h3>Docs. Pendentes</h3> -->
 <p></p>
 <c:choose>
@@ -194,108 +184,6 @@ ${portal.toolkit()}
 		
 	</c:otherwise>
 </c:choose>
-        </div>
-        <div class="tab-pane" id="details">
-<!--             <h3>Extracto</h3> -->
-<p></p>
-<c:choose>
-	<c:when test="${not empty allDocumentsDataSet}">
-		<table id="allDocumentsTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<%--!!!  Field names here --%>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.date"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.documentNumber"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.documentDescription"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.balance"/></th>
-<%-- Operations Column --%>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-	</c:when>
-	<c:otherwise>
-				<div class="alert alert-warning" role="alert">
-					
-					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-					
-				</div>	
-		
-	</c:otherwise>
-</c:choose>
-        </div>
-        <div class="tab-pane" id="payments">
-<!--             <h3>Pagamentos</h3> -->
-<p></p>
-<c:choose>
-	<c:when test="${not empty paymentsDataSet}">
-		<table id="paymentsTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<%--!!!  Field names here --%>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount"/></th>
-<%-- Operations Column --%>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-	</c:when>
-	<c:otherwise>
-				<div class="alert alert-warning" role="alert">
-					
-					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-					
-				</div>	
-		
-	</c:otherwise>
-</c:choose>
-        </div>
-        <div class="tab-pane" id="exemptions">
-<!--             <h3>Isencoes</h3> -->
-<p></p>
-<c:choose>
-	<c:when test="${not empty exemptionsDataSet}">
-		<table id="exemptionsTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<%--!!!  Field names here --%>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount"/></th>
-<%-- Operations Column --%>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-	</c:when>
-	<c:otherwise>
-				<div class="alert alert-warning" role="alert">
-					
-					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-					
-				</div>	
-		
-	</c:otherwise>
-</c:choose>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -317,58 +205,6 @@ var pendingDocumentsDataSet = [
 // 	                 			},
 	                             </c:forEach>
 	                     ];
-
-	var allDocumentsDataSet = [
-		                 			<c:forEach items="${allDocumentsDataSet}" var="searchResult">
-		                 				<%-- Field access / formatting  here CHANGE_ME --%>
-		                 				{
-		                 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-		                 "date" : "<c:out value='${searchResult.date}'/>",
-		                 "documentNumber" : "<c:out value='${searchResult.document.date}'/>",
-		                 "description" : "<c:out value='${searchResult.description}'/>",
-		                 "debitAmount" : "<c:out value='${searchResult.debitAmount}'/>",
-		                 "creditAmount" : "<c:out value='${searchResult.creditAmount}'/>",
-		                 "balance" : "<c:out value='${searchResult.balance}'/>",
-// 		                 "actions" :
-// 		                 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-// 		                                 "" 
-// 		                 			},
-		                             </c:forEach>
-		                     ];
-	var paymentsDataSet = [
-		                 			<c:forEach items="${paymentsDataSet}" var="searchResult">
-		                 				<%-- Field access / formatting  here CHANGE_ME --%>
-		                 				{
-		                 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-		                 "date" : "<c:out value='${searchResult.code}'/>",
-		                 "document" : "<c:out value='${searchResult.name}'/>",
-		                 "description" : "<c:out value='${searchResult.name}'/>",
-		                 "settlementAmount" : "<c:out value='${searchResult.fiscalNumber}'/>",
-		                 "actions" :
-		                 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-		                                 "" 
-		                 			},
-		                             </c:forEach>
-		                     ];
-
-	var exemptionsDataSet = [
-		                 			<c:forEach items="${exemptionsDataSet}" var="searchResult">
-		                 				<%-- Field access / formatting  here CHANGE_ME --%>
-		                 				{
-		                 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-		                 "description" : "<c:out value='${searchResult.code}'/>",
-		                 "exemption" : "<c:out value='${searchResult.name}'/>",
-		                 "reason" : "<c:out value='${searchResult.fiscalNumber}'/>",
-		                 "totalAmount" : "<c:out value='${searchResult.identificationNumber}'/>",
-		                 "exemptionAmount" : "<c:out value='${searchResult.identificationNumber}'/>",
-		                 "finalAmount" : "<c:out value='${searchResult.identificationNumber}'/>",
-		                 "actions" :
-		                 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-		                                 "" 
-		                 			},
-		                             </c:forEach>
-		                     ];
-
 
 
 $(document).ready(function() {
@@ -401,88 +237,6 @@ $(document).ready(function() {
 		});
 	table.columns.adjust().draw();
 
-	 var tableAllDocuments = $('#allDocumentsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'code' },
-			{ data: 'name' },
-			{ data: 'fiscalnumber' },
-			{ data: 'identificationnumber' },
-			{ data: 'actions' }
-			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-		"data" : allDocumentsDataSet,
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-     "tableTools": {
-         "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
-     }
-		});
-		
-	 tableAllDocuments.columns.adjust().draw();
-
-	 var tablePayments = $('#paymentsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'code' },
-			{ data: 'name' },
-			{ data: 'fiscalnumber' },
-			{ data: 'identificationnumber' },
-			{ data: 'actions' }
-			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-		"data" : paymentsDataSet,
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-     "tableTools": {
-         "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
-     }
-		});
-		
-	 tablePayments.columns.adjust().draw();
-
-	 var tableExemptions = $('#exemptionsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'code' },
-			{ data: 'name' },
-			{ data: 'fiscalnumber' },
-			{ data: 'identificationnumber' },
-			{ data: 'actions' }
-			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-		"data" : exemptionsDataSet,
-		//Documentation: https://datatables.net/reference/option/dom
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-     "tableTools": {
-         "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
-     }
-		});
-		
-	 table.columns.adjust().draw();
-	 
-	
-	 //Set the Selection option on tables
-	 $('#pendingDocumentsTable tbody').on( 'click', 'tr', function () {
-		        $(this).toggleClass('selected');
-		    } );
-		  
 
 
 	});

@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -166,6 +168,10 @@ public class Currency extends Currency_Base {
     @Atomic
     public static Currency create(final String code, final LocalizedString name, final String isoCode, final String symbol) {
         return new Currency(code, name, isoCode, symbol);
+    }
+
+    public String getValueFor(BigDecimal totalInDebt) {
+        return totalInDebt.setScale(2, RoundingMode.HALF_EVEN) + " " + this.getSymbol();
     }
 
 }

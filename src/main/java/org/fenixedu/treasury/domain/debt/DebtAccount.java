@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.debt;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -78,7 +79,7 @@ public class DebtAccount extends DebtAccount_Base {
             }
         }
 
-        return amount;
+        return amount.setScale(2, RoundingMode.HALF_EVEN);
     }
 
 //	public boolean isDeletable() {
@@ -143,4 +144,7 @@ public class DebtAccount extends DebtAccount_Base {
         }
     }
 
+    public String getUITotalInDebt() {
+        return this.getFinantialInstitution().getCurrency().getValueFor(this.getTotalInDebt());
+    }
 }
