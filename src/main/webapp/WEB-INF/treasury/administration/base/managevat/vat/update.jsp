@@ -115,16 +115,17 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.Vat.beginDate"/></div> 
 
 <div class="col-sm-4">
-	<input id="vat_beginDate" class="form-control" type="text" name="begindate"  bennu-datetime 
-	value = '<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate }'/>' required/>
+	<input id="vat_beginDate" class="form-control" type="text" name="begindate"  bennu-date
+	value = '<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate.toString("yyyy-MM-dd") }'/>' required/>
 </div>
+
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.Vat.endDate"/></div> 
 
 <div class="col-sm-4">
-	<input id="vat_endDate" class="form-control" type="text" name="enddate"  bennu-datetime 
-	value = '<c:out value='${not empty param.enddate ? param.enddate : vat.endDate }'/>' required/>
+	<input id="vat_endDate" class="form-control" type="text" name="enddate"  bennu-date
+	value = '<c:out value='${not empty param.enddate ? param.enddate : vat.endDate.toString("yyyy-MM-dd") }'/>' required/>
 </div>
 </div>		
   </div>

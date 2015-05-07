@@ -175,9 +175,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
         model.addAttribute("finantialInstitution_country_options",
                 GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_district_options", (country != null) ? country.getPlaces() : new HashSet<>());
-        model.addAttribute("finantialInstitution_municipality_options",
-                (district != null) ? district.getPlaces() : new HashSet<>());
+        model.addAttribute("finantialInstitution_district_options", country != null ? country.getPlaces() : new HashSet<>());
+        model.addAttribute("finantialInstitution_municipality_options", district != null ? district.getPlaces() : new HashSet<>());
         return "treasury/administration/managefinantialinstitution/finantialinstitution/create";
     }
 
@@ -251,9 +250,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
         model.addAttribute("finantialInstitution_country_options",
                 GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_district_options", (country != null) ? country.getPlaces() : new HashSet<>());
-        model.addAttribute("finantialInstitution_municipality_options",
-                (district != null) ? district.getPlaces() : new HashSet<>());
+        model.addAttribute("finantialInstitution_district_options", country != null ? country.getPlaces() : new HashSet<>());
+        model.addAttribute("finantialInstitution_municipality_options", district != null ? district.getPlaces() : new HashSet<>());
         return "treasury/administration/managefinantialinstitution/finantialinstitution/update";
     }
 

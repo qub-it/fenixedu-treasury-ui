@@ -27,13 +27,9 @@
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.Currency;
@@ -43,8 +39,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.administration.base.managefiscalcountryregion.FiscalCountryRegionController;
-import org.springframework.http.MediaType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,12 +47,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.sun.xml.ws.encoding.ContentType;
-
 import pt.ist.fenixframework.Atomic;
 import pt.ist.standards.geographic.Country;
 import pt.ist.standards.geographic.District;
-import pt.ist.standards.geographic.GeographicInfoLoader;
 import pt.ist.standards.geographic.Municipality;
 
 //@Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution") <-- Use for duplicate controller name disambiguation
@@ -152,12 +143,12 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             Model model) {
 
         // Do validation logic ?!?!
-        this.setFinantialInstitutionBean(bean, model);
+        setFinantialInstitutionBean(bean, model);
         return getBeanJson(bean);
     }
 
     public String _create(FinantialInstitutionBean bean, Model model) {
-        this.setFinantialInstitutionBean(bean, model);
+        setFinantialInstitutionBean(bean, model);
         return "treasury/administration/managefinantialinstitution/finantialinstitution2/create";
     }
 
@@ -178,8 +169,8 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
                             bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(), bean.getCountry(),
                             bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode(), bean.getCurrency());
             //Add the bean to be used in the View
-            this.setFinantialInstitution(finantialInstitution, model);
-            this.setFinantialInstitutionBean(bean, model);
+            setFinantialInstitution(finantialInstitution, model);
+            setFinantialInstitutionBean(bean, model);
             addInfoMessage("Sucess creating FinantialInstitution ...", model);
             return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
                     + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
@@ -212,13 +203,13 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
     @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody String updatepostback(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(
             value = "bean", required = false) FinantialInstitutionBean bean, Model model) {
-        this.setFinantialInstitutionBean(bean, model);
+        setFinantialInstitutionBean(bean, model);
         return getBeanJson(bean);
     }
 
     public String _update(FinantialInstitutionBean bean, FinantialInstitution finantialInstitution, Model model) {
-        this.setFinantialInstitution(finantialInstitution, model);
-        this.setFinantialInstitutionBean(bean, model);
+        setFinantialInstitution(finantialInstitution, model);
+        setFinantialInstitutionBean(bean, model);
         return "treasury/administration/managefinantialinstitution/finantialinstitution2/update";
     }
 

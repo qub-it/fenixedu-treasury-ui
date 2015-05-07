@@ -34,7 +34,7 @@ ${portal.toolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read"  ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageexemption/treasuryexemption/"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;</div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -74,7 +74,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.TreasuryExemption.code"/></div> 
 
 <div class="col-sm-10">
-	<input id="treasuryExemption_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : treasuryExemption.code }'/>' />
+	<input id="treasuryExemption_code" class="form-control" type="text" name="code"  value='<c:out value='${not empty param.code ? param.code : treasuryExemption.code }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">

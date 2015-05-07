@@ -104,13 +104,13 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.Vat.beginDate"/></th> 
 	<td>
-		<c:out value='${vat.beginDate}'/>
+		<c:out value='${vat.beginDate.toString("yyyy-MM-dd")}'/>
 	</td> 
 </tr>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.Vat.endDate"/></th> 
 	<td>
-		<c:out value='${vat.endDate}'/>
+		<c:out value='${vat.endDate.toString("yyyy-MM-dd")}'/>
 	</td> 
 </tr>
 </tbody>
