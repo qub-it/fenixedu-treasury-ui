@@ -137,6 +137,7 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+<th><spring:message code="label.Series.finantialInstitution"/></th>					
 <th><spring:message code="label.Series.code"/></th>
 <th><spring:message code="label.Series.name"/></th>
 <th><spring:message code="label.Series.externSeries"/></th>
@@ -167,6 +168,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",				
 "code" : "<c:out value='${searchResult.code}'/>",
 "name" : "<c:out value='${searchResult.name.content}'/>",
 "externseries" : "<c:if test="${searchResult.externSeries}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.externSeries}"><spring:message code="label.false" /></c:if>",
@@ -187,6 +189,7 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
+			{ data: 'finantialinstitution' },		            
 			{ data: 'code' },
 			{ data: 'name' },
 			{ data: 'externseries' },
@@ -198,7 +201,7 @@ ${portal.toolkit()}
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 5 } 
+		               { "width": "54px", "targets": 6 } 
 		             ],
 		"data" : searchseriesDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
