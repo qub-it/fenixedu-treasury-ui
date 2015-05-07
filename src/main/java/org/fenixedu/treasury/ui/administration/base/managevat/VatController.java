@@ -100,7 +100,7 @@ public class VatController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        return new ArrayList<Vat>(Vat.findAll().collect(Collectors.toSet())); //CHANGE_ME
+        return Vat.findAll().collect(Collectors.toSet()); //CHANGE_ME
     }
 
     private List<Vat> filterSearchVat(java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate,
