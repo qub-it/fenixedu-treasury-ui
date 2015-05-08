@@ -49,10 +49,10 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         setBennu(Bennu.getInstance());
     }
 
-    protected FinantialInstitution(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
-            final String companyId, final String name, final String companyName, final String address, final Country country,
-            final District district, final Municipality municipality, final String locality, final String zipCode,
-            final Currency currency) {
+    protected FinantialInstitution(final FiscalCountryRegion fiscalCountryRegion, final Currency currency, final String code,
+            final String fiscalNumber, final String companyId, final String name, final String companyName, final String address,
+            final Country country, final District district, final Municipality municipality, final String locality,
+            final String zipCode) {
         this();
         setFiscalCountryRegion(fiscalCountryRegion);
         setCode(code);
@@ -98,9 +98,12 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     @Atomic
-    public void edit(String code, final String fiscalNumber, final String companyId, final String name, final String companyName,
-            final String address, final Country country, final District district, final Municipality municipality,
-            final String locality, final String zipCode) {
+    public void edit(final FiscalCountryRegion fiscalCountryRegion, final Currency currency, final String code,
+            final String fiscalNumber, final String companyId, final String name, final String companyName, final String address,
+            final Country country, final District district, final Municipality municipality, final String locality,
+            final String zipCode) {
+        setFiscalCountryRegion(fiscalCountryRegion);
+        setCurrency(currency);
         setCode(code);
         setFiscalNumber(fiscalNumber);
         setCompanyId(companyId);
@@ -130,13 +133,13 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         setBennu(null);
         deleteDomainObject();
     }
-    
+
     @Atomic
     public void markSeriesAsDefault(final Series series) {
         for (final Series s : getSeriesSet()) {
             s.setDefaultSeries(false);
         }
-        
+
         series.setDefaultSeries(true);
     }
 
@@ -159,12 +162,12 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     @Atomic
-    public static FinantialInstitution create(FiscalCountryRegion fiscalCountryRegion, String code, final String fiscalNumber,
-            final String companyId, final String name, final String companyName, final String address, final Country country,
-            final District district, final Municipality municipality, final String locality, final String zipCode,
-            final Currency currency) {
-        return new FinantialInstitution(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address, country,
-                district, municipality, locality, zipCode, currency);
+    public static FinantialInstitution create(final FiscalCountryRegion fiscalCountryRegion, final Currency currency,
+            final String code, final String fiscalNumber, final String companyId, final String name, final String companyName,
+            final String address, final Country country, final District district, final Municipality municipality,
+            final String locality, final String zipCode) {
+        return new FinantialInstitution(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName, address,
+                country, district, municipality, locality, zipCode);
     }
 
     public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {

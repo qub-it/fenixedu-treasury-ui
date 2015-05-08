@@ -116,6 +116,16 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 					</select>
 				</div>
 			</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialInstitution.currency" />
+                </div>
+                <div class="col-sm-4">
+                    <select id="finantialInstitution_currency"
+                        class="js-example-basic-single" name="currency">
+                    </select>
+                </div>
+            </div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.code" />
@@ -261,6 +271,14 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
             },
             </c:forEach>
         ];
+        currency_options = [
+           <c:forEach items="${finantialInstitution_currency_options}" var="currency">
+           {
+               "id"   : "<c:out value='${currency.externalId}'/>",
+               "text" : "<c:out value='${currency.isoCode}'/>",
+           },
+           </c:forEach>
+        ];        
         country_options = [
            <c:forEach items="${finantialInstitution_country_options}" var="country">
            {
@@ -291,6 +309,11 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 				data : fiscalCountryRegion_options.sort( sortFunction ),
 			}	  
 		);		
+        $("#finantialInstitution_currency").select2(
+            {
+                data : currency_options.sort( sortFunction ),
+            }     
+        );      
         $("#finantialInstitution_country").select2(
 			{
 				data : country_options.sort( sortFunction ),
@@ -307,6 +330,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 			}	  
 		);
 		$("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${param.fiscalcountryregion}');
+        $("#finantialInstitution_currency").select2().select2('val', '${param.currency}');
 		$("#finantialInstitution_country").select2().select2('val', '${param.country}');
 		$("#finantialInstitution_district").select2().select2('val', '${param.district}');
 		$("#finantialInstitution_municipality").select2().select2('val', '${param.municipality}');

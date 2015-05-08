@@ -115,6 +115,16 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
                     </select>
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialInstitution.currency" />
+                </div>
+                <div class="col-sm-4">
+                    <select id="finantialInstitution_currency"
+                        class="js-example-basic-single" name="currency">
+                    </select>
+                </div>
+            </div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.code" />
@@ -262,6 +272,14 @@ $(document).ready(function() {
         },
         </c:forEach>
     ];
+    currency_options = [
+       <c:forEach items="${finantialInstitution_currency_options}" var="currency">
+       {
+           "id"   : "<c:out value='${currency.externalId}'/>",
+           "text" : "<c:out value='${currency.isoCode}'/>",
+       },
+       </c:forEach>
+    ];        
     country_options = [
         <c:forEach items="${finantialInstitution_country_options}" var="country">
         {
@@ -307,13 +325,19 @@ $(document).ready(function() {
             data : fiscalCountryRegion_options.sort( sortFunction ),
         }     
     );
+    $("#finantialInstitution_currency").select2(
+        {
+            data : currency_options.sort( sortFunction ),
+        }     
+    );  
     <c:set var="savedCountry"><pf:placeCode place='${finantialInstitution.country}'/></c:set>
     <c:set var="savedDistrict"><pf:placeCode place='${finantialInstitution.district}'/></c:set>
     <c:set var="savedMunicipality"><pf:placeCode place='${finantialInstitution.municipality}'/></c:set>
 	$("#finantialInstitution_country").select2().select2('val', '${not empty param.country ? param.country : savedCountry}');
  	$("#finantialInstitution_district").select2().select2('val', '${not empty param.country ? param.country : savedDistrict}');
  	$("#finantialInstitution_municipality").select2().select2('val', '${not empty param.country ? param.country : savedMunicipality}');
-    $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${finantialInstitution.fiscalCountryRegion.externalId}');
+    $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${not empty param.fiscalCountryRegion ? param.fiscalCountryRegion : finantialInstitution.fiscalCountryRegion.externalId}');
+    $("#finantialInstitution_currency").select2().select2('val', '${not empty param.currency ? param.currency : finantialInstitution.currency.externalId}');
     if (district_options.length == 0) {
         $("#finantialInstitution_district_div").hide();
     } 

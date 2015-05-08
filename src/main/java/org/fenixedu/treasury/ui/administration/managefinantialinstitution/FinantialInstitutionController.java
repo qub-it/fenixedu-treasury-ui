@@ -35,10 +35,12 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -107,10 +109,6 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         return new ArrayList<FinantialInstitution>(Bennu.getInstance().getFinantialInstitutionsSet());
     }
 
-    private List<FiscalCountryRegion> getSearchUniverseFiscalCountryRegionsDataSet() {
-        return new ArrayList<FiscalCountryRegion>(Bennu.getInstance().getFiscalCountryRegionsSet());
-    }
-
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read" + "/"
@@ -172,7 +170,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     required = false) Municipality municipality,
             @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
                     required = false) String zipCode, Model model) {
-        model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
+        model.addAttribute("finantialInstitution_fiscalCountryRegion_options",
+                FiscalCountryRegion.findAll().collect(Collectors.toList()));
+        model.addAttribute("finantialInstitution_currency_options", Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialInstitution_country_options",
                 GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
         model.addAttribute("finantialInstitution_district_options", country != null ? country.getPlaces() : new HashSet<>());
@@ -182,6 +182,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@RequestParam(value = "fiscalcountryregion", required = false) FiscalCountryRegion fiscalCountryRegion,
+            @RequestParam(value = "currency", required = true) Currency currency,
             @RequestParam(value = "code", required = false) String code,
             @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber, @RequestParam(value = "companyid",
                     required = false) String companyId, @RequestParam(value = "name", required = false) String name,
@@ -193,8 +194,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     required = false) String zipCode, Model model) {
         try {
             FinantialInstitution finantialInstitution =
-                    createFinantialInstitution(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address,
-                            country, district, municipality, locality, zipCode);
+                    createFinantialInstitution(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName,
+                            address, country, district, municipality, locality, zipCode);
             //Add the bean to be used in the View
             model.addAttribute("finantialInstitution", finantialInstitution);
             addInfoMessage("Sucess creating FinantialInstitution ...", model);
@@ -208,19 +209,18 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     @Atomic
-    public FinantialInstitution createFinantialInstitution(FiscalCountryRegion fiscalCountryRegion, String code,
-            String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
+    public FinantialInstitution createFinantialInstitution(FiscalCountryRegion fiscalCountryRegion, Currency currency,
+            String code, String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
             District district, Municipality municipality, String locality, String zipCode) {
         FinantialInstitution finantialInstitution =
-                FinantialInstitution.create(fiscalCountryRegion, code, fiscalNumber, companyId, name, companyName, address,
-                        country, district, municipality, locality, zipCode, null);
+                FinantialInstitution.create(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName,
+                        address, country, district, municipality, locality, zipCode);
         return finantialInstitution;
     }
 
 //				
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
-        //TODOJN passar para o _update o finantial institution
         return _update(finantialInstitution, finantialInstitution.getCode(), finantialInstitution.getFiscalNumber(),
                 finantialInstitution.getCompanyId(), finantialInstitution.getName(), finantialInstitution.getCompanyName(),
                 finantialInstitution.getAddress(), finantialInstitution.getCountry(), finantialInstitution.getDistrict(),
@@ -247,7 +247,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             String name, String companyName, String address, Country country, District district, Municipality municipality,
             String locality, String zipCode, Model model) {
         setFinantialInstitution(finantialInstitution, model);
-        model.addAttribute("finantialInstitution_fiscalCountryRegion_options", getSearchUniverseFiscalCountryRegionsDataSet());
+        model.addAttribute("finantialInstitution_fiscalCountryRegion_options",
+                FiscalCountryRegion.findAll().collect(Collectors.toList()));
+        model.addAttribute("finantialInstitution_currency_options", Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialInstitution_country_options",
                 GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
         model.addAttribute("finantialInstitution_district_options", country != null ? country.getPlaces() : new HashSet<>());
@@ -257,10 +259,11 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(value = "code",
-            required = false) String code, @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber,
-            @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
+    public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(
+            value = "fiscalcountryregion", required = false) FiscalCountryRegion fiscalCountryRegion, @RequestParam(
+            value = "currency", required = false) Currency currency, @RequestParam(value = "code", required = false) String code,
+            @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber, @RequestParam(value = "companyid",
+                    required = false) String companyId, @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
                     required = false) String address, @RequestParam(value = "country", required = false) Country country,
             @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
@@ -271,8 +274,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         setFinantialInstitution(finantialInstitution, model);
 
         try {
-            updateFinantialInstitution(code, fiscalNumber, companyId, name, companyName, address, country, district,
-                    municipality, locality, zipCode, model);
+            updateFinantialInstitution(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName, address,
+                    country, district, municipality, locality, zipCode, model);
 
             addInfoMessage("Sucess updating FinantialInstitution ...", model);
             return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
@@ -286,12 +289,12 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateFinantialInstitution(String code, String fiscalNumber, String companyId, String name, String companyName,
-            String address, Country country, District district, Municipality municipality, String locality, String zipCode,
-            Model m) {
+    public void updateFinantialInstitution(FiscalCountryRegion fiscalCountryRegion, Currency currency, String code,
+            String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
+            District district, Municipality municipality, String locality, String zipCode, Model m) {
 
-        getFinantialInstitution(m).edit(code, fiscalNumber, companyId, name, companyName, address, country, district,
-                municipality, locality, zipCode);
+        getFinantialInstitution(m).edit(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName, address,
+                country, district, municipality, locality, zipCode);
     }
 
 }
