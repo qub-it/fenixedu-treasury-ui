@@ -31,6 +31,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -132,8 +134,12 @@ public class DebtAccount extends DebtAccount_Base {
         return new DebtAccount(finantialInstitution, customer);
     }
 
-    public Stream<? extends InvoiceEntry> getPendingInvoiceEntries() {
+    public Stream<? extends InvoiceEntry> pendingInvoiceEntries() {
         return this.getInvoiceEntrySet().stream().filter(x -> x.isPending());
+    }
+
+    public Set<? extends InvoiceEntry> getPendingInvoiceEntriesSet() {
+        return pendingInvoiceEntries().collect(Collectors.toSet());
     }
 
     public void closeDebtAccount() {
@@ -144,7 +150,7 @@ public class DebtAccount extends DebtAccount_Base {
         }
     }
 
-    public String getUITotalInDebt() {
+    public String obtainUITotalInDebt() {
         return this.getFinantialInstitution().getCurrency().getValueFor(this.getTotalInDebt());
     }
 }

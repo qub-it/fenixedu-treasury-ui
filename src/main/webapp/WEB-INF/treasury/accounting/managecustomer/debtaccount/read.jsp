@@ -57,8 +57,8 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.externalId}"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"  ><spring:message code="label.event.accounting.manageCustomer.createPayment" /></a>	|&nbsp;&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebtentry"  ><spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a>	|&nbsp;&nbsp;
+|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"  ><spring:message code="label.event.accounting.manageCustomer.createPayment" /></a>	&nbsp;|&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebtentry"  ><spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a>	&nbsp;|&nbsp;
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"  ><spring:message code="label.event.accounting.manageCustomer.createExemption" /></a>	
 </div>
 	<c:if test="${not empty infoMessages}">
@@ -118,7 +118,7 @@ ${portal.angularToolkit()}
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance"/></th> 
 	<td>
-	<c:out value="${debtAccount.getUITotalInDebt()}"/>
+	<c:out value="${debtAccount.obtainUITotalInDebt()}"/>
 	</td> 
 </tr>
 </tbody>

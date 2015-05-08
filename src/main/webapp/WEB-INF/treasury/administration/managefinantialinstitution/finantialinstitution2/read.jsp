@@ -1,8 +1,10 @@
 
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitution2Controller"%>
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%>
+<%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%> 
 
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -79,15 +81,19 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/"><spring:message
+        href="${pageContext.request.contextPath}<%= FinantialInstitution2Controller.SEARCH_URL%>"><spring:message
             code="label.event.back" /></a> |&nbsp;&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> |&nbsp;&nbsp; <span
         class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/update/${finantialInstitution.externalId}"><spring:message
-            code="label.event.update" /></a> |&nbsp;&nbsp;
+        href="${pageContext.request.contextPath}<%= FinantialInstitution2Controller.UPDATE_URL%>${finantialInstitution.externalId}"><spring:message
+            code="label.event.update" /></a> |&nbsp;&nbsp;<span
+        class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}<%= CustomerController.SEARCH_FULL_URI%>?finantialInstitution=${finantialInstitution.externalId}"><spring:message
+            code="label.event.showCustomers" /></a> ;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

@@ -70,15 +70,18 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 // or
 // @BennuSpringController(value=TreasuryController.class)
-@RequestMapping("/treasury/accounting/managecustomer/customer")
+@RequestMapping(CustomerController.CONTROLLER_URI)
 public class CustomerController extends TreasuryBaseController {
+    public static final String CONTROLLER_URI = "/treasury/accounting/managecustomer/customer";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_FULL_URI = CONTROLLER_URI + SEARCH_URI;
 
     //
 
     @RequestMapping
     public String home(Model model) {
         // this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/accounting/managecustomer/customer/";
+        return "forward:" + CONTROLLER_URI + SEARCH_URI;
     }
 
     private Customer getCustomer(Model model) {
@@ -98,7 +101,7 @@ public class CustomerController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "finantialInstitution", required = false) FinantialInstitution institution,
             Model model) {
         List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution);
@@ -132,38 +135,30 @@ public class CustomerController extends TreasuryBaseController {
         }
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    public static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
+
+    @RequestMapping(value = SEARCH_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") Customer customer, Model model,
             RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use
         // below
-        return redirect("/treasury/accounting/managecustomer/customer/read" + "/" + customer.getExternalId(), model,
-                redirectAttributes);
+        return redirect(CONTROLLER_URI + READ_URI + customer.getExternalId(), model, redirectAttributes);
     }
 
+    public static final String READ_URI = "/read/";
+
     //
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Customer customer, Model model) {
         setCustomer(customer, model);
 
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
-        List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
-        List<SettlementEntry> paymentEntries = new ArrayList<SettlementEntry>();
-        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         for (DebtAccount debtAccount : customer.getDebtAccountsSet()) {
-            pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntries().collect(Collectors.<InvoiceEntry> toList()));
-            allInvoiceEntries.addAll(debtAccount.getInvoiceEntrySet());
-            SettlementNote.findByDebtAccount(debtAccount).map(
-                    x -> paymentEntries.addAll(x.getSettlemetEntriesSet().collect(Collectors.toList())));
-
-            exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
+            pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
         }
         model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
-        model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
-        model.addAttribute("paymentsDataSet", paymentEntries);
-        model.addAttribute("exemptionDataSet", exemptionEntries);
 
         return "treasury/accounting/managecustomer/customer/read";
     }
@@ -173,7 +168,9 @@ public class CustomerController extends TreasuryBaseController {
     //
     // This is the EventcreatePayment Method for Screen read
     //
-    @RequestMapping(value = "/read/{oid}/createpayment")
+    public static final String READ_TO_CREATEPAYEMENT_EVENT_URI = "/read/{oid}/createpayment";
+
+    @RequestMapping(value = READ_TO_CREATEPAYEMENT_EVENT_URI)
     public String processReadToCreatePayment(@PathVariable("oid") Customer customer, Model model,
             RedirectAttributes redirectAttributes) {
         setCustomer(customer, model);

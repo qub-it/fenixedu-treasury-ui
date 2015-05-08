@@ -51,13 +51,19 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 
 import pt.ist.fenixframework.Atomic;
 
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.domain.TreasuryExemption;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.dto.DebtAccountBean;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
@@ -112,7 +118,26 @@ public class DebtAccountController extends TreasuryBaseController {
 //				
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") DebtAccount debtAccount, Model model) {
+
         setDebtAccount(debtAccount, model);
+
+        List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
+        List<SettlementEntry> paymentEntries = new ArrayList<SettlementEntry>();
+        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
+        List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
+        allInvoiceEntries.addAll(debtAccount.getInvoiceEntrySet());
+        SettlementNote.findByDebtAccount(debtAccount).map(
+                x -> paymentEntries.addAll(x.getSettlemetEntriesSet().collect(Collectors.toList())));
+
+        exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
+
+        pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
+
+        model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
+        model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
+        model.addAttribute("paymentsDataSet", paymentEntries);
+        model.addAttribute("exemptionDataSet", exemptionEntries);
+
         return "treasury/accounting/managecustomer/debtaccount/read";
     }
 

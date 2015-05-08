@@ -57,15 +57,16 @@ import pt.ist.standards.geographic.Municipality;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution/finantialinstitution2")
+@RequestMapping(FinantialInstitution2Controller.CONTROLLER_URL)
 public class FinantialInstitution2Controller extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/administration/managefinantialinstitution/finantialinstitution2";
 
 //
 
     @RequestMapping
     public String home(Model model) {
         //this is the default behavior, for handling in a Spring Functionality
-        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution2/";
+        return "forward:" + SEARCH_URL;
     }
 
     private FinantialInstitution getFinantialInstitution(Model m) {
@@ -81,7 +82,10 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
         finantialInstitution.delete();
     }
 
-    @RequestMapping(value = "/")
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+
+    @RequestMapping(value = SEARCH_URI)
     public String search(Model model) {
         List<FinantialInstitution> searchfinantialinstitutionResultsDataSet =
                 getSearchUniverseSearchFinantialInstitutionDataSet();
@@ -99,20 +103,28 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
         return new ArrayList<FiscalCountryRegion>(Bennu.getInstance().getFiscalCountryRegionsSet());
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    private static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
+    public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + SEARCH_TO_VIEW_ACTION_URI;
+
+    @RequestMapping(value = SEARCH_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read" + "/"
-                + finantialInstitution.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}")
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
         return "treasury/administration/managefinantialinstitution/finantialinstitution2/read";
     }
 
-    @RequestMapping(value = "/delete/{oid}")
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
+
+    @RequestMapping(value = DELETE_URI + "{oid}")
     public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -121,23 +133,25 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             deleteFinantialInstitution(finantialInstitution);
 
             addInfoMessage("Sucess deleting FinantialInstitution ...", model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution2/";
+            return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (TreasuryDomainException ex) {
             addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getMessage(), model);
         }
 
         //The default mapping is the same Read View
-        return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
-                + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         FinantialInstitutionBean bean = new FinantialInstitutionBean();
         return _create(bean, model);
     }
 
-    @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    private static final String CREATEPOSTBACK_URI = "/createpostback";
+    public static final String CREATEPOSTBACK_URL = CONTROLLER_URL + DELETE_URI;
+
+    @RequestMapping(value = CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) FinantialInstitutionBean bean,
             Model model) {
 
@@ -159,7 +173,10 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
         model.addAttribute("finantialInstitutionBean", bean);
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "bean", required = false) FinantialInstitutionBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
@@ -171,8 +188,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             setFinantialInstitution(finantialInstitution, model);
             setFinantialInstitutionBean(bean, model);
             addInfoMessage("Sucess creating FinantialInstitution ...", model);
-            return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
-                    + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
+            return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
@@ -190,8 +206,11 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
         return finantialInstitution;
     }
 
-//				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+//
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
 
@@ -199,7 +218,11 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
         return _update(bean, finantialInstitution, model);
     }
 
-    @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    private static final String UPDATEPOSTBACK_URI = "/updatepostback/";
+    public static final String UPDATEPOSTBACK_URL = CONTROLLER_URL + UPDATE_URI;
+
+    @RequestMapping(value = UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8")
     public @ResponseBody String updatepostback(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(
             value = "bean", required = false) FinantialInstitutionBean bean, Model model) {
         setFinantialInstitutionBean(bean, model);
@@ -213,7 +236,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(value = "bean",
             required = false) FinantialInstitutionBean bean, Model model, RedirectAttributes redirectAttributes) {
 
@@ -226,8 +249,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
                     bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode(), bean.getCurrency(), model);
 
             addInfoMessage("Sucess updating FinantialInstitution ...", model);
-            return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution2/read/"
-                    + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
+            return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
