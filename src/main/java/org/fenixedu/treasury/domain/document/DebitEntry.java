@@ -27,7 +27,9 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Product;
@@ -37,10 +39,15 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.LocalDate;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
 public class DebitEntry extends DebitEntry_Base {
 
-    protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType, final BigDecimal amount, final LocalDate dueDate) {
-        init(debtAccount, treasuryEvent, vatType, amount, dueDate);
+    protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
+            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
+        init(debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap);
     }
 
     @Override
@@ -49,13 +56,16 @@ public class DebitEntry extends DebitEntry_Base {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType, final BigDecimal amount, final LocalDate dueDate) {
+    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
+            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
         super.init(null, debtAccount, treasuryEvent.getProduct(), FinantialEntryType.DEBIT_ENTRY, vatType, amount);
 
         setDebtAccount(debtAccount);
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
 
+        setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
+        
         checkRules();
     }
 
@@ -70,12 +80,21 @@ public class DebitEntry extends DebitEntry_Base {
         if (getDebtAccount() == null) {
             throw new TreasuryDomainException("error.DebitEntry.debtAccount.required");
         }
-        
-        if(getDueDate() == null) {
+
+        if (getDueDate() == null) {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.required");
         }
     }
 
+    protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
+        final GsonBuilder builder = new GsonBuilder();
+        
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>(){}.getType();
+        
+        return gson.toJson(propertiesMap, stringStringMapType);
+    }
+    
     @Override
     public boolean isFinantialDocumentRequired() {
         return false;
@@ -89,8 +108,7 @@ public class DebitEntry extends DebitEntry_Base {
         final BigDecimal openAmount =
                 this.getAmount().subtract(
                         getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).get());
-        
-        
+
         return isPositive(openAmount) ? openAmount : BigDecimal.ZERO;
     }
 
@@ -108,8 +126,9 @@ public class DebitEntry extends DebitEntry_Base {
         return findAll().filter(d -> d.getFinantialDocument() == debitNote);
     }
 
-    public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType, final BigDecimal amount, final LocalDate dueDate) {
-        return new DebitEntry(debtAccount, treasuryEvent, vatType, amount, dueDate);
+    public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
+            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
+        return new DebitEntry(debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap);
     }
 
 }

@@ -143,7 +143,15 @@ public abstract class Tariff extends Tariff_Base {
         }
 
         setBennu(null);
-        deleteDomainObject();
+        setVatType(null);
+        setProduct(null);
+        setFinantialEntity(null);
+        
+        if(getInterestRate() != null) {
+            getInterestRate().delete();
+        }
+
+        super.deleteDomainObject();
     }
 
     // @formatter: off

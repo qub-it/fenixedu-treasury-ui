@@ -88,6 +88,7 @@ public class InterestRate extends InterestRate_Base {
         }
 
         setBennu(null);
+        setTariff(null);
 
         deleteDomainObject();
     }

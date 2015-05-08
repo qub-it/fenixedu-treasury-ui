@@ -181,6 +181,7 @@ class document.DocumentNumberSeries {
 
 class event.TreasuryEvent {
 	LocalizedString description;
+	String propertiesJsonMap;
 }
 
 class document.FinantialDocument {
@@ -217,6 +218,7 @@ class document.FinantialDocumentEntry {
 		class document.DebitEntry extends document.InvoiceEntry {
 			boolean eventAnnuled;
 			LocalDate dueDate;
+			String propertiesJsonMap;
 		}
 		
 		class document.CreditEntry extends document.InvoiceEntry {
@@ -543,6 +545,7 @@ relation TreasuryExemptionDebitEntry
 	}
 }
 */
+
 relation PaymentMethodBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 		multiplicity 1..1;

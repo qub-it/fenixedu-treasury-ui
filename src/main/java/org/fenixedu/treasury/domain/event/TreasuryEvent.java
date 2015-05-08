@@ -27,13 +27,20 @@
  */
 package org.fenixedu.treasury.domain.event;
 
+import java.lang.reflect.Type;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
@@ -44,12 +51,34 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
     protected void init(final Product product) {
         this.setProduct(product);
+        
+        setDescription(product.getName());
     }
 
     protected  void checkRules() {
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.TreasuryEvent.product.required");
         }
+    }
+    
+    protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
+        final GsonBuilder builder = new GsonBuilder();
+        
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>(){}.getType();
+        
+        return gson.toJson(propertiesMap, stringStringMapType);
+    }
+    
+    public Map<String, String> getPropertiesMap() {
+        final GsonBuilder builder = new GsonBuilder();
+        
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>(){}.getType();
+        
+        final Map<String, String> propertiesMap = gson.fromJson(getPropertiesJsonMap(), stringStringMapType);
+        
+        return propertiesMap;
     }
 
     public boolean isDeletable() {
