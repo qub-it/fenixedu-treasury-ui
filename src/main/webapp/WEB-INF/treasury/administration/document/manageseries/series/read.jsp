@@ -134,21 +134,93 @@ ${portal.toolkit()}
 		<c:out value='${series.finantialInstitution}'/>
 	</td> 
 </tr>
-<tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.Series.bennu"/></th> 
-	<td>
-		<c:out value='${series.bennu}'/>
-	</td> 
-</tr>
+<!-- <tr> -->
+<%-- 	<th scope="row" class="col-xs-3"><spring:message code="label.Series.bennu"/></th> --%>
+<!-- 	<td> -->
+<%-- 		<c:out value='${series.bennu}'/> --%>
+<!-- 	</td>  -->
+<!-- </tr> -->
 </tbody>
 </table>
 </form>
 </div>
 </div>
 
+<h3><spring:message code="label.Series.DocumentNumberSeries"></spring:message></h3>
+
+<c:choose>
+	<c:when test="${not empty series.documentNumberSeriesSet}">
+		<table id="documentNumberSeriesTable" class="table responsive table-bordered table-hover">
+			<thead>
+				<tr>
+					<%--!!!  Field names here --%>
+<th><spring:message code="label.DocumentNumberSeries.FinantialDocumentType"/></th>
+<th><spring:message code="label.DocumentNumberSeries.TotalDocuments"/></th>
+<%-- Operations Column --%>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+			<c:forEach items="${series.documentNumberSeriesSet}" var="documentNumberSeries">
+			<tr>
+			<td>
+			<c:out value="$documentNumberSeries.finantialDocumentType"/>					
+			</td>
+			<td>
+			<c:out value="$documentNumberSeries.getTotalDocuments()"/>	
+			</td>
+			<td>
+<!--  ACTIONS -->				
+			</td>
+			</tr>
+			</c:forEach>				
+			</tbody>
+		</table>
+	</c:when>
+	<c:otherwise>
+				<div class="alert alert-warning" role="alert">
+					
+					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
+					
+				</div>	
+		
+	</c:otherwise>
+</c:choose>
+
 <script>
-$(document).ready(function() {
+
+
 
 	
-	});
+	
+	$(document).ready(function() {
+
+	
+
+
+		var table = $('#documentNumberSeriesTable').DataTable({language : {
+			url : "${datatablesI18NUrl}",			
+		},
+		//CHANGE_ME adjust the actions column width if needed
+		"columnDefs": [
+		//54
+		               { "width": "54px", "targets": 2 } 
+		             ],
+		//Documentation: https://datatables.net/reference/option/dom
+//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+        "tableTools": {
+            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
+        }
+		});
+		table.columns.adjust().draw();
+		
+		  $('#documentNumberSeriesTable tbody').on( 'click', 'tr', function () {
+		        $(this).toggleClass('selected');
+		    } );
+
+	}); 
 </script>
+

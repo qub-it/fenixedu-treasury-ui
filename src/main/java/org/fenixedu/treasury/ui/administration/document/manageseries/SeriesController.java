@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -48,8 +47,19 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
-@RequestMapping("/treasury/administration/document/manageseries/series")
+@RequestMapping(SeriesController.CONTROLLER_URL)
 public class SeriesController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/administration/document/manageseries/series";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
 //
 
@@ -76,7 +86,7 @@ public class SeriesController extends TreasuryBaseController {
 //    }
 
 //				
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(Model model) {
         Set<Series> searchseriesResultsDataSet = getSearchUniverseSearchSeriesDataSet();
 
@@ -123,14 +133,14 @@ public class SeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Series series, Model model) {
         setSeries(series, model);
         return "treasury/administration/document/manageseries/series/read";
     }
 
 //
-//    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+//    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
 //    public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
 //
 //        setSeries(series, model);
@@ -156,7 +166,7 @@ public class SeriesController extends TreasuryBaseController {
 //    }
 
 //				
-//    @RequestMapping(value = "/create", method = RequestMethod.GET)
+//    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
 //    public String create(Model model) {
 //        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
 //
@@ -168,7 +178,7 @@ public class SeriesController extends TreasuryBaseController {
 //    }
 //
 ////				
-//    @RequestMapping(value = "/create", method = RequestMethod.POST)
+//    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
 //    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
 //            required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "externseries",
 //            required = false) boolean externSeries, @RequestParam(value = "certificated", required = false) boolean certificated,
@@ -237,7 +247,7 @@ public class SeriesController extends TreasuryBaseController {
 //    }
 
 //				
-//    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+//    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
 //    public String update(@PathVariable("oid") Series series, Model model) {
 //        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
 //        //model.addAttribute("Series_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
@@ -248,7 +258,7 @@ public class SeriesController extends TreasuryBaseController {
 //    }
 //
 ////				
-//    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+//    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
 //    public String update(
 //            @PathVariable("oid") Series series,
 //            @RequestParam(value = "code", required = false) java.lang.String code,

@@ -58,15 +58,26 @@ import pt.ist.fenixframework.Atomic;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitNote;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice", accessGroup = "logged")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice.debitNote",
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 // or
 // @BennuSpringController(value=TreasuryController.class)
-@RequestMapping("/treasury/document/manageinvoice/debitnote")
+@RequestMapping(DebitNoteController.CONTROLLER_URL)
 public class DebitNoteController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/document/manageinvoice/debitnote";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
 
     //
 
@@ -93,14 +104,14 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
         setDebitNote(debitNote, model);
         return "treasury/document/manageinvoice/debitnote/read";
     }
 
     //
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(
             @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
             @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
@@ -124,19 +135,17 @@ public class DebitNoteController extends TreasuryBaseController {
                                                                                                                                   // MUST
                                                                                                                                   // DEFINE
                                                                                                                                   // RELATION
-        // model.addAttribute("DebitNote_payorDebtAccount_options",
-        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-        // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("DebitNote_finantialDocumentType_options",
-                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
+        model.addAttribute("DebitNote_payorDebtAccount_options",
+                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
+        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
+                .findAll().collect(Collectors.toList()));
         model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
                                                                                                                              // -
                                                                                                                              // MUST
                                                                                                                              // DEFINE
                                                                                                                              // RELATION
-        // model.addAttribute("DebitNote_debtAccount_options",
-        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-        // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_debtAccount_options",
+                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
         model.addAttribute("DebitNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries
                 .findAll().collect(Collectors.toList()));
         model.addAttribute("DebitNote_currency_options",
@@ -194,29 +203,22 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
-        model.addAttribute("DebitNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                                  // -
-                                                                                                                                  // MUST
-                                                                                                                                  // DEFINE
-                                                                                                                                  // RELATION
-        model.addAttribute("DebitNote_finantialDocumentType_options",
-                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
-        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                             // -
-                                                                                                                             // MUST
-                                                                                                                             // DEFINE
-                                                                                                                             // RELATION
-        model.addAttribute("DebitNote_documentNumberSeries_options",
-                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
-        model.addAttribute("DebitNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll());
+        model.addAttribute("DebitNote_payorDebtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
+        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
+                .findAll().collect(Collectors.toList()));
+        model.addAttribute("DebitNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
+        model.addAttribute("DebitNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                .findAll().collect(Collectors.toList()));
+        model.addAttribute("DebitNote_currency_options",
+                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
         return "treasury/document/manageinvoice/debitnote/create";
     }
 
     //
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(
             @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
             @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
@@ -292,31 +294,21 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitNote debitNote, Model model) {
-        model.addAttribute("DebitNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                                  // -
-                                                                                                                                  // MUST
-                                                                                                                                  // DEFINE
-                                                                                                                                  // RELATION
-        // model.addAttribute("DebitNote_payorDebtAccount_options",
-        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-        // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("DebitNote_finantialDocumentType_options",
-                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
 
-        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                             // -
-                                                                                                                             // MUST
-                                                                                                                             // DEFINE
-                                                                                                                             // RELATION
-        // model.addAttribute("DebitNote_debtAccount_options",
-        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
+        model.addAttribute("DebitNote_payorDebtAccount_options", DebtAccount.findAll().collect(Collectors.toList())); //
         // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
+                .findAll().collect(Collectors.toList()));
+
+        model.addAttribute("DebitNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
+
+        model.addAttribute("DebitNote_debtAccount_options",
+                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList())); //
 
         model.addAttribute("DebitNote_documentNumberSeries_options",
                 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
-        // // CHANGE_ME - MUST DEFINE RELATION
 
         model.addAttribute("DebitNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll());
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
@@ -325,7 +317,7 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(
             @PathVariable("oid") DebitNote debitNote,
             @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,

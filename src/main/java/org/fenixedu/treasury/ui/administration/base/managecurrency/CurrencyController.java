@@ -49,9 +49,20 @@ import pt.ist.fenixframework.Atomic;
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageCurrency",
         accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-@RequestMapping("/treasury/administration/base/managecurrency/currency")
+@RequestMapping(CurrencyController.CONTROLLER_URL)
 public class CurrencyController extends TreasuryBaseController {
 //
+    public static final String CONTROLLER_URL = "/treasury/administration/base/managecurrency/currency";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
     @RequestMapping
     public String home(Model model) {
@@ -76,7 +87,7 @@ public class CurrencyController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name,
             @RequestParam(value = "isocode", required = false) java.lang.String isoCode, @RequestParam(value = "symbol",
@@ -130,7 +141,7 @@ public class CurrencyController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Currency currency, Model model) {
         setCurrency(currency, model);
         return "treasury/administration/base/managecurrency/currency/read";
@@ -161,13 +172,13 @@ public class CurrencyController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         return "treasury/administration/base/managecurrency/currency/create";
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name,
             @RequestParam(value = "isocode", required = false) java.lang.String isoCode, @RequestParam(value = "symbol",
@@ -214,14 +225,14 @@ public class CurrencyController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") Currency currency, Model model) {
         setCurrency(currency, model);
         return "treasury/administration/base/managecurrency/currency/update";
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") Currency currency,
             @RequestParam(value = "code", required = false) java.lang.String code,
             @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(

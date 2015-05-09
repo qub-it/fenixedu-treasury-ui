@@ -53,6 +53,17 @@ import pt.ist.fenixframework.Atomic;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managefiscalcountryregion/fiscalcountryregion")
 public class FiscalCountryRegionController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/administration/base/managefiscalcountryregion/fiscalcountryregion";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
 //
 
@@ -79,7 +90,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "fiscalCode", required = false) java.lang.String fiscalCode, @RequestParam(
             value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model) {
         List<FiscalCountryRegion> searchfiscalcountryregionResultsDataSet = filterSearchFiscalCountryRegion(fiscalCode, name);
@@ -127,7 +138,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") FiscalCountryRegion fiscalCountryRegion, Model model) {
         setFiscalCountryRegion(fiscalCountryRegion, model);
         return "treasury/administration/base/managefiscalcountryregion/fiscalcountryregion/read";
@@ -162,13 +173,13 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         return "treasury/administration/base/managefiscalcountryregion/fiscalcountryregion/create";
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "fiscalCode", required = false) java.lang.String fiscalCode, @RequestParam(
             value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,
             RedirectAttributes redirectAttributes) {
@@ -216,14 +227,14 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") FiscalCountryRegion fiscalCountryRegion, Model model) {
         setFiscalCountryRegion(fiscalCountryRegion, model);
         return "treasury/administration/base/managefiscalcountryregion/fiscalcountryregion/update";
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") FiscalCountryRegion fiscalCountryRegion, @RequestParam(value = "fiscalCode",
             required = false) java.lang.String fiscalCode,
             @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,

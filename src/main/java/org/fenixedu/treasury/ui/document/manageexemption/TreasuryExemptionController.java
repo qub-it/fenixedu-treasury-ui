@@ -50,8 +50,19 @@ import pt.ist.fenixframework.Atomic;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 // or
 // @BennuSpringController(value=TreasuryController.class)
-@RequestMapping("/treasury/document/manageexemption/treasuryexemption")
+@RequestMapping(TreasuryExemptionController.CONTROLLER_URL)
 public class TreasuryExemptionController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/document/manageexemption/treasuryexemption";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
     //
 
@@ -77,13 +88,13 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         return "treasury/document/manageexemption/treasuryexemption/create";
     }
 
     //
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "discountrate",
             required = false) java.math.BigDecimal discountRate, Model model, RedirectAttributes redirectAttributes) {
@@ -143,7 +154,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "discountrate",
             required = false) java.math.BigDecimal discountRate, Model model) {
@@ -194,14 +205,14 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") TreasuryExemption treasuryExemption, Model model) {
         setTreasuryExemption(treasuryExemption, model);
         return "treasury/document/manageexemption/treasuryexemption/read";
     }
 
     //
-    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") TreasuryExemption treasuryExemption, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -222,14 +233,14 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") TreasuryExemption treasuryExemption, Model model) {
         setTreasuryExemption(treasuryExemption, model);
         return "treasury/document/manageexemption/treasuryexemption/update";
     }
 
     //
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") TreasuryExemption treasuryExemption,
             @RequestParam(value = "code", required = false) java.lang.String code,
             @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(

@@ -53,8 +53,19 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVat") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVat", accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-@RequestMapping("/treasury/administration/base/managevat/vat")
+@RequestMapping(VatController.CONTROLLER_URL)
 public class VatController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/administration/base/managevat/vat";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
 //
 
@@ -81,7 +92,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(
             @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
             @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
@@ -119,7 +130,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Vat vat, Model model) {
         setVat(vat, model);
         return "treasury/administration/base/managevat/vat/read";
@@ -152,7 +163,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("vatTypeList", VatType.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
@@ -162,7 +173,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
             value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
             value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, @RequestParam(
@@ -209,7 +220,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") Vat vat, Model model) {
         setVat(vat, model);
         model.addAttribute("vatTypeList", VatType.findAll().collect(Collectors.toList()));
@@ -220,7 +231,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
             value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
             value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, @PathVariable("oid") Vat vat,

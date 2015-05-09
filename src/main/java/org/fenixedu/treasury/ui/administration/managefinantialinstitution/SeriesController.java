@@ -48,8 +48,19 @@ import pt.ist.fenixframework.Atomic;
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 @BennuSpringController(value = FinantialInstitutionController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution/series")
+@RequestMapping(SeriesController.CONTROLLER_URL)
 public class SeriesController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/administration/managefinantialinstitution/series";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
     @RequestMapping
     public String home(Model model) {
@@ -80,13 +91,13 @@ public class SeriesController extends TreasuryBaseController {
                 redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Series series, Model model) {
         setSeries(series, model);
         return "treasury/administration/managefinantialinstitution/series/read";
     }
 
-    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
         setSeries(series, model);
         try {
@@ -99,7 +110,7 @@ public class SeriesController extends TreasuryBaseController {
         return "treasury/administration/managefinantialinstitution/series/read/" + getSeries(model).getExternalId();
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(
             @RequestParam(value = "finantialInstitutionId", required = false) FinantialInstitution finantialInstitution,
             Model model) {
@@ -107,7 +118,7 @@ public class SeriesController extends TreasuryBaseController {
         return "treasury/administration/managefinantialinstitution/series/create";
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(
             @RequestParam(value = "finantialInstitutionId", required = false) FinantialInstitution finantialInstitution,
             @RequestParam(value = "code", required = false) String code,
@@ -151,13 +162,13 @@ public class SeriesController extends TreasuryBaseController {
                 + series.getFinantialInstitution().getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") Series series, Model model) {
         setSeries(series, model);
         return "treasury/administration/managefinantialinstitution/series/update";
     }
 
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") Series series, @RequestParam(value = "code", required = false) String code,
             @RequestParam(value = "name", required = false) LocalizedString name, @RequestParam(value = "externseries",
                     required = false) boolean externSeries,

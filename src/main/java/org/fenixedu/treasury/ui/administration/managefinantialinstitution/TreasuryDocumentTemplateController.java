@@ -52,8 +52,13 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 @BennuSpringController(value = FinantialInstitutionController.class)
-@RequestMapping("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate")
+@RequestMapping(TreasuryDocumentTemplateController.CONTROLLER_URL)
 public class TreasuryDocumentTemplateController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/administration/managefinantialinstitution/treasurydocumenttemplate";
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
     @RequestMapping
     public String home(Model model) {
@@ -85,13 +90,13 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
                 + documentTemplate.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, Model model) {
         setDocumentTemplate(documentTemplate, model);
         return "treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read";
     }
 
-    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, Model model,
             RedirectAttributes redirectAttributes) {
         setDocumentTemplate(documentTemplate, model);

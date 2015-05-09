@@ -50,20 +50,32 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageDocumentNumberSeries") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageDocumentNumberSeries",
-//        accessGroup = "logged")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageDocumentNumberSeries",
+        accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-@BennuSpringController(value = SeriesController.class)
-@RequestMapping("/treasury/administration/document/managedocumentnumberseries/documentnumberseries")
+//@BennuSpringController(value = SeriesController.class)
+@RequestMapping(DocumentNumberSeriesController.CONTROLLER_URL)
 public class DocumentNumberSeriesController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL =
+            "/treasury/administration/document/managedocumentnumberseries/documentnumberseries";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
 //
 
     @RequestMapping
     public String home(Model model) {
         //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/administration/document/managedocumentnumberseries/documentnumberseries/";
+        return "forward:" + SEARCH_URL;
     }
 
     private DocumentNumberSeries getDocumentNumberSeries(Model model) {
@@ -83,7 +95,8 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/")
+
+    @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "counter", required = false) int counter, Model model) {
         List<DocumentNumberSeries> searchdocumentnumberseriesResultsDataSet = filterSearchDocumentNumberSeries(counter);
 
@@ -117,14 +130,14 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DocumentNumberSeries documentNumberSeries, Model model) {
         setDocumentNumberSeries(documentNumberSeries, model);
         return "treasury/administration/document/managedocumentnumberseries/documentnumberseries/read";
     }
 
 //
-    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") DocumentNumberSeries documentNumberSeries, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -152,7 +165,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("DocumentNumberSeries_series_options", new ArrayList<org.fenixedu.treasury.domain.document.Series>()); // CHANGE_ME - MUST DEFINE RELATION
         //model.addAttribute("DocumentNumberSeries_series_options", org.fenixedu.treasury.domain.document.Series.findAll()); // CHANGE_ME - MUST DEFINE RELATION
@@ -165,7 +178,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "counter", required = false) int counter, @RequestParam(value = "series",
             required = false) org.fenixedu.treasury.domain.document.Series series, @RequestParam(value = "finantialdocumenttype",
             required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType, @RequestParam(
@@ -233,7 +246,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DocumentNumberSeries documentNumberSeries, Model model) {
         model.addAttribute("DocumentNumberSeries_series_options", new ArrayList<org.fenixedu.treasury.domain.document.Series>()); // CHANGE_ME - MUST DEFINE RELATION
         //model.addAttribute("DocumentNumberSeries_series_options", org.fenixedu.treasury.domain.document.Series.findAll()); // CHANGE_ME - MUST DEFINE RELATION
@@ -247,7 +260,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(
             @PathVariable("oid") DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "counter", required = false) int counter,

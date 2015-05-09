@@ -27,10 +27,14 @@
 package org.fenixedu.treasury.ui.accounting.managedebtentry;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.util.List;
 import java.util.ArrayList;
+
 import org.joda.time.DateTime;
+
 import java.util.stream.Collectors;
+
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.stereotype.Component;
@@ -46,6 +50,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.fenixedu.bennu.core.domain.Bennu;
+
 import pt.ist.fenixframework.Atomic;
 
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -57,75 +62,73 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 // or
 // @BennuSpringController(value=TreasuryController.class)
-@RequestMapping("/treasury/accounting/managedebtentry/invoiceentry")
+@RequestMapping(InvoiceEntryController.CONTROLLER_URL)
 public class InvoiceEntryController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/accounting/managedebtentry/invoiceentry";
 
-	//
+    //
 
-	@RequestMapping
-	public String home(Model model) {
-		// this is the default behaviour, for handling in a Spring Functionality
-		return "forward:/treasury/accounting/managedebtentry/invoiceentry/";
-	}
+    @RequestMapping
+    public String home(Model model) {
+        // this is the default behaviour, for handling in a Spring Functionality
+        return "forward:/treasury/accounting/managedebtentry/invoiceentry/";
+    }
 
-	private InvoiceEntry getInvoiceEntry(Model model) {
-		return (InvoiceEntry) model.asMap().get("invoiceEntry");
-	}
+    private InvoiceEntry getInvoiceEntry(Model model) {
+        return (InvoiceEntry) model.asMap().get("invoiceEntry");
+    }
 
-	private void setInvoiceEntry(InvoiceEntry invoiceEntry, Model model) {
-		model.addAttribute("invoiceEntry", invoiceEntry);
-	}
+    private void setInvoiceEntry(InvoiceEntry invoiceEntry, Model model) {
+        model.addAttribute("invoiceEntry", invoiceEntry);
+    }
 
-	@Atomic
-	public void deleteInvoiceEntry(InvoiceEntry invoiceEntry) {
-		// CHANGE_ME: Do the processing for deleting the invoiceEntry
-		// Do not catch any exception here
+    @Atomic
+    public void deleteInvoiceEntry(InvoiceEntry invoiceEntry) {
+        // CHANGE_ME: Do the processing for deleting the invoiceEntry
+        // Do not catch any exception here
 
-		// invoiceEntry.delete();
-	}
+        // invoiceEntry.delete();
+    }
 
-	//
-	@RequestMapping(value = "/")
-	public String search(Model model) {
-		List<InvoiceEntry> searchinvoiceentryResultsDataSet = filterSearchInvoiceEntry();
+    //
+    @RequestMapping(value = "/")
+    public String search(Model model) {
+        List<InvoiceEntry> searchinvoiceentryResultsDataSet = filterSearchInvoiceEntry();
 
-		// add the results dataSet to the model
-		model.addAttribute("searchinvoiceentryResultsDataSet",
-				searchinvoiceentryResultsDataSet);
-		return "treasury/accounting/managedebtentry/invoiceentry/search";
-	}
+        // add the results dataSet to the model
+        model.addAttribute("searchinvoiceentryResultsDataSet", searchinvoiceentryResultsDataSet);
+        return "treasury/accounting/managedebtentry/invoiceentry/search";
+    }
 
-	private List<InvoiceEntry> getSearchUniverseSearchInvoiceEntryDataSet() {
-		//
-		// The initialization of the result list must be done here
-		//
-		//
-		// return new
-		// ArrayList<InvoiceEntry>(InvoiceEntry.findAll().collect(Collectors.toList()));
-		// //CHANGE_ME
-		return new ArrayList<InvoiceEntry>();
-	}
+    private List<InvoiceEntry> getSearchUniverseSearchInvoiceEntryDataSet() {
+        //
+        // The initialization of the result list must be done here
+        //
+        //
+        // return new
+        // ArrayList<InvoiceEntry>(InvoiceEntry.findAll().collect(Collectors.toList()));
+        // //CHANGE_ME
+        return new ArrayList<InvoiceEntry>();
+    }
 
-	private List<InvoiceEntry> filterSearchInvoiceEntry() {
+    private List<InvoiceEntry> filterSearchInvoiceEntry() {
 
-		return getSearchUniverseSearchInvoiceEntryDataSet().stream().collect(
-				Collectors.toList());
-	}
+        return getSearchUniverseSearchInvoiceEntryDataSet().stream().collect(Collectors.toList());
+    }
 
-	@RequestMapping(value = "/search/view/{oid}")
-	public String processSearchToViewAction(
-			@PathVariable("oid") InvoiceEntry invoiceEntry, Model model,
-			RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "/search/view/{oid}")
+    public String processSearchToViewAction(@PathVariable("oid") InvoiceEntry invoiceEntry, Model model,
+            RedirectAttributes redirectAttributes) {
 
-		// CHANGE_ME Insert code here for processing viewAction
-		// If you selected multiple exists you must choose which one to use
-		// below
+        // CHANGE_ME Insert code here for processing viewAction
+        // If you selected multiple exists you must choose which one to use
+        // below
 
-		return redirect("/treasury/document/manageinvoice/debitnote/read" + "/"
-				+ invoiceEntry.getExternalId(), model, redirectAttributes);
+        return redirect("/treasury/document/manageinvoice/debitnote/read" + "/" + invoiceEntry.getExternalId(), model,
+                redirectAttributes);
 
-		// return redirect("/treasury/document/manageinvoice/creditnote/read" +
-		// "/" + invoiceEntry.getExternalId(), model, redirectAttributes);
-	}
+        // return redirect("/treasury/document/manageinvoice/creditnote/read" +
+        // "/" + invoiceEntry.getExternalId(), model, redirectAttributes);
+    }
 
 }

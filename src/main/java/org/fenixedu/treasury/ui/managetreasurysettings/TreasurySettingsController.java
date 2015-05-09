@@ -42,22 +42,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.manageTreasurySettings", accessGroup = "logged")
-@RequestMapping("/treasury/managetreasurysettings/treasurysettings")
+@RequestMapping(TreasurySettingsController.CONTROLLER_URL)
 public class TreasurySettingsController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/managetreasurysettings/treasurysettings";
+    private static final String UPDATE_URI = "/update";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String READ_URI = "/read";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
 
     @RequestMapping
     public String home(Model model) {
         return "forward:/treasury/managetreasurysettings/treasurysettings/read";
     }
 
-    @RequestMapping(value = "/read")
+    @RequestMapping(value = READ_URI)
     public String read(final Model model) {
         model.addAttribute("treasurySettings", TreasurySettings.getInstance());
 
         return "treasury/managetreasurysettings/treasurysettings/read";
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI, method = RequestMethod.GET)
     public String update(final Model model) {
         model.addAttribute("TreasurySettings_defaultCurrency_options", Currency.findAll().collect(Collectors.toSet()));
         model.addAttribute("TreasurySettings_defaultVatType_options", VatType.findAll().collect(Collectors.toSet()));
@@ -66,10 +71,10 @@ public class TreasurySettingsController extends TreasuryBaseController {
         return "treasury/managetreasurysettings/treasurysettings/update";
     }
 
-    @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency,
-            @RequestParam(value = "defaultvattype", required = true) final VatType defaultVatType,
-            final Model model, final RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = UPDATE_URI, method = RequestMethod.POST)
+    public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency, @RequestParam(
+            value = "defaultvattype", required = true) final VatType defaultVatType, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         final TreasurySettings treasurySettings = TreasurySettings.getInstance();
 

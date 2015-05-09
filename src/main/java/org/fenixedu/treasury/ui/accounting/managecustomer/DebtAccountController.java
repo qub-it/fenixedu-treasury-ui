@@ -71,8 +71,19 @@ import org.fenixedu.treasury.dto.DebtAccountBean;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 @BennuSpringController(value = CustomerController.class)
-@RequestMapping("/treasury/accounting/managecustomer/debtaccount")
+@RequestMapping(DebtAccountController.CONTROLLER_URL)
 public class DebtAccountController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/accounting/managecustomer/debtaccount";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
 //
 
@@ -116,7 +127,7 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
 //				
-    @RequestMapping(value = "/read/{oid}")
+    @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebtAccount debtAccount, Model model) {
 
         setDebtAccount(debtAccount, model);

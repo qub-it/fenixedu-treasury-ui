@@ -67,8 +67,19 @@ import org.fenixedu.treasury.dto.AdhocCustomerBean;
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 @BennuSpringController(value = CustomerController.class)
-@RequestMapping("/treasury/accounting/managecustomer/adhoccustomer")
+@RequestMapping(AdhocCustomerController.CONTROLLER_URL)
 public class AdhocCustomerController extends TreasuryBaseController {
+    public static final String CONTROLLER_URL = "/treasury/accounting/managecustomer/adhoccustomer";
+    private static final String SEARCH_URI = "/";
+    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
+    private static final String UPDATE_URI = "/update/";
+    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
+    private static final String CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
+    private static final String READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + READ_URI;
+    private static final String DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
     //
 
@@ -98,7 +109,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/")
+    @RequestMapping(value = SEARCH_URI)
     public String search(Model model) {
         List<AdhocCustomer> searchadhoccustomerResultsDataSet = filterSearchAdhocCustomer();
 
@@ -132,7 +143,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/create", method = RequestMethod.GET)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         this.setAdhocCustomerBean(new AdhocCustomerBean(), model);
         return "treasury/accounting/managecustomer/adhoccustomer/create";
@@ -146,7 +157,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
         return getBeanJson(bean);
     }
 
-    @RequestMapping(value = "/create", method = RequestMethod.POST)
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -201,7 +212,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model) {
         setAdhocCustomer(adhocCustomer, model);
         setAdhocCustomerBean(new AdhocCustomerBean(adhocCustomer), model);
@@ -217,7 +228,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
         return getBeanJson(bean);
     }
 
-    @RequestMapping(value = "/update/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") AdhocCustomer adhocCustomer,
             @RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
             RedirectAttributes redirectAttributes) {
