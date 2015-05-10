@@ -354,14 +354,14 @@ public class DebitNoteController extends TreasuryBaseController {
              * 
              * Add a error / warning message
              * 
-             * addErrorMessage(" Error updating due to " +
+             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
              * de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning updating due to " +
              * de.getLocalizedMessage(),model);
              */
             // @formatter: on
 
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(debitNote, model);
 
         }

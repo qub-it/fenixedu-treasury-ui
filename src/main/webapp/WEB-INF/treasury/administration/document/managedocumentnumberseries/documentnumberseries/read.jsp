@@ -98,27 +98,27 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <table class="table">
 		<tbody>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.counter"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.Series.finantialInstitution"/></th> 
 	<td>
-		<c:out value='${documentNumberSeries.counter}'/>
+		<c:out value='${documentNumberSeries.series.finantialInstitution.name}'/>
 	</td> 
 </tr>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.series"/></th> 
 	<td>
-		<c:out value='${documentNumberSeries.series}'/>
+		<c:out value='${documentNumberSeries.series.name.content}'/>
 	</td> 
 </tr>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.finantialDocumentType"/></th> 
 	<td>
-		<c:out value='${documentNumberSeries.finantialDocumentType}'/>
+		<c:out value='${documentNumberSeries.finantialDocumentType.name.content}'/>
 	</td> 
 </tr>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.bennu"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.counter"/></th> 
 	<td>
-		<c:out value='${documentNumberSeries.bennu}'/>
+		<c:out value='${documentNumberSeries.counter}'/>
 	</td> 
 </tr>
 </tbody>

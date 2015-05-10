@@ -29,6 +29,7 @@ package org.fenixedu.treasury.ui.administration.document.managedocumentnumberser
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
@@ -36,6 +37,8 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.administration.document.manageseries.SeriesController;
@@ -97,9 +100,8 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
 //				
 
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "counter", required = false) int counter, Model model) {
-        List<DocumentNumberSeries> searchdocumentnumberseriesResultsDataSet = filterSearchDocumentNumberSeries(counter);
-
+    public String search(@RequestParam(value = "series", required = false) Series series, Model model) {
+        List<DocumentNumberSeries> searchdocumentnumberseriesResultsDataSet = filterSearchDocumentNumberSeries(series);
         //add the results dataSet to the model
         model.addAttribute("searchdocumentnumberseriesResultsDataSet", searchdocumentnumberseriesResultsDataSet);
         return "treasury/administration/document/managedocumentnumberseries/documentnumberseries/search";
@@ -113,10 +115,13 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         return DocumentNumberSeries.findAll().collect(Collectors.toList());
     }
 
-    private List<DocumentNumberSeries> filterSearchDocumentNumberSeries(int counter) {
+    private List<DocumentNumberSeries> filterSearchDocumentNumberSeries(Series series) {
 
-        return getSearchUniverseSearchDocumentNumberSeriesDataSet().stream()
-                .filter(documentNumberSeries -> documentNumberSeries.getCounter() == counter).collect(Collectors.toList());
+        Stream<DocumentNumberSeries> result = getSearchUniverseSearchDocumentNumberSeriesDataSet().stream();
+        if (series != null) {
+            result = result.filter(documentNumberSeries -> documentNumberSeries.getSeries() == series);
+        }
+        return result.collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
@@ -167,13 +172,9 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
 //				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
-        model.addAttribute("DocumentNumberSeries_series_options", new ArrayList<org.fenixedu.treasury.domain.document.Series>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("DocumentNumberSeries_series_options", org.fenixedu.treasury.domain.document.Series.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DocumentNumberSeries_series_options", org.fenixedu.treasury.domain.document.Series.readAll());
         model.addAttribute("DocumentNumberSeries_finantialDocumentType_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocumentType>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("DocumentNumberSeries_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("DocumentNumberSeries_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("DocumentNumberSeries_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll().collect(Collectors.toList()));
         return "treasury/administration/document/managedocumentnumberseries/documentnumberseries/create";
     }
 
@@ -248,13 +249,9 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
 //				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DocumentNumberSeries documentNumberSeries, Model model) {
-        model.addAttribute("DocumentNumberSeries_series_options", new ArrayList<org.fenixedu.treasury.domain.document.Series>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("DocumentNumberSeries_series_options", org.fenixedu.treasury.domain.document.Series.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("DocumentNumberSeries_series_options", org.fenixedu.treasury.domain.document.Series.readAll()); // CHANGE_ME - MUST DEFINE RELATION
         model.addAttribute("DocumentNumberSeries_finantialDocumentType_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocumentType>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("DocumentNumberSeries_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("DocumentNumberSeries_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("DocumentNumberSeries_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+                org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll().collect(Collectors.toList())); // CHANGE_ME - MUST DEFINE RELATION
         setDocumentNumberSeries(documentNumberSeries, model);
         return "treasury/administration/document/managedocumentnumberseries/documentnumberseries/update";
     }
@@ -291,16 +288,16 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             *
             * Add a error / warning message
             * 
-            * addErrorMessage(" Error updating due to " + de.getLocalizedMessage(),model);
+            * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
             * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
             */
             // @formatter: on
 
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(documentNumberSeries, model);
 
         } catch (Exception de) {
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(documentNumberSeries, model);
 
         }

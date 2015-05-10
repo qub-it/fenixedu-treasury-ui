@@ -262,12 +262,9 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
         return finantialDocumentType;
     }
 
-//				
+//				 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") FinantialDocumentType finantialDocumentType, Model model) {
-        model.addAttribute("typeValues", org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum.values());
-        model.addAttribute("FinantialDocumentType_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("FinantialDocumentType_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
         setFinantialDocumentType(finantialDocumentType, model);
         return "treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/update";
     }
@@ -290,8 +287,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
             /*Succes Update */
 
-            return redirect("/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/read/"
-                    + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
+            return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
 
         } catch (DomainException de) {
             // @formatter: off
@@ -301,16 +297,16 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             *
             * Add a error / warning message
             * 
-            * addErrorMessage(" Error updating due to " + de.getLocalizedMessage(),model);
+            * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
             * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
             */
             // @formatter: on
 
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(finantialDocumentType, model);
 
         } catch (Exception de) {
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(finantialDocumentType, model);
 
         }

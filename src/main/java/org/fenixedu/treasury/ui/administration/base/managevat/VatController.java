@@ -264,11 +264,11 @@ public class VatController extends TreasuryBaseController {
 
             // @formatter: on
 
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(vat, model);
 
         } catch (Exception de) {
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(vat, model);
         }
     }

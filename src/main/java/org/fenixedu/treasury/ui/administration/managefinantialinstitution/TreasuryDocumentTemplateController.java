@@ -148,7 +148,7 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
             uploadDocumentTemplateFile(documentTemplate, documentTemplateFile, model);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.upload"), model);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(" Error updating due to " + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         }
         return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
                 + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);

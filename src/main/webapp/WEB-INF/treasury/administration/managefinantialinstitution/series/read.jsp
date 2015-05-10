@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@page import="org.fenixedu.treasury.ui.administration.document.managedocumentnumberseries.DocumentNumberSeriesController"%>
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -193,7 +194,7 @@ ${portal.toolkit()}
 </div>
 <h3><spring:message code="label.Series.DocumentNumberSeries"></spring:message></h3>
 <div class="well well-sm" style="display:inline-block">
- 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/create"   ><spring:message code="label.event.create" /></a>
+ 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%=DocumentNumberSeriesController.CREATE_URL%>"><spring:message code="label.event.create" /></a>
 </div>
 
 <c:choose>

@@ -150,7 +150,7 @@ $(document).ready(function() {
 		series_options = [
 			<c:forEach items="${DocumentNumberSeries_series_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -172,7 +172,7 @@ $(document).ready(function() {
 		finantialDocumentType_options = [
 			<c:forEach items="${DocumentNumberSeries_finantialDocumentType_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -187,28 +187,6 @@ $(document).ready(function() {
 	    
 	    
 	    $("#documentNumberSeries_finantialDocumentType").select2().select2('val', '<c:out value='${param.finantialdocumenttype}'/>');
-	
-		<%-- End block for providing finantialDocumentType options --%>
-		<%-- Block for providing bennu options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		bennu_options = [
-			<c:forEach items="${DocumentNumberSeries_bennu_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#documentNumberSeries_bennu").select2(
-			{
-				data : bennu_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#documentNumberSeries_bennu").select2().select2('val', '<c:out value='${param.bennu}'/>');
 	
 		<%-- End block for providing bennu options --%>
 	

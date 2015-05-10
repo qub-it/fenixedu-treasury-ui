@@ -66,22 +66,22 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
-<div class="panel panel-default">
-<form method="get" class="form-horizontal">
-<div class="panel-body">
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DocumentNumberSeries.counter"/></div> 
+<!-- <div class="panel panel-default"> -->
+<!-- <form method="get" class="form-horizontal"> -->
+<!-- <div class="panel-body"> -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.DocumentNumberSeries.counter"/></div>  --%>
 
-<div class="col-sm-10">
-	<input id="documentNumberSeries_counter" class="form-control" type="text" name="counter"  value='<c:out value='${not empty param.counter ? param.counter : documentNumberSeries.counter }'/>' />
-</div>	
-</div>		
-</div>
-<div class="panel-footer">
-	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
-</div>
-</form>
-</div>
+<!-- <div class="col-sm-10"> -->
+<%-- 	<input id="documentNumberSeries_counter" class="form-control" type="text" name="counter"  value='<c:out value='${not empty param.counter ? param.counter : documentNumberSeries.counter }'/>' /> --%>
+<!-- </div>	 -->
+<!-- </div>		 -->
+<!-- </div> -->
+<!-- <div class="panel-footer"> -->
+<%-- 	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/> --%>
+<!-- </div> -->
+<!-- </form> -->
+<!-- </div> -->
 
 
 <c:choose>
@@ -90,6 +90,9 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+<th><spring:message code="label.Series.finantialInstitution"/></th>
+<th><spring:message code="label.DocumentNumberSeries.series"/></th>
+<th><spring:message code="label.DocumentNumberSeries.finantialDocumentType"/></th>
 <th><spring:message code="label.DocumentNumberSeries.counter"/></th>
 <%-- Operations Column --%>
 					<th></th>
@@ -117,6 +120,9 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "counter" : "<c:out value='${searchResult.counter}'/>",
+"series" : "<c:out value='${searchResult.series.name.content}'/>",
+"finantialInstitution" : "<c:out value='${searchResult.series.finantialInstitution.name}'/>",
+"finantialDocumentType" : "<c:out value='${searchResult.finantialDocumentType.name.content}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },
@@ -132,6 +138,9 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
+			{ data: 'finantialInstitution' },
+			{ data: 'series' },
+			{ data: 'finantialDocumentType' },
 			{ data: 'counter' },
 			{ data: 'actions' }
 			
@@ -139,7 +148,7 @@ ${portal.toolkit()}
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 1 } 
+		               { "width": "54px", "targets": 3 } 
 		             ],
 		"data" : searchdocumentnumberseriesDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

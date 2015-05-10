@@ -171,7 +171,7 @@ public class FinantialEntityController extends TreasuryBaseController {
                     "/treasury/administration/managefinantialinstitution/finantialentity/read/"
                             + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(" Error updating due to " + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
             return update(finantialEntity, model);
         }
     }

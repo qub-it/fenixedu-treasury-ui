@@ -182,7 +182,7 @@ public class SeriesController extends TreasuryBaseController {
                     "/treasury/administration/managefinantialinstitution/series/read/" + getSeries(model).getExternalId(), model,
                     redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(" Error updating due to " + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
             return update(series, model);
         }
     }

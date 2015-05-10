@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -68,14 +69,14 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     public int getSequenceNumber() {
         return getCounter();
     }
-    
+
     public int getSequenceNumberAndIncrement() {
         int count = getCounter();
         setCounter(count++);
-        
+
         return count;
     }
-    
+
     public boolean isDeletable() {
         return true;
     }
@@ -102,13 +103,14 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     }
 
     public static DocumentNumberSeries find(final FinantialDocumentType finantialDocumentType, final Series series) {
-        final Stream<DocumentNumberSeries> stream =
-                finantialDocumentType.getDocumentNumberSeriesSet().stream().filter(dns -> dns.getSeries() == series);
-        if (stream.count() > 1) {
+        final Set<DocumentNumberSeries> result =
+                finantialDocumentType.getDocumentNumberSeriesSet().stream().filter(dns -> dns.getSeries() == series)
+                        .collect(Collectors.toSet());
+        if (result.size() > 1) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.not.unique.in.finantialDocumentType.and.series");
         }
 
-        return stream.findFirst().orElse(null);
+        return result.stream().findFirst().orElse(null);
     }
 
     @Atomic
