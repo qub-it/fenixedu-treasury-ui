@@ -1,3 +1,5 @@
+<%@page
+	import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -55,9 +57,17 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
 data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
-				|&nbsp;&nbsp;
+				&nbsp;|&nbsp;
 	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/update/${documentNumberSeries.externalId}"  ><spring:message code="label.event.update" /></a>
-|&nbsp;&nbsp;</div>
+&nbsp;|
+<c:if test="${ documentNumberSeries.finantialDocumentType.type == 'DEBIT_NOTE'}">		 
+&nbsp;<span
+		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?documentnumberseries=${documentNumberSeries.externalId}"><spring:message
+			code="label.event.createdebitnote" /></a>
+</c:if>
+</div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 
@@ -127,9 +137,81 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 </div>
 </div>
 
+<h3><spring:message code="label.Series.FinantialDocumentNotes"></spring:message></h3>
+
+<c:choose>
+	<c:when test="${not empty documentNumberSeries.finantialDocumentsSet}">
+		<table id="documentsTable" class="table responsive table-bordered table-hover">
+			<thead>
+				<tr>
+					<%--!!!  Field names here --%>
+<th><spring:message code="label.DocumentNumberSeries.FinantialDocumentType"/></th>
+<th><spring:message code="label.Customer.TotalDocuments"/></th>
+<%-- Operations Column --%>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+			<c:forEach items="${documentNumberSeries.finantialDocumentsSet}" var="document">
+			<tr>
+			<td>
+			<c:out value="${document.documentNumber}"/>					
+			</td>
+<!-- 			<td> -->
+<%--  			<c:out value="${documentNumberSeries.sequenceNumber}"/>	  --%>
+<!-- 			</td> -->
+<!-- 			<td> -->
+<!-- <!--  ACTIONS -->				 -->
+<%--  			<a  class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=DocumentNumberSeriesController.READ_URL%>${documentNumberSeries.externalId}"><spring:message code='label.view'/></a> --%>
+<!-- 			</td> -->
+			</tr>
+			</c:forEach>				
+			</tbody>
+		</table>
+	</c:when>
+	<c:otherwise>
+				<div class="alert alert-warning" role="alert">
+					
+					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
+					
+				</div>	
+		
+	</c:otherwise>
+</c:choose>
+
 <script>
-$(document).ready(function() {
+
+
 
 	
-	});
+	
+	$(document).ready(function() {
+
+	
+
+
+		var table = $('#documentsTable').DataTable({language : {
+			url : "${datatablesI18NUrl}",			
+		},
+		//CHANGE_ME adjust the actions column width if needed
+		"columnDefs": [
+		//54
+		               { "width": "54px", "targets": 2 } 
+		             ],
+		//Documentation: https://datatables.net/reference/option/dom
+//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+        "tableTools": {
+            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
+        }
+		});
+		table.columns.adjust().draw();
+		
+		  $('#documentsTable tbody').on( 'click', 'tr', function () {
+		        $(this).toggleClass('selected');
+		    } );
+
+	}); 
 </script>

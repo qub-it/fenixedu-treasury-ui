@@ -220,6 +220,7 @@ ${portal.toolkit()}
 			</td>
 			<td>
 <!--  ACTIONS -->				
+ 			<a  class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%=DocumentNumberSeriesController.READ_URL%>${documentNumberSeries.externalId}"><spring:message code='label.view'/></a>
 			</td>
 			</tr>
 			</c:forEach>				

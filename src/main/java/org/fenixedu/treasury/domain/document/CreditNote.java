@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -61,6 +62,16 @@ public class CreditNote extends CreditNote_Base {
         return true;
     }
 
+    @Override
+    protected void checkRules() {
+        if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.CREDIT_NOTE)) {
+            throw new TreasuryDomainException("error.CreditNote.finantialDocumentType.invalid");
+        }
+
+        // TODO Auto-generated method stub
+        super.checkRules();
+    }
+
     public boolean isDeletable() {
         return true;
     }
@@ -68,7 +79,7 @@ public class CreditNote extends CreditNote_Base {
     @Atomic
     public void delete() {
         if (!isDeletable()) {
-            throw new TreasuryDomainException("error.DebitNote.cannot.delete");
+            throw new TreasuryDomainException("error.CreditNote.cannot.delete");
         }
 
         setBennu(null);

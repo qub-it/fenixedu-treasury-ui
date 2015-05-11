@@ -60,11 +60,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
         setDocumentDate(documentDate);
         setCurrency(TreasurySettings.getInstance().getDefaultCurrency());
-        
+
         checkRules();
     }
 
     protected void checkRules() {
+
         if (getDebtAccount() == null) {
             throw new TreasuryDomainException("error.FinantialDocument.debtAccount.required");
         }
@@ -84,8 +85,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         if (getDocumentDueDate() == null) {
             throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.required");
         }
-        
-        if(getCurrency() == null) {
+
+        if (getCurrency() == null) {
             throw new TreasuryDomainException("error.FinantialDocument.currency.required");
         }
     }

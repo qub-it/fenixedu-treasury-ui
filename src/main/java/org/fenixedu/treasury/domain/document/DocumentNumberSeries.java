@@ -33,6 +33,8 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -116,6 +118,11 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     @Atomic
     public static DocumentNumberSeries create(final FinantialDocumentType finantialDocumentType, final Series series) {
         return new DocumentNumberSeries(finantialDocumentType, series);
+    }
+
+    public static Stream<DocumentNumberSeries> find(FinantialDocumentType documentType, FinantialInstitution finantialInstitution) {
+        return findAll().filter(x -> x.getSeries().getFinantialInstitution().equals(finantialInstitution)).filter(
+                x -> x.getFinantialDocumentType().equals(documentType));
     }
 
 }

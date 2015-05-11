@@ -81,16 +81,6 @@ ${portal.toolkit()}
 				</div>
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.finantialDocumentType"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_finantialDocumentType" class="js-example-basic-single" name="finantialdocumenttype">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitNote.debtAccount"/></div> 
 
 <div class="col-sm-4">
@@ -111,27 +101,10 @@ ${portal.toolkit()}
 				</div>
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.currency"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_currency" class="js-example-basic-single" name="currency">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.documentNumber"/></div> 
-
-<div class="col-sm-10">
-	<input id="debitNote_documentNumber" class="form-control" type="text" name="documentnumber"  value='<c:out value='${not empty param.documentnumber ? param.documentnumber : debitNote.documentNumber }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitNote.documentDate"/></div> 
 
 <div class="col-sm-4">
-	<input id="debitNote_documentDate" class="form-control" type="text" name="documentdate"  bennu-datetime 
+	<input id="debitNote_documentDate" class="form-control" type="text" name="documentdate"  bennu-date 
 	value = '<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>' />
 </div>
 </div>		
@@ -139,7 +112,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.DebitNote.documentDueDate"/></div> 
 
 <div class="col-sm-4">
-	<input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate"  bennu-datetime 
+	<input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate"  bennu-date 
 	value = '<c:out value='${not empty param.documentduedate ? param.documentduedate : debitNote.documentDueDate }'/>' />
 </div>
 </div>		
@@ -150,22 +123,8 @@ ${portal.toolkit()}
 	<input id="debitNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"  value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : debitNote.originDocumentNumber }'/>' />
 </div>	
 </div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.state"/></div> 
-
-<div class="col-sm-4">
-	<select id="debitNote_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-		<c:forEach items="${stateValues}" var="field">
-			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
-		</c:forEach>
-	</select>
-	<script>
-		$("#debitNote_state").val('<c:out value='${not empty param.state ? param.state : debitNote.state }'/>');
-	</script>	
-</div>
 </div>		
-  </div>
+  
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
 	</div>
@@ -180,7 +139,7 @@ $(document).ready(function() {
 		payorDebtAccount_options = [
 			<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.customer.code} - ${element.customer.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -196,27 +155,6 @@ $(document).ready(function() {
 	    
 	    $("#debitNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payordebtaccount}'/>');
 	
-		<%-- End block for providing payorDebtAccount options --%>
-		<%-- Block for providing finantialDocumentType options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		finantialDocumentType_options = [
-			<c:forEach items="${DebitNote_finantialDocumentType_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#debitNote_finantialDocumentType").select2(
-			{
-				data : finantialDocumentType_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#debitNote_finantialDocumentType").select2().select2('val', '<c:out value='${param.finantialdocumenttype}'/>');
 	
 		<%-- End block for providing finantialDocumentType options --%>
 		<%-- Block for providing debtAccount options --%>
@@ -224,7 +162,7 @@ $(document).ready(function() {
 		debtAccount_options = [
 			<c:forEach items="${DebitNote_debtAccount_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.customer.code} - ${element.customer.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -246,7 +184,7 @@ $(document).ready(function() {
 		documentNumberSeries_options = [
 			<c:forEach items="${DebitNote_documentNumberSeries_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.series.code}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>

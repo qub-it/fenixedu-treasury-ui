@@ -67,9 +67,10 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     protected void checkRules() {
-        //
-        // CHANGE_ME add more busines validations
-        //
+
+        if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)) {
+            throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
+        }
         if (getFinantialDocumentType() == null) {
             throw new TreasuryDomainException("error.SettlementNote.finantialDocumentType.required");
         }
@@ -86,6 +87,7 @@ public class SettlementNote extends SettlementNote_Base {
             throw new TreasuryDomainException("error.SettlementNote.currency.required");
         }
 
+        super.checkRules();
         // CHANGE_ME In order to validate UNIQUE restrictions
         // if (findByFinantialDocumentType(getFinantialDocumentType().count()>1)
         // {

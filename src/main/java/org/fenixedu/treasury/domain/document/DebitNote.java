@@ -65,6 +65,15 @@ public class DebitNote extends DebitNote_Base {
         return true;
     }
 
+    @Override
+    protected void checkRules() {
+        if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.DEBIT_NOTE)) {
+            throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
+        }
+
+        super.checkRules();
+    }
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -91,34 +100,48 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public void edit(final DebtAccount payorDebtAccount, final FinantialDocumentType finantialDocumentType,
-            final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries, final Currency currency,
-            final java.lang.String documentNumber, final org.joda.time.DateTime documentDate,
-            final org.joda.time.DateTime documentDueDate, final java.lang.String originDocumentNumber,
-            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    public void edit(final DebtAccount payorDebtAccount, final org.joda.time.DateTime documentDueDate,
+            final java.lang.String originDocumentNumber) {
         setPayorDebtAccount(payorDebtAccount);
-        setFinantialDocumentType(finantialDocumentType);
-        setDebtAccount(debtAccount);
-        setDocumentNumberSeries(documentNumberSeries);
-        setCurrency(currency);
-        setDocumentNumber(documentNumber);
-        setDocumentDate(documentDate);
         setDocumentDueDate(documentDueDate);
         setOriginDocumentNumber(originDocumentNumber);
-        setState(state);
         checkRules();
     }
 
     @Atomic
     public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate) {
-        return new DebitNote(debtAccount, documentNumberSeries, documentDate);
+        DebitNote note = new DebitNote(debtAccount, documentNumberSeries, documentDate);
+        note.setDocumentNumber("" + documentNumberSeries.getSequenceNumberAndIncrement());
+        note.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
+        note.setFinantialDocumentType(FinantialDocumentType.findForDebitNote());
+        note.setOriginDocumentNumber("");
+        note.setDocumentDueDate(documentDate);
+        note.setState(FinantialDocumentStateType.PREPARING);
+        note.checkRules();
+        return note;
     }
 
     @Atomic
     public static DebitNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
-            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        return new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate, final DateTime documentDueDate,
+            final String originaNumber) {
+
+        DebitNote note = new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
+        note.setDocumentNumber("" + documentNumberSeries.getSequenceNumberAndIncrement());
+        note.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
+        note.setFinantialDocumentType(FinantialDocumentType.findForDebitNote());
+        note.setOriginDocumentNumber(originaNumber);
+        note.setDocumentDueDate(documentDueDate);
+        note.setState(FinantialDocumentStateType.PREPARING);
+        note.checkRules();
+
+        return note;
     }
-    
+
+    @Atomic
+    public void closeDocument() {
+        this.setState(FinantialDocumentStateType.CLOSED);
+        this.checkRules();
+    }
 }
