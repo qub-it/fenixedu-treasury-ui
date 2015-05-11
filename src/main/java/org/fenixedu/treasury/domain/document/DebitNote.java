@@ -112,12 +112,9 @@ public class DebitNote extends DebitNote_Base {
     public static DebitNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate) {
         DebitNote note = new DebitNote(debtAccount, documentNumberSeries, documentDate);
-        note.setDocumentNumber("" + documentNumberSeries.getSequenceNumberAndIncrement());
-        note.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         note.setFinantialDocumentType(FinantialDocumentType.findForDebitNote());
         note.setOriginDocumentNumber("");
         note.setDocumentDueDate(documentDate);
-        note.setState(FinantialDocumentStateType.PREPARING);
         note.checkRules();
         return note;
     }
@@ -128,12 +125,9 @@ public class DebitNote extends DebitNote_Base {
             final String originaNumber) {
 
         DebitNote note = new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
-        note.setDocumentNumber("" + documentNumberSeries.getSequenceNumberAndIncrement());
-        note.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         note.setFinantialDocumentType(FinantialDocumentType.findForDebitNote());
         note.setOriginDocumentNumber(originaNumber);
         note.setDocumentDueDate(documentDueDate);
-        note.setState(FinantialDocumentStateType.PREPARING);
         note.checkRules();
 
         return note;
