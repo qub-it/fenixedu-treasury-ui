@@ -35,6 +35,7 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -88,8 +89,7 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     public boolean isDeletable() {
-        //TODOJN
-        return false;
+        return true;
     }
 
     @Atomic
@@ -99,6 +99,15 @@ public class FinantialEntity extends FinantialEntity_Base {
         }
 
         setBennu(null);
+        this.setFinantialInstitution(null);
+        for (Tariff t : this.getTariffSet()) {
+            this.removeTariff(t);
+            t.delete();
+        }
+        for (TreasuryDocumentTemplate template : this.getTreasuryDocumentTemplatesSet()) {
+            this.removeTreasuryDocumentTemplates(template);
+            template.delete();
+        }
 
         deleteDomainObject();
     }

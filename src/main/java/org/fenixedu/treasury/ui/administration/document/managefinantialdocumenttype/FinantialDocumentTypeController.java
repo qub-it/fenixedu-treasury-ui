@@ -73,7 +73,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
     @RequestMapping
     public String home(Model model) {
         //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/";
+        return "forward:" + SEARCH_URL;
     }
 
     private FinantialDocumentType getFinantialDocumentType(Model model) {
@@ -130,8 +130,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/read" + "/"
-                + finantialDocumentType.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + finantialDocumentType.getExternalId(), model, redirectAttributes);
     }
 
 //				
@@ -152,8 +151,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             deleteFinantialDocumentType(finantialDocumentType);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/", model,
-                    redirectAttributes);
+            return redirect(SEARCH_URL, model, redirectAttributes);
 
         } catch (DomainException ex) {
             //Add error messages to the list
@@ -165,8 +163,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return redirect("treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/read/"
-                + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
     }
 
 //				
@@ -200,8 +197,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("finantialDocumentType", finantialDocumentType);
-            return redirect("/treasury/administration/document/managefinantialdocumenttype/finantialdocumenttype/read/"
-                    + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
+            return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
 
         } catch (DomainException de) {
 

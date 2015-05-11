@@ -44,15 +44,15 @@ public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_B
         setBennu(Bennu.getInstance());
     }
 
-    protected TreasuryDocumentTemplateFile(final TreasuryDocumentTemplate documentTemplate, final boolean active, final String displayName,
-            final String fileName, final byte[] content) {
+    protected TreasuryDocumentTemplateFile(final TreasuryDocumentTemplate documentTemplate, final boolean active,
+            final String displayName, final String fileName, final byte[] content) {
         this();
         this.init(displayName, fileName, content);
         setTreasuryDocumentTemplate(documentTemplate);
         setActive(active);
-        
+
         documentTemplate.activateFile(this);
-        
+
         checkRules();
     }
 
@@ -71,8 +71,7 @@ public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_B
     }
 
     public boolean isDeletable() {
-        //TODOJN
-        return false;
+        return true;
     }
 
     @Override
@@ -83,12 +82,13 @@ public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_B
         }
 
         setBennu(null);
+        setTreasuryDocumentTemplate(null);
         deleteDomainObject();
     }
 
     @Atomic
-    static TreasuryDocumentTemplateFile create(final TreasuryDocumentTemplate documentTemplate, 
-            final String displayName, final String fileName, final byte[] content) {
+    static TreasuryDocumentTemplateFile create(final TreasuryDocumentTemplate documentTemplate, final String displayName,
+            final String fileName, final byte[] content) {
         TreasuryDocumentTemplateFile documentTemplateFile =
                 new TreasuryDocumentTemplateFile(documentTemplate, false, displayName, fileName, content);
         return documentTemplateFile;

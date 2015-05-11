@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -120,8 +121,19 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     public boolean isDeletable() {
-        //TODOJN
-        return false;
+        if (this.getFinantialEntitiesSet().stream().anyMatch(x -> x.isDeletable() == false)) {
+            return false;
+        }
+
+        if (this.getDebtAccountsSet().stream().anyMatch(x -> x.isDeletable() == false)) {
+            return false;
+        }
+
+        if (this.getSeriesSet().stream().anyMatch(x -> x.isDeletable() == false)) {
+            return false;
+        }
+
+        return true;
     }
 
     @Atomic
@@ -131,6 +143,31 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         }
 
         setBennu(null);
+        setCurrency(null);
+        setCountry(null);
+        setDistrict(null);
+        setMunicipality(null);
+        setFiscalCountryRegion(null);
+
+        for (DebtAccount debt : getDebtAccountsSet()) {
+            this.removeDebtAccounts(debt);
+            debt.delete();
+        }
+
+        for (FinantialEntity entity : getFinantialEntitiesSet()) {
+            this.removeFinantialEntities(entity);
+            entity.delete();
+        }
+
+        for (Product p : getAvailableProductsSet()) {
+            this.removeAvailableProducts(p);
+        }
+
+        for (Series s : getSeriesSet()) {
+            this.removeSeries(s);
+            s.delete();
+        }
+
         deleteDomainObject();
     }
 

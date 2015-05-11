@@ -153,4 +153,25 @@ public class DebtAccount extends DebtAccount_Base {
     public String obtainUITotalInDebt() {
         return this.getFinantialInstitution().getCurrency().getValueFor(this.getTotalInDebt());
     }
+
+    public boolean isDeletable() {
+        if (this.getFinantialDocumentsSet().size() > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.DebtAccount.cannot.delete");
+        }
+
+        setBennu(null);
+        setCustomer(null);
+        setFinantialInstitution(null);
+
+        deleteDomainObject();
+
+    }
 }

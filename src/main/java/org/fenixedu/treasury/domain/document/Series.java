@@ -75,6 +75,15 @@ public class Series extends Series_Base {
 
         findByCode(getFinantialInstitution(), getCode());
         getName().getLocales().stream().forEach(l -> findByName(getFinantialInstitution(), getName().getContent(l)));
+
+        //Check if the Series exists for All DocumentNumberSeries
+        FinantialDocumentType.findAll().forEach(x -> {
+            if (this.getDocumentNumberSeriesSet().stream().anyMatch(series -> series.getFinantialDocumentType().equals(x))) {
+                //do nothing
+            } else {
+                this.addDocumentNumberSeries(new DocumentNumberSeries(x, this));
+            }
+        });
     }
 
     @Atomic
@@ -90,8 +99,10 @@ public class Series extends Series_Base {
     }
 
     public boolean isDeletable() {
-        //TODOJN 
-        return false;
+        if (this.getDocumentNumberSeriesSet().stream().anyMatch(x -> x.isDeletable() == false)) {
+            return false;
+        }
+        return true;
     }
 
     @Atomic
@@ -101,6 +112,12 @@ public class Series extends Series_Base {
         }
 
         setBennu(null);
+        for (DocumentNumberSeries ser : getDocumentNumberSeriesSet()) {
+            removeDocumentNumberSeries(ser);
+            ser.delete();
+        }
+        setFinantialInstitution(null);
+
         deleteDomainObject();
     }
 
@@ -166,7 +183,9 @@ public class Series extends Series_Base {
     @Atomic
     public static Series create(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
             final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries) {
-        return new Series(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries);
+        Series series = new Series(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries);
+
+        return series;
     }
 
 }

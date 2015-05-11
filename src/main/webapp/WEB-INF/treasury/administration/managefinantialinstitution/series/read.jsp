@@ -213,10 +213,10 @@ ${portal.toolkit()}
 			<c:forEach items="${series.documentNumberSeriesSet}" var="documentNumberSeries">
 			<tr>
 			<td>
-			<c:out value="$documentNumberSeries.finantialDocumentType"/>					
+			<c:out value="${documentNumberSeries.finantialDocumentType.name.content}"/>					
 			</td>
 			<td>
-			<c:out value="$documentNumberSeries.getTotalDocuments()"/>	
+ 			<c:out value="${documentNumberSeries.sequenceNumber}"/>	 
 			</td>
 			<td>
 <!--  ACTIONS -->				

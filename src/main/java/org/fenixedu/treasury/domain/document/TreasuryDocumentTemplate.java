@@ -82,7 +82,14 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base {
             throw new TreasuryDomainException("error.TreasuryDocumentTemplate.cannot.delete");
         }
 
+        for (TreasuryDocumentTemplateFile file : this.getTreasuryDocumentTemplateFilesSet()) {
+            this.removeTreasuryDocumentTemplateFiles(file);
+            file.delete();
+        }
+
         setBennu(null);
+        setFinantialDocumentType(null);
+        setFinantialEntity(null);
         deleteDomainObject();
     }
 

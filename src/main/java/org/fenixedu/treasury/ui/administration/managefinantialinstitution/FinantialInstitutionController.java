@@ -50,6 +50,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.standards.geographic.Country;
@@ -135,21 +136,21 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/delete/{oid}")
-    public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
+    public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setFinantialInstitution(finantialInstitution, model);
         try {
             deleteFinantialInstitution(finantialInstitution);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/";
-        } catch (TreasuryDomainException ex) {
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (Exception ex) {
             addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getMessage(), model);
         }
 
         //The default mapping is the same Read View
-        return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                + getFinantialInstitution(model).getExternalId();
+        return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)

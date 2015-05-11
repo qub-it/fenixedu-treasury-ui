@@ -78,7 +78,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return this.getFinantialDocumentsSet().size() == 0;
     }
 
     @Atomic
@@ -88,7 +88,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
         }
 
         setBennu(null);
-
+        setFinantialDocumentType(null);
         deleteDomainObject();
     }
 

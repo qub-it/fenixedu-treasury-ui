@@ -103,11 +103,11 @@ public class SeriesController extends TreasuryBaseController {
         try {
             deleteSeries(series);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/managefinantialinstitution/series/", model, redirectAttributes);
+            return redirect(FinantialInstitutionController.READ_URL + series.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage("Error deleting the Series due to " + tde.getLocalizedMessage(), model);
         }
-        return "treasury/administration/managefinantialinstitution/series/read/" + getSeries(model).getExternalId();
+        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
