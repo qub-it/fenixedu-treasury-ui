@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.administration.base.managecurrency;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
