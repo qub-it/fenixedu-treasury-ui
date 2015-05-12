@@ -30,7 +30,11 @@ package org.fenixedu.treasury.domain.document;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
@@ -39,7 +43,12 @@ import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.tariff.InterestRate;
+import org.fenixedu.treasury.dto.InterestRateBean;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.joda.time.Period;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -70,6 +79,38 @@ public class DebitEntry extends DebitEntry_Base {
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
 
         checkRules();
+    }
+
+    public InterestRateBean calculateInterestValue(LocalDate whenToCalculate) {
+        StringBuilder interestDescription = new StringBuilder();
+        InterestRate rate = getTariff().getInterestRate();
+
+        Map<DateTime, BigDecimal> payments = new HashMap<DateTime, BigDecimal>();
+        for (SettlementEntry settlementEntry : getSettlementEntriesSet()) {
+            payments.put(settlementEntry.getFinantialDocument().getDocumentDate(), settlementEntry.getAmount());
+        }
+
+        BigDecimal amount = getAmountWithVat();
+        LocalDate startDate = getDueDate();
+        List<BigDecimal> interests = new ArrayList<BigDecimal>();
+        for (DateTime date : payments.keySet().stream().sorted().collect(Collectors.toList())) {
+            if (startDate.getYear() != date.getYear()) {
+                int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
+                int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
+
+            }
+        }
+
+        // TODOJN Auto-generated method stub
+        return "<info sobre juros>";
+    }
+
+    private BigDecimal getRateValueUsingDiaryRate(BigDecimal amount, LocalDate startDate, DateTime date, InterestRate rate) {
+        if( startDate.getYear() != date.getYear() ) {
+            int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
+            int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
+            return amount.multiply(multiplicand)
+        }
     }
 
     @Override
@@ -122,6 +163,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public BigDecimal getOpenAmount() {
+<<<<<<< c2d4aae6081f9884d226719317e7ee5ae0b923e7
 
         final BigDecimal openAmount = this.getAmount();
         //the open amount is the TotalAmount minus the Value already "Payed" in a Settlement Entry
@@ -130,6 +172,16 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         return isPositive(openAmount) ? Currency.getValueWithScale(openAmount) : Currency.getValueWithScale(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getAmountWithVat() {
+        return getAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100)))).setScale(2,
+                RoundingMode.HALF_EVEN);
+    }
+
+    public BigDecimal getOpenAmountWithVat() {
+        return getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100)))).setScale(2,
+                RoundingMode.HALF_EVEN);
     }
 
     // @formatter: off

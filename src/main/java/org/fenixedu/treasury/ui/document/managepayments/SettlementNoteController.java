@@ -26,46 +26,38 @@
  */
 package org.fenixedu.treasury.ui.document.managepayments;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.ArrayList;
-
-import org.joda.time.DateTime;
-
+import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
-import org.fenixedu.bennu.spring.portal.SpringApplication;
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.stereotype.Component;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.dto.SettlementNoteBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 import pt.ist.fenixframework.Atomic;
 
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.Constants;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.domain.document.SettlementNote;
-
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "logged")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-// or
-// @BennuSpringController(value=TreasuryController.class)
 @RequestMapping(SettlementNoteController.CONTROLLER_URL)
 public class SettlementNoteController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/document/managepayments/settlementnote";
@@ -79,13 +71,29 @@ public class SettlementNoteController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + READ_URI;
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
-
-    //
+    private static final String CHOOSE_INVOICE_ENTRIES_URI = "/chooseInvoiceEntries/";
+    public static final String CHOOSE_INVOICE_ENTRIES_URL = CONTROLLER_URL + CHOOSE_INVOICE_ENTRIES_URI;
+    private static final String CALCULATE_INTEREST_URI = "/calculateInterest/";
+    public static final String CALCULATE_INTEREST_URL = CONTROLLER_URL + CALCULATE_INTEREST_URI;
+    private static final String CREATE_DEBIT_NOTE_URI = "/createDebitNote/";
+    public static final String CREATE_DEBIT_NOTE_URL = CONTROLLER_URL + CREATE_DEBIT_NOTE_URI;
+    private static final String INSERT_PAYMENT_URI = "/insertpayment/";
+    public static final String INSERT_PAYMENT_URL = CONTROLLER_URL + INSERT_PAYMENT_URI;
+    private static final String SUMMARY_URI = "/summary/";
+    public static final String SUMMARY_URL = CONTROLLER_URL + SUMMARY_URI;
 
     @RequestMapping
     public String home(Model model) {
-        // this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/document/managepayments/settlementnote/";
+        return "forward:" + SEARCH_URL;
+    }
+
+    private SettlementNoteBean getSettlementNoteBean(Model model) {
+        return (SettlementNoteBean) model.asMap().get("settlementNoteBean");
+    }
+
+    private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
+        model.addAttribute("settlementNoteBeanJson", getBeanJson(bean));
+        model.addAttribute("settlementNoteBean", bean);
     }
 
     private SettlementNote getSettlementNote(Model model) {
@@ -98,13 +106,102 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @Atomic
     public void deleteSettlementNote(SettlementNote settlementNote) {
-        // CHANGE_ME: Do the processing for deleting the settlementNote
-        // Do not catch any exception here
-
-        // settlementNote.delete();
+        settlementNote.delete();
     }
 
-    //
+    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}")
+    public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount, @RequestParam(
+            value = "bean", required = false) SettlementNoteBean bean, Model model) {
+        if (bean == null) {
+            bean = new SettlementNoteBean(debtAccount);
+        }
+        setSettlementNoteBean(bean, model);
+        return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
+    }
+
+    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
+    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        BigDecimal debitSum = new BigDecimal(0);
+        BigDecimal creditSum = new BigDecimal(0);
+        boolean error = false;
+
+        for (int i = 0; i < bean.getDebitEntries().size(); i++) {
+            DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
+            if (debitEntryBean.isIncluded()) {
+                if (debitEntryBean.getPaymentAmount().compareTo(BigDecimal.ZERO) == 0) {
+                    debitEntryBean.setNotValid(true);
+                    error = true;
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.payment.equal.zero",
+                            Integer.toString(i + 1)), model);
+                } else if (debitEntryBean.getPaymentAmount().compareTo(debitEntryBean.getDebitEntry().getOpenAmountWithVat()) > 0) {
+                    debitEntryBean.setNotValid(true);
+                    error = true;
+                    addErrorMessage(
+                            BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.exceeded.openAmount",
+                                    Integer.toString(i + 1)), model);
+                } else {
+                    debitEntryBean.setNotValid(false);
+                    debitSum = debitSum.add(debitEntryBean.getPaymentAmount());
+                }
+            } else {
+                debitEntryBean.setNotValid(false);
+            }
+        }
+        for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
+            if (creditEntryBean.isIncluded()) {
+                creditSum = creditSum.add(creditEntryBean.getCreditEntry().getAmount());
+            }
+        }
+        if (creditSum.compareTo(debitSum) > 0) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.negative.payment.value"), model);
+        }
+        if (error) {
+            setSettlementNoteBean(bean, model);
+            return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
+        }
+
+        bean.setInterestEntries(new ArrayList<InterestEntryBean>());
+        for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
+            if (debitEntryBean.isIncluded()) {
+                String debitInterest = debitEntryBean.getDebitEntry().calculateInterestValue(LocalDate.parse(bean.getDate()));
+                if (debitInterest != null) {
+                    bean.getInterestEntries().add(bean.new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest));
+                }
+            }
+        }
+        setSettlementNoteBean(bean, model);
+        return "treasury/document/managepayments/settlementnote/calculateInterest";
+    }
+
+    @RequestMapping(value = CALCULATE_INTEREST_URI, method = RequestMethod.POST)
+    public String calculateInterest(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        setSettlementNoteBean(bean, model);
+        return "treasury/document/managepayments/settlementnote/createDebitNote";
+    }
+
+    @RequestMapping(value = CREATE_DEBIT_NOTE_URI, method = RequestMethod.POST)
+    public String createDebitNote(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        setSettlementNoteBean(bean, model);
+        return "treasury/document/managepayments/settlementnote/insertPayment";
+    }
+
+    @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
+    public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        BigDecimal debitSum = bean.getPaymentAmountWithVat();
+        BigDecimal paymentSum = BigDecimal.ZERO;
+        for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
+            paymentSum.add(paymentEntryBean.getPayedAmount());
+        }
+        if (debitSum.compareTo(paymentSum) != 0) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.no.match.payment.debit"), model);
+            setSettlementNoteBean(bean, model);
+            return "treasury/document/managepayments/settlementnote/insertPayment";
+        }
+        //TODOJN
+        setSettlementNoteBean(bean, model);
+        return "treasury/document/managepayments/settlementnote/createDebitNote";
+    }
+
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         return "treasury/document/managepayments/settlementnote/create";
