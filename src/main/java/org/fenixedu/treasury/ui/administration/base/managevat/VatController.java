@@ -137,7 +137,7 @@ public class VatController extends TreasuryBaseController {
     }
 
 //
-    @RequestMapping(value = "/delete/{oid}")
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") Vat vat, Model model, RedirectAttributes redirectAttributes) {
 
         setVat(vat, model);

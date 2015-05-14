@@ -26,7 +26,6 @@
  */
 package org.fenixedu.treasury.ui.administration.base.managecurrency;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -149,7 +148,7 @@ public class CurrencyController extends TreasuryBaseController {
     }
 
 //
-    @RequestMapping(value = "/delete/{oid}")
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") Currency currency, Model model, RedirectAttributes redirectAttributes) {
 
         setCurrency(currency, model);

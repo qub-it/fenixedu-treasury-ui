@@ -59,7 +59,8 @@ ${portal.angularToolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.externalId}"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"  ><spring:message code="label.event.accounting.manageCustomer.createPayment" /></a>	&nbsp;|&nbsp;
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebtentry"  ><spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a>	&nbsp;|&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"  ><spring:message code="label.event.accounting.manageCustomer.createExemption" /></a>	
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"  ><spring:message code="label.event.accounting.manageCustomer.createExemption" /></a>	&nbsp;|&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"  ><spring:message code="label.event.accounting.manageCustomer.readEvent" /></a>	
 </div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -118,7 +119,7 @@ ${portal.angularToolkit()}
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance"/></th> 
 	<td>
-	<c:out value="${debtAccount.obtainUITotalInDebt()}"/>
+	<%-- <c:out value="${debtAccount.obtainUITotalInDebt()}"/> --%>
 	</td> 
 </tr>
 </tbody>
@@ -190,6 +191,8 @@ ${portal.angularToolkit()}
 				</tr>
 			</thead>
 			<tbody>
+			<%--
+			
 				<c:forEach items="${allDocumentsDataSet}" var="document">
 					<tr>
 						<td>
@@ -212,7 +215,8 @@ ${portal.angularToolkit()}
 						</td>
 					</tr>
 				</c:forEach>
-			</tbody>
+			 --%>
+			 </tbody>
 		</table>
 	</c:when>
 	<c:otherwise>

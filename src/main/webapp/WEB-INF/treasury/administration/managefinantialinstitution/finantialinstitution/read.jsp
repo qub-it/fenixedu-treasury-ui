@@ -100,40 +100,34 @@ ${portal.toolkit()}
 </div>
 <!-- /.modal -->
 
-<div class="modal fade" id="deleteModal">
+<div class="modal fade" id="deleteModal"> 
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"
-					aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title">
-					<spring:message code="label.confirmation" />
-				</h4>
-			</div>
-			<div class="modal-body">
-				<p>
-					<spring:message
-						code="label.administration.manageFinantialInstitution.readFinantialInstitution.confirmDelete"
-						arguments='${finantialInstitution.name }' />
-				</p>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">
-					<spring:message code="label.close" />
-				</button>
-				<a class="btn btn-danger"
-					href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/delete/${finantialInstitution.externalId}">
-					<spring:message code="label.delete" />
-				</a>
-			</div>
-		</div>
-		<!-- /.modal-content -->
-	</div>
-	<!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
+			<form id ="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/delete/${finantialInstitution.externalId}"   method="POST">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<spring:message code="label.confirmation" />
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<spring:message
+							code="label.administration.manageFinantialInstitution.readFinantialInstitution.confirmDelete"
+							arguments='${finantialInstitution.name }' />
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code="label.close" /></button>
+					<button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
+				</div>
+			</form>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a

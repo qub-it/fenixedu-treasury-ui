@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
@@ -50,34 +50,36 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     protected void init(final Product product) {
-        this.setProduct(product);
-        
+        setProduct(product);
+
         setDescription(product.getName());
     }
 
-    protected  void checkRules() {
+    protected void checkRules() {
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.TreasuryEvent.product.required");
         }
     }
-    
+
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
         final GsonBuilder builder = new GsonBuilder();
-        
+
         final Gson gson = builder.create();
-        final Type stringStringMapType = new TypeToken<Map<String, String>>(){}.getType();
-        
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
         return gson.toJson(propertiesMap, stringStringMapType);
     }
-    
+
     public Map<String, String> getPropertiesMap() {
         final GsonBuilder builder = new GsonBuilder();
-        
+
         final Gson gson = builder.create();
-        final Type stringStringMapType = new TypeToken<Map<String, String>>(){}.getType();
-        
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
         final Map<String, String> propertiesMap = gson.fromJson(getPropertiesJsonMap(), stringStringMapType);
-        
+
         return propertiesMap;
     }
 
@@ -96,6 +98,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         deleteDomainObject();
     }
 
+    public DebtAccount getDebtAccount() {
+        //ACFSILVA
+        return getDebitEntriesSet().stream().findFirst().get().getDebtAccount();
+    }
+
     // @formatter: off
     /************
      * SERVICES *
@@ -105,5 +112,5 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public static Stream<? extends TreasuryEvent> findAll() {
         return Bennu.getInstance().getTreasuryEventsSet().stream();
     }
-    
+
 }

@@ -38,10 +38,8 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
-import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -135,7 +133,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
     }
 
-    @RequestMapping(value = "/delete/{oid}")
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
             RedirectAttributes redirectAttributes) {
 

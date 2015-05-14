@@ -26,48 +26,27 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.List;
 import java.util.ArrayList;
-import java.util.stream.Stream;
-
-import org.joda.time.DateTime;
-
+import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.spring.portal.SpringApplication;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.stereotype.Component;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.groups.Group;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
-
-import pt.ist.fenixframework.Atomic;
-
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.domain.TreasuryExemption;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.dto.DebtAccountBean;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer", accessGroup = "logged")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer2", accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 @BennuSpringController(value = CustomerController.class)
@@ -200,6 +179,22 @@ public class DebtAccountController extends TreasuryBaseController {
         // Now choose what is the Exit Screen	 
         return redirect("/treasury/document/manageexemption/treasuryexemption/create/" + getDebtAccount(model).getExternalId(),
                 model, redirectAttributes);
+    }
+
+    //
+    // This is the EventreadEvent Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/readevent")
+    public String processReadToReadEvent(@PathVariable("oid") DebtAccount debtAccount, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebtAccount(debtAccount, model);
+//
+        /* Put here the logic for processing Event readEvent  */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect(TreasuryEventController.SEARCH_URL + "?debtAccount=" + getDebtAccount(model).getExternalId(), model,
+                redirectAttributes);
     }
 
 }

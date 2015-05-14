@@ -26,11 +26,9 @@
  */
 package org.fenixedu.treasury.ui.administration.base.managefiscalcountryregion;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -145,7 +143,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
     }
 
 //
-    @RequestMapping(value = "/delete/{oid}")
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") FiscalCountryRegion fiscalCountryRegion, Model model,
             RedirectAttributes redirectAttributes) {
 
