@@ -188,9 +188,10 @@ ${portal.toolkit()}
 
 <script>
 
+var pendingDocumentsDataSet = [];
+<%--
 var pendingDocumentsDataSet = [
 	                 			<c:forEach items="${pendingDocumentsDataSet}" var="searchResult">
-	                 				<%-- Field access / formatting  here CHANGE_ME --%>
 	                 				{
 	                 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 	                 "document" : "<c:out value='${searchResult.code}'/>",
@@ -205,7 +206,7 @@ var pendingDocumentsDataSet = [
 // 	                 			},
 	                             </c:forEach>
 	                     ];
-
+--%>
 
 $(document).ready(function() {
 

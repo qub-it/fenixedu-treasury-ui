@@ -31,20 +31,22 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
-<div class="modal fade" id="deleteModal">
+<div class="modal fade" id="deleteModal"> 
   <div class="modal-dialog">
     <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
-      </div>
-      <div class="modal-body">
-        <p><spring:message code = "label.administration.base.manageProductGroup.readProductGroup.confirmDelete"/></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
-        <a class="btn btn-danger" href="${pageContext.request.contextPath}/treasury/administration/base/manageproductgroup/productgroup/delete/${productGroup.externalId}"  > <spring:message code = "label.delete"/></a>
-      </div>
+    	<form id ="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/base/manageproductgroup/productgroup/delete/${productGroup.externalId}"   method="POST">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
+	      </div>
+	      <div class="modal-body">
+	        <p><spring:message code = "label.administration.base.manageProductGroup.readProductGroup.confirmDelete"/></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+	        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
+	      </div>
+      </form>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
