@@ -91,6 +91,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
         setBennu(null);
         setFinantialDocumentType(null);
+        setSeries(null);
         deleteDomainObject();
     }
 

@@ -46,6 +46,7 @@ ${portal.toolkit()}
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+            <form action ="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/delete/${finantialInstitution.externalId}" method = "POST">
                 <button type="button" class="close" data-dismiss="modal"
                     aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -66,12 +67,12 @@ ${portal.toolkit()}
                     data-dismiss="modal">
                     <spring:message code="label.close" />
                 </button>
-                <a class="btn btn-danger"
-                    href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/delete/${finantialInstitution.externalId}">
+                <button type="button" class="btn btn-danger">
                     <spring:message code="label.delete" />
-                </a>
+                </button>
             </div>
         </div>
+        </form>
         <!-- /.modal-content -->
     </div>
     <!-- /.modal-dialog -->

@@ -27,20 +27,27 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.Constants;
+
 public enum FinantialDocumentStateType {
-	PREPARING,
-    CLOSED,
-	ANNULED;
-	
-	public boolean isPreparing() {
-	    return this == PREPARING;
-	}
-	
-	public boolean isClosed() {
-	    return this == CLOSED;
-	}
-	
-	public boolean isAnnuled() {
-	    return this == ANNULED;
-	}
+    PREPARING, CLOSED, ANNULED;
+
+    public boolean isPreparing() {
+        return this == PREPARING;
+    }
+
+    public boolean isClosed() {
+        return this == CLOSED;
+    }
+
+    public boolean isAnnuled() {
+        return this == ANNULED;
+    }
+
+    public LocalizedString getDescriptionI18N() {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
+    }
+
 }

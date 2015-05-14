@@ -124,7 +124,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-    @RequestMapping(value = DELETE_URI + "{oid}")
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model,
             RedirectAttributes redirectAttributes) {
 

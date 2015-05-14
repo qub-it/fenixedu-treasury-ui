@@ -63,6 +63,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
@@ -96,6 +97,7 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     private void setDebitNote(DebitNote debitNote, Model model) {
+
         model.addAttribute("debitNote", debitNote);
     }
 
@@ -111,6 +113,9 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
         setDebitNote(debitNote, model);
+        this.addInfoMessage("asdfjaskldjflksadfj", model);
+        this.addInfoMessage("asdfjaskldjflksadfj2323", model);
+        this.addInfoMessage("asdfjaskldjflksadfj53454", model);
         return "treasury/document/manageinvoice/debitnote/read";
     }
 
@@ -128,6 +133,7 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
                     value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
             Model model) {
+
         List<DebitNote> searchdebitnoteResultsDataSet =
                 filterSearchDebitNote(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency,
                         documentNumber, documentDate, documentDueDate, originDocumentNumber, state);

@@ -15,13 +15,13 @@ import org.fenixedu.treasury.util.TreasuryBootstrapUtil;
 @WebListener
 public class FenixeduTreasuryInitializer implements ServletContextListener {
 
-        @Override
-        public void contextInitialized(ServletContextEvent event) {
-        	
-        	TreasuryBootstrapUtil.InitializeDomain();
-        }
+    @Override
+    public void contextInitialized(ServletContextEvent event) {
 
-        @Override
-        public void contextDestroyed(ServletContextEvent event){
-        }
+        TreasuryBootstrapUtil.InitializeDomain();
+    }
+
+    @Override
+    public void contextDestroyed(ServletContextEvent event) {
+    }
 }

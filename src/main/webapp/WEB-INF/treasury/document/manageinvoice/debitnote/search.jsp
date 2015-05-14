@@ -71,51 +71,11 @@ ${portal.toolkit()}
 <form method="get" class="form-horizontal">
 <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.payorDebtAccount"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_payorDebtAccount" class="js-example-basic-single" name="payordebtaccount">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.finantialDocumentType"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_finantialDocumentType" class="js-example-basic-single" name="finantialdocumenttype">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitNote.debtAccount"/></div> 
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		 <select id="debitNote_debtAccount" class="js-example-basic-single" name="debtaccount">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.documentNumberSeries"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.currency"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_currency" class="js-example-basic-single" name="currency">
 		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
 				</div>
@@ -133,14 +93,6 @@ ${portal.toolkit()}
 <div class="col-sm-4">
 	<input id="debitNote_documentDate" class="form-control" type="text" name="documentdate"  bennu-datetime 
 	value = '<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>' />
-</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.documentDueDate"/></div> 
-
-<div class="col-sm-4">
-	<input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate"  bennu-datetime 
-	value = '<c:out value='${not empty param.documentduedate ? param.documentduedate : debitNote.documentDueDate }'/>' />
 </div>
 </div>		
 <div class="form-group row">
@@ -179,15 +131,15 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-<th><spring:message code="label.DebitNote.payorDebtAccount"/></th>
-<th><spring:message code="label.DebitNote.finantialDocumentType"/></th>
-<th><spring:message code="label.DebitNote.debtAccount"/></th>
-<th><spring:message code="label.DebitNote.documentNumberSeries"/></th>
-<th><spring:message code="label.DebitNote.currency"/></th>
-<th><spring:message code="label.DebitNote.documentNumber"/></th>
 <th><spring:message code="label.DebitNote.documentDate"/></th>
-<th><spring:message code="label.DebitNote.documentDueDate"/></th>
-<th><spring:message code="label.DebitNote.originDocumentNumber"/></th>
+<th><spring:message code="label.DebitNote.documentNumberSeries"/></th>
+<th><spring:message code="label.DebitNote.documentNumber"/></th>
+<%-- <th><spring:message code="label.DebitNote.payorDebtAccount"/></th> --%>
+<%-- <th><spring:message code="label.DebitNote.finantialDocumentType"/></th> --%>
+<th><spring:message code="label.DebitNote.debtAccount"/></th>
+<%-- <th><spring:message code="label.DebitNote.currency"/></th> --%>
+<%-- <th><spring:message code="label.DebitNote.documentDueDate"/></th> --%>
+<%-- <th><spring:message code="label.DebitNote.originDocumentNumber"/></th> --%>
 <th><spring:message code="label.DebitNote.state"/></th>
 <%-- Operations Column --%>
 					<th></th>
@@ -214,11 +166,11 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"payordebtaccount" : "<c:out value='${searchResult.payorDebtAccount}'/>",
-"finantialdocumenttype" : "<c:out value='${searchResult.finantialDocumentType}'/>",
-"debtaccount" : "<c:out value='${searchResult.debtAccount}'/>",
-"documentnumberseries" : "<c:out value='${searchResult.documentNumberSeries}'/>",
-"currency" : "<c:out value='${searchResult.currency}'/>",
+"payordebtaccount" : "<c:out value='${searchResult.payorDebtAccount.customer.name}'/>",
+"finantialdocumenttype" : "<c:out value='${searchResult.finantialDocumentType.name.content}'/>",
+"debtaccount" : "<c:out value='${searchResult.debtAccount.customer.name}'/>",
+"documentnumberseries" : "<c:out value='${searchResult.documentNumberSeries.series.code}'/>",
+"currency" : "<c:out value='${searchResult.currency.name.content}'/>",
 "documentnumber" : "<c:out value='${searchResult.documentNumber}'/>",
 "documentdate" : "<c:out value='${searchResult.documentDate}'/>",
 "documentduedate" : "<c:out value='${searchResult.documentDueDate}'/>",
@@ -232,46 +184,6 @@ ${portal.toolkit()}
 	
 	$(document).ready(function() {
 
-	<%-- Block for providing payorDebtAccount options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	payorDebtAccount_options = [
-		<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element"> 
-			{
-				text :"<c:out value='${element}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	
-	$("#debitNote_payorDebtAccount").select2(
-		{
-			data : payorDebtAccount_options,
-		}	  
-		    );
-		    
-		    <%-- If it's not from parameter change param.payorDebtAccount to whatever you need (it's the externalId already) --%>
-		    $("#debitNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payorDebtAccount}'/>');
-	<%-- End block for providing payorDebtAccount options --%>
-	<%-- Block for providing finantialDocumentType options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	finantialDocumentType_options = [
-		<c:forEach items="${DebitNote_finantialDocumentType_options}" var="element"> 
-			{
-				text :"<c:out value='${element}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	
-	$("#debitNote_finantialDocumentType").select2(
-		{
-			data : finantialDocumentType_options,
-		}	  
-		    );
-		    
-		    <%-- If it's not from parameter change param.finantialDocumentType to whatever you need (it's the externalId already) --%>
-		    $("#debitNote_finantialDocumentType").select2().select2('val', '<c:out value='${param.finantialDocumentType}'/>');
-	<%-- End block for providing finantialDocumentType options --%>
 	<%-- Block for providing debtAccount options --%>
 	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
 	debtAccount_options = [
@@ -303,59 +215,30 @@ ${portal.toolkit()}
 		</c:forEach>
 	];
 	
-	$("#debitNote_documentNumberSeries").select2(
-		{
-			data : documentNumberSeries_options,
-		}	  
-		    );
-		    
-		    <%-- If it's not from parameter change param.documentNumberSeries to whatever you need (it's the externalId already) --%>
-		    $("#debitNote_documentNumberSeries").select2().select2('val', '<c:out value='${param.documentNumberSeries}'/>');
-	<%-- End block for providing documentNumberSeries options --%>
-	<%-- Block for providing currency options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	currency_options = [
-		<c:forEach items="${DebitNote_currency_options}" var="element"> 
-			{
-				text :"<c:out value='${element}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	
-	$("#debitNote_currency").select2(
-		{
-			data : currency_options,
-		}	  
-		    );
-		    
-		    <%-- If it's not from parameter change param.currency to whatever you need (it's the externalId already) --%>
-		    $("#debitNote_currency").select2().select2('val', '<c:out value='${param.currency}'/>');
-	<%-- End block for providing currency options --%>
 	
 
 
 		var table = $('#searchdebitnoteTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
 		},
-		"columns": [
-			{ data: 'payordebtaccount' },
-			{ data: 'finantialdocumenttype' },
-			{ data: 'debtaccount' },
-			{ data: 'documentnumberseries' },
-			{ data: 'currency' },
-			{ data: 'documentnumber' },
-			{ data: 'documentdate' },
-			{ data: 'documentduedate' },
-			{ data: 'origindocumentnumber' },
-			{ data: 'state' },
-			{ data: 'actions' }
+// 		"columns": [
+// 			{ data: 'documentdate' },
+// 			{ data: 'documentnumberseries' },
+// 			{ data: 'documentnumber' },
+// // 			{ data: 'payordebtaccount' },
+// // 			{ data: 'finantialdocumenttype' },
+// 			{ data: 'debtaccount' },
+// // 			{ data: 'currency' },
+// // 			{ data: 'documentduedate' },
+// // 			{ data: 'origindocumentnumber' },
+// 			{ data: 'state' },
+// 			{ data: 'actions' }
 			
-		],
+// 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 10 } 
+		               { "width": "54px", "targets": 5 } 
 		             ],
 		"data" : searchdebitnoteDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

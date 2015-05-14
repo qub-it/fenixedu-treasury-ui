@@ -164,33 +164,33 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     }
 
     protected static FinantialDocumentType findByFinantialDocumentType(final FinantialDocumentTypeEnum type) {
-        final Stream<FinantialDocumentType> stream =
-        		findAll().filter(fdt -> fdt.getType() == type);
+        final Set<FinantialDocumentType> stream = findAll().filter(fdt -> fdt.getType() == type).collect(Collectors.toSet());
 
-        if (stream.count() > 1) {
+        if (stream.size() > 1) {
             throw new TreasuryDomainException("error.FinantialDocumentType.not.unique.in.finantial.document.type");
         }
-
-        return stream.findFirst().orElse(null);
+        if (stream.size() == 0)
+            return null;
+        return stream.iterator().next();
     }
 
     public static FinantialDocumentType findForDebitNote() {
         return findByFinantialDocumentType(FinantialDocumentTypeEnum.DEBIT_NOTE);
     }
-    
+
     public static FinantialDocumentType findForCreditNote() {
         return findByFinantialDocumentType(FinantialDocumentTypeEnum.CREDIT_NOTE);
     }
-    
+
     public static FinantialDocumentType findForSettlementNote() {
         return findByFinantialDocumentType(FinantialDocumentTypeEnum.SETTLEMENT_NOTE);
     }
-    
+
     public static FinantialDocumentType findForReimbursementNote() {
         return findByFinantialDocumentType(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE);
     }
 
-    @Atomic 
+    @Atomic
     public static FinantialDocumentType createForDebitNote(final String code, final LocalizedString name,
             final String documentNumberSeriesPrefix, boolean invoice) {
         return new FinantialDocumentType(FinantialDocumentTypeEnum.DEBIT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
@@ -205,13 +205,15 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     @Atomic
     public static FinantialDocumentType createForSettlementNote(final String code, final LocalizedString name,
             final String documentNumberSeriesPrefix, boolean invoice) {
-        return new FinantialDocumentType(FinantialDocumentTypeEnum.SETTLEMENT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
+        return new FinantialDocumentType(FinantialDocumentTypeEnum.SETTLEMENT_NOTE, code, name, documentNumberSeriesPrefix,
+                invoice);
     }
 
     @Atomic
     public static FinantialDocumentType createForReimbursementNote(final String code, final LocalizedString name,
             final String documentNumberSeriesPrefix, boolean invoice) {
-        return new FinantialDocumentType(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE, code, name, documentNumberSeriesPrefix, invoice);
+        return new FinantialDocumentType(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE, code, name, documentNumberSeriesPrefix,
+                invoice);
     }
 
 }
