@@ -166,8 +166,12 @@ public class Product extends Product_Base {
     public void updateFinantialInstitutions(List<FinantialInstitution> finantialInstitutions) {
         for (FinantialInstitution inst : this.getFinantialInstitutionsSet()) {
             if (!finantialInstitutions.contains(inst)) {
-                this.removeFinantialInstitutions(inst);
-                inst.removeAvailableProducts(this);
+                if (this.canRemoveFinantialInstitution(inst)) {
+                    this.removeFinantialInstitutions(inst);
+                    inst.removeAvailableProducts(this);
+                } else {
+                    throw new TreasuryDomainException("error.product.cannot.remove.finantialentity");
+                }
             }
         }
 
@@ -177,5 +181,10 @@ public class Product extends Product_Base {
                 inst2.addAvailableProducts(this);
             }
         }
+    }
+
+    private boolean canRemoveFinantialInstitution(FinantialInstitution inst) {
+        return inst.getFinantialEntitiesSet().stream()
+                .anyMatch(x -> x.getTariffSet().stream().anyMatch(y -> y.getProduct().equals(this)));
     }
 }

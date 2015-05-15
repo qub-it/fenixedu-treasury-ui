@@ -159,11 +159,9 @@ ${portal.toolkit()}
 						</c:forEach>
 						];
 
-						var selectedOptions = undefined;
-						<c:forEach items="${product.finantialInstitutionsSet}" var="element">
-						 selectedOptions = selectedOptions . <c:out value='${element.externalId}'/> . ',';
-						</c:forEach>
-						
+						var selectedOptions = [
+						<c:forEach items="${product.finantialInstitutionsSet}" var="element" varStatus="loop"><c:out value='${element.externalId}'/>    ${!loop.last ? ',' : ''}	</c:forEach>
+						];
 						//Init Select2Options
 						initSelect2Multiple("#finantial_institutions",finantial_institutions_options, selectedOptions); //
 					</script>

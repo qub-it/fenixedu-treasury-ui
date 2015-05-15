@@ -160,8 +160,8 @@ ${portal.toolkit()}
 			</div>
 
 			<c:choose>
-				<c:when test="${not empty product.getActiveTariffsSet(finantialInstitution)}">
-					<datatables:table id="activeTariffs${finantialInstitution.externalId}"  row="tariff" data="${product.getActiveTariffsSet(finantialInstitution)}" cssClass="table responsive table-bordered table-hover"
+				<c:when test="${not empty product.getTariffsSet(finantialInstitution)}">
+					<datatables:table id="activeTariffs${finantialInstitution.externalId}"  row="tariff" data="${product.getTariffsSet(finantialInstitution)}" cssClass="table responsive table-bordered table-hover"
 						cdn="false" cellspacing="2">
 						<datatables:column>
 							<datatables:columnHead>
@@ -190,7 +190,7 @@ ${portal.toolkit()}
 						<datatables:column>
 							<a class="btn btn-default btn-xs"
 								href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/update/${tariff.externalId}"><spring:message
-									code="label.event.update" /></a>
+									code="label.event.update" /></a>&nbsp;
 							<a class="btn btn-default btn-xs"
 								href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/delete/${tariff.externalId}"><spring:message
 									code="label.event.delete" /></a>

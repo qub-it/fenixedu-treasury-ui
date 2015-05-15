@@ -23,6 +23,7 @@ function initSelect2(element_id, elements_data_source, element_init_val) {
 }
 
 function initSelect2Multiple(element_id, elements_data_source, element_init_values) {
+
 	var func = function() {
 		var select2 = $(element_id).select2({
 			data : elements_data_source
