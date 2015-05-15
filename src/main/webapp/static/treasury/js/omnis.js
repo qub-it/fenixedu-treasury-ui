@@ -73,7 +73,6 @@ function createAngularPostbackFunction(angular_scope) {
 
 function createDataTables(tableid, showsearchbox, showtools,pagination, pagecontext,i18nurl) {
 	var dom = "";
-	
 	if (showsearchbox == true && showtools == true) {
 		dom = '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip'; //FilterBox = YES && ExportOptions = YES
 	} else if (showsearchbox == true && showtools == false) {

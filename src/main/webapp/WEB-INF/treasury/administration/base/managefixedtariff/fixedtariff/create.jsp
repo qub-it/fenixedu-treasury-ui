@@ -38,8 +38,7 @@ ${portal.angularToolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_readProduct>"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;</div>
+<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/read/${fixedTariffBean.product.externalId}" ><spring:message code="label.event.back" /></a>|&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
 					
@@ -100,7 +99,7 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.amount"/></div> 
 
 <div class="col-sm-10">
-	<input required id="fixedTariff_amount" class="form-control" type="text" ng-model="object.amount" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : fixedTariff.amount }'/>' />
+	<input required id="fixedTariff_amount" class="form-control" type="text" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" ng-model="object.amount" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : fixedTariff.amount }'/>' />
 </div>	
 </div>		
 <div class="form-group row">

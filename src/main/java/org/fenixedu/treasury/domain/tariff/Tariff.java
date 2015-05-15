@@ -49,11 +49,14 @@ public abstract class Tariff extends Tariff_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final FinantialEntity finantialEntity, final Product product, final VatType vatType, final DateTime beginDate, final DateTime endDate,
-            final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
-            final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,
-            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
-            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+    public abstract String getUiAmount();
+
+    protected void init(final FinantialEntity finantialEntity, final Product product, final VatType vatType,
+            final DateTime beginDate, final DateTime endDate, final DueDateCalculationType dueDateCalculationType,
+            final LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests,
+            final InterestType interestType, final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday,
+            final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount,
+            final BigDecimal rate) {
         setFinantialEntity(finantialEntity);
         setProduct(product);
         setVatType(TreasurySettings.getInstance().getDefaultVatType());
@@ -63,63 +66,64 @@ public abstract class Tariff extends Tariff_Base {
         setFixedDueDate(fixedDueDate);
         setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
         setApplyInterests(applyInterests);
-        
-        if(getApplyInterests()) {
-            InterestRate.create(this, interestType, numberOfDaysAfterCreationForDueDate, applyInFirstWorkday, maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
+        if (getApplyInterests()) {
+            InterestRate.create(this, interestType, numberOfDaysAfterCreationForDueDate, applyInFirstWorkday,
+                    maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
         }
-        
+
     }
 
     protected void checkRules() {
-        if(getProduct() == null) {
+        if (getProduct() == null) {
             throw new TreasuryDomainException("error.Tariff.product.required");
         }
-        
-        if(getVatType() == null) {
+
+        if (getVatType() == null) {
             throw new TreasuryDomainException("error.Tariff.vatType.required");
         }
-        
-        if(getBeginDate() == null) {
+
+        if (getBeginDate() == null) {
             throw new TreasuryDomainException("error.Tariff.beginDate.required");
         }
-        
-        if(getEndDate() != null && !getEndDate().isAfter(getBeginDate())) {
+
+        if (getEndDate() != null && !getEndDate().isAfter(getBeginDate())) {
             throw new TreasuryDomainException("error.Tariff.endDate.must.be.after.beginDate");
         }
-        
-        if(getDueDateCalculationType() == null) {
+
+        if (getDueDateCalculationType() == null) {
             throw new TreasuryDomainException("error.Tariff.dueDateCalculationType.required");
         }
-        
-        if(getDueDateCalculationType().isFixedDate() && getFixedDueDate() == null) {
+
+        if (getDueDateCalculationType().isFixedDate() && getFixedDueDate() == null) {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.required");
         }
-        
-        if(getFixedDueDate() != null && getFixedDueDate().toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1).isBefore(getBeginDate())) {
+
+        if (getFixedDueDate() != null
+                && getFixedDueDate().toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1).isBefore(getBeginDate())) {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.must.be.after.or.equal.beginDate");
         }
-        
-        if(getDueDateCalculationType().isDaysAfterCreation() && getNumberOfDaysAfterCreationForDueDate() < 0) {
+
+        if (getDueDateCalculationType().isDaysAfterCreation() && getNumberOfDaysAfterCreationForDueDate() < 0) {
             throw new TreasuryDomainException("error.Tariff.numberOfDaysAfterCreationForDueDate.must.be.positive");
         }
-        
-        if(getApplyInterests() && getInterestRate() == null) {
+
+        if (getApplyInterests() && getInterestRate() == null) {
             throw new TreasuryDomainException("error.Tariff.interestRate.required");
         }
     }
-    
+
     protected Interval getInterval() {
         return new Interval(getBeginDate(), getEndDate());
     }
-    
+
     public boolean isEndDateDefined() {
         return getEndDate() != null;
     }
-    
+
     public boolean isActive(final DateTime when) {
         return new Interval(getBeginDate(), getEndDate()).contains(when);
     }
-    
+
     public boolean isActive(final Interval dateInterval) {
         return new Interval(getBeginDate(), getEndDate()).overlaps(dateInterval);
     }
@@ -128,7 +132,7 @@ public abstract class Tariff extends Tariff_Base {
     public void edit(final DateTime beginDate, final DateTime endDate) {
         super.setBeginDate(beginDate);
         super.setEndDate(endDate);
-        
+
         checkRules();
     }
 
@@ -146,8 +150,8 @@ public abstract class Tariff extends Tariff_Base {
         setVatType(null);
         setProduct(null);
         setFinantialEntity(null);
-        
-        if(getInterestRate() != null) {
+
+        if (getInterestRate() != null) {
             getInterestRate().delete();
         }
 
@@ -156,26 +160,25 @@ public abstract class Tariff extends Tariff_Base {
 
     // @formatter: off
     /************
-     *   UTILS  *
+     * UTILS *
      ************/
     // @formatter: on
-    
+
     protected boolean isNegative(final BigDecimal value) {
         return !isZero(value) && !isPositive(value);
     }
-    
+
     protected boolean isZero(final BigDecimal value) {
         return BigDecimal.ZERO.compareTo(value) == 0;
     }
-    
+
     protected boolean isPositive(final BigDecimal value) {
         return BigDecimal.ZERO.compareTo(value) < 0;
     }
-    
+
     protected boolean isGreaterThan(final BigDecimal v1, final BigDecimal v2) {
         return v1.compareTo(v2) > 0;
     }
-    
 
     // @formatter: off
     /************
@@ -186,15 +189,15 @@ public abstract class Tariff extends Tariff_Base {
     public static Stream<? extends Tariff> findAll() {
         return Bennu.getInstance().getTariffsSet().stream();
     }
-    
+
     public static Stream<? extends Tariff> find(final Product product) {
         return findAll().filter(t -> t.getProduct() == product);
     }
-    
+
     public static Stream<? extends Tariff> find(final Product product, final DateTime when) {
         return find(product).filter(t -> t.isActive(when));
     }
-    
+
     public static Stream<? extends Tariff> findInInterval(final Product product, final DateTime start, final DateTime end) {
         final Interval interval = new Interval(start, end);
         return find(product).filter(t -> t.isActive(interval));

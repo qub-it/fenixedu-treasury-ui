@@ -38,7 +38,7 @@ ${portal.angularToolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_readProduct>/${fixedTariff.externalId}" ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/read/${fixedTariff.product.externalId}" ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -108,7 +108,7 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.applyInterests"/></div> 
 
 <div class="col-sm-2">
-<select id="fixedTariff_applyInterests" name="applyinterests" class="form-control" ng-model="object.applyinterests">
+<select id="fixedTariff_applyInterests" name="applyinterests" class="form-control" ng-model="object.applyInterests">
 <option value="false"><spring:message code="label.no"/></option>
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
@@ -120,37 +120,24 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.beginDate"/></div> 
 
-<%-- <div class="col-sm-4">
-	<input id="fixedTariff_beginDate" class="form-control" type="text" name="begindate"  bennu-datetime 
-	value = '<c:out value='${not empty param.begindate ? param.begindate : fixedTariff.beginDate }'/>' />
-</div> --%>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.dueDateCalculationType"/></div> 
-
-<div class="col-sm-4">
-		<ui-select id="fixedTariff_dueDateCalculationType" class="form-control" name="duedatecalculationtype" ng-model="$parent.object.dueDateCalculationType" theme="bootstrap" ng-disabled="disabled" >
-    						<ui-select-match >{{$select.selected.text}}</ui-select-match>
-    						<ui-select-choices repeat="dueDateCalculationType.id as dueDateCalculationType in object.dueDateCalculationTypeDataSource | filter: $select.search">
-      							<span ng-bind-html="dueDateCalculationType.text | highlight: $select.search"></span>
-    						</ui-select-choices>
-  						</ui-select>				
-</div>
+ <div class="col-sm-4">
+	<input id="fixedTariff_beginDate"  class="form-control" type="date" name="begindate"   
+	ng-model="object.beginDate"/>
+</div> 
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.endDate"/></div> 
 
-<%-- <div class="col-sm-4">
-	<input id="fixedTariff_endDate" class="form-control" type="text" name="enddate"  bennu-datetime 
-	value = '<c:out value='${not empty param.enddate ? param.enddate : fixedTariff.endDate }'/>' />
-</div> --%>
+ <div class="col-sm-4">
+	<input id="fixedTariff_endDate" class="form-control" type="date" name="enddate"  ng-model="object.endDate" />
+</div> 
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.finantialEntity"/></div> 
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
-		<ui-select id="fixedTariff_finantialEntity" class="form-control" name="finantialentity" ng-model="$parent.object.finantialEntity" theme="bootstrap" ng-disabled="disabled" >
+		<ui-select id="fixedTariff_finantialEntity"  name="finantialentity" ng-model="$parent.object.finantialEntity" theme="bootstrap" ng-disabled="disabled" >
     						<ui-select-match >{{$select.selected.text}}</ui-select-match>
     						<ui-select-choices repeat="finantialEntity.id as finantialEntity in object.finantialEntityDataSource | filter: $select.search">
       							<span ng-bind-html="finantialEntity.text | highlight: $select.search"></span>
@@ -159,14 +146,25 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 				</div>
 </div>		
 <div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.dueDateCalculationType"/></div> 
+
+<div class="col-sm-4">
+		<ui-select id="fixedTariff_dueDateCalculationType"  name="duedatecalculationtype" ng-model="$parent.object.dueDateCalculationType" theme="bootstrap" ng-disabled="disabled" >
+    						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+    						<ui-select-choices repeat="dueDateCalculationType.id as dueDateCalculationType in object.dueDateCalculationTypeDataSource | filter: $select.search">
+      							<span ng-bind-html="dueDateCalculationType.text | highlight: $select.search"></span>
+    						</ui-select-choices>
+  						</ui-select>				
+</div>
+</div>		
+<div class="form-group row" ng-show="object.dueDateCalculationType == 'FIXED_DATE'">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.fixedDueDate"/></div> 
 
-<%-- <div class="col-sm-4">
-	<input id="fixedTariff_fixedDueDate" class="form-control" type="text" name="fixedduedate"  bennu-datetime 
-	value = '<c:out value='${not empty param.fixedduedate ? param.fixedduedate : fixedTariff.fixedDueDate }'/>' />
-</div> --%>
+ <div class="col-sm-4">
+	<input id="fixedTariff_fixedDueDate"  type="text" name="fixedduedate"  ng-model="object.fixedDueDate" />
+</div> 
 </div>		
-<div class="form-group row">
+<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION'">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.numberOfDaysAfterCreationForDueDate"/></div> 
 
 <div class="col-sm-10">
@@ -178,7 +176,7 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
-		<ui-select id="fixedTariff_vatType" class="form-control" name="vattype" ng-model="$parent.object.vatType" theme="bootstrap" ng-disabled="disabled" >
+		<ui-select id="fixedTariff_vatType"  name="vattype" ng-model="$parent.object.vatType" theme="bootstrap" ng-disabled="disabled" >
     						<ui-select-match >{{$select.selected.text}}</ui-select-match>
     						<ui-select-choices repeat="vatType.id as vatType in object.vatTypeDataSource | filter: $select.search">
       							<span ng-bind-html="vatType.text | highlight: $select.search"></span>

@@ -275,4 +275,9 @@ public class FixedTariff extends FixedTariff_Base {
         return findAll(institution).filter(i -> applyInterests == i.getApplyInterests());
     }
 
+    @Override
+    public String getUiAmount() {
+        return this.getAmount().setScale(3) + " " + this.getFinantialEntity().getFinantialInstitution().getCurrency().getSymbol();
+    }
+
 }

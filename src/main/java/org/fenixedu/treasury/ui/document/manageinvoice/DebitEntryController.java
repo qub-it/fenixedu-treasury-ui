@@ -152,9 +152,7 @@ public class DebitEntryController extends TreasuryBaseController {
         Product p = bean.getProduct();
         if (p != null) {
             Tariff t =
-                    p.getActiveTariffs(new DateTime())
-                            .filter(x -> x.getFinantialEntity().getFinantialInstitution()
-                                    .equals(bean.getDebtAccount().getFinantialInstitution())).findFirst().orElse(null);
+                    p.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime()).findFirst().orElse(null);
 
             if (t instanceof FixedTariff) {
                 bean.setAmount(((FixedTariff) t).getAmount());
@@ -220,7 +218,7 @@ public class DebitEntryController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        Optional<Tariff> tariff = product.getActiveTariffs(new DateTime()).findFirst();
+        Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
         VatType vatType = tariff.isPresent() ? tariff.get().getVatType() : null;
 
         DebitEntry debitEntry = DebitEntry.create(debtAccount, null, vatType, amount, dueDate, null, product);

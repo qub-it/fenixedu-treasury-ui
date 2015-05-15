@@ -63,6 +63,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.ProductGroup;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
@@ -77,6 +78,8 @@ import org.fenixedu.treasury.dto.FixedTariffBean;
 public class FixedTariffController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/administration/base/managefixedtariff/fixedtariff";
+    protected static final String _DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
 //
 
@@ -117,6 +120,30 @@ public class FixedTariffController extends TreasuryBaseController {
         // Do not catch any exception here
 
         // fixedTariff.delete();
+    }
+
+    @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
+    public String delete(@PathVariable("oid") FixedTariff fixedTariff, Model model, RedirectAttributes redirectAttributes) {
+
+        String productId = fixedTariff.getProduct().getExternalId();
+        setFixedTariff(fixedTariff, model);
+        try {
+            //call the Atomic delete function
+            deleteFixedTariff(fixedTariff);
+
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            return redirect(ProductController.READ_URL + productId, model, redirectAttributes);
+
+        } catch (DomainException ex) {
+            //Add error messages to the list
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+
+        } catch (Exception ex) {
+            //Add error messages to the list
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+        }
+        //The default mapping is the same Read View
+        return redirect(ProductController.READ_URL + productId, model, redirectAttributes);
     }
 
 //				
@@ -168,9 +195,10 @@ public class FixedTariffController extends TreasuryBaseController {
         try {
 
             FixedTariff fixedTariff =
-                    createFixedTariff(bean.getAmount(), bean.getApplyInterests(), bean.getBeginDate(), null, bean.getEndDate(),
-                            bean.getFinantialEntity(), bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(),
-                            bean.getVatType(), bean.getInterestRate(), bean.getProduct());
+                    createFixedTariff(bean.getAmount(), bean.getApplyInterests(), bean.getBeginDate(),
+                            bean.getDueDateCalculationType(), bean.getEndDate(), bean.getFinantialEntity(),
+                            bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.getVatType(),
+                            bean.getInterestRate(), bean.getProduct());
 
             //Success Validation
             //Add the bean to be used in the View
@@ -224,19 +252,19 @@ public class FixedTariffController extends TreasuryBaseController {
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") FixedTariff fixedTariff, @RequestParam(value = "finantialInstitution",
-            required = true) FinantialInstitution finantialInstitution, Model model) {
+    public String update(@PathVariable("oid") FixedTariff fixedTariff, Model model) {
         setFixedTariff(fixedTariff, model);
 
         FixedTariffBean bean = new FixedTariffBean(fixedTariff);
-        bean.setFinantialEntityDataSource(finantialInstitution.getFinantialEntitiesSet().stream().collect(Collectors.toList()));
+        bean.setFinantialEntityDataSource(fixedTariff.getFinantialEntity().getFinantialInstitution().getFinantialEntitiesSet()
+                .stream().collect(Collectors.toList()));
         bean.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
         List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
         for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
             dueDates.add(dueDate);
         }
         bean.setDueDateCalculationTypeDataSource(dueDates);
-        bean.setFinantialInstitution(finantialInstitution);
+        bean.setFinantialInstitution(fixedTariff.getFinantialEntity().getFinantialInstitution());
 
         setFixedTariffBean(bean, model);
         return "treasury/administration/base/managefixedtariff/fixedtariff/update";
@@ -292,7 +320,7 @@ public class FixedTariffController extends TreasuryBaseController {
             */
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(fixedTariff, bean.getFinantialInstitution(), model);
+            return update(fixedTariff, model);
 
         }
     }

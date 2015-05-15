@@ -140,17 +140,27 @@ public class Product extends Product_Base {
         return new Product(productGroup, code, name, unitOfMeasure, active);
     }
 
-    public Stream<Tariff> getActiveTariffs(DateTime when) {
+    public Stream<Tariff> getTariffs(FinantialInstitution finantialInstitution) {
+        return this.getTariffSet().stream()
+                .filter(x -> x.getFinantialEntity().getFinantialInstitution().equals(finantialInstitution));
+    }
+
+    public Set<Tariff> getTariffsSet(FinantialInstitution finantialInstitution) {
+        return getTariffs(finantialInstitution).collect(Collectors.toSet());
+    }
+
+    public Stream<Tariff> getActiveTariffs(FinantialInstitution finantialInstitution, DateTime when) {
         return this
                 .getTariffSet()
                 .stream()
+                .filter(x -> x.getFinantialEntity().getFinantialInstitution().equals(finantialInstitution))
                 .filter(x -> (x.getBeginDate() != null && x.getBeginDate().isBefore(when))
                         && (x.getEndDate() == null || x.getEndDate().isAfter(when)));
 
     }
 
-    public Set<Tariff> getActiveTariffsSet() {
-        return getActiveTariffs(new DateTime()).collect(Collectors.toSet());
+    public Set<Tariff> getActiveTariffsSet(FinantialInstitution finantialInstitution) {
+        return getActiveTariffs(finantialInstitution, new DateTime()).collect(Collectors.toSet());
     }
 
     public void updateFinantialInstitutions(List<FinantialInstitution> finantialInstitutions) {
