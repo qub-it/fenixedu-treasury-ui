@@ -77,6 +77,10 @@ ${portal.angularToolkit()}
 <script>
 
 angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller('FixedTariffController', ['$scope', function($scope) {
+	$scope.booleanvalues= [
+	                    {name: '<spring:message code="label.no"/>',    value: false},
+	                    {name: '<spring:message code="label.yes"/>',        value: true}
+	                  ];
 
  	$scope.object=angular.fromJson('${fixedTariffBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
@@ -108,13 +112,10 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.applyInterests"/></div> 
 
 <div class="col-sm-2">
-<select id="fixedTariff_applyInterests" name="applyinterests" class="form-control" ng-model="object.applyInterests">
-<option value="false"><spring:message code="label.no"/></option>
-<option value="true"><spring:message code="label.yes"/></option>				
+<script>
+</script>
+<select id="fixedTariff_applyInterests" name="applyinterests" class="form-control" ng-model="object.applyInterests" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 </select>
-	<script>
-		$("#fixedTariff_applyInterests").val('<c:out value='${not empty param.applyinterests ? param.applyinterests : fixedTariff.applyInterests }'/>');
-	</script>	
 </div>
 </div>		
 <div class="form-group row">

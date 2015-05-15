@@ -105,14 +105,11 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.applyInterests"/></div> 
 
-<div class="col-sm-2">
+<div class="col-sm-4">
 <select required id="fixedTariff_applyInterests" name="applyinterests" class="form-control" ng-model="object.applyInterests">
 <option value="false"><spring:message code="label.no"/></option>
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
-	<script>
-		$("#fixedTariff_applyInterests").val('<c:out value='${not empty param.applyinterests ? param.applyinterests : fixedTariff.applyInterests }'/>');
-	</script>	
 </div>
 </div>		
 <div class="form-group row">
