@@ -139,6 +139,36 @@ ${portal.toolkit()}
 	</script>
 				</div>
 			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.Product.finantialInstitution" />
+				</div>
+
+				<div class="col-sm-2">
+					<select id="finantial_institutions" class="js-example-basic-single" name="finantialInstitution" multiple="multiple">
+		 				<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+					</select>
+					<script>
+					<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+						var finantial_institutions_options = [
+						<c:forEach items="${finantial_institutions_options}" var="element">   // THIS _FIELD_NAME__options must be added in the Controller.java 
+						{
+							text :"<c:out value='${element.name}'/>",  //Format the Output for the HTML Option
+							id : "<c:out value='${element.externalId}'/>" //Define the ID for the HTML Option
+						},
+						</c:forEach>
+						];
+
+						var selectedOptions = undefined;
+						<c:forEach items="${product.finantialInstitutionsSet}" var="element">
+						 selectedOptions = selectedOptions . <c:out value='${element.externalId}'/> . ',';
+						</c:forEach>
+						
+						//Init Select2Options
+						initSelect2Multiple("#finantial_institutions",finantial_institutions_options, selectedOptions); //
+					</script>
+				</div>
+			</div>
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"

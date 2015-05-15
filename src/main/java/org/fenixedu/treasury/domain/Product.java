@@ -27,14 +27,19 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -58,10 +63,10 @@ public class Product extends Product_Base {
     }
 
     private void checkRules() {
-        if(getProductGroup() == null) {
+        if (getProductGroup() == null) {
             throw new TreasuryDomainException("error.Product.productGroup.required");
         }
-        
+
         if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
             throw new TreasuryDomainException("error.Product.code.required");
         }
@@ -119,12 +124,12 @@ public class Product extends Product_Base {
 
     public static Stream<Product> findByCode(final String code) {
         return findAll().filter(p -> p.getCode().equalsIgnoreCase(code));
-    }                
+    }
 
     public static Stream<Product> findByName(final String name) {
         return findAll().filter(p -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(p.getName(), name));
     }
-    
+
     public static LocalizedString defaultUnitOfMeasure() {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, "label.unitOfMeasure.default");
     }
@@ -133,5 +138,34 @@ public class Product extends Product_Base {
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
             final LocalizedString unitOfMeasure, boolean active) {
         return new Product(productGroup, code, name, unitOfMeasure, active);
+    }
+
+    public Stream<Tariff> getActiveTariffs(DateTime when) {
+        return this
+                .getTariffSet()
+                .stream()
+                .filter(x -> (x.getBeginDate() != null && x.getBeginDate().isBefore(when))
+                        && (x.getEndDate() == null || x.getEndDate().isAfter(when)));
+
+    }
+
+    public Set<Tariff> getActiveTariffsSet() {
+        return getActiveTariffs(new DateTime()).collect(Collectors.toSet());
+    }
+
+    public void updateFinantialInstitutions(List<FinantialInstitution> finantialInstitutions) {
+        for (FinantialInstitution inst : this.getFinantialInstitutionsSet()) {
+            if (!finantialInstitutions.contains(inst)) {
+                this.removeFinantialInstitutions(inst);
+                inst.removeAvailableProducts(this);
+            }
+        }
+
+        for (FinantialInstitution inst2 : finantialInstitutions) {
+            if (!this.getFinantialInstitutionsSet().contains(inst2)) {
+                this.addFinantialInstitutions(inst2);
+                inst2.addAvailableProducts(this);
+            }
+        }
     }
 }

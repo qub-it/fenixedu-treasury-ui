@@ -51,16 +51,15 @@ ${portal.toolkit()}
 	</h1>
 </div>
 <%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managedebtentry/invoiceentry/"><spring:message
-			code="label.event.back" /></a>|&nbsp;&nbsp; <span
-		class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp;
+<%-- NAVIGATION --%>
+<div class="well well-sm" style="display:inline-block">
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managedebtentry/invoiceentry/"  ><spring:message code="label.event.back" /></a>|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read"  ><spring:message code="label.event.back" /></a>
+|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"  ><spring:message code="label.event.document.manageInvoice.addEntry" /></a>	|&nbsp;&nbsp;
 </div>
+
+
+
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 
@@ -154,6 +153,8 @@ ${portal.toolkit()}
 			<datatables:column title="City 3">
 				<datatables:columnHead ><spring:message code="label.DebitNote.documentDate" /></datatables:columnHead>
 				<c:out value="${debitEntry}" />
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/"${debitEntry.externalId}  ><spring:message code="label.event.document.manageInvoice.updateEntry" /></a>	|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/"${debitEntry.externalId}  ><spring:message code="label.event.document.manageInvoice.deleteEntry" /></a>	
 			</datatables:column>
 		</datatables:table>
  		<script>

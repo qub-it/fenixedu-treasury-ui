@@ -53,7 +53,8 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         this.setCurrency(TreasurySettings.getInstance().getDefaultCurrency());
         this.setDebtAccount(debtAccount);
         this.setProduct(product);
-        this.setVat(Vat.findActiveUnique(vatType, new DateTime()).orElse(null));
+        this.setCurrency(this.getDebtAccount().getFinantialInstitution().getCurrency());
+        this.setVat(Vat.findActiveUnique(vatType, debtAccount.getFinantialInstitution(), new DateTime()).orElse(null));
     }
 
     @Override

@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -93,7 +94,7 @@ public class ProductController extends TreasuryBaseController {
     public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "unitofmeasure",
             required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, @RequestParam(value = "active",
-            required = false) boolean active, Model model) {
+            required = false) Boolean active, Model model) {
         List<Product> searchproductResultsDataSet = filterSearchProduct(code, name, unitOfMeasure, active);
 
         //add the results dataSet to the model
@@ -106,30 +107,29 @@ public class ProductController extends TreasuryBaseController {
     }
 
     private List<Product> filterSearchProduct(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
-            org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, boolean active) {
-
-        return getSearchUniverseSearchProductDataSet()
-                .stream()
-                .filter(product -> code == null || code.length() == 0 || product.getCode() != null
-                        && product.getCode().length() > 0 && product.getCode().toLowerCase().contains(code.toLowerCase()))
-                .filter(product -> name == null
-                        || name.isEmpty()
-                        || name.getLocales()
-                                .stream()
-                                .allMatch(
-                                        locale -> product.getName().getContent(locale) != null
-                                                && product.getName().getContent(locale).toLowerCase()
-                                                        .contains(name.getContent(locale).toLowerCase())))
-                .filter(product -> unitOfMeasure == null
-                        || unitOfMeasure.isEmpty()
-                        || unitOfMeasure
-                                .getLocales()
-                                .stream()
-                                .allMatch(
-                                        locale -> product.getUnitOfMeasure().getContent(locale) != null
-                                                && product.getUnitOfMeasure().getContent(locale).toLowerCase()
-                                                        .contains(unitOfMeasure.getContent(locale).toLowerCase())))
-                .filter(product -> product.getActive() == active).collect(Collectors.toList());
+            org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, Boolean active) {
+        return getSearchUniverseSearchProductDataSet().stream()
+//                .filter(product -> code == null || code.length() == 0 || product.getCode() != null
+//                        && product.getCode().length() > 0 && product.getCode().toLowerCase().contains(code.toLowerCase()))
+//                .filter(product -> name == null
+//                        || name.isEmpty()
+//                        || name.getLocales()
+//                                .stream()
+//                                .allMatch(
+//                                        locale -> product.getName().getContent(locale) != null
+//                                                && product.getName().getContent(locale).toLowerCase()
+//                                                        .contains(name.getContent(locale).toLowerCase())))
+//                .filter(product -> unitOfMeasure == null
+//                        || unitOfMeasure.isEmpty()
+//                        || unitOfMeasure
+//                                .getLocales()
+//                                .stream()
+//                                .allMatch(
+//                                        locale -> product.getUnitOfMeasure().getContent(locale) != null
+//                                                && product.getUnitOfMeasure().getContent(locale).toLowerCase()
+//                                                        .contains(unitOfMeasure.getContent(locale).toLowerCase())))
+//                .filter(product -> (active != null && product.getActive() == active))
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
@@ -239,6 +239,7 @@ public class ProductController extends TreasuryBaseController {
     public String update(@PathVariable("oid") Product product, Model model) {
         setProduct(product, model);
         model.addAttribute("productGroupList", ProductGroup.readAll());
+        model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/administration/base/manageproduct/product/update";
     }
 
@@ -248,7 +249,9 @@ public class ProductController extends TreasuryBaseController {
             @PathVariable("oid") Product product, @RequestParam(value = "code", required = false) java.lang.String code,
             @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(
                     value = "unitofmeasure", required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
-            @RequestParam(value = "active", required = false) boolean active, Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "active", required = false) boolean active, @RequestParam(value = "finantialInstitution",
+                    required = false) List<FinantialInstitution> finantialInstitutions, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setProduct(product, model);
 
@@ -263,7 +266,7 @@ public class ProductController extends TreasuryBaseController {
          * Succes Update
          */
         try {
-            updateProduct(productGroup, code, name, unitOfMeasure, active, model);
+            updateProduct(productGroup, code, name, unitOfMeasure, active, finantialInstitutions, model);
 
             return redirect("/treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(),
                     model, redirectAttributes);
@@ -296,16 +299,19 @@ public class ProductController extends TreasuryBaseController {
 
     @Atomic
     public void updateProduct(ProductGroup productGroup, java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
-            org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, boolean active, Model m) {
+            org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, boolean active,
+            List<FinantialInstitution> finantialInstitutions, Model m) {
         /*
          * Modify the update code here if you do not want to update
          * the object with the default setter for each field
          */
-        getProduct(m).setProductGroup(productGroup);
-        getProduct(m).setCode(code);
-        getProduct(m).setName(name);
-        getProduct(m).setUnitOfMeasure(unitOfMeasure);
-        getProduct(m).setActive(active);
+        Product product = getProduct(m);
+        product.setProductGroup(productGroup);
+        product.setCode(code);
+        product.setName(name);
+        product.setUnitOfMeasure(unitOfMeasure);
+        product.setActive(active);
+        product.updateFinantialInstitutions(finantialInstitutions);
     }
 
 }

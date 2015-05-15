@@ -32,17 +32,20 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.Constants;
 
 public enum DueDateCalculationType {
-    FIXED_DATE,
-    DAYS_AFTER_CREATION;
-    
+    NO_DUE_DATE, FIXED_DATE, DAYS_AFTER_CREATION;
+
     public boolean isFixedDate() {
         return this == FIXED_DATE;
     }
-    
+
+    public boolean isNoDueDate() {
+        return this == NO_DUE_DATE;
+    }
+
     public boolean isDaysAfterCreation() {
         return this == DAYS_AFTER_CREATION;
     }
-    
+
     public LocalizedString getDescriptionI18N() {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, String.format("label.%s.%s", getClass().getSimpleName(), name()));
     }

@@ -22,6 +22,20 @@ function initSelect2(element_id, elements_data_source, element_init_val) {
 	window.jQueryClosures.push(func);
 }
 
+function initSelect2Multiple(element_id, elements_data_source, element_init_values) {
+	var func = function() {
+		var select2 = $(element_id).select2({
+			data : elements_data_source
+		});
+		if (element_init_values != undefined)
+		{
+			select2.select2('val', element_init_values);
+		}
+	};
+	window.jQueryClosures.push(func);
+}
+
+
 $(document).ready(function() {
 	for (var i = 0; i < window.jQueryClosures.length; i++) {
 		window.jQueryClosures[i].call();

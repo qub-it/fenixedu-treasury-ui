@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -35,6 +37,7 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -152,6 +155,11 @@ public class FinantialEntity extends FinantialEntity_Base {
     public static FinantialEntity create(final FinantialInstitution finantialInstitution, final String code,
             final LocalizedString name) {
         return new FinantialEntity(finantialInstitution, code, name);
+    }
+
+    public Set<FixedTariff> getFixedTariffSet() {
+        return this.getTariffSet().stream().filter(x -> x instanceof FixedTariff).map(FixedTariff.class::cast)
+                .collect(Collectors.toSet());
     }
 
 }

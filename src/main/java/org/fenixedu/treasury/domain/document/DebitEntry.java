@@ -46,8 +46,8 @@ import com.google.gson.reflect.TypeToken;
 public class DebitEntry extends DebitEntry_Base {
 
     protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
-            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
-        init(debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap);
+            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap, Product product) {
+        init(debtAccount, treasuryEvent, product, vatType, amount, dueDate, propertiesMap);
     }
 
     @Override
@@ -56,16 +56,16 @@ public class DebitEntry extends DebitEntry_Base {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
-            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
-        super.init(null, debtAccount, treasuryEvent.getProduct(), FinantialEntryType.DEBIT_ENTRY, vatType, amount);
+    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final Product product,
+            final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
+        super.init(null, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vatType, amount);
 
         setDebtAccount(debtAccount);
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
 
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
-        
+
         checkRules();
     }
 
@@ -88,13 +88,14 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
         final GsonBuilder builder = new GsonBuilder();
-        
+
         final Gson gson = builder.create();
-        final Type stringStringMapType = new TypeToken<Map<String, String>>(){}.getType();
-        
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
         return gson.toJson(propertiesMap, stringStringMapType);
     }
-    
+
     @Override
     public boolean isFinantialDocumentRequired() {
         return false;
@@ -127,8 +128,8 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
-            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
-        return new DebitEntry(debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap);
+            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap, final Product product) {
+        return new DebitEntry(debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product);
     }
 
 }

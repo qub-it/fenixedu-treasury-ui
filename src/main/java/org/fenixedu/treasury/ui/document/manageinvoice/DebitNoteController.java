@@ -61,6 +61,7 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -113,9 +114,6 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
         setDebitNote(debitNote, model);
-        this.addInfoMessage("asdfjaskldjflksadfj", model);
-        this.addInfoMessage("asdfjaskldjflksadfj2323", model);
-        this.addInfoMessage("asdfjaskldjflksadfj53454", model);
         return "treasury/document/manageinvoice/debitnote/read";
     }
 
@@ -391,6 +389,54 @@ public class DebitNoteController extends TreasuryBaseController {
         // @formatter: on
         DebitNote note = getDebitNote(model);
         note.edit(payorDebtAccount, documentDueDate.toDateTimeAtStartOfDay(), originDocumentNumber);
+    }
+
+    //
+    // This is the EventaddEntry Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/addentry")
+    public String processReadToAddEntry(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
+//
+        /* Put here the logic for processing Event addEntry     */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect("/treasury/document/manageinvoice/debitentry/create/"
+                + getDebitNote(model).getDebtAccount().getExternalId(), model, redirectAttributes);
+    }
+
+    //
+    // This is the EventupdateEntry Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/updateentry/{entryoid}")
+    public String processReadToUpdateEntry(@PathVariable("oid") DebitNote debitNote,
+            @PathVariable("entryoid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
+//
+        /* Put here the logic for processing Event updateEntry  */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect("/treasury/document/manageinvoice/debitentry/update/" + getDebitNote(model).getExternalId(), model,
+                redirectAttributes);
+    }
+
+    //
+    // This is the EventdeleteEntry Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/deleteentry/{entryoid}")
+    public String processReadToDeleteEntry(@PathVariable("oid") DebitNote debitNote,
+            @PathVariable("entryoid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
+//
+        /* Put here the logic for processing Event deleteEntry  */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
+                redirectAttributes);
     }
 
 }
