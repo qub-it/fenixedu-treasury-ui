@@ -69,6 +69,7 @@ import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.FixedTariffBean;
+import org.fenixedu.treasury.dto.InterestRateBean;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageFixedTariff") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageFixedTariff",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -116,10 +117,8 @@ public class FixedTariffController extends TreasuryBaseController {
 
     @Atomic
     public void deleteFixedTariff(FixedTariff fixedTariff) {
-        // CHANGE_ME: Do the processing for deleting the fixedTariff
-        // Do not catch any exception here
 
-        // fixedTariff.delete();
+        fixedTariff.delete();
     }
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
@@ -146,6 +145,15 @@ public class FixedTariffController extends TreasuryBaseController {
         return redirect(ProductController.READ_URL + productId, model, redirectAttributes);
     }
 
+    private static final String _READ_URI = "/read/";
+    public static final String READ_URL = CONTROLLER_URL + _READ_URI;
+
+    @RequestMapping(value = _READ_URI + "{oid}")
+    public String read(@PathVariable("oid") FixedTariff fixedTariff, Model model) {
+        setFixedTariff(fixedTariff, model);
+        return "treasury/administration/base/managefixedtariff/fixedtariff/read";
+    }
+
 //				
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
@@ -157,17 +165,8 @@ public class FixedTariffController extends TreasuryBaseController {
         FixedTariffBean bean = new FixedTariffBean();
         bean.setProduct(product);
         bean.setFinantialEntityDataSource(finantialInstitution.getFinantialEntitiesSet().stream().collect(Collectors.toList()));
-        bean.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
-        List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
-        for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
-            dueDates.add(dueDate);
-        }
-        bean.setDueDateCalculationTypeDataSource(dueDates);
         bean.setFinantialInstitution(finantialInstitution);
-        bean.setApplyInterests(false);
-        bean.setDueDateCalculationType(DueDateCalculationType.NO_DUE_DATE);
         this.setFixedTariffBean(bean, model);
-
         return "treasury/administration/base/managefixedtariff/fixedtariff/create";
     }
 
@@ -202,9 +201,8 @@ public class FixedTariffController extends TreasuryBaseController {
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("fixedTariff", fixedTariff);
-            return redirect(ProductController.READ_URL + getFixedTariff(model).getProduct().getExternalId(), model,
-                    redirectAttributes);
+            setFixedTariff(fixedTariff, model);
+            return redirect(FixedTariffController.READ_URL + getFixedTariff(model).getExternalId(), model, redirectAttributes);
         } catch (Exception de) {
 
             /*
@@ -229,8 +227,10 @@ public class FixedTariffController extends TreasuryBaseController {
     public FixedTariff createFixedTariff(java.math.BigDecimal amount, boolean applyInterests, org.joda.time.LocalDate beginDate,
             org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType, org.joda.time.LocalDate endDate,
             org.fenixedu.treasury.domain.FinantialEntity finantialEntity, org.joda.time.LocalDate fixedDueDate,
-            int numberOfDaysAfterCreationForDueDate, org.fenixedu.treasury.domain.VatType vatType, InterestRate interestRate,
-            Product product) {
+            int numberOfDaysAfterCreationForDueDate, org.fenixedu.treasury.domain.VatType vatType,
+            InterestRateBean interestRateBean, Product product) {
+
+        InterestRate interestRate = null;
 
         FixedTariff fixedTariff =
                 FixedTariff.create(product, vatType, interestRate, finantialEntity, amount, beginDate.toDateTimeAtStartOfDay(),
@@ -244,6 +244,16 @@ public class FixedTariffController extends TreasuryBaseController {
         fixedTariff.setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
         fixedTariff.setVatType(vatType);
 
+        if (applyInterests) {
+            interestRate =
+                    InterestRate.create(fixedTariff, interestRateBean.getInterestType(),
+                            interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
+                            interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
+                            interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
+            fixedTariff.setInterestRate(interestRate);
+        }
+
+        fixedTariff.checkRules();
         return fixedTariff;
     }
 
@@ -256,15 +266,6 @@ public class FixedTariffController extends TreasuryBaseController {
         setFixedTariff(fixedTariff, model);
 
         FixedTariffBean bean = new FixedTariffBean(fixedTariff);
-        bean.setFinantialEntityDataSource(fixedTariff.getFinantialEntity().getFinantialInstitution().getFinantialEntitiesSet()
-                .stream().collect(Collectors.toList()));
-        bean.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
-        List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
-        for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
-            dueDates.add(dueDate);
-        }
-        bean.setDueDateCalculationTypeDataSource(dueDates);
-        bean.setFinantialInstitution(fixedTariff.getFinantialEntity().getFinantialInstitution());
 
         setFixedTariffBean(bean, model);
         return "treasury/administration/base/managefixedtariff/fixedtariff/update";
@@ -306,8 +307,7 @@ public class FixedTariffController extends TreasuryBaseController {
 
             /*Succes Update */
 
-            return redirect(ProductController.READ_URL + getFixedTariff(model).getProduct().getExternalId(), model,
-                    redirectAttributes);
+            return redirect(FixedTariffController.READ_URL + getFixedTariff(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             /*
@@ -318,9 +318,9 @@ public class FixedTariffController extends TreasuryBaseController {
             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
             * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
             */
-
+            setFixedTariffBean(bean, model);
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(fixedTariff, model);
+            return "treasury/administration/base/managefixedtariff/fixedtariff/update";
 
         }
     }
@@ -332,7 +332,7 @@ public class FixedTariffController extends TreasuryBaseController {
     public void updateFixedTariff(java.math.BigDecimal amount, boolean applyInterests, org.joda.time.DateTime beginDate,
             org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType, org.joda.time.DateTime endDate,
             org.fenixedu.treasury.domain.FinantialEntity finantialEntity, org.joda.time.LocalDate fixedDueDate,
-            int numberOfDaysAfterCreationForDueDate, org.fenixedu.treasury.domain.VatType vatType, InterestRate rate,
+            int numberOfDaysAfterCreationForDueDate, org.fenixedu.treasury.domain.VatType vatType, InterestRateBean rateBean,
             Product product, Model model) {
 
         // @formatter: off				
@@ -355,9 +355,29 @@ public class FixedTariffController extends TreasuryBaseController {
         fixedTariff.setEndDate(endDate);
         fixedTariff.setFinantialEntity(finantialEntity);
         fixedTariff.setFixedDueDate(fixedDueDate);
-        fixedTariff.setInterestRate(rate);
+        if (applyInterests) {
+            if (fixedTariff.getInterestRate() == null) {
+                InterestRate rate =
+                        InterestRate.create(fixedTariff, rateBean.getInterestType(), rateBean.getNumberOfDaysAfterDueDate(),
+                                rateBean.getApplyInFirstWorkday(), rateBean.getMaximumDaysToApplyPenalty(),
+                                rateBean.getMaximumMonthsToApplyPenalty(), rateBean.getInterestFixedAmount(), rateBean.getRate());
+                fixedTariff.setInterestRate(rate);
+            } else {
+                InterestRate rate = fixedTariff.getInterestRate();
+                rate.setApplyInFirstWorkday(rateBean.getApplyInFirstWorkday());
+                rate.setInterestFixedAmount(rateBean.getInterestFixedAmount());
+                rate.setInterestType(rateBean.getInterestType());
+                rate.setMaximumDaysToApplyPenalty(rateBean.getMaximumDaysToApplyPenalty());
+                rate.setMaximumMonthsToApplyPenalty(rateBean.getMaximumDaysToApplyPenalty());
+                rate.setNumberOfDaysAfterDueDate(rateBean.getNumberOfDaysAfterDueDate());
+                rate.setRate(rateBean.getRate());
+            }
+        } else {
+            fixedTariff.setInterestRate(null);
+        }
         fixedTariff.setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
         fixedTariff.setVatType(vatType);
-    }
 
+        fixedTariff.checkRules();
+    }
 }

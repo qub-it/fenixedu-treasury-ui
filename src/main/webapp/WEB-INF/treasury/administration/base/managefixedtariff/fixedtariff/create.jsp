@@ -76,11 +76,15 @@ ${portal.angularToolkit()}
 <script>
 
 angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller('FixedTariffController', ['$scope', function($scope) {
-
+	$scope.booleanvalues= [
+		                    {name: '<spring:message code="label.no"/>',    value: false},
+		                    {name: '<spring:message code="label.yes"/>',        value: true}
+		                  ];
  	$scope.object=angular.fromJson('${fixedTariffBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 	//Begin here of Custom Screen business JS - code
+	
  	
 }]);
 </script>
@@ -101,16 +105,6 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-10">
 	<input required id="fixedTariff_amount" class="form-control" type="text" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" ng-model="object.amount" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : fixedTariff.amount }'/>' />
 </div>	
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.applyInterests"/></div> 
-
-<div class="col-sm-4">
-<select required id="fixedTariff_applyInterests" name="applyinterests" class="form-control" ng-model="object.applyInterests">
-<option value="false"><spring:message code="label.no"/></option>
-<option value="true"><spring:message code="label.yes"/></option>				
-</select>
-</div>
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.beginDate"/></div> 
@@ -145,7 +139,6 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-4" >
 		<ui-select id="fixedTariff_dueDateCalculationType"  name="duedatecalculationtype" ng-model="$parent.object.dueDateCalculationType"  ng-disabled="disabled"  reset-search-input="true">
     						<ui-select-match >{{$select.selected.text}}</ui-select-match>
-    						<ui-select-null-choice>xxx </ui-select-null-choice>
     						<ui-select-choices repeat="dueDateCalculationType.id as dueDateCalculationType in object.dueDateCalculationTypeDataSource | filter: $select.search">
       							<span ng-bind-html="dueDateCalculationType.text | highlight: $select.search"></span>
     						</ui-select-choices>
@@ -178,7 +171,73 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
     						</ui-select-choices>
   						</ui-select>				
 				</div>
+</div>	
+
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.applyInterests"/></div> 
+<div class="col-sm-2">
+<select id="fixedTariff_applyInterests" name="applyinterests" class="form-control" 
+	ng-model="object.applyInterests" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+</select>
+</div>
+</div>	
+	
+<div class="form-group row" ng-show="object.applyInterests">
+<div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.interestType"/></div> 
+
+<div class="col-sm-4">
+	<%-- Relation to side 1 drop down rendered in input --%>
+		<ui-select  id="fixedTariff_interestType"  name="vattype" ng-model="$parent.object.interestRate.interestType" theme="bootstrap" ng-disabled="disabled" >
+    						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+    						<ui-select-choices repeat="interestType.id as interestType in object.interestRate.interestTypeDataSource | filter: $select.search">
+      							<span ng-bind-html="interestType.text | highlight: $select.search"></span>
+    						</ui-select-choices>
+  						</ui-select>				
+				</div>
+</div>	
+<div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
+<div class="col-sm-2 control-label"><spring:message code="label.InterestRate.numberOfDaysAfterDueDate"/></div> 
+<div class="col-sm-4">
+<input  id="fixedTariff_numberOfDaysAfterDueDate" class="form-control" type="text" ng-model="object.interestRate.numberOfDaysAfterDueDate" name="numberOfDaysAfterDueDate"  />
+</div>
+</div>	
+
+<div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
+<div class="col-sm-2 control-label"><spring:message code="label.InterestRate.applyInFirstWorkday"/></div> 
+<div class="col-sm-4">
+<input  id="fixedTariff_applyInFirstWorkday" class="form-control" type="text" ng-model="object.interestRate.applyInFirstWorkday" name="applyInFirstWorkday"  />
+</div>
+</div>	
+
+<div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
+<div class="col-sm-2 control-label"><spring:message code="label.InterestRate.maximumDaysToApplyPenalty"/></div> 
+<div class="col-sm-4">
+<input  id="fixedTariff_maximumDaysToApplyPenalty" class="form-control" type="text" ng-model="object.interestRate.maximumDaysToApplyPenalty" name="maximumDaysToApplyPenalty"  />
+</div>
+</div>
+
+<div class="form-group row" ng-show="object.applyInterests==true && object.interestRate.interestType=='MONTHLY'">
+<div class="col-sm-2 control-label"><spring:message code="label.InterestRate.maximumMonthsToApplyPenalty"/></div> 
+<div class="col-sm-4">
+<input  id="fixedTariff_maximumMonthsToApplyPenalty" class="form-control" type="text" ng-model="object.interestRate.maximumMonthsToApplyPenalty" name="maximumMonthsToApplyPenalty"  />
+</div>
 </div>		
+
+<div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='FIXED_AMOUNT'">
+<div class="col-sm-2 control-label"><spring:message code="label.InterestRate.interestFixedAmount"/></div> 
+<div class="col-sm-4">
+<input  id="fixedTariff_interestFixedAmount" class="form-control" type="text" ng-model="object.interestRate.interestFixedAmount" name="interestFixedAmount"  />
+</div>
+</div>		
+
+<div class="form-group row" ng-show="object.interestRate.interestType != 'FIXED_AMOUNT' && object.applyInterests">
+<div class="col-sm-2 control-label"><spring:message code="label.InterestRate.rate"/></div> 
+<div class="col-sm-4">
+<input  id="fixedTariff_rate" class="form-control" type="text" ng-model="object.interestRate.rate" name="rate"  />
+</div>
+</div>		
+
+	
   </div>
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

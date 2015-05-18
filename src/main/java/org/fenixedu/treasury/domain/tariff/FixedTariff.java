@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
+import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -106,7 +107,7 @@ public class FixedTariff extends FixedTariff_Base {
         checkRules();
     }
 
-    protected void checkRules() {
+    public void checkRules() {
         super.checkRules();
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.FixedTariff.product.required");
@@ -114,6 +115,10 @@ public class FixedTariff extends FixedTariff_Base {
 
         if (getFinantialEntity() == null) {
             throw new TreasuryDomainException("error.FixedTariff.finantialEntity.required");
+        }
+
+        if (this.getAmount() == null || this.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new TreasuryDomainException("error.FixedTariff.amount.invalid");
         }
 
         //CHANGE_ME In order to validate UNIQUE restrictions
@@ -194,9 +199,7 @@ public class FixedTariff extends FixedTariff_Base {
             throw new TreasuryDomainException("error.FixedTariff.cannot.delete");
         }
 
-        setBennu(null);
-
-        deleteDomainObject();
+        super.delete();
     }
 
     @Atomic
@@ -278,6 +281,21 @@ public class FixedTariff extends FixedTariff_Base {
     @Override
     public String getUiAmount() {
         return this.getAmount().setScale(3) + " " + this.getFinantialEntity().getFinantialInstitution().getCurrency().getSymbol();
+    }
+
+    public LocalDate calculateDueDate(DebitNote finantialDocument) {
+        if (this.getDueDateCalculationType().equals(DueDateCalculationType.DAYS_AFTER_CREATION)) {
+            if (finantialDocument != null) {
+                return finantialDocument.getDocumentDueDate().plusDays(this.getNumberOfDaysAfterCreationForDueDate())
+                        .toLocalDate();
+            } else {
+                return new DateTime().plusDays(this.getNumberOfDaysAfterCreationForDueDate()).toLocalDate();
+            }
+        } else if (this.getDueDateCalculationType().equals(DueDateCalculationType.FIXED_DATE)) {
+            return this.getFixedDueDate();
+        } else {
+            return null;
+        }
     }
 
 }

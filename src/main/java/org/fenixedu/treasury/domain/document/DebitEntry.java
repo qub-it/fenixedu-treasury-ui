@@ -70,7 +70,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     @Override
-    protected void checkRules() {
+    public void checkRules() {
         super.checkRules();
 
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof DebitNote)) {
@@ -83,6 +83,11 @@ public class DebitEntry extends DebitEntry_Base {
 
         if (getDueDate() == null) {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.required");
+        }
+
+        if (this.getFinantialDocument() != null
+                && this.getDueDate().isBefore(this.getFinantialDocument().getDocumentDueDate().toLocalDate())) {
+            throw new TreasuryDomainException("error.DebitEntry.dueDate.invalid");
         }
     }
 

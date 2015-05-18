@@ -106,6 +106,16 @@ ${portal.toolkit()}
 				<tbody>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
+								code="label.Series.finantialInstitution" /></th>
+						<td><c:out value='${debitNote.documentNumberSeries.series.finantialInstitution.name}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.DebitNote.documentNumber" /></th>
+						<td><c:out value='${debitNote.documentNumber}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
 								code="label.DebitNote.documentDate" /></th>
 						<td><c:out value='${debitNote.documentDate}' /></td>
 					</tr>
@@ -113,11 +123,6 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.DebitNote.documentDueDate" /></th>
 						<td><c:out value='${debitNote.documentDueDate}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.DebitNote.documentNumber" /></th>
-						<td><c:out value='${debitNote.documentNumber}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message

@@ -36,8 +36,9 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 public class CreditEntry extends CreditEntry_Base {
-    
-    protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final VatType vatType, final BigDecimal amount) {
+
+    protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final VatType vatType,
+            final BigDecimal amount) {
         init(finantialDocument, product, vatType, amount);
     }
 
@@ -46,22 +47,24 @@ public class CreditEntry extends CreditEntry_Base {
             final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
-    
-    protected void init(final FinantialDocument finantialDocument, final Product product, final VatType vatType, final BigDecimal amount) {
-        super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.DEBIT_ENTRY, vatType, amount);
-        
+
+    protected void init(final FinantialDocument finantialDocument, final Product product, final VatType vatType,
+            final BigDecimal amount) {
+        super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.DEBIT_ENTRY, vatType,
+                amount);
+
         checkRules();
     }
-    
+
     @Override
-    protected void checkRules() {
+    public void checkRules() {
         super.checkRules();
-        
-        if(getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
+
+        if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
             throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
         }
     }
-    
+
     // @formatter: off
     /************
      * SERVICES *
@@ -73,11 +76,11 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public BigDecimal getOpenAmount() {
-		BigDecimal amount = this.getAmount();
-		for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-			amount = amount.subtract(entry.getAmount());
-		}
-		return amount;
-	}
-    
+        BigDecimal amount = this.getAmount();
+        for (SettlementEntry entry : this.getSettlementEntriesSet()) {
+            amount = amount.subtract(entry.getAmount());
+        }
+        return amount;
+    }
+
 }

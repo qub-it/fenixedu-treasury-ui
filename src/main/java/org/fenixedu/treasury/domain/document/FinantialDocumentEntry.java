@@ -41,32 +41,33 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         super();
         setBennu(Bennu.getInstance());
     }
-    
-    protected void init(final FinantialDocument finantialDocument, final FinantialEntryType finantialEntryType, final BigDecimal amount) {
+
+    protected void init(final FinantialDocument finantialDocument, final FinantialEntryType finantialEntryType,
+            final BigDecimal amount) {
         setFinantialDocument(finantialDocument);
         setFinantialEntryType(finantialEntryType);
         setAmount(amount);
         setQuantity(BigDecimal.ONE);
     }
 
-    protected void checkRules() {
-        if(isFinantialDocumentRequired() && getFinantialDocument() == null) {
+    public void checkRules() {
+        if (isFinantialDocumentRequired() && getFinantialDocument() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.finantialDocument.required");
         }
 
-        if(getFinantialEntryType() == null) {
+        if (getFinantialEntryType() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.finantialEntryType.required");
         }
-        
-        if(getAmount() == null) {
+
+        if (getAmount() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.required");
         }
-        
-        if(getAmount().compareTo(BigDecimal.ZERO) < 0) {
+
+        if (getAmount().compareTo(BigDecimal.ZERO) < 0) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.less.than.zero");
         }
     }
-    
+
     public boolean isFinantialDocumentRequired() {
         return true;
     }
@@ -86,29 +87,28 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         deleteDomainObject();
     }
 
-    
     // @formatter: off
     /************
-     *   UTILS  *
+     * UTILS *
      ************/
     // @formatter: on
-    
+
     protected boolean isNegative(final BigDecimal value) {
         return !isZero(value) && !isPositive(value);
     }
-    
+
     protected boolean isZero(final BigDecimal value) {
         return BigDecimal.ZERO.compareTo(value) == 0;
     }
-    
+
     protected boolean isPositive(final BigDecimal value) {
         return BigDecimal.ZERO.compareTo(value) < 0;
     }
-    
+
     protected boolean isGreaterThan(final BigDecimal v1, final BigDecimal v2) {
         return v1.compareTo(v2) > 0;
     }
-    
+
     // @formatter: off
     /************
      * SERVICES *

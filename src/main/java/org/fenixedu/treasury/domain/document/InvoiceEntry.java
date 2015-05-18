@@ -58,7 +58,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     @Override
-    protected void checkRules() {
+    public void checkRules() {
         super.checkRules();
 
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof Invoice)) {
@@ -80,6 +80,11 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         if (getVat() == null) {
             throw new TreasuryDomainException("error.InvoiceEntry.vat.required");
         }
+
+        if (getFinantialDocument().getDebtAccount() != this.getDebtAccount()) {
+            throw new TreasuryDomainException("error.InvoiceEntry.invalidDebtAccount");
+        }
+
     }
 
     public static Stream<? extends InvoiceEntry> findAll() {

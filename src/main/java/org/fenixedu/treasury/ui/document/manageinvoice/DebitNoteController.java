@@ -403,8 +403,8 @@ public class DebitNoteController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen    
-        return redirect("/treasury/document/manageinvoice/debitentry/create/"
-                + getDebitNote(model).getDebtAccount().getExternalId(), model, redirectAttributes);
+        return redirect(DebitEntryController.CREATE_URL + getDebitNote(model).getDebtAccount().getExternalId() + "?debitNote="
+                + debitNote.getExternalId(), model, redirectAttributes);
     }
 
     //

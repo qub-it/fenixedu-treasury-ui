@@ -139,6 +139,9 @@ public class DebitEntryController extends TreasuryBaseController {
         bean.setDebtAccount(debtAccount);
         bean.setFinantialDocument(debitNote);
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
+        if (debitNote != null) {
+            bean.setDueDate(debitNote.getDocumentDueDate().toLocalDate());
+        }
         this.setDebitEntryBean(bean, model);
 
         return "treasury/document/manageinvoice/debitentry/create";
@@ -147,15 +150,20 @@ public class DebitEntryController extends TreasuryBaseController {
     // @formatter: off
 
     @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) DebitEntryBean bean, Model model) {
+    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = true) DebitEntryBean bean, Model model) {
 
-        Product p = bean.getProduct();
-        if (p != null) {
-            Tariff t =
-                    p.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime()).findFirst().orElse(null);
+        Product product = bean.getProduct();
+        if (product != null) {
+            FixedTariff tariff =
+                    (FixedTariff) product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime())
+                            .findFirst().orElse(null);
 
-            if (t instanceof FixedTariff) {
-                bean.setAmount(((FixedTariff) t).getAmount());
+            if (tariff != null) {
+                bean.setAmount(tariff.getAmount());
+                bean.setDueDate(tariff.calculateDueDate(bean.getFinantialDocument()));
+            }
+            if (bean.getDescription() == null || bean.getDescription().isEmpty()) {
+                bean.setDescription(product.getName().getContent());
             }
         }
         return getBeanJson(bean);
@@ -225,6 +233,8 @@ public class DebitEntryController extends TreasuryBaseController {
         debitEntry.setDescription(description);
         debitEntry.setAmount(amount);
         debitEntry.setQuantity(quantity);
+
+        debitEntry.checkRules();
 
         return debitEntry;
     }
@@ -300,10 +310,13 @@ public class DebitEntryController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getDebitEntry(model).setDescription(description);
-        getDebitEntry(model).setProduct(product);
-        getDebitEntry(model).setAmount(amount);
-        getDebitEntry(model).setQuantity(quantity);
+        DebitEntry debitEntry = getDebitEntry(model);
+        debitEntry.setDescription(description);
+        debitEntry.setProduct(product);
+        debitEntry.setAmount(amount);
+        debitEntry.setQuantity(quantity);
+
+        debitEntry.checkRules();
     }
 
 }

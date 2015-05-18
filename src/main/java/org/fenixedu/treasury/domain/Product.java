@@ -36,6 +36,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
@@ -147,6 +148,16 @@ public class Product extends Product_Base {
 
     public Set<Tariff> getTariffsSet(FinantialInstitution finantialInstitution) {
         return getTariffs(finantialInstitution).collect(Collectors.toSet());
+    }
+
+    public Stream<FixedTariff> getFixedTariffs(FinantialInstitution finantialInstitution) {
+        return this.getTariffSet().stream().filter(x -> x instanceof FixedTariff)
+                .filter(x -> x.getFinantialEntity().getFinantialInstitution().equals(finantialInstitution))
+                .map(FixedTariff.class::cast);
+    }
+
+    public Set<FixedTariff> getFixedTariffsSet(FinantialInstitution finantialInstitution) {
+        return getFixedTariffs(finantialInstitution).collect(Collectors.toSet());
     }
 
     public Stream<Tariff> getActiveTariffs(FinantialInstitution finantialInstitution, DateTime when) {

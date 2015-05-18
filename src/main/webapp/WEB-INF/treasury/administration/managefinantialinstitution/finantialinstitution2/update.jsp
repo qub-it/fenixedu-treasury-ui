@@ -249,13 +249,9 @@ ${portal.angularToolkit()}
 					<spring:message code="label.FinantialInstitution.country" />
 				</div>
 				<div class="col-sm-4">
-					<ui-select ng-model="$parent.object.country"
-						on-select="onCountryChange($item, $model)" theme="bootstrap"
-						ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
-					<ui-select-choices
-						repeat="country.id as country in object.countries | filter: $select.search">
-					<span ng-bind-html="country.text | highlight: $select.search"></span>
-					</ui-select-choices> </ui-select>
+					<ui-select ng-model="$parent.object.country" on-select="onCountryChange($item, $model)" theme="bootstrap" ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
+					<ui-select-choices repeat="country.id as country in object.countries | filter: $select.search"> <span
+						ng-bind-html="country.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
 				</div>
 
 			</div>

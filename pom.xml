@@ -29,6 +29,11 @@
 			<artifactId>gson-jodatime-serialisers</artifactId>
 			<version>1.1.0</version>
 		</dependency>
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time-jsptags</artifactId>
+			<version>1.1.1</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.guava</groupId>

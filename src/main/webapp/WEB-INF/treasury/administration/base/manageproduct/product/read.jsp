@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -143,7 +143,7 @@ ${portal.toolkit()}
 </div>
 
 <h2>
-	<spring:message code="label.Product.Tariffs" />
+	<spring:message code="label.Product.fixedTariffs" />
 </h2>
 
 <c:choose>
@@ -160,9 +160,9 @@ ${portal.toolkit()}
 			</div>
 
 			<c:choose>
-				<c:when test="${not empty product.getTariffsSet(finantialInstitution)}">
-					<datatables:table id="activeTariffs${finantialInstitution.externalId}"  row="tariff" data="${product.getTariffsSet(finantialInstitution)}" cssClass="table responsive table-bordered table-hover"
-						cdn="false" cellspacing="2">
+				<c:when test="${not empty product.getFixedTariffsSet(finantialInstitution)}">
+					<datatables:table id="activeTariffs${finantialInstitution.externalId}" row="tariff" data="${product.getFixedTariffsSet(finantialInstitution)}"
+						cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 						<datatables:column>
 							<datatables:columnHead>
 								<spring:message code="label.Tariff.finantialEntity" />
@@ -173,13 +173,13 @@ ${portal.toolkit()}
 							<datatables:columnHead>
 								<spring:message code="label.Tariff.beginDate" />
 							</datatables:columnHead>
-							<c:out value="${tariff.beginDate}" />
+							 <joda:format value="${tariff.beginDate}" style="S-" />
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
 								<spring:message code="label.Tariff.endDate" />
 							</datatables:columnHead>
-							<c:out value="${tariff.endDate}" />
+							<joda:format value="${tariff.endDate}" style="S-" />
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
@@ -188,12 +188,8 @@ ${portal.toolkit()}
 							<c:out value="${tariff.uiAmount}" />
 						</datatables:column>
 						<datatables:column>
-							<a class="btn btn-default btn-xs"
-								href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/update/${tariff.externalId}"><spring:message
-									code="label.event.update" /></a>&nbsp;
-							<a class="btn btn-default btn-xs"
-								href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/delete/${tariff.externalId}"><spring:message
-									code="label.event.delete" /></a>
+							<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/read/${tariff.externalId}"><spring:message
+									code="label.event.view" /></a>
 						</datatables:column>
 					</datatables:table>
 				</c:when>

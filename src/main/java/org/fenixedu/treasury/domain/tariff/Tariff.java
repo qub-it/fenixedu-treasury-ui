@@ -107,8 +107,38 @@ public abstract class Tariff extends Tariff_Base {
             throw new TreasuryDomainException("error.Tariff.numberOfDaysAfterCreationForDueDate.must.be.positive");
         }
 
-        if (getApplyInterests() && getInterestRate() == null) {
-            throw new TreasuryDomainException("error.Tariff.interestRate.required");
+        if (getApplyInterests()) {
+            if (getInterestRate() == null || getInterestRate().getInterestType() == null) {
+                throw new TreasuryDomainException("error.Tariff.interestRate.required");
+            }
+
+            if (getInterestRate().getInterestType() == InterestType.DAILY) {
+                if (getInterestRate().getRate() == null || BigDecimal.ZERO.compareTo(getInterestRate().getRate()) >= 0) {
+                    throw new TreasuryDomainException("error.Tariff.interestRate.invalid");
+                }
+                if (getInterestRate().getNumberOfDaysAfterDueDate() <= 0) {
+                    throw new TreasuryDomainException("error.Tariff.interestRate.numberofdaysafterduedate.invalid");
+                }
+                if (getInterestRate().getMaximumDaysToApplyPenalty() < 0) {
+                    throw new TreasuryDomainException("error.Tariff.interestRate.maximumdaystoapplypenalty.invalid");
+                }
+            }
+            if (getInterestRate().getInterestType() == InterestType.MONTHLY) {
+                if (getInterestRate().getRate() == null || BigDecimal.ZERO.compareTo(getInterestRate().getRate()) >= 0) {
+                    throw new TreasuryDomainException("error.Tariff.interestRate.invalid");
+                }
+
+                if (getInterestRate().getMaximumMonthsToApplyPenalty() < 0) {
+                    throw new TreasuryDomainException("error.Tariff.interestRate.maximummonthstoapplypenalty.invalid");
+                }
+            }
+
+            if (getInterestRate().getInterestType() == InterestType.FIXED_AMOUNT) {
+                if (BigDecimal.ZERO.compareTo(getInterestRate().getInterestFixedAmount()) >= 0) {
+                    throw new TreasuryDomainException("error.Tariff.interestRate.interestfixedamount.invalid");
+                }
+            }
+
         }
     }
 

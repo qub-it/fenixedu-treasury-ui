@@ -38,7 +38,7 @@ ${portal.angularToolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read"  ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntryBean.finantialDocument.externalId}"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -82,7 +82,11 @@ angular.module('angularAppDebitEntry', ['ngSanitize', 'ui.select']).controller('
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 	//Begin here of Custom Screen business JS - code
- 	
+ 	$scope.onProductChange = function(product,model)
+ 	{
+		alert('xxx');
+		$scope.postBack(model);
+ 	}
 }]);
 </script>
 
@@ -91,24 +95,17 @@ angular.module('angularAppDebitEntry', ['ngSanitize', 'ui.select']).controller('
 	action='${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/create/${debitEntryBean.debtAccount.externalId}'>
 
 	<input type="hidden" name="postback"
-		value='${pageContext.request.contextPath}treasury/document/manageinvoice/debitentry/createpostback' />
+		value='${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/createpostback' />
 		
 	<input name="bean" type="hidden" value="{{ object }}" />
 <div class="panel panel-default">
   <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.description"/></div> 
-
-<div class="col-sm-10">
-	<input id="debitEntry_description" class="form-control" type="text" ng-model="object.description" name="description"  value='<c:out value='${not empty param.description ? param.description : debitEntry.description }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.product"/></div> 
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
-		<ui-select id="debitEntry_product" class="form-control" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" >
+		<ui-select id="debitEntry_product"  name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled"  on-select="onProductChange($product, $model)">
     						<ui-select-match >{{$select.selected.text}}</ui-select-match>
     						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search">
       							<span ng-bind-html="product.text | highlight: $select.search"></span>
@@ -117,19 +114,35 @@ angular.module('angularAppDebitEntry', ['ngSanitize', 'ui.select']).controller('
 				</div>
 </div>		
 <div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.description"/></div> 
+
+<div class="col-sm-10">
+	<input id="debitEntry_description" class="form-control" type="text" ng-model="object.description" name="description" />
+</div>	
+</div>		
+<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.amount"/></div> 
 
 <div class="col-sm-10">
-	<input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : debitEntry.amount }'/>' />
+	<input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount"  />
 </div>	
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.quantity"/></div> 
 
 <div class="col-sm-10">
-	<input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity"  value='<c:out value='${not empty param.quantity ? param.quantity : debitEntry.quantity }'/>' />
+	<input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity" />
 </div>	
 </div>		
+
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.dueDate"/></div> 
+
+<div class="col-sm-4">
+	<input id="debitEntry_dueDate" class="form-control" type="date" ng-model="object.dueDate" name="dueDate" />
+</div>	
+</div>		
+
   </div>
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.dto;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,8 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 
@@ -47,8 +50,7 @@ public class FixedTariffBean implements IBean {
     private List<TupleDataSourceBean> productDataSource;
     private VatType vatType;
     private List<TupleDataSourceBean> vatTypeDataSource;
-    private InterestRate interestRate;
-    private List<TupleDataSourceBean> interestRateDataSource;
+    private InterestRateBean interestRate;
     private FinantialEntity finantialEntity;
     private List<TupleDataSourceBean> finantialEntityDataSource;
     private java.math.BigDecimal amount;
@@ -75,10 +77,10 @@ public class FixedTariffBean implements IBean {
     public void setProductDataSource(List<Product> value) {
         this.productDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.getName().getContent());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public VatType getVatType() {
@@ -96,31 +98,18 @@ public class FixedTariffBean implements IBean {
     public void setVatTypeDataSource(List<VatType> value) {
         this.vatTypeDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.getName().getContent()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.getName().getContent());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
-    public InterestRate getInterestRate() {
+    public InterestRateBean getInterestRate() {
         return interestRate;
     }
 
     public void setInterestRate(InterestRate value) {
-        interestRate = value;
-    }
-
-    public List<TupleDataSourceBean> getInterestRateDataSource() {
-        return interestRateDataSource;
-    }
-
-    public void setInterestRateDataSource(List<InterestRate> value) {
-        this.interestRateDataSource = value.stream().map(x -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+        interestRate = new InterestRateBean(value);
     }
 
     public FinantialEntity getFinantialEntity() {
@@ -207,20 +196,36 @@ public class FixedTariffBean implements IBean {
     public void setDueDateCalculationTypeDataSource(List<org.fenixedu.treasury.domain.tariff.DueDateCalculationType> value) {
         this.dueDateCalculationTypeDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.toString()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.toString());
+            tuple.setText(x.getDescriptionI18N().getContent());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public FixedTariffBean() {
+        this.interestRate = new InterestRateBean();
+        this.setApplyInterests(false);
+        this.setDueDateCalculationType(DueDateCalculationType.NO_DUE_DATE);
+        this.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
+        List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
+        for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
+            dueDates.add(dueDate);
+        }
+        this.setDueDateCalculationTypeDataSource(dueDates);
 
     }
 
     public FixedTariffBean(FixedTariff fixedTariff) {
+        this();
         this.setProduct(fixedTariff.getProduct());
         this.setVatType(fixedTariff.getVatType());
-        this.setInterestRate(fixedTariff.getInterestRate());
+        this.setApplyInterests(fixedTariff.getApplyInterests());
+        if (fixedTariff.getInterestRate() != null) {
+            this.setInterestRate(fixedTariff.getInterestRate());
+            this.setApplyInterests(true);
+        } else {
+            this.setApplyInterests(false);
+        }
         this.setFinantialEntity(fixedTariff.getFinantialEntity());
         this.setAmount(fixedTariff.getAmount());
         this.setBeginDate(fixedTariff.getBeginDate().toLocalDate());
@@ -228,14 +233,17 @@ public class FixedTariffBean implements IBean {
         this.setDueDateCalculationType(fixedTariff.getDueDateCalculationType());
         this.setFixedDueDate(fixedTariff.getFixedDueDate());
         this.setNumberOfDaysAfterCreationForDueDate(fixedTariff.getNumberOfDaysAfterCreationForDueDate());
-        this.setApplyInterests(fixedTariff.getApplyInterests());
-        this.setAmount(fixedTariff.getAmount());
-        this.setBeginDate(fixedTariff.getBeginDate().toLocalDate());
-        this.setEndDate(fixedTariff.getEndDate().toLocalDate());
-        this.setDueDateCalculationType(fixedTariff.getDueDateCalculationType());
-        this.setFixedDueDate(fixedTariff.getFixedDueDate());
-        this.setNumberOfDaysAfterCreationForDueDate(fixedTariff.getNumberOfDaysAfterCreationForDueDate());
-        this.setApplyInterests(fixedTariff.getApplyInterests());
+
+        this.setFinantialEntityDataSource(fixedTariff.getFinantialEntity().getFinantialInstitution().getFinantialEntitiesSet()
+                .stream().collect(Collectors.toList()));
+        this.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
+        List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
+        for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
+            dueDates.add(dueDate);
+        }
+        this.setDueDateCalculationTypeDataSource(dueDates);
+        this.setFinantialInstitution(fixedTariff.getFinantialEntity().getFinantialInstitution());
+
     }
 
     public FinantialInstitution getFinantialInstitution() {
