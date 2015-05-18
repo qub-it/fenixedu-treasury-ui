@@ -35,6 +35,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
+import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -179,7 +180,7 @@ public class ProductController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("productGroupList", ProductGroup.readAll());
-
+        model.addAttribute("vattype_options", VatType.findAll().collect(Collectors.toList()));
         return "treasury/administration/base/manageproduct/product/create";
     }
 
@@ -189,7 +190,8 @@ public class ProductController extends TreasuryBaseController {
             value = "code", required = false) java.lang.String code,
             @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(
                     value = "unitofmeasure", required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
-            @RequestParam(value = "active", required = false) boolean active, Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "active", required = false) boolean active,
+            @RequestParam(value = "vattype", required = false) VatType vatType, Model model, RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         *	
@@ -197,7 +199,7 @@ public class ProductController extends TreasuryBaseController {
         *    		
         */
         try {
-            Product product = createProduct(productGroup, code, name, unitOfMeasure, active);
+            Product product = createProduct(productGroup, code, name, unitOfMeasure, active, vatType);
 
             /*
              * Success Validation
@@ -224,13 +226,13 @@ public class ProductController extends TreasuryBaseController {
     @Atomic
     public Product createProduct(ProductGroup productGroup, java.lang.String code,
             org.fenixedu.commons.i18n.LocalizedString name, org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
-            boolean active) {
+            boolean active, VatType vatType) {
         /*
          * Modify the creation code here if you do not want to create
          * the object with the default constructor and use the setter
          * for each field
          */
-        Product product = Product.create(productGroup, code, name, unitOfMeasure, active);
+        Product product = Product.create(productGroup, code, name, unitOfMeasure, active, vatType);
         return product;
     }
 
@@ -240,6 +242,7 @@ public class ProductController extends TreasuryBaseController {
         setProduct(product, model);
         model.addAttribute("productGroupList", ProductGroup.readAll());
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
+        model.addAttribute("vattype_options", VatType.findAll().collect(Collectors.toList()));
         return "treasury/administration/base/manageproduct/product/update";
     }
 
@@ -249,7 +252,8 @@ public class ProductController extends TreasuryBaseController {
             @PathVariable("oid") Product product, @RequestParam(value = "code", required = false) java.lang.String code,
             @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(
                     value = "unitofmeasure", required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
-            @RequestParam(value = "active", required = false) boolean active, @RequestParam(value = "finantialInstitution",
+            @RequestParam(value = "active", required = false) boolean active,
+            @RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(value = "finantialInstitution",
                     required = false) List<FinantialInstitution> finantialInstitutions, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -266,7 +270,7 @@ public class ProductController extends TreasuryBaseController {
          * Succes Update
          */
         try {
-            updateProduct(productGroup, code, name, unitOfMeasure, active, finantialInstitutions, model);
+            updateProduct(productGroup, code, name, unitOfMeasure, active, finantialInstitutions, vatType, model);
 
             return redirect("/treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(),
                     model, redirectAttributes);
@@ -300,7 +304,7 @@ public class ProductController extends TreasuryBaseController {
     @Atomic
     public void updateProduct(ProductGroup productGroup, java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
             org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, boolean active,
-            List<FinantialInstitution> finantialInstitutions, Model m) {
+            List<FinantialInstitution> finantialInstitutions, VatType vatType, Model m) {
         /*
          * Modify the update code here if you do not want to update
          * the object with the default setter for each field
@@ -312,6 +316,8 @@ public class ProductController extends TreasuryBaseController {
         product.setUnitOfMeasure(unitOfMeasure);
         product.setActive(active);
         product.updateFinantialInstitutions(finantialInstitutions);
+        product.setVatType(vatType);
+        product.checkRules();
     }
 
 }

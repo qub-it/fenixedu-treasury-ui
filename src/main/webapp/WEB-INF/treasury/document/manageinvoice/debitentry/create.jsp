@@ -84,7 +84,6 @@ angular.module('angularAppDebitEntry', ['ngSanitize', 'ui.select']).controller('
 	//Begin here of Custom Screen business JS - code
  	$scope.onProductChange = function(product,model)
  	{
-		alert('xxx');
 		$scope.postBack(model);
  	}
 }]);

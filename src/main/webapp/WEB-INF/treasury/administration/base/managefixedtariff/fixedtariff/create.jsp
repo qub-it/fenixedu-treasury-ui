@@ -159,19 +159,6 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 	<input  id="fixedTariff_numberOfDaysAfterCreationForDueDate" class="form-control" type="text" ng-model="object.numberOfDaysAfterCreationForDueDate" name="numberofdaysaftercreationforduedate"  value='<c:out value='${not empty param.numberofdaysaftercreationforduedate ? param.numberofdaysaftercreationforduedate : fixedTariff.numberOfDaysAfterCreationForDueDate }'/>' />
 </div>	
 </div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.vatType"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		<ui-select  id="fixedTariff_vatType"  name="vattype" ng-model="$parent.object.vatType" theme="bootstrap" ng-disabled="disabled" >
-    						<ui-select-match >{{$select.selected.text}}</ui-select-match>
-    						<ui-select-choices repeat="vatType.id as vatType in object.vatTypeDataSource | filter: $select.search">
-      							<span ng-bind-html="vatType.text | highlight: $select.search"></span>
-    						</ui-select-choices>
-  						</ui-select>				
-				</div>
-</div>	
 
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.applyInterests"/></div> 

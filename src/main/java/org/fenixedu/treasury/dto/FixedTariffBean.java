@@ -83,27 +83,6 @@ public class FixedTariffBean implements IBean {
         }).collect(Collectors.toList());
     }
 
-    public VatType getVatType() {
-        return vatType;
-    }
-
-    public void setVatType(VatType value) {
-        vatType = value;
-    }
-
-    public List<TupleDataSourceBean> getVatTypeDataSource() {
-        return vatTypeDataSource;
-    }
-
-    public void setVatTypeDataSource(List<VatType> value) {
-        this.vatTypeDataSource = value.stream().map(x -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId());
-            tuple.setText(x.getName().getContent());
-            return tuple;
-        }).collect(Collectors.toList());
-    }
-
     public InterestRateBean getInterestRate() {
         return interestRate;
     }
@@ -206,7 +185,6 @@ public class FixedTariffBean implements IBean {
         this.interestRate = new InterestRateBean();
         this.setApplyInterests(false);
         this.setDueDateCalculationType(DueDateCalculationType.NO_DUE_DATE);
-        this.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
         List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
         for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
             dueDates.add(dueDate);
@@ -218,7 +196,6 @@ public class FixedTariffBean implements IBean {
     public FixedTariffBean(FixedTariff fixedTariff) {
         this();
         this.setProduct(fixedTariff.getProduct());
-        this.setVatType(fixedTariff.getVatType());
         this.setApplyInterests(fixedTariff.getApplyInterests());
         if (fixedTariff.getInterestRate() != null) {
             this.setInterestRate(fixedTariff.getInterestRate());
@@ -236,7 +213,6 @@ public class FixedTariffBean implements IBean {
 
         this.setFinantialEntityDataSource(fixedTariff.getFinantialEntity().getFinantialInstitution().getFinantialEntitiesSet()
                 .stream().collect(Collectors.toList()));
-        this.setVatTypeDataSource(VatType.findAll().collect(Collectors.toList()));
         List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();
         for (DueDateCalculationType dueDate : DueDateCalculationType.values()) {
             dueDates.add(dueDate);

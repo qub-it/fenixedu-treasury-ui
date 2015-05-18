@@ -1048,12 +1048,12 @@ relation TariffProduct {
 	}
 }
 
-relation TariffVatType {
+relation ProductVatType {
 	VatType playsRole vatType {
 		multiplicity 0..1;
 	}
 	
-	tariff.Tariff playsRole tariff {
+	Product playsRole products{
 		multiplicity *;
 	}
 }

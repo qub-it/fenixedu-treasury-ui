@@ -1,5 +1,4 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
  * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
@@ -46,35 +45,34 @@ import pt.ist.fenixframework.Atomic;
 
 public class FixedTariff extends FixedTariff_Base {
 
-    protected FixedTariff(final FinantialEntity finantialEntity, final Product product, final VatType vatType,
-            final DateTime beginDate, final DateTime endDate, final BigDecimal amount,
-            final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
-            final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,
-            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
-            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+    protected FixedTariff(final FinantialEntity finantialEntity, final Product product, final DateTime beginDate,
+            final DateTime endDate, final BigDecimal amount, final DueDateCalculationType dueDateCalculationType,
+            final LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests,
+            final InterestType interestType, final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday,
+            final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount,
+            final BigDecimal rate) {
         super();
 
-        init(finantialEntity, product, vatType, beginDate, endDate, amount, dueDateCalculationType, fixedDueDate,
+        init(finantialEntity, product, beginDate, endDate, amount, dueDateCalculationType, fixedDueDate,
                 numberOfDaysAfterCreationForDueDate, applyInterests, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
                 maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
     }
 
     @Override
-    protected void init(final FinantialEntity finantialEntity, final Product product, final VatType vatType,
-            final DateTime beginDate, final DateTime endDate, final DueDateCalculationType dueDateCalculationType,
-            final LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests,
-            final InterestType interestType, final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday,
-            final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount,
-            final BigDecimal rate) {
+    protected void init(final FinantialEntity finantialEntity, final Product product, final DateTime beginDate,
+            final DateTime endDate, final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
+            final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,
+            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
+            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
         throw new RuntimeException("error.FixedTariff.use.init.with.amount");
     }
 
-    protected void init(final FinantialEntity finantialEntity, final Product product, final VatType vatType,
-            final DateTime beginDate, final DateTime endDate, final BigDecimal amount,
-            final DueDateCalculationType dueDateCalculationType, LocalDate fixedDueDate, int numberOfDaysAfterCreationForDueDate,
-            boolean applyInterests, InterestType interestType, int numberOfDaysAfterDueDate, boolean applyInFirstWorkday,
-            int maximumDaysToApplyPenalty, int maximumMonthsToApplyPenalty, BigDecimal interestFixedAmount, BigDecimal rate) {
-        super.init(finantialEntity, product, vatType, beginDate, endDate, dueDateCalculationType, fixedDueDate,
+    protected void init(final FinantialEntity finantialEntity, final Product product, final DateTime beginDate,
+            final DateTime endDate, final BigDecimal amount, final DueDateCalculationType dueDateCalculationType,
+            LocalDate fixedDueDate, int numberOfDaysAfterCreationForDueDate, boolean applyInterests, InterestType interestType,
+            int numberOfDaysAfterDueDate, boolean applyInFirstWorkday, int maximumDaysToApplyPenalty,
+            int maximumMonthsToApplyPenalty, BigDecimal interestFixedAmount, BigDecimal rate) {
+        super.init(finantialEntity, product, beginDate, endDate, dueDateCalculationType, fixedDueDate,
                 numberOfDaysAfterCreationForDueDate, applyInterests, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
                 maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
 
@@ -87,14 +85,12 @@ public class FixedTariff extends FixedTariff_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final Product product, final VatType vatType, final InterestRate interestRate,
-            final FinantialEntity finantialEntity, final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate,
-            final org.joda.time.DateTime endDate,
+    protected void init(final Product product, final InterestRate interestRate, final FinantialEntity finantialEntity,
+            final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate, final org.joda.time.DateTime endDate,
             final org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType,
             final org.joda.time.LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate,
             final boolean applyInterests) {
         setProduct(product);
-        setVatType(vatType);
         setInterestRate(interestRate);
         setFinantialEntity(finantialEntity);
         setAmount(amount);
@@ -125,10 +121,6 @@ public class FixedTariff extends FixedTariff_Base {
         //if (findByProduct(getProduct().count()>1)
         //{
         //  throw new TreasuryDomainException("error.FixedTariff.product.duplicated");
-        //} 
-        //if (findByVatType(getVatType().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.vatType.duplicated");
         //} 
         //if (findByInterestRate(getInterestRate().count()>1)
         //{
@@ -169,14 +161,12 @@ public class FixedTariff extends FixedTariff_Base {
     }
 
     @Atomic
-    public void edit(final Product product, final VatType vatType, final InterestRate InterestRate,
-            final FinantialEntity finantialEntity, final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate,
-            final org.joda.time.DateTime endDate,
+    public void edit(final Product product, final InterestRate InterestRate, final FinantialEntity finantialEntity,
+            final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate, final org.joda.time.DateTime endDate,
             final org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType,
             final org.joda.time.LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate,
             final boolean applyInterests) {
         setProduct(product);
-        setVatType(vatType);
         setInterestRate(InterestRate);
         setFinantialEntity(finantialEntity);
         setAmount(amount);
@@ -203,14 +193,14 @@ public class FixedTariff extends FixedTariff_Base {
     }
 
     @Atomic
-    public static FixedTariff create(final Product product, final VatType vatType, final InterestRate interestRate,
+    public static FixedTariff create(final Product product, final InterestRate interestRate,
             final FinantialEntity finantialEntity, final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate,
             final org.joda.time.DateTime endDate,
             final org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType,
             final org.joda.time.LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate,
             final boolean applyInterests) {
         FixedTariff fixedTariff = new FixedTariff();
-        fixedTariff.init(product, vatType, interestRate, finantialEntity, amount, beginDate, endDate, dueDateCalculationType,
+        fixedTariff.init(product, interestRate, finantialEntity, amount, beginDate, endDate, dueDateCalculationType,
                 fixedDueDate, numberOfDaysAfterCreationForDueDate, applyInterests);
         return fixedTariff;
     }
@@ -230,10 +220,6 @@ public class FixedTariff extends FixedTariff_Base {
 
     public static Stream<FixedTariff> findByProduct(final FinantialInstitution institution, final Product product) {
         return findAll(institution).filter(i -> product.equals(i.getProduct()));
-    }
-
-    public static Stream<FixedTariff> findByVatType(final FinantialInstitution institution, final VatType vatType) {
-        return findAll(institution).filter(i -> vatType.equals(i.getVatType()));
     }
 
     public static Stream<FixedTariff> findByInterestRate(final FinantialInstitution institution, final InterestRate InterestRate) {

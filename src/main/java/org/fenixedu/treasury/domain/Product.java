@@ -52,18 +52,22 @@ public class Product extends Product_Base {
     }
 
     protected Product(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, boolean active) {
+            final LocalizedString unitOfMeasure, boolean active, VatType vatType) {
         this();
         setProductGroup(productGroup);
         setCode(code);
         setName(name);
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
+        setVatType(vatType);
 
         checkRules();
     }
 
-    private void checkRules() {
+    public void checkRules() {
+        if (getVatType() == null) {
+            throw new TreasuryDomainException("error.Product.vatType.required");
+        }
         if (getProductGroup() == null) {
             throw new TreasuryDomainException("error.Product.productGroup.required");
         }
@@ -89,11 +93,13 @@ public class Product extends Product_Base {
     }
 
     @Atomic
-    public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active) {
+    public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active,
+            VatType vatType) {
         setCode(code);
         setName(name);
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
+        setVatType(vatType);
 
         checkRules();
     }
@@ -137,8 +143,8 @@ public class Product extends Product_Base {
 
     @Atomic
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, boolean active) {
-        return new Product(productGroup, code, name, unitOfMeasure, active);
+            final LocalizedString unitOfMeasure, boolean active, VatType vatType) {
+        return new Product(productGroup, code, name, unitOfMeasure, active, vatType);
     }
 
     public Stream<Tariff> getTariffs(FinantialInstitution finantialInstitution) {

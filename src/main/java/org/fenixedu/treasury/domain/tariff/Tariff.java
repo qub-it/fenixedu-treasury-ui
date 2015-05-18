@@ -51,15 +51,14 @@ public abstract class Tariff extends Tariff_Base {
 
     public abstract String getUiAmount();
 
-    protected void init(final FinantialEntity finantialEntity, final Product product, final VatType vatType,
-            final DateTime beginDate, final DateTime endDate, final DueDateCalculationType dueDateCalculationType,
-            final LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests,
-            final InterestType interestType, final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday,
-            final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount,
-            final BigDecimal rate) {
+    protected void init(final FinantialEntity finantialEntity, final Product product, final DateTime beginDate,
+            final DateTime endDate, final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
+            final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,
+            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
+            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
         setFinantialEntity(finantialEntity);
         setProduct(product);
-        setVatType(TreasurySettings.getInstance().getDefaultVatType());
+
         setBeginDate(beginDate);
         setEndDate(endDate);
         setDueDateCalculationType(dueDateCalculationType);
@@ -76,10 +75,6 @@ public abstract class Tariff extends Tariff_Base {
     protected void checkRules() {
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.Tariff.product.required");
-        }
-
-        if (getVatType() == null) {
-            throw new TreasuryDomainException("error.Tariff.vatType.required");
         }
 
         if (getBeginDate() == null) {
@@ -177,7 +172,6 @@ public abstract class Tariff extends Tariff_Base {
         }
 
         setBennu(null);
-        setVatType(null);
         setProduct(null);
         setFinantialEntity(null);
 

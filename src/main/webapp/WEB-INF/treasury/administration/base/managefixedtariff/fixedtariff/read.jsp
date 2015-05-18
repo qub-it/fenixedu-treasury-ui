@@ -140,7 +140,7 @@ ${portal.angularToolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.vatType" /></th>
-						<td><c:out value='${fixedTariff.vatType.name.content}' /></td>
+						<td><c:out value='${fixedTariff.product.vatType.name.content}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.dueDateCalculationType" /></th>

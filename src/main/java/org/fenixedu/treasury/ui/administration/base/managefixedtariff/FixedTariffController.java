@@ -196,8 +196,8 @@ public class FixedTariffController extends TreasuryBaseController {
             FixedTariff fixedTariff =
                     createFixedTariff(bean.getAmount(), bean.getApplyInterests(), bean.getBeginDate(),
                             bean.getDueDateCalculationType(), bean.getEndDate(), bean.getFinantialEntity(),
-                            bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.getVatType(),
-                            bean.getInterestRate(), bean.getProduct());
+                            bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.getInterestRate(),
+                            bean.getProduct());
 
             //Success Validation
             //Add the bean to be used in the View
@@ -227,13 +227,12 @@ public class FixedTariffController extends TreasuryBaseController {
     public FixedTariff createFixedTariff(java.math.BigDecimal amount, boolean applyInterests, org.joda.time.LocalDate beginDate,
             org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType, org.joda.time.LocalDate endDate,
             org.fenixedu.treasury.domain.FinantialEntity finantialEntity, org.joda.time.LocalDate fixedDueDate,
-            int numberOfDaysAfterCreationForDueDate, org.fenixedu.treasury.domain.VatType vatType,
-            InterestRateBean interestRateBean, Product product) {
+            int numberOfDaysAfterCreationForDueDate, InterestRateBean interestRateBean, Product product) {
 
         InterestRate interestRate = null;
 
         FixedTariff fixedTariff =
-                FixedTariff.create(product, vatType, interestRate, finantialEntity, amount, beginDate.toDateTimeAtStartOfDay(),
+                FixedTariff.create(product, interestRate, finantialEntity, amount, beginDate.toDateTimeAtStartOfDay(),
                         endDate.toDateTimeAtStartOfDay(), dueDateCalculationType, fixedDueDate,
                         numberOfDaysAfterCreationForDueDate, applyInterests);
         fixedTariff.setAmount(amount);
@@ -242,7 +241,6 @@ public class FixedTariffController extends TreasuryBaseController {
         fixedTariff.setFinantialEntity(finantialEntity);
         fixedTariff.setFixedDueDate(fixedDueDate);
         fixedTariff.setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
-        fixedTariff.setVatType(vatType);
 
         if (applyInterests) {
             interestRate =
@@ -302,8 +300,8 @@ public class FixedTariffController extends TreasuryBaseController {
 
             updateFixedTariff(bean.getAmount(), bean.getApplyInterests(), bean.getBeginDate().toDateTimeAtStartOfDay(),
                     bean.getDueDateCalculationType(), bean.getEndDate().toDateTimeAtStartOfDay(), bean.getFinantialEntity(),
-                    bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.getVatType(),
-                    bean.getInterestRate(), bean.getProduct(), model);
+                    bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.getInterestRate(),
+                    bean.getProduct(), model);
 
             /*Succes Update */
 
@@ -332,8 +330,7 @@ public class FixedTariffController extends TreasuryBaseController {
     public void updateFixedTariff(java.math.BigDecimal amount, boolean applyInterests, org.joda.time.DateTime beginDate,
             org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType, org.joda.time.DateTime endDate,
             org.fenixedu.treasury.domain.FinantialEntity finantialEntity, org.joda.time.LocalDate fixedDueDate,
-            int numberOfDaysAfterCreationForDueDate, org.fenixedu.treasury.domain.VatType vatType, InterestRateBean rateBean,
-            Product product, Model model) {
+            int numberOfDaysAfterCreationForDueDate, InterestRateBean rateBean, Product product, Model model) {
 
         // @formatter: off				
         /*
@@ -376,7 +373,6 @@ public class FixedTariffController extends TreasuryBaseController {
             fixedTariff.setInterestRate(null);
         }
         fixedTariff.setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
-        fixedTariff.setVatType(vatType);
 
         fixedTariff.checkRules();
     }

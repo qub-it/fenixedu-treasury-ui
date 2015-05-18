@@ -162,9 +162,7 @@ public class DebitEntryController extends TreasuryBaseController {
                 bean.setAmount(tariff.getAmount());
                 bean.setDueDate(tariff.calculateDueDate(bean.getFinantialDocument()));
             }
-            if (bean.getDescription() == null || bean.getDescription().isEmpty()) {
-                bean.setDescription(product.getName().getContent());
-            }
+            bean.setDescription(product.getName().getContent());
         }
         return getBeanJson(bean);
     }
@@ -227,9 +225,8 @@ public class DebitEntryController extends TreasuryBaseController {
         // @formatter: on
 
         Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
-        VatType vatType = tariff.isPresent() ? tariff.get().getVatType() : null;
 
-        DebitEntry debitEntry = DebitEntry.create(debtAccount, null, vatType, amount, dueDate, null, product);
+        DebitEntry debitEntry = DebitEntry.create(debtAccount, null, product.getVatType(), amount, dueDate, null, product);
         debitEntry.setDescription(description);
         debitEntry.setAmount(amount);
         debitEntry.setQuantity(quantity);
