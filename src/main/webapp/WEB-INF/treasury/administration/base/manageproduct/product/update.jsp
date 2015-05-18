@@ -199,7 +199,7 @@ $(document).ready(function() {
     
     
     
-    $("#product_vatType").select2().select2('val', '<c:out value='${param.vattype}'/>');
+    $("#product_vatType").select2().select2('val', '<c:out value="${product.vatType.externalId}"/>');
 
 	<%-- End block for providing series options --%>
 	

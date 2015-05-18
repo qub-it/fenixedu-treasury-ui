@@ -129,6 +129,10 @@ ${portal.toolkit()}
 						<td><c:out value='${product.unitOfMeasure.content}' /></td>
 					</tr>
 					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.Product.vatType" /></th>
+						<td><c:out value='${product.vatType.name.content}' /></td>
+					</tr>
+					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.Product.active" /></th>
 						<td><c:if test="${product.active}">
 								<spring:message code="label.true" />
