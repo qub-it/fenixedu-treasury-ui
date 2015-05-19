@@ -1,6 +1,9 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="datatables"
+	uri="http://github.com/dandelion/datatables"%>
+
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -9,7 +12,6 @@
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
 <spring:url var="datatablesCssUrl"
 	value="/CSS/dataTables/dataTables.bootstrap.min.css" />
-
 <link rel="stylesheet" href="${datatablesCssUrl}" />
 <spring:url var="datatablesI18NUrl"
 	value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
@@ -80,24 +82,15 @@ ${portal.toolkit()}
 	<div class="alert alert-info" role="alert">
 
 		<c:forEach items="${infoMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon glyphicon-ok-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
+			<p><span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}</p>
 		</c:forEach>
-
 	</div>
 </c:if>
 <c:if test="${not empty warningMessages}">
 	<div class="alert alert-warning" role="alert">
-
 		<c:forEach items="${warningMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign"
-					aria-hidden="true">&nbsp;</span> ${message}
-			</p>
+			<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}</p>
 		</c:forEach>
-
 	</div>
 </c:if>
 <c:if test="${not empty errorMessages}">
@@ -138,74 +131,43 @@ ${portal.toolkit()}
 		</form>
 	</div>
 </div>
-<th><spring:message code="label.TreasuryEvent.allDebitEntries"/></th>
+<h2><spring:message code="label.TreasuryEvent.allDebitEntries"/></h2>
 <div class="tab-pane" id="allDebitEntries">
 	<p></p>
 	<c:choose>
-	<c:when test="${not empty allDebitEntriesDataSet}">
-	<table id="allDebitEntriesTable" class="table responsive table-bordered table-hover">
-		<thead>
-			<tr>
-			<%--!!!  Field names here --%>
-			<th><spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber"/></th>
-			<th><spring:message code="label.TreasuryEvent.allDebitEntries.dueDate"/></th>
-			<th><spring:message code="label.TreasuryEvent.allDebitEntries.description"/></th>
-			<th><spring:message code="label.TreasuryEvent.allDebitEntries.amount"/></th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:forEach items="${allDebitEntriesDataSet}" var="debitEntry">
-				<tr>
-					<td>
-						<p><span>${debitEntry.finantialDocument.finantialDocumentNumber}</span></p>
-					</td>
-					<td>
-						<p align=center><span>${debitEntry.dueDate}</span></p>
-					</td>
-					<td>
-						<p><span>${debitEntry.description}</span></p>
-					</td>
-					<td>
-						<p align=right><span>${debitEntry.amount} &#128;</span></p>
-					</td>
-				</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-	</c:when>
-	<c:otherwise>
-	<div class="alert alert-warning" role="alert">
-		
-		<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-		
-	</div>	
-	
-	</c:otherwise>
+		<c:when test="${not empty allDebitEntriesDataSet}">
+			<datatables:table id="allDebitEntriesTable" row="debitEntry" data="${allDebitEntriesDataSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" /></datatables:columnHead>
+					<c:out value="${debitEntry.finantialDocument.finantialDocumentNumber}" /> 
+				</datatables:column>
+				<datatables:column cssStyle="width:15%">
+					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.dueDate" /></datatables:columnHead>
+					<p align=center><c:out value="${debitEntry.dueDate}" /></p>
+				</datatables:column>
+				<datatables:column cssStyle="width:60%">
+					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.description" /></datatables:columnHead>
+					<c:out value="${debitEntry.description}" />
+				</datatables:column>
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.amount" /></datatables:columnHead>
+					<p align=right><c:out value="${debitEntry.amount} ${debitEntry.debtAccount.finantialInstitution.currency.symbol}" /></p> 
+				</datatables:column>			
+			</datatables:table>
+	 		<script>
+	 		createDataTables('allDebitEntriesTable',false,false,false,"${pageContext.request.contextPath}","${datatablesI18NUrl}");
+	 		</script> 	
+		</c:when>
+		<c:otherwise>
+		<div class="alert alert-warning" role="alert">		
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>		
+		</div>	
+		</c:otherwise>
 	</c:choose>
 </div>
 
 <script>
 $(document).ready(function() {
-	var tableAllDebitEntries = $('#allDebitEntriesTable').DataTable({language : {
-		url : "${datatablesI18NUrl}",			
-	},
-	"columns": [
-		{ data: 'documentNumber' },
-		{ data: 'dueDate' },
-		{ data: 'description' },		
-		{ data: 'amount' }
-		
-	],
-	"columnDefs": [
-		{ "width": "10%", "targets": 0 },
-		{ "width": "10%", "targets": 1 },
-		{ "width": "60%", "targets": 2 },
-		{ "width": "20%", "targets": 3 }
-		
-	],
-	"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-	});
-	tableAllDebitEntries.columns.adjust().draw();
 	
 	});
 </script>
