@@ -116,9 +116,9 @@ public class VatController extends TreasuryBaseController {
     private List<Vat> filterSearchVat(VatType vatType, FinantialInstitution finantialInstitution, Boolean onlyActive) {
 
         return getSearchUniverseSearchVatDataSet().stream()
-                .filter(x -> finantialInstitution != null && finantialInstitution.equals(x.getFinantialInstitution()))
-                .filter(x -> vatType != null && vatType.equals(x.getVatType()))
-                .filter(x -> onlyActive == true && x.isActiveNow()).collect(Collectors.toList());
+                .filter(x -> finantialInstitution == null || finantialInstitution.equals(x.getFinantialInstitution()))
+                .filter(x -> vatType == null || vatType.equals(x.getVatType()))
+                .filter(x -> onlyActive == null || onlyActive == true && x.isActiveNow()).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
