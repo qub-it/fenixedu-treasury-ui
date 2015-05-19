@@ -190,7 +190,7 @@ public class DebitEntryController extends TreasuryBaseController {
             //Add the bean to be used in the View
             model.addAttribute("debitEntry", debitEntry);
             return redirect(DebitNoteController.READ_URL + getDebitEntry(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
+        } catch (Exception de) {
 
             /*
              * If there is any error in validation 
@@ -201,7 +201,8 @@ public class DebitEntryController extends TreasuryBaseController {
              * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(bean.getDebtAccount(), bean.getFinantialDocument(), model);
+            this.setDebitEntryBean(bean, model);
+            return "treasury/document/manageinvoice/debitentry/create";
         }
     }
 
@@ -257,6 +258,7 @@ public class DebitEntryController extends TreasuryBaseController {
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitEntry debitEntry, Model model) {
         setDebitEntryBean(new DebitEntryBean(debitEntry), model);
+        setDebitEntry(debitEntry, model);
         return "treasury/document/manageinvoice/debitentry/update";
     }
 
@@ -276,7 +278,7 @@ public class DebitEntryController extends TreasuryBaseController {
             /*Succes Update */
 
             return redirect(DebitNoteController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
+        } catch (Exception de) {
 
             /*
             * If there is any error in validation 
@@ -288,8 +290,9 @@ public class DebitEntryController extends TreasuryBaseController {
             */
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(debitEntry, model);
-
+            setDebitEntryBean(bean, model);
+            setDebitEntry(debitEntry, model);
+            return "treasury/document/manageinvoice/debitentry/update";
         }
     }
 

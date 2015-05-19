@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,9 +101,26 @@ public class VatController extends TreasuryBaseController {
         model.addAttribute("vatTypeList", VatType.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
 
+        checkVatRules(model);
+
         //add the results dataSet to the model
         model.addAttribute("searchvatResultsDataSet", searchvatResultsDataSet);
         return "treasury/administration/base/managevat/vat/search";
+    }
+
+    private void checkVatRules(Model model) {
+
+        FinantialInstitution.findAll().forEach(
+                inst -> {
+                    VatType.findAll().forEach(
+                            vatType -> {
+                                if (!Vat.findActiveUnique(vatType, inst, new DateTime()).isPresent()) {
+                                    addErrorMessage(
+                                            BundleUtil.getString(Constants.BUNDLE, "label.Vat.missing.vattype.for",
+                                                    inst.getName(), vatType.getName().getContent()), model);
+                                }
+                            });
+                });
     }
 
     private Set<Vat> getSearchUniverseSearchVatDataSet() {
@@ -232,12 +250,12 @@ public class VatController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
-            value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
-            value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, @PathVariable("oid") Vat vat,
-            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate, @RequestParam(value = "begindate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate, @RequestParam(
-                    value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
+    public String update(
+            @RequestParam(value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason,
+            @PathVariable("oid") Vat vat,
+            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         setVat(vat, model);
@@ -254,7 +272,7 @@ public class VatController extends TreasuryBaseController {
          */
 
         try {
-            updateVat(vatType, finantialInstitution, vatExemptionReason, taxRate, beginDate, endDate, model);
+            updateVat(vat.getVatType(), vat.getFinantialInstitution(), vatExemptionReason, taxRate, beginDate, endDate, model);
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);

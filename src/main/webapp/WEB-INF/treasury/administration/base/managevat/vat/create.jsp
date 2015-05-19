@@ -29,10 +29,7 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<!--  HACK IN ORDER TO SOLVE BUG BNN-197  -->
-<script src="${pageContext.request.contextPath}/static/treasury/js/moment.js"></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/datetime.js"></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/datepicker.js"></script>
+
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -88,18 +85,6 @@ ${portal.toolkit()}
 		<div class="panel-body">
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.Vat.vatType" />
-				</div>
-
-				<div class="col-sm-10">
-					<select id="vat_vatType" class="js-example-basic-single"
-						name="vatType" required>
-						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-					</select>
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
 					<spring:message code="label.Vat.finantialInstitution" />
 				</div>
 
@@ -113,23 +98,35 @@ ${portal.toolkit()}
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.Vat.vatExemptionReason" />
+					<spring:message code="label.Vat.vatType" />
 				</div>
 
 				<div class="col-sm-10">
-					<select id="vat_vatExemptionReason"
-						class="js-example-basic-single" name="vatExemptionReason">
-						<option value=""></option>
+					<select id="vat_vatType" class="js-example-basic-single"
+						name="vatType" required>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 				</div>
-			</div>			
+			</div>
+<!-- 			<div class="form-group row"> -->
+<!-- 				<div class="col-sm-2 control-label"> -->
+<%-- 					<spring:message code="label.Vat.vatExemptionReason" /> --%>
+<!-- 				</div> -->
+
+<!-- 				<div class="col-sm-10"> -->
+<!-- 					<select id="vat_vatExemptionReason" -->
+<!-- 						class="js-example-basic-single" name="vatExemptionReason"> -->
+<!-- 						<option value=""></option> -->
+<%-- 						empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+<!-- 					</select> -->
+<!-- 				</div> -->
+<!-- 			</div>			 -->
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.Vat.taxRate" />
 				</div>
 
-				<div class="col-sm-10">
+				<div class="col-sm-4">
 					<input id="vat_taxRate" class="form-control"  type="text" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?"
 						name="taxrate"
 						value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>'
@@ -157,7 +154,7 @@ ${portal.toolkit()}
 					<input id="vat_endDate" class="form-control" type="text"
 						name="enddate" bennu-date
 						value='<c:out value='${not empty param.enddate ? param.enddate : vat.endDate.toString("yyyy-MM-dd") }'/>'
-						required />
+						/>
 				</div>
 			</div>
 		</div>
