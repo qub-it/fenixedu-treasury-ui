@@ -38,20 +38,21 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 public class CreditEntry extends CreditEntry_Base {
 
     protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final VatType vatType,
-            final BigDecimal amount) {
-        init(finantialDocument, product, vatType, amount);
+            final BigDecimal amount, String description, BigDecimal quantity) {
+        init(finantialDocument, product, vatType, amount, description, quantity);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
-            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount) {
+            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount, String description,
+            BigDecimal quantity) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
     protected void init(final FinantialDocument finantialDocument, final Product product, final VatType vatType,
-            final BigDecimal amount) {
+            final BigDecimal amount, String description, BigDecimal quantity) {
         super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.DEBIT_ENTRY, vatType,
-                amount);
+                amount, description, quantity);
 
         checkRules();
     }

@@ -45,25 +45,26 @@ import com.google.gson.reflect.TypeToken;
 
 public class DebitEntry extends DebitEntry_Base {
 
-    protected DebitEntry(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
-            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap, Product product) {
-        init(debtAccount, treasuryEvent, product, vatType, amount, dueDate, propertiesMap);
+    protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
+            final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
+            Product product, String description, BigDecimal quantity) {
+        init(debitNote, debtAccount, null, product, vatType, amount, dueDate, propertiesMap, description, quantity);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
-            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount) {
+            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount, String description,
+            BigDecimal quantity) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final Product product,
-            final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap) {
-        super.init(null, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vatType, amount);
+    protected void init(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
+            final Product product, final VatType vatType, final BigDecimal amount, final LocalDate dueDate,
+            final Map<String, String> propertiesMap, String description, BigDecimal quantity) {
+        super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vatType, amount, description, quantity);
 
-        setDebtAccount(debtAccount);
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
-
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
 
         checkRules();
@@ -132,9 +133,11 @@ public class DebitEntry extends DebitEntry_Base {
         return findAll().filter(d -> d.getFinantialDocument() == debitNote);
     }
 
-    public static DebitEntry create(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final VatType vatType,
-            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap, final Product product) {
-        return new DebitEntry(debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product);
+    public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
+            final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
+            final Product product, String description, BigDecimal quantity) {
+        return new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
+                description, quantity);
     }
 
 }

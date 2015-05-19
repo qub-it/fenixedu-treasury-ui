@@ -217,4 +217,9 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         return null;
     }
 
+    public Vat getActiveVat(VatType vatType, DateTime when) {
+        return this.getVatsSet().stream().filter(x -> x.isActive(when) && x.getVatType().equals(vatType)).findFirst()
+                .orElse(null);
+    }
+
 }

@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -226,10 +227,12 @@ public class DebitEntryBean implements IBean {
     }
 
     public DebitEntryBean() {
-
+        this.setQuantity(BigDecimal.ONE);
+        this.setAmount(BigDecimal.ZERO);
     }
 
     public DebitEntryBean(DebitEntry debitEntry) {
+        this();
         this.setTreasuryEvent(debitEntry.getTreasuryEvent());
         this.setVat(debitEntry.getVat());
         this.setProduct(debitEntry.getProduct());

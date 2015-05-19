@@ -209,10 +209,10 @@ class document.FinantialDocumentEntry {
 	FinantialEntryType finantialEntryType;
 	String description;
 	BigDecimalT amount;
-	BigDecimalT quantity;
 }
 
 	class document.InvoiceEntry extends document.FinantialDocumentEntry {
+	BigDecimalT quantity;
 	}
 
 		class document.DebitEntry extends document.InvoiceEntry {

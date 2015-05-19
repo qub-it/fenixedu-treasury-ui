@@ -36,18 +36,18 @@ import pt.ist.fenixframework.Atomic;
 
 public class SettlementEntry extends SettlementEntry_Base {
 
-    protected SettlementEntry(final FinantialDocument finantialDocument, final BigDecimal amount) {
-        init(finantialDocument, amount);
+    protected SettlementEntry(final FinantialDocument finantialDocument, final BigDecimal amount, final String description) {
+        init(finantialDocument, amount, description);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final FinantialEntryType finantialEntryType,
-            final BigDecimal amount) {
+            final BigDecimal amount, String description) {
         throw new RuntimeException("error.SettlementEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final FinantialDocument finantialDocument, final BigDecimal amount) {
-        super.init(finantialDocument, FinantialEntryType.SETTLEMENT_ENTRY, amount);
+    protected void init(final FinantialDocument finantialDocument, final BigDecimal amount, String description) {
+        super.init(finantialDocument, FinantialEntryType.SETTLEMENT_ENTRY, amount, description);
 
         checkRules();
     }
@@ -72,8 +72,8 @@ public class SettlementEntry extends SettlementEntry_Base {
     }
 
     @Atomic
-    public SettlementEntry create(final FinantialDocument finantialDocument, final BigDecimal amount) {
-        return new SettlementEntry(finantialDocument, amount);
+    public SettlementEntry create(final FinantialDocument finantialDocument, final BigDecimal amount, final String description) {
+        return new SettlementEntry(finantialDocument, amount, description);
     }
 
 }

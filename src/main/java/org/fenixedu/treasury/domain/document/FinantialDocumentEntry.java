@@ -43,11 +43,10 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
     }
 
     protected void init(final FinantialDocument finantialDocument, final FinantialEntryType finantialEntryType,
-            final BigDecimal amount) {
+            final BigDecimal amount, String description) {
         setFinantialDocument(finantialDocument);
         setFinantialEntryType(finantialEntryType);
         setAmount(amount);
-        setQuantity(BigDecimal.ONE);
     }
 
     public void checkRules() {

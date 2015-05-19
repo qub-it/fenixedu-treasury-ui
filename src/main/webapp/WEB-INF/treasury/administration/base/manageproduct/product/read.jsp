@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -177,7 +177,7 @@ ${portal.toolkit()}
 							<datatables:columnHead>
 								<spring:message code="label.Tariff.beginDate" />
 							</datatables:columnHead>
-							 <joda:format value="${tariff.beginDate}" style="S-" />
+							<joda:format value="${tariff.beginDate}" style="S-" />
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>

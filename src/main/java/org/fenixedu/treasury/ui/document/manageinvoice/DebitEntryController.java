@@ -28,6 +28,7 @@ package org.fenixedu.treasury.ui.document.manageinvoice;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -154,13 +155,17 @@ public class DebitEntryController extends TreasuryBaseController {
 
         Product product = bean.getProduct();
         if (product != null) {
+            bean.setVat(bean.getDebtAccount().getFinantialInstitution().getActiveVat(product.getVatType(), new DateTime()));
             FixedTariff tariff =
                     (FixedTariff) product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime())
                             .findFirst().orElse(null);
 
             if (tariff != null) {
-                bean.setAmount(tariff.getAmount());
+                bean.setAmount(tariff.getAmount().setScale(2));
                 bean.setDueDate(tariff.calculateDueDate(bean.getFinantialDocument()));
+            } else {
+                bean.setAmount(BigDecimal.ZERO.setScale(2));
+                bean.setDueDate(new LocalDate());
             }
             bean.setDescription(product.getName().getContent());
         }
@@ -178,8 +183,8 @@ public class DebitEntryController extends TreasuryBaseController {
         try {
 
             DebitEntry debitEntry =
-                    createDebitEntry(bean.getDebtAccount(), bean.getDescription(), bean.getProduct(), bean.getAmount(),
-                            bean.getQuantity(), bean.getDueDate());
+                    createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
+                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate());
 
             //Success Validation
             //Add the bean to be used in the View
@@ -205,7 +210,7 @@ public class DebitEntryController extends TreasuryBaseController {
 //				
 
     @Atomic
-    public DebitEntry createDebitEntry(DebtAccount debtAccount, java.lang.String description,
+    public DebitEntry createDebitEntry(DebitNote debitNote, DebtAccount debtAccount, java.lang.String description,
             org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, java.math.BigDecimal quantity,
             LocalDate dueDate) {
 
@@ -226,12 +231,9 @@ public class DebitEntryController extends TreasuryBaseController {
 
         Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
 
-        DebitEntry debitEntry = DebitEntry.create(debtAccount, null, product.getVatType(), amount, dueDate, null, product);
-        debitEntry.setDescription(description);
-        debitEntry.setAmount(amount);
-        debitEntry.setQuantity(quantity);
-
-        debitEntry.checkRules();
+        DebitEntry debitEntry =
+                DebitEntry.create(debitNote, debtAccount, null, product.getVatType(), amount, dueDate, null, product,
+                        description, quantity);
 
         return debitEntry;
     }

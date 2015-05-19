@@ -160,4 +160,12 @@ public class Vat extends Vat_Base {
         return new Interval(getBeginDate(), getEndDate() != null ? getEndDate() : new DateTime().plusYears(10));
     }
 
+    public boolean isActiveNow() {
+        return isActive(new DateTime());
+    }
+
+    public boolean isActive(DateTime when) {
+        return this.getBeginDate().isBefore(when) && (this.getEndDate() == null || this.getEndDate().isAfter(when));
+    }
+
 }
