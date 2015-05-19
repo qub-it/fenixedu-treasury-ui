@@ -93,12 +93,12 @@ public class VatController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = SEARCH_URI)
-    public String search(
-            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
-            Model model) {
-        List<Vat> searchvatResultsDataSet = filterSearchVat(taxRate, beginDate, endDate);
+    public String search(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
+            value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
+            value = "onlyActive", required = false) Boolean onlyActive, Model model) {
+        List<Vat> searchvatResultsDataSet = filterSearchVat(vatType, finantialInstitution, onlyActive);
+        model.addAttribute("vatTypeList", VatType.findAll().collect(Collectors.toList()));
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
 
         //add the results dataSet to the model
         model.addAttribute("searchvatResultsDataSet", searchvatResultsDataSet);
@@ -113,12 +113,12 @@ public class VatController extends TreasuryBaseController {
         return Vat.findAll().collect(Collectors.toSet()); //CHANGE_ME
     }
 
-    private List<Vat> filterSearchVat(java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate,
-            org.joda.time.DateTime endDate) {
+    private List<Vat> filterSearchVat(VatType vatType, FinantialInstitution finantialInstitution, Boolean onlyActive) {
 
-        return getSearchUniverseSearchVatDataSet().stream().filter(vat -> taxRate == null || taxRate.equals(vat.getTaxRate()))
-                .filter(vat -> beginDate == null || beginDate.equals(vat.getBeginDate()))
-                .filter(vat -> endDate == null || endDate.equals(vat.getEndDate())).collect(Collectors.toList());
+        return getSearchUniverseSearchVatDataSet().stream()
+                .filter(x -> finantialInstitution != null && finantialInstitution.equals(x.getFinantialInstitution()))
+                .filter(x -> vatType != null && vatType.equals(x.getVatType()))
+                .filter(x -> onlyActive == true && x.isActiveNow()).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
