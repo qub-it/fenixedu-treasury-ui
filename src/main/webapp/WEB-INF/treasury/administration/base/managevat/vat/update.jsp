@@ -108,7 +108,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.Vat.taxRate"/></div> 
 
 <div class="col-sm-10">
-	<input id="vat_taxRate" class="form-control" type="text" name="taxrate"  value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>' required/>
+	<input id="vat_taxRate" class="form-control" type="text" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" name="taxrate"  value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>' required/>
 </div>	
 </div>		
 <div class="form-group row">

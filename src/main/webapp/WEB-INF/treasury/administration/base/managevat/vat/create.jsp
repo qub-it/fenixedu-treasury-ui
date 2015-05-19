@@ -29,6 +29,11 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
+<!--  HACK IN ORDER TO SOLVE BUG BNN-197  -->
+<script src="${pageContext.request.contextPath}/static/treasury/js/moment.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/datetime.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/datepicker.js"></script>
+
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
@@ -125,7 +130,7 @@ ${portal.toolkit()}
 				</div>
 
 				<div class="col-sm-10">
-					<input id="vat_taxRate" class="form-control" type="text"
+					<input id="vat_taxRate" class="form-control"  type="text" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?"
 						name="taxrate"
 						value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>'
 						required />
@@ -140,7 +145,7 @@ ${portal.toolkit()}
 					<input id="vat_beginDate" class="form-control" type="text"
 						name="begindate" bennu-date
 						value='<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate.toString("yyyy-MM-dd") }'/>'
-						required />
+						/>
 				</div>
 			</div>
 			<div class="form-group row">
