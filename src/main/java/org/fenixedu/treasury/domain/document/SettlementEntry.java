@@ -76,4 +76,9 @@ public class SettlementEntry extends SettlementEntry_Base {
         return new SettlementEntry(finantialDocument, amount, description);
     }
 
+    @Override
+    public BigDecimal getTotalAmount() {
+        return this.getAmount();
+    }
+
 }

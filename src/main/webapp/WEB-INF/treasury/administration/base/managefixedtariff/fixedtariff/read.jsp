@@ -123,8 +123,20 @@ ${portal.angularToolkit()}
 			<table class="table">
 				<tbody>
 					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.finantialEntity" /></th>
+						<td><c:out value='${fixedTariff.finantialEntity.name.content}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.product" /></th>
+						<td><c:out value='${fixedTariff.product.code} - ${fixedTariff.product.name.content}' /></td>
+					</tr>
+					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.amount" /></th>
 						<td><c:out value='${fixedTariff.uiAmount}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.vatType" /></th>
+						<td><c:out value='${fixedTariff.product.vatType.name.content}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.beginDate" /></th>
@@ -133,14 +145,6 @@ ${portal.angularToolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.endDate" /></th>
 						<td><joda:format value="${fixedTariff.endDate}" style="S-" /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.finantialEntity" /></th>
-						<td><c:out value='${fixedTariff.finantialEntity.name.content}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.vatType" /></th>
-						<td><c:out value='${fixedTariff.product.vatType.name.content}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.dueDateCalculationType" /></th>

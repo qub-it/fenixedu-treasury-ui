@@ -47,6 +47,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.transform.impl.AddDelegateTransformer;
+import org.springframework.cglib.transform.impl.AddStaticInitTransformer;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -63,6 +65,8 @@ import pt.ist.fenixframework.Atomic;
 import org.fenixedu.treasury.dto.DebitEntryBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
@@ -186,10 +190,19 @@ public class DebitEntryController extends TreasuryBaseController {
                     createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
                             bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate());
 
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("debitEntry", debitEntry);
-            return redirect(DebitNoteController.READ_URL + getDebitEntry(model).getExternalId(), model, redirectAttributes);
+            setDebitEntry(debitEntry, model);
+
+            if (getDebitEntry(model).getFinantialDocument() != null) {
+                return redirect(DebitNoteController.READ_URL + getDebitEntry(model).getFinantialDocument().getExternalId(),
+                        model, redirectAttributes);
+            } else {
+                return redirect(DebtAccountController.READ_URL + getDebitEntry(model).getDebtAccount().getExternalId(), model,
+                        redirectAttributes);
+            }
         } catch (Exception de) {
 
             /*
@@ -235,7 +248,6 @@ public class DebitEntryController extends TreasuryBaseController {
         DebitEntry debitEntry =
                 DebitEntry.create(debitNote, debtAccount, null, product.getVatType(), amount, dueDate, null, product,
                         description, quantity);
-
         return debitEntry;
     }
 

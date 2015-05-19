@@ -84,7 +84,7 @@ public class Vat extends Vat_Base {
             throw new TreasuryDomainException("error.Vat.endDate.end.date.must.be.after.begin.date");
         }
 
-        if (findActive(getVatType(), getBeginDate(), getEndDate()).count() > 1) {
+        if (findActive(getFinantialInstitution(), getVatType(), getBeginDate(), getEndDate()).count() > 1) {
             throw new TreasuryDomainException("error.Vat.date.interval.overlap.with.another");
         }
     }
@@ -134,9 +134,11 @@ public class Vat extends Vat_Base {
         return find(vatType).filter(v -> v.interval().contains(when));
     }
 
-    protected static Stream<Vat> findActive(final VatType vatType, final DateTime begin, final DateTime end) {
+    protected static Stream<Vat> findActive(final FinantialInstitution finantialInstitution, final VatType vatType,
+            final DateTime begin, final DateTime end) {
         final Interval interval = new Interval(begin, end);
-        return find(vatType).filter(v -> v.interval().overlaps(interval));
+        return find(vatType).filter(v -> v.getFinantialInstitution().equals(finantialInstitution)).filter(
+                v -> v.interval().overlaps(interval));
     }
 
     public static Optional<Vat> findActiveUnique(final VatType vatType, final FinantialInstitution finantialInstiution,

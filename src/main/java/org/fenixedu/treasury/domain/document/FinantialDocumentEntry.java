@@ -37,6 +37,8 @@ import pt.ist.fenixframework.Atomic;
 
 public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base {
 
+    public abstract BigDecimal getTotalAmount();
+
     protected FinantialDocumentEntry() {
         super();
         setBennu(Bennu.getInstance());

@@ -136,8 +136,14 @@ public class DebitEntry extends DebitEntry_Base {
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, String description, BigDecimal quantity) {
-        return new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
-                description, quantity);
+        DebitEntry entry =
+                new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
+                        description, quantity);
+        if (debitNote != null) {
+            debitNote.addFinantialDocumentEntries(entry);
+        }
+
+        return entry;
     }
 
 }

@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -103,11 +104,29 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public BigDecimal getTotalAmount() {
-        return BigDecimal.ZERO;
+        BigDecimal amount = BigDecimal.ZERO;
+        for (FinantialDocumentEntry entry : this.getFinantialDocumentEntriesSet()) {
+            amount.add(entry.getTotalAmount());
+        }
+
+        return amount.setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public String getUiTotalAmount() {
+        return this.getTotalAmount() + " " + this.getDebtAccount().getFinantialInstitution().getCurrency().getSymbol();
     }
 
     public BigDecimal getTotalNetAmount() {
-        return BigDecimal.ZERO;
+        BigDecimal amount = BigDecimal.ZERO;
+        for (FinantialDocumentEntry entry : this.getFinantialDocumentEntriesSet()) {
+            amount.add(entry.getAmount());
+        }
+
+        return amount.setScale(2, RoundingMode.HALF_EVEN);
+    }
+
+    public String getUiTotalNetAmount() {
+        return this.getTotalNetAmount() + " " + this.getDebtAccount().getFinantialInstitution().getCurrency().getSymbol();
     }
 
     public boolean isClosed() {

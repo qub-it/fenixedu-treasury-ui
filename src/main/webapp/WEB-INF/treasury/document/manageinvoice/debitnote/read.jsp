@@ -92,6 +92,10 @@ ${portal.toolkit()}
 						<td><c:out value='${debitNote.documentNumberSeries.series.finantialInstitution.name}' /></td>
 					</tr>
 					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+						<td><c:out value='${debitNote.debtAccount.customer.name}' /></td>
+					</tr>
+					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentNumber" /></th>
 						<td><c:out value='${debitNote.documentNumber}' /></td>
 					</tr>
@@ -111,6 +115,10 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.state" /></th>
 						<td><c:out value='${debitNote.state}' /></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
+						<td><c:out value='${debitNote.totalAmount}' /></td>
+					</tr>
 				</tbody>
 			</table>
 		</form>
@@ -128,21 +136,17 @@ ${portal.toolkit()}
 		<datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
-					<spring:message code="label.DebitNote.documentDate" />
+					<spring:message code="label.DebitEntry.description" />
 				</datatables:columnHead>
-				<c:out value="${debitEntry}" /> - XPTO 
+				<c:out value="${debitEntry.description}" /> 
 			</datatables:column>
 			<datatables:column>
 				<datatables:columnHead>
-					<spring:message code="label.DebitNote.documentDate" />
+					<spring:message code="label.DebitEntry.amount" />
 				</datatables:columnHead>
-				<c:out value="${debitEntry}" />
+				<c:out value="${debitEntry.amount}" />
 			</datatables:column>
-			<datatables:column title="City 3">
-				<datatables:columnHead>
-					<spring:message code="label.DebitNote.documentDate" />
-				</datatables:columnHead>
-				<c:out value="${debitEntry}" />
+			<datatables:column>
 				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 					href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/" ${debitEntry.externalId}><spring:message
 						code="label.event.document.manageInvoice.updateEntry" /></a>	|&nbsp;&nbsp;
@@ -152,7 +156,7 @@ ${portal.toolkit()}
 			</datatables:column>
 		</datatables:table>
 		<script>
-			createDataTables('debitEntries', false, false, true,
+			createDataTables('debitEntries', false, false, false,
 					"${pageContext.request.contextPath}",
 					"${datatablesI18NUrl}");
 		</script>

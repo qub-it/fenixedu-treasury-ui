@@ -53,10 +53,10 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         super.init(finantialDocument, finantialEntryType, amount, description);
 
         this.setQuantity(quantity);
-        this.setCurrency(TreasurySettings.getInstance().getDefaultCurrency());
+        this.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         this.setDebtAccount(debtAccount);
         this.setProduct(product);
-        this.setCurrency(this.getDebtAccount().getFinantialInstitution().getCurrency());
+
         this.setVat(Vat.findActiveUnique(vatType, debtAccount.getFinantialInstitution(), new DateTime()).orElse(null));
     }
 
@@ -92,7 +92,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             throw new TreasuryDomainException("error.InvoiceEntry.vat.required");
         }
 
-        if (getFinantialDocument().getDebtAccount() != this.getDebtAccount()) {
+        if (getFinantialDocument() != null && getFinantialDocument().getDebtAccount() != this.getDebtAccount()) {
             throw new TreasuryDomainException("error.InvoiceEntry.invalidDebtAccount");
         }
 
