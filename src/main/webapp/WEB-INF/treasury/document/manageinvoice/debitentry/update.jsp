@@ -38,7 +38,14 @@ ${portal.angularToolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntry.externalId}" ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
+	<c:if test="${ not empty debitEntry.finantialDocument}">
+	<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntry.finantialDocument.externalId}" ><spring:message code="label.event.back" /></a>
+	</c:if>
+	<c:if test="${ empty debitEntry.finantialDocument}">
+		<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debtaccount/read/${debitEntry.debtAccount.externalId}" ><spring:message code="label.event.back" /></a>
+	</c:if>
+	
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -104,19 +111,19 @@ angular.module('angularAppDebitEntry', ['ngSanitize', 'ui.select']).controller('
 	<input id="debitEntry_description" class="form-control" type="text" ng-model="object.description" name="description"  value='<c:out value='${not empty param.description ? param.description : debitEntry.description }'/>' />
 </div>	
 </div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.product"/></div> 
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.product"/></div>  --%>
 
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		<ui-select id="debitEntry_product" class="form-control" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" >
-    						<ui-select-match >{{$select.selected.text}}</ui-select-match>
-    						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search">
-      							<span ng-bind-html="product.text | highlight: $select.search"></span>
-    						</ui-select-choices>
-  						</ui-select>				
-				</div>
-</div>		
+<!-- <div class="col-sm-4"> -->
+ 	<%-- Relation to side 1 drop down rendered in input --%> 
+<!-- 		<ui-select id="debitEntry_product" class="form-control" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" > -->
+<!--     						<ui-select-match >{{$select.selected.text}}</ui-select-match> -->
+<!--     						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search"> -->
+<!--       							<span ng-bind-html="product.text | highlight: $select.search"></span> -->
+<!--     						</ui-select-choices> -->
+<!--   						</ui-select>				 -->
+<!-- 				</div> -->
+<!-- </div>		 -->
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.amount"/></div> 
 

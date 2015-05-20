@@ -419,8 +419,7 @@ public class DebitNoteController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen    
-        return redirect("/treasury/document/manageinvoice/debitentry/update/" + getDebitNote(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(DebitEntryController.UPDATE_URL + debitEntry.getExternalId(), model, redirectAttributes);
     }
 
     @Atomic
@@ -447,7 +446,6 @@ public class DebitNoteController extends TreasuryBaseController {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
         // Now choose what is the Exit Screen    
-        return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
     }
 }

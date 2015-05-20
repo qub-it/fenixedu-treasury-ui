@@ -285,11 +285,17 @@ public class DebitEntryController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateDebitEntry(bean.getDescription(), bean.getProduct(), bean.getAmount(), bean.getQuantity(), model);
+            updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), model);
 
             /*Succes Update */
 
-            return redirect(DebitNoteController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
+            if (debitEntry.getFinantialDocument() != null) {
+                return redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model,
+                        redirectAttributes);
+            } else {
+                return redirect(DebtAccountController.READ_URL + debitEntry.getDebtAccount().getExternalId(), model,
+                        redirectAttributes);
+            }
         } catch (Exception de) {
 
             /*
@@ -309,8 +315,8 @@ public class DebitEntryController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateDebitEntry(java.lang.String description, org.fenixedu.treasury.domain.Product product,
-            java.math.BigDecimal amount, java.math.BigDecimal quantity, Model model) {
+    public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity,
+            Model model) {
 
         // @formatter: off				
         /*
@@ -326,7 +332,6 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry = getDebitEntry(model);
         debitEntry.setDescription(description);
-        debitEntry.setProduct(product);
         debitEntry.setAmount(amount);
         debitEntry.setQuantity(quantity);
 

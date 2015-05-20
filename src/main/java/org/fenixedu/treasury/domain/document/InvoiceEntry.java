@@ -60,6 +60,8 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
         this.setCurrency(null);
         this.setDebtAccount(null);
+        this.setVat(null);
+        this.setProduct(null);
         super.delete();
     }
 
