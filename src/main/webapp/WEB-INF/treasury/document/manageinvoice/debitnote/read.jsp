@@ -138,7 +138,7 @@ ${portal.toolkit()}
 				<datatables:columnHead>
 					<spring:message code="label.DebitEntry.description" />
 				</datatables:columnHead>
-				<c:out value="${debitEntry.description}" /> 
+				<c:out value="${debitEntry.description}" />
 			</datatables:column>
 			<datatables:column>
 				<datatables:columnHead>
@@ -150,7 +150,7 @@ ${portal.toolkit()}
 				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 					href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/" ${debitEntry.externalId}><spring:message
 						code="label.event.document.manageInvoice.updateEntry" /></a>	|&nbsp;&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 					href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/" ${debitEntry.externalId}><spring:message
 						code="label.event.document.manageInvoice.deleteEntry" /></a>
 			</datatables:column>

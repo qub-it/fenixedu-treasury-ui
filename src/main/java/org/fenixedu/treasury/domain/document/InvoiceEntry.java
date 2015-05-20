@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -107,6 +108,10 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         BigDecimal totalPayed = BigDecimal.ZERO;
         this.getSettlementEntriesSet().stream().map(x -> totalPayed.add(x.getAmount()));
         return !totalAmount.equals(totalPayed);
+    }
+
+    public BigDecimal getTotalAmount() {
+        return this.getQuantity().multiply(this.getAmount()).setScale(2, RoundingMode.HALF_EVEN);
     }
 
 }
