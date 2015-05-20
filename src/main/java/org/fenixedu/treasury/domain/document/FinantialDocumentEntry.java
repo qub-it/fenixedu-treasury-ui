@@ -28,10 +28,13 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -49,6 +52,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         setFinantialDocument(finantialDocument);
         setFinantialEntryType(finantialEntryType);
         setAmount(amount);
+        setDescription(description);
     }
 
     public void checkRules() {
@@ -73,17 +77,24 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         return true;
     }
 
-    public boolean isDeletable() {
-        return true;
+    @Override
+    protected void checkForDeletionBlockers(Collection<String> blockers) {
+        if (getFinantialDocument() != null && getFinantialDocument().getState() != FinantialDocumentStateType.PREPARING) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE,
+                    "error.finantialdocumententry.cannot.be.deleted.document.is.not.preparing"));
+        }
     }
 
     @Atomic
     public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.FinantialDocumentEntry.cannot.delete");
-        }
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
 
         setBennu(null);
+        if (getFinantialDocument() != null) {
+            getFinantialDocument().removeFinantialDocumentEntries(this);
+        }
+
+        setFinantialDocument(null);
 
         deleteDomainObject();
     }

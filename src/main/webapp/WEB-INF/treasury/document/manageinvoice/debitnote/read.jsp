@@ -147,12 +147,18 @@ ${portal.toolkit()}
 				<c:out value="${debitEntry.amount}" />
 			</datatables:column>
 			<datatables:column>
-				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-					href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/" ${debitEntry.externalId}><spring:message
-						code="label.event.document.manageInvoice.updateEntry" /></a>	|&nbsp;&nbsp;
-				<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-					href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/" ${debitEntry.externalId}><spring:message
-						code="label.event.document.manageInvoice.deleteEntry" /></a>
+				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/${debitEntry.externalId}">
+					<button type="submit" class="btn btn-default btn-xs">
+						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+						<spring:message code="label.event.document.manageInvoice.updateEntry" />
+					</button>
+				</form>
+				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}">
+					<button type="submit" class="btn btn-default btn-xs">
+						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+						<spring:message code="label.event.document.manageInvoice.deleteEntry" />
+					</button>
+				</form>
 			</datatables:column>
 		</datatables:table>
 		<script>

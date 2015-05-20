@@ -27,6 +27,9 @@
  */
 package org.fenixedu.treasury.domain.exceptions;
 
+import java.util.Collection;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
@@ -53,4 +56,9 @@ public class TreasuryDomainException extends DomainException {
         super(cause, status, Constants.BUNDLE, key, args);
     }
 
+    public static void throwWhenDeleteBlocked(Collection<String> blockers) {
+        if (!blockers.isEmpty()) {
+            throw new TreasuryDomainException("key.return.argument", blockers.stream().collect(Collectors.joining(", ")));
+        }
+    }
 }

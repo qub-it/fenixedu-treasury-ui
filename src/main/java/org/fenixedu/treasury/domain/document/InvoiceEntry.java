@@ -29,18 +29,39 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 public abstract class InvoiceEntry extends InvoiceEntry_Base {
+
+    @Override
+    protected void checkForDeletionBlockers(Collection<String> blockers) {
+        super.checkForDeletionBlockers(blockers);
+
+        if (getFinantialDocument() != null && getFinantialDocument().getState() != FinantialDocumentStateType.PREPARING) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.invoiceentry.cannot.be.deleted.document.is.not.preparing"));
+        }
+    }
+
+    @Override
+    public void delete() {
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
+
+        this.setCurrency(null);
+        this.setDebtAccount(null);
+        super.delete();
+    }
 
     @Override
     protected void init(FinantialDocument finantialDocument, FinantialEntryType finantialEntryType, BigDecimal amount,

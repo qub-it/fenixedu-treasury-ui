@@ -410,7 +410,7 @@ public class DebitNoteController extends TreasuryBaseController {
     //
     // This is the EventupdateEntry Method for Screen read
     //
-    @RequestMapping(value = "/read/{oid}/updateentry/{entryoid}")
+    @RequestMapping(value = "/read/{oid}/updateentry/{entryoid}", method = RequestMethod.POST)
     public String processReadToUpdateEntry(@PathVariable("oid") DebitNote debitNote,
             @PathVariable("entryoid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
         setDebitNote(debitNote, model);
@@ -423,20 +423,31 @@ public class DebitNoteController extends TreasuryBaseController {
                 redirectAttributes);
     }
 
+    @Atomic
+    private void deleteDebitEntry(DebitEntry debitEntry, DebitNote debitNote, Model model) {
+        if (debitEntry.getFinantialDocument().equals(debitNote)) {
+            debitEntry.delete();
+        } else {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.invalid.debitentry.in.debitnote"), model);
+        }
+    }
+
     //
     // This is the EventdeleteEntry Method for Screen read
     //
-    @RequestMapping(value = "/read/{oid}/deleteentry/{entryoid}")
+    @RequestMapping(value = "/read/{oid}/deleteentry/{entryoid}", method = RequestMethod.POST)
     public String processReadToDeleteEntry(@PathVariable("oid") DebitNote debitNote,
             @PathVariable("entryoid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
         setDebitNote(debitNote, model);
-//
-        /* Put here the logic for processing Event deleteEntry  */
-        //doSomething();
 
+        try {
+            deleteDebitEntry(debitEntry, debitNote, model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
         // Now choose what is the Exit Screen    
         return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
                 redirectAttributes);
     }
-
 }
