@@ -27,20 +27,14 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public class SettlementNote extends SettlementNote_Base {
 
@@ -66,6 +60,7 @@ public class SettlementNote extends SettlementNote_Base {
         checkRules();
     }
 
+    @Override
     protected void checkRules() {
 
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)) {
@@ -154,10 +149,13 @@ public class SettlementNote extends SettlementNote_Base {
         checkRules();
     }
 
+    @Override
     public boolean isDeletable() {
-        return true;
+        //TODOJN
+        return false;
     }
 
+    @Override
     @Atomic
     public void delete() {
         if (!isDeletable()) {

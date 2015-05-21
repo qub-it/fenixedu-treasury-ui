@@ -94,4 +94,13 @@ public class CreditEntry extends CreditEntry_Base {
         return amount;
     }
 
+    public BigDecimal getOpenAmountWithVat() {
+        return getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100)))).setScale(2,
+                RoundingMode.HALF_EVEN);
+    }
+
+    public static CreditEntry create(FinantialDocument finantialDocument, Product product, VatType vatType, BigDecimal amount) {
+        return new CreditEntry(finantialDocument, product, vatType, amount);
+    }
+
 }

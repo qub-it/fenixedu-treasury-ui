@@ -344,40 +344,34 @@ ${portal.toolkit()}
 		code="label.administration.manageFinantialInstitution.searchDocumentTemplate" />
 </h2>
 <table id="searchDocumentTemplateTable"
-	class="table responsive table-bordered table-hover">
-	<thead>
-		<tr>
-			<th><spring:message
-					code="label.DocumentTemplate.finantialDocumentTypes" /></th>
-			<th><spring:message
-					code="label.DocumentTemplate.finantialEntity" /></th>
-			<%-- Operations Column --%>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<c:forEach items="${finantialDocumentTypeSet}" var="type">
-			<tr>
-				<td><c:out value="${ type.type.descriptionI18N.content }" /></td>
-				<td>
-					<table>
-						<c:forEach items="${ finantialInstitution.finantialEntitiesSet }"
-							var="entity">
-							<c:set var="aaa" value="${ entity.hasDocumentTemplate(type) }" />
-							<c:set var="aaaa" value="${ aaa.ativeDocumentTemplateFile }" />
-
-							<c:set var="documentTemplateFile"
-								value="${ entity.hasDocumentTemplate(type).ativeDocumentTemplateFile }" />
-							<tr>
-								<th><c:out value="${ entity.name.content }" />
-								<th>
-							</tr>
-							<tr>
-								<td><c:if test="${not empty documentTemplateFile }">
-										<a
-											href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/download/${documentTemplateFile.externalId}">
-											<c:out value="${ documentTemplateFile.filename }" />
-										</a>
+    class="table responsive table-bordered table-hover">
+    <thead>
+        <tr>
+            <th><spring:message code="label.DocumentTemplate.finantialDocumentTypes" /></th>
+            <th><spring:message code="label.DocumentTemplate.finantialEntity" /></th>
+            <%-- Operations Column --%>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <c:forEach items="${finantialDocumentTypeSet}" var="type">
+        <tr>
+            <td>
+                <c:out value="${ type.type.descriptionI18N.content }" />
+            </td>
+            <td>
+                <table>
+                    <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
+                        <c:set var="documentTemplateFile" value="${ entity.hasDocumentTemplate(type).ativeDocumentTemplateFile }" />
+                        <tr>
+                            <th><c:out value="${ entity.name.content }" /><th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <c:if test="${not empty documentTemplateFile }" >
+                                    <a href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/download/${documentTemplateFile.externalId}">
+                                        <c:out value="${ documentTemplateFile.filename }" />
+                                    </a>
                                     &nbsp;-&nbsp;
                                     <fmt:formatNumber
 											var="documentTemplateFileSize"

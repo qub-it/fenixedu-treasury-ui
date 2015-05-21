@@ -1,142 +1,97 @@
-/**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
- * software development project between Quorum Born IT and Serviços Partilhados da
- * Universidade de Lisboa:
- *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
- *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
- *
- * Contributors: xpto@qub-it.com
- *
- * 
- * This file is part of FenixEdu Treasury.
- *
- * FenixEdu Treasury is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * FenixEdu Treasury is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package org.fenixedu.treasury.dto;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.math.BigDecimal;
 
 import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.commons.i18n.I18N;
-import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 
-public class InterestRateBean implements IBean {
+public class InterestRateBean implements IBean, Serializable {
 
-    private org.fenixedu.treasury.domain.tariff.InterestType interestType;
-    private List<TupleDataSourceBean> interestTypeDataSource;
-    private int numberOfDaysAfterDueDate;
-    private boolean applyInFirstWorkday;
-    private int maximumDaysToApplyPenalty;
-    private int maximumMonthsToApplyPenalty;
-    private java.math.BigDecimal interestFixedAmount;
-    private java.math.BigDecimal rate;
+    private static final long serialVersionUID = 1L;
 
-    public org.fenixedu.treasury.domain.tariff.InterestType getInterestType() {
+    private InterestType interestType;
+
+    private int numberOfDays;
+
+    private int numberOfMonths;
+
+    private BigDecimal diaryRate;
+
+    private BigDecimal monthlyRate;
+
+    private BigDecimal amount;
+
+    public InterestRateBean() {
+        diaryRate = BigDecimal.ZERO;
+        monthlyRate = BigDecimal.ZERO;
+        amount = BigDecimal.ZERO;
+    }
+
+    public InterestRateBean(InterestType interestType, BigDecimal amount) {
+        this.interestType = interestType;
+        this.amount = amount;
+    }
+
+    public void initDiaryInterestRate(InterestType interestType, int numberOfDays, BigDecimal diaryRate, BigDecimal amount) {
+        this.interestType = interestType;
+        this.numberOfDays = numberOfDays;
+        this.diaryRate = diaryRate;
+        this.amount = amount;
+    }
+
+    public void initMonthlyInterestRate(InterestType interestType, int numberOfMonths, BigDecimal monthlyRate, BigDecimal amount) {
+        this.interestType = interestType;
+        this.numberOfMonths = numberOfMonths;
+        this.monthlyRate = monthlyRate;
+        this.amount = amount;
+    }
+
+    public InterestType getInterestType() {
         return interestType;
     }
 
-    public void setInterestType(org.fenixedu.treasury.domain.tariff.InterestType value) {
-        interestType = value;
+    public void setInterestType(InterestType interestType) {
+        this.interestType = interestType;
     }
 
-    public List<TupleDataSourceBean> getInterestTypeDataSource() {
-        return interestTypeDataSource;
+    public int getNumberOfDays() {
+        return numberOfDays;
     }
 
-    public void setInterestTypeDataSource(List<org.fenixedu.treasury.domain.tariff.InterestType> value) {
-        this.interestTypeDataSource = value.stream().map(x -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.toString());
-            tuple.setText(x.getDescriptionI18N().getContent());
-            return tuple;
-        }).collect(Collectors.toList());
+    public void setNumberOfDays(int numberOfDays) {
+        this.numberOfDays = numberOfDays;
     }
 
-    public int getNumberOfDaysAfterDueDate() {
-        return numberOfDaysAfterDueDate;
+    public int getNumberOfMonths() {
+        return numberOfMonths;
     }
 
-    public void setNumberOfDaysAfterDueDate(int value) {
-        numberOfDaysAfterDueDate = value;
+    public void setNumberOfMonths(int numberOfMonths) {
+        this.numberOfMonths = numberOfMonths;
     }
 
-    public boolean getApplyInFirstWorkday() {
-        return applyInFirstWorkday;
+    public BigDecimal getDiaryRate() {
+        return diaryRate;
     }
 
-    public void setApplyInFirstWorkday(boolean value) {
-        applyInFirstWorkday = value;
+    public void setDiaryRate(BigDecimal diaryRate) {
+        this.diaryRate = diaryRate;
     }
 
-    public int getMaximumDaysToApplyPenalty() {
-        return maximumDaysToApplyPenalty;
+    public BigDecimal getMonthRate() {
+        return monthlyRate;
     }
 
-    public void setMaximumDaysToApplyPenalty(int value) {
-        maximumDaysToApplyPenalty = value;
+    public void setMonthRate(BigDecimal monthlyRate) {
+        this.monthlyRate = monthlyRate;
     }
 
-    public int getMaximumMonthsToApplyPenalty() {
-        return maximumMonthsToApplyPenalty;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setMaximumMonthsToApplyPenalty(int value) {
-        maximumMonthsToApplyPenalty = value;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
-
-    public java.math.BigDecimal getInterestFixedAmount() {
-        return interestFixedAmount;
-    }
-
-    public void setInterestFixedAmount(java.math.BigDecimal value) {
-        interestFixedAmount = value;
-    }
-
-    public java.math.BigDecimal getRate() {
-        return rate;
-    }
-
-    public void setRate(java.math.BigDecimal value) {
-        rate = value;
-    }
-
-    public InterestRateBean() {
-        this.interestTypeDataSource = new ArrayList<TupleDataSourceBean>();
-        for (InterestType type : InterestType.values()) {
-            TupleDataSourceBean typeBean = new TupleDataSourceBean();
-            typeBean.setId(type.toString());
-            typeBean.setText(type.toString());
-            this.interestTypeDataSource.add(typeBean);
-        }
-    }
-
-    public InterestRateBean(InterestRate interestRate) {
-        this();
-        this.setInterestType(interestRate.getInterestType());
-        this.setNumberOfDaysAfterDueDate(interestRate.getNumberOfDaysAfterDueDate());
-        this.setApplyInFirstWorkday(interestRate.getApplyInFirstWorkday());
-        this.setMaximumDaysToApplyPenalty(interestRate.getMaximumDaysToApplyPenalty());
-        this.setMaximumMonthsToApplyPenalty(interestRate.getMaximumMonthsToApplyPenalty());
-        this.setInterestFixedAmount(interestRate.getInterestFixedAmount());
-        this.setRate(interestRate.getRate());
-    }
-
 }
