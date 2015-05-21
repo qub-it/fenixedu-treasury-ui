@@ -60,14 +60,15 @@ public class DebitNote extends DebitNote_Base {
         return true;
     }
 
-    public boolean isDeletable() {
-        return true;
-    }
-
     @Override
     protected void checkRules() {
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.DEBIT_NOTE)) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
+        }
+
+        if (getPayorDebtAccount() != null
+                && !(getPayorDebtAccount().getFinantialInstitution().equals(getDebtAccount().getFinantialInstitution()))) {
+            throw new TreasuryDomainException("error.FinantialDocument.finantialinstitution.mismatch");
         }
 
         super.checkRules();
@@ -75,12 +76,7 @@ public class DebitNote extends DebitNote_Base {
 
     @Atomic
     public void delete() {
-        if (!isDeletable()) {
-            throw new TreasuryDomainException("error.DebitNote.cannot.delete");
-        }
-
-        setBennu(null);
-        deleteDomainObject();
+        super.delete();
     }
 
     @Override
@@ -121,6 +117,7 @@ public class DebitNote extends DebitNote_Base {
     @Atomic
     public void edit(final DebtAccount payorDebtAccount, final org.joda.time.DateTime documentDueDate,
             final java.lang.String originDocumentNumber) {
+
         setPayorDebtAccount(payorDebtAccount);
         setDocumentDueDate(documentDueDate);
         setOriginDocumentNumber(originDocumentNumber);

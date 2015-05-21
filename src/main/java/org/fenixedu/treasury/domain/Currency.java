@@ -185,8 +185,16 @@ public class Currency extends Currency_Base {
         return getValueWithScale(value) + " " + this.getSymbol();
     }
 
+    public String getValueFor(BigDecimal value, int decimalsPlaces) {
+        return getValueWithScale(value, decimalsPlaces) + " " + this.getSymbol();
+    }
+
     public static BigDecimal getValueWithScale(BigDecimal amount) {
-        return amount.setScale(2, RoundingMode.HALF_EVEN);
+        return getValueWithScale(amount, 2);
+    }
+
+    public static BigDecimal getValueWithScale(BigDecimal amount, int decimalPlaces) {
+        return amount.setScale(decimalPlaces, RoundingMode.HALF_EVEN);
     }
 
 }

@@ -33,14 +33,55 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
+<div class="modal fade" id="deleteModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/delete/${debitNote.externalId}" method="POST">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<spring:message code="label.confirmation" />
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<spring:message code="label.document.manageInvoice.readDebitNote.confirmDelete" />
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<spring:message code="label.close" />
+					</button>
+					<button id="deleteButton" class="btn btn-danger" type="submit">
+						<spring:message code="label.delete" />
+					</button>
+				</div>
+			</form>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 <%-- NAVIGATION --%>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span
-		class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtAccount/read/${debitNote.debtAccount.externalId}"><spring:message
+			code="label.event.back" /></a> 
+<c:if test="${debitNote.isDeletable()}">			
+			|&nbsp;&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
+		data-target="#deleteModal"><spring:message code="label.event.delete" /></a> 
+</c:if>		
+		
+		|&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a> |&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
-			code="label.event.document.manageInvoice.addEntry" /></a> |&nbsp;&nbsp;
+			code="label.event.document.manageInvoice.addEntry" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
+			code="label.event.document.manageInvoice.addPendingEntries" /></a>
 </div>
 
 
@@ -116,7 +157,7 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
-						<td><c:out value='${debitNote.totalAmount}' /></td>
+						<td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalAmount)}' /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -139,7 +180,7 @@ ${portal.toolkit()}
 				</datatables:columnHead>
 				<c:out value="${debitEntry.quantity}" />
 			</datatables:column>
-			<datatables:column >
+			<datatables:column>
 				<datatables:columnHead>
 					<spring:message code="label.DebitEntry.description" />
 				</datatables:columnHead>

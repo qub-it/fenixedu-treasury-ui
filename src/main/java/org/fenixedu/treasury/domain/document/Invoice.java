@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -68,8 +69,12 @@ public abstract class Invoice extends Invoice_Base {
         return true;
     }
 
+    @Override
     public boolean isDeletable() {
-        return true;
+        if (getState() != FinantialDocumentStateType.PREPARING) {
+            return false;
+        }
+        return super.isDeletable();
     }
 
     @Atomic
@@ -78,6 +83,7 @@ public abstract class Invoice extends Invoice_Base {
             throw new TreasuryDomainException("error.Invoice.cannot.delete");
         }
 
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
         super.delete();
     }
 

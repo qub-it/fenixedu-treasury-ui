@@ -72,6 +72,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
         return getCounter();
     }
 
+    @Atomic
     public int getSequenceNumberAndIncrement() {
         int count = getCounter();
         setCounter(count++);

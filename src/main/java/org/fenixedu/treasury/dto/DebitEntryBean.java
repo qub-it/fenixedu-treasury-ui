@@ -44,6 +44,8 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.tariff.FixedTariff;
+import org.fenixedu.treasury.domain.tariff.Tariff;
 
 public class DebitEntryBean implements IBean {
 
@@ -64,6 +66,8 @@ public class DebitEntryBean implements IBean {
     private java.lang.String description;
     private java.math.BigDecimal amount;
     private java.math.BigDecimal quantity;
+
+    private Tariff tariff;
 
     public TreasuryEvent getTreasuryEvent() {
         return treasuryEvent;
@@ -251,6 +255,15 @@ public class DebitEntryBean implements IBean {
         this.setDescription(debitEntry.getDescription());
         this.setAmount(debitEntry.getAmount());
         this.setQuantity(debitEntry.getQuantity());
+        this.setTariff(debitEntry.getTariff());
+    }
+
+    public Tariff getTariff() {
+        return tariff;
+    }
+
+    public void setTariff(Tariff tariff) {
+        this.tariff = tariff;
     }
 
 }

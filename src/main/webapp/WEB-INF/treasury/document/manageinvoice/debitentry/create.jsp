@@ -125,6 +125,22 @@ ${portal.angularToolkit()}
 					<div class="form-control"> <c:out value="${debitEntryBean.debtAccount.customer.code} - ${debitEntryBean.debtAccount.customer.name}"/></div>
 				</div>
 			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.DebitEntry.finantialDocument" />
+				</div>
+
+				<div class="col-sm-10">
+					<div class="form-control">
+						<c:if test="${not empty debitEntryBean.finantialDocument}">
+							<c:out value='${debitEntryBean.finantialDocument.uiDocumentNumber}' />
+						</c:if>
+						<c:if test="${empty debitEntryBean.finantialDocument}">
+							<spring:message code="label.DebitEntry.debitentry.with.no.document" />
+						</c:if>
+					</div>
+				</div>
+			</div>
 
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">

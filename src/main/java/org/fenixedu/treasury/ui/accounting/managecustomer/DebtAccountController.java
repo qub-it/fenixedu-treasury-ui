@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.dto.DebtAccountBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
+import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -164,6 +165,22 @@ public class DebtAccountController extends TreasuryBaseController {
 
         // Now choose what is the Exit Screen	 
         return redirect(DebitEntryController.CREATE_URL + getDebtAccount(model).getExternalId(), model, redirectAttributes);
+    }
+
+    //
+    // This is the EventcreateDebtEntry Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/createdebitnote")
+    public String processReadToCreateDebitNote(@PathVariable("oid") DebtAccount debtAccount, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebtAccount(debtAccount, model);
+//
+        /* Put here the logic for processing Event createDebtEntry  */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect(DebitNoteController.CREATE_URL + "?debtAccount=" + getDebtAccount(model).getExternalId(), model,
+                redirectAttributes);
     }
 
     //

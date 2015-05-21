@@ -34,10 +34,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -59,7 +61,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setDebtAccount(debtAccount);
         setFinantialDocumentType(documentNumberSeries.getFinantialDocumentType());
         setDocumentNumberSeries(documentNumberSeries);
-        setDocumentNumber(String.valueOf(documentNumberSeries.getSequenceNumberAndIncrement()));
+        setDocumentNumber("000000000");
         setDocumentDate(documentDate);
         setDocumentDueDate(documentDate);
         setCurrency(debtAccount.getFinantialInstitution().getCurrency());
@@ -92,6 +94,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         if (getCurrency() == null) {
             throw new TreasuryDomainException("error.FinantialDocument.currency.required");
         }
+        if (!getDocumentNumberSeries().getSeries().getFinantialInstitution().equals(getDebtAccount().getFinantialInstitution())) {
+            throw new TreasuryDomainException("error.FinantialDocument.finantialinstitution.mismatch");
+        }
 
         if (getDocumentDueDate().isBefore(getDocumentDate())) {
             throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.invalid");
@@ -100,8 +105,15 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public String getUiDocumentNumber() {
-        return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
-                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
+        if (this.isClosed()) {
+            return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
+                    .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(),
+                    this.getDocumentNumber());
+        } else {
+            return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
+                    .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), "000000000");
+
+        }
     }
 
     public BigDecimal getTotalAmount() {
@@ -154,8 +166,36 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         return true;
     }
 
+    public boolean isAnnulled() {
+        return this.getState().equals(FinantialDocumentStateType.ANNULED);
+    }
+
+    public boolean isPreparing() {
+        return this.getState().equals(FinantialDocumentStateType.PREPARING);
+    }
+
+    @Atomic
     public void closeDocument() {
-        setState(FinantialDocumentStateType.CLOSED);
+        if (this.isPreparing()) {
+            this.setDocumentNumber("" + this.getDocumentNumberSeries().getSequenceNumberAndIncrement());
+            setState(FinantialDocumentStateType.CLOSED);
+        } else {
+            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
+                    "error.FinantialDocumentState.invalid.state.change.request"));
+
+        }
+        checkRules();
+    }
+
+    @Atomic
+    public void anullDocument() {
+        if (this.isPreparing() || this.isClosed()) {
+            if (Boolean.TRUE.booleanValue() == this.getDocumentNumberSeries().getSeries().getCertificated()) {
+                throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");
+            }
+            setState(FinantialDocumentStateType.ANNULED);
+        }
+        checkRules();
     }
 
     @Atomic
@@ -216,6 +256,24 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     public BigDecimal getOpenAmount() {
         return getTotalAmount();
+    }
+
+    @Atomic
+    public void changeState(FinantialDocumentStateType newState) {
+
+        if (this.getState() == FinantialDocumentStateType.PREPARING) {
+            if (newState == FinantialDocumentStateType.ANNULED) {
+                this.anullDocument();
+            }
+
+            if (newState == FinantialDocumentStateType.CLOSED) {
+                this.closeDocument();
+            }
+        } else {
+            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
+                    "error.FinantialDocumentState.invalid.state.change.request"));
+        }
+        checkRules();
     }
 
 }

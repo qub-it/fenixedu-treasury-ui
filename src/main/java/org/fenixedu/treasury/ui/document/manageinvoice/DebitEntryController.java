@@ -73,6 +73,7 @@ import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 
@@ -200,16 +201,24 @@ public class DebitEntryController extends TreasuryBaseController {
         Product product = bean.getProduct();
         if (product != null) {
             bean.setVat(bean.getDebtAccount().getFinantialInstitution().getActiveVat(product.getVatType(), new DateTime()));
-            FixedTariff tariff =
-                    (FixedTariff) product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime())
-                            .findFirst().orElse(null);
+            Tariff tariff =
+                    product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime()).findFirst()
+                            .orElse(null);
 
             if (tariff != null) {
-                bean.setAmount(tariff.getAmount().setScale(2));
-                bean.setDueDate(tariff.calculateDueDate(bean.getFinantialDocument()));
+                bean.setTariff(tariff);
+                if (tariff instanceof FixedTariff) {
+                    bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
+                            .getValueWithScale(((FixedTariff) tariff).getAmount()));
+                    bean.setDueDate(((FixedTariff) tariff).calculateDueDate(bean.getFinantialDocument()));
+                } else {
+                    bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
+                            .getValueWithScale(BigDecimal.ZERO));
+                    bean.setDueDate(new LocalDate());
+
+                }
             } else {
-                bean.setAmount(BigDecimal.ZERO.setScale(2));
-                bean.setDueDate(new LocalDate());
+                throw new TreasuryDomainException("label.Tariff.no.valid.fixed");
             }
             bean.setDescription(product.getName().getContent());
         }
@@ -376,6 +385,40 @@ public class DebitEntryController extends TreasuryBaseController {
         debitEntry.setQuantity(quantity);
 
         debitEntry.checkRules();
+    }
+
+    private static final String _SEARCHPENDINGENTRIES_URI = "/searchpendingentries/";
+    public static final String SEARCHPENDINGENTRIES_URL = CONTROLLER_URL + _SEARCHPENDINGENTRIES_URI;
+
+    @RequestMapping(value = _SEARCHPENDINGENTRIES_URI + "{debtAccountId}")
+    public String searchPendingEntries(@PathVariable("debtAccountId") DebtAccount debtAccount, Model model) {
+        List<DebitEntry> searchpendingentriesResultsDataSet = filterSearchPendingEntries(debtAccount);
+
+        //add the results dataSet to the model
+        model.addAttribute("searchpendingentriesResultsDataSet", searchpendingentriesResultsDataSet);
+        return "treasury/document/manageinvoice/debitentry/searchpendingentries";
+    }
+
+    private Stream<DebitEntry> getSearchUniverseSearchPendingEntriesDataSet(DebtAccount debtAccount) {
+        return debtAccount.pendingInvoiceEntries().filter(x -> x instanceof DebitEntry).map(DebitEntry.class::cast);
+    }
+
+    private List<DebitEntry> filterSearchPendingEntries(DebtAccount debtAccount) {
+
+        return getSearchUniverseSearchPendingEntriesDataSet(debtAccount).collect(Collectors.toList());
+    }
+
+    private static final String _SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URI = "/searchPendingEntries/view/";
+    public static final String SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URL = CONTROLLER_URL
+            + _SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URI;
+
+    @RequestMapping(value = _SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URI + "{oid}")
+    public String processSearchPendingEntriesToViewAction(@PathVariable("oid") DebitEntry debitEntry, Model model,
+            RedirectAttributes redirectAttributes) {
+
+// CHANGE_ME Insert code here for processing viewAction
+// If you selected multiple exists you must choose which one to use below    
+        return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
     }
 
 }
