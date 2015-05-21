@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -81,7 +82,7 @@ public class DebtAccount extends DebtAccount_Base {
             }
         }
 
-        return amount.setScale(2, RoundingMode.HALF_EVEN);
+        return Currency.getValueWithScale(amount);
     }
 
 //	public boolean isDeletable() {

@@ -93,7 +93,7 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
-						<td><c:out value='${debitNote.debtAccount.customer.name}' /></td>
+						<td><c:out value='${debitNote.debtAccount.customer.code} - ${debitNote.debtAccount.customer.name}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentNumber" /></th>
@@ -117,7 +117,7 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
-						<td><c:out value='${debitNote.totalAmount}' /></td>
+						<td><c:out value='${debitNote.uiTotalAmount}' /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -136,6 +136,12 @@ ${portal.toolkit()}
 		<datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
+					<spring:message code="label.DebitEntry.quantity" />
+				</datatables:columnHead>
+				<c:out value="${debitEntry.quantity}" />
+			</datatables:column>
+			<datatables:column >
+				<datatables:columnHead>
 					<spring:message code="label.DebitEntry.description" />
 				</datatables:columnHead>
 				<c:out value="${debitEntry.description}" />
@@ -144,7 +150,7 @@ ${portal.toolkit()}
 				<datatables:columnHead>
 					<spring:message code="label.DebitEntry.amount" />
 				</datatables:columnHead>
-				<c:out value="${debitEntry.amount}" />
+				<c:out value="${debitEntry.totalAmount}" />
 			</datatables:column>
 			<datatables:column>
 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/${debitEntry.externalId}">

@@ -181,8 +181,12 @@ public class Currency extends Currency_Base {
         return new Currency(code, name, isoCode, symbol);
     }
 
-    public String getValueFor(BigDecimal totalInDebt) {
-        return totalInDebt.setScale(2, RoundingMode.HALF_EVEN) + " " + this.getSymbol();
+    public String getValueFor(BigDecimal value) {
+        return getValueWithScale(value) + " " + this.getSymbol();
+    }
+
+    public static BigDecimal getValueWithScale(BigDecimal amount) {
+        return amount.setScale(2, RoundingMode.HALF_EVEN);
     }
 
 }

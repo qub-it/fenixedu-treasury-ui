@@ -34,6 +34,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
@@ -134,7 +135,13 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public BigDecimal getTotalAmount() {
-        return this.getQuantity().multiply(this.getAmount()).setScale(2, RoundingMode.HALF_EVEN);
+        return Currency.getValueWithScale(this.getQuantity().multiply(this.getAmount()));
     }
+
+    public abstract BigDecimal getDebitAmount();
+
+    public abstract BigDecimal getCreditAmount();
+
+    public abstract BigDecimal getOpenAmount();
 
 }

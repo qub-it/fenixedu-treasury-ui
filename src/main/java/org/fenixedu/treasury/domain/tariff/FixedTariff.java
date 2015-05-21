@@ -266,7 +266,7 @@ public class FixedTariff extends FixedTariff_Base {
 
     @Override
     public String getUiAmount() {
-        return this.getAmount().setScale(3) + " " + this.getFinantialEntity().getFinantialInstitution().getCurrency().getSymbol();
+        return this.getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(this.getAmount().setScale(3));
     }
 
     public LocalDate calculateDueDate(DebitNote finantialDocument) {

@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -93,5 +94,9 @@ public abstract class Invoice extends Invoice_Base {
     public static Stream<? extends Invoice> find(final DebtAccount debtAccount) {
         return Invoice.findAll().filter(x -> x.getDebtAccount() == debtAccount);
     }
+
+    public abstract BigDecimal getDebitAmount();
+
+    public abstract BigDecimal getCreditAmount();
 
 }

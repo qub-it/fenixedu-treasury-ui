@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
@@ -109,11 +110,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             amount.add(entry.getTotalAmount());
         }
 
-        return amount.setScale(2, RoundingMode.HALF_EVEN);
+        return Currency.getValueWithScale(amount);
     }
 
     public String getUiTotalAmount() {
-        return this.getTotalAmount() + " " + this.getDebtAccount().getFinantialInstitution().getCurrency().getSymbol();
+        return this.getDebtAccount().getFinantialInstitution().getCurrency().getValueFor(this.getTotalAmount());
     }
 
     public BigDecimal getTotalNetAmount() {
@@ -122,11 +123,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             amount.add(entry.getAmount());
         }
 
-        return amount.setScale(2, RoundingMode.HALF_EVEN);
+        return Currency.getValueWithScale(amount);
     }
 
     public String getUiTotalNetAmount() {
-        return this.getTotalNetAmount() + " " + this.getDebtAccount().getFinantialInstitution().getCurrency().getSymbol();
+        return this.getDebtAccount().getFinantialInstitution().getCurrency().getValueFor(this.getTotalNetAmount());
     }
 
     public boolean isClosed() {
@@ -214,7 +215,6 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public BigDecimal getOpenAmount() {
-        // TODO Auto-generated method stub
         return getTotalAmount();
     }
 

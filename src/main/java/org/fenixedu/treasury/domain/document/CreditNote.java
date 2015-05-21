@@ -86,6 +86,14 @@ public class CreditNote extends CreditNote_Base {
         deleteDomainObject();
     }
 
+    public BigDecimal getDebitAmount() {
+        return BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCreditAmount() {
+        return this.getTotalAmount();
+    }
+
     // @formatter: off
     /************
      * SERVICES *
@@ -138,4 +146,5 @@ public class CreditNote extends CreditNote_Base {
         }
         return amount;
     }
+
 }

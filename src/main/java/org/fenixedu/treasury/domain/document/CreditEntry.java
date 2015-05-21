@@ -28,8 +28,10 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.stream.Stream;
 
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -64,6 +66,14 @@ public class CreditEntry extends CreditEntry_Base {
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
             throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
         }
+    }
+
+    public BigDecimal getDebitAmount() {
+        return Currency.getValueWithScale(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getCreditAmount() {
+        return this.getTotalAmount();
     }
 
     // @formatter: off

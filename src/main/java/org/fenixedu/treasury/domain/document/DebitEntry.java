@@ -29,9 +29,11 @@ package org.fenixedu.treasury.domain.document;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -107,16 +109,27 @@ public class DebitEntry extends DebitEntry_Base {
         return false;
     }
 
+    public BigDecimal getDebitAmount() {
+        return this.getTotalAmount();
+    }
+
+    public BigDecimal getCreditAmount() {
+        return Currency.getValueWithScale(BigDecimal.ZERO);
+    }
+
     public boolean isEventAnnuled() {
         return getEventAnnuled();
     }
 
     public BigDecimal getOpenAmount() {
-        final BigDecimal openAmount =
-                this.getAmount().subtract(
-                        getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).get());
 
-        return isPositive(openAmount) ? openAmount : BigDecimal.ZERO;
+        final BigDecimal openAmount = this.getAmount();
+        //the open amount is the TotalAmount minus the Value already "Payed" in a Settlement Entry
+        if (getSettlementEntriesSet().size() > 0) {
+            openAmount.subtract(getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).get());
+        }
+
+        return isPositive(openAmount) ? Currency.getValueWithScale(openAmount) : Currency.getValueWithScale(BigDecimal.ZERO);
     }
 
     // @formatter: off

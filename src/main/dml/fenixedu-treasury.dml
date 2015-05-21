@@ -271,6 +271,12 @@ class tariff.InterestRate {
 	BigDecimalT rate;
 }
 
+class tariff.GlobalInterestRate {
+	int year;
+	LocalizedString description;
+	BigDecimalT rate;
+}
+
 /* ----
  * SIBS
  * ----

@@ -128,14 +128,19 @@ angular.module('angularAppDebitEntry', ['ngSanitize', 'ui.select']).controller('
 <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.amount"/></div> 
 
 <div class="col-sm-10">
-	<input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : debitEntry.amount }'/>' />
+					<div class="input-group">
+						<div class="input-group-addon">
+							<c:out value="${debitEntryBean.debtAccount.finantialInstitution.currency.symbol}" />
+						</div>
+	<input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount" pattern="^[0-9]+(\.[0-9][0-9]?[0-9]?)?$"   data-number-to-fixed="2" data-number-stepfactor="100" />
+	</div>
 </div>	
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.quantity"/></div> 
 
 <div class="col-sm-10">
-	<input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity"  value='<c:out value='${not empty param.quantity ? param.quantity : debitEntry.quantity }'/>' />
+	<input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity"  />
 </div>	
 </div>		
   </div>

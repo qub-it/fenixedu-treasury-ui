@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,7 +88,11 @@ public class DebitNote extends DebitNote_Base {
 
     @Override
     public BigDecimal getOpenAmount() {
-        return DebitEntry.find(this).map(x -> x.getOpenAmount()).reduce((x, y) -> x.add(y)).get();
+        BigDecimal amount = BigDecimal.ZERO;
+        for (DebitEntry entry : getDebitEntriesSet()) {
+            amount = amount.add(entry.getOpenAmount());
+        }
+        return Currency.getValueWithScale(amount);
     }
 
     public Stream<? extends DebitEntry> getDebitEntries() {
@@ -96,6 +101,14 @@ public class DebitNote extends DebitNote_Base {
 
     public Set<? extends DebitEntry> getDebitEntriesSet() {
         return this.getDebitEntries().collect(Collectors.toSet());
+    }
+
+    public BigDecimal getDebitAmount() {
+        return BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCreditAmount() {
+        return this.getTotalAmount();
     }
 
     // @formatter: off
