@@ -133,6 +133,12 @@ public class DebitEntryController extends TreasuryBaseController {
         // debitEntry.delete();
     }
 
+    @RequestMapping(value = READ_URI + "{oid}")
+    public String read(@PathVariable("oid") DebitEntry debitEntry, Model model) {
+        setDebitEntry(debitEntry, model);
+        return "treasury/document/manageinvoice/debitentry/read";
+    }
+
 //				
     @RequestMapping(value = CREATE_URI + "{oid}", method = RequestMethod.GET)
     public String create(@PathVariable("oid") DebtAccount debtAccount,
