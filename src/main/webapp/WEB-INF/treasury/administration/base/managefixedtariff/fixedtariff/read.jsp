@@ -132,7 +132,7 @@ ${portal.angularToolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.amount" /></th>
-						<td><c:out value='${fixedTariff.uiAmount}' /></td>
+						<td><c:out value='${fixedTariff.uiTariffDescription.content}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.vatType" /></th>

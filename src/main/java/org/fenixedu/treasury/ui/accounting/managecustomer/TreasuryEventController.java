@@ -106,7 +106,7 @@ public class TreasuryEventController extends TreasuryBaseController {
 //				
     @RequestMapping(value = "/")
     public String searchTreasuryEvents(@RequestParam(value = "debtAccount", required = true) DebtAccount debtAccount, Model model) {
-        List<TreasuryEvent> searchtreasuryeventsResultsDataSet = filterSearchTreasuryEvents(debtAccount);
+        List<? extends TreasuryEvent> searchtreasuryeventsResultsDataSet = filterSearchTreasuryEvents(debtAccount);
 
         //add the results dataSet to the model
         model.addAttribute("debtAccount", debtAccount);
@@ -124,11 +124,11 @@ public class TreasuryEventController extends TreasuryBaseController {
 //        return new ArrayList<TreasuryEvent>().stream();
     }
 
-    private List<TreasuryEvent> filterSearchTreasuryEvents(DebtAccount debtAccount) {
+    private List<? extends TreasuryEvent> filterSearchTreasuryEvents(DebtAccount debtAccount) {
 
         return getSearchUniverseSearchTreasuryEventsDataSet().filter(
                 x -> x.getDebitEntriesSet().stream().anyMatch(entry -> entry.getDebtAccount().equals(debtAccount))).collect(
-                Collectors.toList());
+                Collectors. <TreasuryEvent> toList());
 
     }
 

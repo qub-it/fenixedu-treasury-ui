@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.debt;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -140,7 +139,7 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public Set<? extends InvoiceEntry> getPendingInvoiceEntriesSet() {
-        return pendingInvoiceEntries().collect(Collectors.toSet());
+        return pendingInvoiceEntries().collect(Collectors.<InvoiceEntry> toSet());
     }
 
     public void closeDebtAccount() {

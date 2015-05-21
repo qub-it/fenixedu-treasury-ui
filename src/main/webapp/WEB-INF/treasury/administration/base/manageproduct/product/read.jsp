@@ -189,7 +189,7 @@ ${portal.toolkit()}
 							<datatables:columnHead>
 								<spring:message code="label.Tariff.amount" />
 							</datatables:columnHead>
-							<c:out value="${tariff.uiAmount}" />
+							<c:out value="${tariff.uiTariffDescription.content}" />
 						</datatables:column>
 						<datatables:column>
 							<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/read/${tariff.externalId}"><spring:message

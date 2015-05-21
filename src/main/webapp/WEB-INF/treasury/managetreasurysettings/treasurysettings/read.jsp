@@ -112,12 +112,6 @@ ${portal.toolkit()}
 							<c:out value='${treasurySettings.defaultCurrency.name.content}'/>
 						</td> 
 					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.defaultVatType"/></th> 
-						<td>
-							<c:out value='${treasurySettings.defaultVatType.name.content}'/>
-						</td> 
-					</tr>
 				</tbody>
 			</table>
 		</form>

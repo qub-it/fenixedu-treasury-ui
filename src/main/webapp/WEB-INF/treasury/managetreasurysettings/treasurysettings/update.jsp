@@ -90,15 +90,6 @@ ${portal.toolkit()}
 				</div>
 			</div>		
 
-			<div class="form-group row">
-				<div class="col-sm-2 control-label"><spring:message code="label.TreasurySettings.defaultVatType"/></div> 
-				<div class="col-sm-4">
-					<%-- Relation to side 1 drop down rendered in input --%>
-					<select id="treasurySettings_defaultVatType" class="js-example-basic-single" name="defaultvattype">
-						<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-					</select>
-				</div>
-			</div>
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
@@ -128,23 +119,8 @@ $(document).ready(function() {
 		    
 		    
     $("#treasurySettings_defaultCurrency").select2().select2('val', '<c:out value='${not empty param.defaultcurrency ? param.defaultcurrency : treasurySettings.defaultCurrency.externalId }'/>');
+
     <%-- End block for providing defaultCurrency options --%>
-	
-	
-	<%-- Block for providing defaultVatType options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	defaultVatType_options = [
-		<c:forEach items="${TreasurySettings_defaultVatType_options}" var="element"> 
-			{
-				text : "<c:out value='${element.name.content}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	
-	$("#treasurySettings_defaultVatType").select2( {data : defaultVatType_options});	  
-		    
-	$("#treasurySettings_defaultVatType").select2().select2('val', '<c:out value='${not empty param.defaultvattype ? param.defaultvattype : treasurySettings.defaultVatType.externalId }'/>');
 	
 });   
 	

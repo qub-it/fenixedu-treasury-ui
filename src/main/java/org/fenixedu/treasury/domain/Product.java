@@ -52,7 +52,7 @@ public class Product extends Product_Base {
     }
 
     protected Product(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, boolean active, VatType vatType) {
+            final LocalizedString unitOfMeasure, final boolean active, final VatType vatType) {
         this();
         setProductGroup(productGroup);
         setCode(code);
@@ -143,7 +143,7 @@ public class Product extends Product_Base {
 
     @Atomic
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, boolean active, VatType vatType) {
+            final LocalizedString unitOfMeasure, final boolean active, final VatType vatType) {
         return new Product(productGroup, code, name, unitOfMeasure, active, vatType);
     }
 

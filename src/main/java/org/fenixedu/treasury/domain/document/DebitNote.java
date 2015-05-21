@@ -28,7 +28,6 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,8 +38,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public class DebitNote extends DebitNote_Base {
 
@@ -100,7 +97,7 @@ public class DebitNote extends DebitNote_Base {
     }
 
     public Set<? extends DebitEntry> getDebitEntriesSet() {
-        return this.getDebitEntries().collect(Collectors.toSet());
+        return this.getDebitEntries().collect(Collectors. <DebitEntry> toSet());
     }
 
     public BigDecimal getDebitAmount() {

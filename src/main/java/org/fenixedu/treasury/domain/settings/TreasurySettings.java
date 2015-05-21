@@ -16,9 +16,8 @@ public class TreasurySettings extends TreasurySettings_Base {
     }
 
     @Atomic
-    public void edit(final Currency defaultCurrency, final VatType defaultVatType) {
+    public void edit(final Currency defaultCurrency) {
         setDefaultCurrency(defaultCurrency);
-        setDefaultVatType(defaultVatType);
     }
     
     protected static Optional<TreasurySettings> findUnique() {

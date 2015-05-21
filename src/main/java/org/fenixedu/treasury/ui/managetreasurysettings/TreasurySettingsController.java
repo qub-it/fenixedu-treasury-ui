@@ -65,23 +65,21 @@ public class TreasurySettingsController extends TreasuryBaseController {
     @RequestMapping(value = UPDATE_URI, method = RequestMethod.GET)
     public String update(final Model model) {
         model.addAttribute("TreasurySettings_defaultCurrency_options", Currency.findAll().collect(Collectors.toSet()));
-        model.addAttribute("TreasurySettings_defaultVatType_options", VatType.findAll().collect(Collectors.toSet()));
         model.addAttribute("treasurySettings", TreasurySettings.getInstance());
 
         return "treasury/managetreasurysettings/treasurysettings/update";
     }
 
     @RequestMapping(value = UPDATE_URI, method = RequestMethod.POST)
-    public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency, @RequestParam(
-            value = "defaultvattype", required = true) final VatType defaultVatType, final Model model,
-            final RedirectAttributes redirectAttributes) {
+    public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency,
+            final Model model, final RedirectAttributes redirectAttributes) {
 
         final TreasurySettings treasurySettings = TreasurySettings.getInstance();
 
         model.addAttribute("treasurySettings", treasurySettings);
 
         try {
-            treasurySettings.edit(defaultCurrency, defaultVatType);
+            treasurySettings.edit(defaultCurrency);
 
             return redirect("/treasury/managetreasurysettings/treasurysettings/read", model, redirectAttributes);
         } catch (final DomainException de) {

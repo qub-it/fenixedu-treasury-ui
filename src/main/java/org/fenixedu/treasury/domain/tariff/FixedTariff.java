@@ -32,10 +32,11 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.i18n.I18N;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -265,8 +266,9 @@ public class FixedTariff extends FixedTariff_Base {
     }
 
     @Override
-    public String getUiAmount() {
-        return this.getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(this.getAmount().setScale(3));
+    public LocalizedString getUiTariffDescription() {
+        // TODO Anil: Build localized string for all locales supported by application
+        return new LocalizedString(I18N.getLocale(), this.getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(this.getAmount().setScale(3)));
     }
 
     public LocalDate calculateDueDate(DebitNote finantialDocument) {

@@ -31,11 +31,10 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -49,7 +48,7 @@ public abstract class Tariff extends Tariff_Base {
         setBennu(Bennu.getInstance());
     }
 
-    public abstract String getUiAmount();
+    public abstract LocalizedString getUiTariffDescription();
 
     protected void init(final FinantialEntity finantialEntity, final Product product, final DateTime beginDate,
             final DateTime endDate, final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,

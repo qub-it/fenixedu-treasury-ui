@@ -9,7 +9,6 @@
 
 	<tag>
 		<description>This tag prints the place name.</description>
-		<!-- Will be used to call your tag <myTagLibrary:randomNumber greaterThan="2"/> -->
 		<name>placeName</name>   
 		<tag-class>org.fenixedu.treasury.ui.tld.PlaceNameTag</tag-class>
 		<body-content>empty</body-content>

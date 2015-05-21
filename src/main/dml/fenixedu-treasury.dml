@@ -370,17 +370,6 @@ relation TreasurySettingsCurrency {
 	}
 }
 
-relation TreasurySettingsVatType {
-
-	settings.TreasurySettings playsRole treasurySettings {
-		multiplicity 0..1;
-	}
-	
-	VatType playsRole defaultVatType {
-		multiplicity 0..1;
-	}
-}
-
 /*************
  * RELATIONS *
  *************/
@@ -1112,7 +1101,7 @@ relation InterestRateTariff {
 		multiplicity 1..1;
 	}
 	
-	tariff.InterestRate playsRole InterestRate {
+	tariff.InterestRate playsRole interestRate {
 		multiplicity 0..1;
 	}
 }

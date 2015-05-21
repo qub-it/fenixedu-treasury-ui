@@ -59,7 +59,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            Product product, String description, BigDecimal quantity, Tariff tariff) {
+            final Product product, final String description, final BigDecimal quantity, final Tariff tariff) {
         init(debitNote, debtAccount, null, product, vatType, amount, dueDate, propertiesMap, description, quantity, tariff);
     }
 
@@ -72,7 +72,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected void init(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Product product, final VatType vatType, final BigDecimal amount, final LocalDate dueDate,
-            final Map<String, String> propertiesMap, String description, BigDecimal quantity, Tariff tariff) {
+            final Map<String, String> propertiesMap, final String description, final BigDecimal quantity, final Tariff tariff) {
         super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vatType, amount, description, quantity);
 
         setTreasuryEvent(treasuryEvent);
@@ -178,14 +178,9 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public BigDecimal getOpenAmount() {
+        final BigDecimal openAmount = this.getAmount().subtract(getPayedAmount());
 
-        final BigDecimal openAmount = this.getAmount();
-        //the open amount is the TotalAmount minus the Value already "Payed" in a Settlement Entry
-        if (getSettlementEntriesSet().size() > 0) {
-            openAmount.subtract(getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).get());
-        }
-
-        return isPositive(openAmount) ? Currency.getValueWithScale(openAmount) : Currency.getValueWithScale(BigDecimal.ZERO);
+        return Currency.getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
     }
 
     public BigDecimal getAmountWithVat() {
@@ -198,11 +193,21 @@ public class DebitEntry extends DebitEntry_Base {
                 RoundingMode.HALF_EVEN);
     }
 
+    public BigDecimal getPayedAmount() {
+        return getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getRemainingAmount() {
+        return getOpenAmount().subtract(getPayedAmount());
+    }
+
     // @formatter: off
     /************
      * SERVICES *
      ************/
     // @formatter: on
+
+    /* --- Find methods --- */
 
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
@@ -212,17 +217,35 @@ public class DebitEntry extends DebitEntry_Base {
         return findAll().filter(d -> d.getFinantialDocument() == debitNote);
     }
 
+    public static Stream<? extends DebitEntry> find(final TreasuryEvent treasuryEvent) {
+        return findAll().filter(d -> d.getTreasuryEvent() == treasuryEvent);
+    }
+
+    public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent) {
+        return find(treasuryEvent).filter(d -> d.isEventAnnuled());
+    }
+
+    /* --- Math methods --- */
+
+    public static BigDecimal amountToPay(final TreasuryEvent treasuryEvent) {
+        return findActive(treasuryEvent).map(d -> d.getAmount()).reduce((x, y) -> x.add(y)).get();
+    }
+
+    public static BigDecimal payedAmount(final TreasuryEvent treasuryEvent) {
+        return findActive(treasuryEvent).map(d -> d.getPayedAmount()).reduce((x, y) -> x.add(y)).get();
+    }
+
+    public static BigDecimal remainingAmountToPay(final TreasuryEvent treasuryEvent) {
+        return findActive(treasuryEvent).map(d -> d.getRemainingAmount()).reduce((x, y) -> x.add(y)).get();
+    }
+
+    /* --- Creation methods --- */
+
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, String description, BigDecimal quantity, Tariff tariff) {
-        DebitEntry entry =
-                new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
+            final Product product, final String description, final BigDecimal quantity, final Tariff tariff) {
+        return new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
                         description, quantity, tariff);
-        if (debitNote != null) {
-            debitNote.addFinantialDocumentEntries(entry);
-        }
-
-        return entry;
     }
 
 }
