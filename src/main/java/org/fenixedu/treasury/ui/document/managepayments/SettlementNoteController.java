@@ -37,6 +37,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
@@ -163,7 +164,8 @@ public class SettlementNoteController extends TreasuryBaseController {
         bean.setInterestEntries(new ArrayList<InterestEntryBean>());
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
-                String debitInterest = debitEntryBean.getDebitEntry().calculateInterestValue(LocalDate.parse(bean.getDate()));
+                InterestRateBean debitInterest =
+                        debitEntryBean.getDebitEntry().calculateInterestValue(LocalDate.parse(bean.getDate()));
                 if (debitInterest != null) {
                     bean.getInterestEntries().add(bean.new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest));
                 }
@@ -190,7 +192,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         BigDecimal debitSum = bean.getPaymentAmountWithVat();
         BigDecimal paymentSum = BigDecimal.ZERO;
         for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
-            paymentSum.add(paymentEntryBean.getPayedAmount());
+            paymentSum = paymentSum.add(paymentEntryBean.getPayedAmount());
         }
         if (debitSum.compareTo(paymentSum) != 0) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.no.match.payment.debit"), model);
@@ -199,7 +201,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         }
         //TODOJN
         setSettlementNoteBean(bean, model);
-        return "treasury/document/managepayments/settlementnote/createDebitNote";
+        return "treasury/document/managepayments/settlementnote/summary";
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)

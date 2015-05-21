@@ -181,8 +181,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ interestEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
                             </td>
                             <td>
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }" />
-                                <c:out value="${ interestEntryBean.interest }"/>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
                             </td>                           
                         </tr>
                     </c:forEach> 

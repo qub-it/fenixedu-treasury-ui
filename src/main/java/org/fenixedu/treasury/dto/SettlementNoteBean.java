@@ -2,14 +2,17 @@ package org.fenixedu.treasury.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.PaymentMethod;
+import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -122,8 +125,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
         for (InterestEntryBean interestEntryBean : getInterestEntries()) {
             if (interestEntryBean.isIncluded()) {
-                //TODOJN -- interest in value
-                //sum = sum.add(interestEntryBean);
+                sum = sum.add(interestEntryBean.getInterest().getInterestAmount());
             }
         }
         for (CreditEntryBean creditEntryBean : getCreditEntries()) {
@@ -143,8 +145,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
         for (InterestEntryBean interestEntryBean : getInterestEntries()) {
             if (interestEntryBean.isIncluded()) {
-                //TODOJN -- interest in value
-                //sum = sum.add(interestEntryBean);
+                //Interest doesn't have vat
+                sum = sum.add(interestEntryBean.getInterest().getInterestAmount());
             }
         }
         for (CreditEntryBean creditEntryBean : getCreditEntries()) {
@@ -159,31 +161,34 @@ public class SettlementNoteBean implements IBean, Serializable {
         return getPaymentAmountWithVat().subtract(getPaymentAmount());
     }
 
-//    public Map<String, <BigDecimal, BigDecimal>> getValuesByVat() {
-//        Map<String, Pair<BigDecimal, BigDecimal>> sumByVat = new HashMap<String, Pair<BigDecimal, BigDecimal>>();
-//        for (VatType vatType : VatType.findAll().collect(Collectors.toList())) {
-//            sumByVat.put(vatType.getName().getContent(), BigDecimal.ZERO);
-//        }
-//        for (DebitEntryBean debitEntryBean : getDebitEntries()) {
-//            if (debitEntryBean.isIncluded()) {
-//                String vatType = debitEntryBean.getDebitEntry().getVat().getVatType().getName().getContent();
-//                sumByVat.put(vatType, sumByVat.get(vatType).add(debitEntryBean.getPaymentAmountWithVat()));
-//            }
-//        }
-//        for (InterestEntryBean interestEntryBean : getInterestEntries()) {
-//            if (interestEntryBean.isIncluded()) {
-//                //TODOJN -- interest in value
-//                //sum = sum.add(interestEntryBean);
-//            }
-//        }
-//        for (CreditEntryBean creditEntryBean : getCreditEntries()) {
-//            if (creditEntryBean.isIncluded()) {
-//                String vatType = creditEntryBean.getCreditEntry().getVat().getVatType().getName().getContent();
-//                sumByVat.put(vatType, sumByVat.get(vatType).subtract(creditEntryBean.getCreditEntry().getOpenAmountWithVat()));
-//            }
-//        }
-//        return sumByVat;
-//    }
+    public Map<String, VatAmountBean> getValuesByVat() {
+        Map<String, VatAmountBean> sumByVat = new HashMap<String, VatAmountBean>();
+        for (VatType vatType : VatType.findAll().collect(Collectors.toList())) {
+            sumByVat.put(vatType.getName().getContent(), new VatAmountBean(BigDecimal.ZERO, BigDecimal.ZERO));
+        }
+        for (DebitEntryBean debitEntryBean : getDebitEntries()) {
+            if (debitEntryBean.isIncluded()) {
+                String vatType = debitEntryBean.getDebitEntry().getVat().getVatType().getName().getContent();
+                sumByVat.get(vatType).addAmount(debitEntryBean.getPaymentAmount());
+                sumByVat.get(vatType).addAmountWithVat(debitEntryBean.getPaymentAmountWithVat());
+            }
+        }
+        for (InterestEntryBean interestEntryBean : getInterestEntries()) {
+            if (interestEntryBean.isIncluded()) {
+                String vatType = interestEntryBean.getDebitEntry().getVat().getVatType().getName().getContent();
+                sumByVat.get(vatType).addAmount(interestEntryBean.getInterest().getInterestAmount());
+                sumByVat.get(vatType).addAmountWithVat(interestEntryBean.getInterest().getInterestAmount());
+            }
+        }
+        for (CreditEntryBean creditEntryBean : getCreditEntries()) {
+            if (creditEntryBean.isIncluded()) {
+                String vatType = creditEntryBean.getCreditEntry().getVat().getVatType().getName().getContent();
+                sumByVat.get(vatType).subtractAmount(creditEntryBean.getCreditEntry().getOpenAmount());
+                sumByVat.get(vatType).subtractAmountWithVat(creditEntryBean.getCreditEntry().getOpenAmountWithVat());
+            }
+        }
+        return sumByVat;
+    }
 
     public List<PaymentEntryBean> getPaymentEntries() {
         return paymentEntries;
@@ -263,8 +268,9 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public BigDecimal getPaymentAmountWithVat() {
-            return paymentAmount.multiply(BigDecimal.ONE.add(debitEntry.getVat().getTaxRate().divide(BigDecimal.valueOf(100))))
-                    .setScale(2, RoundingMode.HALF_EVEN);
+            BigDecimal amount =
+                    paymentAmount.multiply(BigDecimal.ONE.add(debitEntry.getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
+            return Currency.getValueWithScale(amount);
         }
 
         public void setPaymentAmount(BigDecimal paymentAmount) {
@@ -329,24 +335,23 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         private boolean isIncluded;
 
-        /*TODOJN passar de string para a classe*/
-        private String interest;
+        private InterestRateBean interest;
 
         public InterestEntryBean() {
             this.isIncluded = false;
         }
 
-        public InterestEntryBean(DebitEntry debitEntry, String interest) {
+        public InterestEntryBean(DebitEntry debitEntry, InterestRateBean interest) {
             this();
             this.debitEntry = debitEntry;
             this.interest = interest;
         }
 
-        public String getInterest() {
+        public InterestRateBean getInterest() {
             return interest;
         }
 
-        public void setInterest(String interest) {
+        public void setInterest(InterestRateBean interest) {
             this.interest = interest;
         }
 
@@ -405,4 +410,56 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.paymentMethod = paymentMethod;
         }
     }
+
+    public class VatAmountBean implements IBean, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private BigDecimal amount;
+
+        private BigDecimal amountWithVat;
+
+        public VatAmountBean(BigDecimal amount, BigDecimal amountWithVat) {
+            this.amount = amount;
+            this.amountWithVat = amountWithVat;
+        }
+
+        public VatAmountBean() {
+            this.amount = BigDecimal.ZERO;
+            this.amountWithVat = BigDecimal.ZERO;
+        }
+
+        public BigDecimal getAmount() {
+            return amount;
+        }
+
+        public void setAmount(BigDecimal amount) {
+            this.amount = amount;
+        }
+
+        public void addAmount(BigDecimal partialAmount) {
+            this.amount = amount.add(partialAmount);
+        }
+
+        public void subtractAmount(BigDecimal partialAmount) {
+            this.amount = amount.subtract(partialAmount);
+        }
+
+        public BigDecimal getAmountWithVat() {
+            return amountWithVat;
+        }
+
+        public void setAmountWithVat(BigDecimal amountWithVat) {
+            this.amountWithVat = amountWithVat;
+        }
+
+        public void addAmountWithVat(BigDecimal partialAmountWithVat) {
+            this.amountWithVat = amountWithVat.add(partialAmountWithVat);
+        }
+
+        public void subtractAmountWithVat(BigDecimal partialAmountWithVat) {
+            this.amountWithVat = amountWithVat.subtract(partialAmountWithVat);
+        }
+    }
+
 }
