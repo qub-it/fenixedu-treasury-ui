@@ -67,9 +67,12 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read"><spring:message
-			code="label.event.back" /></a>|&nbsp;&nbsp; <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read"><spring:message code="label.event.back" /></a> |&nbsp;&nbsp; <span
+<c:if test="${not empty debitEntry.finantialDocument }">
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntry.finantialDocument.externalId}"><spring:message
+			code="label.document.manageInvoice.event.backToDebitNote" /></a>&nbsp|&nbsp; 
+</c:if>			
+			<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntry.debtAccount.externalId}"><spring:message code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> |&nbsp;&nbsp; <span
 		class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
 			code="label.event.delete" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/update/${debitEntry.externalId}"><spring:message code="label.event.update" /></a>
@@ -121,12 +124,12 @@ ${portal.toolkit()}
 				<tbody>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.debtAccount" /></th>
-						<td><c:out value='${debitEntry.debtAccount}' /></td>
+						<td><c:out value='${debitEntry.debtAccount.customer.code} - ${debitEntry.debtAccount.customer.name}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.finantialDocument" /></th>
 						<td><c:if test="${not empty debitEntry.finantialDocument}">
-								<c:out value='${debitEntry.finantialDocument}' />
+								<c:out value='${debitEntry.finantialDocument.uiDocumentNumber}' />
 							</c:if> <c:if test="${empty debitEntry.finantialDocument}">
 								<spring:message code="label.DebitEntry.debitentry.with.no.document" />
 							</c:if></td>
@@ -137,11 +140,19 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.amount" /></th>
-						<td><c:out value='${debitEntry.amount}' /></td>
+						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.amount)}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.quantity" /></th>
 						<td><c:out value='${debitEntry.quantity}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.totalAmount" /></th>
+						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.totalAmount)}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.vat" /></th>
+						<td><c:out value='${debitEntry.vat.taxRate} % '/> </td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.dueDate" /></th>

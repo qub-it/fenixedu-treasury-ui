@@ -36,9 +36,8 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managedebtentry/invoiceentry/"><spring:message code="label.event.back" /></a>|&nbsp;&nbsp; <span
-		class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read"><spring:message
+	<span
+		class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message
 			code="label.event.back" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
 			code="label.event.document.manageInvoice.addEntry" /></a> |&nbsp;&nbsp;
@@ -97,7 +96,7 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentNumber" /></th>
-						<td><c:out value='${debitNote.documentNumber}' /></td>
+						<td><c:out value='${debitNote.uiDocumentNumber}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDate" /></th>
@@ -117,7 +116,7 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
-						<td><c:out value='${debitNote.uiTotalAmount}' /></td>
+						<td><c:out value='${debitNote.totalAmount}' /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -146,23 +145,22 @@ ${portal.toolkit()}
 				</datatables:columnHead>
 				<c:out value="${debitEntry.description}" />
 			</datatables:column>
-			<datatables:column>
+			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
 					<spring:message code="label.DebitEntry.amount" />
 				</datatables:columnHead>
 				<c:out value="${debitEntry.totalAmount}" />
 			</datatables:column>
-			<datatables:column>
-				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/updateentry/${debitEntry.externalId}">
+			<datatables:column cssStyle="width:10%">
+				<datatables:columnHead>
+					<spring:message code="label.DebitEntry.vat" />
+				</datatables:columnHead>
+				<c:out value="${debitEntry.vat.taxRate}" />
+			</datatables:column>
+			<datatables:column cssStyle="width:10%">
+				<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}">
 					<button type="submit" class="btn btn-default btn-xs">
-						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-						<spring:message code="label.event.document.manageInvoice.updateEntry" />
-					</button>
-				</form>
-				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}">
-					<button type="submit" class="btn btn-default btn-xs">
-						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-						<spring:message code="label.event.document.manageInvoice.deleteEntry" />
+						<spring:message code="label.event.view" />
 					</button>
 				</form>
 			</datatables:column>

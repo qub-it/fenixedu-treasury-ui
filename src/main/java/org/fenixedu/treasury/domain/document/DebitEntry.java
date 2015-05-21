@@ -44,6 +44,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
+import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -58,8 +59,8 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            Product product, String description, BigDecimal quantity) {
-        init(debitNote, debtAccount, null, product, vatType, amount, dueDate, propertiesMap, description, quantity);
+            Product product, String description, BigDecimal quantity, Tariff tariff) {
+        init(debitNote, debtAccount, null, product, vatType, amount, dueDate, propertiesMap, description, quantity, tariff);
     }
 
     @Override
@@ -71,13 +72,13 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected void init(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Product product, final VatType vatType, final BigDecimal amount, final LocalDate dueDate,
-            final Map<String, String> propertiesMap, String description, BigDecimal quantity) {
+            final Map<String, String> propertiesMap, String description, BigDecimal quantity, Tariff tariff) {
         super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vatType, amount, description, quantity);
 
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
-
+        setTariff(tariff);
         checkRules();
     }
 
@@ -133,6 +134,19 @@ public class DebitEntry extends DebitEntry_Base {
         if (this.getFinantialDocument() != null
                 && this.getDueDate().isBefore(this.getFinantialDocument().getDocumentDueDate().toLocalDate())) {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.invalid");
+        }
+
+        if (this.getTariff() == null) {
+            //HACK: Correct invalid, missing tariff
+            Tariff t =
+                    getProduct().getActiveTariffs(getDebtAccount().getFinantialInstitution(), this.getEntryDateTime())
+                            .findFirst().orElse(null);
+
+            if (t != null) {
+                this.setTariff(t);
+            } else {
+                throw new TreasuryDomainException("error.DebitEntry.tariff.invalid");
+            }
         }
     }
 
@@ -200,10 +214,10 @@ public class DebitEntry extends DebitEntry_Base {
 
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, String description, BigDecimal quantity) {
+            final Product product, String description, BigDecimal quantity, Tariff tariff) {
         DebitEntry entry =
                 new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
-                        description, quantity);
+                        description, quantity, tariff);
         if (debitNote != null) {
             debitNote.addFinantialDocumentEntries(entry);
         }

@@ -130,13 +130,42 @@ public class DebitEntryController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the debitEntry
         // Do not catch any exception here
 
-        // debitEntry.delete();
+        debitEntry.delete();
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebitEntry debitEntry, Model model) {
         setDebitEntry(debitEntry, model);
         return "treasury/document/manageinvoice/debitentry/read";
+    }
+
+    //
+    private static final String _DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
+
+    @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
+    public String delete(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
+
+        setDebitEntry(debitEntry, model);
+        try {
+            DebitNote note = (DebitNote) debitEntry.getFinantialDocument();
+            DebtAccount account = debitEntry.getDebtAccount();
+            //call the Atomic delete function
+            deleteDebitEntry(debitEntry);
+
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            if (note != null) {
+                return redirect(DebitNoteController.READ_URL + note.getExternalId(), model, redirectAttributes);
+            } else {
+                return redirect(DebtAccountController.READ_URL + account.getExternalId(), model, redirectAttributes);
+            }
+        } catch (DomainException ex) {
+            //Add error messages to the list
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        }
+
+        //The default mapping is the same Read View
+        return "treasury/document/manageinvoice/debitentry/read/" + getDebitEntry(model).getExternalId();
     }
 
 //				
@@ -154,6 +183,11 @@ public class DebitEntryController extends TreasuryBaseController {
             bean.setDueDate(debitNote.getDocumentDueDate().toLocalDate());
         }
         this.setDebitEntryBean(bean, model);
+
+        if (debitNote == null) {
+            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.document.manageInvoice.createDebitEntry.entry.with.no.document"), model);
+        }
 
         return "treasury/document/manageinvoice/debitentry/create";
     }
@@ -253,7 +287,7 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry =
                 DebitEntry.create(debitNote, debtAccount, null, product.getVatType(), amount, dueDate, null, product,
-                        description, quantity);
+                        description, quantity, tariff.orElse(null));
         return debitEntry;
     }
 

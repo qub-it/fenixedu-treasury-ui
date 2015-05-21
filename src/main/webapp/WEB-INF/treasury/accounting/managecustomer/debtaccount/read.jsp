@@ -159,13 +159,18 @@ ${portal.angularToolkit()}
 			<p></p>
 			<c:choose>
 				<c:when test="${not empty pendingDocumentsDataSet}">
-					<%--!!!  Field names here --%>
 					<datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
 						<datatables:column>
 							<datatables:columnHead>
 								<spring:message code="label.InvoiceEntry.finantialDocument" />
 							</datatables:columnHead>
+							<c:if test="${not empty pendingEntry.finantialDocument }">
+							<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}" >
 							<c:out value="${pendingEntry.finantialDocument.uiDocumentNumber}" />
+							</c:if>
+							<c:if test="${empty pendingEntry.finantialDocument }">
+							---
+							</c:if>
 						</datatables:column>
 						<datatables:column cssStyle="width:10%;align:right">
 							<datatables:columnHead>
@@ -175,9 +180,9 @@ ${portal.angularToolkit()}
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
-								<spring:message code="label.Invoice.dueDate" />
+								<spring:message code="label.InvoiceEntry.date" />
 							</datatables:columnHead>
-							<c:out value="${pendingEntry.finantialDocument.documentDueDate}" />
+							<c:out value="${pendingEntry.dueDate}" />
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
@@ -241,48 +246,74 @@ ${portal.angularToolkit()}
 			<p></p>
 			<c:choose>
 				<c:when test="${not empty allDocumentsDataSet}">
-					<table id="allDocumentsTable" class="table responsive table-bordered table-hover">
-						<thead>
-							<tr>
-								<%--!!!  Field names here --%>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.date" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.documentNumber" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.documentDescription" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.balance" /></th>
-								<%-- Operations Column --%>
-								<th></th>
-							</tr>
-						</thead>
-						<tbody>
-							<%--
-			
-				<c:forEach items="${allDocumentsDataSet}" var="document">
-					<tr>
-						<td>
-							<p><span>${document.documentDate.toLocalDate()}</span></p>
-						</td>
-						<td>
-							<p><span>${document.documentNumber}</span></p>
-						</td>
-						<td>
-							<p><span>${document.documentDescription}</span></p>
-						</td>
-						<td>
-							<p><span>${document.debitAmount}</span></p>
-						</td>
-						<td>
-							<p><span>${document.creditAmount}</span></p>
-						</td>
-						<td>
-							<p><span>${document.balance}</span></p>
-						</td>
-					</tr>
-				</c:forEach>
-			 --%>
-						</tbody>
-					</table>
+					<datatables:table id="allDocuments" row="entry" data="${allDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.finantialDocument" />
+							</datatables:columnHead>
+							<c:if test="${not empty entry.finantialDocument }">
+							<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}" >
+							<c:out value="${entry.finantialDocument.uiDocumentNumber}" />
+							</c:if>
+							<c:if test="${empty entry.finantialDocument }">
+							---
+							</c:if>
+						</datatables:column>
+						<datatables:column cssStyle="width:10%;align:right">
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.description" />
+							</datatables:columnHead>
+							<c:out value="${entry.description}" />
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.date" />
+							</datatables:columnHead>
+							<c:out value="${entry.dueDate}" />
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.Invoice.debitAmount" />
+							</datatables:columnHead>
+							<div align=right>
+								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" />
+							</div>
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.creditAmount" />
+							</datatables:columnHead>
+							<div align=right>
+								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" />
+							</div>
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.openAmount" />
+							</datatables:columnHead>
+							<div align=right>
+								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" />
+							</div>
+						</datatables:column>
+						<datatables:column>
+											<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
+												<button type="submit" class="btn btn-default btn-xs">
+													<spring:message code="label.event.view" />
+												</button>
+											</form>
+							<%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
+							<!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
+							<!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->
+							<%-- 						<spring:message code="label.event.document.manageInvoice.deleteEntry" /> --%>
+							<!-- 					</button> -->
+							<!-- 				</form> -->
+						</datatables:column>
+					</datatables:table>
+					<script>
+			createDataTables('allDocuments', false, false, false,
+					"${pageContext.request.contextPath}",
+					"${datatablesI18NUrl}");
+		</script>
 				</c:when>
 				<c:otherwise>
 					<div class="alert alert-warning" role="alert">
@@ -383,27 +414,6 @@ $(document).ready(function() {
 	 $('#tabs').tab();
 
 
-	 var tableAllDocuments = $('#allDocumentsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'code' },
-			{ data: 'name' },
-			{ data: 'fiscalnumber' },
-			{ data: 'identificationnumber' },
-			{ data: 'actions' }
-			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-     }
-		});
-		
-	 tableAllDocuments.columns.adjust().draw();
 
 	 var tablePayments = $('#paymentsTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
