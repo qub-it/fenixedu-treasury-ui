@@ -6,7 +6,7 @@
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -69,6 +69,7 @@ import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.FixedTariffBean;
+import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
 import org.fenixedu.treasury.dto.InterestRateBean;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageFixedTariff") <-- Use for duplicate controller name disambiguation
@@ -227,7 +228,7 @@ public class FixedTariffController extends TreasuryBaseController {
     public FixedTariff createFixedTariff(java.math.BigDecimal amount, boolean applyInterests, org.joda.time.LocalDate beginDate,
             org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType, org.joda.time.LocalDate endDate,
             org.fenixedu.treasury.domain.FinantialEntity finantialEntity, org.joda.time.LocalDate fixedDueDate,
-            int numberOfDaysAfterCreationForDueDate, InterestRateBean interestRateBean, Product product) {
+            int numberOfDaysAfterCreationForDueDate, FixedTariffInterestRateBean interestRateBean, Product product) {
 
         InterestRate interestRate = null;
 
@@ -330,7 +331,7 @@ public class FixedTariffController extends TreasuryBaseController {
     public void updateFixedTariff(java.math.BigDecimal amount, boolean applyInterests, org.joda.time.DateTime beginDate,
             org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType, org.joda.time.DateTime endDate,
             org.fenixedu.treasury.domain.FinantialEntity finantialEntity, org.joda.time.LocalDate fixedDueDate,
-            int numberOfDaysAfterCreationForDueDate, InterestRateBean rateBean, Product product, Model model) {
+            int numberOfDaysAfterCreationForDueDate, FixedTariffInterestRateBean rateBean, Product product, Model model) {
 
         // @formatter: off				
         /*

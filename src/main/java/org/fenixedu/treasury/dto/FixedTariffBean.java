@@ -6,7 +6,7 @@
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -50,7 +50,7 @@ public class FixedTariffBean implements IBean {
     private List<TupleDataSourceBean> productDataSource;
     private VatType vatType;
     private List<TupleDataSourceBean> vatTypeDataSource;
-    private InterestRateBean interestRate;
+    private FixedTariffInterestRateBean interestRate;
     private FinantialEntity finantialEntity;
     private List<TupleDataSourceBean> finantialEntityDataSource;
     private java.math.BigDecimal amount;
@@ -83,12 +83,12 @@ public class FixedTariffBean implements IBean {
         }).collect(Collectors.toList());
     }
 
-    public InterestRateBean getInterestRate() {
+    public FixedTariffInterestRateBean getInterestRate() {
         return interestRate;
     }
 
     public void setInterestRate(InterestRate value) {
-        interestRate = new InterestRateBean(value);
+        interestRate = new FixedTariffInterestRateBean(value);
     }
 
     public FinantialEntity getFinantialEntity() {
@@ -182,7 +182,7 @@ public class FixedTariffBean implements IBean {
     }
 
     public FixedTariffBean() {
-        this.interestRate = new InterestRateBean();
+        this.interestRate = new FixedTariffInterestRateBean();
         this.setApplyInterests(false);
         this.setDueDateCalculationType(DueDateCalculationType.NO_DUE_DATE);
         List<DueDateCalculationType> dueDates = new ArrayList<DueDateCalculationType>();

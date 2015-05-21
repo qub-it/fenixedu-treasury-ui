@@ -99,8 +99,9 @@ public class CreditEntry extends CreditEntry_Base {
                 RoundingMode.HALF_EVEN);
     }
 
-    public static CreditEntry create(FinantialDocument finantialDocument, Product product, VatType vatType, BigDecimal amount) {
-        return new CreditEntry(finantialDocument, product, vatType, amount);
+    public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, VatType vatType,
+            BigDecimal amount) {
+        return new CreditEntry(finantialDocument, product, vatType, amount, description, amount);
     }
 
 }

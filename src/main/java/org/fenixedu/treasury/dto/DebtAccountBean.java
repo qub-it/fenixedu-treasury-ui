@@ -6,7 +6,7 @@
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.

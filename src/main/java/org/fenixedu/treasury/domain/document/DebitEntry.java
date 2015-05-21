@@ -81,7 +81,7 @@ public class DebitEntry extends DebitEntry_Base {
         checkRules();
     }
 
-    public InterestRateBean calculateInterestValue(LocalDate whenToCalculate) {
+    public String calculateInterestValue(LocalDate whenToCalculate) {
         StringBuilder interestDescription = new StringBuilder();
         InterestRate rate = getTariff().getInterestRate();
 
@@ -105,13 +105,14 @@ public class DebitEntry extends DebitEntry_Base {
         return "<info sobre juros>";
     }
 
-    private BigDecimal getRateValueUsingDiaryRate(BigDecimal amount, LocalDate startDate, DateTime date, InterestRate rate) {
-        if( startDate.getYear() != date.getYear() ) {
-            int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
-            int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
-            return amount.multiply(multiplicand)
-        }
-    }
+//
+//    private BigDecimal getRateValueUsingDiaryRate(BigDecimal amount, LocalDate startDate, DateTime date, InterestRate rate) {
+//        if( startDate.getYear() != date.getYear() ) {
+//            int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
+//            int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
+//            return amount.multiply(multiplicand)
+//        }
+//    }
 
     @Override
     public void checkRules() {
@@ -163,7 +164,6 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public BigDecimal getOpenAmount() {
-<<<<<<< c2d4aae6081f9884d226719317e7ee5ae0b923e7
 
         final BigDecimal openAmount = this.getAmount();
         //the open amount is the TotalAmount minus the Value already "Payed" in a Settlement Entry

@@ -6,7 +6,7 @@
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -38,7 +38,7 @@ import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 
-public class InterestRateBean implements IBean {
+public class FixedTariffInterestRateBean implements IBean {
 
     private org.fenixedu.treasury.domain.tariff.InterestType interestType;
     private List<TupleDataSourceBean> interestTypeDataSource;
@@ -118,7 +118,7 @@ public class InterestRateBean implements IBean {
         rate = value;
     }
 
-    public InterestRateBean() {
+    public FixedTariffInterestRateBean() {
         this.interestTypeDataSource = new ArrayList<TupleDataSourceBean>();
         for (InterestType type : InterestType.values()) {
             TupleDataSourceBean typeBean = new TupleDataSourceBean();
@@ -128,7 +128,7 @@ public class InterestRateBean implements IBean {
         }
     }
 
-    public InterestRateBean(InterestRate interestRate) {
+    public FixedTariffInterestRateBean(InterestRate interestRate) {
         this();
         this.setInterestType(interestRate.getInterestType());
         this.setNumberOfDaysAfterDueDate(interestRate.getNumberOfDaysAfterDueDate());
