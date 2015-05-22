@@ -182,7 +182,7 @@ public class DebitEntryController extends TreasuryBaseController {
         bean.setFinantialDocument(debitNote);
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         if (debitNote != null) {
-            bean.setDueDate(debitNote.getDocumentDueDate().toLocalDate());
+            bean.setDueDate(debitNote.getDocumentDueDate());
         }
         this.setDebitEntryBean(bean, model);
 

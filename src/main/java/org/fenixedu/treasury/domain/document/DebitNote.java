@@ -36,6 +36,7 @@ import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -93,7 +94,7 @@ public class DebitNote extends DebitNote_Base {
     }
 
     public Set<? extends DebitEntry> getDebitEntriesSet() {
-        return this.getDebitEntries().collect(Collectors. <DebitEntry> toSet());
+        return this.getDebitEntries().collect(Collectors.<DebitEntry> toSet());
     }
 
     public BigDecimal getDebitAmount() {
@@ -115,7 +116,7 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public void edit(final DebtAccount payorDebtAccount, final org.joda.time.DateTime documentDueDate,
+    public void edit(final DebtAccount payorDebtAccount, final org.joda.time.LocalDate documentDueDate,
             final java.lang.String originDocumentNumber) {
 
         setPayorDebtAccount(payorDebtAccount);
@@ -130,14 +131,14 @@ public class DebitNote extends DebitNote_Base {
         DebitNote note = new DebitNote(debtAccount, documentNumberSeries, documentDate);
         note.setFinantialDocumentType(FinantialDocumentType.findForDebitNote());
         note.setOriginDocumentNumber("");
-        note.setDocumentDueDate(documentDate);
+        note.setDocumentDueDate(documentDate.toLocalDate());
         note.checkRules();
         return note;
     }
 
     @Atomic
     public static DebitNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
-            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate, final DateTime documentDueDate,
+            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate, final LocalDate documentDueDate,
             final String originaNumber) {
 
         DebitNote note = new DebitNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);

@@ -187,7 +187,7 @@ class event.TreasuryEvent {
 class document.FinantialDocument {
 	String documentNumber;
 	DateTime documentDate;
-	DateTime documentDueDate;
+	LocalDate documentDueDate;
 	String originDocumentNumber;
 	FinantialDocumentStateType state;
 }

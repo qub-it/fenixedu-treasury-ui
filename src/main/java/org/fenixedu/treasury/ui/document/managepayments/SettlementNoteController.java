@@ -264,8 +264,8 @@ public class SettlementNoteController extends TreasuryBaseController {
         // @formatter: on
 
         SettlementNote settlementNote =
-                SettlementNote.create(FinantialDocumentType.findForSettlementNote(), null, null, null, null, documentDate,
-                        documentDate, null, null);
+                SettlementNote.create(FinantialDocumentType.findForSettlementNote(), null, null, null, null, documentDate, null,
+                        null);
         return settlementNote;
     }
 
@@ -413,7 +413,6 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
             @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
             @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
                     value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
             Model model, RedirectAttributes redirectAttributes) {
@@ -426,7 +425,7 @@ public class SettlementNoteController extends TreasuryBaseController {
              */
 
             updateSettlementNote(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
-                    documentDate, documentDueDate, originDocumentNumber, state, model);
+                    documentDate, originDocumentNumber, state, model);
 
             /* Succes Update */
 
@@ -458,8 +457,8 @@ public class SettlementNoteController extends TreasuryBaseController {
             org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
             org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
             org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
-            org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
-            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state, Model model) {
+            java.lang.String originDocumentNumber, org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
+            Model model) {
 
         // @formatter: off
         /*
@@ -474,7 +473,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         // @formatter: on
 
         getSettlementNote(model).edit(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
-                documentDate, documentDueDate, originDocumentNumber, state);
+                documentDate, originDocumentNumber, state);
     }
 
 }

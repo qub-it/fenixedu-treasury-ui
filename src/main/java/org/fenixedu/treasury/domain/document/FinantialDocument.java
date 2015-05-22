@@ -63,7 +63,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setDocumentNumberSeries(documentNumberSeries);
         setDocumentNumber("000000000");
         setDocumentDate(documentDate);
-        setDocumentDueDate(documentDate);
+        setDocumentDueDate(documentDate.toLocalDate());
         setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         setState(FinantialDocumentStateType.PREPARING);
         checkRules();
@@ -98,7 +98,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             throw new TreasuryDomainException("error.FinantialDocument.finantialinstitution.mismatch");
         }
 
-        if (getDocumentDueDate().isBefore(getDocumentDate())) {
+        if (getDocumentDueDate().isBefore(getDocumentDate().toLocalDate())) {
             throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.invalid");
         }
 
@@ -255,7 +255,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public BigDecimal getOpenAmount() {
-        return getTotalAmount();
+        if (this.getState() == FinantialDocumentStateType.PREPARING || this.getState() == FinantialDocumentStateType.CLOSED)
+            return getTotalAmount();
+        else
+            return BigDecimal.ZERO;
     }
 
     @Atomic

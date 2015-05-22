@@ -45,8 +45,7 @@ public class SettlementNote extends SettlementNote_Base {
 
     protected void init(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
             final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final org.joda.time.DateTime documentDueDate,
-            final java.lang.String originDocumentNumber,
+            final org.joda.time.DateTime documentDate, final java.lang.String originDocumentNumber,
             final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         setFinantialDocumentType(finantialDocumentType);
         setDebtAccount(debtAccount);
@@ -54,7 +53,7 @@ public class SettlementNote extends SettlementNote_Base {
         setCurrency(currency);
         setDocumentNumber(documentNumber);
         setDocumentDate(documentDate);
-        setDocumentDueDate(documentDueDate);
+        setDocumentDueDate(documentDate.toLocalDate());
         setOriginDocumentNumber(originDocumentNumber);
         setState(state);
         checkRules();
@@ -134,8 +133,7 @@ public class SettlementNote extends SettlementNote_Base {
     @Atomic
     public void edit(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
             final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final org.joda.time.DateTime documentDueDate,
-            final java.lang.String originDocumentNumber,
+            final org.joda.time.DateTime documentDate, final java.lang.String originDocumentNumber,
             final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         setFinantialDocumentType(finantialDocumentType);
         setDebtAccount(debtAccount);
@@ -143,7 +141,7 @@ public class SettlementNote extends SettlementNote_Base {
         setCurrency(currency);
         setDocumentNumber(documentNumber);
         setDocumentDate(documentDate);
-        setDocumentDueDate(documentDueDate);
+        setDocumentDueDate(documentDate.toLocalDate());
         setOriginDocumentNumber(originDocumentNumber);
         setState(state);
         checkRules();
@@ -170,12 +168,11 @@ public class SettlementNote extends SettlementNote_Base {
     @Atomic
     public static SettlementNote create(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
             final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final org.joda.time.DateTime documentDueDate,
-            final java.lang.String originDocumentNumber,
+            final org.joda.time.DateTime documentDate, final java.lang.String originDocumentNumber,
             final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         SettlementNote settlementNote = new SettlementNote();
         settlementNote.init(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber, documentDate,
-                documentDueDate, originDocumentNumber, state);
+                originDocumentNumber, state);
         return settlementNote;
     }
 

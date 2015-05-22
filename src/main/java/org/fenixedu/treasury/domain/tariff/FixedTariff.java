@@ -268,14 +268,14 @@ public class FixedTariff extends FixedTariff_Base {
     @Override
     public LocalizedString getUiTariffDescription() {
         // TODO Anil: Build localized string for all locales supported by application
-        return new LocalizedString(I18N.getLocale(), this.getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(this.getAmount().setScale(3)));
+        return new LocalizedString(I18N.getLocale(), this.getFinantialEntity().getFinantialInstitution().getCurrency()
+                .getValueFor(this.getAmount().setScale(3)));
     }
 
     public LocalDate calculateDueDate(DebitNote finantialDocument) {
         if (this.getDueDateCalculationType().equals(DueDateCalculationType.DAYS_AFTER_CREATION)) {
             if (finantialDocument != null) {
-                return finantialDocument.getDocumentDueDate().plusDays(this.getNumberOfDaysAfterCreationForDueDate())
-                        .toLocalDate();
+                return finantialDocument.getDocumentDueDate().plusDays(this.getNumberOfDaysAfterCreationForDueDate());
             } else {
                 return new DateTime().plusDays(this.getNumberOfDaysAfterCreationForDueDate()).toLocalDate();
             }

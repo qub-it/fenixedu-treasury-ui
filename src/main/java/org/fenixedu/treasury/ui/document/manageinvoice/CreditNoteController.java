@@ -512,7 +512,6 @@ public class CreditNoteController extends TreasuryBaseController {
         getCreditNote(model).setCurrency(currency);
         getCreditNote(model).setDocumentNumber(documentNumber);
         getCreditNote(model).setDocumentDate(documentDate);
-        getCreditNote(model).setDocumentDueDate(documentDueDate);
         getCreditNote(model).setOriginDocumentNumber(originDocumentNumber);
         getCreditNote(model).setState(state);
     }

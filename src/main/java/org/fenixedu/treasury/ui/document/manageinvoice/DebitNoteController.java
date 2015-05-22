@@ -323,7 +323,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
         DebitNote debitNote =
                 DebitNote.create(payorDebtAccount, debtAccount, documentNumberSeries, documentDate.toDateTimeAtCurrentTime(),
-                        documentDueDate.toDateTimeAtStartOfDay(), originDocumentNumber);
+                        documentDueDate, originDocumentNumber);
 
         return debitNote;
     }
@@ -400,7 +400,7 @@ public class DebitNoteController extends TreasuryBaseController {
         // Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
         DebitNote note = getDebitNote(model);
-        note.edit(payorDebtAccount, documentDueDate.toDateTimeAtStartOfDay(), originDocumentNumber);
+        note.edit(payorDebtAccount, documentDueDate, originDocumentNumber);
         note.changeState(state);
     }
 

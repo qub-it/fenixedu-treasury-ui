@@ -120,7 +120,7 @@ public class CreditNote extends CreditNote_Base {
     public void edit(final DebitNote debitNote, final DebtAccount payorDebtAccount,
             final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
             final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final org.joda.time.DateTime documentDueDate,
+            final org.joda.time.DateTime documentDate, final org.joda.time.LocalDate documentDueDate,
             final java.lang.String originDocumentNumber,
             final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         setDebitNote(debitNote);

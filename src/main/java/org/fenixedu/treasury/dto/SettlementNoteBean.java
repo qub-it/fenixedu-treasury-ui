@@ -246,8 +246,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public DateTime getDocumentDate() {
-            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentDueDate() : debitEntry
-                    .getDueDate().toDateTimeAtStartOfDay();
+            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
+                    .getEntryDateTime();
         }
 
         public boolean isIncluded() {
@@ -308,7 +308,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public DateTime getDocumentDate() {
-            return (creditEntry.getFinantialDocument() != null) ? creditEntry.getFinantialDocument().getDocumentDueDate() : null;
+            return (creditEntry.getFinantialDocument() != null) ? creditEntry.getFinantialDocument().getDocumentDate() : creditEntry
+                    .getEntryDateTime();
         }
 
         public boolean isIncluded() {
@@ -358,8 +359,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public DateTime getDocumentDate() {
-            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentDueDate() : debitEntry
-                    .getDueDate().toDateTimeAtStartOfDay();
+            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
+                    .getEntryDateTime();
         }
 
         public boolean isIncluded() {
