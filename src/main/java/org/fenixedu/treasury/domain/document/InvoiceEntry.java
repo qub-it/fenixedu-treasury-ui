@@ -157,12 +157,8 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public BigDecimal getTotalAmount() {
-        return Currency.getValueWithScale(this.getQuantity().multiply(this.getAmount()));
+        return this.getAmountWithVat();
     }
-
-    public abstract BigDecimal getDebitAmount();
-
-    public abstract BigDecimal getCreditAmount();
 
     public abstract BigDecimal getOpenAmount();
 
