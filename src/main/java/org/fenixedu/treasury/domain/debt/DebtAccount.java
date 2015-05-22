@@ -135,7 +135,7 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public Stream<? extends InvoiceEntry> pendingInvoiceEntries() {
-        return this.getInvoiceEntrySet().stream().filter(x -> x.isPending());
+        return this.getInvoiceEntrySet().stream().filter(x -> x.isPendingForPayment());
     }
 
     public Set<? extends InvoiceEntry> getPendingInvoiceEntriesSet() {

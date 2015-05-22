@@ -33,34 +33,35 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 public class CreditEntry extends CreditEntry_Base {
 
-    protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final VatType vatType,
+    protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final Vat vat,
             final BigDecimal amount, String description, BigDecimal quantity) {
-        init(finantialDocument, product, vatType, amount, description, quantity);
+        init(finantialDocument, product, vat, amount, description, quantity);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
-            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount, String description,
+            final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
             BigDecimal quantity) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final FinantialDocument finantialDocument, final Product product, final VatType vatType,
-            final BigDecimal amount, String description, BigDecimal quantity) {
-        super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.DEBIT_ENTRY, vatType,
-                amount, description, quantity);
+    protected void init(final FinantialDocument finantialDocument, final Product product, final Vat vat, final BigDecimal amount,
+            String description, BigDecimal quantity) {
+        super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.CREDIT_ENTRY, vat, amount,
+                description, quantity);
 
         checkRules();
     }
 
     @Override
-    public void checkRules() {
+    protected void checkRules() {
         super.checkRules();
 
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
@@ -99,9 +100,9 @@ public class CreditEntry extends CreditEntry_Base {
                 RoundingMode.HALF_EVEN);
     }
 
-    public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, VatType vatType,
+    public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
             BigDecimal amount) {
-        return new CreditEntry(finantialDocument, product, vatType, amount, description, amount);
+        return new CreditEntry(finantialDocument, product, vat, amount, description, amount);
     }
 
 }

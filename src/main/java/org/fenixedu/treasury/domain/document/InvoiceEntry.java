@@ -44,6 +44,8 @@ import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
+import pt.ist.fenixframework.Atomic;
+
 public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
     @Override
@@ -73,20 +75,19 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
-            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount, String description,
+            final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
             BigDecimal quantity) {
         super.init(finantialDocument, finantialEntryType, amount, description);
-
         this.setQuantity(quantity);
         this.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         this.setDebtAccount(debtAccount);
         this.setProduct(product);
-
-        this.setVat(Vat.findActiveUnique(vatType, debtAccount.getFinantialInstitution(), new DateTime()).orElse(null));
+        this.setVat(vat);
+        this.setVatRate(vat.getTaxRate());
     }
 
     @Override
-    public void checkRules() {
+    protected void checkRules() {
         super.checkRules();
 
         if (getQuantity() == null) {
@@ -121,13 +122,34 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             throw new TreasuryDomainException("error.InvoiceEntry.invalidDebtAccount");
         }
 
+        if (checkAmountValues() == false) {
+            throw new TreasuryDomainException("error.InvoiceEntry.amount.invalid.consistency");
+        }
+
+    }
+
+    protected boolean checkAmountValues() {
+        BigDecimal netAmount = getCurrency().getValueWithScale(getQuantity().multiply(getAmount()));
+        BigDecimal vatAmount = getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate()));
+        BigDecimal amountWithVat = getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(getVatRate())));
+
+        //Compare the re-calculated values with the original ones
+        return (netAmount.compareTo(getNetAmount()) == 0 && vatAmount.compareTo(getVatAmount()) == 0 && amountWithVat
+                .compareTo(amountWithVat) == 0);
+    }
+
+    @Atomic
+    protected void realculateAmountValues() {
+        setNetAmount(getCurrency().getValueWithScale(getQuantity().multiply(getAmount())));
+        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate())));
+        setAmountWithVat(getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(getVatRate()))));
     }
 
     public static Stream<? extends InvoiceEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof InvoiceEntry).map(InvoiceEntry.class::cast);
     }
 
-    public boolean isPending() {
+    public boolean isPendingForPayment() {
         BigDecimal totalAmount = this.getAmount();
         BigDecimal totalPayed = BigDecimal.ZERO;
         this.getSettlementEntriesSet().stream().map(x -> totalPayed.add(x.getAmount()));

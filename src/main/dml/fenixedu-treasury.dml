@@ -214,6 +214,11 @@ class document.FinantialDocumentEntry {
 
 	class document.InvoiceEntry extends document.FinantialDocumentEntry {
 	BigDecimalT quantity;
+	BigDecimalT vatAmount;
+	BigDecimalT vatRate;
+	BigDecimalT netAmount;
+	BigDecimalT amountWithVat;
+	
 	}
 
 		class document.DebitEntry extends document.InvoiceEntry {

@@ -69,6 +69,7 @@ import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -166,7 +167,7 @@ public class DebitEntryController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return "treasury/document/manageinvoice/debitentry/read/" + getDebitEntry(model).getExternalId();
+        return "treasury/document/manageinvoice/debitentry/read/";
     }
 
 //				
@@ -294,8 +295,11 @@ public class DebitEntryController extends TreasuryBaseController {
 
         Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
 
+        Optional<Vat> activeVat =
+                Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
+
         DebitEntry debitEntry =
-                DebitEntry.create(debitNote, debtAccount, null, product.getVatType(), amount, dueDate, null, product,
+                DebitEntry.create(debitNote, debtAccount, null, activeVat.orElse(null), amount, dueDate, null, product,
                         description, quantity, tariff.orElse(null));
         return debitEntry;
     }
@@ -317,10 +321,15 @@ public class DebitEntryController extends TreasuryBaseController {
 
 //  
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") DebitEntry debitEntry, Model model) {
-        setDebitEntryBean(new DebitEntryBean(debitEntry), model);
-        setDebitEntry(debitEntry, model);
-        return "treasury/document/manageinvoice/debitentry/update";
+    public String update(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
+
+        if (debitEntry.getFinantialDocument() == null || debitEntry.getFinantialDocument().isPreparing()) {
+            setDebitEntryBean(new DebitEntryBean(debitEntry), model);
+            setDebitEntry(debitEntry, model);
+            return "treasury/document/manageinvoice/debitentry/update";
+        } else {
+            return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
+        }
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
@@ -328,6 +337,10 @@ public class DebitEntryController extends TreasuryBaseController {
             @RequestParam(value = "bean", required = false) DebitEntryBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         setDebitEntry(debitEntry, model);
+
+        if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
+            return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
+        }
 
         try {
             /*
@@ -380,11 +393,7 @@ public class DebitEntryController extends TreasuryBaseController {
         // @formatter: on
 
         DebitEntry debitEntry = getDebitEntry(model);
-        debitEntry.setDescription(description);
-        debitEntry.setAmount(amount);
-        debitEntry.setQuantity(quantity);
-
-        debitEntry.checkRules();
+        debitEntry.edit(description, amount, quantity);
     }
 
     private static final String _SEARCHPENDINGENTRIES_URI = "/searchpendingentries/";

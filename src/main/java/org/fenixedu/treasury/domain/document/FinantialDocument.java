@@ -260,6 +260,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     @Atomic
     public void changeState(FinantialDocumentStateType newState) {
+        //Same state, do nothing...
+        if (newState == this.getState()) {
+            return;
+        }
 
         if (this.getState() == FinantialDocumentStateType.PREPARING) {
             if (newState == FinantialDocumentStateType.ANNULED) {

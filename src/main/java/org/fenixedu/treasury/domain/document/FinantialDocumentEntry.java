@@ -55,7 +55,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         setDescription(description);
     }
 
-    public void checkRules() {
+    protected void checkRules() {
         if (isFinantialDocumentRequired() && getFinantialDocument() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.finantialDocument.required");
         }

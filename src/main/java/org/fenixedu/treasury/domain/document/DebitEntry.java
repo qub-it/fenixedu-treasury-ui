@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -58,22 +59,22 @@ import com.google.gson.reflect.TypeToken;
 public class DebitEntry extends DebitEntry_Base {
 
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
-            final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
+            final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final Tariff tariff) {
-        init(debitNote, debtAccount, null, product, vatType, amount, dueDate, propertiesMap, description, quantity, tariff);
+        init(debitNote, debtAccount, null, product, vat, amount, dueDate, propertiesMap, description, quantity, tariff);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
-            final FinantialEntryType finantialEntryType, final VatType vatType, final BigDecimal amount, String description,
+            final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
             BigDecimal quantity) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
     protected void init(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
-            final Product product, final VatType vatType, final BigDecimal amount, final LocalDate dueDate,
+            final Product product, final Vat vat, final BigDecimal amount, final LocalDate dueDate,
             final Map<String, String> propertiesMap, final String description, final BigDecimal quantity, final Tariff tariff) {
-        super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vatType, amount, description, quantity);
+        super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vat, amount, description, quantity);
 
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
@@ -116,7 +117,7 @@ public class DebitEntry extends DebitEntry_Base {
 //    }
 
     @Override
-    public void checkRules() {
+    protected void checkRules() {
         super.checkRules();
 
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof DebitNote)) {
@@ -242,10 +243,23 @@ public class DebitEntry extends DebitEntry_Base {
     /* --- Creation methods --- */
 
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
-            final VatType vatType, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
+            final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final Tariff tariff) {
-        return new DebitEntry(debitNote, debtAccount, treasuryEvent, vatType, amount, dueDate, propertiesMap, product,
-                        description, quantity, tariff);
+        DebitEntry entry =
+                new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
+                        quantity, tariff);
+        entry.realculateAmountValues();
+        return entry;
+    }
+
+    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
+
+        this.setDescription(description);
+        this.setAmount(amount);
+        this.setQuantity(quantity);
+        realculateAmountValues();
+        checkRules();
+
     }
 
 }
