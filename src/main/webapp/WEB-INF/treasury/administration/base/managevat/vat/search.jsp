@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -183,9 +185,11 @@ ${portal.toolkit()}
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 				"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 				"vattype" : "<c:out value='${searchResult.vatType.name.content}'/>",
-				"taxrate" : "<c:out value='${searchResult.taxRate} %' />",
-"begindate" : "<c:out value='${searchResult.beginDate.toString(\'yyyy-MM-dd\')}'/>",
-"enddate" : "<c:out value='${searchResult.endDate.toString(\'yyyy-MM-dd\')}'/>",
+				"taxrate" : "<c:out value='${searchResult.taxRate}'/>",
+// ACFSILVA "begindate" : "<c:out value='${searchResult.beginDate.toString(\'yyyy-MM-dd\')}'/>",
+				"begindate" : "<joda:format value='${searchResult.beginDate}' style='S-' />",
+// ACFSILVA "enddate" : "<c:out value='${searchResult.endDate.toString(\'yyyy-MM-dd\')}'/>",
+				"enddate" : "<joda:format value='${searchResult.endDate}' style='S-' />",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/base/managevat/vat/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },

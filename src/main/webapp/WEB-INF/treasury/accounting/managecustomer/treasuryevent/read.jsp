@@ -3,6 +3,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="datatables"
 	uri="http://github.com/dandelion/datatables"%>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -143,7 +144,8 @@ ${portal.toolkit()}
 				</datatables:column>
 				<datatables:column cssStyle="width:15%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.dueDate" /></datatables:columnHead>
-					<p align=center><c:out value="${debitEntry.dueDate}" /></p>
+<%-- 					<p align=center><c:out value="${debitEntry.dueDate}" /></p> --%>
+					<p align=center><joda:format value="${debitEntry.dueDate}" style="S-" /></p>
 				</datatables:column>
 				<datatables:column cssStyle="width:60%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.description" /></datatables:columnHead>

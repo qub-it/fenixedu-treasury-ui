@@ -118,27 +118,54 @@ ${portal.toolkit()}
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.Vat.beginDate" />
 				</div>
+			</div>					  
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.Vat.taxRate"/></div> 
+
+<div class="col-sm-10">
+	<input id="vat_taxRate" class="form-control" type="text" name="taxrate"  value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>' required/>
+</div>	
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.Vat.beginDate"/></div> 
+
+<div class="col-sm-4">
+	<input id="vat_beginDate" class="form-control" type="text" name="begindate"  bennu-date
+	value = '<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate }'/>' required/>
+</div>
+
 
 				<div class="col-sm-4">
 					<input id="vat_beginDate" class="form-control" type="text" name="begindate" bennu-date
 						value='<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate.toString("yyyy-MM-dd") }'/>' required />
 				</div>
 
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.Vat.endDate" />
-				</div>
 
-				<div class="col-sm-4">
-					<input id="vat_endDate" class="form-control" type="text" name="enddate" bennu-date
-						value='<c:out value='${not empty param.enddate ? param.enddate : vat.endDate.toString("yyyy-MM-dd") }'/>' required />
-				</div>
-			</div>
-		</div>
-		<div class="panel-footer">
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
-		</div>
+<div class="col-sm-10">
+	<input id="vat_taxRate" class="form-control" type="text" name="taxrate"  value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>' required/>
+</div>	
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.Vat.beginDate"/></div> 
+
+<div class="col-sm-4">
+	<input id="vat_beginDate" class="form-control" type="text" name="begindate"  bennu-date
+	value = '<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate }'/>' required/>
+</div>
+
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.Vat.endDate"/></div> 
+
+<div class="col-sm-4">
+	<input id="vat_endDate" class="form-control" type="text" name="enddate"  bennu-date
+	value = '<c:out value='${not empty param.enddate ? param.enddate : vat.endDate }'/>' required/>
+</div>
+</div>		
+  </div>
+  <div class="panel-footer">
+		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
+	</div>
 	</div>
 </form>
 

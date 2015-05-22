@@ -1,6 +1,9 @@
+<%@page import="org.joda.time.DateTime"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -126,11 +129,11 @@ ${portal.toolkit()}
 					<spring:message code="label.Vat.taxRate" />
 				</div>
 
-				<div class="col-sm-4">
-					<input id="vat_taxRate" class="form-control"  type="text" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?"
-						name="taxrate"
+				<div class="col-sm-10">
+					<input id="vat_taxRate" class="form-control" type="text" 
+						name="taxrate" pattern="^[0-9]+(\.[0-9]{1,3})?$"
 						value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>'
-						required />
+						 />
 				</div>
 			</div>
 			<div class="form-group row">
@@ -139,6 +142,9 @@ ${portal.toolkit()}
 				</div>
 
 				<div class="col-sm-4">
+					
+					<%= new DateTime().toString() %>
+					
 					<input id="vat_beginDate" class="form-control" type="text"
 						name="begindate" bennu-date
 						value='<c:out value='${not empty param.begindate ? param.begindate : vat.beginDate.toString("yyyy-MM-dd") }'/>'

@@ -273,11 +273,10 @@ class tariff.InterestRate {
 }
 
 class tariff.GlobalInterestRate {
-	int year;
-	LocalizedString description;
-	BigDecimalT rate;
+    int year;
+    LocalizedString description;
+    BigDecimalT rate;
 }
-
 /* ----
  * SIBS
  * ----
@@ -1083,6 +1082,17 @@ relation TariffFinantialEntity {
 		multiplicity *;
 	}
 }
+
+relation GlobalInterestRateBennu {
+    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+        multiplicity 1..1;
+    }
+    
+    tariff.GlobalInterestRate playsRole globalInterestRates {
+        multiplicity *;
+    }
+}
+
 
 /* --- InterestRate --- */
 
