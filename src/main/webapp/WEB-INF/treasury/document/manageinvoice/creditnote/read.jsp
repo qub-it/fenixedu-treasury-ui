@@ -6,11 +6,14 @@
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
 <spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css"/>
+
 <link rel="stylesheet" href="${datatablesCssUrl}"/>
 <spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
+<%--${portal.angularToolkit()} --%>
+${portal.toolkit()}
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
@@ -21,9 +24,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -33,39 +34,45 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managedebtentry/invoiceentry/"  ><spring:message code="label.event.back" /></a>|&nbsp;&nbsp;
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;</div>
-<c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
-
-		<c:forEach items="${infoMessages}" var="message">
-			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
-<c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
-
-		<c:forEach items="${warningMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
-<c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
-
-		<c:forEach items="${errorMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
+|&nbsp;&nbsp;	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/update/${creditNote.externalId}"  ><spring:message code="label.event.update" /></a>
+|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/closecreditnote"  ><spring:message code="label.event.document.manageInvoice.closeCreditNote" /></a>	|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/anullcreditnote"  ><spring:message code="label.event.document.manageInvoice.anullCreditNote" /></a>	|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"  ><spring:message code="label.event.document.manageInvoice.addEntry" /></a>	
+</div>
+	<c:if test="${not empty infoMessages}">
+				<div class="alert alert-info" role="alert">
+					
+					<c:forEach items="${infoMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
+			<c:if test="${not empty warningMessages}">
+				<div class="alert alert-warning" role="alert">
+					
+					<c:forEach items="${warningMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
+			<c:if test="${not empty errorMessages}">
+				<div class="alert alert-danger" role="alert">
+					
+					<c:forEach items="${errorMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
 
 <div class="panel panel-primary">
 	<div class="panel-heading">

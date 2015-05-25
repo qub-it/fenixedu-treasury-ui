@@ -28,14 +28,37 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.document.manageInvoice.updateCreditNote" />
+	<h1><spring:message code="label.document.manageInvoice.readCreditEntry" />
 		<small></small>
 	</h1>
 </div>
-
+<div class="modal fade" id="deleteModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    <form id ="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/delete/${creditEntry.externalId}"   method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
+      </div>
+      <div class="modal-body">
+        <p><spring:message code = "label.document.manageInvoice.readCreditEntry.confirmDelete"/></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
+      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}" ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read"  ><spring:message code="label.event.back" /></a>|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read"  ><spring:message code="label.event.back" /></a>
+|&nbsp;&nbsp;				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
+data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
+				|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}"  ><spring:message code="label.event.update" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -71,42 +94,53 @@ ${portal.toolkit()}
 				</div>	
 			</c:if>
 
-<form method="post" class="form-horizontal">
-
-<div class="panel panel-default">
-  <div class="panel-body">
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.originDocumentNumber"/></div> 
-
-<div class="col-sm-10">
-	<input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"  value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.state"/></div> 
-
-<div class="col-sm-4">
-	<select id="creditNote_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-		<c:forEach items="${stateValues}" var="field">
-			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
-		</c:forEach>
-	</select>
-	<script>
-		$("#creditNote_state").val('<c:out value='${not empty param.state ? param.state : creditNote.state }'/>');
-	</script>	
-</div>
-</div>		
-  </div>
-  <div class="panel-footer">
-		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title"><spring:message code="label.details"/></h3>
 	</div>
-</div>
+	<div class="panel-body">
+<form method="post" class="form-horizontal">
+<table class="table">
+		<tbody>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.debtAccount"/></th> 
+	<td>
+		<c:out value='${creditEntry.debtAccount}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.finantialDocument"/></th> 
+	<td>
+		<c:out value='${creditEntry.finantialDocument}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.description"/></th> 
+	<td>
+		<c:out value='${creditEntry.description}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.amount"/></th> 
+	<td>
+		<c:out value='${creditEntry.amount}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.debitEntry"/></th> 
+	<td>
+		<c:out value='${creditEntry.debitEntry}'/>
+	</td> 
+</tr>
+</tbody>
+</table>
 </form>
+</div>
+</div>
 
 <script>
 $(document).ready(function() {
 
-
+	
 	});
 </script>

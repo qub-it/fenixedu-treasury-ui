@@ -6,11 +6,14 @@
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
 <spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css"/>
+
 <link rel="stylesheet" href="${datatablesCssUrl}"/>
 <spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
+<%--${portal.angularToolkit()} --%>
+${portal.toolkit()}
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
@@ -21,9 +24,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -35,36 +36,41 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create"   ><spring:message code="label.event.create" /></a>
 |&nbsp;&nbsp;</div>
-<c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
+	<c:if test="${not empty infoMessages}">
+				<div class="alert alert-info" role="alert">
+					
+					<c:forEach items="${infoMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
+			<c:if test="${not empty warningMessages}">
+				<div class="alert alert-warning" role="alert">
+					
+					<c:forEach items="${warningMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
+			<c:if test="${not empty errorMessages}">
+				<div class="alert alert-danger" role="alert">
+					
+					<c:forEach items="${errorMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
 
-		<c:forEach items="${infoMessages}" var="message">
-			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
-<c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
 
-		<c:forEach items="${warningMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
-<c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
-
-		<c:forEach items="${errorMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
 
 <div class="panel panel-default">
 <form method="get" class="form-horizontal">
@@ -231,15 +237,14 @@ ${portal.toolkit()}
 "documentnumberseries" : "<c:out value='${searchResult.documentNumberSeries}'/>",
 "currency" : "<c:out value='${searchResult.currency}'/>",
 "documentnumber" : "<c:out value='${searchResult.documentNumber}'/>",
-// "documentdate" : "<c:out value='${searchResult.documentDate}'/>",
-"documentdate" : "<joda:format value='${searchResult.documentDate}' style='S-' />",
-// "documentduedate" : "<c:out value='${searchResult.documentDueDate}'/>",
-"documentduedate" : "<joda:format value='${searchResult.documentDueDate}' style='S-' />",
+"documentdate" : "<c:out value='${searchResult.documentDate}'/>",
+"documentduedate" : "<c:out value='${searchResult.documentDueDate}'/>",
 "origindocumentnumber" : "<c:out value='${searchResult.originDocumentNumber}'/>",
 "state" : "<c:out value='${searchResult.state}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-                "" },
+                "" 
+			},
             </c:forEach>
     ];
 	
@@ -398,7 +403,7 @@ ${portal.toolkit()}
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
-            "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
+            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	
         }
 		});
 		table.columns.adjust().draw();

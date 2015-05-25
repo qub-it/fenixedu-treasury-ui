@@ -28,14 +28,14 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.document.manageInvoice.updateCreditNote" />
+	<h1><spring:message code="label.document.manageInvoice.updateCreditEntry" />
 		<small></small>
 	</h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}" ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditEntry.externalId}" ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -76,26 +76,18 @@ ${portal.toolkit()}
 <div class="panel panel-default">
   <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.originDocumentNumber"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.CreditEntry.description"/></div> 
 
 <div class="col-sm-10">
-	<input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"  value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
+	<input id="creditEntry_description" class="form-control" type="text" name="description"  value='<c:out value='${not empty param.description ? param.description : creditEntry.description }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.state"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.CreditEntry.amount"/></div> 
 
-<div class="col-sm-4">
-	<select id="creditNote_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-		<c:forEach items="${stateValues}" var="field">
-			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
-		</c:forEach>
-	</select>
-	<script>
-		$("#creditNote_state").val('<c:out value='${not empty param.state ? param.state : creditNote.state }'/>');
-	</script>	
-</div>
+<div class="col-sm-10">
+	<input id="creditEntry_amount" class="form-control" type="text" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
+</div>	
 </div>		
   </div>
   <div class="panel-footer">

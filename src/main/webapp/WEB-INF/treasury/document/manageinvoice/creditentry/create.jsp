@@ -28,14 +28,14 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.document.manageInvoice.updateCreditNote" />
+	<h1><spring:message code="label.document.manageInvoice.createCreditEntry" />
 		<small></small>
 	</h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}" ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -72,30 +72,31 @@ ${portal.toolkit()}
 			</c:if>
 
 <form method="post" class="form-horizontal">
-
 <div class="panel panel-default">
   <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.originDocumentNumber"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.CreditEntry.description"/></div> 
 
 <div class="col-sm-10">
-	<input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"  value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
+	<input id="creditEntry_description" class="form-control" type="text" name="description"  value='<c:out value='${not empty param.description ? param.description : creditEntry.description }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.state"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.CreditEntry.amount"/></div> 
+
+<div class="col-sm-10">
+	<input id="creditEntry_amount" class="form-control" type="text" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
+</div>	
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.CreditEntry.debitEntry"/></div> 
 
 <div class="col-sm-4">
-	<select id="creditNote_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-		<c:forEach items="${stateValues}" var="field">
-			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
-		</c:forEach>
-	</select>
-	<script>
-		$("#creditNote_state").val('<c:out value='${not empty param.state ? param.state : creditNote.state }'/>');
-	</script>	
-</div>
+	<%-- Relation to side 1 drop down rendered in input --%>
+		 <select id="creditEntry_debitEntry" class="js-example-basic-single" name="debitentry">
+		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		</select>
+				</div>
 </div>		
   </div>
   <div class="panel-footer">
@@ -107,6 +108,28 @@ ${portal.toolkit()}
 <script>
 $(document).ready(function() {
 
+	<%-- Block for providing debitEntry options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	debitEntry_options = [
+		<c:forEach items="${CreditEntry_debitEntry_options}" var="element"> 
+			{
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+	
+	$("#creditEntry_debitEntry").select2(
+		{
+			data : debitEntry_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditEntry_debitEntry").select2().select2('val', '<c:out value='${param.debitentry}'/>');
+
+	<%-- End block for providing debitEntry options --%>
 
 	});
 </script>

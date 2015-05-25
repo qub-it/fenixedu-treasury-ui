@@ -6,11 +6,14 @@
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
 <spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css"/>
+
 <link rel="stylesheet" href="${datatablesCssUrl}"/>
 <spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json"/>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
+<%--${portal.angularToolkit()} --%>
+${portal.toolkit()}
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
@@ -21,9 +24,7 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -36,36 +37,39 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;</div>
-<c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
-
-		<c:forEach items="${infoMessages}" var="message">
-			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
-<c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
-
-		<c:forEach items="${warningMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
-<c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
-
-		<c:forEach items="${errorMessages}" var="message">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  				${message}
-  			</p>
-		</c:forEach>
-	</div>
-</c:if>
+	<c:if test="${not empty infoMessages}">
+				<div class="alert alert-info" role="alert">
+					
+					<c:forEach items="${infoMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
+			<c:if test="${not empty warningMessages}">
+				<div class="alert alert-warning" role="alert">
+					
+					<c:forEach items="${warningMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
+			<c:if test="${not empty errorMessages}">
+				<div class="alert alert-danger" role="alert">
+					
+					<c:forEach items="${errorMessages}" var="message"> 
+						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+  							${message}
+  						</p>
+					</c:forEach>
+					
+				</div>	
+			</c:if>
 
 <form method="post" class="form-horizontal">
 <div class="panel panel-default">
@@ -185,139 +189,138 @@ ${portal.toolkit()}
 <script>
 $(document).ready(function() {
 
-		<%-- Block for providing debitNote options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		debitNote_options = [
-			<c:forEach items="${CreditNote_debitNote_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#creditNote_debitNote").select2(
+	<%-- Block for providing debitNote options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	debitNote_options = [
+		<c:forEach items="${CreditNote_debitNote_options}" var="element"> 
 			{
-				data : debitNote_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#creditNote_debitNote").select2().select2('val', '<c:out value='${param.debitnote}'/>');
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		<%-- End block for providing debitNote options --%>
-		<%-- Block for providing payorDebtAccount options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		payorDebtAccount_options = [
-			<c:forEach items="${CreditNote_payorDebtAccount_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#creditNote_payorDebtAccount").select2(
+	$("#creditNote_debitNote").select2(
+		{
+			data : debitNote_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditNote_debitNote").select2().select2('val', '<c:out value='${param.debitnote}'/>');
+
+	<%-- End block for providing debitNote options --%>
+	<%-- Block for providing payorDebtAccount options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	payorDebtAccount_options = [
+		<c:forEach items="${CreditNote_payorDebtAccount_options}" var="element"> 
 			{
-				data : payorDebtAccount_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#creditNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payordebtaccount}'/>');
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		<%-- End block for providing payorDebtAccount options --%>
-		<%-- Block for providing finantialDocumentType options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		finantialDocumentType_options = [
-			<c:forEach items="${CreditNote_finantialDocumentType_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#creditNote_finantialDocumentType").select2(
+	$("#creditNote_payorDebtAccount").select2(
+		{
+			data : payorDebtAccount_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payordebtaccount}'/>');
+
+	<%-- End block for providing payorDebtAccount options --%>
+	<%-- Block for providing finantialDocumentType options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	finantialDocumentType_options = [
+		<c:forEach items="${CreditNote_finantialDocumentType_options}" var="element"> 
 			{
-				data : finantialDocumentType_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#creditNote_finantialDocumentType").select2().select2('val', '<c:out value='${param.finantialdocumenttype}'/>');
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		<%-- End block for providing finantialDocumentType options --%>
-		<%-- Block for providing debtAccount options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		debtAccount_options = [
-			<c:forEach items="${CreditNote_debtAccount_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#creditNote_debtAccount").select2(
+	$("#creditNote_finantialDocumentType").select2(
+		{
+			data : finantialDocumentType_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditNote_finantialDocumentType").select2().select2('val', '<c:out value='${param.finantialdocumenttype}'/>');
+
+	<%-- End block for providing finantialDocumentType options --%>
+	<%-- Block for providing debtAccount options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	debtAccount_options = [
+		<c:forEach items="${CreditNote_debtAccount_options}" var="element"> 
 			{
-				data : debtAccount_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#creditNote_debtAccount").select2().select2('val', '<c:out value='${param.debtaccount}'/>');
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		<%-- End block for providing debtAccount options --%>
-		<%-- Block for providing documentNumberSeries options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		documentNumberSeries_options = [
-			<c:forEach items="${CreditNote_documentNumberSeries_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#creditNote_documentNumberSeries").select2(
+	$("#creditNote_debtAccount").select2(
+		{
+			data : debtAccount_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditNote_debtAccount").select2().select2('val', '<c:out value='${param.debtaccount}'/>');
+
+	<%-- End block for providing debtAccount options --%>
+	<%-- Block for providing documentNumberSeries options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	documentNumberSeries_options = [
+		<c:forEach items="${CreditNote_documentNumberSeries_options}" var="element"> 
 			{
-				data : documentNumberSeries_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#creditNote_documentNumberSeries").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		<%-- End block for providing documentNumberSeries options --%>
-		<%-- Block for providing currency options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		currency_options = [
-			<c:forEach items="${CreditNote_currency_options}" var="element"> 
-				{
-					text : "<c:out value='${element}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#creditNote_currency").select2(
+	$("#creditNote_documentNumberSeries").select2(
+		{
+			data : documentNumberSeries_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditNote_documentNumberSeries").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
+
+	<%-- End block for providing documentNumberSeries options --%>
+	<%-- Block for providing currency options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	currency_options = [
+		<c:forEach items="${CreditNote_currency_options}" var="element"> 
 			{
-				data : currency_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#creditNote_currency").select2().select2('val', '<c:out value='${param.currency}'/>');
+				text : "<c:out value='${element}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		<%-- End block for providing currency options --%>
-	
-	
+	$("#creditNote_currency").select2(
+		{
+			data : currency_options,
+		}	  
+    );
+    
+    
+    
+    $("#creditNote_currency").select2().select2('val', '<c:out value='${param.currency}'/>');
+
+	<%-- End block for providing currency options --%>
+
 	});
 </script>
