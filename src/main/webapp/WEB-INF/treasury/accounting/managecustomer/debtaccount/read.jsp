@@ -81,9 +81,7 @@ ${portal.angularToolkit()}
 		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><spring:message
 			code="label.event.accounting.manageCustomer.createDebitNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"><spring:message
-			code="label.event.accounting.manageCustomer.createExemption" /></a>&nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><spring:message
-			code="label.event.accounting.manageCustomer.createDebtEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+			code="label.event.accounting.manageCustomer.createExemption" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"><spring:message
 			code="label.event.accounting.manageCustomer.readEvent" /></a>
 </div>
@@ -188,20 +186,20 @@ ${portal.angularToolkit()}
 							</datatables:columnHead>
 							<c:out value="${pendingEntry.dueDate}" />
 						</datatables:column>
+<%-- 						<datatables:column> --%>
+<%-- 							<datatables:columnHead> --%>
+<%-- 								<spring:message code="label.Invoice.debitAmount" /> --%>
+<%-- 							</datatables:columnHead> --%>
+<!-- 							<div align=right> -->
+<%-- 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" /> --%>
+<!-- 							</div> -->
+<%-- 						</datatables:column> --%>
 						<datatables:column>
 							<datatables:columnHead>
-								<spring:message code="label.Invoice.debitAmount" />
+								<spring:message code="label.InvoiceEntry.totalAmount" />
 							</datatables:columnHead>
 							<div align=right>
-								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" />
-							</div>
-						</datatables:column>
-						<datatables:column>
-							<datatables:columnHead>
-								<spring:message code="label.InvoiceEntry.creditAmount" />
-							</datatables:columnHead>
-							<div align=right>
-								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" />
+								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
 							</div>
 						</datatables:column>
 						<datatables:column>
@@ -215,7 +213,7 @@ ${portal.angularToolkit()}
 						<datatables:column>
 											<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
 												<button type="submit" class="btn btn-default btn-xs">
-													<spring:message code="label.event.view" />
+													<spring:message code="label.view" />
 												</button>
 											</form>
 							<%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
@@ -277,20 +275,20 @@ ${portal.angularToolkit()}
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
-								<spring:message code="label.Invoice.debitAmount" />
+								<spring:message code="label.Invoice.totalAmount" />
 							</datatables:columnHead>
 							<div align=right>
-								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" />
+								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
 							</div>
 						</datatables:column>
-						<datatables:column>
-							<datatables:columnHead>
-								<spring:message code="label.InvoiceEntry.creditAmount" />
-							</datatables:columnHead>
-							<div align=right>
-								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" />
-							</div>
-						</datatables:column>
+<%-- 						<datatables:column> --%>
+<%-- 							<datatables:columnHead> --%>
+<%-- 								<spring:message code="label.InvoiceEntry.creditAmount" /> --%>
+<%-- 							</datatables:columnHead> --%>
+<!-- 							<div align=right> -->
+<%-- 								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" /> --%>
+<!-- 							</div> -->
+<%-- 						</datatables:column> --%>
 						<datatables:column>
 							<datatables:columnHead>
 								<spring:message code="label.InvoiceEntry.openAmount" />
@@ -302,7 +300,7 @@ ${portal.angularToolkit()}
 						<datatables:column>
 											<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
 												<button type="submit" class="btn btn-default btn-xs">
-													<spring:message code="label.event.view" />
+													<spring:message code="label.view" />
 												</button>
 											</form>
 							<%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
@@ -343,8 +341,8 @@ ${portal.angularToolkit()}
 								<%--!!!  Field names here --%>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount" /></th>
+<%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
+								<th><spring:message code="label.accounting.manageCustomer.readCustomer.totalAmount" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount" /></th>
 								<%-- Operations Column --%>
 								<th></th>
@@ -379,8 +377,8 @@ ${portal.angularToolkit()}
 								<%--!!!  Field names here --%>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th>
-								<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount" /></th>
+<%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
+								<th><spring:message code="label.accounting.manageCustomer.readCustomer.totalAmount" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount" /></th>
 								<%-- Operations Column --%>
 								<th></th>

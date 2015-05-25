@@ -26,42 +26,25 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
-import javax.servlet.http.HttpServletRequest;
-
 import java.util.List;
-import java.util.ArrayList;
-
-import org.joda.time.DateTime;
-
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
-import org.fenixedu.bennu.spring.portal.SpringApplication;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.stereotype.Component;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.dto.AdhocCustomerBean;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 import pt.ist.fenixframework.Atomic;
-
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.Constants;
-import org.fenixedu.treasury.domain.AdhocCustomer;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.dto.AdhocCustomerBean;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -172,9 +155,9 @@ public class AdhocCustomerController extends TreasuryBaseController {
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("adhocCustomer", adhocCustomer);
-            return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
-                    model, redirectAttributes);
+            setAdhocCustomer(adhocCustomer, model);
+
+            return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             /*
@@ -207,7 +190,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
         // Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        AdhocCustomer adhocCustomer = AdhocCustomer.create(code, fiscalNumber, name, "", "", "", "");
+        AdhocCustomer adhocCustomer = AdhocCustomer.create(code, fiscalNumber, name, "", "", "", "", identificationNumber);
         return adhocCustomer;
     }
 
@@ -279,7 +262,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
         // Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getAdhocCustomer(model).edit(code, fiscalNumber, name, "", "", "", "");
+        getAdhocCustomer(model).edit(code, fiscalNumber, name, "", "", "", "", identificationNumber);
     }
 
 }

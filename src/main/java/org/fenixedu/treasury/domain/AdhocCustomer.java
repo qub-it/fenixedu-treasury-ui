@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -48,7 +47,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     protected AdhocCustomer(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode) {
+            final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
         this();
         setCode(code);
         setFiscalNumber(fiscalNumber);
@@ -57,6 +56,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setDistrictSubdivision(districtSubdivision);
         setZipCode(zipCode);
         setCountryCode(countryCode);
+        setIdentificationNumber(identificationNumber);
 
         checkRules();
     }
@@ -77,21 +77,24 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     @Atomic
     public void edit(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode) {
+            final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
         setFiscalNumber(fiscalNumber);
         setName(name);
         setAddress(address);
         setDistrictSubdivision(districtSubdivision);
         setZipCode(zipCode);
         setCountryCode(countryCode);
+        setIdentificationNumber(identificationNumber);
 
         checkRules();
     }
 
+    @Override
     public boolean isDeletable() {
         return true;
     }
 
+    @Override
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -105,8 +108,9 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     @Atomic
     public static AdhocCustomer create(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode) {
-        return new AdhocCustomer(code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode);
+            final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
+        return new AdhocCustomer(code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
+                identificationNumber);
     }
 
     // @formatter: off

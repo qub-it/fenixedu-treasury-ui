@@ -234,10 +234,16 @@ public class DebitNoteController extends TreasuryBaseController {
             model.addAttribute("DebitNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
 
         } else {
-            model.addAttribute(
-                    "DebitNote_documentNumberSeries_options",
+            List<DocumentNumberSeries> availableSeries =
                     org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
-                            documentNumberSeries.getSeries().getFinantialInstitution()).collect(Collectors.toList()));
+                            debtAccount.getFinantialInstitution()).collect(Collectors.toList());
+            if (availableSeries.size() > 0) {
+                model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
+            } else {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+                return redirect(SEARCH_URL, model, redirectAttributes);
+            }
         }
         return "treasury/document/manageinvoice/debitnote/create";
     }
@@ -246,9 +252,9 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(
             @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDate,
+            @RequestParam(value = "debtaccount") org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+            @RequestParam(value = "documentnumberseries") org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDate,
             @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, Model model,
             RedirectAttributes redirectAttributes) {

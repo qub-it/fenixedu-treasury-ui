@@ -27,17 +27,20 @@
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.DebitEntryBean;
@@ -55,22 +58,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
-
-import org.fenixedu.treasury.dto.DebitEntryBean;
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
-import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
-import org.fenixedu.treasury.util.Constants;
-import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.Vat;
-import org.fenixedu.treasury.domain.VatType;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.DebitEntry;
-import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.tariff.FixedTariff;
-import org.fenixedu.treasury.domain.tariff.Tariff;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -181,7 +168,7 @@ public class DebitEntryController extends TreasuryBaseController {
         this.setDebitEntryBean(bean, model);
 
         if (debitNote == null) {
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.document.manageInvoice.createDebitEntry.entry.with.no.document"), model);
         }
 

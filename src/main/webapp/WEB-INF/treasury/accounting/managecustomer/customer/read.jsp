@@ -138,8 +138,8 @@ ${portal.toolkit()}
 	<th scope="row" class="col-xs-3">
 
 	<c:out value="${debtAccount.finantialInstitution.name}"/></th> 
-	<td>
-   			 <c:out value="${debtAccount.totalInDebt}"/> <c:out value="${debtAccount.finantialInstitution.currency.symbol}"/> &nbsp;&nbsp;<a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message code="label.customer.read.showdebtaccount"></spring:message></a> 
+	<td style="vertical-align:middle">
+   			 <div class="col-xs-3" ><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}"/></div> &nbsp;&nbsp;<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message code="label.customer.read.showdebtaccount"></spring:message></a> 
 	</td> 
 </tr>
 		</c:forEach>
@@ -163,8 +163,7 @@ ${portal.toolkit()}
 					<%--!!!  Field names here --%>
 <th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems"/></th>
 <th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.creditAmount"/></th>
+<th><spring:message code="label.accounting.manageCustomer.readCustomer.totalAmount"/></th>
 <th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount"/></th>
 <%-- Operations Column --%>
 					<th></th>
@@ -220,8 +219,7 @@ $(document).ready(function() {
 			{ data: 'document' },
 			{ data: 'debtItems' },
 			{ data: 'dueDate' },
-			{ data: 'debitAmount' },
-			{ data: 'creditAmount' },
+			{ data: 'totalAmount' },
 			{ data: 'pendingAmount' },
 			{ data: 'actions' }			
 		],

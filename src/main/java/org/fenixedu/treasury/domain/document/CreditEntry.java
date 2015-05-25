@@ -33,7 +33,6 @@ import java.util.stream.Stream;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
-import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
@@ -68,15 +67,15 @@ public class CreditEntry extends CreditEntry_Base {
         }
     }
 
-    @Override
-    public BigDecimal getDebitAmount() {
-        return Currency.getValueWithScale(BigDecimal.ZERO);
-    }
-
-    @Override
-    public BigDecimal getCreditAmount() {
-        return this.getTotalAmount();
-    }
+//    @Override
+//    public BigDecimal getDebitAmount() {
+//        return Currency.getValueWithScale(BigDecimal.ZERO);
+//    }
+//
+//    @Override
+//    public BigDecimal getCreditAmount() {
+//        return this.getTotalAmount();
+//    }
 
     // @formatter: off
     /************

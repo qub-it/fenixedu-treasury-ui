@@ -39,7 +39,6 @@ import java.util.stream.Stream;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
-import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -159,13 +158,13 @@ public class DebitEntry extends DebitEntry_Base {
 
     private BigDecimal getRateValueUsingDiaryRate(BigDecimal amount, int days, InterestRate rate) {
         int numberOfDays =
-                (rate.getMaximumDaysToApplyPenalty() < (days - rate.getNumberOfDaysAfterDueDate())) ? rate
+                rate.getMaximumDaysToApplyPenalty() < days - rate.getNumberOfDaysAfterDueDate() ? rate
                         .getMaximumDaysToApplyPenalty() : days - rate.getNumberOfDaysAfterDueDate();
         return amount.multiply(BigDecimal.valueOf(numberOfDays / 365)).multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
     }
 
     private BigDecimal getRateValueUsingMonthlyRate(BigDecimal amount, int months, InterestRate rate) {
-        int numberOfMonths = (rate.getMaximumMonthsToApplyPenalty() < months) ? rate.getMaximumMonthsToApplyPenalty() : months;
+        int numberOfMonths = rate.getMaximumMonthsToApplyPenalty() < months ? rate.getMaximumMonthsToApplyPenalty() : months;
         return amount.multiply(BigDecimal.valueOf(numberOfMonths)).multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
     }
 
@@ -223,15 +222,15 @@ public class DebitEntry extends DebitEntry_Base {
         return false;
     }
 
-    @Override
-    public BigDecimal getDebitAmount() {
-        return this.getTotalAmount();
-    }
-
-    @Override
-    public BigDecimal getCreditAmount() {
-        return Currency.getValueWithScale(BigDecimal.ZERO);
-    }
+//    @Override
+//    public BigDecimal getDebitAmount() {
+//        return this.getTotalAmount();
+//    }
+//
+//    @Override
+//    public BigDecimal getCreditAmount() {
+//        return Currency.getValueWithScale(BigDecimal.ZERO);
+//    }
 
     public boolean isEventAnnuled() {
         return getEventAnnuled();
@@ -244,6 +243,7 @@ public class DebitEntry extends DebitEntry_Base {
         return Currency.getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
     }
 
+    @Override
     public BigDecimal getAmountWithVat() {
         BigDecimal amount = getAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
         return Currency.getValueWithScale(amount);
