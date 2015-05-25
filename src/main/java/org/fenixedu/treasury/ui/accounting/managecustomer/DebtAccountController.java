@@ -179,7 +179,7 @@ public class DebtAccountController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen    
-        return redirect(DebitNoteController.CREATE_URL + "?debtAccount=" + getDebtAccount(model).getExternalId(), model,
+        return redirect(DebitNoteController.CREATE_URL + "?debtaccount=" + getDebtAccount(model).getExternalId(), model,
                 redirectAttributes);
     }
 

@@ -26,47 +26,31 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
-import javax.servlet.http.HttpServletRequest;
-
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
-
-import org.joda.time.DateTime;
-
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
-import org.fenixedu.bennu.spring.portal.SpringApplication;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.stereotype.Component;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 import pt.ist.fenixframework.Atomic;
-
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.Constants;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.DebitEntry;
-import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
-import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice.debitNote",
@@ -187,16 +171,14 @@ public class DebitNoteController extends TreasuryBaseController {
                 .filter(debitNote -> debtAccount == null || debtAccount == debitNote.getDebtAccount())
                 .filter(debitNote -> documentNumberSeries == null || documentNumberSeries == debitNote.getDocumentNumberSeries())
                 .filter(debitNote -> currency == null || currency == debitNote.getCurrency())
-                .filter(debitNote -> documentNumber == null
-                        || documentNumber.length() == 0
-                        || (debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0 && debitNote
-                                .getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase())))
+                .filter(debitNote -> documentNumber == null || documentNumber.length() == 0
+                        || debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0
+                        && debitNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
                 .filter(debitNote -> documentDate == null || documentDate.equals(debitNote.getDocumentDate()))
                 .filter(debitNote -> documentDueDate == null || documentDueDate.equals(debitNote.getDocumentDueDate()))
-                .filter(debitNote -> originDocumentNumber == null
-                        || originDocumentNumber.length() == 0
-                        || (debitNote.getOriginDocumentNumber() != null && debitNote.getOriginDocumentNumber().length() > 0 && debitNote
-                                .getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase())))
+                .filter(debitNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
+                        || debitNote.getOriginDocumentNumber() != null && debitNote.getOriginDocumentNumber().length() > 0
+                        && debitNote.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase()))
                 .filter(debitNote -> state == null || state.equals(debitNote.getState())).collect(Collectors.toList());
     }
 
@@ -219,6 +201,8 @@ public class DebitNoteController extends TreasuryBaseController {
 
         FinantialInstitution finantialInstitution = null;
         if (documentNumberSeries == null && debtAccount == null) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         }
 

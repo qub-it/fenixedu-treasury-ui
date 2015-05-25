@@ -71,16 +71,6 @@ ${portal.toolkit()}
 <div class="panel panel-default">
   <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.payorDebtAccount"/></div> 
-
-<div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="debitNote_payorDebtAccount" class="js-example-basic-single" name="payordebtaccount">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
-		</select>
-				</div>
-</div>		
-<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.DebitNote.debtAccount"/></div> 
 
 <div class="col-sm-4">
@@ -96,7 +86,6 @@ ${portal.toolkit()}
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		 <select id="debitNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
 				</div>
 </div>		
@@ -122,7 +111,18 @@ ${portal.toolkit()}
 <div class="col-sm-10">
 	<input id="debitNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"  value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : debitNote.originDocumentNumber }'/>' />
 </div>	
+</div>
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.DebitNote.payorDebtAccount"/></div> 
+
+<div class="col-sm-4">
+	<%-- Relation to side 1 drop down rendered in input --%>
+		 <select id="debitNote_payorDebtAccount" class="js-example-basic-single" name="payordebtaccount">
+		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		</select>
+				</div>
 </div>		
+		
 </div>		
   
   <div class="panel-footer">
