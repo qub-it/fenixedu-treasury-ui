@@ -134,8 +134,8 @@ ${portal.angularToolkit()}
 
 <script type="text/javascript">
     function processSubmit(url) {
-        $("#insertPaymentForm").attr("action", url);
-        $("#insertPaymentForm").submit();
+        $("#summaryForm").attr("action", url);
+        $("#summaryForm").submit();
     }
 </script>
 
@@ -159,7 +159,7 @@ ${portal.angularToolkit()}
                 </tr>
                 <tr>
                     <th scope="row" class="col-xs-3">
-                        <spring:message code="label.Customer.nif" />
+                        <spring:message code="label.Customer.fiscalNumber" />
                     </th>
                     <td>
                         <c:out value='${settlementNoteBean.debtAccount.customer.fiscalNumber}' />
@@ -178,7 +178,7 @@ ${portal.angularToolkit()}
     </div>
 </div>
 
-<div class="panel panel-primary">    
+<div class="panel panel-primary ">    
     <div class="panel-heading">
         <h3 class="panel-title">
             <spring:message code="label.DebitEntry" />
@@ -211,7 +211,7 @@ ${portal.angularToolkit()}
                                 <c:out value='${ debitNoteDate }' />
                             </td>                                
                             <td>
-                                <c:out value="${ debitEntryBean.debitEntry.vat.taxRate}"/>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }"/>
                             </td>
                             <td>
                                 <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" />
@@ -253,7 +253,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
                             </td>
                             <td>
-                                <c:out value="${ debitEntryBean.debitEntry.vat.taxRate}"/>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }"/>
                             </td>
                             <td>
                                 <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" />
@@ -273,7 +273,7 @@ ${portal.angularToolkit()}
                             <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
                         </td>
                         <td>
-                            <c:out value="${ creditEntryBean.creditEntry.vat.taxRate}"/>
+                            <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }"/>
                         </td>
                         <td>
                             -
@@ -289,77 +289,6 @@ ${portal.angularToolkit()}
     </div>
 </div>
 
-<div class="panel panel-primary">    
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            <spring:message code="label.DebitEntry" />
-        </h3>
-    </div>
-    <div class="panel-horizontal">
-    <div class="panel-body">
-        <table id="vatTable"
-            class="table responsive table-bordered table-hover">
-            <thead>
-                <tr>
-                    <th><spring:message code="label.VatType" /></th>
-                    <th><spring:message code="label.VatType.valueWithoutVat" /></th>
-                    <th><spring:message code="label.VatType.valueWithVat" /></th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:set var="sumAmount" value="<%= BigDecimal.ZERO %>" />
-                <c:set var="sumAmountWithVat" value="<%= BigDecimal.ZERO %>" />                            
-                <c:forEach items="${ settlementNoteBean.valuesByVat }" var="entry">
-                    <c:set var="sumAmount" value="${ sumAmount.add(entry.value.amount) }" />
-                    <c:set var="sumAmountWithVat" value="${ sumAmountWithVat.add(entry.value.amountWithVat) }" />                
-                    <tr>
-                        <td>
-                            <c:out value="${ entry.key }" />
-                        </td>
-                        <td>
-                            <c:out value="${ entry.value.amount }" />
-                        </td>
-                        <td>
-                            <c:out value="${ entry.value.amountWithVat.subtract(entry.value.amount) }" />
-                        </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-    </div>
-    <div class="panel-body ">
-        <table id="vatSummaryTable"
-            class="table responsive table-bordered table-hover">
-            <tbody>
-                <tr>
-                    <th scope="row" class="col-xs-3">
-                        <spring:message code="label.VatType.sumValueWithoutVat" />
-                    </th>
-                    <td>
-                        <c:out value='${ sumAmount }' />
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row" class="col-xs-3">
-                        <spring:message code="label.VatType.sumValueOfVat" />
-                    </th>
-                    <td>
-                        <c:out value='${ sumAmountWithVat.subtract(sumAmount) }' />
-                    </td>
-                </tr>
-                <tr>
-                    <th scope="row" class="col-xs-3">
-                        <spring:message code="label.VatType.sumValueWithVat" />
-                    </th>
-                    <td>
-                        <c:out value='${ settlementNoteBean.paymentAmountWithVat }' />
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    </div>
-</div>
 
 <form id='summaryForm' name='form' method="post" class="form-horizontal"
     ng-app="angularAppSettlementNote"
@@ -391,7 +320,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ paymentEntry.paymentMethod.name.content }" />
                             </td>
                             <td>
-                                <c:out value="${ paymentEntry.payedAmount }" />
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( paymentEntry.payedAmount ) }" />
                             </td>
                         </tr>
                     </c:forEach> 
@@ -402,6 +331,85 @@ ${portal.angularToolkit()}
             </div>
         </div>
     </div>
+
+    <div class="panel panel-primary">    
+        <div class="panel panel-heading">
+            <h3 class="panel-title">
+                <spring:message code="label.Vat.Summary" />
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6 col-lg-6">
+                    <table id="vatTable"
+                        class="table responsive table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th><spring:message code="label.VatType" /></th>
+                                <th><spring:message code="label.VatType.valueWithoutVat" /></th>
+                                <th><spring:message code="label.VatType.valueOfVat" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:set var="sumAmount" value="<%= BigDecimal.ZERO %>" />
+                            <c:set var="sumAmountWithVat" value="<%= BigDecimal.ZERO %>" />                            
+                            <c:forEach items="${ settlementNoteBean.valuesByVat }" var="entry">
+                                <c:set var="sumAmount" value="${ sumAmount.add(entry.value.amount) }" />
+                                <c:set var="sumAmountWithVat" value="${ sumAmountWithVat.add(entry.value.amountWithVat) }" />                
+                                <tr>
+                                    <td>
+                                        <c:out value="${ entry.key }" />
+                                    </td>
+                                    <td>
+                                        <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( entry.value.amount ) }" />
+                                    </td>
+                                    <td>
+                                        <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( entry.value.amountWithVat.subtract(entry.value.amount) ) }" />
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6 col-lg-6">
+                    <p align="center">
+                        <b><spring:message code="label.summary"/></b>
+                    </p>
+                    <br>
+                    <table id="vatSummaryTable"
+                        class="table responsive table-bordered table-hover">
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="col-xs-3">
+                                    <spring:message code="label.VatType.sumValueWithoutVat" />
+                                </th>
+                                <td>
+                                    <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( sumAmount ) }' />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-xs-3">
+                                    <spring:message code="label.VatType.sumValueOfVat" />
+                                </th>
+                                <td>
+                                    <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( sumAmountWithVat.subtract(sumAmount) ) }' />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="col-xs-3">
+                                    <spring:message code="label.VatType.sumValueWithVat" />
+                                </th>
+                                <td>
+                                    <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( settlementNoteBean.paymentAmountWithVat ) }' />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div> 
+        </div>
+    </div>
+
 
     <div class="panel-footer">
         <button type="button" class="btn btn-default" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CREATE_DEBIT_NOTE_URL %>')"><spring:message code="label.event.back" /></button>
