@@ -431,8 +431,7 @@ public class DebitNoteController extends TreasuryBaseController {
         }
 
         // Now choose what is the Exit Screen    
-        return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(DebitNoteController.READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
     }
 
     //
@@ -453,8 +452,7 @@ public class DebitNoteController extends TreasuryBaseController {
         }
 
         // Now choose what is the Exit Screen    
-        return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(DebitNoteController.READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/addpendingentries")
