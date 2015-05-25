@@ -188,12 +188,10 @@ ${portal.angularToolkit()}
                                 <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
                             </td>
                             <td>
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }" />
-                                <c:out value="${ debitEntryBean.debitEntry.amountWithVat }"/>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" />
                             </td>
                             <td>
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }" />
-                                <c:out value="${ debitEntryBean.debitEntry.openAmountWithVat }"/>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmountWithVat ) }" />
                             </td>
                             <td>
                                 <c:out value="${ debitEntryBean.debitEntry.vat.taxRate }"/>
@@ -252,8 +250,8 @@ ${portal.angularToolkit()}
                                 <c:out value="${ creditEntryBean.creditEntry.vat.taxRate }"/>
                             </td>
                             <td>
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }" />
-                                <c:out value="${ creditEntryBean.creditEntry.openAmountWithVat }"/>
+                                -
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmountWithVat ) }" />
                             </td>
                         </tr>
                     </c:forEach> 
@@ -276,7 +274,6 @@ ${portal.angularToolkit()}
 
 <script>
 	$(document).ready(function() {
-
 		// Put here the initializing code for page
 	});
 </script>

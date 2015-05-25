@@ -28,7 +28,6 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
@@ -69,10 +68,12 @@ public class CreditEntry extends CreditEntry_Base {
         }
     }
 
+    @Override
     public BigDecimal getDebitAmount() {
         return Currency.getValueWithScale(BigDecimal.ZERO);
     }
 
+    @Override
     public BigDecimal getCreditAmount() {
         return this.getTotalAmount();
     }
@@ -87,6 +88,7 @@ public class CreditEntry extends CreditEntry_Base {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof CreditEntry).map(CreditEntry.class::cast);
     }
 
+    @Override
     public BigDecimal getOpenAmount() {
         BigDecimal amount = this.getAmount();
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
@@ -96,8 +98,8 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public BigDecimal getOpenAmountWithVat() {
-        return getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100)))).setScale(2,
-                RoundingMode.HALF_EVEN);
+        BigDecimal amount = getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
+        return Currency.getValueWithScale(amount);
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,

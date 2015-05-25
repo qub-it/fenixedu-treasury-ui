@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryExemption;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
@@ -41,6 +40,7 @@ import org.fenixedu.treasury.dto.DebtAccountBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
+import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -148,8 +148,8 @@ public class DebtAccountController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen	 
-        return redirect("/treasury/document/managepayments/settlementnote/create/" + getDebtAccount(model).getExternalId(),
-                model, redirectAttributes);
+        return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId(), model,
+                redirectAttributes);
     }
 
     //
