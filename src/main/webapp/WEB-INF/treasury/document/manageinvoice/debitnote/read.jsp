@@ -216,6 +216,8 @@ ${portal.toolkit()}
 </h2>
 
 <%-- NAVIGATION --%>
+<c:if test="${debitNote.isPreparing()}">
+
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
@@ -223,7 +225,7 @@ ${portal.toolkit()}
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
 			code="label.event.document.manageInvoice.addPendingEntries" /></a>
 </div>
-
+</c:if>
 <c:choose>
 	<c:when test="${not empty debitNote.debitEntriesSet}">
 		<datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">

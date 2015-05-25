@@ -155,7 +155,14 @@ public class DebitEntryController extends TreasuryBaseController {
 //				
     @RequestMapping(value = CREATE_URI + "{oid}", method = RequestMethod.GET)
     public String create(@PathVariable("oid") DebtAccount debtAccount,
-            @RequestParam(value = "debitNote", required = false) DebitNote debitNote, Model model) {
+            @RequestParam(value = "debitNote", required = false) DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (debitNote != null && !debitNote.isPreparing()) {
+            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+            redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
 
         DebitEntryBean bean = new DebitEntryBean();
 
@@ -219,6 +226,11 @@ public class DebitEntryController extends TreasuryBaseController {
         */
 
         try {
+            if (bean.getFinantialDocument() != null && !bean.getFinantialDocument().isPreparing()) {
+                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+                redirect(DebitNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
+            }
 
             DebitEntry debitEntry =
                     createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
@@ -306,6 +318,11 @@ public class DebitEntryController extends TreasuryBaseController {
 //  
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
+        if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
+            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+            redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
+        }
 
         if (debitEntry.getFinantialDocument() == null || debitEntry.getFinantialDocument().isPreparing()) {
             setDebitEntryBean(new DebitEntryBean(debitEntry), model);
@@ -322,8 +339,10 @@ public class DebitEntryController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setDebitEntry(debitEntry, model);
 
-        if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
-            return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
+        if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
+            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+            redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
         }
 
         try {
@@ -423,6 +442,11 @@ public class DebitEntryController extends TreasuryBaseController {
     public String processSearchPendingEntriesToAddEntries(@RequestParam("debitNote") DebitNote debitNote,
             @RequestParam("debitEntrys") List<DebitEntry> debitEntries, Model model, RedirectAttributes redirectAttributes) {
 
+        if (debitNote != null && !debitNote.isPreparing()) {
+            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+            redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
         try {
             debitNote.addDebitNoteEntries(debitEntries);
         } catch (Exception ex) {
