@@ -155,13 +155,6 @@ public class DebitNote extends DebitNote_Base {
         return note;
     }
 
-    @Override
-    @Atomic
-    public void closeDocument() {
-        this.setState(FinantialDocumentStateType.CLOSED);
-        this.checkRules();
-    }
-
     @Atomic
     public void addDebitNoteEntries(List<DebitEntry> debitEntries) {
         debitEntries.forEach(x -> this.addFinantialDocumentEntries(x));
