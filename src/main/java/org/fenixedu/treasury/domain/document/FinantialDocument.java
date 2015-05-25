@@ -267,7 +267,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             return;
         }
 
-        if (this.getState() == FinantialDocumentStateType.PREPARING) {
+        if (this.isPreparing()) {
             if (newState == FinantialDocumentStateType.ANNULED) {
                 this.anullDocument(true);
             }
@@ -275,11 +275,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             if (newState == FinantialDocumentStateType.CLOSED) {
                 this.closeDocument();
             }
+        } else if (this.isClosed() && newState == FinantialDocumentStateType.ANNULED) {
+            this.anullDocument(false);
         } else {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                     "error.FinantialDocumentState.invalid.state.change.request"));
         }
         checkRules();
     }
-
 }
