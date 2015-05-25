@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,12 +65,12 @@ public class DebitNote extends DebitNote_Base {
     @Override
     protected void checkRules() {
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.DEBIT_NOTE)) {
-            throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
+            throw new TreasuryDomainException("error.DebitNote.finantialDocumentType.invalid");
         }
 
         if (getPayorDebtAccount() != null
                 && !getPayorDebtAccount().getFinantialInstitution().equals(getDebtAccount().getFinantialInstitution())) {
-            throw new TreasuryDomainException("error.FinantialDocument.finantialinstitution.mismatch");
+            throw new TreasuryDomainException("error.DebitNote.finantialinstitution.mismatch");
         }
 
         super.checkRules();
@@ -159,5 +160,11 @@ public class DebitNote extends DebitNote_Base {
     public void closeDocument() {
         this.setState(FinantialDocumentStateType.CLOSED);
         this.checkRules();
+    }
+
+    @Atomic
+    public void addDebitNoteEntries(List<DebitEntry> debitEntries) {
+        debitEntries.forEach(x -> this.addFinantialDocumentEntries(x));
+        checkRules();
     }
 }

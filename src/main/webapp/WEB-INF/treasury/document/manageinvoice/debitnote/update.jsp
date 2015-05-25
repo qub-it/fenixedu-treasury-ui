@@ -89,24 +89,6 @@ ${portal.toolkit()}
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitNote.state" />
-				</div>
-
-				<div class="col-sm-4">
-					<select id="debitNote_state" class="form-control" name="state">
-						<option value=""></option>
-						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-						<c:forEach items="${stateValues}" var="field">
-							<option value='<c:out value='${field}'/>'><c:out value='${field}' /></option>
-						</c:forEach>
-					</select>
-					<script>
-		$("#debitNote_state").val('<c:out value='${not empty param.state ? param.state : debitNote.state }'/>');
-	</script>
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
 					<spring:message code="label.DebitNote.dueDate" />
 				</div>
 

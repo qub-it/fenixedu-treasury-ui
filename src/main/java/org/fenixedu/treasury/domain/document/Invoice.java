@@ -43,6 +43,19 @@ public abstract class Invoice extends Invoice_Base {
     }
 
     @Override
+    protected void checkRules() {
+        //check if all invoiceEntries are for the same debtaccount of invoice
+        for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
+            InvoiceEntry invoiceEntry = (InvoiceEntry) entry;
+            if (!invoiceEntry.getDebtAccount().equals(this.getDebtAccount())) {
+                throw new TreasuryDomainException("error.Invoice.debtaccount.mismatch.invoiceentries.debtaccount");
+            }
+        }
+        // TODO Auto-generated method stub
+        super.checkRules();
+    }
+
+    @Override
     protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate) {
         super.init(debtAccount, documentNumberSeries, documentDate);

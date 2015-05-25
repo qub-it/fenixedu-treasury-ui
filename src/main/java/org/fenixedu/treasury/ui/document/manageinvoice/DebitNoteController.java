@@ -395,7 +395,6 @@ public class DebitNoteController extends TreasuryBaseController {
         // @formatter: on
         DebitNote note = getDebitNote(model);
         note.edit(payorDebtAccount, documentDueDate, originDocumentNumber);
-        note.changeState(state);
     }
 
     //
@@ -414,47 +413,49 @@ public class DebitNoteController extends TreasuryBaseController {
                 + debitNote.getExternalId(), model, redirectAttributes);
     }
 
-//    //
-//    // This is the EventupdateEntry Method for Screen read
-//    //
-//    @RequestMapping(value = "/read/{oid}/updateentry/{entryoid}", method = RequestMethod.POST)
-//    public String processReadToUpdateEntry(@PathVariable("oid") DebitNote debitNote,
-//            @PathVariable("entryoid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
-//        setDebitNote(debitNote, model);
-////
-//        /* Put here the logic for processing Event updateEntry  */
-//        //doSomething();
-//
-//        // Now choose what is the Exit Screen    
-//        return redirect(DebitEntryController.UPDATE_URL + debitEntry.getExternalId(), model, redirectAttributes);
-//    }
+    //
+    // This is the EventcloseDebitNote Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/closedebitnote", method = RequestMethod.POST)
+    public String processReadToCloseDebitNote(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
 
-//    @Atomic
-//    private void deleteDebitEntry(DebitEntry debitEntry, DebitNote debitNote, Model model) {
-//        if (debitEntry.getFinantialDocument().equals(debitNote)) {
-//            debitEntry.delete();
-//        } else {
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.invalid.debitentry.in.debitnote"), model);
-//        }
-//    }
+        try {
+            debitNote.changeState(FinantialDocumentStateType.CLOSED);
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.closed.sucess"),
+                    model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
 
-//    //
-//    // This is the EventdeleteEntry Method for Screen read
-//    //
-//    @RequestMapping(value = "/read/{oid}/deleteentry/{entryoid}", method = RequestMethod.POST)
-//    public String processReadToDeleteEntry(@PathVariable("oid") DebitNote debitNote,
-//            @PathVariable("entryoid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
-//        setDebitNote(debitNote, model);
+        // Now choose what is the Exit Screen    
+        return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
+                redirectAttributes);
+    }
+
+    //
+    // This is the EventanullDebitNote Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/anulldebitnote", method = RequestMethod.POST)
+    public String processReadToAnullDebitNote(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
 //
-//        try {
-//            deleteDebitEntry(debitEntry, debitNote, model);
-//            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-//        } catch (Exception ex) {
-//            addErrorMessage(ex.getLocalizedMessage(), model);
-//        }
-//        // Now choose what is the Exit Screen    
-//        return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
-//    }
+        try {
+            debitNote.changeState(FinantialDocumentStateType.ANNULED);
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.anulled.sucess"),
+                    model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+
+        // Now choose what is the Exit Screen    
+        return redirect("/treasury/document/manageinvoice/debitnote/read/" + getDebitNote(model).getExternalId(), model,
+                redirectAttributes);
+    }
 
     @RequestMapping(value = "/read/{oid}/addpendingentries")
     public String processReadToAddPendingEntries(@PathVariable("oid") DebitNote debitNote, Model model,
@@ -465,8 +466,7 @@ public class DebitNoteController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen    
-        return redirect("/treasury/document/manageinvoice/debitentry/searchpendingentries/"
-                + getDebitNote(model).getDebtAccount().getExternalId(), model, redirectAttributes);
+        return redirect(DebitEntryController.SEARCHPENDINGENTRIES_URL + "?debitNote=" + debitNote.getExternalId(), model,
+                redirectAttributes);
     }
-
 }

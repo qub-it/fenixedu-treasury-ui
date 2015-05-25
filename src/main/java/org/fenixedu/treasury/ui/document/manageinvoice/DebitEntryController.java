@@ -383,17 +383,21 @@ public class DebitEntryController extends TreasuryBaseController {
     private static final String _SEARCHPENDINGENTRIES_URI = "/searchpendingentries/";
     public static final String SEARCHPENDINGENTRIES_URL = CONTROLLER_URL + _SEARCHPENDINGENTRIES_URI;
 
-    @RequestMapping(value = _SEARCHPENDINGENTRIES_URI + "{debtAccountId}")
-    public String searchPendingEntries(@PathVariable("debtAccountId") DebtAccount debtAccount, Model model) {
-        List<DebitEntry> searchpendingentriesResultsDataSet = filterSearchPendingEntries(debtAccount);
+    @RequestMapping(value = _SEARCHPENDINGENTRIES_URI)
+    public String searchPendingEntries(@RequestParam("debitNote") DebitNote debitNote, Model model) {
+        List<DebitEntry> searchpendingentriesResultsDataSet = filterSearchPendingEntries(debitNote.getDebtAccount());
 
         //add the results dataSet to the model
         model.addAttribute("searchpendingentriesResultsDataSet", searchpendingentriesResultsDataSet);
+        if (debitNote != null) {
+            model.addAttribute("debitNote", debitNote);
+        }
         return "treasury/document/manageinvoice/debitentry/searchpendingentries";
     }
 
     private Stream<DebitEntry> getSearchUniverseSearchPendingEntriesDataSet(DebtAccount debtAccount) {
-        return debtAccount.pendingInvoiceEntries().filter(x -> x instanceof DebitEntry).map(DebitEntry.class::cast);
+        return debtAccount.getInvoiceEntrySet().stream().filter(x -> x.isDebitNoteEntry())
+                .filter(x -> x.getFinantialDocument() == null).map(DebitEntry.class::cast);
     }
 
     private List<DebitEntry> filterSearchPendingEntries(DebtAccount debtAccount) {
@@ -401,7 +405,7 @@ public class DebitEntryController extends TreasuryBaseController {
         return getSearchUniverseSearchPendingEntriesDataSet(debtAccount).collect(Collectors.toList());
     }
 
-    private static final String _SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URI = "/searchPendingEntries/view/";
+    private static final String _SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URI = "/searchpendingentries/view/";
     public static final String SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URL = CONTROLLER_URL
             + _SEARCHPENDINGENTRIES_TO_VIEW_ACTION_URI;
 
@@ -409,9 +413,23 @@ public class DebitEntryController extends TreasuryBaseController {
     public String processSearchPendingEntriesToViewAction(@PathVariable("oid") DebitEntry debitEntry, Model model,
             RedirectAttributes redirectAttributes) {
 
-// CHANGE_ME Insert code here for processing viewAction
-// If you selected multiple exists you must choose which one to use below    
         return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
     }
 
+    private static final String _SEARCHPENDINGENTRIES_TO_ADDENTRIES_URI = "/searchpendingentries/addentries";
+    public static final String SEARCHPENDINGENTRIES_TO_ADDENTRIES_URL = CONTROLLER_URL + _SEARCHPENDINGENTRIES_TO_ADDENTRIES_URI;
+
+    @RequestMapping(value = _SEARCHPENDINGENTRIES_TO_ADDENTRIES_URI, method = RequestMethod.POST)
+    public String processSearchPendingEntriesToAddEntries(@RequestParam("debitNote") DebitNote debitNote,
+            @RequestParam("debitEntrys") List<DebitEntry> debitEntries, Model model, RedirectAttributes redirectAttributes) {
+
+        try {
+            debitNote.addDebitNoteEntries(debitEntries);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+        }
+
+        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.create"), model);
+        return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+    }
 }

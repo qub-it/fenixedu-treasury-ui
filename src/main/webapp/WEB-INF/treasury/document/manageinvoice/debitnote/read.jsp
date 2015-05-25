@@ -36,7 +36,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="closeModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closeDebitNote" method="POST">
+			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closedebitnote" method="POST">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -69,7 +69,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="anullModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/anullDebitNote" method="POST">
+			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/anulldebitnote" method="POST">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -103,7 +103,7 @@ ${portal.toolkit()}
 <form>
 	<div class="well well-sm" style="display: inline-block">
 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtAccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
+			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
 		&nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
 		&nbsp;|&nbsp;

@@ -182,12 +182,16 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     @Atomic
-    public void anullDocument() {
+    public void anullDocument(boolean freeEntries) {
         if (this.isPreparing() || this.isClosed()) {
             if (Boolean.TRUE.booleanValue() == this.getDocumentNumberSeries().getSeries().getCertificated()) {
                 throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");
             }
             setState(FinantialDocumentStateType.ANNULED);
+            //If we want to free entries and the document is in "Preparing" state, the Entries will become "free"
+            if (freeEntries && this.isPreparing()) {
+                this.getFinantialDocumentEntriesSet().forEach(x -> this.removeFinantialDocumentEntries(x));
+            }
         }
         checkRules();
     }
@@ -265,7 +269,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         if (this.getState() == FinantialDocumentStateType.PREPARING) {
             if (newState == FinantialDocumentStateType.ANNULED) {
-                this.anullDocument();
+                this.anullDocument(true);
             }
 
             if (newState == FinantialDocumentStateType.CLOSED) {
