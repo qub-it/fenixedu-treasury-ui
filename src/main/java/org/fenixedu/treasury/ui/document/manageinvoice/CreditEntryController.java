@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -46,9 +46,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice", accessGroup = "logged")
+// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-@BennuSpringController(value = TreasuryController.class)
+//@BennuSpringController(value = TreasuryController.class)
 @RequestMapping(CreditEntryController.CONTROLLER_URL)
 public class CreditEntryController extends TreasuryBaseController {
 
