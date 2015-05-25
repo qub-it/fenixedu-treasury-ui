@@ -31,23 +31,26 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
 public class SettlementEntry extends SettlementEntry_Base {
 
-    protected SettlementEntry(final FinantialDocument finantialDocument, final BigDecimal amount, final String description) {
-        init(finantialDocument, amount, description);
+    protected SettlementEntry(final FinantialDocument finantialDocument, final BigDecimal amount, final String description,
+            final DateTime entryDateTime) {
+        init(finantialDocument, amount, description, entryDateTime);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final FinantialEntryType finantialEntryType,
-            final BigDecimal amount, String description) {
+            final BigDecimal amount, String description, DateTime entryDateTime) {
         throw new RuntimeException("error.SettlementEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final FinantialDocument finantialDocument, final BigDecimal amount, String description) {
-        super.init(finantialDocument, FinantialEntryType.SETTLEMENT_ENTRY, amount, description);
+    protected void init(final FinantialDocument finantialDocument, final BigDecimal amount, String description,
+            final DateTime entryDateTime) {
+        super.init(finantialDocument, FinantialEntryType.SETTLEMENT_ENTRY, amount, description, entryDateTime);
 
         checkRules();
     }
@@ -72,8 +75,9 @@ public class SettlementEntry extends SettlementEntry_Base {
     }
 
     @Atomic
-    public SettlementEntry create(final FinantialDocument finantialDocument, final BigDecimal amount, final String description) {
-        return new SettlementEntry(finantialDocument, amount, description);
+    public SettlementEntry create(final FinantialDocument finantialDocument, final BigDecimal amount, final String description,
+            final DateTime entryDateTime) {
+        return new SettlementEntry(finantialDocument, amount, description, entryDateTime);
     }
 
     @Override

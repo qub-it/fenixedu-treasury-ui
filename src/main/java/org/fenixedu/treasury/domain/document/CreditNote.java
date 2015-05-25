@@ -28,8 +28,6 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
@@ -72,10 +70,12 @@ public class CreditNote extends CreditNote_Base {
         super.checkRules();
     }
 
+    @Override
     public boolean isDeletable() {
         return true;
     }
 
+    @Override
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -135,16 +135,6 @@ public class CreditNote extends CreditNote_Base {
         setOriginDocumentNumber(originDocumentNumber);
         setState(state);
         checkRules();
-    }
-
-    @Override
-    public BigDecimal getOpenAmount() {
-        BigDecimal amount = BigDecimal.ZERO;
-        for (CreditEntry entry : this.getFinantialDocumentEntriesSet().stream().map(CreditEntry.class::cast)
-                .collect(Collectors.toList())) {
-            amount = amount.add(entry.getOpenAmount());
-        }
-        return amount;
     }
 
 }

@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
+
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -156,23 +158,80 @@ ${portal.toolkit()}
 <p></p>
 <c:choose>
 	<c:when test="${not empty pendingDocumentsDataSet}">
-		<table id="pendingDocumentsTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-				
-					<%--!!!  Field names here --%>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.totalAmount"/></th>
-<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount"/></th>
-<%-- Operations Column --%>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
+					<datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
+						<datatables:column cssStyle="width:10%;align:right">
+							<datatables:columnHead>
+								<spring:message code="label.DebtAccount.finantialInstitution" />
+							</datatables:columnHead>
+							<c:out value="${pendingEntry.debtAccount.finantialInstitution.name}" />
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.finantialDocument" />
+							</datatables:columnHead>
+							<c:if test="${not empty pendingEntry.finantialDocument }">
+							<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}" >
+							<c:out value="${pendingEntry.finantialDocument.uiDocumentNumber}" />
+							</c:if>
+							<c:if test="${empty pendingEntry.finantialDocument }">
+							---
+							</c:if>
+						</datatables:column>
+						<datatables:column cssStyle="width:10%;align:right">
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.description" />
+							</datatables:columnHead>
+							<c:out value="${pendingEntry.description}" />
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.date" />
+							</datatables:columnHead>
+							<c:out value="${pendingEntry.dueDate}" />
+						</datatables:column>
+<%-- 						<datatables:column> --%>
+<%-- 							<datatables:columnHead> --%>
+<%-- 								<spring:message code="label.Invoice.debitAmount" /> --%>
+<%-- 							</datatables:columnHead> --%>
+<!-- 							<div align=right> -->
+<%-- 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" /> --%>
+<!-- 							</div> -->
+<%-- 						</datatables:column> --%>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.totalAmount" />
+							</datatables:columnHead>
+							<div align=right>
+								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
+							</div>
+						</datatables:column>
+						<datatables:column>
+							<datatables:columnHead>
+								<spring:message code="label.InvoiceEntry.openAmount" />
+							</datatables:columnHead>
+							<div align=right>
+								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" />
+							</div>
+						</datatables:column>
+						<datatables:column>
+											<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
+												<button type="submit" class="btn btn-default btn-xs">
+													<spring:message code="label.view" />
+												</button>
+											</form>
+							<%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
+							<!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
+							<!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->
+							<%-- 						<spring:message code="label.event.document.manageInvoice.deleteEntry" /> --%>
+							<!-- 					</button> -->
+							<!-- 				</form> -->
+						</datatables:column>
+					</datatables:table>
+					<script>
+			createDataTables('pendingDocuments', false, false, false,
+					"${pageContext.request.contextPath}",
+					"${datatablesI18NUrl}");
+		</script>
 	</c:when>
 	<c:otherwise>
 				<div class="alert alert-warning" role="alert">
@@ -187,56 +246,11 @@ ${portal.toolkit()}
 
 <script>
 
-var pendingDocumentsDataSet = [];
-<%--
-var pendingDocumentsDataSet = [
-	                 			<c:forEach items="${pendingDocumentsDataSet}" var="searchResult">
-	                 				{
-	                 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-	                 "document" : "<c:out value='${searchResult.code}'/>",
-	                 "debtItems" : "<c:out value='${searchResult.name}'/>",
-	                 "dueDate" : "<c:out value='${searchResult.fiscalNumber}'/>",
-	                 "debitAmount" : "<c:out value='${searchResult.identificationNumber}'/>",
-	                 "creditAmount" : "<c:out value='${searchResult.identificationNumber}'/>",
-	                 "pendingAmount" : "<c:out value='${searchResult.identificationNumber}'/>",
-// 	                 "" :
-// 	                 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-// 	                                 "" 
-// 	                 			},
-	                             </c:forEach>
-	                     ];
---%>
 
 $(document).ready(function() {
 
 	//Enable Bootstrap Tabs
 	 $('#tabs').tab();
 
-	 var table = $('#pendingDocumentsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'document' },
-			{ data: 'debtItems' },
-			{ data: 'dueDate' },
-			{ data: 'totalAmount' },
-			{ data: 'pendingAmount' },
-			{ data: 'actions' }			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-		"data" : pendingDocumentsDataSet,
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-        "tableTools": {
-            "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
-        }
-		});
-	table.columns.adjust().draw();
-
-
-
-	});
+});
 </script>

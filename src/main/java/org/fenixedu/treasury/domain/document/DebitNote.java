@@ -68,13 +68,14 @@ public class DebitNote extends DebitNote_Base {
         }
 
         if (getPayorDebtAccount() != null
-                && !(getPayorDebtAccount().getFinantialInstitution().equals(getDebtAccount().getFinantialInstitution()))) {
+                && !getPayorDebtAccount().getFinantialInstitution().equals(getDebtAccount().getFinantialInstitution())) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialinstitution.mismatch");
         }
 
         super.checkRules();
     }
 
+    @Override
     @Atomic
     public void delete() {
         super.delete();
@@ -82,6 +83,9 @@ public class DebitNote extends DebitNote_Base {
 
     @Override
     public BigDecimal getOpenAmount() {
+        if (this.isAnnulled()) {
+            return BigDecimal.ZERO;
+        }
         BigDecimal amount = BigDecimal.ZERO;
         for (DebitEntry entry : getDebitEntriesSet()) {
             amount = amount.add(entry.getOpenAmount());
@@ -150,6 +154,7 @@ public class DebitNote extends DebitNote_Base {
         return note;
     }
 
+    @Override
     @Atomic
     public void closeDocument() {
         this.setState(FinantialDocumentStateType.CLOSED);

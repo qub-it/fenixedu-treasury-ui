@@ -28,7 +28,6 @@
 package org.fenixedu.treasury.domain.debt;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -173,5 +172,13 @@ public class DebtAccount extends DebtAccount_Base {
 
         deleteDomainObject();
 
+    }
+
+    public Stream<InvoiceEntry> getActiveInvoiceEntries() {
+        return this
+                .getInvoiceEntrySet()
+                .stream()
+                .filter(x -> x.getFinantialDocument() == null || x.getFinantialDocument() != null
+                        && x.getFinantialDocument().isAnnulled() == false);
     }
 }

@@ -28,9 +28,6 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -38,8 +35,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public abstract class Invoice extends Invoice_Base {
 
@@ -77,6 +72,7 @@ public abstract class Invoice extends Invoice_Base {
         return super.isDeletable();
     }
 
+    @Override
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -101,8 +97,15 @@ public abstract class Invoice extends Invoice_Base {
         return Invoice.findAll().filter(x -> x.getDebtAccount() == debtAccount);
     }
 
-    public abstract BigDecimal getDebitAmount();
+//    public abstract BigDecimal getDebitAmount();
+//
+//    public abstract BigDecimal getCreditAmount();
 
-    public abstract BigDecimal getCreditAmount();
-
+    public BigDecimal getTotalVatAmount() {
+        BigDecimal vat = BigDecimal.ZERO;
+        for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
+            vat = vat.add(((InvoiceEntry) entry).getVatAmount());
+        }
+        return vat;
+    }
 }

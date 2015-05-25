@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain.document;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,21 +61,38 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, final String description, final BigDecimal quantity, final Tariff tariff) {
-        init(debitNote, debtAccount, null, product, vat, amount, dueDate, propertiesMap, description, quantity, tariff);
+            final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
+            final DateTime entryDateTime) {
+        init(debitNote, debtAccount, null, product, vat, amount, dueDate, propertiesMap, description, quantity, tariff,
+                entryDateTime);
+    }
+
+    @Override
+    protected void checkForDeletionBlockers(Collection<String> blockers) {
+        super.checkForDeletionBlockers(blockers);
+    }
+
+    @Override
+    public void delete() {
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
+        this.setTariff(null);
+        this.setTreasuryEvent(null);
+        super.delete();
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
             final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
-            BigDecimal quantity) {
+            BigDecimal quantity, DateTime entryDateTime) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
     protected void init(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Product product, final Vat vat, final BigDecimal amount, final LocalDate dueDate,
-            final Map<String, String> propertiesMap, final String description, final BigDecimal quantity, final Tariff tariff) {
-        super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vat, amount, description, quantity);
+            final Map<String, String> propertiesMap, final String description, final BigDecimal quantity, final Tariff tariff,
+            final DateTime entryDateTime) {
+        super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vat, amount, description, quantity,
+                entryDateTime);
 
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
@@ -304,10 +322,11 @@ public class DebitEntry extends DebitEntry_Base {
 
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, final String description, final BigDecimal quantity, final Tariff tariff) {
+            final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
+            final DateTime entryDateTime) {
         DebitEntry entry =
                 new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
-                        quantity, tariff);
+                        quantity, tariff, entryDateTime);
         entry.realculateAmountValues();
         return entry;
     }

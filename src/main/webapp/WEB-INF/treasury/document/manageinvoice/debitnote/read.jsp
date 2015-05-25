@@ -68,14 +68,14 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtAccount/read/${debitNote.debtAccount.externalId}"><spring:message
-			code="label.event.back" /></a> 
-<c:if test="${debitNote.isDeletable()}">			
-			|&nbsp;&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
-		data-target="#deleteModal"><spring:message code="label.event.delete" /></a> 
-</c:if>		
-		
-		|&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtAccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
+	<c:if test="${debitNote.isDeletable()}">			
+			|&nbsp;&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+				code="label.event.delete" /></a>
+	</c:if>
+
+	|&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a> |&nbsp;&nbsp;
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
@@ -155,6 +155,15 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.state" /></th>
 						<td><c:out value='${debitNote.state}' /></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
+						<td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalNetAmount)}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalVatAmount" /></th>
+						<td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalVatAmount)}' /></td>
+					</tr>
+
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
 						<td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalAmount)}' /></td>

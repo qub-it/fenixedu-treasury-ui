@@ -118,7 +118,7 @@ public class DebtAccountController extends TreasuryBaseController {
         List<SettlementEntry> paymentEntries = new ArrayList<SettlementEntry>();
         List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
-        allInvoiceEntries.addAll(debtAccount.getInvoiceEntrySet());
+        allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
         SettlementNote.findByDebtAccount(debtAccount).map(
                 x -> paymentEntries.addAll(x.getSettlemetEntriesSet().collect(Collectors.toList())));
 

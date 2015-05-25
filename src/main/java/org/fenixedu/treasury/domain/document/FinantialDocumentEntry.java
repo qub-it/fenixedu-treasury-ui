@@ -35,6 +35,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -48,11 +49,12 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
     }
 
     protected void init(final FinantialDocument finantialDocument, final FinantialEntryType finantialEntryType,
-            final BigDecimal amount, String description) {
+            final BigDecimal amount, String description, DateTime entryDateTime) {
         setFinantialDocument(finantialDocument);
         setFinantialEntryType(finantialEntryType);
         setAmount(amount);
         setDescription(description);
+        setEntryDateTime(entryDateTime);
     }
 
     protected void checkRules() {

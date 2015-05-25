@@ -40,7 +40,6 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.DebitEntryBean;
@@ -49,6 +48,8 @@ import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -178,7 +179,8 @@ public class DebitEntryController extends TreasuryBaseController {
     // @formatter: off
 
     @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = true) DebitEntryBean bean, Model model) {
+    public @ResponseBody ResponseEntity<String> createpostback(
+            @RequestParam(value = "bean", required = true) DebitEntryBean bean, Model model) {
 
         Product product = bean.getProduct();
         if (product != null) {
@@ -200,11 +202,12 @@ public class DebitEntryController extends TreasuryBaseController {
 
                 }
             } else {
-                throw new TreasuryDomainException("label.Tariff.no.valid.fixed");
+                return new ResponseEntity<String>(BundleUtil.getString(Constants.BUNDLE, "label.Tariff.no.valid.fixed"),
+                        HttpStatus.BAD_REQUEST);
             }
             bean.setDescription(product.getName().getContent());
         }
-        return getBeanJson(bean);
+        return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
     }
 
     @RequestMapping(value = CREATE_URI + "{oid}", method = RequestMethod.POST)
@@ -281,7 +284,7 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry =
                 DebitEntry.create(debitNote, debtAccount, null, activeVat.orElse(null), amount, dueDate, null, product,
-                        description, quantity, tariff.orElse(null));
+                        description, quantity, tariff.orElse(null), new DateTime());
         return debitEntry;
     }
 

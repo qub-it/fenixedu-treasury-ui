@@ -28,9 +28,6 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -38,13 +35,10 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
@@ -255,10 +249,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public BigDecimal getOpenAmount() {
-        if (this.getState() == FinantialDocumentStateType.PREPARING || this.getState() == FinantialDocumentStateType.CLOSED)
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
             return getTotalAmount();
-        else
+        } else {
             return BigDecimal.ZERO;
+        }
     }
 
     @Atomic

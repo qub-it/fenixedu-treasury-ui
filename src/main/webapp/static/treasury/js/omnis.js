@@ -61,7 +61,7 @@ function createAngularPostbackFunction(angular_scope) {
 					angular_scope.$apply();
 				},
 				error : function(jqXHR, textStatus, errorThrown) {
-					messageAlert("Erro","Ocorreu um erro ao comunicar com o servidor");
+					messageAlert("Erro", jqXHR.responseText);
 				},
 			});
 		};

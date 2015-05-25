@@ -35,25 +35,26 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
 
 public class CreditEntry extends CreditEntry_Base {
 
     protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final Vat vat,
-            final BigDecimal amount, String description, BigDecimal quantity) {
-        init(finantialDocument, product, vat, amount, description, quantity);
+            final BigDecimal amount, String description, BigDecimal quantity, final DateTime entryDateTime) {
+        init(finantialDocument, product, vat, amount, description, quantity, entryDateTime);
     }
 
     @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
             final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
-            BigDecimal quantity) {
+            BigDecimal quantity, final DateTime entryDateTime) {
         throw new RuntimeException("error.CreditEntry.use.init.without.finantialEntryType");
     }
 
     protected void init(final FinantialDocument finantialDocument, final Product product, final Vat vat, final BigDecimal amount,
-            String description, BigDecimal quantity) {
+            String description, BigDecimal quantity, final DateTime entryDateTime) {
         super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.CREDIT_ENTRY, vat, amount,
-                description, quantity);
+                description, quantity, entryDateTime);
 
         checkRules();
     }
@@ -102,8 +103,8 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
-            BigDecimal amount) {
-        return new CreditEntry(finantialDocument, product, vat, amount, description, amount);
+            BigDecimal amount, final DateTime entryDateTime) {
+        return new CreditEntry(finantialDocument, product, vat, amount, description, amount, entryDateTime);
     }
 
 }

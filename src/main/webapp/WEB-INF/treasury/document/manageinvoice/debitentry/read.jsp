@@ -155,6 +155,10 @@ ${portal.toolkit()}
 						<td><c:out value='${debitEntry.vat.taxRate} % '/> </td>
 					</tr>
 					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.entryDate" /></th>
+						<td><c:out value='${debitEntry.entryDateTime}' /></td>
+					</tr>
+					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.dueDate" /></th>
 						<td><c:out value='${debitEntry.dueDate}' /></td>
 					</tr>
