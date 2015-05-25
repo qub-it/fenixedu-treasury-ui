@@ -147,6 +147,18 @@ ${portal.angularToolkit()}
 
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
+					<spring:message code="label.FinantialDocumentEntry.entryDateTime" />
+				</div>
+
+				<div class="col-sm-10">
+					<div class="form-control">
+						<c:out value="${debitEntry.entryDateTime}" />
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
 					<spring:message code="label.DebitEntry.product" />
 				</div>
 
@@ -172,7 +184,10 @@ ${portal.angularToolkit()}
 			<!-- </div>		 -->
 
 
-
+		</div>
+	</div>
+	<div class="panel panel-default">
+		<div class="panel-body">
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.DebitEntry.description" />

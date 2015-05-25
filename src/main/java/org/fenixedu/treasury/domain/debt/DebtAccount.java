@@ -37,7 +37,6 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
@@ -70,13 +69,11 @@ public class DebtAccount extends DebtAccount_Base {
 
     public BigDecimal getTotalInDebt() {
         BigDecimal amount = BigDecimal.ZERO;
-        for (FinantialDocument document : this.getFinantialDocumentsSet()) {
-            if (document.isClosed() == false) {
-                if (document.isDebitNote()) {
-                    amount = amount.add(document.getOpenAmount());
-                } else if (document.isCreditNote()) {
-                    amount = amount.subtract(document.getOpenAmount());
-                }
+        for (InvoiceEntry entry : this.getPendingInvoiceEntriesSet()) {
+            if (entry.isDebitNoteEntry()) {
+                amount = amount.add(entry.getOpenAmount());
+            } else if (entry.isCreditNoteEntry()) {
+                amount = amount.subtract(entry.getOpenAmount());
             }
         }
 

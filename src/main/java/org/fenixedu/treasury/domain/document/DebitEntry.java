@@ -68,6 +68,11 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     @Override
+    public boolean isDebitNoteEntry() {
+        return true;
+    }
+
+    @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
     }

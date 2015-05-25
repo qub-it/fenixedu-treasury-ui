@@ -45,6 +45,11 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     @Override
+    public boolean isCreditNoteEntry() {
+        return true;
+    }
+
+    @Override
     protected void init(final FinantialDocument finantialDocument, final DebtAccount debtAccount, final Product product,
             final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
             BigDecimal quantity, final DateTime entryDateTime) {

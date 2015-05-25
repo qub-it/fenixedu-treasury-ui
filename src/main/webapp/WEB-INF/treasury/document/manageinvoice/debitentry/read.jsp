@@ -135,32 +135,32 @@ ${portal.toolkit()}
 							</c:if></td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.description" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.entryDate" /></th>
+						<td><c:out value='${debitEntry.entryDateTime}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.dueDate" /></th>
+						<td><c:out value='${debitEntry.dueDate}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.description" /></th>
 						<td><c:out value='${debitEntry.description}' /></td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.amount" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.amount" /></th>
 						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.amount)}' /></td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.quantity" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.quantity" /></th>
 						<td><c:out value='${debitEntry.quantity}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.totalAmount" /></th>
-						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.totalAmount)}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.vat" /></th>
 						<td><c:out value='${debitEntry.vat.taxRate} % '/> </td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.entryDate" /></th>
-						<td><c:out value='${debitEntry.entryDateTime}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.dueDate" /></th>
-						<td><c:out value='${debitEntry.dueDate}' /></td>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.totalAmount" /></th>
+						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.totalAmount)}' /></td>
 					</tr>
 				</tbody>
 			</table>

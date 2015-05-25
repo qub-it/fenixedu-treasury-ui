@@ -33,10 +33,10 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
-<div class="modal fade" id="deleteModal">
+<div class="modal fade" id="closeModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
-			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/delete/${debitNote.externalId}" method="POST">
+			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closeDebitNote" method="POST">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 						<span aria-hidden="true">&times;</span>
@@ -47,12 +47,45 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-body">
 					<p>
-						<spring:message code="label.document.manageInvoice.readDebitNote.confirmDelete" />
+						<spring:message code="label.document.manageInvoice.readDebitNote.confirmClose" />
 					</p>
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<spring:message code="label.cancel" />
+					</button>
+					<button id="deleteButton" class="btn btn-primary" type="submit">
 						<spring:message code="label.close" />
+					</button>
+				</div>
+			</form>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="modal fade" id="anullModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/anullDebitNote" method="POST">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<spring:message code="label.confirmation" />
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<spring:message code="label.document.manageInvoice.readDebitNote.confirmAnull" />
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<spring:message code="label.cancel" />
 					</button>
 					<button id="deleteButton" class="btn btn-danger" type="submit">
 						<spring:message code="label.delete" />
@@ -64,26 +97,28 @@ ${portal.toolkit()}
 	</div>
 	<!-- /.modal-dialog -->
 </div>
-<!-- /.modal -->
+
 <%-- NAVIGATION --%>
 <%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtAccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
-	<c:if test="${debitNote.isDeletable()}">			
-			|&nbsp;&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-				code="label.event.delete" /></a>
-	</c:if>
-
-	|&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a> |&nbsp;&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
-			code="label.event.document.manageInvoice.addEntry" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
-			code="label.event.document.manageInvoice.addPendingEntries" /></a>
-</div>
-
+<form>
+	<div class="well well-sm" style="display: inline-block">
+		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtAccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
+		&nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
+		&nbsp;|&nbsp;
+		<c:if test="${debitNote.isPreparing()}">
+			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+			<a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
+			</a> &nbsp;|&nbsp; 
+		</c:if>
+		<c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
+			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+			<a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
+			</a> &nbsp;|&nbsp;
+		</c:if>
+	</div>
+</form>
 
 
 <c:if test="${not empty infoMessages}">
@@ -180,6 +215,15 @@ ${portal.toolkit()}
 	<spring:message code="label.DebitNote.debitEntries" />
 </h2>
 
+<%-- NAVIGATION --%>
+<div class="well well-sm" style="display: inline-block">
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
+			code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
+			code="label.event.document.manageInvoice.addPendingEntries" /></a>
+</div>
+
 <c:choose>
 	<c:when test="${not empty debitNote.debitEntriesSet}">
 		<datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
@@ -210,7 +254,7 @@ ${portal.toolkit()}
 			<datatables:column cssStyle="width:10%">
 				<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}">
 					<button type="submit" class="btn btn-default btn-xs">
-						<spring:message code="label.event.view" />
+						<spring:message code="label.view" />
 					</button>
 				</form>
 			</datatables:column>

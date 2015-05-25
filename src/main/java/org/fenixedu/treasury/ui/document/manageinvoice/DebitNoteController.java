@@ -311,8 +311,12 @@ public class DebitNoteController extends TreasuryBaseController {
         // Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
+        if (payorDebtAccount == null) {
+            payorDebtAccount = debtAccount;
+        }
+
         DebitNote debitNote =
-                DebitNote.create(payorDebtAccount, debtAccount, documentNumberSeries, documentDate.toDateTimeAtCurrentTime(),
+                DebitNote.create(debtAccount, payorDebtAccount, documentNumberSeries, documentDate.toDateTimeAtCurrentTime(),
                         documentDueDate, originDocumentNumber);
 
         return debitNote;

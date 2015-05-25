@@ -52,6 +52,14 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         }
     }
 
+    public boolean isDebitNoteEntry() {
+        return false;
+    }
+
+    public boolean isCreditNoteEntry() {
+        return false;
+    }
+
     @Override
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
