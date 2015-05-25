@@ -191,11 +191,10 @@ ${portal.angularToolkit()}
                                     <c:out value='${ debitNoteDate }' />
                                 </td>                                
                                 <td>
-                                    <c:out value="${ debitEntryBean.debitEntry.vat.taxRate}"/>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale(  debitEntryBean.debitEntry.vat.taxRate ) }"/>
                                 </td>
                                 <td>
-                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }" />
-                                    <c:out value="${ debitEntryBean.paymentAmountWithVat }" />
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" />
                                 </td>
                             </tr>
                         </c:if>                    
@@ -216,8 +215,7 @@ ${portal.angularToolkit()}
                                     0.00
                                 </td>
                                 <td>
-                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }" />
-                                    <c:out value="${ interestEntryBean.interest }" />
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
                                 </td>
                             </tr>
                         </c:if>                    
@@ -249,7 +247,7 @@ ${portal.angularToolkit()}
                                     <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
                                 </td>
                                 <td>
-                                    <c:out value="${ debitEntryBean.debitEntry.vat.taxRate}"/>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate ) }"/>
                                 </td>
                                 <td>
                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" />
@@ -269,7 +267,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
                             </td>
                             <td>
-                                <c:out value="${ creditEntryBean.creditEntry.vat.taxRate}"/>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }"/>
                             </td>
                             <td>
                                 -

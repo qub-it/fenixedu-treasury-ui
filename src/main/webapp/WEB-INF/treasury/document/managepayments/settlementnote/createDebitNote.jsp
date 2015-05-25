@@ -177,7 +177,7 @@ ${portal.angularToolkit()}
                                     <c:out value="${ debitEntryBean.debitEntry.description }" />
                                 </td>
                                 <td>
-                                    <c:out value="${ debitEntryBean.debitEntry.vat.taxRate}"/>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale(  debitEntryBean.debitEntry.vat.taxRate ) }"/>
                                 </td>
                                 <td>
                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" />

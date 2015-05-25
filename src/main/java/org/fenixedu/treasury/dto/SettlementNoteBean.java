@@ -67,14 +67,12 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.debtAccount = debtAccount;
     }
 
-    /*TODOJN - date*/
-    public String getDate() {
-        return date.toString("yyyy-MM-dd");
+    public LocalDate getDate() {
+        return date;
     }
 
-    /*TODOJN - date*/
-    public void setDate(String date) {
-        this.date = LocalDate.parse(date);
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public List<CreditEntryBean> getCreditEntries() {
@@ -264,13 +262,14 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public BigDecimal getPaymentAmount() {
-            return paymentAmount;
+            BigDecimal amount =
+                    paymentAmount.multiply(BigDecimal.ONE.subtract(debitEntry.getVat().getTaxRate()
+                            .divide(BigDecimal.valueOf(100))));
+            return Currency.getValueWithScale(amount);
         }
 
         public BigDecimal getPaymentAmountWithVat() {
-            BigDecimal amount =
-                    paymentAmount.multiply(BigDecimal.ONE.add(debitEntry.getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-            return Currency.getValueWithScale(amount);
+            return Currency.getValueWithScale(paymentAmount);
         }
 
         public void setPaymentAmount(BigDecimal paymentAmount) {

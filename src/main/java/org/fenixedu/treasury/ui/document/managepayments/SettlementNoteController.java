@@ -46,7 +46,6 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
-import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -156,6 +155,10 @@ public class SettlementNoteController extends TreasuryBaseController {
         if (creditSum.compareTo(debitSum) > 0) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.negative.payment.value"), model);
         }
+//        if (bean.getDate().isAfter(new LocalDate())) {
+//            error = true;
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+//        }
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -164,8 +167,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         bean.setInterestEntries(new ArrayList<InterestEntryBean>());
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
-                InterestRateBean debitInterest =
-                        debitEntryBean.getDebitEntry().calculateInterestValue(LocalDate.parse(bean.getDate()));
+                InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateInterestValue(bean.getDate());
                 if (debitInterest != null) {
                     bean.getInterestEntries().add(bean.new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest));
                 }
