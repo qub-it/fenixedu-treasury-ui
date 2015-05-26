@@ -104,9 +104,13 @@ ${portal.toolkit()}
 	<div class="well well-sm" style="display: inline-block">
 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
-		&nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+		&nbsp;|&nbsp; 
+		
+		<c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
+		<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
 		&nbsp;|&nbsp;
+		</c:if>
 		<c:if test="${debitNote.isPreparing()}">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 			<a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
@@ -188,7 +192,20 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.state" /></th>
-						<td><c:out value='${debitNote.state}' /></td>
+						<td>
+						<c:if test = "${debitNote.isAnnulled()}">
+						<span class="label label-danger">
+						</c:if>
+						<c:if test = "${debitNote.isPreparing() }">
+						<span class="label label-warning">
+						</c:if>
+						<c:if test = "${debitNote.isClosed()}">
+						<span class="label label-primary">
+						</c:if>
+						
+						<c:out value='${debitNote.state.descriptionI18N.content}' />
+						</span>
+						</td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>

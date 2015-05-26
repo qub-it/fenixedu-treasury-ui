@@ -176,7 +176,19 @@ ${portal.toolkit()}
 				<datatables:columnHead>
 					<spring:message code="label.DebitNote.state" />
 				</datatables:columnHead>
-				<c:out value="${debitNote.state.descriptionI18N.content}" />
+				
+				<c:if test = "${debitNote.isAnnulled()}">
+						<span class="label label-danger">
+						</c:if>
+						<c:if test = "${debitNote.isPreparing() }">
+						<span class="label label-warning">
+						</c:if>
+						<c:if test = "${debitNote.isClosed()}">
+						<span class="label label-primary">
+						</c:if>
+						
+						<c:out value='${debitNote.state.descriptionI18N.content}' />
+						</span>
 			</datatables:column>
 			<datatables:column>
 				<!--  ACTIONS COLUMN -->

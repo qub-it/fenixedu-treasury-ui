@@ -41,6 +41,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -210,7 +211,7 @@ public class DebitNoteController extends TreasuryBaseController {
             if (!documentNumberSeries.getSeries().equals(debtAccount.getFinantialInstitution())) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
-                return redirect(SEARCH_URL, model, redirectAttributes);
+                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
             }
         }
 
@@ -242,7 +243,7 @@ public class DebitNoteController extends TreasuryBaseController {
             } else {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
-                return redirect(SEARCH_URL, model, redirectAttributes);
+                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
             }
         }
         return "treasury/document/manageinvoice/debitnote/create";
