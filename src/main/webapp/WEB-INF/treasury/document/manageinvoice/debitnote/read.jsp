@@ -104,11 +104,11 @@ ${portal.toolkit()}
 	<div class="well well-sm" style="display: inline-block">
 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
-		&nbsp;|&nbsp; 
-		
+		&nbsp;|&nbsp;
+
 		<c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
-		<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
+			<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+				href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
 		&nbsp;|&nbsp;
 		</c:if>
 		<c:if test="${debitNote.isPreparing()}">
@@ -123,7 +123,13 @@ ${portal.toolkit()}
 		</c:if>
 		<c:if test="${debitNote.isClosed()}">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message code="label.event.document.manageInvoice.createCreditNote" /></a>
+				href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"><spring:message
+					code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
+		&nbsp;|&nbsp;
+		
+			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+				href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message
+					code="label.event.document.manageInvoice.createCreditNote" /></a>
 		&nbsp;|&nbsp;
 		</c:if>
 	</div>
@@ -197,20 +203,13 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.state" /></th>
-						<td>
-						<c:if test = "${debitNote.isAnnulled()}">
-						<span class="label label-danger">
-						</c:if>
-						<c:if test = "${debitNote.isPreparing() }">
-						<span class="label label-warning">
-						</c:if>
-						<c:if test = "${debitNote.isClosed()}">
-						<span class="label label-primary">
-						</c:if>
-						
-						<c:out value='${debitNote.state.descriptionI18N.content}' />
-						</span>
-						</td>
+						<td><c:if test="${debitNote.isAnnulled()}">
+								<span class="label label-danger">
+							</c:if> <c:if test="${debitNote.isPreparing() }">
+								<span class="label label-warning">
+							</c:if> <c:if test="${debitNote.isClosed()}">
+								<span class="label label-primary">
+							</c:if> <c:out value='${debitNote.state.descriptionI18N.content}' /> </span></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
@@ -240,13 +239,13 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <c:if test="${debitNote.isPreparing()}">
 
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
-			code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
-			code="label.event.document.manageInvoice.addPendingEntries" /></a>
-</div>
+	<div class="well well-sm" style="display: inline-block">
+		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
+				code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
+				code="label.event.document.manageInvoice.addPendingEntries" /></a>
+	</div>
 </c:if>
 <c:choose>
 	<c:when test="${not empty debitNote.debitEntriesSet}">

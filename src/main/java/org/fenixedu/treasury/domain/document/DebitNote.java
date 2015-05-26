@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -159,5 +160,33 @@ public class DebitNote extends DebitNote_Base {
     public void addDebitNoteEntries(List<DebitEntry> debitEntries) {
         debitEntries.forEach(x -> this.addFinantialDocumentEntries(x));
         checkRules();
+    }
+
+    public Set<FinantialDocument> findRelatedDocuments() {
+        Set<FinantialDocument> documents = new HashSet<FinantialDocument>();
+        documents.add(this);
+
+        for (DebitEntry entry : getDebitEntriesSet()) {
+            if (entry.getCreditEntriesSet().size() > 0) {
+                for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
+                    if (creditEntry.getFinantialDocument() != null) {
+                        documents.add(creditEntry.getFinantialDocument());
+                    }
+                }
+            }
+        }
+
+        //TODO: Missing Payments relations
+//        for (DebitEntry entry : get) {
+//            if (entry.getCreditEntriesSet().size() > 0) {
+//                for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
+//                    if (creditEntry.getFinantialDocument() != null) {
+//                        documents.add(creditEntry.getFinantialDocument());
+//                    }
+//                }
+//            }
+//        }
+
+        return documents;
     }
 }

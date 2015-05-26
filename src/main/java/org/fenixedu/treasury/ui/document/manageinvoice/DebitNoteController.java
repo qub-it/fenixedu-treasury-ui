@@ -39,11 +39,14 @@ import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.services.integration.SAFTExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -479,5 +482,17 @@ public class DebitNoteController extends TreasuryBaseController {
 
         // Now choose what is the Exit Screen    
         return redirect(CreditNoteController.CREATE_URL + "?debitNote=" + debitNote.getExternalId(), model, redirectAttributes);
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportintegrationfile")
+    public ResponseEntity<String> processReadToExportIntegrationFile(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        String output =
+                SAFTExporter.exportFinantialDocument(debitNote.getDebtAccount().getFinantialInstitution(),
+                        debitNote.findRelatedDocuments());
+        ResponseEntity<String> result = new ResponseEntity<String>(output, HttpStatus.OK);
+
+        return result;
     }
 }

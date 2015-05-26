@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -96,8 +97,8 @@ public class SAFTExporter {
     // public final static String SAFT_HEADER_VERSION_1_02_01 = "1.02_01";
     public final static String SAFT_HEADER_VERSION_1_03_01 = "1.03_01";
 
-    private void generateSaft(FinantialInstitution institution, DateTime fromDate, DateTime toDate, ExportOperation operation,
-            List<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) throws Exception {
+    private String generateSaft(FinantialInstitution institution, DateTime fromDate, DateTime toDate, ExportOperation operation,
+            Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) throws Exception {
 
         // Build SAFT-AuditFile
         AuditFile auditFile = new AuditFile();
@@ -306,8 +307,11 @@ public class SAFTExporter {
 
         String xml = ExportAuditFileToXML(auditFile);
 
-        writeSaftFile(xml, operation);
+        if (operation != null) {
+            writeSaftFile(xml, operation);
+        }
         logger.info("SAFT File export concluded with success.");
+        return xml;
     }
 
     private WorkDocument convertToSAFTWorkDocument(FinantialDocument document,
@@ -1604,7 +1608,8 @@ public class SAFTExporter {
             SAFTExporter saftExporter = new SAFTExporter();
             List<FinantialDocument> documents = finantialInstitution.getExportableDocuments(fromDate, toDate);
             logger.info("Collecting " + documents.size() + " documents to export to store " + finantialInstitution.getCode());
-            saftExporter.generateSaft(finantialInstitution, fromDate, toDate, operation, documents, true);
+            saftExporter.generateSaft(finantialInstitution, fromDate, toDate, operation,
+                    documents.stream().collect(Collectors.toSet()), true);
 
         } catch (Throwable t) {
             writeError(operation, t);
@@ -1664,11 +1669,27 @@ public class SAFTExporter {
         ExportOperation operation = createSaftExportOperation(institution, fromDate, toDate, username);
         try {
             SAFTExporter saftExporter = new SAFTExporter();
-            saftExporter.generateSaft(institution, fromDate, toDate, operation, pendingDocuments, false);
+            saftExporter.generateSaft(institution, fromDate, toDate, operation,
+                    pendingDocuments.stream().collect(Collectors.toSet()), false);
 
         } catch (Throwable t) {
             writeError(operation, t);
         }
         // }
+    }
+
+    public static String exportFinantialDocument(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {
+        SAFTExporter saftExporter = new SAFTExporter();
+        DateTime beginDate =
+                documents.stream().min((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
+        DateTime endDate =
+                documents.stream().max((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
+        try {
+            return saftExporter.generateSaft(finantialInstitution, beginDate, endDate, null, documents, false);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return "";
     }
 }
