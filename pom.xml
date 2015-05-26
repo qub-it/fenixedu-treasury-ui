@@ -169,7 +169,7 @@
 					<packageName></packageName>
 					<outputDirectory>${basedir}/target/generated-sources/xsd/</outputDirectory>
 					<schemaDirectory>${basedir}/src/main/xsd/saft/</schemaDirectory>
-					<schemaFiles>SAFTPT1.03_01.xsd</schemaFiles>
+					<schemaFiles>FenixEdu_ERP_Integration_1.0.0.xsd</schemaFiles>
 				</configuration>
 			</plugin>
 			<plugin>
