@@ -34,7 +34,12 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditNote;
+import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -383,26 +388,29 @@ public class CreditNoteController extends TreasuryBaseController {
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
-    public String create(Model model) {
-        model.addAttribute("CreditNote_debitNote_options", new ArrayList<org.fenixedu.treasury.domain.document.DebitNote>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_debitNote_options", org.fenixedu.treasury.domain.document.DebitNote.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_payorDebtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_finantialDocumentType_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocumentType>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_debtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_documentNumberSeries_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.DocumentNumberSeries>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_currency_options", new ArrayList<org.fenixedu.treasury.domain.Currency>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+    public String create(@RequestParam("debitNote") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
 
-        //IF ANGULAR, initialize the Bean
-        //CreditNoteBean bean = new CreditNoteBean();
-        //this.setCreditNoteBean(bean, model);
+        FinantialInstitution finantialInstitution = debitNote.getDebtAccount().getFinantialInstitution();
+        DebtAccount debtAccount = debitNote.getDebtAccount();
+        DocumentNumberSeries documentNumberSeries =
+                DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
+                        .getSeries());
+
+        if (documentNumberSeries == null && debtAccount == null) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
+
+        if (documentNumberSeries != null && debtAccount != null) {
+            if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+                return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            }
+        }
+
+        model.addAttribute("debitNote", debitNote);
 
         return "treasury/document/manageinvoice/creditnote/create";
     }
@@ -460,33 +468,40 @@ public class CreditNoteController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "debitnote", required = false) org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
-                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(value = "debitNote") org.fenixedu.treasury.domain.document.DebitNote debitNote,
+            @RequestParam(value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime documentDate,
+            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, Model model,
+            RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         */
+        FinantialInstitution finantialInstitution = debitNote.getDebtAccount().getFinantialInstitution();
+        DebtAccount debtAccount = debitNote.getDebtAccount();
+        DocumentNumberSeries documentNumberSeries =
+                DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
+                        .getSeries());
+        if (documentNumberSeries == null && debtAccount == null) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
+
+        if (documentNumberSeries != null && debtAccount != null) {
+            if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+                return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            }
+        }
 
         try {
 
-            CreditNote creditNote =
-                    createCreditNote(debitNote, payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries,
-                            currency, documentNumber, documentDate, originDocumentNumber, state);
+            CreditNote creditNote = createCreditNote(debitNote, documentNumberSeries, documentDate, originDocumentNumber);
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("creditNote", creditNote);
-            return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model,
-                    redirectAttributes);
+            setCreditNote(creditNote, model);
+            return redirect(READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -500,18 +515,13 @@ public class CreditNoteController extends TreasuryBaseController {
             // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
+            return create(debitNote, model, redirectAttributes);
         }
     }
 
     @Atomic
     public CreditNote createCreditNote(org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-            org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
-            java.lang.String originDocumentNumber, org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+            DocumentNumberSeries documentNumberSeries, org.joda.time.DateTime documentDate, java.lang.String originDocumentNumber) {
 
         // @formatter: off
 
@@ -528,17 +538,9 @@ public class CreditNoteController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        CreditNote creditNote = CreditNote.create(debtAccount, documentNumberSeries, documentDate);
-        creditNote.setDebitNote(debitNote);
-        creditNote.setPayorDebtAccount(payorDebtAccount);
-        creditNote.setFinantialDocumentType(finantialDocumentType);
-        creditNote.setDebtAccount(debtAccount);
-        creditNote.setDocumentNumberSeries(documentNumberSeries);
-        creditNote.setCurrency(currency);
-        creditNote.setDocumentNumber(documentNumber);
-        creditNote.setDocumentDate(documentDate);
-        creditNote.setOriginDocumentNumber(originDocumentNumber);
-        creditNote.setState(state);
+        CreditNote creditNote =
+                CreditNote
+                        .create(debitNote.getDebtAccount(), documentNumberSeries, documentDate, debitNote, originDocumentNumber);
 
         return creditNote;
     }

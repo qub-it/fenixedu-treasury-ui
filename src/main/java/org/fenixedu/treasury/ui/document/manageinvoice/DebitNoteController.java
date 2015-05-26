@@ -208,7 +208,7 @@ public class DebitNoteController extends TreasuryBaseController {
         }
 
         if (documentNumberSeries != null && debtAccount != null) {
-            if (!documentNumberSeries.getSeries().equals(debtAccount.getFinantialInstitution())) {
+            if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
                 return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
@@ -467,5 +467,17 @@ public class DebitNoteController extends TreasuryBaseController {
         // Now choose what is the Exit Screen    
         return redirect(DebitEntryController.SEARCHPENDINGENTRIES_URL + "?debitNote=" + debitNote.getExternalId(), model,
                 redirectAttributes);
+    }
+
+    @RequestMapping(value = "/read/{oid}/createcreditnote")
+    public String processReadToCreateCreditNote(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
+//
+        /* Put here the logic for processing Event addPendingEntries    */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect(CreditNoteController.CREATE_URL + "?debitNote=" + debitNote.getExternalId(), model, redirectAttributes);
     }
 }

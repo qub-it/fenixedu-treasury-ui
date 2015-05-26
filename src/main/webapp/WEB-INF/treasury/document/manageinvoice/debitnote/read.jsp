@@ -121,6 +121,11 @@ ${portal.toolkit()}
 			<a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
 			</a> &nbsp;|&nbsp;
 		</c:if>
+		<c:if test="${debitNote.isClosed()}">
+			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message code="label.event.document.manageInvoice.createCreditNote" /></a>
+		&nbsp;|&nbsp;
+		</c:if>
 	</div>
 </form>
 

@@ -40,11 +40,19 @@ import pt.ist.fenixframework.Atomic;
 public class CreditNote extends CreditNote_Base {
 
     protected CreditNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate) {
+            final DateTime documentDate, DebitNote debitNote) {
         super();
 
-        init(debtAccount, documentNumberSeries, documentDate);
+        init(debtAccount, documentNumberSeries, documentDate, debitNote);
         checkRules();
+    }
+
+    protected void init(DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries, DateTime documentDate,
+            DebitNote debitNote) {
+        super.init(debtAccount, documentNumberSeries, documentDate);
+
+        this.setDebitNote(debitNote);
+
     }
 
     protected CreditNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
@@ -66,7 +74,9 @@ public class CreditNote extends CreditNote_Base {
             throw new TreasuryDomainException("error.CreditNote.finantialDocumentType.invalid");
         }
 
-        // TODO Auto-generated method stub
+        if (getDebitNote() != null && !getDebitNote().getDebtAccount().equals(getDebtAccount())) {
+            throw new TreasuryDomainException("error.CreditNote.invalid.debtaccount.with.debitnote");
+        }
         super.checkRules();
     }
 
@@ -82,7 +92,8 @@ public class CreditNote extends CreditNote_Base {
             throw new TreasuryDomainException("error.CreditNote.cannot.delete");
         }
 
-        setBennu(null);
+        super.delete();
+        setDebitNote(null);
         deleteDomainObject();
     }
 
@@ -106,15 +117,18 @@ public class CreditNote extends CreditNote_Base {
 
     @Atomic
     public static CreditNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate) {
-        return new CreditNote(debtAccount, documentNumberSeries, documentDate);
+            final DateTime documentDate, DebitNote debitNote, String originNumber) {
+        CreditNote note = new CreditNote(debtAccount, documentNumberSeries, documentDate, debitNote);
+        note.setOriginDocumentNumber(originNumber);
+        note.checkRules();
+        return note;
     }
 
-    @Atomic
-    public static CreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
-            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        return new CreditNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
-    }
+//    @Atomic
+//    public static CreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
+//            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
+//        return new CreditNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
+//    }
 
     @Atomic
     public void edit(final DebitNote debitNote, final DebtAccount payorDebtAccount,
