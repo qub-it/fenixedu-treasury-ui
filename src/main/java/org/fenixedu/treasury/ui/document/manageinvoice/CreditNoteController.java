@@ -50,6 +50,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.services.integration.SAFTExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -109,10 +110,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
     @Atomic
     public void deleteCreditNote(CreditNote creditNote) {
-        // CHANGE_ME: Do the processing for deleting the creditNote
-        // Do not catch any exception here
-
-        // creditNote.delete();
+        creditNote.delete(true);
     }
 
 //				
@@ -167,6 +165,27 @@ public class CreditNoteController extends TreasuryBaseController {
 
         // Now choose what is the Exit Screen	 
         return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
+    }
+
+    //
+    // This is the Delete Method for Screen read
+    //
+    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+    public String delete(@PathVariable("oid") CreditNote creditNote, Model model, RedirectAttributes redirectAttributes) {
+        setCreditNote(creditNote, model);
+//
+        DebtAccount debtAccount = creditNote.getDebtAccount();
+        try {
+
+            deleteCreditNote(creditNote);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+        }
+
+        // Now choose what is the Exit Screen    
+        return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
     }
 
     //

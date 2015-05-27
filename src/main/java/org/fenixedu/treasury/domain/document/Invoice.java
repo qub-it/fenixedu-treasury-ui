@@ -87,13 +87,13 @@ public abstract class Invoice extends Invoice_Base {
 
     @Override
     @Atomic
-    public void delete() {
+    public void delete(boolean deleteEntries) {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.Invoice.cannot.delete");
         }
 
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
-        super.delete();
+        super.delete(deleteEntries);
     }
 
     // @formatter: off

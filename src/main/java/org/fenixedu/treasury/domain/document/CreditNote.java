@@ -67,23 +67,6 @@ public class CreditNote extends CreditNote_Base {
     }
 
     @Override
-    public void anullDocument(boolean freeEntries) {
-        if (this.isPreparing()) {
-            for (CreditEntry entry : getCreditEntriesSet()) {
-                entry.delete();
-            }
-            this.delete();
-        } else {
-            if (freeEntries) {
-                for (CreditEntry entry : getCreditEntriesSet()) {
-                    entry.setDebitEntry(null);
-                }
-            }
-            super.anullDocument(freeEntries);
-        }
-    }
-
-    @Override
     public boolean isCreditNote() {
         return true;
     }
@@ -107,14 +90,13 @@ public class CreditNote extends CreditNote_Base {
 
     @Override
     @Atomic
-    public void delete() {
+    public void delete(boolean deleteEntries) {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.CreditNote.cannot.delete");
         }
 
-        super.delete();
         setDebitNote(null);
-        deleteDomainObject();
+        super.delete(deleteEntries);
     }
 
     public Stream<? extends CreditEntry> getCreditEntries() {

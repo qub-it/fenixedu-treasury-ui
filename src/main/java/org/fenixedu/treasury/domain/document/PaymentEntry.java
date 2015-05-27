@@ -27,10 +27,28 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+
+import pt.ist.fenixframework.Atomic;
+
 public class PaymentEntry extends PaymentEntry_Base {
-    
+
     public PaymentEntry() {
         super();
     }
-    
+
+    protected boolean isDeletable() {
+        return true;
+    }
+
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.PaymentEntry.cannot.delete");
+        }
+        setBennu(null);
+        setPaymentMethod(null);
+        setSettlementNote(null);
+        deleteDomainObject();
+    }
 }

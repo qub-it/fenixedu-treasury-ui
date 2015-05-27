@@ -98,7 +98,28 @@ public class DebitNoteController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the debitNote
         // Do not catch any exception here
 
-        debitNote.delete();
+        debitNote.delete(false);
+    }
+
+    //
+    // This is the Delete Method for Screen read
+    //
+    @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
+    public String delete(@PathVariable("oid") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
+        setDebitNote(debitNote, model);
+//
+        DebtAccount debtAccount = debitNote.getDebtAccount();
+        try {
+
+            deleteDebitNote(debitNote);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
+
+        // Now choose what is the Exit Screen    
+        return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
     }
 
     //

@@ -35,6 +35,39 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
+<div class="modal fade" id="deleteModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/delete/${creditNote.externalId}" method="POST">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<spring:message code="label.confirmation" />
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<spring:message <spring:message code="label.document.manageInvoice.readCreditNote.confirmDelete" /> arguments='${debitNote.uiDocumentNumber}' />
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<spring:message code="label.close" />
+					</button>
+					<button id="deleteButton" class="btn btn-danger" type="submit">
+						<spring:message code="label.delete" />
+					</button>
+				</div>
+			</form>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <div class="modal fade" id="closeModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -114,16 +147,16 @@ ${portal.toolkit()}
 		&nbsp;|&nbsp;
 		</c:if>
 		<c:if test="${creditNote.isPreparing()}">
+			<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+					code="label.event.delete" /></a>  &nbsp;|&nbsp; 
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 			<a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeCreditNote" />
 			</a> &nbsp;|&nbsp; 
 		</c:if>
-		<c:if test="${creditNote.isPreparing() || creditNote.isClosed()}">
+		<c:if test="${creditNote.isClosed()}">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 			<a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullCreditNote" />
 			</a> &nbsp;|&nbsp;
-		</c:if>
-		<c:if test="${creditNote.isClosed()}">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 				href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationfile"><spring:message
 					code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
@@ -207,19 +240,19 @@ ${portal.toolkit()}
 								<span class="label label-primary">
 							</c:if> <c:out value='${creditNote.state.descriptionI18N.content}' /> </span></td>
 					</tr>
-<!-- 					<tr> -->
-<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CredtNote.totalNetAmount" /></th> --%>
-<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalNetAmount)}' /></td> --%>
-<!-- 					</tr> -->
-<!-- 					<tr> -->
-<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.totalVatAmount" /></th> --%>
-<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalVatAmount)}' /></td> --%>
-<!-- 					</tr> -->
+					<!-- 					<tr> -->
+					<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CredtNote.totalNetAmount" /></th> --%>
+					<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalNetAmount)}' /></td> --%>
+					<!-- 					</tr> -->
+					<!-- 					<tr> -->
+					<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.totalVatAmount" /></th> --%>
+					<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalVatAmount)}' /></td> --%>
+					<!-- 					</tr> -->
 
-<!-- 					<tr> -->
-<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.totalAmount" /></th> --%>
-<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalAmount)}' /></td> --%>
-<!-- 					</tr> -->
+					<!-- 					<tr> -->
+					<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.totalAmount" /></th> --%>
+					<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalAmount)}' /></td> --%>
+					<!-- 					</tr> -->
 				</tbody>
 			</table>
 		</form>

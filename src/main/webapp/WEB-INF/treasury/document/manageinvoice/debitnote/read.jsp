@@ -33,6 +33,47 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm"
+                action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/delete/${debitNote.externalId}"
+                method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close"
+                        data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message
+                            <spring:message code="label.document.manageInvoice.readDebitNote.confirmDelete" /> 
+                            arguments='${debitNote.uiDocumentNumber}' />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                        data-dismiss="modal">
+                        <spring:message code="label.close" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-danger"
+                        type="submit">
+                        <spring:message code="label.delete" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
 <div class="modal fade" id="closeModal">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -112,16 +153,18 @@ ${portal.toolkit()}
 		&nbsp;|&nbsp;
 		</c:if>
 		<c:if test="${debitNote.isPreparing()}">
+			<span
+        class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
+        class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+            code="label.event.delete" /></a>  &nbsp;|&nbsp; 
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 			<a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
 			</a> &nbsp;|&nbsp; 
 		</c:if>
-		<c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
+		<c:if test="${debitNote.isClosed()}">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 			<a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
 			</a> &nbsp;|&nbsp;
-		</c:if>
-		<c:if test="${debitNote.isClosed()}">
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 				href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"><spring:message
 					code="label.event.document.manageInvoice.exportIntegrationFile" /></a>

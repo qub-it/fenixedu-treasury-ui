@@ -158,14 +158,28 @@ public class SettlementNote extends SettlementNote_Base {
 
     @Override
     @Atomic
-    public void delete() {
+    public void delete(boolean deleteEntries) {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.SettlementNote.cannot.delete");
         }
 
-        setBennu(null);
-
-        deleteDomainObject();
+        for (PaymentEntry paymentEntry : getPaymentEntriesSet()) {
+            this.removePaymentEntries(paymentEntry);
+            if (deleteEntries) {
+                paymentEntry.delete();
+            } else {
+                paymentEntry.setSettlementNote(null);
+            }
+        }
+        for (ReimbursementEntry entry : getReimbursementEntriesSet()) {
+            this.removeReimbursementEntries(entry);
+            if (deleteEntries) {
+                entry.delete();
+            } else {
+                entry.setSettlementNote(null);
+            }
+        }
+        super.delete(deleteEntries);
     }
 
     @Atomic

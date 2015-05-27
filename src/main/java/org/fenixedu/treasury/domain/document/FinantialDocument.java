@@ -34,6 +34,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.integration.IntegrationOperation;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
@@ -156,7 +157,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        if (this.isPreparing()) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isAnnulled() {
@@ -196,12 +200,29 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     @Atomic
-    public void delete() {
+    public void delete(boolean deleteEntries) {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.FinantialDocument.cannot.delete");
         }
 
         setBennu(null);
+        setDocumentNumberSeries(null);
+        setCurrency(null);
+        setDebtAccount(null);
+        setFinantialDocumentType(null);
+        for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
+            this.removeFinantialDocumentEntries(entry);
+            if (deleteEntries) {
+                entry.delete();
+            } else {
+                entry.setFinantialDocument(null);
+            }
+        }
+
+        for (IntegrationOperation oper : getIntegrationOperationsSet()) {
+            this.removeIntegrationOperations(oper);
+            oper.delete();
+        }
 
         deleteDomainObject();
     }

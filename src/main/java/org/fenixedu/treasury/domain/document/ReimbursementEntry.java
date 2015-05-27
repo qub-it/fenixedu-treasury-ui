@@ -27,10 +27,28 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+
+import pt.ist.fenixframework.Atomic;
+
 public class ReimbursementEntry extends ReimbursementEntry_Base {
-    
+
     public ReimbursementEntry() {
         super();
     }
-    
+
+    protected boolean isDeletable() {
+        return true;
+    }
+
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.ReimbursementEntry.cannot.delete");
+        }
+        setBennu(null);
+        setSettlementNote(null);
+        deleteDomainObject();
+    }
+
 }

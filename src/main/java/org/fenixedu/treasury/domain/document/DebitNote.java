@@ -78,8 +78,8 @@ public class DebitNote extends DebitNote_Base {
 
     @Override
     @Atomic
-    public void delete() {
-        super.delete();
+    public void delete(boolean deleteEntries) {
+        super.delete(deleteEntries);
     }
 
     @Override

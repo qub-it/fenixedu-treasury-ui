@@ -81,7 +81,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
-        if (getFinantialDocument() != null && getFinantialDocument().getState() != FinantialDocumentStateType.PREPARING) {
+        if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
             blockers.add(BundleUtil.getString(Constants.BUNDLE,
                     "error.finantialdocumententry.cannot.be.deleted.document.is.not.preparing"));
         }
@@ -97,6 +97,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         }
 
         setFinantialDocument(null);
+        setFinantialEntryType(null);
 
         deleteDomainObject();
     }

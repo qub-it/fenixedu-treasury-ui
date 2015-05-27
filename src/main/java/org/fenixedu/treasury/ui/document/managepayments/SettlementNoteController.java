@@ -106,7 +106,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @Atomic
     public void deleteSettlementNote(SettlementNote settlementNote) {
-        settlementNote.delete();
+        settlementNote.delete(true);
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}")
@@ -336,17 +336,15 @@ public class SettlementNoteController extends TreasuryBaseController {
                 .filter(settlementNote -> documentNumberSeries == null
                         || documentNumberSeries == settlementNote.getDocumentNumberSeries())
                 .filter(settlementNote -> currency == null || currency == settlementNote.getCurrency())
-                .filter(settlementNote -> documentNumber == null
-                        || documentNumber.length() == 0
-                        || (settlementNote.getDocumentNumber() != null && settlementNote.getDocumentNumber().length() > 0 && settlementNote
-                                .getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase())))
+                .filter(settlementNote -> documentNumber == null || documentNumber.length() == 0
+                        || settlementNote.getDocumentNumber() != null && settlementNote.getDocumentNumber().length() > 0
+                        && settlementNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
                 .filter(settlementNote -> documentDate == null || documentDate.equals(settlementNote.getDocumentDate()))
                 .filter(settlementNote -> documentDueDate == null || documentDueDate.equals(settlementNote.getDocumentDueDate()))
-                .filter(settlementNote -> originDocumentNumber == null
-                        || originDocumentNumber.length() == 0
-                        || (settlementNote.getOriginDocumentNumber() != null
-                                && settlementNote.getOriginDocumentNumber().length() > 0 && settlementNote
-                                .getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase())))
+                .filter(settlementNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
+                        || settlementNote.getOriginDocumentNumber() != null
+                        && settlementNote.getOriginDocumentNumber().length() > 0
+                        && settlementNote.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase()))
                 .filter(settlementNote -> state == null || state.equals(settlementNote.getState())).collect(Collectors.toList());
     }
 
