@@ -29,6 +29,7 @@ package org.fenixedu.treasury.ui.document.manageinvoice;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.services.integration.ERPExporter;
@@ -513,12 +515,15 @@ public class DebitNoteController extends TreasuryBaseController {
         try {
             String output =
                     ERPExporter.exportFinantialDocument(debitNote.getDebtAccount().getFinantialInstitution(),
-                            debitNote.findRelatedDocuments());
+                            debitNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
             response.setContentType("text/xml");
             String filename =
                     URLEncoder.encode(
-                            StringNormalizer.normalizePreservingCapitalizedLetters(debitNote.getUiDocumentNumber() + ".xml")
-                                    .replaceAll("\\s", "_"), "UTF-8");
+                            StringNormalizer
+                                    .normalizePreservingCapitalizedLetters(
+                                            debitNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
+                                                    + debitNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_")
+                                    .replace(" ", "_"), "UTF-8");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("UTF8"));
         } catch (Exception ex) {

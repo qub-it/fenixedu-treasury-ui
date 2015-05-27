@@ -200,12 +200,13 @@ public class ERPExporter {
         auditFile.setSourceDocuments(sourceDocuments);
 
         SourceDocuments.SalesInvoices invoices = new SourceDocuments.SalesInvoices();
-
         SourceDocuments.WorkingDocuments workingDocuments = new SourceDocuments.WorkingDocuments();
+        Payments paymentsDocuments = new Payments();
 
-//        MovementOfGoods movementOfGoods = new MovementOfGoods();
-//        BigInteger sumOfNumberMovementLines = BigInteger.ZERO;
-//        BigDecimal sumOfTotalQuantityIssued = BigDecimal.ZERO;
+        BigInteger numberOfPaymentsDocuments = BigInteger.ZERO;
+        BigDecimal totalDebitOfPaymentsDocuments = BigDecimal.ZERO;
+        BigDecimal totalCreditOfPaymentsDocuments = BigDecimal.ZERO;
+
         BigInteger numberOfWorkingDocuments = BigInteger.ZERO;
         BigDecimal totalDebitOfWorkingDocuments = BigDecimal.ZERO;
         BigDecimal totalCreditOfWorkingDocuments = BigDecimal.ZERO;
@@ -214,7 +215,7 @@ public class ERPExporter {
         invoices.setTotalCredit(BigDecimal.ZERO);
         invoices.setTotalDebit(BigDecimal.ZERO);
 
-        int i = 0;
+//        int i = 0;
         for (FinantialDocument document : allDocuments) {
             if ((document.isCreditNote() || document.isDebitNote()) && (document.isClosed() || document.isAnnulled())) {
                 try {
@@ -233,25 +234,9 @@ public class ERPExporter {
                         }
                     }
 
-                    // Update Counter
-                    // information.setCurrentCounter(information
-                    // .getCurrentCounter() + 10);
-                    // if (i % 10 == 0) {
-                    // try {
-                    // persistenceSupport.flush();
-                    // persistenceSupport.clearSession();
-                    // } catch (Throwable t) {
-                    // logger.error("Something gone wrong flushing state",
-                    // t);
-                    // }
-                    // logger.info("Processing " + i + "/"
-                    // + saleDocuments.size() + " documents in Store "
-                    // + storeToProcess.getCode());
-                    // }
-                    i++;
+//                    i++;
 
                 } catch (Exception ex) {
-                    // persistenceSupport.flush();
                     logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getMessage());
                     throw ex;
                 }
@@ -269,11 +254,6 @@ public class ERPExporter {
 
         //PROCESSING PAYMENTS TABLE
 
-        Payments paymentsDocuments = new Payments();
-        BigInteger numberOfPaymentsDocuments = BigInteger.ZERO;
-        BigDecimal totalDebitOfPaymentsDocuments = BigDecimal.ZERO;
-        BigDecimal totalCreditOfPaymentsDocuments = BigDecimal.ZERO;
-
         paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
         paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
         paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
@@ -284,7 +264,7 @@ public class ERPExporter {
                     paymentsDocuments.getPayment().add(paymentDocument);
 
                     // AcumulateValues
-                    numberOfWorkingDocuments = numberOfWorkingDocuments.add(BigInteger.ONE);
+                    numberOfPaymentsDocuments = numberOfPaymentsDocuments.add(BigInteger.ONE);
                     totalCreditOfPaymentsDocuments =
                             totalCreditOfPaymentsDocuments.add(paymentDocument.getDocumentTotals().getSettlement()
                                     .getSettlementAmount());
@@ -292,22 +272,7 @@ public class ERPExporter {
                             totalDebitOfPaymentsDocuments.add(paymentDocument.getDocumentTotals().getSettlement()
                                     .getSettlementAmount());
 
-                    // Update Counter
-                    // information.setCurrentCounter(information
-                    // .getCurrentCounter() + 10);
-                    // if (i % 10 == 0) {
-                    // try {
-                    // persistenceSupport.flush();
-                    // persistenceSupport.clearSession();
-                    // } catch (Throwable t) {
-                    // logger.error("Something gone wrong flushing state",
-                    // t);
-                    // }
-                    // logger.info("Processing " + i + "/"
-                    // + saleDocuments.size() + " documents in Store "
-                    // + storeToProcess.getCode());
-                    // }
-                    i++;
+//                    i++;
                 } catch (Exception ex) {
                     // persistenceSupport.flush();
                     logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getMessage());
@@ -318,6 +283,11 @@ public class ERPExporter {
             }
 
         }
+
+        // Update Totals of Payment Documents
+        paymentsDocuments.setNumberOfEntries(numberOfPaymentsDocuments);
+        paymentsDocuments.setTotalCredit(totalCreditOfPaymentsDocuments);
+        paymentsDocuments.setTotalDebit(totalDebitOfPaymentsDocuments);
         sourceDocuments.setPayments(paymentsDocuments);
 
         // Update the Customer Table in SAFT
@@ -330,7 +300,7 @@ public class ERPExporter {
             productList.add(product);
         }
 
-        String xml = ExportAuditFileToXML(auditFile);
+        String xml = exportAuditFileToXML(auditFile);
 
         if (operation != null) {
             writeSaftFile(xml, operation);
@@ -455,7 +425,7 @@ public class ERPExporter {
             payment.setSourceID(document.getUserCreated());
 
         } catch (DatatypeConfigurationException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
@@ -494,6 +464,18 @@ public class ERPExporter {
             baseCustomers.put(customer.getCustomerID(), customer);
         }
 
+        //check the PayorDebtAccount
+        if (document.getPayorDebtAccount() != null) {
+            if (baseCustomers.containsKey(document.getPayorDebtAccount().getCustomer().getCode())) {
+                //do nothing
+            } else {
+                // If not found, create a new one and add it to baseCustomers
+                oecd.standardauditfile_tax.pt_1.Customer payorCustomer =
+                        convertCustomerToSAFTCustomer(document.getPayorDebtAccount().getCustomer());
+                baseCustomers.put(payorCustomer.getCustomerID(), payorCustomer);
+            }
+        }
+
         // MovementDate
         DatatypeFactory dataTypeFactory;
         try {
@@ -503,8 +485,7 @@ public class ERPExporter {
             // SystemEntryDate
             workDocument.setSystemEntryDate(convertToXMLDateTime(dataTypeFactory, documentDate));
 
-            workDocument.setWorkDate(dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
-                    documentDate.getMonthOfYear(), documentDate.getDayOfMonth(), DatatypeConstants.FIELD_UNDEFINED));
+            workDocument.setWorkDate(convertToXMLDateTime(dataTypeFactory, documentDate));
 
             // DocumentNumber
             workDocument.setDocumentNumber(document.getUiDocumentNumber());
@@ -524,7 +505,12 @@ public class ERPExporter {
              */
             SourceDocuments.WorkingDocuments.WorkDocument.DocumentStatus status =
                     new SourceDocuments.WorkingDocuments.WorkDocument.DocumentStatus();
-            status.setWorkStatus("N");
+            if (document.isAnnulled()) {
+                status.setWorkStatus("A");
+            } else {
+                status.setWorkStatus("N");
+            }
+
             status.setWorkStatusDate(workDocument.getSystemEntryDate());
             // status.setReason("");
             // Utilizador responsável pelo estado atual do docu-mento.
@@ -548,25 +534,6 @@ public class ERPExporter {
                     .setScale(2, RoundingMode.HALF_EVEN));
             workDocument.setDocumentTotals(docTotals);
 
-            // TODO: EACCode
-            // mov.setEACCode(value);
-
-            // Hash
-            // if (!StringUtils.isEmpty(document.getDigitalSignature())) {
-            // workDocument.setHash(document.getDigitalSignature());
-            // } else {
-            // workDocument.setHash(" ");
-            // }
-
-            // HashControl
-            // if (!StringUtils.isEmpty(document.getDigitalSignatureControl()))
-            // {
-            // workDocument.setHashControl(document
-            // .getDigitalSignatureControl());
-            // } else {
-            // workDocument.setHashControl(" ");
-            // }
-
             // WorkType
             /*
              * Deve ser preenchido com: Texto 2 "DC" — Documentos emitidos que
@@ -588,32 +555,6 @@ public class ERPExporter {
              */
             workDocument.setPeriod(document.getDocumentDate().getMonthOfYear());
 
-            // ShipFrom
-            // ShippingPointStructure shipFrom = new ShippingPointStructure();
-            // Store documentStore =
-            // orderNote.getVisit().getDailyRecord().getSalesman().getCurrentWorkingStore();
-            // AddressStructure storeAddress = null;
-            // if
-            // (!documentStore.getPartyContacts(PhysicalAddress.class).isEmpty())
-            // {
-            // storeAddress =
-            // convertToSAFTAddressStructure(documentStore.getPartyContacts(PhysicalAddress.class).get(0));
-            // } else {
-            // throw new DomainException("Address in Store not defined");
-            // }
-            // shipFrom.setAddress(storeAddress);
-            // // shipFrom.setDeliveryDate(mov.getMovementStartTime());
-            // mov.setShipFrom(shipFrom);
-
-            // // ShipTo
-            // ShippingPointStructure shipTo = new ShippingPointStructure();
-            // shipTo.setAddress(customer.getBillingAddress());
-            // // shipTo.setDeliveryDate(mov.getMovementEndTime());
-            // mov.setShipTo(shipTo);
-
-            // TODO: SourceBilling
-            // mov.setSourceBilling(value);
-
             // SourceID
             /*
              * C?digo do utilizador que registou o movimento (SourceID).
@@ -621,23 +562,9 @@ public class ERPExporter {
             workDocument.setSourceID(document.getUserCreated());
 
         } catch (DatatypeConfigurationException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
-
-        // TransactionId
-        /*
-         * O preenchimento é obrigatório, no caso de se tratar de um sistema
-         * integrado que inclua inventário permanente em que o campo 1.4. –
-         * Sistema con-tabilístico (TaxAccountingBasis) = I. Texto 70 Deve ser
-         * indicada a chave única da tabela 3 — Mo-vimentos contabilísticos
-         * (GeneralLedgerEntries) onde foi lançado este documento de movimento
-         * de stocks, respeitando a regra aí definida para o campo 3.4.3.1 —
-         * Chave única do movimento contabilístico (TransactionID).
-         */
-        // mov.setTransactionID(mov.getMovementDate().toString() + " " +
-        // mov.getSourceID() + " " + document.getDocumentNumber()
-        // + " ");
 
         List<oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line> productLines =
                 workDocument.getLine();
@@ -678,21 +605,18 @@ public class ERPExporter {
             DateTime documentDate = entry.getFinantialDocument().getDocumentDate();
             documentDateCalendar = convertToXMLDateTime(dataTypeFactory, documentDate);
         } catch (DatatypeConfigurationException e) {
-            // TODO Auto-generated catch block
+
             e.printStackTrace();
         }
 
         oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line line =
                 new oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line();
 
-        // DebitAmount
-        // line.setDebitAmount(productLine.getNetPrice().setScale(2,
-        // RoundingMode.HALF_EVEN));
-
-        // 4 – Nas guias de remessa (output de produtos) os valores das linhas
-        // são registados em creditamount, e não debitamount
-        // CreditAmount
-        line.setCreditAmount(entry.getAmount().setScale(2, RoundingMode.HALF_EVEN));
+        if (entry.isCreditNoteEntry()) {
+            line.setCreditAmount(entry.getAmount().setScale(2, RoundingMode.HALF_EVEN));
+        } else if (entry.isDebitNoteEntry()) {
+            line.setDebitAmount(entry.getAmount().setScale(2, RoundingMode.HALF_EVEN));
+        }
 
         // Description
         line.setDescription(currentProduct.getProductDescription());
@@ -768,22 +692,8 @@ public class ERPExporter {
 
         // VatType vat = product.getVatType();
         // Tax-TaxCode
+        tax.setTaxCode(vat.getVatType().getCode());
 
-        if (vat.getVatType().getCode().equals("4")) {
-            tax.setTaxCode("INT");
-        } else if (vat.getVatType().getCode().equals("2")) {
-            tax.setTaxCode("RED");
-        } else if (vat.getVatType().getCode().equals("3")) {
-            tax.setTaxCode("NOR");
-        } else if (vat.getVatType().getCode().equals("5")) {
-            tax.setTaxCode("ISE");
-        } else if (vat.getVatType().getCode().equals("6")) {
-            tax.setTaxCode("ISE");
-        } else if (vat.getVatType().getCode().equals("1")) {
-            tax.setTaxCode("ISE");
-        }
-
-        // TODO: Tax-TaxCountryRegion
         tax.setTaxCountryRegion("PT");
 
         // Tax-TaxPercentage
@@ -855,29 +765,17 @@ public class ERPExporter {
              * 1.11 * C?digo de moeda (CurrencyCode) . . . . . . . Preencher com
              * ?EUR?
              */
-            // if (finantialInstitution != null && headquarter.getParameters()
-            // != null
-            // && headquarter.getParameters().getDefaultCurrency() != null) {
-            // Currency currency = headquarter.getParameters()
-            // .getDefaultCurrency();
-            // header.setCurrencyCode(currency.getTypeValue());
-            // } else {
-            header.setCurrencyCode("EUR");
-            // }
+            header.setCurrencyCode(finantialInstitution.getCurrency().getCode());
 
             // DateCreated
             DateTime now = new DateTime();
-            XMLGregorianCalendar xmlCreateDate =
-                    dataTypeFactory.newXMLGregorianCalendarDate(now.getYear(), now.getMonthOfYear(), now.getDayOfMonth(),
-                            DatatypeConstants.FIELD_UNDEFINED);
-            header.setDateCreated(xmlCreateDate);
+            header.setDateCreated(convertToXMLDateTime(dataTypeFactory, now));
 
             // Email
             // header.setEmail(StringUtils.EMPTY);
 
             // EndDate
-            header.setEndDate(dataTypeFactory.newXMLGregorianCalendarDate(endDate.getYear(), endDate.getMonthOfYear(),
-                    endDate.getDayOfMonth(), DatatypeConstants.FIELD_UNDEFINED));
+            header.setEndDate(convertToXMLDateTime(dataTypeFactory, endDate));
 
             // Fax
             // header.setFax(StringUtils.EMPTY);
@@ -952,15 +850,12 @@ public class ERPExporter {
                 throw new RuntimeException("Invalid Fiscal Number.");
             }
 
-            // TODO: Telephone
             // header.setTelephone(finantialInstitution.get);
 
-            // TODO: Website
             // header.setWebsite(finantialInstitution.getEmailContact());
 
             return header;
         } catch (DatatypeConfigurationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return null;
         }
@@ -978,7 +873,7 @@ public class ERPExporter {
         return companyAddress;
     }
 
-    private String ExportAuditFileToXML(AuditFile auditFile) {
+    private String exportAuditFileToXML(AuditFile auditFile) {
         try {
             final String cleanXMLAnotations = "xsi:type=\"xs:string\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"";
             final String cleanXMLAnotations2 = "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"";
@@ -1031,596 +926,6 @@ public class ERPExporter {
         return buf.toString();
     }
 
-    // private StockMovement convertToSAFTStockMovement(SaleNoteDocument
-    // document,
-    // Map<String, oecd.standardauditfile_tax.pt_1.Customer> baseCustomers,
-    // Map<String, oecd.standardauditfile_tax.pt_1.Product> baseProducts) {
-    //
-    // StockMovement mov = new StockMovement();
-    //
-    // // Find the Customer in BaseCustomers
-    // oecd.standardauditfile_tax.pt_1.Customer customer = null;
-    //
-    // if
-    // (baseCustomers.containsKey(document.getVisit().getCustomerStore().getCode()))
-    // {
-    // customer =
-    // baseCustomers.get(document.getVisit().getCustomerStore().getCode());
-    // } else {
-    // // If not found, create a new one and add it to baseCustomers
-    // customer = convertToSAFTCustomer(document.getVisit().getCustomerStore());
-    // baseCustomers.put(customer.getCustomerID(), customer);
-    // }
-    //
-    // // MovementDate
-    // DatatypeFactory dataTypeFactory;
-    // try {
-    // dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = document.getDocumentDate();
-    //
-    // // SystemEntryDate
-    // mov.setSystemEntryDate(dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(),
-    // documentDate.getMonthOfYear(),
-    // documentDate.getDayOfMonth(), documentDate.getHourOfDay(),
-    // documentDate.getMinuteOfHour(),
-    // documentDate.getSecondOfMinute(), 0, DatatypeConstants.FIELD_UNDEFINED));
-    //
-    // mov.setMovementDate(dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
-    // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
-    // DatatypeConstants.FIELD_UNDEFINED));
-    //
-    // // DocumentNumber
-    // mov.setDocumentNumber(document.getUiDocumentNumber());
-    //
-    // // CustomerID
-    // mov.setCustomerID(document.getVisit().getCustomerStore().getCode());
-    //
-    // // MovementStartTime
-    // mov.setMovementStartTime(mov.getSystemEntryDate());
-    //
-    // // MovementEndTime
-    // mov.setMovementEndTime(mov.getSystemEntryDate());
-    //
-    // // DocumentStatus
-    // /*
-    // * Deve ser preenchido com: ?N? ? Normal; Texto 1 ?T? ? Por conta de
-    // * terceiros; ?A? ? Documento anulado.
-    // */
-    // SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus status = new
-    // SourceDocuments.MovementOfGoods.StockMovement.DocumentStatus();
-    // status.setMovementStatus("N");
-    // status.setMovementStatusDate(mov.getSystemEntryDate());
-    // // status.setReason("");
-    // // Utilizador responsável pelo estado atual do docu-mento.
-    // status.setSourceID(document.getVisit().getDailyRecord().getSalesman().getCode());
-    // // Deve ser preenchido com:
-    // // 'P' - Documento produzido na aplicacao;
-    // status.setSourceBilling(SAFTPTSourceBilling.P);
-    //
-    // mov.setDocumentStatus(status);
-    //
-    // // DocumentTotals
-    // DocumentTotals docTotals = new DocumentTotals();
-    // docTotals.setGrossTotal(document.getTotalValue().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    // docTotals.setNetTotal(document.getTotalNetValue().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    // docTotals.setTaxPayable(document.getTotalValue().subtract(document.getTotalNetValue())
-    // .setScale(2, RoundingMode.HALF_EVEN));
-    // mov.setDocumentTotals(docTotals);
-    //
-    // // TODO: EACCode
-    // // mov.setEACCode(value);
-    //
-    // // Hash
-    // if (!StringUtils.isEmpty(document.getDigitalSignature())) {
-    // mov.setHash(document.getDigitalSignature());
-    // } else {
-    // mov.setHash(" ");
-    // }
-    //
-    // // HashControl
-    // if (!StringUtils.isEmpty(document.getDigitalSignatureControl())) {
-    // mov.setHashControl(document.getDigitalSignatureControl());
-    // } else {
-    // mov.setHashControl(" ");
-    // }
-    //
-    // // mov.setMovementComments("");
-    //
-    // // MovementType
-    // /*
-    // * Deve ser preenchido com: ?GR? ? Guia de remessa; ?GT? ? Guia de
-    // * transporte; ?GA? ? Guia de movimenta??o de ativos pr?prios; ?GC?
-    // * ? Guia de consigna??o; ?GD? ? Guia ou nota de devolu??o efetuada
-    // * pelo cliente
-    // */
-    // mov.setMovementType("GR");
-    //
-    // // Period
-    // /*
-    // * Per?odo contabil?stico (Period) . . . . . . . . . . Deve ser
-    // * indicado o n?mero do m?s do per?odo de tributa??o, de ?1? a ?12?,
-    // * contado desde a data do in?cio. Pode ainda ser preenchido com
-    // * ?13?, ?14?, ?15? ou ?16? para movimentos efectuados no ?ltimo m?s
-    // * do per?odo de tributa??o, relacionados com o apuramento do
-    // * resultado. Ex.: movimentos de apuramentos de invent?rios,
-    // * deprecia??es, ajustamentos ou apuramentos de resultados.
-    // */
-    // mov.setPeriod(document.getDocumentDate().getMonthOfYear());
-    //
-    // // ShipFrom
-    // ShippingPointStructure shipFrom = new ShippingPointStructure();
-    // Store documentStore =
-    // document.getVisit().getDailyRecord().getSalesman().getCurrentWorkingStore();
-    // AddressStructure storeAddress = null;
-    // if (!documentStore.getPartyContacts(PhysicalAddress.class).isEmpty()) {
-    // storeAddress =
-    // convertToSAFTAddressStructure(documentStore.getPartyContacts(PhysicalAddress.class).get(0));
-    // } else {
-    // throw new DomainException("Address in Store not defined");
-    // }
-    // shipFrom.setAddress(storeAddress);
-    // // shipFrom.setDeliveryDate(mov.getMovementStartTime());
-    // mov.setShipFrom(shipFrom);
-    //
-    // // ShipTo
-    // ShippingPointStructure shipTo = new ShippingPointStructure();
-    // shipTo.setAddress(customer.getBillingAddress());
-    // // shipTo.setDeliveryDate(mov.getMovementEndTime());
-    // mov.setShipTo(shipTo);
-    //
-    // // TODO: SourceBilling
-    // // mov.setSourceBilling(value);
-    //
-    // // SourceID
-    // /*
-    // * C?digo do utilizador que registou o movimento (SourceID).
-    // */
-    // mov.setSourceID(document.getVisit().getDailyRecord().getSalesman().getFullCode());
-    //
-    // // SupplierID
-    // mov.setSupplierID(null);
-    //
-    // } catch (DatatypeConfigurationException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    //
-    // // TransactionId
-    // /*
-    // * O preenchimento é obrigatório, no caso de se tratar de um sistema
-    // * integrado que inclua inventário permanente em que o campo 1.4. –
-    // * Sistema con-tabilístico (TaxAccountingBasis) = I. Texto 70 Deve ser
-    // * indicada a chave única da tabela 3 — Mo-vimentos contabilísticos
-    // * (GeneralLedgerEntries) onde foi lançado este documento de movimento
-    // * de stocks, respeitando a regra aí definida para o campo 3.4.3.1 —
-    // * Chave única do movimento contabilístico (TransactionID).
-    // */
-    // // mov.setTransactionID(mov.getMovementDate().toString() + " " +
-    // // mov.getSourceID() + " " + document.getDocumentNumber()
-    // // + " ");
-    //
-    // List<oecd.standardauditfile_tax.pt_1.SourceDocuments.MovementOfGoods.StockMovement.Line>
-    // productLines = mov.getLine();
-    //
-    // // Process individual
-    // BigInteger i = BigInteger.ONE;
-    // for (DocumentLine docLine : document.getLines()) {
-    // ProductLine saleNoteLine = (ProductLine) docLine;
-    // oecd.standardauditfile_tax.pt_1.SourceDocuments.MovementOfGoods.StockMovement.Line
-    // line = convertToSAFTStockMovementLine(
-    // saleNoteLine, baseProducts);
-    //
-    // // LineNumber
-    // line.setLineNumber(i);
-    //
-    // // Add to productLines
-    // i = i.add(BigInteger.ONE);
-    // productLines.add(line);
-    // }
-    //
-    // return mov;
-    // }
-
-    // private SourceDocuments.SalesInvoices.Invoice
-    // convertToSAFTInvoice(SaleNoteDocument document,
-    // Map<String, oecd.standardauditfile_tax.pt_1.Customer> baseCustomers,
-    // Map<String, oecd.standardauditfile_tax.pt_1.Product> baseProducts) {
-    //
-    // SourceDocuments.SalesInvoices.Invoice invoice = new
-    // SourceDocuments.SalesInvoices.Invoice();
-    //
-    // // Find the Customer in BaseCustomers
-    // CustomerStore movementCustomer = document.getVisit().getCustomerStore();
-    // oecd.standardauditfile_tax.pt_1.Customer customer = null;
-    //
-    // if (baseCustomers.containsKey(movementCustomer.getCode())) {
-    // customer = baseCustomers.get(movementCustomer.getCode());
-    // } else {
-    // // If not found, create a new one and add it to baseCustomers
-    // customer = convertToSAFTCustomer(document.getVisit().getCustomerStore());
-    // baseCustomers.put(customer.getCustomerID(), customer);
-    // }
-    //
-    // // MovementDate
-    // DatatypeFactory dataTypeFactory;
-    // try {
-    // dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = document.getDocumentDate();
-    //
-    // // SystemEntryDate
-    // invoice.setSystemEntryDate(dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(),
-    // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
-    // documentDate.getHourOfDay(),
-    // documentDate.getMinuteOfHour(), documentDate.getSecondOfMinute(), 0,
-    // DatatypeConstants.FIELD_UNDEFINED));
-    //
-    // invoice.setInvoiceDate(dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
-    // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
-    // DatatypeConstants.FIELD_UNDEFINED));
-    //
-    // // DocumentNumber
-    // invoice.setInvoiceNo(document.getUiDocumentNumber());
-    //
-    // // CustomerID - Uses Code
-    // invoice.setCustomerID(document.getVisit().getCustomerStore().getCode());
-    //
-    // // MovementStartTime
-    // invoice.setMovementStartTime(invoice.getSystemEntryDate());
-    //
-    // // MovementEndTime
-    // invoice.setMovementEndTime(invoice.getSystemEntryDate());
-    //
-    // // SpecialRegimes
-    //
-    // SpecialRegimes specialRegimes = new SpecialRegimes();
-    // // Deve ser preenchido com "1" se respeitar a autofaturação e
-    // // com "0" (zero) no caso contrário
-    // specialRegimes.setSelfBillingIndicator(0);
-    // // Indicador da existência de adesão ao regime de IVA de Caixa.
-    // // Inteiro
-    // // Deve ser preenchido com "1" se houver adesão e com "0"
-    // // (zero) no caso contrário.
-    // specialRegimes.setCashVATSchemeIndicator(0);
-    //
-    // // Deve ser preenchido com "1" se respeitar a faturação emitida
-    // // em nome e por conta de terceiros e com "0" (zero) no caso
-    // // contrário.
-    // specialRegimes.setThirdPartiesBillingIndicator(0);
-    //
-    // invoice.setSpecialRegimes(specialRegimes);
-    //
-    // // DocumentStatus
-    // /*
-    // * Deve ser preenchido com: ?N? ? Normal; Texto 1 ?T? ? Por conta de
-    // * terceiros; ?A? ? Documento anulado.
-    // */
-    // SourceDocuments.SalesInvoices.Invoice.DocumentStatus status = new
-    // SourceDocuments.SalesInvoices.Invoice.DocumentStatus();
-    // // status.setReason("");
-    // // Utilizador responsável pelo estado atual do docu-mento.
-    // status.setSourceID(document.getVisit().getDailyRecord().getSalesman().getCode());
-    // // Deve ser preenchido com:
-    // // 'P' - Documento produzido na aplicacao;
-    // status.setSourceBilling(SAFTPTSourceBilling.P);
-    // status.setInvoiceStatus("N");
-    // status.setInvoiceStatusDate(invoice.getSystemEntryDate());
-    //
-    // invoice.setDocumentStatus(status);
-    //
-    // // DocumentTotals
-    // SourceDocuments.SalesInvoices.Invoice.DocumentTotals docTotals = new
-    // SourceDocuments.SalesInvoices.Invoice.DocumentTotals();
-    // docTotals.setGrossTotal(document.getTotalValue().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    // docTotals.setNetTotal(document.getTotalNetValue().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    // docTotals.setTaxPayable(document.getTotalValue().subtract(
-    // document.getTotalNetValue().setScale(2, RoundingMode.HALF_EVEN)));
-    // invoice.setDocumentTotals(docTotals);
-    //
-    // // Hash
-    // if (!StringUtils.isEmpty(document.getDigitalSignature())) {
-    // invoice.setHash(document.getDigitalSignature());
-    // } else {
-    // invoice.setHash(" ");
-    // }
-    //
-    // // HashControl
-    // if (!StringUtils.isEmpty(document.getDigitalSignatureControl())) {
-    // invoice.setHashControl(document.getDigitalSignatureControl());
-    // } else {
-    // invoice.setHashControl(" ");
-    // }
-    //
-    // // mov.setMovementComments("");
-    //
-    // // MovementType
-    // invoice.setInvoiceType("FT");
-    //
-    // // Period
-    // /*
-    // * Per?odo contabil?stico (Period) . . . . . . . . . . Deve ser
-    // * indicado o n?mero do m?s do per?odo de tributa??o, de ?1? a ?12?,
-    // * contado desde a data do in?cio. Pode ainda ser preenchido com
-    // * ?13?, ?14?, ?15? ou ?16? para movimentos efectuados no ?ltimo m?s
-    // * do per?odo de tributa??o, relacionados com o apuramento do
-    // * resultado. Ex.: movimentos de apuramentos de invent?rios,
-    // * deprecia??es, ajustamentos ou apuramentos de resultados.
-    // */
-    // invoice.setPeriod(document.getDocumentDate().getMonthOfYear());
-    //
-    // // ShipFrom
-    // ShippingPointStructure shipFrom = new ShippingPointStructure();
-    // // shipFrom.setAddress(value);
-    // // shipFrom.setDeliveryDate(mov.getMovementStartTime());
-    // invoice.setShipFrom(shipFrom);
-    //
-    // // ShipTo
-    // ShippingPointStructure shipTo = new ShippingPointStructure();
-    // shipTo.setAddress(customer.getBillingAddress());
-    // // shipTo.setDeliveryDate(mov.getMovementEndTime());
-    // invoice.setShipTo(shipTo);
-    //
-    // // TODO: SourceBilling
-    // // mov.setSourceBilling(value);
-    //
-    // // SourceID
-    // /*
-    // * C?digo do utilizador que registou o movimento (SourceID).
-    // */
-    // invoice.setSourceID(document.getVisit().getDailyRecord().getSalesman().getFullCode());
-    //
-    // } catch (DatatypeConfigurationException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    //
-    // // TransactionId
-    // /*
-    // * O preenchimento é obrigatório, no caso de se tratar de um sistema
-    // * integrado que inclua inventário permanente em que o campo 1.4. –
-    // * Sistema con-tabilístico (TaxAccountingBasis) = I. Texto 70 Deve ser
-    // * indicada a chave única da tabela 3 — Mo-vimentos contabilísticos
-    // * (GeneralLedgerEntries) onde foi lançado este documento de movimento
-    // * de stocks, respeitando a regra aí definida para o campo 3.4.3.1 —
-    // * Chave única do movimento contabilístico (TransactionID).
-    // */
-    // // mov.setTransactionID(mov.getMovementDate().toString() + " " +
-    // // mov.getSourceID() + " " + document.getDocumentNumber()
-    // // + " ");
-    //
-    // List<SourceDocuments.SalesInvoices.Invoice.Line> productLines =
-    // invoice.getLine();
-    //
-    // // Process individual
-    // BigInteger i = BigInteger.ONE;
-    // for (DocumentLine docLine : document.getLines()) {
-    // ProductLine saleNoteLine = (ProductLine) docLine;
-    // SourceDocuments.SalesInvoices.Invoice.Line line =
-    // convertToSAFTInvoiceLine(saleNoteLine, baseProducts);
-    //
-    // // LineNumber
-    // line.setLineNumber(i);
-    //
-    // // Add to productLines
-    // i = i.add(BigInteger.ONE);
-    // productLines.add(line);
-    // }
-    //
-    // return invoice;
-    // }
-
-    // private SourceDocuments.SalesInvoices.Invoice.Line
-    // convertToSAFTInvoiceLine(ProductLine productLine,
-    // Map<String, oecd.standardauditfile_tax.pt_1.Product> baseProducts) {
-    // oecd.standardauditfile_tax.pt_1.Product currentProduct = null;
-    //
-    // ProductInstance productInstance = productLine.getProductInstance();
-    // Product product = productInstance.getProduct();
-    //
-    // if (product.getSapCode() != null &&
-    // baseProducts.containsKey(product.getSapCode())) {
-    // currentProduct = baseProducts.get(product.getSapCode());
-    // } else if (baseProducts.containsKey(product.getBaseCode())) {
-    // currentProduct = baseProducts.get(product.getBaseCode());
-    // } else {
-    // currentProduct = convertToSAFTProduct(product);
-    // baseProducts.put(currentProduct.getProductCode(), currentProduct);
-    // }
-    // XMLGregorianCalendar documentGregorianDate = null;
-    //
-    // try {
-    // DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = productLine.getDocument().getDocumentDate();
-    // documentGregorianDate =
-    // dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
-    // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
-    // DatatypeConstants.FIELD_UNDEFINED);
-    // } catch (DatatypeConfigurationException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    //
-    // SourceDocuments.SalesInvoices.Invoice.Line line = new
-    // SourceDocuments.SalesInvoices.Invoice.Line();
-    //
-    // // The line total should be in creditamount, regarding email from AT
-    // // 4 – Nas guias de remessa (output de produtos) os valores das linhas
-    // // são registados em creditamount, e não debitamount
-    // // DebitAmount
-    // // line.setDebitAmount(productLine.getNetPrice().setScale(2,
-    // // RoundingMode.HALF_EVEN));
-    //
-    // // CreditAmount
-    // line.setCreditAmount(productLine.getNetPrice().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    //
-    // line.setTaxPointDate(documentGregorianDate);
-    //
-    // // Description
-    // line.setDescription(currentProduct.getProductDescription());
-    //
-    // if
-    // (!StringUtils.isEmpty(productLine.getDocument().getDocumentSourceReferenceNumber()))
-    // {
-    // List<OrderReferences> orderReferences = line.getOrderReferences();
-    // OrderReferences reference = new OrderReferences();
-    // reference.setOriginatingON(productLine.getDocument().getDocumentSourceReferenceNumber());
-    // reference.setOrderDate(documentGregorianDate);
-    //
-    // orderReferences.add(reference);
-    // }
-    //
-    // // ProductCode
-    // line.setProductCode(currentProduct.getProductCode());
-    //
-    // // ProductDescription
-    // line.setProductDescription(currentProduct.getProductDescription());
-    //
-    // // Quantity
-    // line.setQuantity(productLine.getQuantity().multiply(productInstance.getUnitNumber()));
-    //
-    // // SettlementAmount
-    // line.setSettlementAmount(BigDecimal.ZERO);
-    //
-    // Store store =
-    // productLine.getDocument().getVisit().getDailyRecord().getStore();
-    // ProductStore productInStore = productInstance.getProductStore(store);
-    //
-    // // Tax
-    // line.setTax(getSAFTInvoiceTax(productInstance.getProductStore(store)));
-    //
-    // // TaxExemptionReason
-    // /*
-    // * Motivo da isen??o de imposto (TaxExemptionReason). Campo de
-    // * preenchimento obrigat?rio, quando os campos percentagem da taxa de
-    // * imposto (TaxPercentage) ou montante do imposto (TaxAmount) s?o iguais
-    // * a zero. Deve ser referido o preceito legal aplic?vel. . . . . . . . .
-    // * . Texto 60
-    // */
-    // if (line.getTax().getTaxAmount() == BigDecimal.ZERO ||
-    // line.getTax().getTaxPercentage() == BigDecimal.ZERO) {
-    // VAT vat =
-    // productLine.getProductInstance().getProductStore(store).getVat();
-    // VatExemptionReason reason = vat.getVatExemptionReason();
-    // if (reason == null) {
-    // reason =
-    // VatExemptionReason.findByCode(SolutionConfig.DOCUMENTS.DEFAULT_VAT_EXEMPTION_REASON());
-    // }
-    // line.setTaxExemptionReason(reason.getCode() + "-" +
-    // reason.getDescription());
-    // }
-    // // UnitOfMeasure
-    // line.setUnitOfMeasure(productInstance.getUIUnitOfMeasure());
-    //
-    // // UnitPrice
-    // line.setUnitPrice(productLine.getUnitPrice().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    //
-    // return line;
-    // }
-    //
-    // private Line convertToSAFTStockMovementLine(ProductLine productLine,
-    // Map<String, oecd.standardauditfile_tax.pt_1.Product> baseProducts) {
-    // oecd.standardauditfile_tax.pt_1.Product currentProduct = null;
-    //
-    // ProductInstance productInstance = productLine.getProductInstance();
-    // Product product = productInstance.getProduct();
-    //
-    // if (product.getSapCode() != null &&
-    // baseProducts.containsKey(product.getSapCode())) {
-    // currentProduct = baseProducts.get(product.getSapCode());
-    // } else if (baseProducts.containsKey(product.getBaseCode())) {
-    // currentProduct = baseProducts.get(product.getBaseCode());
-    // } else {
-    // currentProduct = convertToSAFTProduct(product);
-    // baseProducts.put(currentProduct.getProductCode(), currentProduct);
-    // }
-    //
-    // Line line = new Line();
-    //
-    // // DebitAmount
-    // // line.setDebitAmount(productLine.getNetPrice().setScale(2,
-    // // RoundingMode.HALF_EVEN));
-    //
-    // // 4 – Nas guias de remessa (output de produtos) os valores das linhas
-    // // são registados em creditamount, e não debitamount
-    // // CreditAmount
-    // line.setCreditAmount(productLine.getNetPrice().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    //
-    // // Description
-    // line.setDescription(currentProduct.getProductDescription());
-    //
-    // if
-    // (!StringUtils.isEmpty(productLine.getDocument().getDocumentSourceReferenceNumber()))
-    // {
-    // List<OrderReferences> orderReferences = line.getOrderReferences();
-    // OrderReferences reference = new OrderReferences();
-    // reference.setOriginatingON(productLine.getDocument().getDocumentSourceReferenceNumber());
-    //
-    // try {
-    // DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = productLine.getDocument().getDocumentDate();
-    // reference.setOrderDate(dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
-    // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
-    // DatatypeConstants.FIELD_UNDEFINED));
-    // } catch (DatatypeConfigurationException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // orderReferences.add(reference);
-    // }
-    //
-    // // ProductCode
-    // line.setProductCode(currentProduct.getProductCode());
-    //
-    // // ProductDescription
-    // line.setProductDescription(currentProduct.getProductDescription());
-    //
-    // // Quantity
-    // line.setQuantity(productLine.getQuantity().multiply(productInstance.getUnitNumber()));
-    //
-    // // SettlementAmount
-    // line.setSettlementAmount(BigDecimal.ZERO);
-    //
-    // // Tax
-    // Store store =
-    // productLine.getDocument().getVisit().getDailyRecord().getStore();
-    // line.setTax(getSAFTMovementTax(productInstance.getProductStore(store)));
-    //
-    // // TaxExemptionReason
-    // /*
-    // * Motivo da isen??o de imposto (TaxExemptionReason). Campo de
-    // * preenchimento obrigat?rio, quando os campos percentagem da taxa de
-    // * imposto (TaxPercentage) ou montante do imposto (TaxAmount) s?o iguais
-    // * a zero. Deve ser referido o preceito legal aplic?vel. . . . . . . . .
-    // * . Texto 60
-    // */
-    // if (line.getTax().getTaxPercentage() == BigDecimal.ZERO) {
-    // VAT vat =
-    // productLine.getProductInstance().getProductStore(store).getVat();
-    // if (vat.getVatExemptionReason() != null) {
-    // line.setTaxExemptionReason(vat.getVatExemptionReason().getCode() + "-"
-    // + vat.getVatExemptionReason().getDescription());
-    // } else {
-    // // HACK : TABACO
-    // line.setTaxExemptionReason(VatExemptionReason.M11().getCode() + "-" +
-    // VatExemptionReason.M11().getDescription());
-    // }
-    // }
-    //
-    // // UnitOfMeasure
-    // line.setUnitOfMeasure(productInstance.getUIUnitOfMeasure());
-    // // UnitPrice
-    // line.setUnitPrice(productLine.getUnitPrice().setScale(2,
-    // RoundingMode.HALF_EVEN));
-    //
-    // return line;
-    // }
-    //
     private oecd.standardauditfile_tax.pt_1.Customer convertCustomerToSAFTCustomer(Customer customer) {
         oecd.standardauditfile_tax.pt_1.Customer c = new oecd.standardauditfile_tax.pt_1.Customer();
 
@@ -1725,21 +1030,8 @@ public class ERPExporter {
     private MovementTax getSAFTMovementTax(Product product, Vat vat) {
         MovementTax tax = new MovementTax();
 
-        if (vat.getVatType().getCode().equals("RED")) {
-            tax.setTaxCode("INT");
-        } else if (vat.getVatType().getCode().equals("2")) {
-            tax.setTaxCode("RED");
-        } else if (vat.getVatType().getCode().equals("3")) {
-            tax.setTaxCode("NOR");
-        } else if (vat.getVatType().getCode().equals("5")) {
-            tax.setTaxCode("ISE");
-        } else if (vat.getVatType().getCode().equals("6")) {
-            tax.setTaxCode("ISE");
-        } else if (vat.getVatType().getCode().equals("1")) {
-            tax.setTaxCode("ISE");
-        }
+        tax.setTaxCode(vat.getVatType().getCode());
 
-        // TODO: Tax-TaxCountryRegion
         tax.setTaxCountryRegion("PT");
 
         // Tax-TaxPercentage
@@ -1755,21 +1047,8 @@ public class ERPExporter {
         Tax tax = new Tax();
         // Tax-TaxCode
 
-        if (vat.getVatType().getCode().equals("RED")) {
-            tax.setTaxCode("INT");
-        } else if (vat.getVatType().getCode().equals("2")) {
-            tax.setTaxCode("RED");
-        } else if (vat.getVatType().getCode().equals("3")) {
-            tax.setTaxCode("NOR");
-        } else if (vat.getVatType().getCode().equals("5")) {
-            tax.setTaxCode("ISE");
-        } else if (vat.getVatType().getCode().equals("6")) {
-            tax.setTaxCode("ISE");
-        } else if (vat.getVatType().getCode().equals("1")) {
-            tax.setTaxCode("ISE");
-        }
+        tax.setTaxCode(vat.getVatType().getCode());
 
-        // TODO: Tax-TaxCountryRegion
         tax.setTaxCountryRegion("PT");
 
         // Tax-TaxPercentage
@@ -1809,9 +1088,7 @@ public class ERPExporter {
     private static ExportOperation createSaftExportOperation(FinantialInstitution institution, DateTime fromDate,
             DateTime toDate, String username) {
         return ExportOperation.create(new DateTime(), false, false, "");
-        // return ExportOperation.create(username, institution, false, null,
-        // java.util.Collections.<SaftDocumentReport> emptyList(),
-        // fromDate, toDate, type, null);
+
     }
 
     @Atomic
@@ -1842,9 +1119,9 @@ public class ERPExporter {
     // operation.setProcessed(true);
     // }
 
-    public static void exportMovementOfGoods(String username, FinantialInstitution institution, DateTime fromDate, DateTime toDate) {
+    public static void exportPendingsDocuments(String username, FinantialInstitution institution, DateTime fromDate,
+            DateTime toDate) {
 
-        // if (!deliveryNotesNotValidated.isEmpty()) {
         List<FinantialDocument> pendingDocuments = institution.findPendingDocumentsNotExported(fromDate, toDate);
 
         ExportOperation operation = createSaftExportOperation(institution, fromDate, toDate, username);
@@ -1856,7 +1133,6 @@ public class ERPExporter {
         } catch (Throwable t) {
             writeError(operation, t);
         }
-        // }
     }
 
     public static String exportFinantialDocument(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {

@@ -36,8 +36,11 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -168,6 +171,21 @@ public class DebtAccount extends DebtAccount_Base {
 
         deleteDomainObject();
 
+    }
+
+    public BigDecimal calculatePendingInterestAmount() {
+        return calculatePendingInterestAmount(new DateTime().toLocalDate());
+    }
+
+    private BigDecimal calculatePendingInterestAmount(LocalDate whenToCalculate) {
+        BigDecimal interestAmount = BigDecimal.ZERO;
+        for (InvoiceEntry entry : this.getPendingInvoiceEntriesSet()) {
+            if (entry.isDebitNoteEntry()) {
+                interestAmount =
+                        interestAmount.add(((DebitEntry) entry).calculateInterestValue(whenToCalculate).getInterestAmount());
+            }
+        }
+        return interestAmount;
     }
 
     public Stream<InvoiceEntry> getActiveInvoiceEntries() {

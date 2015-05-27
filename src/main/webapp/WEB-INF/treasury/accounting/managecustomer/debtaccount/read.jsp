@@ -141,6 +141,10 @@ ${portal.angularToolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
 						<td><c:out value="${debtAccount.obtainUITotalInDebt()}" /></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
+						<td><c:out value="${debtAccount.finantialIntitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /></td>
+					</tr>
 				</tbody>
 			</table>
 		</form>

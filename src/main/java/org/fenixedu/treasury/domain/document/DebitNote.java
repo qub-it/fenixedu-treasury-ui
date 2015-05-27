@@ -28,7 +28,6 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -161,15 +160,17 @@ public class DebitNote extends DebitNote_Base {
         checkRules();
     }
 
-    public Set<FinantialDocument> findRelatedDocuments() {
-        Set<FinantialDocument> documents = new HashSet<FinantialDocument>();
-        documents.add(this);
+    @Override
+    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList) {
+        documentsBaseList.add(this);
 
         for (DebitEntry entry : getDebitEntriesSet()) {
             if (entry.getCreditEntriesSet().size() > 0) {
                 for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
-                    if (creditEntry.getFinantialDocument() != null && creditEntry.getFinantialDocument().isClosed()) {
-                        documents.add(creditEntry.getFinantialDocument());
+                    if (creditEntry.getFinantialDocument() != null && !creditEntry.getFinantialDocument().isPreparing()) {
+                        if (!documentsBaseList.contains(creditEntry.getFinantialDocument())) {
+                            documentsBaseList.addAll(creditEntry.getFinantialDocument().findRelatedDocuments(documentsBaseList));
+                        }
                     }
                 }
             }
@@ -178,13 +179,16 @@ public class DebitNote extends DebitNote_Base {
         for (DebitEntry entry : getDebitEntriesSet()) {
             if (entry.getSettlementEntriesSet().size() > 0) {
                 for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
-                    if (settlementEntry.getFinantialDocument() != null && settlementEntry.getFinantialDocument().isClosed()) {
-                        documents.add(settlementEntry.getFinantialDocument());
+                    if (settlementEntry.getFinantialDocument() != null && !settlementEntry.getFinantialDocument().isPreparing()) {
+                        if (!documentsBaseList.contains(settlementEntry.getFinantialDocument())) {
+                            documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
+                                    documentsBaseList));
+                        }
                     }
                 }
             }
         }
 
-        return documents;
+        return documentsBaseList;
     }
 }

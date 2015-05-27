@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -219,6 +220,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         deleteDomainObject();
     }
+
+    public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList);
 
     // @formatter: off
     /************

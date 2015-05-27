@@ -27,7 +27,6 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -248,16 +247,20 @@ public class SettlementNote extends SettlementNote_Base {
         return getSettlemetEntries().collect(Collectors.toSet());
     }
 
-    public Set<FinantialDocument> findRelatedDocuments() {
-        Set<FinantialDocument> documents = new HashSet<FinantialDocument>();
-        documents.add(this);
+    @Override
+    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList) {
+
+        documentsBaseList.add(this);
 
         for (SettlementEntry entry : getSettlemetEntriesSet()) {
             if (entry.getInvoiceEntry() != null && entry.getInvoiceEntry().getFinantialDocument() != null) {
-                documents.add(entry.getFinantialDocument());
+                if (!documentsBaseList.contains(entry.getFinantialDocument())) {
+                    documentsBaseList.addAll(entry.getFinantialDocument().findRelatedDocuments(documentsBaseList));
+                }
             }
         }
-        return documents;
+        return documentsBaseList;
+
     }
 
 }
