@@ -49,7 +49,7 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-body">
 					<p>
-						<spring:message code="label.document.manageInvoice.readCreditNote.confirmDelete" /> 
+						<spring:message code="label.document.manageInvoice.readCreditNote.confirmDelete" />
 					</p>
 				</div>
 				<div class="modal-footer">
@@ -230,6 +230,12 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.originDocumentNumber" /></th>
 						<td><c:out value='${creditNote.originDocumentNumber}' /></td>
 					</tr>
+					<c:if test="${not empty creditNote.debitNote}">
+						<tr>
+							<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.debitNote" /></th>
+							<td><a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${creditNote.getDebitNote().externalId}"><c:out value='${creditNote.getDebitNote().uiDocumentNumber}' /></a></td>
+						</tr>
+					</c:if>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.state" /></th>
 						<td><c:if test="${creditNote.isAnnulled()}">
@@ -263,14 +269,14 @@ ${portal.toolkit()}
 </h2>
 
 <%-- NAVIGATION --%>
-<c:if test="${creditNote.isPreparing()}">
+<%-- <c:if test="${creditNote.isPreparing()}"> --%>
 
-	<div class="well well-sm" style="display: inline-block">
-		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message
-				code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|
-	</div>
-</c:if>
+<!-- 	<div class="well well-sm" style="display: inline-block"> -->
+<!-- 		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a -->
+<%-- 			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message --%>
+<%-- 				code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;| --%>
+<!-- 	</div> -->
+<%-- </c:if> --%>
 <c:choose>
 	<c:when test="${not empty creditNote.creditEntriesSet}">
 		<datatables:table id="creditEntries" row="creditEntry" data="${creditNote.creditEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
@@ -290,13 +296,13 @@ ${portal.toolkit()}
 				<datatables:columnHead>
 					<spring:message code="label.CreditEntry.amount" />
 				</datatables:columnHead>
-				<c:out value="${creditEntry.totalAmount}" />
+				<c:out value="${creditEntry.currency.getValueFor(creditEntry.totalAmount)}" />
 			</datatables:column>
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
 					<spring:message code="label.CreditEntry.vat" />
 				</datatables:columnHead>
-				<c:out value="${creditEntry.vat.taxRate}" />
+				<c:out value="${creditEntry.vat.taxRate} %" />
 			</datatables:column>
 			<datatables:column cssStyle="width:10%">
 				<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${creditEntry.externalId}">

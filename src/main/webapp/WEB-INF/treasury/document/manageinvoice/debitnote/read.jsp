@@ -142,9 +142,12 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <form>
 	<div class="well well-sm" style="display: inline-block">
-		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
+	
+		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a href="#" onclick="window.history.back();return false;"><spring:message code="label.event.back" /></a>
 		&nbsp;|&nbsp;
+<!-- 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" -->
+<%-- 			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a> --%>
+<!-- 		&nbsp;|&nbsp; -->
 
 		<c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
 			<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""

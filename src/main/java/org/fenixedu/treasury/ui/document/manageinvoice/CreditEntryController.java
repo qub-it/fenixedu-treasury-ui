@@ -227,7 +227,7 @@ public class CreditEntryController extends TreasuryBaseController {
 
         CreditEntry creditEntry =
                 CreditEntry.create(finantialDocument, description, debitEntry.getProduct(), debitEntry.getVat(), amount,
-                        new DateTime(), null);
+                        new DateTime(), debitEntry, debitEntry.getQuantity());
         creditEntry.setFinantialDocument(finantialDocument);
         creditEntry.setDescription(description);
         creditEntry.setAmount(amount);

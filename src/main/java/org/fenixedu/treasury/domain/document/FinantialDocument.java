@@ -99,15 +99,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public String getUiDocumentNumber() {
-        if (this.isClosed()) {
-            return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
-                    .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(),
-                    this.getDocumentNumber());
-        } else {
-            return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
-                    .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), "000000000");
-
-        }
+        return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
+                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
     }
 
     public BigDecimal getTotalAmount() {
