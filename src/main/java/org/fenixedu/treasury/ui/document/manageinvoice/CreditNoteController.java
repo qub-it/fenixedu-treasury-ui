@@ -26,14 +26,18 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -43,6 +47,7 @@ import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.services.integration.SAFTExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -564,4 +569,24 @@ public class CreditNoteController extends TreasuryBaseController {
         }
         return creditNote;
     }
+
+    @RequestMapping(value = "/read/{oid}/exportintegrationfile")
+    public void processReadToExportIntegrationFile(@PathVariable("oid") CreditNote creditNote, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            String output =
+                    SAFTExporter.exportFinantialDocument(creditNote.getDebtAccount().getFinantialInstitution(),
+                            creditNote.findRelatedDocuments());
+            response.setContentType("text/xml");
+            String filename =
+                    URLEncoder.encode(
+                            StringNormalizer.normalizePreservingCapitalizedLetters(creditNote.getUiDocumentNumber() + ".xml")
+                                    .replaceAll("\\s", "_"), "UTF-8");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(output.getBytes("UTF8"));
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+    }
+
 }

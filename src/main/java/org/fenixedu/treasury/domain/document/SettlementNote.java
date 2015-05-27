@@ -27,6 +27,9 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -223,8 +226,24 @@ public class SettlementNote extends SettlementNote_Base {
         return findAll().filter(i -> state.equals(i.getState()));
     }
 
-    public Stream<SettlementEntry> getSettlemetEntriesSet() {
+    public Stream<SettlementEntry> getSettlemetEntries() {
         return this.getFinantialDocumentEntriesSet().stream().map(SettlementEntry.class::cast);
+    }
+
+    public Set<SettlementEntry> getSettlemetEntriesSet() {
+        return getSettlemetEntries().collect(Collectors.toSet());
+    }
+
+    public Set<FinantialDocument> findRelatedDocuments() {
+        Set<FinantialDocument> documents = new HashSet<FinantialDocument>();
+        documents.add(this);
+
+        for (SettlementEntry entry : getSettlemetEntriesSet()) {
+            if (entry.getInvoiceEntry() != null && entry.getInvoiceEntry().getFinantialDocument() != null) {
+                documents.add(entry.getFinantialDocument());
+            }
+        }
+        return documents;
     }
 
 }

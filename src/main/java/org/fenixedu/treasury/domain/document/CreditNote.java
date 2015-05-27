@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -188,6 +189,30 @@ public class CreditNote extends CreditNote_Base {
             amount = amount.add(entry.getOpenAmount());
         }
         return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
+    }
+
+    public Set<FinantialDocument> findRelatedDocuments() {
+        Set<FinantialDocument> documents = new HashSet<FinantialDocument>();
+        documents.add(this);
+
+        for (CreditEntry entry : getCreditEntriesSet()) {
+            if (entry.getDebitEntry() != null && entry.getDebitEntry().getFinantialDocument() != null
+                    && entry.getDebitEntry().getFinantialDocument().isClosed()) {
+                documents.add(entry.getDebitEntry().getFinantialDocument());
+            }
+        }
+
+        for (CreditEntry entry : getCreditEntriesSet()) {
+            if (entry.getSettlementEntriesSet().size() > 0) {
+                for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
+                    if (settlementEntry.getFinantialDocument() != null && settlementEntry.getFinantialDocument().isClosed()) {
+                        documents.add(settlementEntry.getFinantialDocument());
+                    }
+                }
+            }
+        }
+
+        return documents;
     }
 
 }

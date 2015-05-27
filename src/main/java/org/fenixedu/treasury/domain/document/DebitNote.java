@@ -168,23 +168,22 @@ public class DebitNote extends DebitNote_Base {
         for (DebitEntry entry : getDebitEntriesSet()) {
             if (entry.getCreditEntriesSet().size() > 0) {
                 for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
-                    if (creditEntry.getFinantialDocument() != null) {
+                    if (creditEntry.getFinantialDocument() != null && creditEntry.getFinantialDocument().isClosed()) {
                         documents.add(creditEntry.getFinantialDocument());
                     }
                 }
             }
         }
 
-        //TODO: Missing Payments relations
-//        for (DebitEntry entry : get) {
-//            if (entry.getCreditEntriesSet().size() > 0) {
-//                for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
-//                    if (creditEntry.getFinantialDocument() != null) {
-//                        documents.add(creditEntry.getFinantialDocument());
-//                    }
-//                }
-//            }
-//        }
+        for (DebitEntry entry : getDebitEntriesSet()) {
+            if (entry.getSettlementEntriesSet().size() > 0) {
+                for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
+                    if (settlementEntry.getFinantialDocument() != null && settlementEntry.getFinantialDocument().isClosed()) {
+                        documents.add(settlementEntry.getFinantialDocument());
+                    }
+                }
+            }
+        }
 
         return documents;
     }
