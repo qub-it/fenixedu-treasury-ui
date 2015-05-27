@@ -88,7 +88,7 @@ public abstract class Invoice extends Invoice_Base {
     @Atomic
     public void recalculateAmountValues() {
         for (FinantialDocumentEntry entry : this.getFinantialDocumentEntriesSet()) {
-            ((InvoiceEntry) entry).realculateAmountValues();
+            ((InvoiceEntry) entry).recalculateAmountValues();
         }
     }
 

@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +37,12 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.SettlementNoteBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -45,45 +53,27 @@ public class SettlementNote extends SettlementNote_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
-            final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final java.lang.String originDocumentNumber,
-            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
-        setFinantialDocumentType(finantialDocumentType);
-        setDebtAccount(debtAccount);
-        setDocumentNumberSeries(documentNumberSeries);
-        setCurrency(currency);
-        setDocumentNumber(documentNumber);
-        setDocumentDate(documentDate);
-        setDocumentDueDate(documentDate.toLocalDate());
+    protected SettlementNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate, final String originDocumentNumber) {
+        this();
+        init(debtAccount, documentNumberSeries, documentDate, originDocumentNumber);
+    }
+
+    protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate, final String originDocumentNumber) {
+        super.init(debtAccount, documentNumberSeries, documentDate);
         setOriginDocumentNumber(originDocumentNumber);
-        setState(state);
         checkRules();
     }
 
     @Override
     protected void checkRules() {
+        super.checkRules();
 
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
         }
-        if (getFinantialDocumentType() == null) {
-            throw new TreasuryDomainException("error.SettlementNote.finantialDocumentType.required");
-        }
 
-        if (getDebtAccount() == null) {
-            throw new TreasuryDomainException("error.SettlementNote.debtAccount.required");
-        }
-
-        if (getDocumentNumberSeries() == null) {
-            throw new TreasuryDomainException("error.SettlementNote.documentNumberSeries.required");
-        }
-
-        if (getCurrency() == null) {
-            throw new TreasuryDomainException("error.SettlementNote.currency.required");
-        }
-
-        super.checkRules();
         // CHANGE_ME In order to validate UNIQUE restrictions
         // if (findByFinantialDocumentType(getFinantialDocumentType().count()>1)
         // {
@@ -182,13 +172,68 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     @Atomic
-    public static SettlementNote create(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
-            final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final java.lang.String originDocumentNumber,
-            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
-        SettlementNote settlementNote = new SettlementNote();
-        settlementNote.init(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber, documentDate,
-                originDocumentNumber, state);
+    public void processSettlementNoteCreation(SettlementNoteBean bean) {
+        closeDebitNotes(bean);
+        closeCreditNotes(bean);
+        processInterestEntries(bean);
+        processPaymentEntries(bean);
+    }
+
+    private void processPaymentEntries(SettlementNoteBean bean) {
+        for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
+            PaymentEntry.create(paymentEntryBean.getPaymentMethod(), this, paymentEntryBean.getPaymentAmount());
+        }
+    }
+
+    private void processInterestEntries(SettlementNoteBean bean) {
+        DebitNote interestDebitNote =
+                DebitNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay());
+        for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
+            DebitEntry interestDebitEntry =
+                    interestEntryBean.getDebitEntry().generateInterestRateDebitEntry(interestEntryBean.getInterest(),
+                            bean.getDate().toDateTimeAtStartOfDay(), interestDebitNote);
+            if (interestEntryBean.isIncluded()) {
+                SettlementEntry.create(interestDebitEntry, this, interestEntryBean.getInterest().getInterestAmount(),
+                        interestDebitEntry.getDescription(), bean.getDate().toDateTimeAtStartOfDay());
+            }
+        }
+        interestDebitNote.closeDocument();
+    }
+
+    private void closeCreditNotes(SettlementNoteBean bean) {
+        for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
+            if (creditEntryBean.isIncluded() && !creditEntryBean.getCreditEntry().getFinantialDocument().isClosed()) {
+                creditEntryBean.getCreditEntry().getFinantialDocument().closeDocument();
+                SettlementEntry.create(creditEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
+            }
+        }
+    }
+
+    private void closeDebitNotes(SettlementNoteBean bean) {
+        List<DebitEntry> untiedDebitEntries = new ArrayList<DebitEntry>();
+        for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
+            if (debitEntryBean.isIncluded()) {
+                if (debitEntryBean.getDebitEntry().getFinantialDocument() == null) {
+                    untiedDebitEntries.add(debitEntryBean.getDebitEntry());
+                } else {
+                    if (!debitEntryBean.getDebitEntry().getFinantialDocument().isClosed()) {
+                        debitEntryBean.getDebitEntry().getFinantialDocument().closeDocument();
+                    }
+                }
+                SettlementEntry.create(debitEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
+            }
+        }
+        DebitNote debitNote =
+                DebitNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay());
+        debitNote.addDebitNoteEntries(untiedDebitEntries);
+        debitNote.closeDocument();
+    }
+
+    @Atomic
+    public static SettlementNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate, final String originDocumentNumber) {
+        SettlementNote settlementNote = new SettlementNote(debtAccount, documentNumberSeries, documentDate, originDocumentNumber);
+
         return settlementNote;
     }
 

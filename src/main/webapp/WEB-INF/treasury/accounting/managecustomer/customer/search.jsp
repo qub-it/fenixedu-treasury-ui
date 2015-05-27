@@ -103,7 +103,6 @@ ${portal.toolkit()}
 
 
 
-
 <c:choose>
 	<c:when test="${not empty searchcustomerResultsDataSet}">
 		<table id="searchcustomerTable" class="table responsive table-bordered table-hover">

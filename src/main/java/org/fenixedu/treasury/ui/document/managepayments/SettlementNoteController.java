@@ -42,10 +42,11 @@ import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -128,12 +129,13 @@ public class SettlementNoteController extends TreasuryBaseController {
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
-                if (debitEntryBean.getPaymentAmount().compareTo(BigDecimal.ZERO) == 0) {
+                if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.payment.equal.zero",
-                            Integer.toString(i + 1)), model);
-                } else if (debitEntryBean.getPaymentAmount().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
+                    addErrorMessage(
+                            BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.debtAmount.equal.zero",
+                                    Integer.toString(i + 1)), model);
+                } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(
@@ -141,8 +143,9 @@ public class SettlementNoteController extends TreasuryBaseController {
                                     Integer.toString(i + 1)), model);
                 } else {
                     debitEntryBean.setNotValid(false);
-                    debitSum = debitSum.add(debitEntryBean.getPaymentAmount());
                 }
+                //Always perform the sum, in order to verify if creditSum is not higher than debitSum
+                debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
             } else {
                 debitEntryBean.setNotValid(false);
             }
@@ -153,12 +156,17 @@ public class SettlementNoteController extends TreasuryBaseController {
             }
         }
         if (creditSum.compareTo(debitSum) > 0) {
+            error = true;
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.negative.payment.value"), model);
         }
-//        if (bean.getDate().isAfter(new LocalDate())) {
-//            error = true;
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
-//        }
+        if (debitSum.compareTo(BigDecimal.ZERO) == 0) {
+            error = true;
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
+        }
+        if (bean.getDate().isAfter(new LocalDate())) {
+            error = true;
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+        }
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -179,8 +187,20 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = CALCULATE_INTEREST_URI, method = RequestMethod.POST)
     public String calculateInterest(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        setSettlementNoteBean(bean, model);
-        return "treasury/document/managepayments/settlementnote/createDebitNote";
+        for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
+            if (debitEntryBean.isIncluded() && debitEntryBean.getDebitEntry().getFinantialDocument() == null) {
+                setSettlementNoteBean(bean, model);
+                return "treasury/document/managepayments/settlementnote/createDebitNote";
+            }
+        }
+        for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
+            if (interestEntryBean.isIncluded()) {
+                setSettlementNoteBean(bean, model);
+                return "treasury/document/managepayments/settlementnote/createDebitNote";
+            }
+        }
+        //It is not necessary to create a debit note
+        return createDebitNote(bean, model);
     }
 
     @RequestMapping(value = CREATE_DEBIT_NOTE_URI, method = RequestMethod.POST)
@@ -191,88 +211,40 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        BigDecimal debitSum = bean.getPaymentAmountWithVat();
-        BigDecimal paymentSum = BigDecimal.ZERO;
-        for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
-            paymentSum = paymentSum.add(paymentEntryBean.getPayedAmount());
-        }
+        BigDecimal debitSum = bean.getDebtAmountWithVat();
+        BigDecimal paymentSum = bean.getPaymentAmount();
         if (debitSum.compareTo(paymentSum) != 0) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.no.match.payment.debit"), model);
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/insertPayment";
         }
-        //TODOJN
+
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/summary";
     }
 
-    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
-    public String create(Model model) {
-        return "treasury/document/managepayments/settlementnote/create";
-    }
-
-    //
-    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "documentdate", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate, Model model,
+    @RequestMapping(value = SUMMARY_URI, method = RequestMethod.POST)
+    public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
-        /*
-         * Creation Logic
-         */
+        //TODOJN
+        //Surround by try/catch block
+        /////////////
+        processSettlementNoteCreation(bean);
+        ////////////
 
-        try {
-
-            SettlementNote settlementNote = createSettlementNote(documentDate);
-
-            // Success Validation
-            // Add the bean to be used in the View
-            model.addAttribute("settlementNote", settlementNote);
-            return redirect("/treasury/accounting/managecustomer/customer/read/" + getSettlementNote(model).getExternalId(),
-                    model, redirectAttributes);
-        } catch (DomainException de) {
-
-            // @formatter: off
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(
-             * Constants.BUNDLE, "label.error.create")
-             * + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+
-             * ex.getLocalizedMessage(),model);
-             */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
-        }
+        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
+        return redirect(DebtAccountController.READ_URL + bean.getDebtAccount().getExternalId(), model, redirectAttributes);
     }
 
     @Atomic
-    public SettlementNote createSettlementNote(org.joda.time.DateTime documentDate) {
-
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create the object
-         * with the default constructor and use the setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        // SettlementNote settlementNote =
-        // settlementNote.create(fields_to_create);
-
-        // Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
+    public void processSettlementNoteCreation(SettlementNoteBean bean) {
         SettlementNote settlementNote =
-                SettlementNote.create(FinantialDocumentType.findForSettlementNote(), null, null, null, null, documentDate, null,
-                        null);
-        return settlementNote;
+                SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay(),
+                        bean.getOriginDocumentNumber());
+        settlementNote.processSettlementNoteCreation(bean);
     }
 
+//////// AUTO GENERATED ////////    
     //
     @RequestMapping(value = SEARCH_URI)
     public String search(

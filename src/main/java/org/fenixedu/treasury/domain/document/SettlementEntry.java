@@ -30,16 +30,25 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
 public class SettlementEntry extends SettlementEntry_Base {
 
-    protected SettlementEntry(final FinantialDocument finantialDocument, final BigDecimal amount, final String description,
-            final DateTime entryDateTime) {
-        init(finantialDocument, amount, description, entryDateTime);
+    protected SettlementEntry() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
+
+    protected SettlementEntry(final InvoiceEntry invoiceEntry, final FinantialDocument finantialDocument,
+            final BigDecimal amount, final String description, final DateTime entryDateTime) {
+        this();
+        init(invoiceEntry, finantialDocument, amount, description, entryDateTime);
     }
 
     @Override
@@ -48,10 +57,10 @@ public class SettlementEntry extends SettlementEntry_Base {
         throw new RuntimeException("error.SettlementEntry.use.init.without.finantialEntryType");
     }
 
-    protected void init(final FinantialDocument finantialDocument, final BigDecimal amount, String description,
-            final DateTime entryDateTime) {
+    protected void init(final InvoiceEntry invoiceEntry, final FinantialDocument finantialDocument, final BigDecimal amount,
+            String description, final DateTime entryDateTime) {
         super.init(finantialDocument, FinantialEntryType.SETTLEMENT_ENTRY, amount, description, entryDateTime);
-
+        setInvoiceEntry(invoiceEntry);
         checkRules();
     }
 
@@ -75,9 +84,21 @@ public class SettlementEntry extends SettlementEntry_Base {
     }
 
     @Atomic
-    public SettlementEntry create(final FinantialDocument finantialDocument, final BigDecimal amount, final String description,
-            final DateTime entryDateTime) {
-        return new SettlementEntry(finantialDocument, amount, description, entryDateTime);
+    public static SettlementEntry create(final InvoiceEntry invoiceEntry, final FinantialDocument finantialDocument,
+            final BigDecimal amount, final String description, final DateTime entryDateTime) {
+        return new SettlementEntry(invoiceEntry, finantialDocument, amount, description, entryDateTime);
+    }
+
+    @Atomic
+    public static SettlementEntry create(final DebitEntryBean debitEntryBean, SettlementNote settlementNote, DateTime entryDate) {
+        return new SettlementEntry(debitEntryBean.getDebitEntry(), settlementNote, debitEntryBean.getDebtAmount(), debitEntryBean
+                .getDebitEntry().getDescription(), entryDate);
+    }
+
+    @Atomic
+    public static SettlementEntry create(final CreditEntryBean creditEntryBean, SettlementNote settlementNote, DateTime entryDate) {
+        return new SettlementEntry(creditEntryBean.getCreditEntry(), settlementNote,
+                creditEntryBean.getCreditEntry().getAmount(), creditEntryBean.getCreditEntry().getDescription(), entryDate);
     }
 
     @Override

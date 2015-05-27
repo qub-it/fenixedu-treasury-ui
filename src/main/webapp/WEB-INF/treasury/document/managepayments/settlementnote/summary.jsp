@@ -94,230 +94,306 @@ ${portal.angularToolkit()}
 </div>
 
 <script>
-	angular.isUndefinedOrNull = function(val) {
-		return angular.isUndefined(val) || val === null
-	};
-	angular
-			.module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ])
-			.controller(
-					'SettlementNoteController',
-					[
-							'$scope',
-							function($scope) {
-								$scope.object = angular
-										.fromJson('${settlementNoteBeanJson}');
-								$scope.getTotal = function() {
-									var total = 0;
-									for (var i = 0; i < $scope.object.paymentEntries.length; i++) {
-										total += parseFloat($scope.object.paymentEntries[i].payedAmount);
-									}
-									return total.toFixed(2);
-								}
-							} ]);
+   angular.isUndefinedOrNull = function(val) {
+        return angular.isUndefined(val) || val === null };
+   angular
+        .module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ])
+        .controller(
+                  'SettlementNoteController',
+                  [
+                    '$scope',
+                    function($scope) {
+                        $scope.object = angular.fromJson('${settlementNoteBeanJson}');
+                        $scope.getTotal = function() {
+                            var total = 0;
+                            for(var i = 0; i < $scope.object.paymentEntries.length; i++){
+                                total += parseFloat($scope.object.paymentEntries[i].paymentAmount);
+                            }
+                            return total.toFixed(2);
+                        }
+                        $scope.currencySymbol = "${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }";
+                    } 
+                  ]
+         );
 </script>
 
 <script type="text/javascript">
-	function processSubmit(url) {
-		$("#summaryForm").attr("action", url);
-		$("#summaryForm").submit();
-	}
+    function processSubmit(url) {
+        $("#summaryForm").attr("action", url);
+        $("#summaryForm").submit();
+    }
 </script>
 
 
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">
-			<spring:message code="label.Customer" />
-		</h3>
-	</div>
-	<div class="panel-body">
-		<table class="table">
-			<tbody>
-				<tr>
-					<th scope="row" class="col-xs-3"><spring:message code="label.Customer.name" /></th>
-					<td><c:out value='${settlementNoteBean.debtAccount.customer.name}' /></td>
-				</tr>
-				<tr>
-					<th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
-					<td><c:out value='${settlementNoteBean.debtAccount.customer.fiscalNumber}' /></td>
-				</tr>
-				<tr>
-					<th scope="row" class="col-xs-3"><spring:message code="label.Customer.address" /></th>
-					<td><c:out value='${settlementNoteBean.debtAccount.customer.address}' /></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
+<div class="panel panel-primary">    
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.Customer" />
+        </h3>
+    </div>
+    <div class="panel-body">
+        <table class="table">
+            <tbody>
+                <tr>
+                    <th scope="row" class="col-xs-3">
+                        <spring:message code="label.Customer.name" />
+                    </th>
+                    <td>
+                        <c:out value='${settlementNoteBean.debtAccount.customer.name}' />
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="col-xs-3">
+                        <spring:message code="label.Customer.fiscalNumber" />
+                    </th>
+                    <td>
+                        <c:out value='${settlementNoteBean.debtAccount.customer.fiscalNumber}' />
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row" class="col-xs-3">
+                        <spring:message code="label.Customer.address" />
+                    </th>
+                    <td>
+                        <c:out value='${settlementNoteBean.debtAccount.customer.address}' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="panel panel-primary ">
-	<div class="panel-heading">
-		<h3 class="panel-title">
-			<spring:message code="label.DebitEntry" />
-		</h3>
-	</div>
-	<div class="panel-body">
-		<table id="debitNoteTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<th><spring:message code="label.DebitEntry.documentNumber" /></th>
-					<th><spring:message code="label.DebitEntry.description" /></th>
-					<th><spring:message code="label.DebitEntry.dueDate" /></th>
-					<th><spring:message code="label.DebitEntry.vat" /></th>
-					<th><spring:message code="label.DebitEntry.amountWithVat" /></th>
-				</tr>
-			</thead>
-			<tbody>
-				<c:set var="debitNoteDate" value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
-				<c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
-					<c:if test="${ debitEntryBean.included && empty debitEntryBean.debitEntry.finantialDocument  }">
-						<tr>
-							<td>---</td>
-							<td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
-							<td><c:out value='${ debitNoteDate }' /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }" /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" /></td>
-						</tr>
-					</c:if>
-				</c:forEach>
-				<c:forEach items="${ settlementNoteBean.interestEntries }" var="interestEntryBean">
-					<c:if test="${ interestEntryBean.included  }">
-						<tr>
-							<td>---</td>
-							<td><c:out value="${ interestEntryBean.debitEntry.description }" /></td>
-							<td><c:out value='${ debitNoteDate }' /></td>
-							<td>0.00</td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" /></td>
-						</tr>
-					</c:if>
-				</c:forEach>
-				<c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
-					<c:if test="${ debitEntryBean.included && not empty debitEntryBean.debitEntry.finantialDocument  }">
-						<tr>
-							<td><c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></td>
-							<td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
-							<td><c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }" /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" /></td>
-						</tr>
-					</c:if>
-				</c:forEach>
-				<c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
-					<tr>
-						<td><c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }" /></td>
-						<td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
-						<td><c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
-						<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }" /></td>
-						<td>- <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.amount ) }" />
-						</td>
-					</tr>
-				</c:forEach>
-			</tbody>
-		</table>
-		<div class="panel-footer">
-			<p align="right">
-				<b><spring:message code="label.total" /></b>: ${ settlementNoteBean.paymentAmountWithVat }
-			</p>
-		</div>
-	</div>
+<div class="panel panel-primary ">    
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.DebitEntry" />
+        </h3>
+    </div>
+    <div class="panel-body">
+        <table id="debitNoteTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><spring:message code="label.DebitEntry.documentNumber" /></th>
+                    <th><spring:message code="label.DebitEntry.description" /></th>
+                    <th><spring:message code="label.DebitEntry.dueDate" /></th>
+                    <th><spring:message code="label.DebitEntry.vat" /></th>
+                    <th><spring:message code="label.DebitEntry.amountWithVat" /></th> 
+                </tr>
+            </thead>
+            <tbody>
+                <c:set var="debitNoteDate" value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
+                <c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
+                    <c:if test="${ debitEntryBean.included && empty debitEntryBean.debitEntry.finantialDocument  }">
+                        <tr>
+                            <td>
+                                ---
+                            </td>
+                            <td>
+                                <c:out value="${ debitEntryBean.debitEntry.description }" />
+                            </td>
+                            <td>
+                                <c:out value='${ debitNoteDate }' />
+                            </td>                                
+                            <td>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }"/>
+                            </td>
+                            <td>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
+                            </td>
+                        </tr>
+                    </c:if>                    
+                </c:forEach>
+                <c:forEach items="${ settlementNoteBean.interestEntries }" var="interestEntryBean">
+                    <c:if test="${ interestEntryBean.included  }">
+                        <tr>
+                            <td>
+                                ---
+                            </td>
+                            <td>
+                                <c:out value="${ interestEntryBean.debitEntry.description }" />
+                            </td>
+                            <td>
+                                <c:out value='${ debitNoteDate }' />
+                            </td>                                
+                            <td>
+                                0.00
+                            </td>
+                            <td>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
+                            </td>
+                        </tr>
+                    </c:if>                    
+                </c:forEach>                 
+                <c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
+                    <c:if test="${ debitEntryBean.included && not empty debitEntryBean.debitEntry.finantialDocument  }">
+                        <tr>
+                            <td>
+                                <c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" />
+                            </td>
+                            <td>
+                                <c:out value="${ debitEntryBean.debitEntry.description }" />
+                            </td>
+                            <td>
+                                <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                            </td>
+                            <td>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }"/>
+                            </td>
+                            <td>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
+                            </td>
+                        </tr>
+                    </c:if>                    
+                </c:forEach>
+                <c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
+                    <c:if test="${ creditEntryBean.included }">
+                        <tr>
+                            <td>
+                                <c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }"/>
+                            </td>
+                            <td>
+                                <c:out value="${ creditEntryBean.creditEntry.description }"/>
+                            </td>
+                            <td>
+                                <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                            </td>
+                            <td>
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }"/>
+                            </td>
+                            <td>
+                                -
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.amount ) }" />
+                            </td>
+                        </tr>
+                    </c:if>
+                </c:forEach>   
+            </tbody>
+        </table>
+        <div class="panel-footer">
+            <p align="right"><b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat ) }</p>
+        </div>            
+    </div>
 </div>
 
+<div class="panel panel-primary">    
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.PaymentMethod" />
+        </h3>
+    </div>
+    <div class="panel-body">            
+        <table id="paymentTableTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><spring:message code="label.PaymentMethod" /></th>
+                    <th><spring:message code="label.PaymentMethod.value" /></th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach items="${ settlementNoteBean.paymentEntries }" var="paymentEntry">
+                    <tr>
+                        <td>
+                            <c:out value="${ paymentEntry.paymentMethod.name.content }" />
+                        </td>
+                        <td>
+                            <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( paymentEntry.paymentAmount ) }" />
+                        </td>
+                    </tr>
+                </c:forEach> 
+            </tbody>
+        </table>
+        <div class="panel-footer">
+            <p align="right"><b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.paymentAmount ) }</p>
+        </div>
+    </div>
+</div>
 
-<form id='summaryForm' name='form' method="post" class="form-horizontal" ng-app="angularAppSettlementNote" ng-controller="SettlementNoteController"
-	action='${pageContext.request.contextPath}<%= SettlementNoteController.SUMMARY_URL %>'>
+<div class="panel panel-primary">    
+    <div class="panel panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.Vat.Summary" />
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-lg-6">
+                <table id="vatTable"
+                    class="table responsive table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th><spring:message code="label.VatType" /></th>
+                            <th><spring:message code="label.VatType.valueWithoutVat" /></th>
+                            <th><spring:message code="label.VatType.valueOfVat" /></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:set var="sumAmount" value="<%= BigDecimal.ZERO %>" />
+                        <c:set var="sumAmountWithVat" value="<%= BigDecimal.ZERO %>" />                            
+                        <c:forEach items="${ settlementNoteBean.valuesByVat }" var="entry">
+                            <c:set var="sumAmount" value="${ sumAmount.add(entry.value.amount) }" />
+                            <c:set var="sumAmountWithVat" value="${ sumAmountWithVat.add(entry.value.amountWithVat) }" />                
+                            <tr>
+                                <td>
+                                    <c:out value="${ entry.key }" />
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( entry.value.amount ) }" />
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( entry.value.amountWithVat.subtract(entry.value.amount) ) }" />
+                                </td>
+                            </tr>
+                        </c:forEach>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-6 col-lg-6">
+                <p align="center">
+                    <b><spring:message code="label.summary"/></b>
+                </p>
+                <br>
+                <table id="vatSummaryTable"
+                    class="table responsive table-bordered table-hover">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="col-xs-3">
+                                <spring:message code="label.VatType.sumValueWithoutVat" />
+                            </th>
+                            <td>
+                                <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( sumAmount ) }' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="col-xs-3">
+                                <spring:message code="label.VatType.sumValueOfVat" />
+                            </th>
+                            <td>
+                                <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( sumAmountWithVat.subtract(sumAmount) ) }' />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="col-xs-3">
+                                <spring:message code="label.VatType.sumValueWithVat" />
+                            </th>
+                            <td>
+                                <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( sumAmountWithVat ) }' />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div> 
+    </div>
+</div>
 
-	<input name="bean" type="hidden" value="{{ object }}" />
+<form id='summaryForm' name='form' method="post" class="form-horizontal"
+    ng-app="angularAppSettlementNote"
+    ng-controller="SettlementNoteController"
+    action='${pageContext.request.contextPath}<%= SettlementNoteController.SUMMARY_URL %>'>
 
-
-	<div class="panel panel-primary">
-		<div class="panel-heading">
-			<h3 class="panel-title">
-				<spring:message code="label.PaymentMethod" />
-			</h3>
-		</div>
-		<div class="panel-body">
-			<table id="paymentTableTable" class="table responsive table-bordered table-hover">
-				<thead>
-					<tr>
-						<th><spring:message code="label.PaymentMethod" /></th>
-						<th><spring:message code="label.PaymentMethod.value" /></th>
-					</tr>
-				</thead>
-				<tbody>
-					<c:forEach items="${ settlementNoteBean.paymentEntries }" var="paymentEntry">
-						<tr>
-							<td><c:out value="${ paymentEntry.paymentMethod.name.content }" /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( paymentEntry.payedAmount ) }" /></td>
-						</tr>
-					</c:forEach>
-				</tbody>
-			</table>
-			<div class="panel-footer">
-				<p align="right">
-					<b><spring:message code="label.total" /></b>: {{ getTotal() }}
-				</p>
-			</div>
-		</div>
-	</div>
-
-	<div class="panel panel-primary">
-		<div class="panel panel-heading">
-			<h3 class="panel-title">
-				<spring:message code="label.Vat.Summary" />
-			</h3>
-		</div>
-		<div class="panel-body">
-			<div class="row">
-				<div class="col-md-6 col-lg-6">
-					<table id="vatTable" class="table responsive table-bordered table-hover">
-						<thead>
-							<tr>
-								<th><spring:message code="label.VatType" /></th>
-								<th><spring:message code="label.VatType.valueWithoutVat" /></th>
-								<th><spring:message code="label.VatType.valueOfVat" /></th>
-							</tr>
-						</thead>
-						<tbody>
-							<c:set var="sumAmount" value="<%=BigDecimal.ZERO%>" />
-							<c:set var="sumAmountWithVat" value="<%=BigDecimal.ZERO%>" />
-							<c:forEach items="${ settlementNoteBean.valuesByVat }" var="entry">
-								<c:set var="sumAmount" value="${ sumAmount.add(entry.value.amount) }" />
-								<c:set var="sumAmountWithVat" value="${ sumAmountWithVat.add(entry.value.amountWithVat) }" />
-								<tr>
-									<td><c:out value="${ entry.key }" /></td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( entry.value.amount ) }" /></td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( entry.value.amountWithVat.subtract(entry.value.amount) ) }" /></td>
-								</tr>
-							</c:forEach>
-						</tbody>
-					</table>
-				</div>
-				<div class="col-md-6 col-lg-6">
-					<p align="center">
-						<b><spring:message code="label.summary" /></b>
-					</p>
-					<br>
-					<table id="vatSummaryTable" class="table responsive table-bordered table-hover">
-						<tbody>
-							<tr>
-								<th scope="row" class="col-xs-3"><spring:message code="label.VatType.sumValueWithoutVat" /></th>
-								<td><c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( sumAmount ) }' /></td>
-							</tr>
-							<tr>
-								<th scope="row" class="col-xs-3"><spring:message code="label.VatType.sumValueOfVat" /></th>
-								<td><c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( sumAmountWithVat.subtract(sumAmount) ) }' /></td>
-							</tr>
-							<tr>
-								<th scope="row" class="col-xs-3"><spring:message code="label.VatType.sumValueWithVat" /></th>
-								<td><c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( settlementNoteBean.paymentAmountWithVat ) }' /></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
-
+    <input name="bean" type="hidden" value="{{ object }}" />
 
 	<div class="panel-footer">
 		<button type="button" class="btn btn-default" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CREATE_DEBIT_NOTE_URL %>')">

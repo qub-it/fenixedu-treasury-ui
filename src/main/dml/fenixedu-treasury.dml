@@ -419,6 +419,17 @@ relation TreasurySettingsBennu {
 	}
 }
 
+relation TreasurySettingsInterestProduct {
+    
+    settings.TreasurySettings playsRole treasurySettings {
+        multiplicity 0..1;
+    }
+    
+    Product playsRole interestProduct {
+        multiplicity 0..1;
+    }
+}
+
 relation TreasurySettingsCurrency {
 	
 	settings.TreasurySettings playsRole treasurySettings {

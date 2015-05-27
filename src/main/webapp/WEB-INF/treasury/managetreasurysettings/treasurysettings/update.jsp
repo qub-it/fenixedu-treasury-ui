@@ -86,6 +86,15 @@ ${portal.toolkit()}
 					</select>
 				</div>
 			</div>		
+            <div class="form-group row">
+                <div class="col-sm-2 control-label"><spring:message code="label.TreasurySettings.interestProduct"/></div> 
+                
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select id="treasurySettings_interestProduct" class="js-example-basic-single" name="interestproduct"> 
+                    </select>
+                </div>
+            </div>      
 
 		</div>
 		<div class="panel-footer">
@@ -118,7 +127,30 @@ $(document).ready(function() {
     $("#treasurySettings_defaultCurrency").select2().select2('val', '<c:out value='${not empty param.defaultcurrency ? param.defaultcurrency : treasurySettings.defaultCurrency.externalId }'/>');
 
     <%-- End block for providing defaultCurrency options --%>
-	
+
+    <%-- Block for providing interestProduct options --%>
+    <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+    interestProduct_options = [
+        <c:forEach items="${TreasurySettings_interestProduct_options}" var="element"> 
+            {
+                text : "<c:out value='${element.name.content}'/>", 
+                id : "<c:out value='${element.externalId}'/>"
+            },
+        </c:forEach>
+    ];
+    
+    $("#treasurySettings_interestProduct").select2(
+        {
+            data : interestProduct_options,
+        }     
+            );
+            
+            
+    $("#treasurySettings_interestProduct").select2().select2('val', '<c:out value='${not empty param.interestproduct ? param.interestproduct : treasurySettings.interestProduct.externalId }'/>');
+
+    <%-- End block for providing interestProduct options --%>
+
+    
 });   
 	
 </script>

@@ -93,44 +93,40 @@ ${portal.angularToolkit()}
 </div>
 
 <script>
-	angular.isUndefinedOrNull = function(val) {
-		return angular.isUndefined(val) || val === null
-	};
-	angular
-			.module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ])
-			.controller(
-					'SettlementNoteController',
-					[
-							'$scope',
-							function($scope) {
-								$scope.object = angular
-										.fromJson('${settlementNoteBeanJson}');
-								$scope.getTotal = function() {
-									var total = 0;
-									for (var i = 0; i < $scope.object.paymentEntries.length; i++) {
-										total += parseFloat($scope.object.paymentEntries[i].payedAmount);
-									}
-									return total.toFixed(2);
-								}
-								$scope.addPaymentMethod = function() {
-									$scope.object.paymentEntries.push({
-										payedAmount : $scope.paymentAmount,
-										paymentMethod : $scope.paymentMethod.id
-									});
-									$scope.paymentAmount = '0';
-								}
-								$scope.getPaymentName = function(id) {
-									var name;
-									angular.forEach(
-											$scope.object.paymentMethods,
-											function(paymentMethod) {
-												if (paymentMethod.id == id) {
-													name = paymentMethod.text;
-												}
-											}, id, name)
-									return name;
-								}
-							} ]);
+   angular.isUndefinedOrNull = function(val) {
+        return angular.isUndefined(val) || val === null };
+   angular
+        .module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ])
+        .controller(
+                  'SettlementNoteController',
+                  [
+                    '$scope',
+                    function($scope) {
+                        $scope.object = angular.fromJson('${settlementNoteBeanJson}');
+                        $scope.getTotal = function() {
+                            var total = 0;
+                    	    for(var i = 0; i < $scope.object.paymentEntries.length; i++){
+                    	        total += parseFloat($scope.object.paymentEntries[i].paymentAmount);
+                    	    }
+                    	    return total.toFixed(2);
+                	    }
+                        $scope.addPaymentMethod = function() {
+                        	$scope.object.paymentEntries.push({paymentAmount : parseFloat($scope.paymentAmount).toFixed(2) , paymentMethod : $scope.paymentMethod.id });
+                        	$scope.paymentAmount='';
+                        }
+                        $scope.getPaymentName = function(id) {
+                        	var name;
+                        	angular.forEach($scope.object.paymentMethods, function(paymentMethod) {
+                        		if(paymentMethod.id == id) {
+                        			name = paymentMethod.text;
+                        		}
+                        	}, id, name)
+                        	return name;
+                        }
+                        $scope.currencySymbol = "${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }";
+                    } 
+                  ]
+         );
 </script>
 
 <script type="text/javascript">
@@ -145,166 +141,211 @@ ${portal.angularToolkit()}
 
 	<input name="bean" type="hidden" value="{{ object }}" />
 
-	<div class="panel panel-primary">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<spring:message code="label.DebitEntry" />
-				</h3>
-			</div>
-			<div class="panel-body">
-				<table id="debitNoteTable" class="table responsive table-bordered table-hover">
-					<thead>
-						<tr>
-							<th><spring:message code="label.DebitEntry.documentNumber" /></th>
-							<th><spring:message code="label.DebitEntry.description" /></th>
-							<th><spring:message code="label.DebitEntry.dueDate" /></th>
-							<th><spring:message code="label.DebitEntry.vat" /></th>
-							<th><spring:message code="label.DebitEntry.amountWithVat" /></th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:set var="debitNoteDate" value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
-						<c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
-							<c:if test="${ debitEntryBean.included && empty debitEntryBean.debitEntry.finantialDocument  }">
-								<tr>
-									<td>---</td>
-									<td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
-									<td><c:out value='${ debitNoteDate }' /></td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale(  debitEntryBean.debitEntry.vat.taxRate ) }" /></td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" /></td>
-								</tr>
-							</c:if>
-						</c:forEach>
-						<c:forEach items="${ settlementNoteBean.interestEntries }" var="interestEntryBean">
-							<c:if test="${ interestEntryBean.included  }">
-								<tr>
-									<td>---</td>
-									<td><c:out value="${ interestEntryBean.debitEntry.description }" /></td>
-									<td><c:out value='${ debitNoteDate }' /></td>
-									<td>0.00</td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" /></td>
-								</tr>
-							</c:if>
-						</c:forEach>
-					</tbody>
-				</table>
-				<table id="debitEntriesTable" class="table responsive table-bordered table-hover">
-					<thead>
-						<tr>
-							<th><spring:message code="label.DebitEntry.documentNumber" /></th>
-							<th><spring:message code="label.DebitEntry.description" /></th>
-							<th><spring:message code="label.DebitEntry.dueDate" /></th>
-							<th><spring:message code="label.DebitEntry.vat" /></th>
-							<th><spring:message code="label.DebitEntry.amountWithVat" /></th>
-						</tr>
-					</thead>
-					<tbody>
-						<c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
-							<c:if test="${ debitEntryBean.included && not empty debitEntryBean.debitEntry.finantialDocument  }">
-								<tr>
-									<td><c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></td>
-									<td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
-									<td><c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate ) }" /></td>
-									<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" /></td>
-								</tr>
-							</c:if>
-						</c:forEach>
-						<c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
-							<tr>
-								<td><c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }" /></td>
-								<td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
-								<td><c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
-								<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }" /></td>
-								<td>- <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmountWithVat ) }" />
-								</td>
-							</tr>
-						</c:forEach>
-					</tbody>
-				</table>
-			</div>
-			<div class="panel-footer">
-				<p align="right">
-					<b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(settlementNoteBean.paymentAmountWithVat) }
-				</p>
-			</div>
-
-		</div>
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">
-					<spring:message code="label.PaymentMethod" />
-				</h3>
-			</div>
-
-			<div class="panel-body">
-				<table id="paymentTableTable" class="table responsive table-bordered table-hover">
-					<thead>
-						<tr>
-							<th><spring:message code="label.PaymentMethod" /></th>
-							<th><spring:message code="label.PaymentMethod.value" /></th>
-							<!-- operation column -->
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr ng-repeat="paymentEntryBean in object.paymentEntries">
-							<td>{{ getPaymentName( paymentEntryBean.paymentMethod ) }}</td>
-							<td>{{ paymentEntryBean.payedAmount }} ${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}</td>
-							<td>
-								<button type="button" class="btn btn-default" ng-click="object.paymentEntries.splice($index,1);">
-									<spring:message code="label.event.delete" />
-								</button>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-
-			</div>
-
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.PaymentMethod" />
-				</div>
-				<div class="col-sm-4">
-					<ui-select id="settlementNote_paymentMethod" ng-model="$parent.paymentMethod" theme="bootstrap" ng-disabled="disableddew-"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
-					<ui-select-choices repeat="paymentMethod as paymentMethod in object.paymentMethods | filter: $select.search"> <span
-						ng-bind-html="paymentMethod.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.PaymentMethod.base.value" />
-				</div>
-				<div class="col-sm-2">
-					<input id="settlementNote_paymentAmount" class="form-control" type="text" name="paymentAmount" ng-model="paymentAmount" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
-					<p class="alert alert-danger" ng-show="form.paymentAmount.$error.pattern">
-						<spring:message code="error.invalid.format.input" />
-					</p>
-				</div>
-				<div class="col-sm-2">
-					<button type="button" class="btn btn-default" ng-click="addPaymentMethod()" ng-disabled="form.paymentAmount.$error.pattern">
-						<spring:message code="label.event.add" />
-					</button>
-				</div>
-
-			</div>
-			<div class="panel-footer">
-				<p align="right">
-					<b><spring:message code="label.totalToCollect" /></b>: {{ getTotal() }} ${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}
-				</p>
-			</div>
-		</div>
-		<div class="panel-footer">
-			<button type="button" class="btn btn-default" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CALCULATE_INTEREST_URL %>')">
-				<spring:message code="label.event.back" />
-			</button>
-			<button type="button" class="btn btn-primary" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.INSERT_PAYMENT_URL %>')">
-				<spring:message code="label.continue" />
-			</button>
-		</div>
-	</div>
+    <div class="panel panel-primary">    
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <spring:message code="label.DebitEntry" />
+            </h3>
+        </div>
+        <div class="panel-body">
+            <table id="debitNoteTable"
+                class="table responsive table-bordered table-hover">
+                <col style="width:20%"/>
+                <col style="width:40%"/>
+                <col style="width:15%"/>
+                <col style="width:10%"/>
+                <col style="width:15%"/>
+                <thead>
+                    <tr>
+                        <th><spring:message code="label.DebitEntry.documentNumber" /></th>
+                        <th><spring:message code="label.DebitEntry.description" /></th>
+                        <th><spring:message code="label.DebitEntry.dueDate" /></th>
+                        <th><spring:message code="label.DebitEntry.vat" /></th>
+                        <th><spring:message code="label.DebitEntry.amountWithVat" /></th> 
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:set var="debitNoteDate" value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
+                    <c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
+                        <c:if test="${ debitEntryBean.included && empty debitEntryBean.debitEntry.finantialDocument  }">
+                            <tr>
+                                <td>
+                                    ---
+                                </td>
+                                <td>
+                                    <c:out value="${ debitEntryBean.debitEntry.description }" />
+                                </td>
+                                <td>
+                                    <c:out value='${ debitNoteDate }' />
+                                </td>                                
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale(  debitEntryBean.debitEntry.vat.taxRate ) }"/>
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
+                                </td>
+                            </tr>
+                        </c:if>                    
+                    </c:forEach>
+                    <c:forEach items="${ settlementNoteBean.interestEntries }" var="interestEntryBean">
+                        <c:if test="${ interestEntryBean.included  }">
+                            <tr>
+                                <td>
+                                    ---
+                                </td>
+                                <td>
+                                    <spring:message code="label.InterestEntry.interest" />
+                                    &nbsp;
+                                    <c:out value="${ interestEntryBean.debitEntry.description }" />
+                                </td>
+                                <td>
+                                    <c:out value='${ debitNoteDate }' />
+                                </td>                                
+                                <td>
+                                    0.00
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
+                                </td>
+                            </tr>
+                        </c:if>                    
+                    </c:forEach>                 
+                </tbody>
+            </table>
+            <table id="debitEntriesTable"
+                class="table responsive table-bordered table-hover">
+                <col style="width:20%"/>
+                <col style="width:40%"/>
+                <col style="width:15%"/>
+                <col style="width:10%"/>
+                <col style="width:15%"/>
+                <thead>
+                    <tr>
+                        <th><spring:message code="label.DebitEntry.documentNumber" /></th>
+                        <th><spring:message code="label.DebitEntry.description" /></th>
+                        <th><spring:message code="label.DebitEntry.dueDate" /></th>
+                        <th><spring:message code="label.DebitEntry.vat" /></th>
+                        <th><spring:message code="label.DebitEntry.amountWithVat" /></th>                    
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
+                        <c:if test="${ debitEntryBean.included && not empty debitEntryBean.debitEntry.finantialDocument  }">
+                            <tr>
+                                <td>
+                                    <c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" />
+                                </td>
+                                <td>
+                                    <c:out value="${ debitEntryBean.debitEntry.description }" />
+                                </td>
+                                <td>
+                                    <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate ) }"/>
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
+                                </td>
+                            </tr>
+                        </c:if>                    
+                    </c:forEach>
+                    <c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
+                        <c:if test="${ creditEntryBean.included }">
+                            <tr>
+                                <td>
+                                    <c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }"/>
+                                </td>
+                                <td>
+                                    <c:out value="${ creditEntryBean.creditEntry.description }"/>
+                                </td>
+                                <td>
+                                    <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                </td>
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }"/>
+                                </td>
+                                <td>
+                                    -
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmountWithVat ) }" />
+                                </td>
+                            </tr>
+                        </c:if>
+                    </c:forEach>                   
+                </tbody>
+            </table>
+            <div class="panel-footer">
+                <p align="right"><b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat ) }</p>
+            </div>            
+        </div>
+    </div>
+    <div class="panel panel-primary">    
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <spring:message code="label.PaymentMethod" />
+            </h3>
+        </div>
+        <div class="panel-body">            
+            <table id="paymentTableTable"
+                class="table responsive table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th><spring:message code="label.PaymentMethod" /></th>
+                        <th><spring:message code="label.PaymentMethod.value" /></th>
+                        <!-- operation column -->
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="paymentEntryBean in object.paymentEntries">
+                        <td>
+                            {{ getPaymentName( paymentEntryBean.paymentMethod ) }}
+                        </td>
+                        <td>
+                            {{ paymentEntryBean.paymentAmount + " " + currencySymbol }}
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-default" ng-click="object.paymentEntries.splice($index,1);"><spring:message code="label.event.delete" /></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="panel-footer">
+                <p align="right"><b><spring:message code="label.total" /></b>: {{ getTotal() + " " + currencySymbol }}</p>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentMethod" />
+                </div>
+                <div class="col-sm-4">
+                    <ui-select id="settlementNote_paymentMethod" ng-model="$parent.paymentMethod" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="paymentMethod as paymentMethod in object.paymentMethods | filter: $select.search">
+                            <span ng-bind-html="paymentMethod.text"></span>
+                        </ui-select-choices> 
+                    </ui-select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentMethod.base.value" />
+                </div>
+                <div class="col-sm-4">
+                    <input id="settlementNote_paymentAmount" class="form-control" type="text" name="paymentAmount" ng-model="paymentAmount" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"/>
+                    <p class="alert alert-danger" ng-show="form.paymentAmount.$error.pattern"><spring:message code="error.invalid.format.input" /></p>
+                </div>
+            </div> 
+            <div class="panel-footer">
+                <button type="button" class="btn btn-default" ng-click="addPaymentMethod()" ng-disabled="form.paymentAmount.$error.pattern" ><spring:message code="label.event.add" /></button>
+            </div>  
+        </div>
+    </div>    
+    <div class="panel-footer">
+        <button type="button" class="btn btn-default" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CALCULATE_INTEREST_URL %>')"><spring:message code="label.event.back" /></button>
+        <button type="button" class="btn btn-primary" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.INSERT_PAYMENT_URL %>')"><spring:message code="label.continue" /></button>
+    </div>
 </form>
 
 <script>
