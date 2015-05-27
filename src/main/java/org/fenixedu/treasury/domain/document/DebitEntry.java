@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -263,22 +262,28 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal getOpenAmount() {
         final BigDecimal openAmount = this.getAmount().subtract(getPayedAmount());
 
-        return Currency.getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
+        return getCurrency().getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
     }
 
     @Override
     public BigDecimal getAmountWithVat() {
         BigDecimal amount = getAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-        return Currency.getValueWithScale(amount);
+        return getCurrency().getValueWithScale(amount);
     }
 
     public BigDecimal getOpenAmountWithVat() {
         BigDecimal amount = getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-        return Currency.getValueWithScale(amount);
+        return getCurrency().getValueWithScale(amount);
     }
 
     public BigDecimal getPayedAmount() {
-        return getSettlementEntriesSet().stream().map((x) -> x.getAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
+        BigDecimal amount = this.getAmount();
+        for (SettlementEntry entry : this.getSettlementEntriesSet()) {
+            if (entry.getFinantialDocument().isClosed()) {
+                amount = amount.subtract(entry.getAmount());
+            }
+        }
+        return amount;
     }
 
     public BigDecimal getRemainingAmount() {

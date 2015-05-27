@@ -178,4 +178,16 @@ public class CreditNote extends CreditNote_Base {
         checkRules();
     }
 
+    @Override
+    public BigDecimal getOpenAmount() {
+        if (this.isAnnulled()) {
+            return BigDecimal.ZERO;
+        }
+        BigDecimal amount = BigDecimal.ZERO;
+        for (CreditEntry entry : getCreditEntriesSet()) {
+            amount = amount.add(entry.getOpenAmount());
+        }
+        return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
+    }
+
 }

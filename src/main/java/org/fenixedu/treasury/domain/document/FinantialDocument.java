@@ -32,7 +32,6 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
@@ -116,7 +115,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             amount = amount.add(entry.getTotalAmount());
         }
 
-        return Currency.getValueWithScale(amount);
+        return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
 
     public String getUiTotalAmount() {
@@ -129,7 +128,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             amount.add(entry.getAmount());
         }
 
-        return Currency.getValueWithScale(amount);
+        return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
 
     public String getUiTotalNetAmount() {

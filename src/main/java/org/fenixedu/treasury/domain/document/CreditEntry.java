@@ -30,7 +30,6 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -104,19 +103,23 @@ public class CreditEntry extends CreditEntry_Base {
     public BigDecimal getOpenAmount() {
         BigDecimal amount = this.getAmount();
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-            amount = amount.subtract(entry.getAmount());
+            if (entry.getFinantialDocument().isClosed()) {
+                amount = amount.subtract(entry.getAmount());
+            }
         }
         return amount;
     }
 
     public BigDecimal getOpenAmountWithVat() {
         BigDecimal amount = getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-        return Currency.getValueWithScale(amount);
+        return getCurrency().getValueWithScale(amount);
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
             BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry) {
-        return new CreditEntry(finantialDocument, product, vat, amount, description, amount, entryDateTime, debitEntry);
+        CreditEntry cr = new CreditEntry(finantialDocument, product, vat, amount, description, amount, entryDateTime, debitEntry);
+        cr.realculateAmountValues();
+        return cr;
     }
 
     public static Stream<? extends CreditEntry> find(final CreditNote creditNote) {

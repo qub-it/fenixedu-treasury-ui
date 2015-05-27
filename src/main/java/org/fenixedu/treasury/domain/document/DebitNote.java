@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -92,7 +91,7 @@ public class DebitNote extends DebitNote_Base {
         for (DebitEntry entry : getDebitEntriesSet()) {
             amount = amount.add(entry.getOpenAmount());
         }
-        return Currency.getValueWithScale(amount);
+        return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
 
     public Stream<? extends DebitEntry> getDebitEntries() {

@@ -125,7 +125,7 @@ public class CreditNoteController extends TreasuryBaseController {
     //
     // This is the EventcloseCreditNote Method for Screen read
     //
-    @RequestMapping(value = "/read/{oid}/closecreditnote")
+    @RequestMapping(value = "/read/{oid}/closecreditnote", method = RequestMethod.POST)
     public String processReadToCloseCreditNote(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
@@ -140,14 +140,13 @@ public class CreditNoteController extends TreasuryBaseController {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
         // Now choose what is the Exit Screen	 
-        return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
     }
 
     //
     // This is the EventanullCreditNote Method for Screen read
     //
-    @RequestMapping(value = "/read/{oid}/anullcreditnote")
+    @RequestMapping(value = "/read/{oid}/anullcreditnote", method = RequestMethod.POST)
     public String processReadToAnullCreditNote(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
@@ -162,8 +161,7 @@ public class CreditNoteController extends TreasuryBaseController {
         }
 
         // Now choose what is the Exit Screen	 
-        return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
     }
 
     //

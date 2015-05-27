@@ -495,8 +495,9 @@ public class DebitNoteController extends TreasuryBaseController {
                             debitNote.findRelatedDocuments());
             response.setContentType("text/xml");
             String filename =
-                    URLEncoder.encode(StringNormalizer.normalizePreservingCapitalizedLetters(debitNote.getUiDocumentNumber())
-                            .replaceAll("\\s", "_"), "UTF-8");
+                    URLEncoder.encode(
+                            StringNormalizer.normalizePreservingCapitalizedLetters(debitNote.getUiDocumentNumber() + ".xml")
+                                    .replaceAll("\\s", "_"), "UTF-8");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("UTF8"));
         } catch (Exception ex) {

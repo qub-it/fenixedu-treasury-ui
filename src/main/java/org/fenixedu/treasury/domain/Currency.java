@@ -30,7 +30,6 @@ package org.fenixedu.treasury.domain;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -189,11 +188,11 @@ public class Currency extends Currency_Base {
         return getValueWithScale(value, decimalsPlaces) + " " + this.getSymbol();
     }
 
-    public static BigDecimal getValueWithScale(BigDecimal amount) {
+    public BigDecimal getValueWithScale(BigDecimal amount) {
         return getValueWithScale(amount, 2);
     }
 
-    public static BigDecimal getValueWithScale(BigDecimal amount, int decimalPlaces) {
+    public BigDecimal getValueWithScale(BigDecimal amount, int decimalPlaces) {
         return amount.setScale(decimalPlaces, RoundingMode.HALF_EVEN);
     }
 

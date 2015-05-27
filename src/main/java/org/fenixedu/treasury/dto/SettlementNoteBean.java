@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -245,11 +244,11 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public String getDocumentNumber() {
-            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentNumber() : null;
+            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentNumber() : null;
         }
 
         public DateTime getDocumentDate() {
-            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
+            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
                     .getEntryDateTime();
         }
 
@@ -265,11 +264,11 @@ public class SettlementNoteBean implements IBean, Serializable {
             BigDecimal amount =
                     paymentAmount.multiply(BigDecimal.ONE.subtract(debitEntry.getVat().getTaxRate()
                             .divide(BigDecimal.valueOf(100))));
-            return Currency.getValueWithScale(amount);
+            return debitEntry.getCurrency().getValueWithScale(amount);
         }
 
         public BigDecimal getPaymentAmountWithVat() {
-            return Currency.getValueWithScale(paymentAmount);
+            return debitEntry.getCurrency().getValueWithScale(paymentAmount);
         }
 
         public void setPaymentAmount(BigDecimal paymentAmount) {
@@ -309,11 +308,11 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public String getDocumentNumber() {
-            return (creditEntry.getFinantialDocument() != null) ? creditEntry.getFinantialDocument().getDocumentNumber() : null;
+            return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument().getDocumentNumber() : null;
         }
 
         public DateTime getDocumentDate() {
-            return (creditEntry.getFinantialDocument() != null) ? creditEntry.getFinantialDocument().getDocumentDate() : creditEntry
+            return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument().getDocumentDate() : creditEntry
                     .getEntryDateTime();
         }
 
@@ -363,7 +362,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public DateTime getDocumentDate() {
-            return (debitEntry.getFinantialDocument() != null) ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
+            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
                     .getEntryDateTime();
         }
 
