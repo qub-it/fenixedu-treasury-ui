@@ -66,6 +66,23 @@ public class CreditNote extends CreditNote_Base {
     }
 
     @Override
+    public void anullDocument(boolean freeEntries) {
+        if (this.isPreparing()) {
+            for (CreditEntry entry : getCreditEntriesSet()) {
+                entry.delete();
+            }
+            this.delete();
+        } else {
+            if (freeEntries) {
+                for (CreditEntry entry : getCreditEntriesSet()) {
+                    entry.setDebitEntry(null);
+                }
+            }
+            super.anullDocument(freeEntries);
+        }
+    }
+
+    @Override
     public boolean isCreditNote() {
         return true;
     }

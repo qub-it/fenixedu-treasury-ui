@@ -41,6 +41,7 @@ import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -130,8 +131,14 @@ public class CreditNoteController extends TreasuryBaseController {
         setCreditNote(creditNote, model);
 //
         /* Put here the logic for processing Event closeCreditNote 	*/
-        //doSomething();
-
+        try {
+            creditNote.changeState(FinantialDocumentStateType.CLOSED);
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.closed.sucess"),
+                    model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
         // Now choose what is the Exit Screen	 
         return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model,
                 redirectAttributes);
@@ -145,8 +152,14 @@ public class CreditNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
 //
-        /* Put here the logic for processing Event anullCreditNote 	*/
-        //doSomething();
+        try {
+            creditNote.changeState(FinantialDocumentStateType.ANNULED);
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.anulled.sucess"),
+                    model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
 
         // Now choose what is the Exit Screen	 
         return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model,
