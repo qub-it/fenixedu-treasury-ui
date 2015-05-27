@@ -270,11 +270,8 @@ public class CreditNoteController extends TreasuryBaseController {
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") CreditNote creditNote,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
-            @RequestParam(value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable("oid") CreditNote creditNote, @RequestParam(value = "origindocumentnumber",
+            required = false) java.lang.String originDocumentNumber, Model model, RedirectAttributes redirectAttributes) {
 
         setCreditNote(creditNote, model);
 
@@ -283,7 +280,7 @@ public class CreditNoteController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateCreditNote(originDocumentNumber, state, model);
+            updateCreditNote(originDocumentNumber, model);
 
             /*Succes Update */
 
@@ -309,8 +306,7 @@ public class CreditNoteController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateCreditNote(java.lang.String originDocumentNumber,
-            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state, Model model) {
+    public void updateCreditNote(java.lang.String originDocumentNumber, Model model) {
 
         // @formatter: off				
         /*
@@ -325,7 +321,7 @@ public class CreditNoteController extends TreasuryBaseController {
         // @formatter: on
 
         getCreditNote(model).setOriginDocumentNumber(originDocumentNumber);
-        getCreditNote(model).setState(state);
+
     }
 
 //				

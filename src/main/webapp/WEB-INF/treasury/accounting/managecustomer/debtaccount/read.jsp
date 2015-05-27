@@ -167,8 +167,14 @@ ${portal.angularToolkit()}
 								<spring:message code="label.InvoiceEntry.finantialDocument" />
 							</datatables:columnHead>
 							<c:if test="${not empty pendingEntry.finantialDocument }">
-							<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}" >
-							<c:out value="${pendingEntry.finantialDocument.uiDocumentNumber}" />
+								<c:if test="${pendingEntry.isDebitNoteEntry() }">
+									<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
+											value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
+								</c:if>
+								<c:if test="${pendingEntry.isCreditNoteEntry() }">
+									<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
+											value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
+								</c:if>
 							</c:if>
 							<c:if test="${empty pendingEntry.finantialDocument }">
 							---
@@ -184,38 +190,42 @@ ${portal.angularToolkit()}
 							<datatables:columnHead>
 								<spring:message code="label.InvoiceEntry.date" />
 							</datatables:columnHead>
-							<c:out value="${pendingEntry.dueDate}" />
+							<c:out value="${pendingEntry.entryDateTime}" />
 						</datatables:column>
-<%-- 						<datatables:column> --%>
-<%-- 							<datatables:columnHead> --%>
-<%-- 								<spring:message code="label.Invoice.debitAmount" /> --%>
-<%-- 							</datatables:columnHead> --%>
-<!-- 							<div align=right> -->
-<%-- 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" /> --%>
-<!-- 							</div> -->
-<%-- 						</datatables:column> --%>
+						<%-- 						<datatables:column> --%>
+						<%-- 							<datatables:columnHead> --%>
+						<%-- 								<spring:message code="label.Invoice.debitAmount" /> --%>
+						<%-- 							</datatables:columnHead> --%>
+						<!-- 							<div align=right> -->
+						<%-- 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" /> --%>
+						<!-- 							</div> -->
+						<%-- 						</datatables:column> --%>
 						<datatables:column>
 							<datatables:columnHead>
+								<c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
 								<spring:message code="label.InvoiceEntry.totalAmount" />
 							</datatables:columnHead>
 							<div align=right>
+								<c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
 							</div>
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
+								<c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
 								<spring:message code="label.InvoiceEntry.openAmount" />
 							</datatables:columnHead>
 							<div align=right>
+								<c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" />
 							</div>
 						</datatables:column>
 						<datatables:column>
-											<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
-												<button type="submit" class="btn btn-default btn-xs">
-													<spring:message code="label.view" />
-												</button>
-											</form>
+							<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
+								<button type="submit" class="btn btn-default btn-xs">
+									<spring:message code="label.view" />
+								</button>
+							</form>
 							<%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
 							<!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
 							<!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->
@@ -225,10 +235,10 @@ ${portal.angularToolkit()}
 						</datatables:column>
 					</datatables:table>
 					<script>
-			createDataTables('pendingDocuments', false, false, false,
-					"${pageContext.request.contextPath}",
-					"${datatablesI18NUrl}");
-		</script>
+						createDataTables('pendingDocuments', false, false,
+								false, "${pageContext.request.contextPath}",
+								"${datatablesI18NUrl}");
+					</script>
 				</c:when>
 				<c:otherwise>
 					<div class="alert alert-warning" role="alert">
@@ -254,8 +264,8 @@ ${portal.angularToolkit()}
 								<spring:message code="label.InvoiceEntry.finantialDocument" />
 							</datatables:columnHead>
 							<c:if test="${not empty entry.finantialDocument }">
-							<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}" >
-							<c:out value="${entry.finantialDocument.uiDocumentNumber}" />
+								<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}"> <c:out
+										value="${entry.finantialDocument.uiDocumentNumber}" />
 							</c:if>
 							<c:if test="${empty entry.finantialDocument }">
 							---
@@ -271,7 +281,7 @@ ${portal.angularToolkit()}
 							<datatables:columnHead>
 								<spring:message code="label.InvoiceEntry.date" />
 							</datatables:columnHead>
-							<c:out value="${entry.dueDate}" />
+							<c:out value="${entry.entryDateTime}" />
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
@@ -281,14 +291,14 @@ ${portal.angularToolkit()}
 								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
 							</div>
 						</datatables:column>
-<%-- 						<datatables:column> --%>
-<%-- 							<datatables:columnHead> --%>
-<%-- 								<spring:message code="label.InvoiceEntry.creditAmount" /> --%>
-<%-- 							</datatables:columnHead> --%>
-<!-- 							<div align=right> -->
-<%-- 								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" /> --%>
-<!-- 							</div> -->
-<%-- 						</datatables:column> --%>
+						<%-- 						<datatables:column> --%>
+						<%-- 							<datatables:columnHead> --%>
+						<%-- 								<spring:message code="label.InvoiceEntry.creditAmount" /> --%>
+						<%-- 							</datatables:columnHead> --%>
+						<!-- 							<div align=right> -->
+						<%-- 								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" /> --%>
+						<!-- 							</div> -->
+						<%-- 						</datatables:column> --%>
 						<datatables:column>
 							<datatables:columnHead>
 								<spring:message code="label.InvoiceEntry.openAmount" />
@@ -298,11 +308,11 @@ ${portal.angularToolkit()}
 							</div>
 						</datatables:column>
 						<datatables:column>
-											<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
-												<button type="submit" class="btn btn-default btn-xs">
-													<spring:message code="label.view" />
-												</button>
-											</form>
+							<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
+								<button type="submit" class="btn btn-default btn-xs">
+									<spring:message code="label.view" />
+								</button>
+							</form>
 							<%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
 							<!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
 							<!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->
@@ -312,10 +322,10 @@ ${portal.angularToolkit()}
 						</datatables:column>
 					</datatables:table>
 					<script>
-			createDataTables('allDocuments', false, false, false,
-					"${pageContext.request.contextPath}",
-					"${datatablesI18NUrl}");
-		</script>
+						createDataTables('allDocuments', false, false, false,
+								"${pageContext.request.contextPath}",
+								"${datatablesI18NUrl}");
+					</script>
 				</c:when>
 				<c:otherwise>
 					<div class="alert alert-warning" role="alert">
@@ -341,7 +351,7 @@ ${portal.angularToolkit()}
 								<%--!!!  Field names here --%>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate" /></th>
-<%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
+								<%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.totalAmount" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount" /></th>
 								<%-- Operations Column --%>
@@ -377,7 +387,7 @@ ${portal.angularToolkit()}
 								<%--!!!  Field names here --%>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debtItems" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.dueDate" /></th>
-<%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
+								<%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.totalAmount" /></th>
 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.pendingAmount" /></th>
 								<%-- Operations Column --%>
@@ -406,45 +416,41 @@ ${portal.angularToolkit()}
 </div>
 
 <script>
+	$(document).ready(function() {
 
+		//Enable Bootstrap Tabs
+		$('#tabs').tab();
 
-
-
-$(document).ready(function() {
-
-	//Enable Bootstrap Tabs
-	 $('#tabs').tab();
-
-
-
-	 var tablePayments = $('#paymentsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+		var tablePayments = $('#paymentsTable').DataTable({
+			language : {
+				url : "${datatablesI18NUrl}",
+			},
+			//CHANGE_ME adjust the actions column width if needed
+			"columnDefs" : [
+			//54
+			{
+				"width" : "54px",
+				"targets" : 4
+			} ],
+			"dom" : '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 		});
-		
-	 tablePayments.columns.adjust().draw();
 
-	 var tableExemptions = $('#exemptionsTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 4 } 
-		             ],
-		//Documentation: https://datatables.net/reference/option/dom
-"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+		tablePayments.columns.adjust().draw();
+
+		var tableExemptions = $('#exemptionsTable').DataTable({
+			language : {
+				url : "${datatablesI18NUrl}",
+			},
+			"columnDefs" : [
+			//54
+			{
+				"width" : "54px",
+				"targets" : 4
+			} ],
+			//Documentation: https://datatables.net/reference/option/dom
+			"dom" : '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 		});
-		
-	 table.columns.adjust().draw();
-	 
-	
-		  
 
+		table.columns.adjust().draw();
 
 	});

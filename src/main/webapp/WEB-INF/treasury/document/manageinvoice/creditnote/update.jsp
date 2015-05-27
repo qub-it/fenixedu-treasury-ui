@@ -82,21 +82,6 @@ ${portal.toolkit()}
 	<input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"  value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
 </div>	
 </div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.CreditNote.state"/></div> 
-
-<div class="col-sm-4">
-	<select id="creditNote_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-		<c:forEach items="${stateValues}" var="field">
-			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
-		</c:forEach>
-	</select>
-	<script>
-		$("#creditNote_state").val('<c:out value='${not empty param.state ? param.state : creditNote.state }'/>');
-	</script>	
-</div>
-</div>		
   </div>
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

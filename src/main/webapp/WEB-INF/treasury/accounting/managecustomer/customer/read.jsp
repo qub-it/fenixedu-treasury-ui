@@ -180,13 +180,14 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.InvoiceEntry.finantialDocument" />
 					</datatables:columnHead>
-					<c:if test="${not empty pendingEntry.finantialDocument }">
+					<c:if test="${pendingEntry.isDebitNoteEntry() }">
 						<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
-								value="${pendingEntry.finantialDocument.uiDocumentNumber}" />
+								value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
 					</c:if>
-					<c:if test="${empty pendingEntry.finantialDocument }">
-							---
-							</c:if>
+					<c:if test="${pendingEntry.isCreditNoteEntry() }">
+						<a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
+								value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
+					</c:if>
 				</datatables:column>
 				<datatables:column cssStyle="width:10%;align:right">
 					<datatables:columnHead>

@@ -160,7 +160,7 @@ ${portal.toolkit()}
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
 				href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationfile"><spring:message
 					code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
-		&nbsp;|&nbsp;		
+				
 		</c:if>
 	</div>
 </form>

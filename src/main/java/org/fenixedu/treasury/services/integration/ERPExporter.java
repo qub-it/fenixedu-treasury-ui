@@ -70,6 +70,8 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
@@ -527,14 +529,26 @@ public class SAFTExporter {
 
         // Description
         line.setDescription(currentProduct.getProductDescription());
+        List<OrderReferences> orderReferences = line.getOrderReferences();
 
-        if (!Strings.isNullOrEmpty(entry.getFinantialDocument().getOriginDocumentNumber())) {
-            List<OrderReferences> orderReferences = line.getOrderReferences();
-            OrderReferences reference = new OrderReferences();
-            reference.setOriginatingON(entry.getFinantialDocument().getOriginDocumentNumber());
+        //Add the references on the document creditEntries <-> debitEntries
+        if (entry.isCreditNoteEntry()) {
+            CreditEntry creditEntry = (CreditEntry) entry;
+            if (creditEntry.getDebitEntry() != null) {
+                OrderReferences reference = new OrderReferences();
+                reference.setOriginatingON(creditEntry.getDebitEntry().getFinantialDocument().getUiDocumentNumber());
+                reference.setOrderDate(documentDateCalendar);
+                orderReferences.add(reference);
+            }
 
-            reference.setOrderDate(documentDateCalendar);
-            orderReferences.add(reference);
+        } else if (entry.isDebitNoteEntry()) {
+            DebitEntry debitEntry = (DebitEntry) entry;
+            for (CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
+                OrderReferences reference = new OrderReferences();
+                reference.setOriginatingON(creditEntry.getFinantialDocument().getUiDocumentNumber());
+                reference.setOrderDate(documentDateCalendar);
+                orderReferences.add(reference);
+            }
         }
 
         // ProductCode
