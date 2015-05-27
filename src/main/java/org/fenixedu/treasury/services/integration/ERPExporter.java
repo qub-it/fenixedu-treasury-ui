@@ -57,10 +57,14 @@ import oecd.standardauditfile_tax.pt_1.AuditFile;
 import oecd.standardauditfile_tax.pt_1.Header;
 import oecd.standardauditfile_tax.pt_1.MovementTax;
 import oecd.standardauditfile_tax.pt_1.OrderReferences;
+import oecd.standardauditfile_tax.pt_1.PaymentMethod;
 import oecd.standardauditfile_tax.pt_1.SAFTPTMovementTaxType;
 import oecd.standardauditfile_tax.pt_1.SAFTPTSourceBilling;
+import oecd.standardauditfile_tax.pt_1.SAFTPTSourcePayment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.MovementOfGoods;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
 import oecd.standardauditfile_tax.pt_1.Tax;
 import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
@@ -74,7 +78,11 @@ import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
+import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.PaymentEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.integration.ExportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.joda.time.DateTime;
@@ -92,15 +100,16 @@ import com.google.common.base.Strings;
 // (Documento Original)
 // http://dre.pt/pdf1sdip/2012/11/22700/0672406740.pdf (Adenda para os
 // Documentos de Transporte)
+// Versão 1.0.3
+// https://info.portaldasfinancas.gov.pt/NR/rdonlyres/BA9FB096-D482-445D-A5DB-C05B1980F7D7/0/Portaria_274_2013_21_09.pdf
 // ******************************************************************************************************************************
-public class SAFTExporter {
+public class ERPExporter {
 
-    private static Logger logger = LoggerFactory.getLogger(SAFTExporter.class);
-    // public final static String SAFT_HEADER_VERSION_1_02_01 = "1.02_01";
-    public final static String SAFT_HEADER_VERSION_1_03_01 = "1.03_01";
+    private static Logger logger = LoggerFactory.getLogger(ERPExporter.class);
+    public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.0";
 
-    private String generateSaft(FinantialInstitution institution, DateTime fromDate, DateTime toDate, ExportOperation operation,
-            Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) {
+    private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
+            ExportOperation operation, Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) {
 
         // Build SAFT-AuditFile
         AuditFile auditFile = new AuditFile();
@@ -108,7 +117,7 @@ public class SAFTExporter {
         // SaftThreadRegister.retrieveCurrentThreadInformation();
 
         // Build SAFT-HEADER (Chapter 1 in AuditFile)
-        Header header = this.createSAFTHeader(fromDate, toDate, institution, SAFT_HEADER_VERSION_1_03_01);
+        Header header = this.createSAFTHeader(fromDate, toDate, institution, ERP_HEADER_VERSION_1_00_00);
         // SetHeader
         auditFile.setHeader(header);
 
@@ -195,9 +204,9 @@ public class SAFTExporter {
 
         SourceDocuments.WorkingDocuments workingDocuments = new SourceDocuments.WorkingDocuments();
 
-        MovementOfGoods movementOfGoods = new MovementOfGoods();
-        BigInteger sumOfNumberMovementLines = BigInteger.ZERO;
-        BigDecimal sumOfTotalQuantityIssued = BigDecimal.ZERO;
+//        MovementOfGoods movementOfGoods = new MovementOfGoods();
+//        BigInteger sumOfNumberMovementLines = BigInteger.ZERO;
+//        BigDecimal sumOfTotalQuantityIssued = BigDecimal.ZERO;
         BigInteger numberOfWorkingDocuments = BigInteger.ZERO;
         BigDecimal totalDebitOfWorkingDocuments = BigDecimal.ZERO;
         BigDecimal totalCreditOfWorkingDocuments = BigDecimal.ZERO;
@@ -206,66 +215,17 @@ public class SAFTExporter {
         invoices.setTotalCredit(BigDecimal.ZERO);
         invoices.setTotalDebit(BigDecimal.ZERO);
 
-        // persistenceSupport.disableAutoFlush();
-
         int i = 0;
         for (FinantialDocument document : allDocuments) {
-            if (Boolean.TRUE.equals(document.getClosed())) {
+            if ((document.isCreditNote() || document.isDebitNote()) && Boolean.TRUE.equals(document.getClosed())) {
                 try {
-                    // if (SAFTDocumentType.MOVEMENT_OF_GOODS().equals(
-                    // document.getFinantialDocumentType().get
-                    // .getDocumentType().getSAFTType())) {
-                    // StockMovement mov = convertToSAFTStockMovement(
-                    // document, customerMap, productMap);
-                    // movementOfGoods.getStockMovement().add(mov);
-                    // // AcumulateValues
-                    // sumOfNumberMovementLines = sumOfNumberMovementLines
-                    // .add(BigInteger.valueOf(mov.getLine().size()));
-                    // for
-                    // (oecd.standardauditfile_tax.pt_1.SourceDocuments.MovementOfGoods.StockMovement.Line
-                    // line : mov
-                    // .getLine()) {
-                    // sumOfTotalQuantityIssued = sumOfTotalQuantityIssued
-                    // .add(line.getQuantity());
-                    // }
-                    //
-                    // Update Totals of MovementOfGoods
-                    movementOfGoods.setNumberOfMovementLines(sumOfNumberMovementLines);
-                    movementOfGoods.setTotalQuantityIssued(sumOfTotalQuantityIssued);
+                    WorkDocument workDocument = convertToSAFTWorkDocument((Invoice) document, customerMap, productMap);
+                    workingDocuments.getWorkDocument().add(workDocument);
 
-                    sourceDocuments.setMovementOfGoods(movementOfGoods);
-                    // }
-                    if (document.getDocumentNumberSeries().getSeries().getCertificated() == true) {
-                        // SourceDocuments.SalesInvoices.Invoice invoice =
-                        // convertToSAFTInvoice(
-                        // document, customerMap, productMap);
-                        //
-                        // invoices.getInvoice().add(invoice);
-                        // // AcumulateValues
-                        // invoices.setNumberOfEntries(invoices
-                        // .getNumberOfEntries().add(BigInteger.ONE));
-                        // invoices.setTotalCredit(invoices.getTotalDebit().add(
-                        // invoice.getDocumentTotals().getNetTotal()));
-                        // sourceDocuments.setSalesInvoices(invoices);
-                    } else if (document.getDocumentNumberSeries().getSeries().getCertificated() == false) {
-                        WorkDocument workDocument = convertToSAFTWorkDocument(document, customerMap, productMap);
-                        workingDocuments.getWorkDocument().add(workDocument);
-
-                        // AcumulateValues
-                        numberOfWorkingDocuments = numberOfWorkingDocuments.add(BigInteger.ONE);
-                        totalCreditOfWorkingDocuments =
-                                totalCreditOfWorkingDocuments.add(workDocument.getDocumentTotals().getNetTotal());
-
-                        // Update Totals of Workingdocuments
-                        workingDocuments.setNumberOfEntries(numberOfWorkingDocuments);
-                        workingDocuments.setTotalCredit(totalCreditOfWorkingDocuments);
-                        workingDocuments.setTotalDebit(totalDebitOfWorkingDocuments);
-
-                        sourceDocuments.setWorkingDocuments(workingDocuments);
-                    } else {
-                        logger.error("Error processing document " + document.getUiDocumentNumber()
-                                + ": No SAFT Document Type defined.");
-                    }
+                    // AcumulateValues
+                    numberOfWorkingDocuments = numberOfWorkingDocuments.add(BigInteger.ONE);
+                    totalCreditOfWorkingDocuments =
+                            totalCreditOfWorkingDocuments.add(workDocument.getDocumentTotals().getNetTotal());
 
                     // Update Counter
                     // information.setCurrentCounter(information
@@ -294,8 +254,65 @@ public class SAFTExporter {
             }
 
         }
+        // Update Totals of Workingdocuments
+        workingDocuments.setNumberOfEntries(numberOfWorkingDocuments);
+        workingDocuments.setTotalCredit(totalCreditOfWorkingDocuments);
+        workingDocuments.setTotalDebit(totalDebitOfWorkingDocuments);
 
-        // persistenceSupport.enableAutoFlush();
+        sourceDocuments.setWorkingDocuments(workingDocuments);
+
+        //PROCESSING PAYMENTS TABLE
+
+        Payments paymentsDocuments = new Payments();
+        BigInteger numberOfPaymentsDocuments = BigInteger.ZERO;
+        BigDecimal totalDebitOfPaymentsDocuments = BigDecimal.ZERO;
+        BigDecimal totalCreditOfPaymentsDocuments = BigDecimal.ZERO;
+
+        paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
+        paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
+        paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
+        for (FinantialDocument document : allDocuments) {
+            if (document.isSettlementNote() && Boolean.TRUE.equals(document.getClosed())) {
+                try {
+                    Payment paymentDocument = convertToSAFTPaymentDocument((SettlementNote) document, customerMap, productMap);
+                    paymentsDocuments.getPayment().add(paymentDocument);
+
+                    // AcumulateValues
+                    numberOfWorkingDocuments = numberOfWorkingDocuments.add(BigInteger.ONE);
+                    totalCreditOfPaymentsDocuments =
+                            totalCreditOfPaymentsDocuments.add(paymentDocument.getDocumentTotals().getSettlement()
+                                    .getSettlementAmount());
+                    totalDebitOfPaymentsDocuments =
+                            totalDebitOfPaymentsDocuments.add(paymentDocument.getDocumentTotals().getSettlement()
+                                    .getSettlementAmount());
+
+                    // Update Counter
+                    // information.setCurrentCounter(information
+                    // .getCurrentCounter() + 10);
+                    // if (i % 10 == 0) {
+                    // try {
+                    // persistenceSupport.flush();
+                    // persistenceSupport.clearSession();
+                    // } catch (Throwable t) {
+                    // logger.error("Something gone wrong flushing state",
+                    // t);
+                    // }
+                    // logger.info("Processing " + i + "/"
+                    // + saleDocuments.size() + " documents in Store "
+                    // + storeToProcess.getCode());
+                    // }
+                    i++;
+                } catch (Exception ex) {
+                    // persistenceSupport.flush();
+                    logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getMessage());
+                    throw ex;
+                }
+            } else {
+                logger.info("Ignoring document " + document.getUiDocumentNumber() + " because is not closed yet.");
+            }
+
+        }
+        sourceDocuments.setPayments(paymentsDocuments);
 
         // Update the Customer Table in SAFT
         for (oecd.standardauditfile_tax.pt_1.Customer customer : customerMap.values()) {
@@ -316,7 +333,145 @@ public class SAFTExporter {
         return xml;
     }
 
-    private WorkDocument convertToSAFTWorkDocument(FinantialDocument document,
+    private Payment convertToSAFTPaymentDocument(SettlementNote document,
+            Map<String, oecd.standardauditfile_tax.pt_1.Customer> baseCustomers,
+            Map<String, oecd.standardauditfile_tax.pt_1.Product> productMap) {
+        Payment payment = new Payment();
+
+        // Find the Customer in BaseCustomers
+        oecd.standardauditfile_tax.pt_1.Customer customer = null;
+
+        if (baseCustomers.containsKey(document.getDebtAccount().getCustomer().getCode())) {
+            customer = baseCustomers.get(document.getDebtAccount().getCustomer().getCode());
+        } else {
+            // If not found, create a new one and add it to baseCustomers
+            customer = convertCustomerToSAFTCustomer(document.getDebtAccount().getCustomer());
+            baseCustomers.put(customer.getCustomerID(), customer);
+        }
+
+        // MovementDate
+        DatatypeFactory dataTypeFactory;
+        try {
+            dataTypeFactory = DatatypeFactory.newInstance();
+            DateTime documentDate = document.getDocumentDate();
+
+            // SystemEntryDate
+            payment.setSystemEntryDate(convertToXMLDateTime(dataTypeFactory, documentDate));
+
+            payment.setTransactionDate(convertToXMLDateTime(dataTypeFactory, documentDate));
+
+            // DocumentNumber
+            payment.setPaymentRefNo(document.getUiDocumentNumber());
+
+            // CustomerID
+            payment.setCustomerID(document.getDebtAccount().getCustomer().getCode());
+
+            // DocumentStatus
+            /*
+             * Deve ser preenchido com: ?N? ? Normal; Texto 1 ?T? ? Por conta de
+             * terceiros; ?A? ? Documento anulado.
+             */
+            SourceDocuments.Payments.Payment.DocumentStatus status = new SourceDocuments.Payments.Payment.DocumentStatus();
+            if (document.isAnnulled()) {
+                status.setPaymentStatus("A");
+            } else {
+                status.setPaymentStatus("N");
+            }
+            status.setPaymentStatusDate(payment.getSystemEntryDate());
+            // status.setReason("");
+            // Utilizador responsável pelo estado atual do docu-mento.
+            status.setSourceID(document.getUserChanged());
+            // Deve ser preenchido com:
+            // 'P' - Documento produzido na aplicacao;
+            if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())) {
+                status.setSourcePayment(SAFTPTSourcePayment.I);
+            } else {
+                status.setSourcePayment(SAFTPTSourcePayment.P);
+            }
+
+            payment.setDocumentStatus(status);
+
+            //PaymentMethods
+            for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
+                PaymentMethod method = new PaymentMethod();
+                method.setPaymentAmount(paymentEntry.getPayedAmount());
+                method.setPaymentDate(payment.getTransactionDate());
+                method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
+                payment.getPaymentMethod().add(method);
+            }
+
+            payment.setSourceID(document.getUserCreated());
+
+            // DocumentTotals
+            SourceDocuments.Payments.Payment.DocumentTotals docTotals = new SourceDocuments.Payments.Payment.DocumentTotals();
+
+            //Lines
+            BigInteger i = BigInteger.ONE;
+            for (SettlementEntry settlementEntry : document.getSettlemetEntriesSet()) {
+                SourceDocuments.Payments.Payment.Line line = new SourceDocuments.Payments.Payment.Line();
+                line.setLineNumber(i);
+                //SourceDocument
+                SourceDocumentID sourceDocument = new SourceDocumentID();
+                sourceDocument.setOriginatingON(settlementEntry.getInvoiceEntry().getFinantialDocument().getUiDocumentNumber());
+                sourceDocument.setInvoiceDate(convertToXMLDateTime(dataTypeFactory, settlementEntry.getInvoiceEntry()
+                        .getFinantialDocument().getDocumentDate()));
+                sourceDocument.setDescription(settlementEntry.getDescription());
+                line.getSourceDocumentID().add(sourceDocument);
+                //SettlementAmount
+                line.setSettlementAmount(BigDecimal.ZERO);
+                line.setDebitAmount(settlementEntry.getTotalAmount());
+                line.setCreditAmount(BigDecimal.ZERO);
+                payment.getLine().add(line);
+            }
+            docTotals.setGrossTotal(document.getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
+            docTotals.setNetTotal(document.getTotalNetAmount().setScale(2, RoundingMode.HALF_EVEN));
+            docTotals.setTaxPayable(document.getTotalAmount().subtract(document.getTotalNetAmount())
+                    .setScale(2, RoundingMode.HALF_EVEN));
+            payment.setDocumentTotals(docTotals);
+
+            // Period
+            /*
+             * Per?odo contabil?stico (Period) . . . . . . . . . . Deve ser
+             * indicado o n?mero do m?s do per?odo de tributa??o, de ?1? a ?12?,
+             * contado desde a data do in?cio. Pode ainda ser preenchido com
+             * ?13?, ?14?, ?15? ou ?16? para movimentos efectuados no ?ltimo m?s
+             * do per?odo de tributa??o, relacionados com o apuramento do
+             * resultado. Ex.: movimentos de apuramentos de invent?rios,
+             * deprecia??es, ajustamentos ou apuramentos de resultados.
+             */
+            payment.setPeriod(document.getDocumentDate().getMonthOfYear());
+
+            // SourceID
+            /*
+             * C?digo do utilizador que registou o movimento (SourceID).
+             */
+            payment.setSourceID(document.getUserCreated());
+
+        } catch (DatatypeConfigurationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return payment;
+    }
+
+    private XMLGregorianCalendar convertToXMLDateTime(DatatypeFactory dataTypeFactory, DateTime documentDate) {
+        return dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(), documentDate.getMonthOfYear(),
+                documentDate.getDayOfMonth(), documentDate.getHourOfDay(), documentDate.getMinuteOfHour(),
+                documentDate.getSecondOfMinute(), 0, DatatypeConstants.FIELD_UNDEFINED);
+    }
+
+    private String convertToSAFTPaymentMechanism(org.fenixedu.treasury.domain.PaymentMethod paymentMethod) {
+        String code = paymentMethod.getCode();
+        if (code == "CC" || code == "CD" || code == "CH" || code == "CO" || code == "CS" || code == "DE" || code == "LC"
+                || code == "MB" || code == "NU" || code == "TB" || code == "TR") {
+            return paymentMethod.getCode();
+        } else {
+            return "OU";
+        }
+    }
+
+    private WorkDocument convertToSAFTWorkDocument(Invoice document,
             Map<String, oecd.standardauditfile_tax.pt_1.Customer> baseCustomers,
             Map<String, oecd.standardauditfile_tax.pt_1.Product> baseProducts) {
         WorkDocument workDocument = new WorkDocument();
@@ -339,9 +494,7 @@ public class SAFTExporter {
             DateTime documentDate = document.getDocumentDate();
 
             // SystemEntryDate
-            workDocument.setSystemEntryDate(dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(),
-                    documentDate.getMonthOfYear(), documentDate.getDayOfMonth(), documentDate.getHourOfDay(),
-                    documentDate.getMinuteOfHour(), documentDate.getSecondOfMinute(), 0, DatatypeConstants.FIELD_UNDEFINED));
+            workDocument.setSystemEntryDate(convertToXMLDateTime(dataTypeFactory, documentDate));
 
             workDocument.setWorkDate(dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
                     documentDate.getMonthOfYear(), documentDate.getDayOfMonth(), DatatypeConstants.FIELD_UNDEFINED));
@@ -1619,10 +1772,10 @@ public class SAFTExporter {
 
         ExportOperation operation = createSaftExportOperation(finantialInstitution, fromDate, toDate, username);
         try {
-            SAFTExporter saftExporter = new SAFTExporter();
+            ERPExporter saftExporter = new ERPExporter();
             List<FinantialDocument> documents = finantialInstitution.getExportableDocuments(fromDate, toDate);
             logger.info("Collecting " + documents.size() + " documents to export to store " + finantialInstitution.getCode());
-            saftExporter.generateSaft(finantialInstitution, fromDate, toDate, operation,
+            saftExporter.generateERPFile(finantialInstitution, fromDate, toDate, operation,
                     documents.stream().collect(Collectors.toSet()), true);
 
         } catch (Throwable t) {
@@ -1682,8 +1835,8 @@ public class SAFTExporter {
 
         ExportOperation operation = createSaftExportOperation(institution, fromDate, toDate, username);
         try {
-            SAFTExporter saftExporter = new SAFTExporter();
-            saftExporter.generateSaft(institution, fromDate, toDate, operation,
+            ERPExporter saftExporter = new ERPExporter();
+            saftExporter.generateERPFile(institution, fromDate, toDate, operation,
                     pendingDocuments.stream().collect(Collectors.toSet()), false);
 
         } catch (Throwable t) {
@@ -1693,11 +1846,11 @@ public class SAFTExporter {
     }
 
     public static String exportFinantialDocument(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {
-        SAFTExporter saftExporter = new SAFTExporter();
+        ERPExporter saftExporter = new ERPExporter();
         DateTime beginDate =
                 documents.stream().min((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
         DateTime endDate =
                 documents.stream().max((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
-        return saftExporter.generateSaft(finantialInstitution, beginDate, endDate, null, documents, false);
+        return saftExporter.generateERPFile(finantialInstitution, beginDate, endDate, null, documents, false);
     }
 }
