@@ -98,7 +98,7 @@ public class SAFTExporter {
     public final static String SAFT_HEADER_VERSION_1_03_01 = "1.03_01";
 
     private String generateSaft(FinantialInstitution institution, DateTime fromDate, DateTime toDate, ExportOperation operation,
-            Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) throws Exception {
+            Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) {
 
         // Build SAFT-AuditFile
         AuditFile auditFile = new AuditFile();
@@ -334,7 +334,7 @@ public class SAFTExporter {
         DatatypeFactory dataTypeFactory;
         try {
             dataTypeFactory = DatatypeFactory.newInstance();
-            DateTime documentDate = document.getWhenCreated();
+            DateTime documentDate = document.getDocumentDate();
 
             // SystemEntryDate
             workDocument.setSystemEntryDate(dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(),
@@ -415,7 +415,7 @@ public class SAFTExporter {
              * resultado. Ex.: movimentos de apuramentos de invent?rios,
              * deprecia??es, ajustamentos ou apuramentos de resultados.
              */
-            workDocument.setPeriod(document.getWhenCreated().getMonthOfYear());
+            workDocument.setPeriod(document.getDocumentDate().getMonthOfYear());
 
             // ShipFrom
             // ShippingPointStructure shipFrom = new ShippingPointStructure();
@@ -504,7 +504,7 @@ public class SAFTExporter {
         XMLGregorianCalendar documentDateCalendar = null;
         try {
             DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-            DateTime documentDate = entry.getFinantialDocument().getWhenCreated();
+            DateTime documentDate = entry.getFinantialDocument().getDocumentDate();
             documentDateCalendar =
                     dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(), documentDate.getMonthOfYear(),
                             documentDate.getDayOfMonth(), DatatypeConstants.FIELD_UNDEFINED);
@@ -875,7 +875,7 @@ public class SAFTExporter {
     // DatatypeFactory dataTypeFactory;
     // try {
     // dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = document.getWhenCreated();
+    // DateTime documentDate = document.getDocumentDate();
     //
     // // SystemEntryDate
     // mov.setSystemEntryDate(dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(),
@@ -966,7 +966,7 @@ public class SAFTExporter {
     // * resultado. Ex.: movimentos de apuramentos de invent?rios,
     // * deprecia??es, ajustamentos ou apuramentos de resultados.
     // */
-    // mov.setPeriod(document.getWhenCreated().getMonthOfYear());
+    // mov.setPeriod(document.getDocumentDate().getMonthOfYear());
     //
     // // ShipFrom
     // ShippingPointStructure shipFrom = new ShippingPointStructure();
@@ -1066,7 +1066,7 @@ public class SAFTExporter {
     // DatatypeFactory dataTypeFactory;
     // try {
     // dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = document.getWhenCreated();
+    // DateTime documentDate = document.getDocumentDate();
     //
     // // SystemEntryDate
     // invoice.setSystemEntryDate(dataTypeFactory.newXMLGregorianCalendar(documentDate.getYear(),
@@ -1168,7 +1168,7 @@ public class SAFTExporter {
     // * resultado. Ex.: movimentos de apuramentos de invent?rios,
     // * deprecia??es, ajustamentos ou apuramentos de resultados.
     // */
-    // invoice.setPeriod(document.getWhenCreated().getMonthOfYear());
+    // invoice.setPeriod(document.getDocumentDate().getMonthOfYear());
     //
     // // ShipFrom
     // ShippingPointStructure shipFrom = new ShippingPointStructure();
@@ -1252,7 +1252,7 @@ public class SAFTExporter {
     //
     // try {
     // DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = productLine.getDocument().getWhenCreated();
+    // DateTime documentDate = productLine.getDocument().getDocumentDate();
     // documentGregorianDate =
     // dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
     // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
@@ -1382,7 +1382,7 @@ public class SAFTExporter {
     //
     // try {
     // DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
-    // DateTime documentDate = productLine.getDocument().getWhenCreated();
+    // DateTime documentDate = productLine.getDocument().getDocumentDate();
     // reference.setOrderDate(dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(),
     // documentDate.getMonthOfYear(), documentDate.getDayOfMonth(),
     // DatatypeConstants.FIELD_UNDEFINED));
@@ -1684,12 +1684,6 @@ public class SAFTExporter {
                 documents.stream().min((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
         DateTime endDate =
                 documents.stream().max((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
-        try {
-            return saftExporter.generateSaft(finantialInstitution, beginDate, endDate, null, documents, false);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return "";
+        return saftExporter.generateSaft(finantialInstitution, beginDate, endDate, null, documents, false);
     }
 }

@@ -26,13 +26,17 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -45,8 +49,6 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -485,14 +487,20 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationfile")
-    public ResponseEntity<String> processReadToExportIntegrationFile(@PathVariable("oid") DebitNote debitNote, Model model,
-            RedirectAttributes redirectAttributes) {
-
-        String output =
-                SAFTExporter.exportFinantialDocument(debitNote.getDebtAccount().getFinantialInstitution(),
-                        debitNote.findRelatedDocuments());
-        ResponseEntity<String> result = new ResponseEntity<String>(output, HttpStatus.OK);
-
-        return result;
+    public void processReadToExportIntegrationFile(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            String output =
+                    SAFTExporter.exportFinantialDocument(debitNote.getDebtAccount().getFinantialInstitution(),
+                            debitNote.findRelatedDocuments());
+            response.setContentType("text/xml");
+            String filename =
+                    URLEncoder.encode(StringNormalizer.normalizePreservingCapitalizedLetters(debitNote.getUiDocumentNumber())
+                            .replaceAll("\\s", "_"), "UTF-8");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(output.getBytes("UTF8"));
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
     }
 }

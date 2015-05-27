@@ -40,8 +40,9 @@ import org.joda.time.DateTime;
 public class CreditEntry extends CreditEntry_Base {
 
     protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final Vat vat,
-            final BigDecimal amount, String description, BigDecimal quantity, final DateTime entryDateTime) {
-        init(finantialDocument, product, vat, amount, description, quantity, entryDateTime);
+            final BigDecimal amount, String description, BigDecimal quantity, final DateTime entryDateTime,
+            final DebitEntry debitEntry) {
+        init(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
     }
 
     @Override
@@ -57,10 +58,10 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     protected void init(final FinantialDocument finantialDocument, final Product product, final Vat vat, final BigDecimal amount,
-            String description, BigDecimal quantity, final DateTime entryDateTime) {
+            String description, BigDecimal quantity, final DateTime entryDateTime, final DebitEntry debitEntry) {
         super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.CREDIT_ENTRY, vat, amount,
                 description, quantity, entryDateTime);
-
+        this.setDebitEntry(debitEntry);
         checkRules();
     }
 
@@ -71,6 +72,12 @@ public class CreditEntry extends CreditEntry_Base {
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
             throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
         }
+    }
+
+    @Override
+    public void delete() {
+        this.setDebitEntry(null);
+        super.delete();
     }
 
 //    @Override
@@ -108,8 +115,12 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
-            BigDecimal amount, final DateTime entryDateTime) {
-        return new CreditEntry(finantialDocument, product, vat, amount, description, amount, entryDateTime);
+            BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry) {
+        return new CreditEntry(finantialDocument, product, vat, amount, description, amount, entryDateTime, debitEntry);
+    }
+
+    public static Stream<? extends CreditEntry> find(final CreditNote creditNote) {
+        return findAll().filter(d -> d.getFinantialDocument() == creditNote);
     }
 
 }

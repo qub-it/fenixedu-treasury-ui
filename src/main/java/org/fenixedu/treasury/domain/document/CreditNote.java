@@ -28,6 +28,8 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
@@ -95,6 +97,14 @@ public class CreditNote extends CreditNote_Base {
         super.delete();
         setDebitNote(null);
         deleteDomainObject();
+    }
+
+    public Stream<? extends CreditEntry> getCreditEntries() {
+        return CreditEntry.find(this);
+    }
+
+    public Set<? extends CreditEntry> getCreditEntriesSet() {
+        return this.getCreditEntries().collect(Collectors.<CreditEntry> toSet());
     }
 
     public BigDecimal getDebitAmount() {

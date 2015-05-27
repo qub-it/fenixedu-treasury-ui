@@ -36,13 +36,16 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.CreditNote;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -542,6 +545,12 @@ public class CreditNoteController extends TreasuryBaseController {
                 CreditNote
                         .create(debitNote.getDebtAccount(), documentNumberSeries, documentDate, debitNote, originDocumentNumber);
 
+        for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
+            CreditEntry creditEntry =
+                    CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), entry.getAmount(),
+                            new DateTime(), entry);
+            creditNote.addFinantialDocumentEntries(creditEntry);
+        }
         return creditNote;
     }
 }

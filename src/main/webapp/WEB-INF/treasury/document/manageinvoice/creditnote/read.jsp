@@ -117,6 +117,70 @@ ${portal.toolkit()}
 </form>
 </div>
 </div>
+<h2>
+	<spring:message code="label.CreditNote.creditEntries" />
+</h2>
+
+<%-- NAVIGATION --%>
+<c:if test="${creditNote.isPreparing()}">
+
+	<div class="well well-sm" style="display: inline-block">
+		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message
+				code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|
+	</div>
+</c:if>
+<c:choose>
+	<c:when test="${not empty creditNote.creditEntriesSet}">
+		<datatables:table id="creditEntries" row="creditEntry" data="${creditNote.creditEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+			<datatables:column cssStyle="width:10%">
+				<datatables:columnHead>
+					<spring:message code="label.CreditEntry.quantity" />
+				</datatables:columnHead>
+				<c:out value="${creditEntry.quantity}" />
+			</datatables:column>
+			<datatables:column>
+				<datatables:columnHead>
+					<spring:message code="label.CreditEntry.description" />
+				</datatables:columnHead>
+				<c:out value="${creditEntry.description}" />
+			</datatables:column>
+			<datatables:column cssStyle="width:10%">
+				<datatables:columnHead>
+					<spring:message code="label.CreditEntry.amount" />
+				</datatables:columnHead>
+				<c:out value="${creditEntry.totalAmount}" />
+			</datatables:column>
+			<datatables:column cssStyle="width:10%">
+				<datatables:columnHead>
+					<spring:message code="label.DebitEntry.vat" />
+				</datatables:columnHead>
+				<c:out value="${creditEntry.vat.taxRate}" />
+			</datatables:column>
+			<datatables:column cssStyle="width:10%">
+				<form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${creditEntry.externalId}">
+					<button type="submit" class="btn btn-default btn-xs">
+						<spring:message code="label.view" />
+					</button>
+				</form>
+			</datatables:column>
+		</datatables:table>
+		<script>
+			createDataTables('creditEntries', false, false, false,
+					"${pageContext.request.contextPath}",
+					"${datatablesI18NUrl}");
+		</script>
+	</c:when>
+	<c:otherwise>
+		<div class="alert alert-warning" role="alert">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+				<spring:message code="label.noResultsFound" />
+			</p>
+		</div>
+
+	</c:otherwise>
+</c:choose>
 
 <script>
 $(document).ready(function() {

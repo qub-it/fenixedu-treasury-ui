@@ -104,11 +104,11 @@ public class DebitNote extends DebitNote_Base {
     }
 
     public BigDecimal getDebitAmount() {
-        return BigDecimal.ZERO;
+        return this.getTotalAmount();
     }
 
     public BigDecimal getCreditAmount() {
-        return this.getTotalAmount();
+        return BigDecimal.ZERO;
     }
 
     // @formatter: off
