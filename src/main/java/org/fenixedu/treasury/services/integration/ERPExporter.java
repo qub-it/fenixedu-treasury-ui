@@ -75,7 +75,6 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
-import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.document.Invoice;
@@ -217,15 +216,22 @@ public class ERPExporter {
 
         int i = 0;
         for (FinantialDocument document : allDocuments) {
-            if ((document.isCreditNote() || document.isDebitNote()) && Boolean.TRUE.equals(document.getClosed())) {
+            if ((document.isCreditNote() || document.isDebitNote()) && (document.isClosed() || document.isAnnulled())) {
                 try {
                     WorkDocument workDocument = convertToSAFTWorkDocument((Invoice) document, customerMap, productMap);
                     workingDocuments.getWorkDocument().add(workDocument);
 
                     // AcumulateValues
                     numberOfWorkingDocuments = numberOfWorkingDocuments.add(BigInteger.ONE);
-                    totalCreditOfWorkingDocuments =
-                            totalCreditOfWorkingDocuments.add(workDocument.getDocumentTotals().getNetTotal());
+                    if (!document.isAnnulled()) {
+                        if (document.isDebitNote()) {
+                            totalDebitOfWorkingDocuments =
+                                    totalDebitOfWorkingDocuments.add(workDocument.getDocumentTotals().getNetTotal());
+                        } else if (document.isCreditNote()) {
+                            totalCreditOfWorkingDocuments =
+                                    totalCreditOfWorkingDocuments.add(workDocument.getDocumentTotals().getNetTotal());
+                        }
+                    }
 
                     // Update Counter
                     // information.setCurrentCounter(information
@@ -412,6 +418,7 @@ public class ERPExporter {
                 line.setLineNumber(i);
                 //SourceDocument
                 SourceDocumentID sourceDocument = new SourceDocumentID();
+//                sourceDocument.setLineNumber(settlementEntry.getInvoiceEntry().get);
                 sourceDocument.setOriginatingON(settlementEntry.getInvoiceEntry().getFinantialDocument().getUiDocumentNumber());
                 sourceDocument.setInvoiceDate(convertToXMLDateTime(dataTypeFactory, settlementEntry.getInvoiceEntry()
                         .getFinantialDocument().getDocumentDate()));
@@ -505,6 +512,11 @@ public class ERPExporter {
             // CustomerID
             workDocument.setCustomerID(document.getDebtAccount().getCustomer().getCode());
 
+            //PayorID
+            if (document.getPayorDebtAccount() != null) {
+                workDocument.setPayorCustomerID(document.getPayorDebtAccount().getCustomer().getCode());
+            }
+
             // DocumentStatus
             /*
              * Deve ser preenchido com: ?N? ? Normal; Texto 1 ?T? ? Por conta de
@@ -519,7 +531,11 @@ public class ERPExporter {
             status.setSourceID(document.getUserChanged());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
-            status.setSourceBilling(SAFTPTSourceBilling.P);
+            if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())) {
+                status.setSourceBilling(SAFTPTSourceBilling.I);
+            } else {
+                status.setSourceBilling(SAFTPTSourceBilling.P);
+            }
 
             workDocument.setDocumentStatus(status);
 
@@ -660,9 +676,7 @@ public class ERPExporter {
         try {
             DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
             DateTime documentDate = entry.getFinantialDocument().getDocumentDate();
-            documentDateCalendar =
-                    dataTypeFactory.newXMLGregorianCalendarDate(documentDate.getYear(), documentDate.getMonthOfYear(),
-                            documentDate.getDayOfMonth(), DatatypeConstants.FIELD_UNDEFINED);
+            documentDateCalendar = convertToXMLDateTime(dataTypeFactory, documentDate);
         } catch (DatatypeConfigurationException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -695,13 +709,13 @@ public class ERPExporter {
             }
 
         } else if (entry.isDebitNoteEntry()) {
-            DebitEntry debitEntry = (DebitEntry) entry;
-            for (CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
-                OrderReferences reference = new OrderReferences();
-                reference.setOriginatingON(creditEntry.getFinantialDocument().getUiDocumentNumber());
-                reference.setOrderDate(documentDateCalendar);
-                orderReferences.add(reference);
-            }
+//            DebitEntry debitEntry = (DebitEntry) entry;
+//            for (CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
+//                OrderReferences reference = new OrderReferences();
+//                reference.setOriginatingON(creditEntry.getFinantialDocument().getUiDocumentNumber());
+//                reference.setOrderDate(documentDateCalendar);
+//                orderReferences.add(reference);
+//            }
         }
 
         // ProductCode
