@@ -47,7 +47,7 @@ import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.services.integration.SAFTExporter;
+import org.fenixedu.treasury.services.integration.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
@@ -590,7 +590,7 @@ public class CreditNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             String output =
-                    SAFTExporter.exportFinantialDocument(creditNote.getDebtAccount().getFinantialInstitution(),
+                    ERPExporter.exportFinantialDocument(creditNote.getDebtAccount().getFinantialInstitution(),
                             creditNote.findRelatedDocuments());
             response.setContentType("text/xml");
             String filename =
