@@ -583,7 +583,7 @@ public class CreditNoteController extends TreasuryBaseController {
         for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
             CreditEntry creditEntry =
                     CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), entry.getAmount(),
-                            new DateTime(), entry);
+                            new DateTime(), entry, entry.getQuantity());
             creditNote.addFinantialDocumentEntries(creditEntry);
         }
         return creditNote;

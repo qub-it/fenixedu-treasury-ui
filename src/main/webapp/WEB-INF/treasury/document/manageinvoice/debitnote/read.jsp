@@ -50,9 +50,8 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message
-                            <spring:message code="label.document.manageInvoice.readDebitNote.confirmDelete" /> 
-                            arguments='${debitNote.uiDocumentNumber}' />
+                        
+                            <spring:message code="label.document.manageInvoice.readDebitNote.confirmDelete" />  
                     </p>
                 </div>
                 <div class="modal-footer">

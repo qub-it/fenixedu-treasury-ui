@@ -116,8 +116,9 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
-            BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry) {
-        CreditEntry cr = new CreditEntry(finantialDocument, product, vat, amount, description, amount, entryDateTime, debitEntry);
+            BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry, BigDecimal quantity) {
+        CreditEntry cr =
+                new CreditEntry(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
         cr.realculateAmountValues();
         return cr;
     }
