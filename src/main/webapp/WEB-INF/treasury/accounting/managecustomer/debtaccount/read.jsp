@@ -143,7 +143,7 @@ ${portal.angularToolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
-						<td><c:out value="${debtAccount.finantialIntitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /></td>
+						<td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /></td>
 					</tr>
 				</tbody>
 			</table>

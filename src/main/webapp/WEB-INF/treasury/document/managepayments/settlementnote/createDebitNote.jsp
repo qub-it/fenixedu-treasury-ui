@@ -57,9 +57,12 @@ ${portal.angularToolkit()}
         <small></small>
     </h1>
     <div>
-        <p>
-            ${ settlementNoteBean.debtAccount.customer.name } (NIF ${ settlementNoteBean.debtAccount.customer.fiscalNumber })
-        </p>
+       		<div class="well well-sm">
+			<p><strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>${settlementNoteBean.debtAccount.finantialInstitution.name}</p>
+			<p><strong><spring:message code="label.DebtAccount.customer" />: </strong>${settlementNoteBean.debtAccount.customer.code} - ${settlementNoteBean.debtAccount.customer.name}</p>
+			<p><strong><spring:message code="label.Customer.fiscalNumber" />: </strong>${ settlementNoteBean.debtAccount.customer.fiscalNumber }</p>
+		</div>
+
     </div>
 </div>
 

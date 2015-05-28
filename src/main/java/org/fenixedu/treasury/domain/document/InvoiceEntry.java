@@ -86,7 +86,6 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         this.setDebtAccount(debtAccount);
         this.setProduct(product);
         this.setVat(vat);
-        this.setVatRate(vat.getTaxRate());
     }
 
     @Override
@@ -147,6 +146,9 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
     @Atomic
     protected void realculateAmountValues() {
+        if (this.getVatRate() == null) {
+            this.setVatRate(super.getVat().getTaxRate());
+        }
         setNetAmount(getCurrency().getValueWithScale(getQuantity().multiply(getAmount())));
         setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate())));
         setAmountWithVat(getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(getVatRate()))));

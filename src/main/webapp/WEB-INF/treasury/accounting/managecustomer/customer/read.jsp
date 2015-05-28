@@ -150,7 +150,7 @@ ${portal.toolkit()}
 							<th scope="row" class="col-xs-3"><c:out value="${debtAccount.finantialInstitution.name}" /></th>
 							<td style="vertical-align: middle">
 								<div class="col-xs-3">
-									<c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" />
+									<c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
 								</div> &nbsp;&nbsp;<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message
 										code="label.customer.read.showdebtaccount"></spring:message></a>
 							</td>

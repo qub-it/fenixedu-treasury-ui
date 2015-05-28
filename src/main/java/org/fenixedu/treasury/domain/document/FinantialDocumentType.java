@@ -70,6 +70,13 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
             throw new TreasuryDomainException("error.FinantialDocumentType.name.required");
         }
 
+        final Set<FinantialDocumentType> stream =
+                findAll().filter(fdt -> fdt.getType() == this.getType()).collect(Collectors.toSet());
+
+        if (stream.size() > 1) {
+            throw new TreasuryDomainException("error.FinantialDocumentType.not.unique.in.finantial.document.type");
+        }
+
         findByCode(getCode());
 
         getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
@@ -84,6 +91,9 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     }
 
     public boolean isDeletable() {
+        if (this.getFinantialDocumentsSet().size() > 0) {
+            return false;
+        }
         return true;
     }
 
@@ -169,8 +179,9 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
         if (stream.size() > 1) {
             throw new TreasuryDomainException("error.FinantialDocumentType.not.unique.in.finantial.document.type");
         }
-        if (stream.size() == 0)
+        if (stream.size() == 0) {
             return null;
+        }
         return stream.iterator().next();
     }
 

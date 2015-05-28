@@ -232,7 +232,7 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.debitEntry = debitEntry;
             this.isIncluded = false;
             this.isNotValid = false;
-            this.paymentAmount = BigDecimal.ZERO;
+            this.paymentAmount = debitEntry.getOpenAmountWithVat();
         }
 
         public DebitEntry getDebitEntry() {
