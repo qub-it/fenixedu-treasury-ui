@@ -1,11 +1,11 @@
-package org.fenixedu.treasury.services.integration;
+package org.fenixedu.treasury.services.integration.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 
 import org.fenixedu.bennu.IBean;
 
-public class InterestRateBeanWS implements IBean, Serializable {
+public class InterestRequestValueOuptut implements IBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -13,12 +13,12 @@ public class InterestRateBeanWS implements IBean, Serializable {
 
     private String description;
 
-    public InterestRateBeanWS() {
+    public InterestRequestValueOuptut() {
         setInterestAmount(BigDecimal.ZERO);
         setDescription(new String());
     }
 
-    public InterestRateBeanWS(BigDecimal interestAmount, String description) {
+    public InterestRequestValueOuptut(BigDecimal interestAmount, String description) {
         this.setInterestAmount(interestAmount);
         this.setDescription(description);
     }

@@ -1,9 +1,12 @@
 package org.fenixedu.treasury.services.integration;
 
-import java.math.BigDecimal;
-
 import javax.jws.WebMethod;
 import javax.jws.WebService;
+
+import org.fenixedu.treasury.services.integration.dto.DocumentsInformationInput;
+import org.fenixedu.treasury.services.integration.dto.IntegrationStatusOutput;
+import org.fenixedu.treasury.services.integration.dto.InterestRequestValueOuptut;
+import org.fenixedu.treasury.services.integration.dto.InterestRequestValueInput;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
 
@@ -11,15 +14,31 @@ import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebSer
 public class ERPIntegrationService extends BennuWebService {
 
     @WebMethod
-    public void sendInfo(String requestID, Byte[] data) {
+    public String sendInfoOnline(DocumentsInformationInput documentsInformation) {
 
+        String requestId = "Random_requestId";
         //Integrate the information from XML SAFT
 
+        return requestId;
     }
 
-    public InterestRateBeanWS getInterest(final String finantialInstitutionFiscalNumber, final String customerCode,
-            final String debitNoteNumber, final Integer lineNumber, final BigDecimal amount,
-            final Boolean generateInterestDebitNote) {
+    @WebMethod
+    public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
+
+        String requestId = "Random_requestId";
+        //Integrate the information from XML SAFT
+
+        return requestId;
+    }
+
+    @WebMethod
+    public IntegrationStatusOutput getIntegrationStatusFor(String requestIdentification) {
+        IntegrationStatusOutput status = new IntegrationStatusOutput(requestIdentification);
+        return status;
+    }
+
+    @WebMethod
+    public InterestRequestValueOuptut getInterestValueFor(InterestRequestValueInput interestRequest) {
 
         //1. Check if the the lineNumber+DebitNoteNumber is for the Customer of the FinantialInstitution
 
@@ -27,9 +46,9 @@ public class ERPIntegrationService extends BennuWebService {
 
         //3 . calculate the amount of interest
 
-        InterestRateBeanWS bean = new InterestRateBeanWS();
+        InterestRequestValueOuptut bean = new InterestRequestValueOuptut();
 
-        if (generateInterestDebitNote) {
+        if (interestRequest.getGenerateInterestDebitNote()) {
             //Create DebitNote for the InterestRate
         }
         return bean;
