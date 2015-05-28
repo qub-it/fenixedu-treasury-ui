@@ -67,7 +67,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         }
 
         if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-            throw new TreasuryDomainException("error.AdhocCustomer.name.required");
+            throw new TreasuryDomainException("e");
         }
 
         if (findByCode(getCode()).count() > 1) {
@@ -153,11 +153,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     public Set<FinantialInstitution> getFinantialInstitutions() {
-        return this.getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution()).collect(Collectors.toSet());
+        return getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution()).collect(Collectors.toSet());
     }
 
     public DebtAccount getDebtAccountFor(FinantialInstitution institution) {
-        return this.getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
+        return getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
                 .orElse(null);
     }
 

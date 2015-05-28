@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.ui.administration.base.manageglobalinterestrate;
+package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,10 +33,11 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,16 +47,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.treasury.ui.administration.base.manageGlobalInterestRate") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageGlobalInterestRate",
+//@Component("org.fenixedu.treasury.ui.administration.payments.sibs.manageSibsReportFile") <-- Use for duplicate controller name disambiguation
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.manageSibsReportFile",
         accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
-@RequestMapping(GlobalInterestRateController.CONTROLLER_URL)
-public class GlobalInterestRateController extends TreasuryBaseController {
+@RequestMapping(SibsReportFileController.CONTROLLER_URL)
+public class SibsReportFileController extends TreasuryBaseController {
 
-    public static final String CONTROLLER_URL = "/treasury/administration/base/manageglobalinterestrate/globalinterestrate";
+    public static final String CONTROLLER_URL = "/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile";
 
 //
 
@@ -71,33 +72,30 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     * This should be used when using AngularJS in the JSP
     */
 
-    //private GlobalInterestRate getGlobalInterestRateBean(Model model)
+    //private SibsReportFile getSibsReportFileBean(Model model)
     //{
-    //	return (GlobalInterestRate)model.asMap().get("globalInterestRateBean");
+    //	return (SibsReportFile)model.asMap().get("sibsReportFileBean");
     //}
     //				
-    //private void setGlobalInterestRateBean (GlobalInterestRateBean bean, Model model)
+    //private void setSibsReportFileBean (SibsReportFileBean bean, Model model)
     //{
-    //	model.addAttribute("globalInterestRateBeanJson", getBeanJson(bean));
-    //	model.addAttribute("globalInterestRateBean", bean);
+    //	model.addAttribute("sibsReportFileBeanJson", getBeanJson(bean));
+    //	model.addAttribute("sibsReportFileBean", bean);
     //}
 
     // @formatter: on
 
-    private GlobalInterestRate getGlobalInterestRate(Model model) {
-        return (GlobalInterestRate) model.asMap().get("globalInterestRate");
+    private SibsReportFile getSibsReportFile(Model model) {
+        return (SibsReportFile) model.asMap().get("sibsReportFile");
     }
 
-    private void setGlobalInterestRate(GlobalInterestRate globalInterestRate, Model model) {
-        model.addAttribute("globalInterestRate", globalInterestRate);
+    private void setSibsReportFile(SibsReportFile sibsReportFile, Model model) {
+        model.addAttribute("sibsReportFile", sibsReportFile);
     }
 
     @Atomic
-    public void deleteGlobalInterestRate(GlobalInterestRate globalInterestRate) {
-        // CHANGE_ME: Do the processing for deleting the globalInterestRate
-        // Do not catch any exception here
-
-        globalInterestRate.delete();
+    public void deleteSibsReportFile(SibsReportFile sibsReportFile) {
+        sibsReportFile.delete();
     }
 
 //				
@@ -105,40 +103,36 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(
-            @RequestParam(value = "description", required = false) org.fenixedu.commons.i18n.LocalizedString description,
-            @RequestParam(value = "rate", required = false) java.math.BigDecimal rate, Model model) {
-        List<GlobalInterestRate> searchglobalinterestrateResultsDataSet = filterSearchGlobalInterestRate(description, rate);
+    public String search(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs, @RequestParam(
+            value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount, @RequestParam(
+            value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model) {
+        List<SibsReportFile> searchsibsreportfileResultsDataSet =
+                filterSearchSibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost);
 
         //add the results dataSet to the model
-        model.addAttribute("searchglobalinterestrateResultsDataSet", searchglobalinterestrateResultsDataSet);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/search";
+        model.addAttribute("searchsibsreportfileResultsDataSet", searchsibsreportfileResultsDataSet);
+        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/search";
     }
 
-    private Stream<GlobalInterestRate> getSearchUniverseSearchGlobalInterestRateDataSet() {
+    private Stream<SibsReportFile> getSearchUniverseSearchSibsReportFileDataSet() {
         //
         //The initialization of the result list must be done here
         //
         //
-        return GlobalInterestRate.findAll();
-        //return new ArrayList<GlobalInterestRate>().stream();
+        return SibsReportFile.findAll();
+        //return new ArrayList<SibsReportFile>().stream();
     }
 
-    private List<GlobalInterestRate> filterSearchGlobalInterestRate(org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate) {
+    private List<SibsReportFile> filterSearchSibsReportFile(org.joda.time.LocalDate whenProcessedBySibs,
+            java.math.BigDecimal transactionsTotalAmount, java.math.BigDecimal totalCost) {
 
-        return getSearchUniverseSearchGlobalInterestRateDataSet()
-//                .filter(globalInterestRate -> globalInterestRate.getYear() == year)
-                .filter(globalInterestRate -> description == null
-                        || description.isEmpty()
-                        || description
-                                .getLocales()
-                                .stream()
-                                .allMatch(
-                                        locale -> globalInterestRate.getDescription().getContent(locale) != null
-                                                && globalInterestRate.getDescription().getContent(locale).toLowerCase()
-                                                        .contains(description.getContent(locale).toLowerCase())))
-                .filter(globalInterestRate -> rate == null || rate.equals(globalInterestRate.getRate()))
+        return getSearchUniverseSearchSibsReportFileDataSet()
+                .filter(sibsReportFile -> whenProcessedBySibs == null
+                        || whenProcessedBySibs.equals(sibsReportFile.getWhenProcessedBySibs()))
+                .filter(sibsReportFile -> transactionsTotalAmount == null
+                        || transactionsTotalAmount.equals(sibsReportFile.getTransactionsTotalAmount()))
+                .filter(sibsReportFile -> totalCost == null || totalCost.equals(sibsReportFile.getTotalCost()))
                 .collect(Collectors.toList());
     }
 
@@ -146,13 +140,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_ACTION_URI;
 
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
+    public String processSearchToViewAction(@PathVariable("oid") SibsReportFile sibsReportFile, Model model,
             RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read" + "/"
-                + globalInterestRate.getExternalId(), model, redirectAttributes);
+        return redirect(
+                "/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read" + "/"
+                        + sibsReportFile.getExternalId(), model, redirectAttributes);
     }
 
 //				
@@ -160,9 +155,9 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
     @RequestMapping(value = _READ_URI + "{oid}")
-    public String read(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
-        setGlobalInterestRate(globalInterestRate, model);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read";
+    public String read(@PathVariable("oid") SibsReportFile sibsReportFile, Model model) {
+        setSibsReportFile(sibsReportFile, model);
+        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read";
     }
 
 //
@@ -170,16 +165,15 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String delete(@PathVariable("oid") SibsReportFile sibsReportFile, Model model, RedirectAttributes redirectAttributes) {
 
-        setGlobalInterestRate(globalInterestRate, model);
+        setSibsReportFile(sibsReportFile, model);
         try {
             //call the Atomic delete function
-            deleteGlobalInterestRate(globalInterestRate);
+            deleteSibsReportFile(sibsReportFile);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/", model,
+            return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/", model,
                     redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
@@ -187,8 +181,8 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                + getGlobalInterestRate(model).getExternalId();
+        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/"
+                + getSibsReportFile(model).getExternalId();
     }
 
 //				
@@ -199,10 +193,10 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public String create(Model model) {
 
         //IF ANGULAR, initialize the Bean
-        //GlobalInterestRateBean bean = new GlobalInterestRateBean();
-        //this.setGlobalInterestRateBean(bean, model);
+        //SibsReportFileBean bean = new SibsReportFileBean();
+        //this.setSibsReportFileBean(bean, model);
 
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/create";
+        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/create";
     }
 
 //
@@ -213,16 +207,16 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				private static final String _CREATEPOSTBACK_URI ="/createpostback";
 //				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
 //    			@RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) SibsReportFileBean bean,
 //            		Model model) {
 //
 //        			// Do validation logic ?!?!
-//        			this.setGlobalInterestRateBean(bean, model);
+//        			this.setSibsReportFileBean(bean, model);
 //        			return getBeanJson(bean);
 //    			}
 //    			
 //    			@RequestMapping(value = CREATE, method = RequestMethod.POST)
-//  			  	public String create(@RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public String create(@RequestParam(value = "bean", required = false) SibsReportFileBean bean,
 //            		Model model, RedirectAttributes redirectAttributes ) {
 //
 //					/*
@@ -232,12 +226,12 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //					try
 //					{
 //
-//				     	GlobalInterestRate globalInterestRate = createGlobalInterestRate(... get properties from bean ...,model);
+//				     	SibsReportFile sibsReportFile = createSibsReportFile(... get properties from bean ...,model);
 //				    	
 //					//Success Validation
 //				     //Add the bean to be used in the View
-//					model.addAttribute("globalInterestRate",globalInterestRate);
-//				    return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/" + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+//					model.addAttribute("sibsReportFile",sibsReportFile);
+//				    return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/" + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
 //					}
 //					catch (DomainException de)
 //					{
@@ -258,22 +252,24 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "year", required = false) int year, @RequestParam(value = "description",
-            required = false) org.fenixedu.commons.i18n.LocalizedString description, @RequestParam(value = "rate",
-            required = false) java.math.BigDecimal rate, Model model, RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs, @RequestParam(
+            value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount, @RequestParam(
+            value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
+            RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         */
 
         try {
 
-            GlobalInterestRate globalInterestRate = createGlobalInterestRate(year, description, rate);
+            SibsReportFile sibsReportFile = createSibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost);
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("globalInterestRate", globalInterestRate);
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                    + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+            model.addAttribute("sibsReportFile", sibsReportFile);
+            return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/"
+                    + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -292,8 +288,8 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     }
 
     @Atomic
-    public GlobalInterestRate createGlobalInterestRate(int year, org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate) {
+    public SibsReportFile createSibsReportFile(org.joda.time.LocalDate whenProcessedBySibs,
+            java.math.BigDecimal transactionsTotalAmount, java.math.BigDecimal totalCost) {
 
         // @formatter: off
 
@@ -305,13 +301,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
          */
 
         // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //GlobalInterestRate globalInterestRate = globalInterestRate.create(fields_to_create);
+        //SibsReportFile sibsReportFile = sibsReportFile.create(fields_to_create);
 
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        GlobalInterestRate globalInterestRate = GlobalInterestRate.create(year, description, rate);
-        return globalInterestRate;
+        SibsReportFile sibsReportFile = SibsReportFile.create(whenProcessedBySibs, transactionsTotalAmount, totalCost);
+
+        return sibsReportFile;
     }
 
 //				
@@ -319,9 +316,9 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
-        setGlobalInterestRate(globalInterestRate, model);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/update";
+    public String update(@PathVariable("oid") SibsReportFile sibsReportFile, Model model) {
+        setSibsReportFile(sibsReportFile, model);
+        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/update";
     }
 
 //
@@ -333,18 +330,18 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
 //				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
 //    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") SibsReportFile sibsReportFile, @RequestParam(value = "bean", required = false) SibsReportFileBean bean,
 //            		Model model) {
 //
 //        			// Do validation logic ?!?!
-//        			this.setGlobalInterestRateBean(bean, model);
+//        			this.setSibsReportFileBean(bean, model);
 //        			return getBeanJson(bean);
 //    			} 
 //    			
 //    			@RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//  			  	public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public String update(@PathVariable("oid") SibsReportFile sibsReportFile, @RequestParam(value = "bean", required = false) SibsReportFileBean bean,
 //            		Model model, RedirectAttributes redirectAttributes ) {
-//					setGlobalInterestRate(globalInterestRate,model);
+//					setSibsReportFile(sibsReportFile,model);
 //
 //				     try
 //				     {
@@ -352,11 +349,11 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //					*  UpdateLogic here
 //					*/
 //				    		
-//						updateGlobalInterestRate( .. get fields from bean..., model);
+//						updateSibsReportFile( .. get fields from bean..., model);
 //
 //					/*Succes Update */
 //
-//				    return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/" + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+//				    return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/" + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
 //					}
 //					catch (DomainException de) 
 //					{
@@ -371,7 +368,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				     	*/
 //										     
 //				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(globalInterestRate,model);
+//				     	return update(sibsReportFile,model);
 //					 
 //
 //					}
@@ -379,25 +376,26 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "year",
-            required = false) int year,
-            @RequestParam(value = "description", required = false) org.fenixedu.commons.i18n.LocalizedString description,
-            @RequestParam(value = "rate", required = false) java.math.BigDecimal rate, Model model,
+    public String update(
+            @PathVariable("oid") SibsReportFile sibsReportFile,
+            @RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs,
+            @RequestParam(value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount,
+            @RequestParam(value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
             RedirectAttributes redirectAttributes) {
 
-        setGlobalInterestRate(globalInterestRate, model);
+        setSibsReportFile(sibsReportFile, model);
 
         try {
             /*
             *  UpdateLogic here
             */
 
-            updateGlobalInterestRate(year, description, rate, model);
+            updateSibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, model);
 
             /*Succes Update */
 
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                    + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+            return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/"
+                    + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             // @formatter: off
 
@@ -412,14 +410,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
             // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(globalInterestRate, model);
+            return update(sibsReportFile, model);
 
         }
     }
 
     @Atomic
-    public void updateGlobalInterestRate(int year, org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate, Model model) {
+    public void updateSibsReportFile(org.joda.time.LocalDate whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
+            java.math.BigDecimal totalCost, Model model) {
 
         // @formatter: off				
         /*
@@ -428,14 +426,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
          */
 
         // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getGlobalInterestRate(model).edit(fields_to_edit);
+        //getSibsReportFile(model).edit(fields_to_edit);
 
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getGlobalInterestRate(model).setYear(year);
-        getGlobalInterestRate(model).setDescription(description);
-        getGlobalInterestRate(model).setRate(rate);
+        getSibsReportFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
+        getSibsReportFile(model).setTransactionsTotalAmount(transactionsTotalAmount);
+        getSibsReportFile(model).setTotalCost(totalCost);
     }
 
 }

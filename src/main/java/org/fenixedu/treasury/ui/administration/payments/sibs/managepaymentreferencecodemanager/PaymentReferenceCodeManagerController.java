@@ -24,7 +24,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.ui.administration.base.manageglobalinterestrate;
+package org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecodemanager;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeManager;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -46,16 +46,17 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.treasury.ui.administration.base.manageGlobalInterestRate") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageGlobalInterestRate",
-        accessGroup = "logged")
+//@Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCodeManager") <-- Use for duplicate controller name disambiguation
+@SpringFunctionality(app = TreasuryController.class,
+        title = "label.title.administration.payments.sibs.managePaymentReferenceCodeManager", accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
-@RequestMapping(GlobalInterestRateController.CONTROLLER_URL)
-public class GlobalInterestRateController extends TreasuryBaseController {
+@RequestMapping(PaymentReferenceCodeManagerController.CONTROLLER_URL)
+public class PaymentReferenceCodeManagerController extends TreasuryBaseController {
 
-    public static final String CONTROLLER_URL = "/treasury/administration/base/manageglobalinterestrate/globalinterestrate";
+    public static final String CONTROLLER_URL =
+            "/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager";
 
 //
 
@@ -71,33 +72,30 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     * This should be used when using AngularJS in the JSP
     */
 
-    //private GlobalInterestRate getGlobalInterestRateBean(Model model)
+    //private PaymentReferenceCodeManager getPaymentReferenceCodeManagerBean(Model model)
     //{
-    //	return (GlobalInterestRate)model.asMap().get("globalInterestRateBean");
+    //	return (PaymentReferenceCodeManager)model.asMap().get("paymentReferenceCodeManagerBean");
     //}
     //				
-    //private void setGlobalInterestRateBean (GlobalInterestRateBean bean, Model model)
+    //private void setPaymentReferenceCodeManagerBean (PaymentReferenceCodeManagerBean bean, Model model)
     //{
-    //	model.addAttribute("globalInterestRateBeanJson", getBeanJson(bean));
-    //	model.addAttribute("globalInterestRateBean", bean);
+    //	model.addAttribute("paymentReferenceCodeManagerBeanJson", getBeanJson(bean));
+    //	model.addAttribute("paymentReferenceCodeManagerBean", bean);
     //}
 
     // @formatter: on
 
-    private GlobalInterestRate getGlobalInterestRate(Model model) {
-        return (GlobalInterestRate) model.asMap().get("globalInterestRate");
+    private PaymentReferenceCodeManager getPaymentReferenceCodeManager(Model model) {
+        return (PaymentReferenceCodeManager) model.asMap().get("paymentReferenceCodeManager");
     }
 
-    private void setGlobalInterestRate(GlobalInterestRate globalInterestRate, Model model) {
-        model.addAttribute("globalInterestRate", globalInterestRate);
+    private void setPaymentReferenceCodeManager(PaymentReferenceCodeManager paymentReferenceCodeManager, Model model) {
+        model.addAttribute("paymentReferenceCodeManager", paymentReferenceCodeManager);
     }
 
     @Atomic
-    public void deleteGlobalInterestRate(GlobalInterestRate globalInterestRate) {
-        // CHANGE_ME: Do the processing for deleting the globalInterestRate
-        // Do not catch any exception here
-
-        globalInterestRate.delete();
+    public void deletePaymentReferenceCodeManager(PaymentReferenceCodeManager paymentReferenceCodeManager) {
+        paymentReferenceCodeManager.delete();
     }
 
 //				
@@ -105,40 +103,36 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(
-            @RequestParam(value = "description", required = false) org.fenixedu.commons.i18n.LocalizedString description,
-            @RequestParam(value = "rate", required = false) java.math.BigDecimal rate, Model model) {
-        List<GlobalInterestRate> searchglobalinterestrateResultsDataSet = filterSearchGlobalInterestRate(description, rate);
+    public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(
+            value = "description", required = false) java.lang.String description, Model model) {
+        List<PaymentReferenceCodeManager> searchpaymentreferencecodemanagerResultsDataSet =
+                filterSearchPaymentReferenceCodeManager(code, description);
 
         //add the results dataSet to the model
-        model.addAttribute("searchglobalinterestrateResultsDataSet", searchglobalinterestrateResultsDataSet);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/search";
+        model.addAttribute("searchpaymentreferencecodemanagerResultsDataSet", searchpaymentreferencecodemanagerResultsDataSet);
+        return "treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/search";
     }
 
-    private Stream<GlobalInterestRate> getSearchUniverseSearchGlobalInterestRateDataSet() {
+    private Stream<PaymentReferenceCodeManager> getSearchUniverseSearchPaymentReferenceCodeManagerDataSet() {
         //
         //The initialization of the result list must be done here
         //
         //
-        return GlobalInterestRate.findAll();
-        //return new ArrayList<GlobalInterestRate>().stream();
+        return PaymentReferenceCodeManager.findAll();
+        //return new ArrayList<PaymentReferenceCodeManager>().stream();
     }
 
-    private List<GlobalInterestRate> filterSearchGlobalInterestRate(org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate) {
+    private List<PaymentReferenceCodeManager> filterSearchPaymentReferenceCodeManager(java.lang.String code,
+            java.lang.String description) {
 
-        return getSearchUniverseSearchGlobalInterestRateDataSet()
-//                .filter(globalInterestRate -> globalInterestRate.getYear() == year)
-                .filter(globalInterestRate -> description == null
-                        || description.isEmpty()
-                        || description
-                                .getLocales()
-                                .stream()
-                                .allMatch(
-                                        locale -> globalInterestRate.getDescription().getContent(locale) != null
-                                                && globalInterestRate.getDescription().getContent(locale).toLowerCase()
-                                                        .contains(description.getContent(locale).toLowerCase())))
-                .filter(globalInterestRate -> rate == null || rate.equals(globalInterestRate.getRate()))
+        return getSearchUniverseSearchPaymentReferenceCodeManagerDataSet()
+                .filter(paymentReferenceCodeManager -> code == null || code.length() == 0
+                        || paymentReferenceCodeManager.getCode() != null && paymentReferenceCodeManager.getCode().length() > 0
+                        && paymentReferenceCodeManager.getCode().toLowerCase().contains(code.toLowerCase()))
+                .filter(paymentReferenceCodeManager -> description == null || description.length() == 0
+                        || paymentReferenceCodeManager.getDescription() != null
+                        && paymentReferenceCodeManager.getDescription().length() > 0
+                        && paymentReferenceCodeManager.getDescription().toLowerCase().contains(description.toLowerCase()))
                 .collect(Collectors.toList());
     }
 
@@ -146,13 +140,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_ACTION_URI;
 
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processSearchToViewAction(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager,
+            Model model, RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read" + "/"
-                + globalInterestRate.getExternalId(), model, redirectAttributes);
+        return redirect(
+                "/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read" + "/"
+                        + paymentReferenceCodeManager.getExternalId(), model, redirectAttributes);
     }
 
 //				
@@ -160,9 +155,9 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
     @RequestMapping(value = _READ_URI + "{oid}")
-    public String read(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
-        setGlobalInterestRate(globalInterestRate, model);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read";
+    public String read(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager, Model model) {
+        setPaymentReferenceCodeManager(paymentReferenceCodeManager, model);
+        return "treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read";
     }
 
 //
@@ -170,25 +165,26 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
+    public String delete(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager, Model model,
             RedirectAttributes redirectAttributes) {
 
-        setGlobalInterestRate(globalInterestRate, model);
+        setPaymentReferenceCodeManager(paymentReferenceCodeManager, model);
         try {
             //call the Atomic delete function
-            deleteGlobalInterestRate(globalInterestRate);
+            deletePaymentReferenceCodeManager(paymentReferenceCodeManager);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/", model,
-                    redirectAttributes);
+            return redirect(
+                    "/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/",
+                    model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                + getGlobalInterestRate(model).getExternalId();
+        return "treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read/"
+                + getPaymentReferenceCodeManager(model).getExternalId();
     }
 
 //				
@@ -199,10 +195,10 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public String create(Model model) {
 
         //IF ANGULAR, initialize the Bean
-        //GlobalInterestRateBean bean = new GlobalInterestRateBean();
-        //this.setGlobalInterestRateBean(bean, model);
+        //PaymentReferenceCodeManagerBean bean = new PaymentReferenceCodeManagerBean();
+        //this.setPaymentReferenceCodeManagerBean(bean, model);
 
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/create";
+        return "treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/create";
     }
 
 //
@@ -213,16 +209,16 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				private static final String _CREATEPOSTBACK_URI ="/createpostback";
 //				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
 //    			@RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) PaymentReferenceCodeManagerBean bean,
 //            		Model model) {
 //
 //        			// Do validation logic ?!?!
-//        			this.setGlobalInterestRateBean(bean, model);
+//        			this.setPaymentReferenceCodeManagerBean(bean, model);
 //        			return getBeanJson(bean);
 //    			}
 //    			
 //    			@RequestMapping(value = CREATE, method = RequestMethod.POST)
-//  			  	public String create(@RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public String create(@RequestParam(value = "bean", required = false) PaymentReferenceCodeManagerBean bean,
 //            		Model model, RedirectAttributes redirectAttributes ) {
 //
 //					/*
@@ -232,12 +228,12 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //					try
 //					{
 //
-//				     	GlobalInterestRate globalInterestRate = createGlobalInterestRate(... get properties from bean ...,model);
+//				     	PaymentReferenceCodeManager paymentReferenceCodeManager = createPaymentReferenceCodeManager(... get properties from bean ...,model);
 //				    	
 //					//Success Validation
 //				     //Add the bean to be used in the View
-//					model.addAttribute("globalInterestRate",globalInterestRate);
-//				    return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/" + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+//					model.addAttribute("paymentReferenceCodeManager",paymentReferenceCodeManager);
+//				    return redirect("/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read/" + getPaymentReferenceCodeManager(model).getExternalId(), model, redirectAttributes);
 //					}
 //					catch (DomainException de)
 //					{
@@ -258,22 +254,23 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "year", required = false) int year, @RequestParam(value = "description",
-            required = false) org.fenixedu.commons.i18n.LocalizedString description, @RequestParam(value = "rate",
-            required = false) java.math.BigDecimal rate, Model model, RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(
+            value = "description", required = false) java.lang.String description, Model model,
+            RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         */
 
         try {
 
-            GlobalInterestRate globalInterestRate = createGlobalInterestRate(year, description, rate);
+            PaymentReferenceCodeManager paymentReferenceCodeManager = createPaymentReferenceCodeManager(code, description);
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("globalInterestRate", globalInterestRate);
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                    + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+            model.addAttribute("paymentReferenceCodeManager", paymentReferenceCodeManager);
+            return redirect(
+                    "/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read/"
+                            + getPaymentReferenceCodeManager(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -292,8 +289,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     }
 
     @Atomic
-    public GlobalInterestRate createGlobalInterestRate(int year, org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate) {
+    public PaymentReferenceCodeManager createPaymentReferenceCodeManager(java.lang.String code, java.lang.String description) {
 
         // @formatter: off
 
@@ -305,13 +301,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
          */
 
         // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //GlobalInterestRate globalInterestRate = globalInterestRate.create(fields_to_create);
+        //PaymentReferenceCodeManager paymentReferenceCodeManager = paymentReferenceCodeManager.create(fields_to_create);
 
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        GlobalInterestRate globalInterestRate = GlobalInterestRate.create(year, description, rate);
-        return globalInterestRate;
+        PaymentReferenceCodeManager paymentReferenceCodeManager = PaymentReferenceCodeManager.create(code, description);
+
+        return paymentReferenceCodeManager;
     }
 
 //				
@@ -319,9 +316,9 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
-        setGlobalInterestRate(globalInterestRate, model);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/update";
+    public String update(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager, Model model) {
+        setPaymentReferenceCodeManager(paymentReferenceCodeManager, model);
+        return "treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/update";
     }
 
 //
@@ -333,18 +330,18 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
 //				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
 //    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager, @RequestParam(value = "bean", required = false) PaymentReferenceCodeManagerBean bean,
 //            		Model model) {
 //
 //        			// Do validation logic ?!?!
-//        			this.setGlobalInterestRateBean(bean, model);
+//        			this.setPaymentReferenceCodeManagerBean(bean, model);
 //        			return getBeanJson(bean);
 //    			} 
 //    			
 //    			@RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//  			  	public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public String update(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager, @RequestParam(value = "bean", required = false) PaymentReferenceCodeManagerBean bean,
 //            		Model model, RedirectAttributes redirectAttributes ) {
-//					setGlobalInterestRate(globalInterestRate,model);
+//					setPaymentReferenceCodeManager(paymentReferenceCodeManager,model);
 //
 //				     try
 //				     {
@@ -352,11 +349,11 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //					*  UpdateLogic here
 //					*/
 //				    		
-//						updateGlobalInterestRate( .. get fields from bean..., model);
+//						updatePaymentReferenceCodeManager( .. get fields from bean..., model);
 //
 //					/*Succes Update */
 //
-//				    return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/" + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+//				    return redirect("/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read/" + getPaymentReferenceCodeManager(model).getExternalId(), model, redirectAttributes);
 //					}
 //					catch (DomainException de) 
 //					{
@@ -371,7 +368,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				     	*/
 //										     
 //				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(globalInterestRate,model);
+//				     	return update(paymentReferenceCodeManager,model);
 //					 
 //
 //					}
@@ -379,25 +376,25 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "year",
-            required = false) int year,
-            @RequestParam(value = "description", required = false) org.fenixedu.commons.i18n.LocalizedString description,
-            @RequestParam(value = "rate", required = false) java.math.BigDecimal rate, Model model,
+    public String update(@PathVariable("oid") PaymentReferenceCodeManager paymentReferenceCodeManager, @RequestParam(
+            value = "code", required = false) java.lang.String code,
+            @RequestParam(value = "description", required = false) java.lang.String description, Model model,
             RedirectAttributes redirectAttributes) {
 
-        setGlobalInterestRate(globalInterestRate, model);
+        setPaymentReferenceCodeManager(paymentReferenceCodeManager, model);
 
         try {
             /*
             *  UpdateLogic here
             */
 
-            updateGlobalInterestRate(year, description, rate, model);
+            updatePaymentReferenceCodeManager(code, description, model);
 
             /*Succes Update */
 
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                    + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+            return redirect(
+                    "/treasury/administration/payments/sibs/managepaymentreferencecodemanager/paymentreferencecodemanager/read/"
+                            + getPaymentReferenceCodeManager(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             // @formatter: off
 
@@ -412,14 +409,13 @@ public class GlobalInterestRateController extends TreasuryBaseController {
             // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(globalInterestRate, model);
+            return update(paymentReferenceCodeManager, model);
 
         }
     }
 
     @Atomic
-    public void updateGlobalInterestRate(int year, org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate, Model model) {
+    public void updatePaymentReferenceCodeManager(java.lang.String code, java.lang.String description, Model model) {
 
         // @formatter: off				
         /*
@@ -428,14 +424,13 @@ public class GlobalInterestRateController extends TreasuryBaseController {
          */
 
         // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getGlobalInterestRate(model).edit(fields_to_edit);
+        //getPaymentReferenceCodeManager(model).edit(fields_to_edit);
 
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getGlobalInterestRate(model).setYear(year);
-        getGlobalInterestRate(model).setDescription(description);
-        getGlobalInterestRate(model).setRate(rate);
+        getPaymentReferenceCodeManager(model).setCode(code);
+        getPaymentReferenceCodeManager(model).setDescription(description);
     }
 
 }
