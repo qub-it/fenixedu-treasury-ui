@@ -54,7 +54,7 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution2/create"><spring:message
-            code="label.event.create" /></a> |&nbsp;&nbsp;
+            code="label.event.create" /></a> &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

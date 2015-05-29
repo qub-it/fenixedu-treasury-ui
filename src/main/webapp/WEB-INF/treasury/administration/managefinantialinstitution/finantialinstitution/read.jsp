@@ -272,7 +272,7 @@ ${portal.toolkit()}
 	&nbsp; <a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/create?finantialInstitutionId=${finantialInstitution.externalId }">
 		<spring:message code="label.event.create" />
-	</a> |&nbsp;&nbsp;
+	</a> &nbsp;|&nbsp;
 </div>
 <c:choose>
 	<c:when test="${not empty finantialInstitution.finantialEntitiesSet}">
@@ -309,7 +309,7 @@ ${portal.toolkit()}
 	&nbsp; <a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/create?finantialInstitutionId=${finantialInstitution.externalId }">
 		<spring:message code="label.event.create" />
-	</a> |&nbsp;&nbsp;
+	</a> &nbsp;|&nbsp;
 </div>
 <c:choose>
 	<c:when test="${not empty finantialInstitution.seriesSet}">

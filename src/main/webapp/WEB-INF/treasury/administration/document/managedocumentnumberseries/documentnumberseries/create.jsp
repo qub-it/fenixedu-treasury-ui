@@ -43,7 +43,7 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp;
+			code="label.event.back" /></a> &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">

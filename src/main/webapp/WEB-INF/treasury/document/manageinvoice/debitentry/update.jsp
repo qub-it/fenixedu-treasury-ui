@@ -49,7 +49,7 @@ ${portal.angularToolkit()}
 				code="label.event.back" /></a>
 	</c:if>
 
-	|&nbsp;&nbsp;
+	&nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">

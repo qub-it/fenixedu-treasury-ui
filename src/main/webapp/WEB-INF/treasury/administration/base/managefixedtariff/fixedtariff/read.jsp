@@ -73,10 +73,10 @@ ${portal.angularToolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/read/${fixedTariff.product.externalId}"><spring:message code="label.event.back" /></a>
-	|&nbsp;&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-			code="label.event.delete" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+	&nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+			code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/update/${fixedTariff.externalId}"><spring:message
-			code="label.event.update" /></a> |&nbsp;&nbsp;
+			code="label.event.update" /></a> &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">

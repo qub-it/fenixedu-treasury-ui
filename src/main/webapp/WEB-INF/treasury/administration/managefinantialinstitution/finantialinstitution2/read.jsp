@@ -83,14 +83,14 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}<%= FinantialInstitution2Controller.SEARCH_URL%>"><spring:message
-            code="label.event.back" /></a> |&nbsp;&nbsp; <span
+            code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> |&nbsp;&nbsp; <span
+            code="label.event.delete" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}<%= FinantialInstitution2Controller.UPDATE_URL%>${finantialInstitution.externalId}"><spring:message
-            code="label.event.update" /></a> |&nbsp;&nbsp;<span
+            code="label.event.update" /></a> &nbsp;|&nbsp;<span
         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}<%= CustomerController.SEARCH_FULL_URI%>?finantialInstitution=${finantialInstitution.externalId}"><spring:message
@@ -243,7 +243,7 @@ ${portal.toolkit()}
        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/create?finantialInstitutionId=${finantialInstitution.externalId }">
            <spring:message code="label.event.create" />
     </a> 
-    |&nbsp;&nbsp;
+    &nbsp;|&nbsp;
 </div>
 <c:choose>
     <c:when
@@ -282,7 +282,7 @@ ${portal.toolkit()}
        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/create?finantialInstitutionId=${finantialInstitution.externalId }">
            <spring:message code="label.event.create" />
     </a> 
-    |&nbsp;&nbsp;
+    &nbsp;|&nbsp;
 </div>
 <c:choose>
     <c:when test="${not empty finantialInstitution.seriesSet}">

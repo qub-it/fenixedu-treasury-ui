@@ -41,7 +41,7 @@ ${portal.toolkit()}
 <c:if test="${not empty param.debtaccount }">
 	<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${param.debtaccount}"  ><spring:message code="label.event.back" /></a>
 </c:if>	
-|&nbsp;&nbsp;</div>
+&nbsp;|&nbsp;</div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 

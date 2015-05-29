@@ -42,12 +42,12 @@ ${portal.angularToolkit()}
 	<c:if test="${not empty debitEntryBean.finantialDocument }">
 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntryBean.finantialDocument.externalId}"><spring:message
-				code="label.event.back" /></a> |&nbsp;&nbsp;
+				code="label.event.back" /></a> &nbsp;|&nbsp;
 </c:if>
 	<c:if test="${empty debitEntryBean.finantialDocument }">
 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntryBean.debtAccount.externalId}"><spring:message
-				code="label.event.back" /></a> |&nbsp;&nbsp;
+				code="label.event.back" /></a> &nbsp;|&nbsp;
 </c:if>
 </div>
 <c:if test="${not empty infoMessages}">

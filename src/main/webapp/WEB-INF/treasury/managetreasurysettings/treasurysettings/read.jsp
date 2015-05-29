@@ -60,7 +60,7 @@ ${portal.toolkit()}
 	<a class="" href="${pageContext.request.contextPath}/treasury/managetreasurysettings/treasurysettings/update">
 		<spring:message code="label.event.update" />
 	</a>
-|&nbsp;&nbsp;
+&nbsp;|&nbsp;
 </div>
 
 <c:if test="${not empty infoMessages}">

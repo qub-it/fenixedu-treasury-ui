@@ -82,14 +82,14 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${series.finantialInstitution.externalId}"><spring:message
-            code="label.event.back" /></a> |&nbsp;&nbsp; <span
+            code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> |&nbsp;&nbsp; <span
+            code="label.event.delete" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/update/${series.externalId}"><spring:message
-            code="label.event.update" /></a> |&nbsp;&nbsp;
+            code="label.event.update" /></a> &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
