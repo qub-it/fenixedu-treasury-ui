@@ -127,11 +127,11 @@ ${portal.toolkit()}
 			<table class="table">
 				<tbody>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.debtAccount" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.debtAccount" /></th>
 						<td><c:out value='${debitEntry.debtAccount.customer.code} - ${debitEntry.debtAccount.customer.name}' /></td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.finantialDocument" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.finantialDocument" /></th>
 						<td><c:if test="${not empty debitEntry.finantialDocument}">
 								<c:out value='${debitEntry.finantialDocument.uiDocumentNumber}' />
 							</c:if> <c:if test="${empty debitEntry.finantialDocument}">
@@ -148,11 +148,11 @@ ${portal.toolkit()}
 						<td><c:out value='${debitEntry.dueDate}' /></td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.description" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.description" /></th>
 						<td><c:out value='${debitEntry.description}' /></td>
 					</tr>
 					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.amount" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.amount" /></th>
 						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.amount)}' /></td>
 					</tr>
 					<tr>
