@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes.pool;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -44,15 +45,23 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 //		setBennu(Bennu.getInstance());
     }
 
-    protected void init(final java.lang.String name, final java.lang.Integer minPaymentCodes,
-            final java.lang.Integer maxPaymentCodes, final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount,
-            final java.lang.Boolean active) {
+    protected PaymentCodePool(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
+            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
+            final FinantialInstitution finantialInstitution) {
+        this();
+        init(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);
+    }
+
+    protected void init(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
+            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
+            final FinantialInstitution finantialInstitution) {
         setName(name);
         setMinPaymentCodes(minPaymentCodes);
         setMaxPaymentCodes(maxPaymentCodes);
         setMinAmount(minAmount);
         setMaxAmount(maxAmount);
         setActive(active);
+        setFinantialInstitution(finantialInstitution);
         checkRules();
     }
 
@@ -123,12 +132,11 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public static PaymentCodePool create(final java.lang.String name, final java.lang.Integer minPaymentCodes,
-            final java.lang.Integer maxPaymentCodes, final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount,
-            final java.lang.Boolean active) {
-        PaymentCodePool paymentCodePool = new PaymentCodePool();
-        paymentCodePool.init(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active);
-        return paymentCodePool;
+    public static PaymentCodePool create(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
+            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
+            final FinantialInstitution finantialInstitution) {
+        return new PaymentCodePool(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);
+
     }
 
     // @formatter: off

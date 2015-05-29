@@ -24,16 +24,19 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.ui.administration.base.manageglobalinterestrate;
+package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -42,20 +45,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.treasury.ui.administration.base.manageGlobalInterestRate") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageGlobalInterestRate",
+//@Component("org.fenixedu.treasury.ui.administration.payments.sibs.manageSibsInputFile") <-- Use for duplicate controller name disambiguation
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.manageSibsInputFile",
         accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
-@RequestMapping(GlobalInterestRateController.CONTROLLER_URL)
-public class GlobalInterestRateController extends TreasuryBaseController {
+@RequestMapping(SibsInputFileController.CONTROLLER_URL)
+public class SibsInputFileController extends TreasuryBaseController {
 
-    public static final String CONTROLLER_URL = "/treasury/administration/base/manageglobalinterestrate/globalinterestrate";
+    public static final String CONTROLLER_URL = "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile";
 
 //
 
@@ -71,33 +75,30 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     * This should be used when using AngularJS in the JSP
     */
 
-    //private GlobalInterestRate getGlobalInterestRateBean(Model model)
+    //private SibsInputFile getSibsInputFileBean(Model model)
     //{
-    //	return (GlobalInterestRate)model.asMap().get("globalInterestRateBean");
+    //	return (SibsInputFile)model.asMap().get("sibsInputFileBean");
     //}
     //				
-    //private void setGlobalInterestRateBean (GlobalInterestRateBean bean, Model model)
+    //private void setSibsInputFileBean (SibsInputFileBean bean, Model model)
     //{
-    //	model.addAttribute("globalInterestRateBeanJson", getBeanJson(bean));
-    //	model.addAttribute("globalInterestRateBean", bean);
+    //	model.addAttribute("sibsInputFileBeanJson", getBeanJson(bean));
+    //	model.addAttribute("sibsInputFileBean", bean);
     //}
 
     // @formatter: on
 
-    private GlobalInterestRate getGlobalInterestRate(Model model) {
-        return (GlobalInterestRate) model.asMap().get("globalInterestRate");
+    private SibsInputFile getSibsInputFile(Model model) {
+        return (SibsInputFile) model.asMap().get("sibsInputFile");
     }
 
-    private void setGlobalInterestRate(GlobalInterestRate globalInterestRate, Model model) {
-        model.addAttribute("globalInterestRate", globalInterestRate);
+    private void setSibsInputFile(SibsInputFile sibsInputFile, Model model) {
+        model.addAttribute("sibsInputFile", sibsInputFile);
     }
 
     @Atomic
-    public void deleteGlobalInterestRate(GlobalInterestRate globalInterestRate) {
-        // CHANGE_ME: Do the processing for deleting the globalInterestRate
-        // Do not catch any exception here
-
-        globalInterestRate.delete();
+    public void deleteSibsInputFile(SibsInputFile sibsInputFile) {
+        sibsInputFile.delete();
     }
 
 //				
@@ -105,54 +106,44 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(
-            @RequestParam(value = "description", required = false) org.fenixedu.commons.i18n.LocalizedString description,
-            @RequestParam(value = "rate", required = false) java.math.BigDecimal rate, Model model) {
-        List<GlobalInterestRate> searchglobalinterestrateResultsDataSet = filterSearchGlobalInterestRate(description, rate);
+    public String search(@RequestParam(value = "uploader", required = false) org.fenixedu.bennu.core.domain.User uploader,
+            Model model) {
+        List<SibsInputFile> searchsibsinputfileResultsDataSet = filterSearchSibsInputFile(uploader);
 
         //add the results dataSet to the model
-        model.addAttribute("searchglobalinterestrateResultsDataSet", searchglobalinterestrateResultsDataSet);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/search";
+        model.addAttribute("searchsibsinputfileResultsDataSet", searchsibsinputfileResultsDataSet);
+        model.addAttribute("SibsInputFile_uploader_options", new ArrayList<org.fenixedu.bennu.core.domain.User>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("SibsInputFile_uploader_options", org.fenixedu.bennu.core.domain.User.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search";
     }
 
-    private Stream<GlobalInterestRate> getSearchUniverseSearchGlobalInterestRateDataSet() {
+    private Stream<SibsInputFile> getSearchUniverseSearchSibsInputFileDataSet() {
         //
         //The initialization of the result list must be done here
         //
         //
-        return GlobalInterestRate.findAll();
-        //return new ArrayList<GlobalInterestRate>().stream();
+        return SibsInputFile.findAll();
+        //return new ArrayList<SibsInputFile>().stream();
     }
 
-    private List<GlobalInterestRate> filterSearchGlobalInterestRate(org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate) {
+    private List<SibsInputFile> filterSearchSibsInputFile(org.fenixedu.bennu.core.domain.User uploader) {
 
-        return getSearchUniverseSearchGlobalInterestRateDataSet()
-//                .filter(globalInterestRate -> globalInterestRate.getYear() == year)
-                .filter(globalInterestRate -> description == null
-                        || description.isEmpty()
-                        || description
-                                .getLocales()
-                                .stream()
-                                .allMatch(
-                                        locale -> globalInterestRate.getDescription().getContent(locale) != null
-                                                && globalInterestRate.getDescription().getContent(locale).toLowerCase()
-                                                        .contains(description.getContent(locale).toLowerCase())))
-                .filter(globalInterestRate -> rate == null || rate.equals(globalInterestRate.getRate()))
-                .collect(Collectors.toList());
+        return getSearchUniverseSearchSibsInputFileDataSet().filter(
+                sibsInputFile -> uploader == null || uploader == sibsInputFile.getUploader()).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
     public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_ACTION_URI;
 
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
+    public String processSearchToViewAction(@PathVariable("oid") SibsInputFile sibsInputFile, Model model,
             RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read" + "/"
-                + globalInterestRate.getExternalId(), model, redirectAttributes);
+        return redirect(
+                "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read" + "/"
+                        + sibsInputFile.getExternalId(), model, redirectAttributes);
     }
 
 //				
@@ -160,9 +151,9 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
     @RequestMapping(value = _READ_URI + "{oid}")
-    public String read(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
-        setGlobalInterestRate(globalInterestRate, model);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read";
+    public String read(@PathVariable("oid") SibsInputFile sibsInputFile, Model model) {
+        setSibsInputFile(sibsInputFile, model);
+        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read";
     }
 
 //
@@ -170,16 +161,15 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String delete(@PathVariable("oid") SibsInputFile sibsInputFile, Model model, RedirectAttributes redirectAttributes) {
 
-        setGlobalInterestRate(globalInterestRate, model);
+        setSibsInputFile(sibsInputFile, model);
         try {
             //call the Atomic delete function
-            deleteGlobalInterestRate(globalInterestRate);
+            deleteSibsInputFile(sibsInputFile);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/", model,
+            return redirect("/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/", model,
                     redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
@@ -187,8 +177,8 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                + getGlobalInterestRate(model).getExternalId();
+        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
+                + getSibsInputFile(model).getExternalId();
     }
 
 //				
@@ -197,12 +187,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
+        model.addAttribute("SibsInputFile_uploader_options", new ArrayList<org.fenixedu.bennu.core.domain.User>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("SibsInputFile_uploader_options", org.fenixedu.bennu.core.domain.User.findAll()); // CHANGE_ME - MUST DEFINE RELATION
 
         //IF ANGULAR, initialize the Bean
-        //GlobalInterestRateBean bean = new GlobalInterestRateBean();
-        //this.setGlobalInterestRateBean(bean, model);
+        //SibsInputFileBean bean = new SibsInputFileBean();
+        //this.setSibsInputFileBean(bean, model);
 
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/create";
+        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create";
     }
 
 //
@@ -213,16 +205,16 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				private static final String _CREATEPOSTBACK_URI ="/createpostback";
 //				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
 //    			@RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) SibsInputFileBean bean,
 //            		Model model) {
 //
 //        			// Do validation logic ?!?!
-//        			this.setGlobalInterestRateBean(bean, model);
+//        			this.setSibsInputFileBean(bean, model);
 //        			return getBeanJson(bean);
 //    			}
 //    			
 //    			@RequestMapping(value = CREATE, method = RequestMethod.POST)
-//  			  	public String create(@RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public String create(@RequestParam(value = "bean", required = false) SibsInputFileBean bean,
 //            		Model model, RedirectAttributes redirectAttributes ) {
 //
 //					/*
@@ -232,12 +224,12 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //					try
 //					{
 //
-//				     	GlobalInterestRate globalInterestRate = createGlobalInterestRate(... get properties from bean ...,model);
+//				     	SibsInputFile sibsInputFile = createSibsInputFile(... get properties from bean ...,model);
 //				    	
 //					//Success Validation
 //				     //Add the bean to be used in the View
-//					model.addAttribute("globalInterestRate",globalInterestRate);
-//				    return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/" + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+//					model.addAttribute("sibsInputFile",sibsInputFile);
+//				    return redirect("/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/" + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
 //					}
 //					catch (DomainException de)
 //					{
@@ -258,22 +250,23 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "year", required = false) int year, @RequestParam(value = "description",
-            required = false) org.fenixedu.commons.i18n.LocalizedString description, @RequestParam(value = "rate",
-            required = false) java.math.BigDecimal rate, Model model, RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(value = "uploader", required = false) User uploader, @RequestParam(
+            value = "sibsInputFile", required = false) MultipartFile sibsInputFile, Model model,
+            RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         */
 
         try {
 
-            GlobalInterestRate globalInterestRate = createGlobalInterestRate(year, description, rate);
+            SibsInputFile file = createSibsInputFile(uploader, sibsInputFile);
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("globalInterestRate", globalInterestRate);
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                    + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+            model.addAttribute("sibsInputFile", file);
+            return redirect(
+                    "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
+                            + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -292,8 +285,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     }
 
     @Atomic
-    public GlobalInterestRate createGlobalInterestRate(int year, org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate) {
+    public SibsInputFile createSibsInputFile(User uploader, MultipartFile requestFile) {
 
         // @formatter: off
 
@@ -305,13 +297,24 @@ public class GlobalInterestRateController extends TreasuryBaseController {
          */
 
         // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //GlobalInterestRate globalInterestRate = globalInterestRate.create(fields_to_create);
+        //SibsInputFile sibsInputFile = sibsInputFile.create(fields_to_create);
 
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        GlobalInterestRate globalInterestRate = GlobalInterestRate.create(year, description, rate);
-        return globalInterestRate;
+        SibsInputFile sibsInputFile =
+                SibsInputFile.create(requestFile.getName(), requestFile.getOriginalFilename(), getContent(requestFile), uploader);
+
+        return sibsInputFile;
+    }
+
+    //ACFSILVA - how to handle this exception
+    private byte[] getContent(MultipartFile requestFile) {
+        try {
+            return requestFile.getBytes();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 //				
@@ -319,9 +322,11 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
-        setGlobalInterestRate(globalInterestRate, model);
-        return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/update";
+    public String update(@PathVariable("oid") SibsInputFile sibsInputFile, Model model) {
+        model.addAttribute("SibsInputFile_uploader_options", new ArrayList<org.fenixedu.bennu.core.domain.User>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("SibsInputFile_uploader_options", org.fenixedu.bennu.core.domain.User.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        setSibsInputFile(sibsInputFile, model);
+        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/update";
     }
 
 //
@@ -333,18 +338,18 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
 //				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
 //    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "bean", required = false) SibsInputFileBean bean,
 //            		Model model) {
 //
 //        			// Do validation logic ?!?!
-//        			this.setGlobalInterestRateBean(bean, model);
+//        			this.setSibsInputFileBean(bean, model);
 //        			return getBeanJson(bean);
 //    			} 
 //    			
 //    			@RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//  			  	public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "bean", required = false) GlobalInterestRateBean bean,
+//  			  	public String update(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "bean", required = false) SibsInputFileBean bean,
 //            		Model model, RedirectAttributes redirectAttributes ) {
-//					setGlobalInterestRate(globalInterestRate,model);
+//					setSibsInputFile(sibsInputFile,model);
 //
 //				     try
 //				     {
@@ -352,11 +357,11 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //					*  UpdateLogic here
 //					*/
 //				    		
-//						updateGlobalInterestRate( .. get fields from bean..., model);
+//						updateSibsInputFile( .. get fields from bean..., model);
 //
 //					/*Succes Update */
 //
-//				    return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/" + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+//				    return redirect("/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/" + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
 //					}
 //					catch (DomainException de) 
 //					{
@@ -371,7 +376,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //				     	*/
 //										     
 //				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(globalInterestRate,model);
+//				     	return update(sibsInputFile,model);
 //					 
 //
 //					}
@@ -379,25 +384,24 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, @RequestParam(value = "year",
-            required = false) int year,
-            @RequestParam(value = "description", required = false) org.fenixedu.commons.i18n.LocalizedString description,
-            @RequestParam(value = "rate", required = false) java.math.BigDecimal rate, Model model,
+    public String update(@PathVariable("oid") SibsInputFile sibsInputFile,
+            @RequestParam(value = "uploader", required = false) org.fenixedu.bennu.core.domain.User uploader, Model model,
             RedirectAttributes redirectAttributes) {
 
-        setGlobalInterestRate(globalInterestRate, model);
+        setSibsInputFile(sibsInputFile, model);
 
         try {
             /*
             *  UpdateLogic here
             */
 
-            updateGlobalInterestRate(year, description, rate, model);
+            updateSibsInputFile(uploader, model);
 
             /*Succes Update */
 
-            return redirect("/treasury/administration/base/manageglobalinterestrate/globalinterestrate/read/"
-                    + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
+            return redirect(
+                    "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
+                            + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             // @formatter: off
 
@@ -412,14 +416,13 @@ public class GlobalInterestRateController extends TreasuryBaseController {
             // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(globalInterestRate, model);
+            return update(sibsInputFile, model);
 
         }
     }
 
     @Atomic
-    public void updateGlobalInterestRate(int year, org.fenixedu.commons.i18n.LocalizedString description,
-            java.math.BigDecimal rate, Model model) {
+    public void updateSibsInputFile(org.fenixedu.bennu.core.domain.User uploader, Model model) {
 
         // @formatter: off				
         /*
@@ -428,14 +431,12 @@ public class GlobalInterestRateController extends TreasuryBaseController {
          */
 
         // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getGlobalInterestRate(model).edit(fields_to_edit);
+        //getSibsInputFile(model).edit(fields_to_edit);
 
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getGlobalInterestRate(model).setYear(year);
-        getGlobalInterestRate(model).setDescription(description);
-        getGlobalInterestRate(model).setRate(rate);
+        getSibsInputFile(model).setUploader(uploader);
     }
 
 }
