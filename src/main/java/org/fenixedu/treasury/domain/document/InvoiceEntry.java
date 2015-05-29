@@ -150,8 +150,9 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             this.setVatRate(super.getVat().getTaxRate());
         }
         setNetAmount(getCurrency().getValueWithScale(getQuantity().multiply(getAmount())));
-        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate())));
-        setAmountWithVat(getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(getVatRate()))));
+        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate().divide(BigDecimal.valueOf(100)))));
+        setAmountWithVat(getCurrency().getValueWithScale(
+                getNetAmount().multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100))))));
     }
 
     public static Stream<? extends InvoiceEntry> findAll() {
@@ -164,7 +165,10 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         }
         BigDecimal totalAmount = this.getAmount();
         BigDecimal totalPayed = BigDecimal.ZERO;
-        this.getSettlementEntriesSet().stream().map(x -> totalPayed.add(x.getAmount()));
+        //Only use Closed Payments
+        this.getSettlementEntriesSet().stream()
+                .filter(x -> x.getFinantialDocument() != null && x.getFinantialDocument().isClosed())
+                .map(x -> totalPayed.add(x.getAmount()));
         return !totalAmount.equals(totalPayed);
     }
 

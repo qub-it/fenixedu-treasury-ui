@@ -32,11 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -75,7 +72,8 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     @Atomic
     public int getSequenceNumberAndIncrement() {
         int count = getCounter();
-        setCounter(count++);
+        count++;
+        setCounter(count);
 
         return count;
     }

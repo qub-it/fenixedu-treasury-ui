@@ -143,7 +143,6 @@ ${portal.toolkit()}
 
 				<div class="col-sm-4">
 					
-					<%= new DateTime().toString() %>
 					
 					<input id="vat_beginDate" class="form-control" type="text"
 						name="begindate" bennu-date
