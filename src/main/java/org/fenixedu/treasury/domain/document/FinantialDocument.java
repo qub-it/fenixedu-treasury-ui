@@ -170,6 +170,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         if (this.isPreparing()) {
             this.setDocumentNumber("" + this.getDocumentNumberSeries().getSequenceNumberAndIncrement());
             setState(FinantialDocumentStateType.CLOSED);
+            int order = 1;
+            for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
+                entry.setEntryOrder(Integer.valueOf(order));
+                order = order + 1;
+            }
         } else {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                     "error.FinantialDocumentState.invalid.state.change.request"));
