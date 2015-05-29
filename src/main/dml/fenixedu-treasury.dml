@@ -304,6 +304,20 @@ class paymentcodes.PaymentReferenceCode
 	  BigDecimalT maxAmount;
 	  Boolean active;
 	}
+	
+	
+	
+	relation PaymentCodePoolFinantialInstitution {
+		FinantialInstitution playsRole finantialInstitution {
+			multiplicity 1..1;
+		}
+	
+		paymentcodes.pool.PaymentCodePool playsRole paymentCodePools{
+			multiplicity *;
+		}
+	}
+	
+	
 	class paymentcodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 	  LocalDate whenProcessedBySibs;
 	  BigDecimalT transactionsTotalAmount;
