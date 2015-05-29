@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -528,6 +529,12 @@ public class DebitNoteController extends TreasuryBaseController {
             response.getOutputStream().write(output.getBytes("UTF8"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
     }
 }

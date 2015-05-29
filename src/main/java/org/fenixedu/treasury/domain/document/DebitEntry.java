@@ -260,7 +260,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     @Override
     public BigDecimal getOpenAmount() {
-        final BigDecimal openAmount = this.getAmount().subtract(getPayedAmount());
+        final BigDecimal openAmount = this.getAmountWithVat().subtract(getPayedAmount());
 
         return getCurrency().getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
     }
@@ -271,16 +271,11 @@ public class DebitEntry extends DebitEntry_Base {
         return getCurrency().getValueWithScale(amount);
     }
 
-    public BigDecimal getOpenAmountWithVat() {
-        BigDecimal amount = getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-        return getCurrency().getValueWithScale(amount);
-    }
-
     public BigDecimal getPayedAmount() {
         BigDecimal amount = BigDecimal.ZERO;
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
             if (entry.getFinantialDocument().isClosed()) {
-                amount = amount.add(entry.getAmount());
+                amount = amount.add(entry.getTotalAmount());
             }
         }
         return amount;

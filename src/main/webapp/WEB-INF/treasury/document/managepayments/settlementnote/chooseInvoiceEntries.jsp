@@ -176,7 +176,7 @@ ${portal.angularToolkit()}
 							<td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
 							<td><c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
 							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmountWithVat ) }" /></td>
+							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmount ) }" /></td>
 							<td><c:out value="${ debitEntryBean.debitEntry.vat.taxRate }" /></td>
 							<td><input class="form-control" name="paymentAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].paymentAmount" type="text"
 								ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" value='0.00' />
@@ -221,7 +221,7 @@ ${portal.angularToolkit()}
 								<td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
 								<td><c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
 								<td><c:out value="${ creditEntryBean.creditEntry.vat.taxRate }" /></td>
-								<td>- <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmountWithVat ) }" />
+								<td>- <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmount ) }" />
 								</td>
 							</tr>
 						</c:forEach>

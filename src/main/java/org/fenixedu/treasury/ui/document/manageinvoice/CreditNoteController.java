@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -591,6 +592,7 @@ public class CreditNoteController extends TreasuryBaseController {
     public void processReadToExportIntegrationFile(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
+            creditNote.recalculateAmountValues();
             String output =
                     ERPExporter.exportFinantialDocument(creditNote.getDebtAccount().getFinantialInstitution(),
                             creditNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
@@ -606,6 +608,11 @@ public class CreditNoteController extends TreasuryBaseController {
             response.getOutputStream().write(output.getBytes("UTF8"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

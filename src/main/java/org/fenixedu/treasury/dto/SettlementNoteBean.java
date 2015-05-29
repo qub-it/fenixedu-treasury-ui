@@ -148,7 +148,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
         for (CreditEntryBean creditEntryBean : getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                sum = sum.subtract(creditEntryBean.getCreditEntry().getOpenAmountWithVat());
+                sum = sum.subtract(creditEntryBean.getCreditEntry().getOpenAmount());
             }
         }
         return sum;
@@ -181,7 +181,7 @@ public class SettlementNoteBean implements IBean, Serializable {
             if (creditEntryBean.isIncluded()) {
                 String vatType = creditEntryBean.getCreditEntry().getVat().getVatType().getName().getContent();
                 sumByVat.get(vatType).subtractAmount(creditEntryBean.getCreditEntry().getOpenAmount());
-                sumByVat.get(vatType).subtractAmountWithVat(creditEntryBean.getCreditEntry().getOpenAmountWithVat());
+                sumByVat.get(vatType).subtractAmountWithVat(creditEntryBean.getCreditEntry().getOpenAmount());
             }
         }
         return sumByVat;
@@ -232,7 +232,7 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.debitEntry = debitEntry;
             this.isIncluded = false;
             this.isNotValid = false;
-            this.paymentAmount = debitEntry.getOpenAmountWithVat();
+            this.paymentAmount = debitEntry.getOpenAmount();
         }
 
         public DebitEntry getDebitEntry() {

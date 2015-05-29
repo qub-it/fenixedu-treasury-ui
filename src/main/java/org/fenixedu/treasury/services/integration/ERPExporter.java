@@ -1136,6 +1136,11 @@ public class ERPExporter {
     }
 
     public static String exportFinantialDocument(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {
+        documents.forEach(x -> {
+            if (x instanceof Invoice) {
+                ((Invoice) x).recalculateAmountValues();
+            }
+        });
         ERPExporter saftExporter = new ERPExporter();
         DateTime beginDate =
                 documents.stream().min((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();

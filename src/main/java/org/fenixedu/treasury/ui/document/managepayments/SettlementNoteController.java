@@ -133,7 +133,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                     error = true;
                     addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.payment.equal.zero",
                             Integer.toString(i + 1)), model);
-                } else if (debitEntryBean.getPaymentAmount().compareTo(debitEntryBean.getDebitEntry().getOpenAmountWithVat()) > 0) {
+                } else if (debitEntryBean.getPaymentAmount().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(

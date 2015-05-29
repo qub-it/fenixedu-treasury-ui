@@ -623,7 +623,7 @@
 														<xs:complexType>
 															<xs:sequence>
 <!-- 																QUB-IT Maybe this is not needed for now -->
-																<!-- <xs:element ref="LineNumber"/> -->
+																 <xs:element ref="LineNumber"/> 
 																<xs:element ref="OriginatingON" />
 																<xs:element ref="InvoiceDate" />
 																<xs:element minOccurs="0" ref="Description" />
@@ -718,6 +718,7 @@
 	<!-- Estrutura de Referencias ao documento de origem -->
 	<xs:complexType name="OrderReferences">
 		<xs:sequence>
+			<xs:element ref="LineNumber"/>
 			<xs:element minOccurs="0" ref="OriginatingON" />
 			<xs:element minOccurs="0" ref="OrderDate" />
 		</xs:sequence>

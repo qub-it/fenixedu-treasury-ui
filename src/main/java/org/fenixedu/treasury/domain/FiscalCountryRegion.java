@@ -28,11 +28,9 @@
 package org.fenixedu.treasury.domain;
 
 import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -44,130 +42,124 @@ import pt.ist.fenixframework.Atomic;
 
 public class FiscalCountryRegion extends FiscalCountryRegion_Base {
 
-	protected FiscalCountryRegion() {
-		super();
-		setBennu(Bennu.getInstance());
-	}
+    protected FiscalCountryRegion() {
+        super();
+        setBennu(Bennu.getInstance());
+    }
 
-	protected FiscalCountryRegion(final String fiscalCode,
-			final LocalizedString name) {
-		this();
-		setFiscalCode(fiscalCode);
-		setName(name);
+    protected FiscalCountryRegion(final String fiscalCode, final LocalizedString name) {
+        this();
+        setFiscalCode(fiscalCode);
+        setName(name);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	@Atomic
-	public static void initializeFiscalRegion() {
-		if (FiscalCountryRegion.findAll().count() == 0) {
-			FiscalCountryRegion.create("PT",
-					new LocalizedString(Locale.getDefault(),BundleUtil
-							.getString(Constants.BUNDLE, "lable.FiscalCountryRegion.PT")));
-			FiscalCountryRegion.create("PT_MA",
-					new LocalizedString(Locale.getDefault(), BundleUtil
-							.getString(Constants.BUNDLE, "lable.FiscalCountryRegion.PT_MA")));
-			FiscalCountryRegion.create("PT_AZ",
-					new LocalizedString(Locale.getDefault(), BundleUtil
-							.getString(Constants.BUNDLE, "lable.FiscalCountryRegion.PT_AZ")));
-		}
-	}
+    @Atomic
+    public static void initializeFiscalRegion() {
+        if (FiscalCountryRegion.findAll().count() == 0) {
+            FiscalCountryRegion.create(
+                    "PT",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FiscalCountryRegion.PT")));
+            FiscalCountryRegion.create(
+                    "PT_MA",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FiscalCountryRegion.PT_MA")));
+            FiscalCountryRegion.create(
+                    "PT_AZ",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FiscalCountryRegion.PT_AZ")));
+        }
+    }
 
-	private void checkRules() {
-		if (LocalizedStringUtil.isTrimmedEmpty(getFiscalCode())) {
-			throw new TreasuryDomainException(
-					"error.FiscalCountryRegion.fiscalCode.required");
-		}
+    private void checkRules() {
+        if (LocalizedStringUtil.isTrimmedEmpty(getFiscalCode())) {
+            throw new TreasuryDomainException("error.FiscalCountryRegion.fiscalCode.required");
+        }
 
-		if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-			throw new TreasuryDomainException(
-					"error.FiscalCountryRegion.name.required");
-		}
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.FiscalCountryRegion.name.required");
+        }
 
-		findByRegionCode(getFiscalCode());
+        findByRegionCode(getFiscalCode());
 
-		getName().getLocales().stream()
-				.forEach(l -> findByName(getName().getContent(l)));
-	}
+        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
+    }
 
-	@Atomic
-	public void edit(final String fiscalCode, final LocalizedString name) {
-		setFiscalCode(fiscalCode);
-		setName(name);
+    @Atomic
+    public void edit(final String fiscalCode, final LocalizedString name) {
+        setFiscalCode(fiscalCode);
+        setName(name);
 
-		checkRules();
-	}
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException(
-					"error.FiscalCountryRegion.cannot.delete");
-		}
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.FiscalCountryRegion.cannot.delete");
+        }
 
-		setBennu(null);
+        setBennu(null);
 
-		deleteDomainObject();
-	}
+        deleteDomainObject();
+    }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
-	public static Stream<FiscalCountryRegion> findAll() {
-		return Bennu.getInstance().getFiscalCountryRegionsSet().stream();
-	}
+    public static Stream<FiscalCountryRegion> findAll() {
+        return Bennu.getInstance().getFiscalCountryRegionsSet().stream();
+    }
 
-	public static FiscalCountryRegion findByRegionCode(final String fiscalCode) {
-		FiscalCountryRegion result = null;
+    public static FiscalCountryRegion findByRegionCode(final String fiscalCode) {
+        FiscalCountryRegion result = null;
 
-		for (final FiscalCountryRegion it : findAll().collect(Collectors.toList())) {
-			if (!it.getFiscalCode().equalsIgnoreCase(fiscalCode)) {
-				continue;
-			}
+        for (final FiscalCountryRegion it : findAll().collect(Collectors.toList())) {
+            if (!it.getFiscalCode().equalsIgnoreCase(fiscalCode)) {
+                continue;
+            }
 
-			if (result != null) {
-				throw new TreasuryDomainException(
-						"error.FiscalCountryRegion.duplicated.fiscalCode");
-			}
+            if (result != null) {
+                throw new TreasuryDomainException("error.FiscalCountryRegion.duplicated.fiscalCode");
+            }
 
-			result = it;
-		}
+            result = it;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	public static FiscalCountryRegion findByName(final String name) {
-		FiscalCountryRegion result = null;
+    public static FiscalCountryRegion findByName(final String name) {
+        FiscalCountryRegion result = null;
 
-		for (final FiscalCountryRegion it : findAll().collect(Collectors.toList())) {
+        for (final FiscalCountryRegion it : findAll().collect(Collectors.toList())) {
 
-			if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(),
-					name)) {
-				continue;
-			}
+            if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
+                continue;
+            }
 
-			if (result != null) {
-				throw new TreasuryDomainException(
-						"error.FiscalCountryRegion.duplicated.name");
-			}
+            if (result != null) {
+                throw new TreasuryDomainException("error.FiscalCountryRegion.duplicated.name");
+            }
 
-			result = it;
-		}
+            result = it;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Atomic
-	public static FiscalCountryRegion create(final String fiscalCode,
-			final LocalizedString name) {
-		return new FiscalCountryRegion(fiscalCode, name);
-	}
+    @Atomic
+    public static FiscalCountryRegion create(final String fiscalCode, final LocalizedString name) {
+        return new FiscalCountryRegion(fiscalCode, name);
+    }
 
 }

@@ -104,15 +104,10 @@ public class CreditEntry extends CreditEntry_Base {
         BigDecimal amount = this.getAmount();
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
             if (entry.getFinantialDocument().isClosed()) {
-                amount = amount.subtract(entry.getAmount());
+                amount = amount.subtract(entry.getTotalAmount());
             }
         }
         return amount;
-    }
-
-    public BigDecimal getOpenAmountWithVat() {
-        BigDecimal amount = getOpenAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-        return getCurrency().getValueWithScale(amount);
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
