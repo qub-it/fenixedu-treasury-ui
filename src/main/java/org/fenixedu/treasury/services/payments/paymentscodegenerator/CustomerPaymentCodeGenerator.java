@@ -64,10 +64,11 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     private String getCustomerCodeDigits(Customer customer) {
-        if (customer.getCode().length() > 9) {
-            throw new RuntimeException("SIBS Payment Code: " + customer.getCode() + " exceeded maximun size accepted");
+        if (customer.getPaymentReferenceBaseCode().length() > Customer.MAX_CODE_LENGHT) {
+            throw new RuntimeException("SIBS Payment Code: " + customer.getPaymentReferenceBaseCode()
+                    + " exceeded maximun size accepted");
         }
-        return StringUtils.leftPad(customer.getCode(), PERSON_CODE_LENGTH, CODE_FILLER);
+        return StringUtils.leftPad(customer.getPaymentReferenceBaseCode(), PERSON_CODE_LENGTH, CODE_FILLER);
     }
 
     @Override

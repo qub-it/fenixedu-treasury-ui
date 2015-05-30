@@ -73,6 +73,15 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         if (findByCode(getCode()).count() > 1) {
             throw new TreasuryDomainException("error.AdhocCustomer.code.duplicated");
         }
+
+        if (this.getCode().length() > Customer.MAX_CODE_LENGHT) {
+            throw new TreasuryDomainException("error.AdhocCustomer.code.maxlenght");
+        }
+
+    }
+
+    public String getPaymentReferenceBaseCode() {
+        return this.getCode();
     }
 
     @Atomic

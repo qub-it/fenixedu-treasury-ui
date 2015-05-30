@@ -261,8 +261,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(
             @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate endDate,
             @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, Model model,
             RedirectAttributes redirectAttributes) {
         /*
@@ -296,8 +296,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     }
 
     @Atomic
-    public PaymentReferenceCode createPaymentReferenceCode(java.lang.String referenceCode, org.joda.time.DateTime beginDate,
-            org.joda.time.DateTime endDate, PaymentReferenceCodeStateType state) {
+    public PaymentReferenceCode createPaymentReferenceCode(java.lang.String referenceCode, org.joda.time.LocalDate beginDate,
+            org.joda.time.LocalDate endDate, PaymentReferenceCodeStateType state) {
 
         // @formatter: off
 
@@ -388,8 +388,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public String update(
             @PathVariable("oid") PaymentReferenceCode paymentReferenceCode,
             @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate endDate,
             @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -426,8 +426,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updatePaymentReferenceCode(java.lang.String referenceCode, org.joda.time.DateTime beginDate,
-            org.joda.time.DateTime endDate, PaymentReferenceCodeStateType state, Model model) {
+    public void updatePaymentReferenceCode(java.lang.String referenceCode, org.joda.time.LocalDate beginDate,
+            org.joda.time.LocalDate endDate, PaymentReferenceCodeStateType state, Model model) {
 
         // @formatter: off				
         /*

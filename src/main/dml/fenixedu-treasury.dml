@@ -292,8 +292,8 @@ class tariff.GlobalInterestRate {
 class paymentcodes.PaymentReferenceCode
 {
        String referenceCode;
-       DateTime beginDate;
-       DateTime endDate;
+       LocalDate beginDate;
+       LocalDate endDate;
        PaymentReferenceCodeStateType state;
        PaymentReferenceCodeType type;
        BigDecimalT maxAmount;

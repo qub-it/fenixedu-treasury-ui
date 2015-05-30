@@ -43,6 +43,7 @@ import pt.ist.fenixframework.Atomic;
 public abstract class Customer extends Customer_Base implements IFiscalContributor {
 
     public static final String DEFAULT_FISCAL_NUMBER = "9999999990";
+    public static final int MAX_CODE_LENGHT = 9;
 
     protected Customer() {
         super();
@@ -66,6 +67,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getZipCode();
 
     public abstract String getCountryCode();
+
+    public abstract String getPaymentReferenceBaseCode();
 
     public boolean isDeletable() {
         return true;
