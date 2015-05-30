@@ -188,4 +188,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return findAll().filter(i -> i.getFinantialInstitution().equals(finantialInstitution));
     }
 
+    protected void generatePaymentAllCodes() {
+
+    }
+
 }

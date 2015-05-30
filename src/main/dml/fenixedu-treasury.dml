@@ -1,11 +1,12 @@
 package org.fenixedu.treasury.domain;
 
-enum org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum                                     as FinantialDocumentTypeEnum;
-enum org.fenixedu.treasury.domain.document.FinantialEntryType                                            as FinantialEntryType;
-enum org.fenixedu.treasury.domain.document.FinantialDocumentStateType                                    as FinantialDocumentStateType;
-enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                          as DueDateCalculationType;
-enum org.fenixedu.treasury.domain.tariff.InterestType                                                    as InterestType; 
-enum org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType							 as PaymentReferenceCodeStateType;
+enum org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum                                as FinantialDocumentTypeEnum;
+enum org.fenixedu.treasury.domain.document.FinantialEntryType                                       as FinantialEntryType;
+enum org.fenixedu.treasury.domain.document.FinantialDocumentStateType                               as FinantialDocumentStateType;
+enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                     as DueDateCalculationType;
+enum org.fenixedu.treasury.domain.tariff.InterestType                                               as InterestType; 
+enum org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType						as PaymentReferenceCodeStateType;
+enum org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType							 	as PaymentReferenceCodeType;
 
 external class .org.fenixedu.bennu.io.domain.GenericFile;
 
@@ -294,10 +295,35 @@ class paymentcodes.PaymentReferenceCode
        DateTime beginDate;
        DateTime endDate;
        PaymentReferenceCodeStateType state;
+       PaymentReferenceCodeType type;
+       BigDecimalT maxAmount;
+       BigDecimalT minAmount;
 }
+
+	relation PaymentReferenceCodeFinantialDocument {
+		document.FinantialDocument playsRole finantialDocument {
+			multiplicity 0..1;
+		}
+	
+		paymentcodes.PaymentReferenceCode playsRole paymentCodes{
+			multiplicity *;
+		}
+	}
+
+	relation PaymentReferenceCodeInvoiceEntry {
+		document.InvoiceEntry playsRole invoiceEntries {
+			multiplicity *;
+		}
+	
+		paymentcodes.PaymentReferenceCode playsRole paymentCodes{
+			multiplicity *;
+		}
+	}
+
 
 	class paymentcodes.pool.PaymentCodePool  {
 	  String name;
+	  String entityReferenceCode;
 	  Integer minPaymentCodes;
 	  Integer maxPaymentCodes;
 	  BigDecimalT minAmount;
@@ -316,6 +342,17 @@ class paymentcodes.PaymentReferenceCode
 			multiplicity *;
 		}
 	}
+	
+		relation PaymentReferenceCodePaymentCodePool {
+		paymentcodes.pool.PaymentCodePool playsRole paymentCodePool {
+			multiplicity 1..1;
+		}
+	
+		paymentcodes.PaymentReferenceCode playsRole paymentReferenceCodes{
+			multiplicity *;
+		}
+	}
+	
 	
 	
 	class paymentcodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
