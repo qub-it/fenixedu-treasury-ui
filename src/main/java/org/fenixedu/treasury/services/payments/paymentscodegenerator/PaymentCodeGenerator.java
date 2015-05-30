@@ -19,16 +19,13 @@
 package org.fenixedu.treasury.services.payments.paymentscodegenerator;
 
 import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType;
 
 public abstract class PaymentCodeGenerator {
-    public abstract boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, final Customer person,
-            final FinantialInstitution finantialInstitution);
+    public abstract boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, final Customer person);
 
-    public abstract String generateNewCodeFor(final PaymentReferenceCodeType codeType, final Customer customer,
-            final FinantialInstitution finantialInstitution);
+    public abstract String generateNewCodeFor(final PaymentReferenceCodeType codeType, final Customer customer);
 
     public abstract boolean isCodeMadeByThisFactory(final PaymentReferenceCode paymentCode);
 

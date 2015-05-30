@@ -44,8 +44,7 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
-    public boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, final Customer customer,
-            final FinantialInstitution finantialInstitution) {
+    public boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, final Customer customer) {
         for (PaymentReferenceCode code : customer.getPaymentCodesBy(paymentCodeType, finantialInstitution)) {
             if (isCodeMadeByThisFactory(code)) {
                 return false;
@@ -55,8 +54,8 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
-    public String generateNewCodeFor(final PaymentReferenceCodeType paymentCodeType, final Customer person,
-            final FinantialInstitution finantialInstitution) {
+    public String generateNewCodeFor(final PaymentReferenceCodeType paymentCodeType, final Customer person) {
+
         String baseCode =
                 getCustomerCodeDigits(person)
                         + StringUtils.leftPad(Integer.toString(paymentCodeType.getTypeDigit()), TYPE_CODE_LENGTH, CODE_FILLER);

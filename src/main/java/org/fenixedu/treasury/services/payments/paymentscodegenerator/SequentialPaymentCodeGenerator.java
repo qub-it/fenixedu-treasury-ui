@@ -49,15 +49,13 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
-    public boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, Customer customer,
-            FinantialInstitution finantialInstitution) {
+    public boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, Customer customer) {
         final PaymentReferenceCode lastPaymentCode = findLastPaymentReferenceCode(finantialInstitution);
         return lastPaymentCode == null ? true : Integer.valueOf(getSequentialNumber(lastPaymentCode)) < 9999999;
     }
 
     @Override
-    public String generateNewCodeFor(PaymentReferenceCodeType codeType, Customer customer,
-            FinantialInstitution finantialInstitution) {
+    public String generateNewCodeFor(PaymentReferenceCodeType codeType, Customer customer) {
         // TODO Auto-generated method stub
         return null;
     }
