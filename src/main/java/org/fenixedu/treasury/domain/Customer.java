@@ -107,6 +107,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             debt.getFinantialDocumentsSet().forEach(x -> references.addAll(x.getPaymentCodesSet()));
             debt.getInvoiceEntrySet().forEach(x -> references.addAll(x.getPaymentCodesSet()));
         }
-        return references.stream().filter(x -> x.getType().equals(paymentCodeType)).collect(Collectors.toSet());
+        return references.stream().filter(x -> x.getPaymentCodePool().getType().equals(paymentCodeType))
+                .collect(Collectors.toSet());
     }
 }

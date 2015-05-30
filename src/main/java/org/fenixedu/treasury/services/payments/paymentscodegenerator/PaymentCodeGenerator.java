@@ -31,4 +31,6 @@ public abstract class PaymentCodeGenerator {
             final FinantialInstitution finantialInstitution);
 
     public abstract boolean isCodeMadeByThisFactory(final PaymentReferenceCode paymentCode);
+
+    public abstract void refreshReferenceCodeGenerator();
 }

@@ -303,7 +303,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         }
 
         internalProcess(responsibleUser, amount, whenRegistered, sibsTransactionId, comments);
-        if (!getType().isReusable()) {
+        if (!getPaymentCodePool().getType().isReusable()) {
             setState(PaymentReferenceCodeStateType.USED);
         }
     }
@@ -323,7 +323,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 //    }
 
     public String getDescription() {
-        return BundleUtil.getString(Constants.BUNDLE, getType().getQualifiedName());
+        return BundleUtil.getString(Constants.BUNDLE, getPaymentCodePool().getType().getQualifiedName());
     }
 
     protected void internalProcess(final User user, final BigDecimal amount, final DateTime whenRegistered,
@@ -340,8 +340,9 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 //        return null;
 //    }
 
-    protected static PaymentCodeGenerator getPaymentCodeGenerator(PaymentReferenceCodeType paymentCodeType) {
-        return PaymentCodeGeneratorFactory.getGenerator(paymentCodeType);
+    protected static PaymentCodeGenerator getPaymentCodeGenerator(PaymentReferenceCodeType paymentCodeType,
+            FinantialInstitution finantialInstitution) {
+        return PaymentCodeGeneratorFactory.getGenerator(paymentCodeType, finantialInstitution);
     }
 
     static public PaymentReferenceCode readByCode(final String code, FinantialInstitution finantialInstitution) {
@@ -362,7 +363,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     public static boolean canGenerateNewCode(Class<? extends PaymentReferenceCode> paymentCodeClass,
             PaymentReferenceCodeType paymentCodeType, final Customer customer, final FinantialInstitution finantialInstitution) {
-        return getPaymentCodeGenerator(paymentCodeType).canGenerateNewCode(paymentCodeType, customer, finantialInstitution);
+        return getPaymentCodeGenerator(paymentCodeType, finantialInstitution).canGenerateNewCode(paymentCodeType, customer,
+                finantialInstitution);
     }
 
 }

@@ -36,7 +36,11 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
 
     private static final int CODE_LENGTH = 9;
 
-    public CustomerPaymentCodeGenerator() {
+    private final FinantialInstitution finantialInstitution;
+
+    public CustomerPaymentCodeGenerator(FinantialInstitution finantialInstitution) {
+        super();
+        this.finantialInstitution = finantialInstitution;
     }
 
     @Override
@@ -80,5 +84,11 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
             customer = paymentCode.getInvoiceEntriesSet().stream().findFirst().get().getDebtAccount().getCustomer();
         }
         return paymentCode.getReferenceCode().startsWith(getCustomerCodeDigits(customer));
+    }
+
+    @Override
+    public void refreshReferenceCodeGenerator() {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -295,7 +295,6 @@ class paymentcodes.PaymentReferenceCode
        LocalDate beginDate;
        LocalDate endDate;
        PaymentReferenceCodeStateType state;
-       PaymentReferenceCodeType type;
        BigDecimalT maxAmount;
        BigDecimalT minAmount;
 }
@@ -329,6 +328,7 @@ class paymentcodes.PaymentReferenceCode
 	  BigDecimalT minAmount;
 	  BigDecimalT maxAmount;
 	  Boolean active;
+       PaymentReferenceCodeType type;
 	}
 	
 	

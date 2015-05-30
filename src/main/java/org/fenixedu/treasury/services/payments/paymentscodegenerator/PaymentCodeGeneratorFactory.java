@@ -18,12 +18,20 @@
  */
 package org.fenixedu.treasury.services.payments.paymentscodegenerator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType;
 
 public class PaymentCodeGeneratorFactory {
-    private static final CustomerPaymentCodeGenerator customerPaymentCodeGenerator = new CustomerPaymentCodeGenerator();
 
-    public static PaymentCodeGenerator getGenerator(PaymentReferenceCodeType type) {
+    private static Map<FinantialInstitution, List<PaymentCodeGenerator>> generators =
+            new HashMap<FinantialInstitution, List<PaymentCodeGenerator>>();
+
+    public static PaymentCodeGenerator getGenerator(PaymentReferenceCodeType type, FinantialInstitution finantialInstitution) {
         switch (type) {
         case TOTAL_GRATUITY:
         case GRATUITY_FIRST_INSTALLMENT:
@@ -35,7 +43,7 @@ public class PaymentCodeGeneratorFactory {
         case RESIDENCE_FEE:
 //            return personRotationPaymentCodeGenerator;
         case INSTITUTION_ACCOUNT_CREDIT:
-            return customerPaymentCodeGenerator;
+            return getCustomerPaymentCodeGeneratorFor(finantialInstitution);
 //        case INTERNAL_DEGREE_CHANGE_INDIVIDUAL_CANDIDACY_PROCESS:
 //        case EXTERNAL_DEGREE_CHANGE_INDIVIDUAL_CANDIDACY_PROCESS:
 //        case INTERNAL_DEGREE_TRANSFER_INDIVIDUAL_CANDIDACY_PROCESS:
@@ -49,7 +57,51 @@ public class PaymentCodeGeneratorFactory {
 //        case RECTORATE:
 //            return rectoratePaymentCodeGenerator;
         default:
-            return null;
+            return getSequentialPaymentCodeGenerator(finantialInstitution);
+        }
+    }
+
+    private static PaymentCodeGenerator getSequentialPaymentCodeGenerator(FinantialInstitution finantialInstitution) {
+        if (generators.containsKey(finantialInstitution)) {
+            for (PaymentCodeGenerator generator : generators.get(finantialInstitution)) {
+                if (generator instanceof CustomerPaymentCodeGenerator) {
+                    return generator;
+                }
+            }
+
+            //try to create/load a new one
+            SequentialPaymentCodeGenerator sequentialGenerator = new SequentialPaymentCodeGenerator(finantialInstitution);
+            generators.get(finantialInstitution).add(sequentialGenerator);
+            return sequentialGenerator;
+        } else {
+            //try to create/load a new one
+            SequentialPaymentCodeGenerator sequentialGenerator = new SequentialPaymentCodeGenerator(finantialInstitution);
+            List<PaymentCodeGenerator> generatorsList = new ArrayList<PaymentCodeGenerator>();
+            generatorsList.add(sequentialGenerator);
+            generators.put(finantialInstitution, generatorsList);
+            return sequentialGenerator;
+        }
+    }
+
+    private static PaymentCodeGenerator getCustomerPaymentCodeGeneratorFor(FinantialInstitution finantialInstitution) {
+        if (generators.containsKey(finantialInstitution)) {
+            for (PaymentCodeGenerator generator : generators.get(finantialInstitution)) {
+                if (generator instanceof CustomerPaymentCodeGenerator) {
+                    return generator;
+                }
+            }
+
+            //try to create/load a new one
+            CustomerPaymentCodeGenerator customerGenerator = new CustomerPaymentCodeGenerator(finantialInstitution);
+            generators.get(finantialInstitution).add(customerGenerator);
+            return customerGenerator;
+        } else {
+            //try to create/load a new one
+            CustomerPaymentCodeGenerator customerGenerator = new CustomerPaymentCodeGenerator(finantialInstitution);
+            List<PaymentCodeGenerator> generatorsList = new ArrayList<PaymentCodeGenerator>();
+            generatorsList.add(customerGenerator);
+            generators.put(finantialInstitution, generatorsList);
+            return customerGenerator;
         }
     }
 }
