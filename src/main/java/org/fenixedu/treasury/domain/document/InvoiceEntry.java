@@ -134,8 +134,11 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         //only check after the first initializations
         if (getNetAmount() != null && getVatAmount() != null && getAmountWithVat() != null) {
             BigDecimal netAmount = getCurrency().getValueWithScale(getQuantity().multiply(getAmount()));
-            BigDecimal vatAmount = getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate()));
-            BigDecimal amountWithVat = getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(getVatRate())));
+            BigDecimal vatAmount =
+                    getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate().divide(BigDecimal.valueOf(100))));
+            BigDecimal amountWithVat =
+                    getCurrency().getValueWithScale(
+                            getNetAmount().multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100)))));
 
             //Compare the re-calculated values with the original ones
             return netAmount.compareTo(getNetAmount()) == 0 && vatAmount.compareTo(getVatAmount()) == 0

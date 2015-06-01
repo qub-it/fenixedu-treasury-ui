@@ -258,21 +258,6 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         return this.getState().equals(FinantialDocumentStateType.CLOSED);
     }
 
-    public DateTime getWhenCreated() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getUserChanged() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public String getUserCreated() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public BigDecimal getOpenAmount() {
         if (this.getState().isPreparing() || this.getState().isClosed()) {
             return getTotalAmount();

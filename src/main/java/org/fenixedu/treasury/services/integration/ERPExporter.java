@@ -356,7 +356,7 @@ public class ERPExporter {
             status.setPaymentStatusDate(payment.getSystemEntryDate());
             // status.setReason("");
             // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(document.getUserChanged());
+            status.setSourceID(document.getVersioningUpdatedBy());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
             if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())) {
@@ -376,7 +376,7 @@ public class ERPExporter {
                 payment.getPaymentMethod().add(method);
             }
 
-            payment.setSourceID(document.getUserCreated());
+            payment.setSourceID(document.getVersioningCreator());
 
             // DocumentTotals
             SourceDocuments.Payments.Payment.DocumentTotals docTotals = new SourceDocuments.Payments.Payment.DocumentTotals();
@@ -422,7 +422,7 @@ public class ERPExporter {
             /*
              * C?digo do utilizador que registou o movimento (SourceID).
              */
-            payment.setSourceID(document.getUserCreated());
+            payment.setSourceID(document.getVersioningCreator());
 
         } catch (DatatypeConfigurationException e) {
 
@@ -514,7 +514,7 @@ public class ERPExporter {
             status.setWorkStatusDate(workDocument.getSystemEntryDate());
             // status.setReason("");
             // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(document.getUserChanged());
+            status.setSourceID(document.getVersioningUpdatedBy());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
             if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())) {
@@ -559,7 +559,7 @@ public class ERPExporter {
             /*
              * C?digo do utilizador que registou o movimento (SourceID).
              */
-            workDocument.setSourceID(document.getUserCreated());
+            workDocument.setSourceID(document.getVersioningCreator());
 
         } catch (DatatypeConfigurationException e) {
 
