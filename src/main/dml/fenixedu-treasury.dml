@@ -190,6 +190,7 @@ class document.FinantialDocument {
 	LocalDate documentDueDate;
 	String originDocumentNumber;
 	FinantialDocumentStateType state;
+	String address;
 }
 
 
@@ -200,6 +201,7 @@ class document.FinantialDocument {
 		}
 		
 		class document.CreditNote extends document.Invoice {
+			String reason;
 		}
 	
 	class document.SettlementNote extends document.FinantialDocument {

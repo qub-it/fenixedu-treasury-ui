@@ -77,6 +77,14 @@ public class InterestRate extends InterestRate_Base {
         }
     }
     
+    public boolean isMaximumDaysToApplyPenaltyApplied() {
+        return getMaximumDaysToApplyPenalty() > 0;
+    }
+    
+    public boolean isMaximumMonthsToApplyPenaltyApplied() {
+        return getMaximumMonthsToApplyPenalty() > 0;
+    }
+    
     public boolean isDeletable() {
         return true;
     }

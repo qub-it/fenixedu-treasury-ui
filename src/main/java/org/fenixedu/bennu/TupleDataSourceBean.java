@@ -31,6 +31,15 @@ public class TupleDataSourceBean implements IBean {
     private String id;
     private String text;
 
+    public TupleDataSourceBean() {
+        
+    }
+    
+    public TupleDataSourceBean(final String id, final String text) {
+        this.id = id;
+        this.text = text;
+    }
+    
     public String getId() {
         return id;
     }

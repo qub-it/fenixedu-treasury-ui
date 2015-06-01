@@ -65,10 +65,9 @@ public abstract class Tariff extends Tariff_Base {
         setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
         setApplyInterests(applyInterests);
         if (getApplyInterests()) {
-            InterestRate.create(this, interestType, numberOfDaysAfterCreationForDueDate, applyInFirstWorkday,
+            InterestRate.create(this, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
                     maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
         }
-
     }
 
     protected void checkRules() {
@@ -106,8 +105,8 @@ public abstract class Tariff extends Tariff_Base {
                 throw new TreasuryDomainException("error.Tariff.interestRate.required");
             }
 
-            if (getInterestRate().getInterestType() == InterestType.DAILY) {
-                if (getInterestRate().getRate() == null || BigDecimal.ZERO.compareTo(getInterestRate().getRate()) >= 0) {
+            if (getInterestRate().getInterestType().isDaily()) {
+                if (getInterestRate().getRate() == null || !isPositive(getInterestRate().getRate())) {
                     throw new TreasuryDomainException("error.Tariff.interestRate.invalid");
                 }
                 if (getInterestRate().getNumberOfDaysAfterDueDate() <= 0) {
@@ -117,7 +116,7 @@ public abstract class Tariff extends Tariff_Base {
                     throw new TreasuryDomainException("error.Tariff.interestRate.maximumdaystoapplypenalty.invalid");
                 }
             }
-            if (getInterestRate().getInterestType() == InterestType.MONTHLY) {
+            if (getInterestRate().getInterestType().isMonthly()) {
                 if (getInterestRate().getRate() == null || BigDecimal.ZERO.compareTo(getInterestRate().getRate()) >= 0) {
                     throw new TreasuryDomainException("error.Tariff.interestRate.invalid");
                 }
@@ -203,6 +202,15 @@ public abstract class Tariff extends Tariff_Base {
         return v1.compareTo(v2) > 0;
     }
 
+    protected LocalDate dueDate(final LocalDate requestDate) {
+
+        if (getDueDateCalculationType().isFixedDate()) {
+            return getFixedDueDate();
+        }
+
+        return requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());
+    }
+    
     // @formatter: off
     /************
      * SERVICES *
