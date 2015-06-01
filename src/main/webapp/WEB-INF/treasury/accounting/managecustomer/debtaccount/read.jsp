@@ -131,7 +131,7 @@ ${portal.angularToolkit()}
 				<tbody>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
-						<td><c:out value='${debtAccount.customer.name}' /></td>
+						<td><c:out value='${debtAccount.customer.code}' /> - <c:out value='${debtAccount.customer.name}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
@@ -206,7 +206,6 @@ ${portal.angularToolkit()}
 						<%-- 						</datatables:column> --%>
 						<datatables:column>
 							<datatables:columnHead>
-								<c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
 								<spring:message code="label.InvoiceEntry.totalAmount" />
 							</datatables:columnHead>
 							<div align=right>
@@ -216,7 +215,6 @@ ${portal.angularToolkit()}
 						</datatables:column>
 						<datatables:column>
 							<datatables:columnHead>
-								<c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
 								<spring:message code="label.InvoiceEntry.openAmount" />
 							</datatables:columnHead>
 							<div align=right>
@@ -292,7 +290,8 @@ ${portal.angularToolkit()}
 								<spring:message code="label.Invoice.totalAmount" />
 							</datatables:columnHead>
 							<div align=right>
-								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
+                                <c:if test="${entry.isCreditNoteEntry() }">-</c:if>
+								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />
 							</div>
 						</datatables:column>
 						<%-- 						<datatables:column> --%>
@@ -308,7 +307,8 @@ ${portal.angularToolkit()}
 								<spring:message code="label.InvoiceEntry.openAmount" />
 							</datatables:columnHead>
 							<div align=right>
-								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" />
+                                <c:if test="${entry.isCreditNoteEntry() }">-</c:if>
+								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(entry.openAmount)}" />
 							</div>
 						</datatables:column>
 						<datatables:column>

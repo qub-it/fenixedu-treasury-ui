@@ -26,14 +26,15 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.springframework.ui.Model;
@@ -46,10 +47,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice", accessGroup = "logged")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageInvoice", accessGroup = "logged")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-//@BennuSpringController(value = TreasuryController.class)
+@BennuSpringController(value = CreditNoteController.class)
 @RequestMapping(CreditEntryController.CONTROLLER_URL)
 public class CreditEntryController extends TreasuryBaseController {
 
@@ -187,8 +188,8 @@ public class CreditEntryController extends TreasuryBaseController {
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("creditEntry", creditEntry);
-            return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditEntry(model).getExternalId(), model,
-                    redirectAttributes);
+            return redirect("/treasury/document/manageinvoice/creditnote/read/"
+                    + getCreditEntry(model).getFinantialDocument().getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -255,11 +256,12 @@ public class CreditEntryController extends TreasuryBaseController {
 
         setCreditEntry(creditEntry, model);
         try {
+            CreditNote note = (CreditNote) creditEntry.getFinantialDocument();
             //call the Atomic delete function
             deleteCreditEntry(creditEntry);
 
             addInfoMessage("Sucess deleting CreditEntry ...", model);
-            return redirect("/treasury/document/manageinvoice/creditnote/read", model, redirectAttributes);
+            return redirect("/treasury/document/manageinvoice/creditnote/read/" + note.getExternalId(), model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
@@ -335,8 +337,10 @@ public class CreditEntryController extends TreasuryBaseController {
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") CreditEntry creditEntry,
-            @RequestParam(value = "description", required = false) java.lang.String description, @RequestParam(value = "amount",
-                    required = false) java.math.BigDecimal amount, Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "description", required = true) java.lang.String description, @RequestParam(value = "amount",
+                    required = true) java.math.BigDecimal amount,
+            @RequestParam(value = "quantity", required = true) java.math.BigDecimal quantity, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setCreditEntry(creditEntry, model);
 
@@ -345,12 +349,12 @@ public class CreditEntryController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateCreditEntry(description, amount, model);
+            updateCreditEntry(description, amount, quantity, model);
 
             /*Succes Update */
 
-            return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditEntry(model).getExternalId(), model,
-                    redirectAttributes);
+            return redirect("/treasury/document/manageinvoice/creditnote/read/"
+                    + getCreditEntry(model).getFinantialDocument().getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             // @formatter: off
 
@@ -371,7 +375,7 @@ public class CreditEntryController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateCreditEntry(java.lang.String description, java.math.BigDecimal amount, Model model) {
+    public void updateCreditEntry(java.lang.String description, java.math.BigDecimal amount, BigDecimal quantity, Model model) {
 
         // @formatter: off				
         /*
@@ -385,8 +389,10 @@ public class CreditEntryController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getCreditEntry(model).setDescription(description);
-        getCreditEntry(model).setAmount(amount);
+        CreditEntry creditEntry = getCreditEntry(model);
+        creditEntry.setDescription(description);
+        creditEntry.setAmount(amount);
+        creditEntry.edit(description, amount, quantity);
     }
 
 }

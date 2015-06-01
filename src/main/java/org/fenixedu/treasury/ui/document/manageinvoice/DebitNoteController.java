@@ -510,7 +510,7 @@ public class DebitNoteController extends TreasuryBaseController {
         return redirect(CreditNoteController.CREATE_URL + "?debitNote=" + debitNote.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/exportintegrationfile")
+    @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")
     public void processReadToExportIntegrationFile(@PathVariable("oid") DebitNote debitNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
@@ -518,15 +518,16 @@ public class DebitNoteController extends TreasuryBaseController {
                     ERPExporter.exportFinantialDocument(debitNote.getDebtAccount().getFinantialInstitution(),
                             debitNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
             response.setContentType("text/xml");
+            response.setCharacterEncoding("Windows-1252");
             String filename =
                     URLEncoder.encode(
                             StringNormalizer
                                     .normalizePreservingCapitalizedLetters(
                                             debitNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
                                                     + debitNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_")
-                                    .replace(" ", "_"), "UTF-8");
+                                    .replace(" ", "_"), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
-            response.getOutputStream().write(output.getBytes("UTF8"));
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {

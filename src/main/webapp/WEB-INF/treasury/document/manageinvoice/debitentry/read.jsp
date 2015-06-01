@@ -151,13 +151,13 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.description" /></th>
 						<td><c:out value='${debitEntry.description}' /></td>
 					</tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.quantity" /></th>
+                        <td><c:out value='${debitEntry.quantity}' /></td>
+                    </tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.amount" /></th>
 						<td><c:out value='${debitEntry.currency.getValueFor(debitEntry.amount)}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.quantity" /></th>
-						<td><c:out value='${debitEntry.quantity}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.vat" /></th>

@@ -28,138 +28,156 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1>
-		<spring:message code="label.document.manageInvoice.readCreditEntry" />
-		<small></small>
-	</h1>
+    <h1>
+        <spring:message code="label.document.manageInvoice.readCreditEntry" />
+        <small></small>
+    </h1>
 </div>
 <div class="modal fade" id="deleteModal">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/delete/${creditEntry.externalId}" method="POST">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-					</button>
-					<h4 class="modal-title">
-						<spring:message code="label.confirmation" />
-					</h4>
-				</div>
-				<div class="modal-body">
-					<p>
-						<spring:message code="label.document.manageInvoice.readCreditEntry.confirmDelete" />
-					</p>
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">
-						<spring:message code="label.close" />
-					</button>
-					<button id="deleteButton" class="btn btn-danger" type="submit">
-						<spring:message code="label.delete" />
-					</button>
-				</div>
-			</form>
-		</div>
-		<!-- /.modal-content -->
-	</div>
-	<!-- /.modal-dialog -->
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/delete/${creditEntry.externalId}" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.document.manageInvoice.readCreditEntry.confirmDelete" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.close" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
+                        <spring:message code="label.delete" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read"><spring:message
-			code="label.event.back" /></a>&nbsp;|&nbsp; <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp;
-
-	<c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
-
-		<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-				code="label.event.delete" /></a>
-				&nbsp;|&nbsp;
-	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}"><spring:message code="label.event.update" /></a>
-&nbsp;|&nbsp;
-	</c:if>
-
+    <c:if test="${not empty creditEntry.finantialDocument }">
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditEntry.finantialDocument.externalId}"><spring:message
+                code="label.document.manageInvoice.event.backToCreditNote" /></a>&nbsp|&nbsp; 
+    </c:if>
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditEntry.debtAccount.externalId}"><spring:message
+            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp;
+    <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
+        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+                code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}"><spring:message code="label.event.update" /></a>
+    &nbsp;|&nbsp;
+    </c:if>
 </div>
 <c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
+    <div class="alert alert-info" role="alert">
 
-		<c:forEach items="${infoMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${infoMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 <c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning" role="alert">
 
-		<c:forEach items="${warningMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${warningMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 <c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" role="alert">
 
-		<c:forEach items="${errorMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${errorMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 
 <div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">
-			<spring:message code="label.details" />
-		</h3>
-	</div>
-	<div class="panel-body">
-		<form method="post" class="form-horizontal">
-			<table class="table">
-				<tbody>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.debtAccount" /></th>
-						<td><c:out value='${creditEntry.debtAccount}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.finantialDocument" /></th>
-						<td><c:if test="${not empty creditEntry.finantialDocument}">
-								<c:out value='${creditEntry.finantialDocument.uiDocumentNumber}' />
-							</c:if> <c:if test="${empty creditEntry.finantialDocument}">
-															<span class="label label-warning">
-								<spring:message code="label.CreditEntry.creditEntry.with.no.document" />
-								</span>
-							</c:if></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.description" /></th>
-						<td><c:out value='${creditEntry.description}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.amount" /></th>
-						<td><c:out value='${creditEntry.amount}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.debitEntry" /></th>
-						<td><c:out value='${creditEntry.debitEntry}' /></td>
-					</tr>
-				</tbody>
-			</table>
-		</form>
-	</div>
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.details" />
+        </h3>
+    </div>
+    <div class="panel-body">
+        <form method="post" class="form-horizontal">
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.debtAccount" /></th>
+                        <td><c:out value='${creditEntry.debtAccount.customer.code} - ${creditEntry.debtAccount.customer.name}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.finantialDocument" /></th>
+                        <td><c:if test="${not empty creditEntry.finantialDocument}">
+                                <c:out value='${creditEntry.finantialDocument.uiDocumentNumber}' />
+                            </c:if> <c:if test="${empty creditEntry.finantialDocument}">
+                                <span class="label label-warning"> <spring:message code="label.CreditEntry.creditEntry.with.no.document" />
+                                </span>
+                            </c:if></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.entryDate" /></th>
+                        <td><c:out value='${creditEntry.entryDateTime}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.debitNote" /></th>
+                        <td><c:if test="${not empty creditEntry.debitEntry}">
+                        <a href ="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${creditEntry.debitEntry.finantialDocument.externalId}">
+                                <c:out value='${creditEntry.debitEntry.finantialDocument.uiDocumentNumber}' /></a>
+                            </c:if> </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.description" /></th>
+                        <td><c:out value='${creditEntry.description}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.quantity" /></th>
+                        <td><c:out value='${creditEntry.quantity}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.amount" /></th>
+                        <td><c:out value='${creditEntry.currency.getValueFor(creditEntry.amount)}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.vat" /></th>
+                        <td><c:out value='${creditEntry.vat.taxRate} % ' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.totalAmount" /></th>
+                        <td><c:out value='${creditEntry.currency.getValueFor(creditEntry.totalAmount)}' /></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
 </div>
 
 <script>
-	$(document).ready(function() {
+    $(document).ready(function() {
 
-	});
+    });
 </script>

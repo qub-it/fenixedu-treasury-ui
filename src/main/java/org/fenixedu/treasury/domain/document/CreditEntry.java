@@ -101,7 +101,7 @@ public class CreditEntry extends CreditEntry_Base {
 
     @Override
     public BigDecimal getOpenAmount() {
-        BigDecimal amount = this.getAmount();
+        BigDecimal amount = this.getTotalAmount();
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
             if (entry.getFinantialDocument().isClosed()) {
                 amount = amount.subtract(entry.getTotalAmount());
@@ -116,6 +116,14 @@ public class CreditEntry extends CreditEntry_Base {
                 new CreditEntry(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
         cr.realculateAmountValues();
         return cr;
+    }
+
+    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
+        this.setAmount(amount);
+        this.setQuantity(quantity);
+        this.setDescription(description);
+        this.realculateAmountValues();
+        this.checkRules();
     }
 
     public static Stream<? extends CreditEntry> find(final CreditNote creditNote) {

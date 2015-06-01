@@ -588,7 +588,7 @@ public class CreditNoteController extends TreasuryBaseController {
         return creditNote;
     }
 
-    @RequestMapping(value = "/read/{oid}/exportintegrationfile")
+    @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")
     public void processReadToExportIntegrationFile(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
@@ -597,15 +597,16 @@ public class CreditNoteController extends TreasuryBaseController {
                     ERPExporter.exportFinantialDocument(creditNote.getDebtAccount().getFinantialInstitution(),
                             creditNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
             response.setContentType("text/xml");
+            response.setCharacterEncoding("Windows-1252");
             String filename =
                     URLEncoder.encode(
                             StringNormalizer
                                     .normalizePreservingCapitalizedLetters(
                                             creditNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
                                                     + creditNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_")
-                                    .replaceAll(" ", "_"), "UTF-8");
+                                    .replaceAll(" ", "_"), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
-            response.getOutputStream().write(output.getBytes("UTF8"));
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
