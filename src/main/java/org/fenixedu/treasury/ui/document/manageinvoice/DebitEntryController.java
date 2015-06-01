@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.DebitEntryBean;
@@ -174,6 +175,8 @@ public class DebitEntryController extends TreasuryBaseController {
             bean.setDueDate(debitNote.getDocumentDueDate());
         }
         this.setDebitEntryBean(bean, model);
+
+        model.addAttribute("DebitEntry_event_options", TreasuryEvent.findActiveBy(debtAccount).collect(Collectors.toList()));
 
         if (debitNote == null) {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
@@ -326,6 +329,8 @@ public class DebitEntryController extends TreasuryBaseController {
 
         if (debitEntry.getFinantialDocument() == null || debitEntry.getFinantialDocument().isPreparing()) {
             setDebitEntryBean(new DebitEntryBean(debitEntry), model);
+            model.addAttribute("DebitEntry_event_options",
+                    TreasuryEvent.findActiveBy(debitEntry.getDebtAccount()).collect(Collectors.toList()));
             setDebitEntry(debitEntry, model);
             return "treasury/document/manageinvoice/debitentry/update";
         } else {

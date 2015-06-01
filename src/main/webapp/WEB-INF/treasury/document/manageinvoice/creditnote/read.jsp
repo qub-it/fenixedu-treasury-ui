@@ -246,19 +246,19 @@ ${portal.toolkit()}
 								<span class="label label-primary">
 							</c:if> <c:out value='${creditNote.state.descriptionI18N.content}' /> </span></td>
 					</tr>
-					<!-- 					<tr> -->
-					<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CredtNote.totalNetAmount" /></th> --%>
-					<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalNetAmount)}' /></td> --%>
-					<!-- 					</tr> -->
-					<!-- 					<tr> -->
-					<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.totalVatAmount" /></th> --%>
-					<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalVatAmount)}' /></td> --%>
-					<!-- 					</tr> -->
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
+                        <td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalNetAmount)}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalVatAmount" /></th>
+                        <td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalVatAmount)}' /></td>
+                    </tr>
 
-					<!-- 					<tr> -->
-					<%-- 						<th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.totalAmount" /></th> --%>
-					<%-- 						<td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalAmount)}' /></td> --%>
-					<!-- 					</tr> -->
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
+                        <td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalAmount)}' /></td>
+                    </tr>
 				</tbody>
 			</table>
 		</form>

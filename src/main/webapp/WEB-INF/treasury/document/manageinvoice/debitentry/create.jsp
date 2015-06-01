@@ -91,6 +91,13 @@ ${portal.angularToolkit()}
 				$scope.object = angular.fromJson('${debitEntryBeanJson}');
 				$scope.postBack = createAngularPostbackFunction($scope);
 
+                $scope.eventsDataSource = [
+                                            <c:forEach items="${DebitEntry_event_options}" var="element"> 
+                                                {text : "<c:out value='${element.description.content}'/>",id : "<c:out value='${element.externalId}'/>"},
+                                            </c:forEach>
+                                        ];
+
+				
 				//Begin here of Custom Screen business JS - code
 				$scope.onProductChange = function(product, model) {
 					$scope.postBack(model);
@@ -126,7 +133,7 @@ ${portal.angularToolkit()}
 
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.debtAccount" />
+					<spring:message code="label.DebitNote.debtAccount" />
 				</div>
 
 				<div class="col-sm-10">
@@ -195,7 +202,7 @@ ${portal.angularToolkit()}
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.quantity" />
+					<spring:message code="label.InvoiceEntry.quantity" />
 				</div>
 
 				<div class="col-sm-10">
@@ -212,6 +219,22 @@ ${portal.angularToolkit()}
 					<input id="debitEntry_dueDate" class="form-control" type="date" ng-model="object.dueDate" name="dueDate" />
 				</div>
 			</div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.event" />
+                </div>
+
+                <div class="col-sm-10">
+                    <ui-select ng-model="$parent.object.treasuryEvent" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match> 
+                        <ui-select-choices repeat="event.id as event in eventsDataSource| filter: $select.search"> 
+                            <span ng-bind-html="event.text | highlight: $select.search"></span>
+                        </ui-select-choices> 
+                    </ui-select>
+                </div>
+            </div>
+
 
 		</div>
 		<div class="panel-footer">

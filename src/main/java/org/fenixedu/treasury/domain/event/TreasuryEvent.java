@@ -109,8 +109,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
      ************/
     // @formatter: on
 
-    public static Stream<? extends TreasuryEvent> findAll() {
+    public static Stream<TreasuryEvent> findAll() {
         return Bennu.getInstance().getTreasuryEventsSet().stream();
     }
 
+    public static Stream<TreasuryEvent> findActiveBy(DebtAccount debtAccount) {
+        return findAll().filter(x -> x.getDebtAccount().equals(debtAccount));
+    }
 }

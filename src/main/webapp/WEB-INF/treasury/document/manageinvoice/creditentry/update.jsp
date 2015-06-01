@@ -95,7 +95,9 @@ ${portal.toolkit()}
 <div class="col-sm-10">
 	<input id="creditEntry_amount" class="form-control" type="text" name="amount"  value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
 </div>	
-</div>		
+</div>
+
+		
   </div>
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

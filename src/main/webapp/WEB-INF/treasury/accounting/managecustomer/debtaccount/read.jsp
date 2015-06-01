@@ -139,15 +139,14 @@ ${portal.angularToolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> <c:if
-                                test="${debtAccount.totalInDebt < 0 }">
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> <c:if test="${debtAccount.totalInDebt < 0 }">
                                 <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                 </span>
                             </c:if></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /> </td>
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /></td>
                     </tr>
                 </tbody>
             </table>
@@ -228,10 +227,15 @@ ${portal.angularToolkit()}
                             </div>
                         </datatables:column>
                         <datatables:column>
-                            <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
-                                <button type="submit" class="btn btn-default btn-xs">
-                                    <spring:message code="label.view" />
-                                </button>
+                            <c:if test="${pendingEntry.isDebitNoteEntry() }">
+                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
+                            </c:if>
+                            <c:if test="${pendingEntry.isCreditNoteEntry() }">
+                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${pendingEntry.externalId}">
+                            </c:if>
+                            <button type="submit" class="btn btn-default btn-xs">
+                                <spring:message code="label.view" />
+                            </button>
                             </form>
                             <%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
                             <!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
@@ -321,11 +325,15 @@ ${portal.angularToolkit()}
                             </div>
                         </datatables:column>
                         <datatables:column>
-                            <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
-                                <button type="submit" class="btn btn-default btn-xs">
-                                    <spring:message code="label.view" />
-                                </button>
-                            </form>
+                            <c:if test="${entry.isDebitNoteEntry() }">
+                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
+                            </c:if>
+                            <c:if test="${entry.isCreditNoteEntry() }">
+                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${entry.externalId}">
+                            </c:if>
+                            <button type="submit" class="btn btn-default btn-xs">
+                                <spring:message code="label.view" />
+                            </button>
                             <%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
                             <!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
                             <!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->

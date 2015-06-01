@@ -179,7 +179,7 @@ public class CreditNote extends CreditNote_Base {
         for (CreditEntry entry : getCreditEntriesSet()) {
             if (entry.getDebitEntry() != null && entry.getDebitEntry().getFinantialDocument() != null
                     && !entry.getDebitEntry().getFinantialDocument().isPreparing()) {
-                if (!documentsBaseList.contains(entry.getFinantialDocument())) {
+                if (!documentsBaseList.contains(entry.getDebitEntry().getFinantialDocument())) {
                     documentsBaseList
                             .addAll(entry.getDebitEntry().getFinantialDocument().findRelatedDocuments(documentsBaseList));
                 }

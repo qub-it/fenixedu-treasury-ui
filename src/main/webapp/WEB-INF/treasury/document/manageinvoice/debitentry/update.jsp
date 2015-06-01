@@ -31,64 +31,69 @@ ${portal.angularToolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1>
-		<spring:message code="label.document.manageInvoice.updateDebitEntry" />
-		<small></small>
-	</h1>
+    <h1>
+        <spring:message code="label.document.manageInvoice.updateDebitEntry" />
+        <small></small>
+    </h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
-	<c:if test="${ not empty debitEntry.finantialDocument}">
-		<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntry.finantialDocument.externalId}"><spring:message
-				code="label.event.back" /></a>
-	</c:if>
-	<c:if test="${ empty debitEntry.finantialDocument}">
-		<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntry.debtAccount.externalId}"><spring:message
-				code="label.event.back" /></a>
-	</c:if>
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
+    <c:if test="${ not empty debitEntry.finantialDocument}">
+        <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntry.finantialDocument.externalId}"><spring:message
+                code="label.event.back" /></a>
+    </c:if>
+    <c:if test="${ empty debitEntry.finantialDocument}">
+        <a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntry.debtAccount.externalId}"><spring:message
+                code="label.event.back" /></a>
+    </c:if>
 
-	&nbsp;|&nbsp;
+    &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
+    <div class="alert alert-info" role="alert">
 
-		<c:forEach items="${infoMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${infoMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 <c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning" role="alert">
 
-		<c:forEach items="${warningMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${warningMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 <c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" role="alert">
 
-		<c:forEach items="${errorMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${errorMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 
 <script>
 	angular.module('angularAppDebitEntry', [ 'ngSanitize', 'ui.select' ])
 			.controller('DebitEntryController', [ '$scope', function($scope) {
 
+	            $scope.eventsDataSource = [
+	                                       <c:forEach items="${DebitEntry_event_options}" var="element"> 
+	                                           {text : "<c:out value='${element.description.content}'/>",id : "<c:out value='${element.externalId}'/>"},
+	                                       </c:forEach>
+	                                   ];
 				$scope.object = angular.fromJson('${debitEntryBeanJson}');
 				$scope.postBack = createAngularPostbackFunction($scope);
 
@@ -98,139 +103,158 @@ ${portal.angularToolkit()}
 </script>
 
 <form name='form' method="post" class="form-horizontal" ng-app="angularAppDebitEntry" ng-controller="DebitEntryController"
-	action='${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/update/${debitEntry.externalId}'>
+    action='${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/update/${debitEntry.externalId}'>
 
-	<input type="hidden" name="postback" value='${pageContext.request.contextPath}treasury/document/manageinvoice/debitentry/updatepostback/${debitEntry.externalId}' /> <input
-		name="bean" type="hidden" value="{{ object }}" />
+    <input type="hidden" name="postback" value='${pageContext.request.contextPath}treasury/document/manageinvoice/debitentry/updatepostback/${debitEntry.externalId}' /> <input
+        name="bean" type="hidden" value="{{ object }}" />
 
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebtAccount.finantialInstitution" />
-				</div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebtAccount.finantialInstitution" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value="${debitEntryBean.debtAccount.finantialInstitution.name}" />
-					</div>
-				</div>
-			</div>
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${debitEntryBean.debtAccount.finantialInstitution.name}" />
+                    </div>
+                </div>
+            </div>
 
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.debtAccount" />
-				</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.debtAccount" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value="${debitEntryBean.debtAccount.customer.code} - ${debitEntryBean.debtAccount.customer.name}" />
-					</div>
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.finantialDocument" />
-				</div>
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${debitEntryBean.debtAccount.customer.code} - ${debitEntryBean.debtAccount.customer.name}" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.finantialDocument" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:if test="${not empty debitEntry.finantialDocument}">
-							<c:out value='${debitEntry.finantialDocument.uiDocumentNumber}' />
-						</c:if>
-						<c:if test="${empty debitEntry.finantialDocument}">
-							<spring:message code="label.DebitEntry.debitentry.with.no.document" />
-						</c:if>
-					</div>
-				</div>
-			</div>
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:if test="${not empty debitEntry.finantialDocument}">
+                            <c:out value='${debitEntry.finantialDocument.uiDocumentNumber}' />
+                        </c:if>
+                        <c:if test="${empty debitEntry.finantialDocument}">
+                            <spring:message code="label.DebitEntry.debitentry.with.no.document" />
+                        </c:if>
+                    </div>
+                </div>
+            </div>
 
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.FinantialDocumentEntry.entryDateTime" />
-				</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialDocumentEntry.entryDateTime" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value="${debitEntry.entryDateTime}" />
-					</div>
-				</div>
-			</div>
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${debitEntry.entryDateTime}" />
+                    </div>
+                </div>
+            </div>
 
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.product" />
-				</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.product" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value="${debitEntryBean.product.name.content}" />
-					</div>
-				</div>
-			</div>
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${debitEntryBean.product.name.content}" />
+                    </div>
+                </div>
+            </div>
 
-			<!-- <div class="form-group row"> -->
-			<%-- <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.product"/></div>  --%>
+            <!-- <div class="form-group row"> -->
+            <%-- <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.product"/></div>  --%>
 
-			<!-- <div class="col-sm-4"> -->
-			<%-- Relation to side 1 drop down rendered in input --%>
-			<!-- 		<ui-select id="debitEntry_product" class="form-control" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" > -->
-			<!--     						<ui-select-match >{{$select.selected.text}}</ui-select-match> -->
-			<!--     						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search"> -->
-			<!--       							<span ng-bind-html="product.text | highlight: $select.search"></span> -->
-			<!--     						</ui-select-choices> -->
-			<!--   						</ui-select>				 -->
-			<!-- 				</div> -->
-			<!-- </div>		 -->
+            <!-- <div class="col-sm-4"> -->
+            <%-- Relation to side 1 drop down rendered in input --%>
+            <!-- 		<ui-select id="debitEntry_product" class="form-control" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" > -->
+            <!--     						<ui-select-match >{{$select.selected.text}}</ui-select-match> -->
+            <!--     						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search"> -->
+            <!--       							<span ng-bind-html="product.text | highlight: $select.search"></span> -->
+            <!--     						</ui-select-choices> -->
+            <!--   						</ui-select>				 -->
+            <!-- 				</div> -->
+            <!-- </div>		 -->
 
 
-		</div>
-	</div>
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.description" />
-				</div>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.description" />
+                </div>
 
-				<div class="col-sm-10">
-					<input id="debitEntry_description" class="form-control" type="text" ng-model="object.description" name="description"
-						value='<c:out value='${not empty param.description ? param.description : debitEntry.description }'/>' />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.amount" />
-				</div>
+                <div class="col-sm-10">
+                    <input id="debitEntry_description" class="form-control" type="text" ng-model="object.description" name="description"
+                        value='<c:out value='${not empty param.description ? param.description : debitEntry.description }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.amount" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="input-group">
-						<div class="input-group-addon">
-							<c:out value="${debitEntryBean.debtAccount.finantialInstitution.currency.symbol}" />
-						</div>
-						<input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount" pattern="^[0-9]+(\.[0-9][0-9]?[0-9]?)?$" data-number-to-fixed="2"
-							data-number-stepfactor="100" />
-					</div>
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebitEntry.quantity" />
-				</div>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${debitEntryBean.debtAccount.finantialInstitution.currency.symbol}" />
+                        </div>
+                        <input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount" pattern="^[0-9]+(\.[0-9][0-9]?[0-9]?)?$"
+                            data-number-to-fixed="2" data-number-stepfactor="100" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.InvoiceEntry.quantity" />
+                </div>
 
-				<div class="col-sm-10">
-					<input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity" />
-				</div>
-			</div>
-		</div>
-		<div class="panel-footer">
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
-		</div>
-	</div>
+                <div class="col-sm-10">
+                    <input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.event" />
+                </div>
+
+                <div class="col-sm-10">
+                    <ui-select ng-model="$parent.object.treasuryEvent" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match> 
+                        <ui-select-choices repeat="event.id as event in eventsDataSource| filter: $select.search"> 
+                            <span ng-bind-html="event.text | highlight: $select.search"></span>
+                        </ui-select-choices> 
+                    </ui-select>
+                </div>
+            </div>
+
+
+
+        </div>
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
+        </div>
+    </div>
 </form>
 
 <script>
 	$(document).ready(function() {
+
 
 	});
 </script>

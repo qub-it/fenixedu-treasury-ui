@@ -27,24 +27,19 @@
 
 package org.fenixedu.treasury.dto;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
-import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 
 public class DebitEntryBean implements IBean {
@@ -79,15 +74,6 @@ public class DebitEntryBean implements IBean {
 
     public List<TupleDataSourceBean> getTreasuryEventDataSource() {
         return treasuryEventDataSource;
-    }
-
-    public void setTreasuryEventDataSource(List<TreasuryEvent> value) {
-        this.treasuryEventDataSource = value.stream().map(x -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
     }
 
     public Vat getVat() {
