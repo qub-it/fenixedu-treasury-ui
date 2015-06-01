@@ -22,7 +22,9 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType;
+import org.joda.time.DateTime;
 
 /**
  * Code Format: <numericPartOfIstId{6}><typeDigit{2}><checkDigit{1}>
@@ -64,7 +66,10 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
             throw new RuntimeException("Unexpected code length for generated code");
         }
 
-        return baseCode;
+        PaymentReferenceCode referenceCode =
+                PaymentReferenceCode.create(baseCode, new DateTime().toLocalDate(), new DateTime().plusDays(30).toLocalDate(),
+                        PaymentReferenceCodeStateType.USED);
+        return referenceCode;
     }
 
     private String getCustomerCodeDigits(Customer customer) {
