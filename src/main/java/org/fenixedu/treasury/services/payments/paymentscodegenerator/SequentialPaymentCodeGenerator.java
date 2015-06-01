@@ -55,7 +55,7 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
-    public String generateNewCodeFor(PaymentReferenceCodeType codeType, Customer customer) {
+    public PaymentReferenceCode generateNewCodeFor(PaymentReferenceCodeType codeType, Customer customer) {
         // TODO Auto-generated method stub
         return null;
     }

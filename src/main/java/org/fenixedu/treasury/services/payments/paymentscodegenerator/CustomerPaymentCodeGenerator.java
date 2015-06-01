@@ -54,7 +54,7 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
-    public String generateNewCodeFor(final PaymentReferenceCodeType paymentCodeType, final Customer person) {
+    public PaymentReferenceCode generateNewCodeFor(final PaymentReferenceCodeType paymentCodeType, final Customer person) {
 
         String baseCode =
                 getCustomerCodeDigits(person)
@@ -63,6 +63,7 @@ public class CustomerPaymentCodeGenerator extends PaymentCodeGenerator {
         if (baseCode.length() != CODE_LENGTH) {
             throw new RuntimeException("Unexpected code length for generated code");
         }
+
         return baseCode;
     }
 

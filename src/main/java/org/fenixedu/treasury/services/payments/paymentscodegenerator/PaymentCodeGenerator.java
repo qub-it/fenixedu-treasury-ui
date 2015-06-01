@@ -25,7 +25,7 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType;
 public abstract class PaymentCodeGenerator {
     public abstract boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, final Customer person);
 
-    public abstract String generateNewCodeFor(final PaymentReferenceCodeType codeType, final Customer customer);
+    public abstract PaymentReferenceCode generateNewCodeFor(final PaymentReferenceCodeType codeType, final Customer customer);
 
     public abstract boolean isCodeMadeByThisFactory(final PaymentReferenceCode paymentCode);
 

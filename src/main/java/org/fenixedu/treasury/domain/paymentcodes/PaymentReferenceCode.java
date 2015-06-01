@@ -363,8 +363,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     public static boolean canGenerateNewCode(Class<? extends PaymentReferenceCode> paymentCodeClass,
             PaymentReferenceCodeType paymentCodeType, final Customer customer, final FinantialInstitution finantialInstitution) {
-        return getPaymentCodeGenerator(paymentCodeType, finantialInstitution).canGenerateNewCode(paymentCodeType, customer,
-                finantialInstitution);
+        return getPaymentCodeGenerator(paymentCodeType, finantialInstitution).canGenerateNewCode(paymentCodeType, customer);
     }
 
 }
