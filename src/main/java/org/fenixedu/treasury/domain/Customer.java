@@ -29,14 +29,12 @@ package org.fenixedu.treasury.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -99,7 +97,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
-    public Set<PaymentReferenceCode> getPaymentCodesBy(PaymentReferenceCodeType paymentCodeType, FinantialInstitution institution) {
+    public Set<PaymentReferenceCode> getPaymentCodesBy(FinantialInstitution institution) {
         Set<PaymentReferenceCode> references = new HashSet<PaymentReferenceCode>();
 
         DebtAccount debt = DebtAccount.findUnique(institution, this).orElse(null);
@@ -107,7 +105,6 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             debt.getFinantialDocumentsSet().forEach(x -> references.addAll(x.getPaymentCodesSet()));
             debt.getInvoiceEntrySet().forEach(x -> references.addAll(x.getPaymentCodesSet()));
         }
-        return references.stream().filter(x -> x.getPaymentCodePool().getType().equals(paymentCodeType))
-                .collect(Collectors.toSet());
+        return references;
     }
 }

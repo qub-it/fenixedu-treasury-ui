@@ -31,31 +31,30 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeType;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 
-public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
+public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGenerator {
 
     private static final String CODE_FILLER = "0";
     private static final int NUM_CONTROL_DIGITS = 2;
     private static final int NUM_SEQUENTIAL_NUMBERS = 7;
 
-    private final FinantialInstitution finantialInstitution;
+    private final PaymentCodePool referenceCodePool;
 
-    public SequentialPaymentCodeGenerator(FinantialInstitution finantialInstitution) {
+    public SequentialPaymentWithCheckDigitCodeGenerator(PaymentCodePool pool) {
         super();
-        this.finantialInstitution = finantialInstitution;
+        this.referenceCodePool = pool;
     }
 
     @Override
-    public boolean canGenerateNewCode(PaymentReferenceCodeType paymentCodeType, Customer customer) {
-        final PaymentReferenceCode lastPaymentCode = findLastPaymentReferenceCode(finantialInstitution);
+    public boolean canGenerateNewCode(Customer customer) {
+        final PaymentReferenceCode lastPaymentCode = findLastPaymentReferenceCode(referenceCodePool);
         return lastPaymentCode == null ? true : Integer.valueOf(getSequentialNumber(lastPaymentCode)) < 9999999;
     }
 
     @Override
-    public PaymentReferenceCode generateNewCodeFor(PaymentReferenceCodeType codeType, Customer customer) {
+    public PaymentReferenceCode generateNewCodeFor(Customer customer) {
         // TODO Auto-generated method stub
         return null;
     }
@@ -65,15 +64,14 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
         return true;
     }
 
-    protected PaymentReferenceCode findLastPaymentReferenceCode(FinantialInstitution finantialInstitution) {
-        final Set<PaymentReferenceCode> paymentCodes = allPaymentCodes(finantialInstitution);
+    protected PaymentReferenceCode findLastPaymentReferenceCode(PaymentCodePool referenceCodePool) {
+        final Set<PaymentReferenceCode> paymentCodes = allPaymentCodes(referenceCodePool);
         return paymentCodes.stream().sorted((x, y) -> y.getReferenceCode().compareTo(x.getReferenceCode())).findFirst()
                 .orElse(null);
     }
 
-    protected Set<PaymentReferenceCode> allPaymentCodes(FinantialInstitution finantialInstitution) {
-        return PaymentReferenceCode.findAll()
-                .filter(x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution))
+    protected Set<PaymentReferenceCode> allPaymentCodes(PaymentCodePool referenceCodePool) {
+        return PaymentReferenceCode.findAll().filter(x -> x.getPaymentCodePool().equals(referenceCodePool))
                 .collect(Collectors.toSet());
     }
 

@@ -136,9 +136,9 @@ public class PaymentCodePoolController extends TreasuryBaseController {
                         && paymentCodePool.getName().length() > 0
                         && paymentCodePool.getName().toLowerCase().contains(name.toLowerCase()))
                 .filter(paymentCodePool -> minPaymentCodes == null
-                        || minPaymentCodes.equals(paymentCodePool.getMinPaymentCodes()))
+                        || minPaymentCodes.equals(paymentCodePool.getMinReferenceCode()))
                 .filter(paymentCodePool -> maxPaymentCodes == null
-                        || maxPaymentCodes.equals(paymentCodePool.getMaxPaymentCodes()))
+                        || maxPaymentCodes.equals(paymentCodePool.getMaxReferenceCode()))
                 .filter(paymentCodePool -> minAmount == null || minAmount.equals(paymentCodePool.getMinAmount()))
                 .filter(paymentCodePool -> maxAmount == null || maxAmount.equals(paymentCodePool.getMaxAmount()))
                 .filter(paymentCodePool -> active == null || active.equals(paymentCodePool.getActive()))
@@ -450,8 +450,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         // @formatter: on
 
         getPaymentCodePool(model).setName(name);
-        getPaymentCodePool(model).setMinPaymentCodes(minPaymentCodes);
-        getPaymentCodePool(model).setMaxPaymentCodes(maxPaymentCodes);
+        getPaymentCodePool(model).setMinReferenceCode(minPaymentCodes);
+        getPaymentCodePool(model).setMaxReferenceCode(maxPaymentCodes);
         getPaymentCodePool(model).setMinAmount(minAmount);
         getPaymentCodePool(model).setMaxAmount(maxAmount);
         getPaymentCodePool(model).setActive(active);

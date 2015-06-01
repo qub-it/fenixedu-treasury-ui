@@ -33,14 +33,9 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
-import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGenerator;
-import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGeneratorFactory;
-import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -303,9 +298,9 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         }
 
         internalProcess(responsibleUser, amount, whenRegistered, sibsTransactionId, comments);
-        if (!getPaymentCodePool().getType().isReusable()) {
-            setState(PaymentReferenceCodeStateType.USED);
-        }
+//        if (!getPaymentCodePool().getType().isReusable()) {
+//            setState(PaymentReferenceCodeStateType.USED);
+//        }
     }
 
 //    public void delete() {
@@ -323,7 +318,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 //    }
 
     public String getDescription() {
-        return BundleUtil.getString(Constants.BUNDLE, getPaymentCodePool().getType().getQualifiedName());
+        return this.getPaymentCodePool().getEntityReferenceCode() + " " + this.getReferenceCode();
     }
 
     protected void internalProcess(final User user, final BigDecimal amount, final DateTime whenRegistered,
@@ -340,11 +335,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 //        return null;
 //    }
 
-    protected static PaymentCodeGenerator getPaymentCodeGenerator(PaymentReferenceCodeType paymentCodeType,
-            FinantialInstitution finantialInstitution) {
-        return PaymentCodeGeneratorFactory.getGenerator(paymentCodeType, finantialInstitution);
-    }
-
     static public PaymentReferenceCode readByCode(final String code, FinantialInstitution finantialInstitution) {
         if (StringUtils.isEmpty(code)) {
             return null;
@@ -359,11 +349,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             }
         }
         return paymentReferenceCode;
-    }
-
-    public static boolean canGenerateNewCode(Class<? extends PaymentReferenceCode> paymentCodeClass,
-            PaymentReferenceCodeType paymentCodeType, final Customer customer, final FinantialInstitution finantialInstitution) {
-        return getPaymentCodeGenerator(paymentCodeType, finantialInstitution).canGenerateNewCode(paymentCodeType, customer);
     }
 
 }

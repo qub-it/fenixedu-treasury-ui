@@ -35,6 +35,8 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGenerator;
+import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialPaymentWithCheckDigitCodeGenerator;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -56,8 +58,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
             final FinantialInstitution finantialInstitution) {
         setName(name);
-        setMinPaymentCodes(minPaymentCodes);
-        setMaxPaymentCodes(maxPaymentCodes);
+        setMinReferenceCode(minPaymentCodes);
+        setMaxReferenceCode(maxPaymentCodes);
         setMinAmount(minAmount);
         setMaxAmount(maxAmount);
         setActive(active);
@@ -108,8 +110,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final java.lang.Integer maxPaymentCodes, final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount,
             final java.lang.Boolean active) {
         setName(name);
-        setMinPaymentCodes(minPaymentCodes);
-        setMaxPaymentCodes(maxPaymentCodes);
+        setMinReferenceCode(minPaymentCodes);
+        setMaxReferenceCode(maxPaymentCodes);
         setMinAmount(minAmount);
         setMaxAmount(maxAmount);
         setActive(active);
@@ -161,12 +163,12 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     public static Stream<PaymentCodePool> findByMinPaymentCodes(final java.lang.Integer minPaymentCodes,
             final FinantialInstitution finantialInstitution) {
-        return findByFinantialInstitution(finantialInstitution).filter(i -> minPaymentCodes.equals(i.getMinPaymentCodes()));
+        return findByFinantialInstitution(finantialInstitution).filter(i -> minPaymentCodes.equals(i.getMinReferenceCode()));
     }
 
     public static Stream<PaymentCodePool> findByMaxPaymentCodes(final java.lang.Integer maxPaymentCodes,
             final FinantialInstitution finantialInstitution) {
-        return findByFinantialInstitution(finantialInstitution).filter(i -> maxPaymentCodes.equals(i.getMaxPaymentCodes()));
+        return findByFinantialInstitution(finantialInstitution).filter(i -> maxPaymentCodes.equals(i.getMaxReferenceCode()));
     }
 
     public static Stream<PaymentCodePool> findByMinAmount(final java.math.BigDecimal minAmount,
@@ -190,6 +192,20 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     protected void generatePaymentAllCodes() {
 
+    }
+
+    private static PaymentCodeGenerator _referenceCodeGenerator;
+
+    public PaymentCodeGenerator getReferenceCodeGenerator() {
+
+        if (_referenceCodeGenerator == null) {
+            if (Boolean.TRUE.equals(this.getUseCheckDigit())) {
+                _referenceCodeGenerator = new SequentialPaymentWithCheckDigitCodeGenerator(this);
+            } else {
+                //Create a Sequencial CustomerFileCodeGenerator
+            }
+        }
+        return _referenceCodeGenerator;
     }
 
 }
