@@ -254,7 +254,7 @@ public class SettlementNote extends SettlementNote_Base {
 
         for (SettlementEntry entry : getSettlemetEntriesSet()) {
             if (entry.getInvoiceEntry() != null && entry.getInvoiceEntry().getFinantialDocument() != null) {
-                if (!documentsBaseList.contains(entry.getFinantialDocument())) {
+                if (documentsBaseList.contains(entry.getFinantialDocument()) == false) {
                     documentsBaseList.addAll(entry.getFinantialDocument().findRelatedDocuments(documentsBaseList));
                 }
             }

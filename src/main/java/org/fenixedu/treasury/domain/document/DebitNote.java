@@ -168,7 +168,7 @@ public class DebitNote extends DebitNote_Base {
             if (entry.getCreditEntriesSet().size() > 0) {
                 for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
                     if (creditEntry.getFinantialDocument() != null && !creditEntry.getFinantialDocument().isPreparing()) {
-                        if (!documentsBaseList.contains(creditEntry.getFinantialDocument())) {
+                        if (documentsBaseList.contains(creditEntry.getFinantialDocument()) == false) {
                             documentsBaseList.addAll(creditEntry.getFinantialDocument().findRelatedDocuments(documentsBaseList));
                         }
                     }
@@ -180,7 +180,7 @@ public class DebitNote extends DebitNote_Base {
             if (entry.getSettlementEntriesSet().size() > 0) {
                 for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
                     if (settlementEntry.getFinantialDocument() != null && !settlementEntry.getFinantialDocument().isPreparing()) {
-                        if (!documentsBaseList.contains(settlementEntry.getFinantialDocument())) {
+                        if (documentsBaseList.contains(settlementEntry.getFinantialDocument()) == false) {
                             documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
                                     documentsBaseList));
                         }
