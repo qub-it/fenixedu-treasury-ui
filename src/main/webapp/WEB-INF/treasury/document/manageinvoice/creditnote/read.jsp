@@ -282,7 +282,7 @@ ${portal.toolkit()}
 		<datatables:table id="creditEntries" row="creditEntry" data="${creditNote.creditEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
-					<spring:message code="label.CreditEntry.quantity" />
+					<spring:message code="label.InvoiceEntry.quantity" />
 				</datatables:columnHead>
 				<c:out value="${creditEntry.quantity}" />
 			</datatables:column>

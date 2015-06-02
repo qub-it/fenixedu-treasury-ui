@@ -323,7 +323,7 @@ public class DebitEntryController extends TreasuryBaseController {
     public String update(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
         if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
             addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+                    "label.error.document.manageinvoice.debitentry.invalid.state.update.debitentry"), model);
             redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
         }
 

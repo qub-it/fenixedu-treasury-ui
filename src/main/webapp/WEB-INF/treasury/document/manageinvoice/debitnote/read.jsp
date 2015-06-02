@@ -291,7 +291,7 @@ ${portal.toolkit()}
         <datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
-                    <spring:message code="label.DebitEntry.quantity" />
+                    <spring:message code="label.InvoiceEntry.quantity" />
                 </datatables:columnHead>
                 <c:out value="${debitEntry.quantity}" />
             </datatables:column>

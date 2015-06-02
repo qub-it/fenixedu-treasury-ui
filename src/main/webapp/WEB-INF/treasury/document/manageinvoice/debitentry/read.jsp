@@ -77,7 +77,10 @@ ${portal.toolkit()}
 			code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp;
 	<c:if test="${empty debitEntry.finantialDocument ||  debitEntry.finantialDocument.isPreparing()}">
 		<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-				code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+				code="label.event.delete" /></a> &nbsp;|&nbsp; 
+    </c:if>                
+    <c:if test="${empty debitEntry.finantialDocument ||  debitEntry.finantialDocument.isClosed() || debitEntry.finantialDocument.isAnulled()}">
+                <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/update/${debitEntry.externalId}"><spring:message code="label.event.update" /></a>
 	&nbsp;|&nbsp;
 	</c:if>
