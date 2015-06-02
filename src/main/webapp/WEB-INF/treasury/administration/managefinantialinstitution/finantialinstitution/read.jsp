@@ -141,14 +141,14 @@ ${portal.toolkit()}
 		class=""
 		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}"><spring:message
 			code="label.event.update" /></a> &nbsp;|&nbsp;
-                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportproductsintegrationfile"><spring:message
-            code="label.event.administration.base.manageproduct.prouct.exportProductERP" /></a> &nbsp;|&nbsp;
-                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
+            code="label.event.administration.managefinantialinstitution.finantialinstitution.exportProductERP" /></a> &nbsp;|&nbsp;
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationfile"><spring:message
-            code="label.event.administration.base.manageproduct.prouct.exportCustomersERP" /></a> &nbsp;|&nbsp;
+            code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERP" /></a> &nbsp;|&nbsp;
             
 </div>
 <c:if test="${not empty infoMessages}">

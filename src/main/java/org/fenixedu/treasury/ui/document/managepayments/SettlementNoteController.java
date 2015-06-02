@@ -26,15 +26,23 @@
  */
 package org.fenixedu.treasury.ui.document.managepayments;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.dto.InterestRateBean;
@@ -42,6 +50,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.services.integration.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
@@ -448,6 +457,55 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         getSettlementNote(model).edit(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
                 documentDate, originDocumentNumber, state);
+    }
+
+    //
+    // This is the EventanullDebitNote Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
+    public String processReadToAnullDebitNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        setSettlementNote(settlementNote, model);
+//
+        try {
+            settlementNote.changeState(FinantialDocumentStateType.ANNULED);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+
+        // Now choose what is the Exit Screen    
+        return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")
+    public void processReadToExportIntegrationFile(@PathVariable("oid") SettlementNote settlementNote, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            String output =
+                    ERPExporter.exportFinantialDocument(settlementNote.getDebtAccount().getFinantialInstitution(),
+                            settlementNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
+            response.setContentType("text/xml");
+            response.setCharacterEncoding("Windows-1252");
+            String filename =
+                    URLEncoder.encode(
+                            StringNormalizer
+                                    .normalizePreservingCapitalizedLetters(
+                                            settlementNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
+                                                    + settlementNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_")
+                                    .replace(" ", "_"), "Windows-1252");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
 }

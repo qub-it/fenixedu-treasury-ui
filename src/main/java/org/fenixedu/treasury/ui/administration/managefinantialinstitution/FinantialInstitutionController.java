@@ -49,7 +49,6 @@ import org.fenixedu.treasury.services.integration.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
-import org.joda.time.DateTime;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -325,9 +324,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     URLEncoder.encode(
                             StringNormalizer
                                     .normalizePreservingCapitalizedLetters(
-                                            "ERP_PRODUCTS_" + finantialInstitution.getFiscalNumber() + "_"
-                                                    + new DateTime().toString() + ".xml").replaceAll("\\s", "_")
-                                    .replace(" ", "_"), "Windows-1252");
+                                            "ERP_PRODUCTS_" + finantialInstitution.getFiscalNumber() + ".xml")
+                                    .replaceAll("\\s", "_").replace(" ", "_"), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
@@ -352,9 +350,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     URLEncoder.encode(
                             StringNormalizer
                                     .normalizePreservingCapitalizedLetters(
-                                            "ERP_CUSTOMERS_" + finantialInstitution.getFiscalNumber() + "_"
-                                                    + new DateTime().toString() + ".xml").replaceAll("\\s", "_")
-                                    .replace(" ", "_"), "Windows-1252");
+                                            "ERP_CUSTOMERS_" + finantialInstitution.getFiscalNumber() + ".xml")
+                                    .replaceAll("\\s", "_").replace(" ", "_"), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {

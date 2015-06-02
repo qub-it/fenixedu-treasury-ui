@@ -24,6 +24,38 @@ ${portal.toolkit()}
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
+<div class="modal fade" id="anullModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/anullsettlmentnote"
+                method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.document.managePayments.readSettlementNote.confirmAnull" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
+                        <spring:message code="label.delete" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 
 
 <%-- TITLE --%>
@@ -68,11 +100,24 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/"><spring:message code="label.event.back" /></a> |&nbsp;&nbsp; <span
+        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message
-            code="label.event.update" /></a> |&nbsp;&nbsp;
+            code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message code="label.event.update" /></a>
+    &nbsp;|&nbsp;
+
+    <c:if test="${settlementNote.isClosed()}">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.managePayments.anullSettlementNote" />
+        </a> &nbsp;|&nbsp;      
+        </c:if>
+    <c:if test="${not settlementNote.isPreparing()}">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile"><spring:message
+                code="label.event.document.managePayments.exportIntegrationFile" /></a>
+        &nbsp;|&nbsp;
+        </c:if>
+
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -161,7 +206,8 @@ ${portal.toolkit()}
 </div>
 <c:choose>
     <c:when test="${not empty settlementNote.debitEntriesSet}">
-        <datatables:table id="debitEntries" row="debitEntry" data="${settlementNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+        <datatables:table id="debitEntries" row="debitEntry" data="${settlementNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
+            cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.InvoiceEntry.quantity" />
@@ -195,14 +241,14 @@ ${portal.toolkit()}
             </datatables:column>
         </datatables:table>
         <script>
-                                    createDataTables(
-                                            'debitEntries',
-                                            false,
-                                            false,
-                                            false,
-                                            "${pageContext.request.contextPath}",
-                                            "${datatablesI18NUrl}");
-                                </script>
+									createDataTables(
+											'debitEntries',
+											false,
+											false,
+											false,
+											"${pageContext.request.contextPath}",
+											"${datatablesI18NUrl}");
+								</script>
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">
