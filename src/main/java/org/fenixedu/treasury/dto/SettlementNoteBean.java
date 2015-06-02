@@ -15,6 +15,8 @@ import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -27,6 +29,10 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     private LocalDate date;
 
+    private DocumentNumberSeries docNumSeries;
+
+    private String originDocumentNumber;
+
     private List<CreditEntryBean> creditEntries;
 
     private List<DebitEntryBean> debitEntries;
@@ -36,6 +42,8 @@ public class SettlementNoteBean implements IBean, Serializable {
     private List<PaymentEntryBean> paymentEntries;
 
     private List<TupleDataSourceBean> paymentMethods;
+
+    private List<TupleDataSourceBean> documentNumberSeries;
 
     public SettlementNoteBean() {
         creditEntries = new ArrayList<CreditEntryBean>();
@@ -56,6 +64,8 @@ public class SettlementNoteBean implements IBean, Serializable {
                 creditEntries.add(new CreditEntryBean((CreditEntry) invoiceEntry));
             }
         }
+        this.setDocumentNumberSeries(DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
+                debtAccount.getFinantialInstitution()).collect(Collectors.toList()));
     }
 
     public DebtAccount getDebtAccount() {
@@ -113,11 +123,11 @@ public class SettlementNoteBean implements IBean, Serializable {
         return lowerDate;
     }
 
-    public BigDecimal getPaymentAmount() {
+    public BigDecimal getDebtAmount() {
         BigDecimal sum = BigDecimal.ZERO;
         for (DebitEntryBean debitEntryBean : getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
-                sum = sum.add(debitEntryBean.getPaymentAmount());
+                sum = sum.add(debitEntryBean.getDebtAmount());
             }
         }
         for (InterestEntryBean interestEntryBean : getInterestEntries()) {
@@ -133,11 +143,11 @@ public class SettlementNoteBean implements IBean, Serializable {
         return sum;
     }
 
-    public BigDecimal getPaymentAmountWithVat() {
+    public BigDecimal getDebtAmountWithVat() {
         BigDecimal sum = BigDecimal.ZERO;
         for (DebitEntryBean debitEntryBean : getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
-                sum = sum.add(debitEntryBean.getPaymentAmountWithVat());
+                sum = sum.add(debitEntryBean.getDebtAmountWithVat());
             }
         }
         for (InterestEntryBean interestEntryBean : getInterestEntries()) {
@@ -155,7 +165,7 @@ public class SettlementNoteBean implements IBean, Serializable {
     }
 
     public BigDecimal getVatAmount() {
-        return getPaymentAmountWithVat().subtract(getPaymentAmount());
+        return getDebtAmountWithVat().subtract(getDebtAmount());
     }
 
     public Map<String, VatAmountBean> getValuesByVat() {
@@ -166,8 +176,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         for (DebitEntryBean debitEntryBean : getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
                 String vatType = debitEntryBean.getDebitEntry().getVat().getVatType().getName().getContent();
-                sumByVat.get(vatType).addAmount(debitEntryBean.getPaymentAmount());
-                sumByVat.get(vatType).addAmountWithVat(debitEntryBean.getPaymentAmountWithVat());
+                sumByVat.get(vatType).addAmount(debitEntryBean.getDebtAmount());
+                sumByVat.get(vatType).addAmountWithVat(debitEntryBean.getDebtAmountWithVat());
             }
         }
         for (InterestEntryBean interestEntryBean : getInterestEntries()) {
@@ -208,6 +218,43 @@ public class SettlementNoteBean implements IBean, Serializable {
         }).collect(Collectors.toList());
     }
 
+    public BigDecimal getPaymentAmount() {
+        BigDecimal paymentAmount = BigDecimal.ZERO;
+        for (PaymentEntryBean paymentEntryBean : getPaymentEntries()) {
+            paymentAmount = paymentAmount.add(paymentEntryBean.getPaymentAmount());
+        }
+        return paymentAmount;
+    }
+
+    public DocumentNumberSeries getDocNumSeries() {
+        return docNumSeries;
+    }
+
+    public void setDocNumSeries(DocumentNumberSeries docNumSeries) {
+        this.docNumSeries = docNumSeries;
+    }
+
+    public List<TupleDataSourceBean> getDocumentNumberSeries() {
+        return documentNumberSeries;
+    }
+
+    public void setDocumentNumberSeries(List<DocumentNumberSeries> documentNumberSeries) {
+        this.documentNumberSeries = documentNumberSeries.stream().map(docNumSeries -> {
+            TupleDataSourceBean tuple = new TupleDataSourceBean();
+            tuple.setText(docNumSeries.getSeries().getName().getContent());
+            tuple.setId(docNumSeries.getExternalId());
+            return tuple;
+        }).collect(Collectors.toList());
+    }
+
+    public String getOriginDocumentNumber() {
+        return originDocumentNumber;
+    }
+
+    public void setOriginDocumentNumber(String originDocumentNumber) {
+        this.originDocumentNumber = originDocumentNumber;
+    }
+
     ///////////////////
     // Inner classes //
     ///////////////////
@@ -222,7 +269,7 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         private boolean isNotValid;
 
-        private BigDecimal paymentAmount;
+        private BigDecimal debtAmount;
 
         public DebitEntryBean() {
 
@@ -232,7 +279,7 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.debitEntry = debitEntry;
             this.isIncluded = false;
             this.isNotValid = false;
-            this.paymentAmount = debitEntry.getOpenAmount();
+            this.debtAmount = debitEntry.getOpenAmount();
         }
 
         public DebitEntry getDebitEntry() {
@@ -260,19 +307,19 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.isIncluded = isIncluded;
         }
 
-        public BigDecimal getPaymentAmount() {
+        public BigDecimal getDebtAmount() {
             BigDecimal amount =
-                    paymentAmount.multiply(BigDecimal.ONE.subtract(debitEntry.getVat().getTaxRate()
-                            .divide(BigDecimal.valueOf(100))));
-            return debitEntry.getCurrency().getValueWithScale(amount);
+                    debtAmount
+                            .multiply(BigDecimal.ONE.subtract(debitEntry.getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
+            return debitEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
         }
 
-        public BigDecimal getPaymentAmountWithVat() {
-            return debitEntry.getCurrency().getValueWithScale(paymentAmount);
+        public BigDecimal getDebtAmountWithVat() {
+            return debitEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(debtAmount);
         }
 
-        public void setPaymentAmount(BigDecimal paymentAmount) {
-            this.paymentAmount = paymentAmount;
+        public void setDebtAmount(BigDecimal debtAmount) {
+            this.debtAmount = debtAmount;
         }
 
         public boolean isNotValid() {
@@ -379,25 +426,25 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private BigDecimal payedAmount;
+        private BigDecimal paymentAmount;
 
         private PaymentMethod paymentMethod;
 
         public PaymentEntryBean() {
-            setPayedAmount(BigDecimal.ZERO);
+            this.paymentAmount = BigDecimal.ZERO;
         }
 
-        public PaymentEntryBean(BigDecimal payedAmount, PaymentMethod paymentMethod) {
-            this.setPayedAmount(payedAmount);
-            this.setPaymentMethod(paymentMethod);
+        public PaymentEntryBean(BigDecimal paymentAmount, PaymentMethod paymentMethod) {
+            this.paymentAmount = paymentAmount;
+            this.paymentMethod = paymentMethod;
         }
 
-        public BigDecimal getPayedAmount() {
-            return payedAmount;
+        public BigDecimal getPaymentAmount() {
+            return paymentAmount;
         }
 
-        public void setPayedAmount(BigDecimal payedAmount) {
-            this.payedAmount = payedAmount;
+        public void setPaymentAmount(BigDecimal paymentAmount) {
+            this.paymentAmount = paymentAmount;
         }
 
         public PaymentMethod getPaymentMethod() {

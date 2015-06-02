@@ -27,17 +27,71 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.math.BigDecimal;
+import java.util.stream.Stream;
+
+import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
 
 public class PaymentEntry extends PaymentEntry_Base {
 
-    public PaymentEntry() {
+    protected PaymentEntry() {
         super();
+        setBennu(Bennu.getInstance());
     }
 
-    protected boolean isDeletable() {
+    protected PaymentEntry(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount) {
+        this();
+        init(paymentMethod, settlementNote, payedAmount);
+    }
+
+    protected void init(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount) {
+        setPaymentMethod(paymentMethod);
+        setSettlementNote(settlementNote);
+        setPayedAmount(payedAmount);
+        checkRules();
+    }
+
+    private void checkRules() {
+        //
+        //CHANGE_ME add more busines validations
+        //
+        if (getPaymentMethod() == null) {
+            throw new TreasuryDomainException("error.PaymentEntry.paymentMethod.required");
+        }
+
+        if (getSettlementNote() == null) {
+            throw new TreasuryDomainException("error.PaymentEntry.settlementNote.required");
+        }
+
+        //CHANGE_ME In order to validate UNIQUE restrictions
+        //if (findByPaymentMethod(getPaymentMethod().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.PaymentEntry.paymentMethod.duplicated");
+        //} 
+        //if (findBySettlementNote(getSettlementNote().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.PaymentEntry.settlementNote.duplicated");
+        //} 
+        //if (findByPayedAmount(getPayedAmount().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.PaymentEntry.payedAmount.duplicated");
+        //} 
+    }
+
+    @Atomic
+    public void edit(final PaymentMethod paymentMethod, final SettlementNote settlementNote,
+            final java.math.BigDecimal payedAmount) {
+        setPaymentMethod(paymentMethod);
+        setSettlementNote(settlementNote);
+        setPayedAmount(payedAmount);
+        checkRules();
+    }
+
+    public boolean isDeletable() {
         return true;
     }
 
@@ -46,9 +100,37 @@ public class PaymentEntry extends PaymentEntry_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.PaymentEntry.cannot.delete");
         }
+
         setBennu(null);
-        setPaymentMethod(null);
-        setSettlementNote(null);
+
         deleteDomainObject();
+    }
+
+    @Atomic
+    public static PaymentEntry create(final PaymentMethod paymentMethod, final SettlementNote settlementNote,
+            final BigDecimal payedAmount) {
+        return new PaymentEntry(paymentMethod, settlementNote, payedAmount);
+    }
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+
+    public static Stream<PaymentEntry> findAll() {
+        return Bennu.getInstance().getPaymentEntriesSet().stream();
+    }
+
+    public static Stream<PaymentEntry> findByPaymentMethod(final PaymentMethod paymentMethod) {
+        return findAll().filter(i -> paymentMethod.equals(i.getPaymentMethod()));
+    }
+
+    public static Stream<PaymentEntry> findBySettlementNote(final SettlementNote settlementNote) {
+        return findAll().filter(i -> settlementNote.equals(i.getSettlementNote()));
+    }
+
+    public static Stream<PaymentEntry> findByPayedAmount(final java.math.BigDecimal payedAmount) {
+        return findAll().filter(i -> payedAmount.equals(i.getPayedAmount()));
     }
 }

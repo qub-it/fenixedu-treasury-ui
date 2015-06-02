@@ -183,7 +183,7 @@ ${portal.angularToolkit()}
                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale(  debitEntryBean.debitEntry.vat.taxRate ) }"/>
                                 </td>
                                 <td>
-                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.paymentAmountWithVat ) }" />
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
                                 </td>
                             </tr>
                         </c:if>                    
@@ -192,6 +192,8 @@ ${portal.angularToolkit()}
                         <c:if test="${ interestEntryBean.included  }">
                             <tr>
                                 <td>
+                                    <spring:message code="label.InterestEntry.interest" />
+                                    &nbsp;
                                     <c:out value="${ interestEntryBean.debitEntry.description }" />
                                 </td>
                                 <td>

@@ -4,32 +4,33 @@ import java.util.Optional;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Currency;
-import org.fenixedu.treasury.domain.VatType;
+import org.fenixedu.treasury.domain.Product;
 
 import pt.ist.fenixframework.Atomic;
 
 public class TreasurySettings extends TreasurySettings_Base {
-    
+
     protected TreasurySettings() {
         super();
         setBennu(Bennu.getInstance());
     }
 
     @Atomic
-    public void edit(final Currency defaultCurrency) {
+    public void edit(final Currency defaultCurrency, Product interestProduct) {
         setDefaultCurrency(defaultCurrency);
+        setInterestProduct(interestProduct);
     }
-    
+
     protected static Optional<TreasurySettings> findUnique() {
         return Bennu.getInstance().getTreasurySettingsSet().stream().findFirst();
     }
-    
+
     @Atomic
     public synchronized static TreasurySettings getInstance() {
-        if(!findUnique().isPresent()) {
-            new TreasurySettings();
+        if (!findUnique().isPresent()) {
+            TreasurySettings settings = new TreasurySettings();
         }
-        
+
         return findUnique().get();
     }
 }

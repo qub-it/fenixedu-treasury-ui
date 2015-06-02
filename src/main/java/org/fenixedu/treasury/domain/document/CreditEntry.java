@@ -42,6 +42,7 @@ public class CreditEntry extends CreditEntry_Base {
             final BigDecimal amount, String description, BigDecimal quantity, final DateTime entryDateTime,
             final DebitEntry debitEntry) {
         init(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
+
     }
 
     @Override
@@ -114,7 +115,7 @@ public class CreditEntry extends CreditEntry_Base {
             BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry, BigDecimal quantity) {
         CreditEntry cr =
                 new CreditEntry(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
-        cr.realculateAmountValues();
+        cr.recalculateAmountValues();
         return cr;
     }
 
@@ -122,7 +123,7 @@ public class CreditEntry extends CreditEntry_Base {
         this.setAmount(amount);
         this.setQuantity(quantity);
         this.setDescription(description);
-        this.realculateAmountValues();
+        this.recalculateAmountValues();
         this.checkRules();
     }
 

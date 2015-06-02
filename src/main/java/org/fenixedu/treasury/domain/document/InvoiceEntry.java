@@ -148,7 +148,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     @Atomic
-    protected void realculateAmountValues() {
+    protected void recalculateAmountValues() {
         if (this.getVatRate() == null) {
             this.setVatRate(super.getVat().getTaxRate());
         }

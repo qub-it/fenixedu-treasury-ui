@@ -237,7 +237,8 @@ public class DebitNoteController extends TreasuryBaseController {
         }
 
         if (documentNumberSeries != null && debtAccount != null) {
-            if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
+            if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
+                    .equals(debtAccount.getFinantialInstitution().getCode())) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
                 return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);

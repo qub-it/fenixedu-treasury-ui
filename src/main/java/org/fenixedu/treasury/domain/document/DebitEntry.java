@@ -37,11 +37,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.fenixedu.treasury.domain.tariff.Tariff;
@@ -239,6 +241,16 @@ public class DebitEntry extends DebitEntry_Base {
         return gson.toJson(propertiesMap, stringStringMapType);
     }
 
+    protected Map<String, String> propertiesJsonToMap(final String propertiesMapJson) {
+        final GsonBuilder builder = new GsonBuilder();
+
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
+        return gson.fromJson(propertiesMapJson, stringStringMapType);
+    }
+
     @Override
     public boolean isFinantialDocumentRequired() {
         return false;
@@ -283,6 +295,22 @@ public class DebitEntry extends DebitEntry_Base {
 
     public BigDecimal getRemainingAmount() {
         return getOpenAmount().subtract(getPayedAmount());
+    }
+
+    @Atomic
+    public DebitEntry generateInterestRateDebitEntry(InterestRateBean interest, DateTime when, DebitNote debitNote) {
+        Product product = TreasurySettings.getInstance().getInterestProduct();
+        FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
+        Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
+
+        Tariff activeTariff = product.getFixedTariffs(finantialInstitution).findFirst().orElse(null);
+
+        DebitEntry interestEntry =
+                create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
+                        propertiesJsonToMap(getPropertiesJsonMap()), product, interest.getDescription(), BigDecimal.ONE,
+                        activeTariff, when);
+        addInterestDebitEntries(interestEntry);
+        return interestEntry;
     }
 
     // @formatter: off
@@ -332,7 +360,7 @@ public class DebitEntry extends DebitEntry_Base {
         DebitEntry entry =
                 new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
                         quantity, tariff, entryDateTime);
-        entry.realculateAmountValues();
+        entry.recalculateAmountValues();
         return entry;
     }
 
@@ -341,7 +369,7 @@ public class DebitEntry extends DebitEntry_Base {
         this.setDescription(description);
         this.setAmount(amount);
         this.setQuantity(quantity);
-        realculateAmountValues();
+        recalculateAmountValues();
         checkRules();
 
     }
