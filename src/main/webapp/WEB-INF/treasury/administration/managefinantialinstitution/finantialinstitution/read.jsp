@@ -139,12 +139,17 @@ ${portal.toolkit()}
 			code="label.event.delete" /></a> &nbsp;|&nbsp; <span
 		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
-			code="label.event.update" /></a> &nbsp;|&nbsp;<span
-		class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?finantialinstitution=${finantialInstitution.externalId}"><spring:message
-			code="label.event.createnote" /></a>
+		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}"><spring:message
+			code="label.event.update" /></a> &nbsp;|&nbsp;
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportproductsintegrationfile"><spring:message
+            code="label.event.administration.base.manageproduct.prouct.exportProductERP" /></a> &nbsp;|&nbsp;
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationfile"><spring:message
+            code="label.event.administration.base.manageproduct.prouct.exportCustomersERP" /></a> &nbsp;|&nbsp;
+            
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">

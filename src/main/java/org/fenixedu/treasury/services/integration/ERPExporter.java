@@ -69,6 +69,7 @@ import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocu
 import oecd.standardauditfile_tax.pt_1.Tax;
 import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
 
+import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
@@ -943,7 +944,12 @@ public class ERPExporter {
          * contas da contabilidade, caso esteja definida. Caso contr?rio dever?
          * ser preenchido com a designa??o ?Desconhecido?.
          */
-        c.setAccountID("Desconhecido");
+
+        if (customer instanceof AdhocCustomer) {
+            c.setAccountID("ADHOC");
+        } else {
+            c.setAccountID("STUDENT");
+        }
 
         // BillingAddress
         // List<PhysicalAddress> addresses = customer
@@ -1156,5 +1162,17 @@ public class ERPExporter {
         DateTime endDate =
                 documents.stream().max((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
         return saftExporter.generateERPFile(finantialInstitution, beginDate, endDate, null, documents, false, false);
+    }
+
+    public static String exportsProducts(FinantialInstitution finantialInstitution) {
+        ERPExporter saftExporter = new ERPExporter();
+        return saftExporter.generateERPFile(finantialInstitution, new DateTime(), new DateTime(), null,
+                new HashSet<FinantialDocument>(), false, true);
+    }
+
+    public static String exportsCustomers(FinantialInstitution finantialInstitution) {
+        ERPExporter saftExporter = new ERPExporter();
+        return saftExporter.generateERPFile(finantialInstitution, new DateTime(), new DateTime(), null,
+                new HashSet<FinantialDocument>(), true, false);
     }
 }

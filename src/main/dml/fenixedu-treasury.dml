@@ -224,14 +224,14 @@ class document.FinantialDocumentEntry {
 	
 	}
 
-		class document.DebitEntry extends document.InvoiceEntry {
+	class document.DebitEntry extends document.InvoiceEntry {
 			boolean eventAnnuled;
 			LocalDate dueDate;
 			String propertiesJsonMap;
-		}
+	}
 		
-		class document.CreditEntry extends document.InvoiceEntry {
-		}
+	class document.CreditEntry extends document.InvoiceEntry {
+	}
 
 	class document.SettlementEntry extends document.FinantialDocumentEntry {
 	}

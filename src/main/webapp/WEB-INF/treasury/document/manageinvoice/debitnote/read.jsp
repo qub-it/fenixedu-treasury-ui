@@ -263,6 +263,10 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
                         <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalAmount)}' /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
+                    </tr>
                 </tbody>
             </table>
         </form>

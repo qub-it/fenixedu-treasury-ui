@@ -26,23 +26,30 @@
  */
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
+import org.fenixedu.treasury.services.integration.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -305,6 +312,60 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
         getFinantialInstitution(m).edit(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName, address,
                 country, district, municipality, locality, zipCode);
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportproductsintegrationfile", produces = "text/xml;charset=Windows-1252")
+    public void processReadToExportProductIntegrationFile(@PathVariable("oid") FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            String output = ERPExporter.exportsProducts(finantialInstitution);
+            response.setContentType("text/xml");
+            response.setCharacterEncoding("Windows-1252");
+            String filename =
+                    URLEncoder.encode(
+                            StringNormalizer
+                                    .normalizePreservingCapitalizedLetters(
+                                            "ERP_PRODUCTS_" + finantialInstitution.getFiscalNumber() + "_"
+                                                    + new DateTime().toString() + ".xml").replaceAll("\\s", "_")
+                                    .replace(" ", "_"), "Windows-1252");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportcustomersintegrationfile", produces = "text/xml;charset=Windows-1252")
+    public void processReadToExportCustomerIntegrationFile(@PathVariable("oid") FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            String output = ERPExporter.exportsCustomers(finantialInstitution);
+            response.setContentType("text/xml");
+            response.setCharacterEncoding("Windows-1252");
+            String filename =
+                    URLEncoder.encode(
+                            StringNormalizer
+                                    .normalizePreservingCapitalizedLetters(
+                                            "ERP_CUSTOMERS_" + finantialInstitution.getFiscalNumber() + "_"
+                                                    + new DateTime().toString() + ".xml").replaceAll("\\s", "_")
+                                    .replace(" ", "_"), "Windows-1252");
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
 }

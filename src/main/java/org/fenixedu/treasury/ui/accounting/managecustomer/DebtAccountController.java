@@ -34,7 +34,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryExemption;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
-import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.dto.DebtAccountBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -115,11 +115,11 @@ public class DebtAccountController extends TreasuryBaseController {
         setDebtAccount(debtAccount, model);
 
         List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
-        List<SettlementEntry> paymentEntries = new ArrayList<SettlementEntry>();
+        List<PaymentEntry> paymentEntries = new ArrayList<PaymentEntry>();
         List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
         allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
-        SettlementNote.findByDebtAccount(debtAccount).map(x -> paymentEntries.addAll(x.getSettlemetEntriesSet()));
+        SettlementNote.findByDebtAccount(debtAccount).map(x -> paymentEntries.addAll(x.getPaymentEntriesSet()));
 
         exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
 

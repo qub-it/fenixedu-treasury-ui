@@ -104,7 +104,8 @@ public class CreditEntry extends CreditEntry_Base {
     public BigDecimal getOpenAmount() {
         BigDecimal amount = this.getTotalAmount();
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-            if (entry.getFinantialDocument().isClosed()) {
+            if (entry.getFinantialDocument() != null
+                    && (entry.getFinantialDocument().isClosed() || entry.getFinantialDocument().isPreparing())) {
                 amount = amount.subtract(entry.getTotalAmount());
             }
         }
