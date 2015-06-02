@@ -209,7 +209,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" />
                             </td>
                             <td>
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmountWithVat ) }" />
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmount ) }" />
                             </td>
                             <td>
                                 <c:out value="${ debitEntryBean.debitEntry.vat.taxRate }"/>
@@ -269,7 +269,7 @@ ${portal.angularToolkit()}
                             </td>
                             <td>
                                 -
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmountWithVat ) }" />
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmount ) }" />
                             </td>
                         </tr>
                     </c:forEach> 

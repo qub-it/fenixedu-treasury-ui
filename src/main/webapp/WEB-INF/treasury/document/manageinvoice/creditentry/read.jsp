@@ -152,7 +152,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.description" /></th>
-                        <td><c:out value='${creditEntry.description}' /></td>
+                        <td><c:out value='${creditEntry.product.code} - ${creditEntry.description}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.quantity" /></th>

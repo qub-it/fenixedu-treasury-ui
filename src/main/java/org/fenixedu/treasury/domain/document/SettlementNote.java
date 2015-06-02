@@ -186,8 +186,14 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     private void processInterestEntries(SettlementNoteBean bean) {
+
+        DocumentNumberSeries debitNoteSeries =
+                DocumentNumberSeries
+                        .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
+                        .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+
         DebitNote interestDebitNote =
-                DebitNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay());
+                DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
         for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
             DebitEntry interestDebitEntry =
                     interestEntryBean.getDebitEntry().generateInterestRateDebitEntry(interestEntryBean.getInterest(),
@@ -210,6 +216,11 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     private void closeDebitNotes(SettlementNoteBean bean) {
+        DocumentNumberSeries debitNoteSeries =
+                DocumentNumberSeries
+                        .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
+                        .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+
         List<DebitEntry> untiedDebitEntries = new ArrayList<DebitEntry>();
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
@@ -223,8 +234,7 @@ public class SettlementNote extends SettlementNote_Base {
                 SettlementEntry.create(debitEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
             }
         }
-        DebitNote debitNote =
-                DebitNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay());
+        DebitNote debitNote = DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
         debitNote.addDebitNoteEntries(untiedDebitEntries);
         debitNote.closeDocument();
     }
