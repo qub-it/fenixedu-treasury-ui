@@ -5,8 +5,8 @@ import javax.jws.WebService;
 
 import org.fenixedu.treasury.services.integration.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.dto.IntegrationStatusOutput;
-import org.fenixedu.treasury.services.integration.dto.InterestRequestValueOuptut;
 import org.fenixedu.treasury.services.integration.dto.InterestRequestValueInput;
+import org.fenixedu.treasury.services.integration.dto.InterestRequestValueOuptut;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
 
@@ -32,8 +32,8 @@ public class ERPIntegrationService extends BennuWebService {
     }
 
     @WebMethod
-    public IntegrationStatusOutput getIntegrationStatusFor(String requestIdentification) {
-        IntegrationStatusOutput status = new IntegrationStatusOutput(requestIdentification);
+    public IntegrationStatusOutput[] getIntegrationStatusFor(String requestIdentification) {
+        IntegrationStatusOutput[] status = null;
         return status;
     }
 

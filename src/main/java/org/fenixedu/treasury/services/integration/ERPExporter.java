@@ -108,7 +108,8 @@ public class ERPExporter {
     public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.0";
 
     private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
-            ExportOperation operation, Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomersAndProducts) {
+            ExportOperation operation, Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers,
+            Boolean generateAllProducts) {
 
         // Build SAFT-AuditFile
         AuditFile auditFile = new AuditFile();
@@ -139,15 +140,14 @@ public class ERPExporter {
         Map<String, oecd.standardauditfile_tax.pt_1.Customer> customerMap =
                 new HashMap<String, oecd.standardauditfile_tax.pt_1.Customer>();
 
-        // Readd All Products and Clients if needed
-        if (generateAllCustomersAndProducts) {
-            logger.info("Reading all Customers and Products in Store " + institution.getCode());
+        // Readd All  Clients if needed
+        if (generateAllCustomers) {
+            logger.info("Reading all Customers in Institution " + institution.getCode());
 
             Set<Customer> allCustomers = new HashSet<Customer>();
             for (DebtAccount debt : institution.getDebtAccountsSet()) {
                 allCustomers.add(debt.getCustomer());
             }
-            Set<Product> allProducts = institution.getAvailableProductsSet();
 
             // Update the Total Objects Count
             // information.setTotalCounter(allCustomers.size() +
@@ -161,11 +161,17 @@ public class ERPExporter {
                 customerMap.put(saftCustomer.getCustomerID(), saftCustomer);
                 i++;
                 if (i % 100 == 0) {
-                    logger.info("Processing " + i + "/" + allCustomers.size() + " Customers in Store " + institution.getCode());
+                    logger.info("Processing " + i + "/" + allCustomers.size() + " Customers in Institution "
+                            + institution.getCode());
                 }
             }
+        }
+        // Readd All Products if needed
+        if (generateAllProducts) {
 
-            i = 0;
+            logger.info("Reading all Customers in Institution " + institution.getCode());
+            Set<Product> allProducts = institution.getAvailableProductsSet();
+            int i = 0;
             for (Product product : allProducts) {
                 if (!productCodes.contains(product.getCode())) {
                     oecd.standardauditfile_tax.pt_1.Product saftProduct = this.convertProductToSAFTProduct(product);
@@ -175,7 +181,8 @@ public class ERPExporter {
 
                 i++;
                 if (i % 100 == 0) {
-                    logger.info("Processing " + i + "/" + allProducts.size() + " Products in Store " + institution.getCode());
+                    logger.info("Processing " + i + "/" + allProducts.size() + " Products in Institution "
+                            + institution.getCode());
                 }
 
                 // information.setCurrentCounter(information.getCurrentCounter()
@@ -388,7 +395,7 @@ public class ERPExporter {
                 line.setLineNumber(i);
                 //SourceDocument
                 SourceDocumentID sourceDocument = new SourceDocumentID();
-//                sourceDocument.setLineNumber(settlementEntry.getInvoiceEntry().get);
+                sourceDocument.setLineNumber(BigInteger.valueOf(settlementEntry.getInvoiceEntry().getEntryOrder()));
                 sourceDocument.setOriginatingON(settlementEntry.getInvoiceEntry().getFinantialDocument().getUiDocumentNumber());
                 sourceDocument.setInvoiceDate(convertToXMLDateTime(dataTypeFactory, settlementEntry.getInvoiceEntry()
                         .getFinantialDocument().getDocumentDate()));
@@ -399,6 +406,7 @@ public class ERPExporter {
                 line.setDebitAmount(settlementEntry.getTotalAmount());
                 line.setCreditAmount(BigDecimal.ZERO);
                 payment.getLine().add(line);
+                i = i.add(BigInteger.ONE);
             }
             docTotals.setGrossTotal(document.getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
             docTotals.setNetTotal(document.getTotalNetAmount().setScale(2, RoundingMode.HALF_EVEN));
@@ -1067,9 +1075,10 @@ public class ERPExporter {
         try {
             ERPExporter saftExporter = new ERPExporter();
             List<FinantialDocument> documents = finantialInstitution.getExportableDocuments(fromDate, toDate);
-            logger.info("Collecting " + documents.size() + " documents to export to store " + finantialInstitution.getCode());
+            logger.info("Collecting " + documents.size() + " documents to export to institution "
+                    + finantialInstitution.getCode());
             saftExporter.generateERPFile(finantialInstitution, fromDate, toDate, operation,
-                    documents.stream().collect(Collectors.toSet()), true);
+                    documents.stream().collect(Collectors.toSet()), true, true);
 
         } catch (Throwable t) {
             writeError(operation, t);
@@ -1128,7 +1137,7 @@ public class ERPExporter {
         try {
             ERPExporter saftExporter = new ERPExporter();
             saftExporter.generateERPFile(institution, fromDate, toDate, operation,
-                    pendingDocuments.stream().collect(Collectors.toSet()), false);
+                    pendingDocuments.stream().collect(Collectors.toSet()), false, false);
 
         } catch (Throwable t) {
             writeError(operation, t);
@@ -1146,6 +1155,6 @@ public class ERPExporter {
                 documents.stream().min((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
         DateTime endDate =
                 documents.stream().max((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).get().getDocumentDate();
-        return saftExporter.generateERPFile(finantialInstitution, beginDate, endDate, null, documents, false);
+        return saftExporter.generateERPFile(finantialInstitution, beginDate, endDate, null, documents, false, false);
     }
 }
