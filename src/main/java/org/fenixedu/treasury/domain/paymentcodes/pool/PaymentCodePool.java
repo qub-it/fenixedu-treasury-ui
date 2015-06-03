@@ -105,9 +105,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public void edit(final java.lang.String name, final java.lang.Integer minPaymentCodes,
-            final java.lang.Integer maxPaymentCodes, final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount,
-            final java.lang.Boolean active) {
+    public void edit(final java.lang.String name, final java.lang.Long minPaymentCodes, final java.lang.Long maxPaymentCodes,
+            final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount, final java.lang.Boolean active) {
         setName(name);
         setMinReferenceCode(minPaymentCodes);
         setMaxReferenceCode(maxPaymentCodes);
@@ -133,7 +132,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public static PaymentCodePool create(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
+    public static PaymentCodePool create(final String name, final Long minPaymentCodes, final Long maxPaymentCodes,
             final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
             final FinantialInstitution finantialInstitution) {
         return new PaymentCodePool(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);

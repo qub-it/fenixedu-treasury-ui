@@ -261,10 +261,10 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(
-            value = "minpaymentcodes", required = false) java.lang.Integer minPaymentCodes, @RequestParam(
-            value = "maxpaymentcodes", required = false) java.lang.Integer maxPaymentCodes, @RequestParam(value = "minamount",
-            required = false) java.math.BigDecimal minAmount,
-            @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount, @RequestParam(value = "active",
+            value = "minpaymentcodes", required = false) java.lang.Long minPaymentCodes, @RequestParam(value = "maxpaymentcodes",
+            required = false) java.lang.Long maxPaymentCodes,
+            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount, @RequestParam(
+                    value = "maxamount", required = false) java.math.BigDecimal maxAmount, @RequestParam(value = "active",
                     required = false) java.lang.Boolean active,
             @RequestParam(value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution,
             Model model, RedirectAttributes redirectAttributes) {
@@ -301,7 +301,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     @Atomic
-    public PaymentCodePool createPaymentCodePool(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
+    public PaymentCodePool createPaymentCodePool(final String name, final Long minPaymentCodes, final Long maxPaymentCodes,
             final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
             final FinantialInstitution finantialInstitution) {
 
