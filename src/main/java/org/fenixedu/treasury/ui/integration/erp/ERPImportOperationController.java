@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -48,9 +48,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import", accessGroup = "logged")
+// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-@BennuSpringController(value = TreasuryController.class)
+//@BennuSpringController(value = TreasuryController.class)
 @RequestMapping(ERPImportOperationController.CONTROLLER_URL)
 public class ERPImportOperationController extends TreasuryBaseController {
 

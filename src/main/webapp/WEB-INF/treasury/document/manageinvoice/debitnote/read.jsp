@@ -1,4 +1,5 @@
 <%@page import="java.math.BigDecimal"%>
+<%@page import="org.fenixedu.treasury.services.payments.paymentscodegenerator.CheckDigitGenerator"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -178,8 +179,6 @@ ${portal.toolkit()}
 
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
-    <c:out value="<%=org.fenixedu.treasury.services.payments.paymentscodegenerator.CheckDigitGenerator("11604","9991234",java.math.BigDecimal.valueOf(25.86)) %>"/>
-
         <c:forEach items="${infoMessages}" var="message">
             <p>
                 <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
@@ -228,7 +227,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentNumber" /></th>
-                        <td><c:out value='${debitNote.uiDocumentNumber}' /></td>
+                        <td><strong><c:out value='${debitNote.uiDocumentNumber}' /></strong></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDate" /></th>
@@ -240,7 +239,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.originDocumentNumber" /></th>
-<%--                         <td><c:out value='${debitNote.originDocumentNumber}' /></td> --%>
+                        <td><c:out value='${debitNote.originDocumentNumber}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.state" /></th>
