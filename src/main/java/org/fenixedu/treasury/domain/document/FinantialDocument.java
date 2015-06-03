@@ -35,7 +35,8 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.integration.IntegrationOperation;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
@@ -218,8 +219,13 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             }
         }
 
-        for (IntegrationOperation oper : getIntegrationOperationsSet()) {
-            this.removeIntegrationOperations(oper);
+        for (ERPExportOperation oper : getErpExportOperationsSet()) {
+            this.removeErpExportOperations(oper);
+            oper.delete();
+        }
+
+        for (ERPImportOperation oper : getErpImportOperationsSet()) {
+            this.removeErpImportOperations(oper);
             oper.delete();
         }
 

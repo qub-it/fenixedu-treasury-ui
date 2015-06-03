@@ -83,7 +83,7 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
-import org.fenixedu.treasury.domain.integration.ExportOperation;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -109,7 +109,7 @@ public class ERPExporter {
     public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.0";
 
     private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
-            ExportOperation operation, Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers,
+            ERPExportOperation operation, Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers,
             Boolean generateAllProducts) {
 
         // Build SAFT-AuditFile
@@ -1074,10 +1074,10 @@ public class ERPExporter {
         return tax;
     }
 
-    public static ExportOperation exportFullSAFT(FinantialInstitution finantialInstitution, DateTime fromDate, DateTime toDate,
-            String username, Boolean includeMovements) {
+    public static ERPExportOperation exportFullSAFT(FinantialInstitution finantialInstitution, DateTime fromDate,
+            DateTime toDate, String username, Boolean includeMovements) {
 
-        ExportOperation operation = createSaftExportOperation(finantialInstitution, fromDate, toDate, username);
+        ERPExportOperation operation = createSaftExportOperation(finantialInstitution, fromDate, toDate, username);
         try {
             ERPExporter saftExporter = new ERPExporter();
             List<FinantialDocument> documents = finantialInstitution.getExportableDocuments(fromDate, toDate);
@@ -1092,7 +1092,7 @@ public class ERPExporter {
         return operation;
     }
 
-    private static void writeError(ExportOperation operation, Throwable t) {
+    private static void writeError(ERPExportOperation operation, Throwable t) {
         StringWriter out = new StringWriter();
         PrintWriter writer = new PrintWriter(out);
         t.printStackTrace(writer);
@@ -1100,14 +1100,14 @@ public class ERPExporter {
         operation.setErrorLog(out.toString());
     }
 
-    private static ExportOperation createSaftExportOperation(FinantialInstitution institution, DateTime fromDate,
+    private static ERPExportOperation createSaftExportOperation(FinantialInstitution institution, DateTime fromDate,
             DateTime toDate, String username) {
-        return ExportOperation.create(new DateTime(), false, false, "");
+        return ERPExportOperation.create(null, institution, new DateTime(), false, false, false, null);
 
     }
 
     @Atomic
-    private void writeSaftFile(String content, ExportOperation operation) {
+    private void writeSaftFile(String content, ERPExportOperation operation) {
         byte[] bytes = null;
         try {
             bytes = content.getBytes("Windows-1252");
@@ -1139,7 +1139,7 @@ public class ERPExporter {
 
         List<FinantialDocument> pendingDocuments = institution.findPendingDocumentsNotExported(fromDate, toDate);
 
-        ExportOperation operation = createSaftExportOperation(institution, fromDate, toDate, username);
+        ERPExportOperation operation = createSaftExportOperation(institution, fromDate, toDate, username);
         try {
             ERPExporter saftExporter = new ERPExporter();
             saftExporter.generateERPFile(institution, fromDate, toDate, operation,
