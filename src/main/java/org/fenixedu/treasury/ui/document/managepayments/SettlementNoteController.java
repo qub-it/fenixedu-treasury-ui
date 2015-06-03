@@ -50,7 +50,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
-import org.fenixedu.treasury.services.integration.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;

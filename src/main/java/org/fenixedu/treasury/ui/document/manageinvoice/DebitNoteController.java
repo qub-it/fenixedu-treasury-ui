@@ -46,7 +46,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.services.integration.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;

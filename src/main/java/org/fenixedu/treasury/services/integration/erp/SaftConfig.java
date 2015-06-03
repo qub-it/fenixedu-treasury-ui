@@ -25,24 +25,24 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.services.integration;
+package org.fenixedu.treasury.services.integration.erp;
 
 public class SaftConfig {
 
-	public static String PRODUCT_ID() {
-		return "FenixEdu/FenixEdu";
-	}
+    public static String PRODUCT_ID() {
+        return "FenixEdu/FenixEdu";
+    }
 
-	public static String PRODUCT_VERSION() {
-		return "5.0.0.0";
-	}
+    public static String PRODUCT_VERSION() {
+        return "5.0.0.0";
+    }
 
-	public static int SOFTWARE_CERTIFICATE_NUMBER() {
-		return -1;
-	}
+    public static int SOFTWARE_CERTIFICATE_NUMBER() {
+        return -1;
+    }
 
-	public static String PRODUCT_COMPANY_TAX_ID() {
-		return "999999999";
-	}
+    public static String PRODUCT_COMPANY_TAX_ID() {
+        return "999999999";
+    }
 
 }

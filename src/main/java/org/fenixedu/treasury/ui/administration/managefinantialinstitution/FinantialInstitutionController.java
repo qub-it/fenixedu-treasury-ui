@@ -45,7 +45,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
-import org.fenixedu.treasury.services.integration.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
