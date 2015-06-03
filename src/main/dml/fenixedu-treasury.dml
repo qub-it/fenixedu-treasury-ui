@@ -324,8 +324,8 @@ class paymentcodes.PaymentReferenceCode
 	class paymentcodes.pool.PaymentCodePool  {
 	  String name;
 	  String entityReferenceCode;
-	  Integer minReferenceCode;
-	  Integer maxReferenceCode;
+	  Long minReferenceCode;
+	  Long maxReferenceCode;
 	  BigDecimalT minAmount;
 	  BigDecimalT maxAmount;
 	  LocalDate validFrom;

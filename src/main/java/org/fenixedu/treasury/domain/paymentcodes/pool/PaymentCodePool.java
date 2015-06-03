@@ -47,16 +47,15 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 //		setBennu(Bennu.getInstance());
     }
 
-    protected PaymentCodePool(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
+    protected PaymentCodePool(final String name, final Long minPaymentCodes, final Long maxPaymentCodes,
             final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
             final FinantialInstitution finantialInstitution) {
         this();
         init(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);
     }
 
-    protected void init(final String name, final Integer minPaymentCodes, final Integer maxPaymentCodes,
-            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
-            final FinantialInstitution finantialInstitution) {
+    protected void init(final String name, final Long minPaymentCodes, final Long maxPaymentCodes, final BigDecimal minAmount,
+            final BigDecimal maxAmount, final Boolean active, final FinantialInstitution finantialInstitution) {
         setName(name);
         setMinReferenceCode(minPaymentCodes);
         setMaxReferenceCode(maxPaymentCodes);
@@ -190,13 +189,9 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return findAll().filter(i -> i.getFinantialInstitution().equals(finantialInstitution));
     }
 
-    protected void generatePaymentAllCodes() {
-
-    }
-
     private static PaymentCodeGenerator _referenceCodeGenerator;
 
-    public PaymentCodeGenerator getReferenceCodeGenerator() {
+    protected PaymentCodeGenerator getReferenceCodeGenerator() {
 
         if (_referenceCodeGenerator == null) {
             if (Boolean.TRUE.equals(this.getUseCheckDigit())) {

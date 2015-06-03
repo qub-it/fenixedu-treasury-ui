@@ -20,6 +20,8 @@
  */
 package org.fenixedu.treasury.services.payments.paymentscodegenerator;
 
+import java.math.BigDecimal;
+
 /**
  * Implements ISO 7064 Mod97,10 check digit scheme
  * 
@@ -53,7 +55,9 @@ public class CheckISO7064Mod97_10 {
      * @see com.modp.checkdigit.CheckDigit#computeCheck(java.lang.String)
      */
     public int computeCheck(String digits) {
-        return (int) (98 - Long.parseLong(digits) * 100 % 97L) % 97;
+        return BigDecimal.valueOf(98)
+                .subtract(new BigDecimal(digits).multiply(BigDecimal.valueOf(100)).remainder(BigDecimal.valueOf(97)))
+                .remainder(BigDecimal.valueOf(97)).intValue();
     }
 
     /* (non-Javadoc)

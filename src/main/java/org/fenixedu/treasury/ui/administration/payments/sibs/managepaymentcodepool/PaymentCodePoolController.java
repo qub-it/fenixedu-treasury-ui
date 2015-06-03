@@ -394,11 +394,12 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") PaymentCodePool paymentCodePool,
             @RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(value = "minpaymentcodes",
-                    required = false) java.lang.Integer minPaymentCodes, @RequestParam(value = "maxpaymentcodes",
-                    required = false) java.lang.Integer maxPaymentCodes,
-            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount, @RequestParam(
-                    value = "maxamount", required = false) java.math.BigDecimal maxAmount, @RequestParam(value = "active",
-                    required = false) java.lang.Boolean active, Model model, RedirectAttributes redirectAttributes) {
+                    required = false) java.lang.Long minPaymentCodes,
+            @RequestParam(value = "maxpaymentcodes", required = false) java.lang.Long maxPaymentCodes, @RequestParam(
+                    value = "minamount", required = false) java.math.BigDecimal minAmount, @RequestParam(value = "maxamount",
+                    required = false) java.math.BigDecimal maxAmount,
+            @RequestParam(value = "active", required = false) java.lang.Boolean active, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setPaymentCodePool(paymentCodePool, model);
 
@@ -433,9 +434,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updatePaymentCodePool(java.lang.String name, java.lang.Integer minPaymentCodes,
-            java.lang.Integer maxPaymentCodes, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
-            java.lang.Boolean active, Model model) {
+    public void updatePaymentCodePool(java.lang.String name, java.lang.Long minPaymentCodes, java.lang.Long maxPaymentCodes,
+            java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount, java.lang.Boolean active, Model model) {
 
         // @formatter: off				
         /*

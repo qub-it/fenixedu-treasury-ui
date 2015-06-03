@@ -18,15 +18,17 @@
  */
 package org.fenixedu.treasury.services.payments.paymentscodegenerator;
 
+import java.math.BigDecimal;
+
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 
 public abstract class PaymentCodeGenerator {
     public abstract boolean canGenerateNewCode(final Customer person);
 
-    public abstract PaymentReferenceCode generateNewCodeFor(final Customer customer);
+    public abstract PaymentReferenceCode generateNewCodeFor(final Customer customer, BigDecimal amount);
 
     public abstract boolean isCodeMadeByThisFactory(final PaymentReferenceCode paymentCode);
 
-    public abstract void refreshReferenceCodeGenerator();
+//    public abstract void refreshReferenceCodeGenerator();
 }

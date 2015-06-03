@@ -351,4 +351,11 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return paymentReferenceCode;
     }
 
+    public String getReferenceCodeWithoutCheckDigits() {
+        if (Boolean.TRUE.equals(this.getPaymentCodePool().getUseCheckDigit())) {
+            return this.getReferenceCode().substring(0, 6);
+        }
+        throw new TreasuryDomainException("error.PaymentReferenceCode.not.from.pool.with.checkdigit");
+    }
+
 }
