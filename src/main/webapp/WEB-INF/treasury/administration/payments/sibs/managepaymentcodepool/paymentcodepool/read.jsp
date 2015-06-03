@@ -102,21 +102,33 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <table class="table">
 		<tbody>
 <tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.finantialInstitution"/></th> 
+	<td>
+		<c:out value='${paymentCodePool.finantialInstitution}'/>
+	</td> 
+</tr>
+<tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.name"/></th> 
 	<td>
 		<c:out value='${paymentCodePool.name}'/>
 	</td> 
 </tr>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.minPaymentCodes"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.entityReferenceCode"/></th> 
 	<td>
-		<c:out value='${paymentCodePool.minPaymentCodes}'/>
+		<c:out value='${paymentCodePool.entityReferenceCode}'/>
 	</td> 
 </tr>
 <tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.maxPaymentCodes"/></th> 
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.minReferenceCode"/></th> 
 	<td>
-		<c:out value='${paymentCodePool.maxPaymentCodes}'/>
+		<c:out value='${paymentCodePool.minReferenceCode}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.maxReferenceCode"/></th> 
+	<td>
+		<c:out value='${paymentCodePool.maxReferenceCode}'/>
 	</td> 
 </tr>
 <tr>
@@ -132,9 +144,33 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 	</td> 
 </tr>
 <tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.validFrom"/></th> 
+	<td>
+		<c:out value='${paymentCodePool.validFrom}'/>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.validTo"/></th> 
+	<td>
+		<c:out value='${paymentCodePool.validTo}'/>
+	</td> 
+</tr>
+<tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.active"/></th> 
 	<td>
 		<c:if test="${paymentCodePool.active}"><spring:message code="label.true" /></c:if><c:if test="${not paymentCodePool.active}"><spring:message code="label.false" /></c:if>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.useCheckDigit"/></th> 
+	<td>
+		<c:if test="${paymentCodePool.useCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not paymentCodePool.useCheckDigit}"><spring:message code="label.false" /></c:if>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.useAmountToValidateCheckDigit"/></th> 
+	<td>
+		<c:if test="${paymentCodePool.useAmountToValidateCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not paymentCodePool.useAmountToValidateCheckDigit}"><spring:message code="label.false" /></c:if>
 	</td> 
 </tr>
 </tbody>

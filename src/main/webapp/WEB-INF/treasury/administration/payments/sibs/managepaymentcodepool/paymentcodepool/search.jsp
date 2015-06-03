@@ -76,6 +76,16 @@ ${portal.toolkit()}
 <form method="get" class="form-horizontal">
 <div class="panel-body">
 <div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.finantialInstitution"/></div> 
+
+<div class="col-sm-4">
+	<%-- Relation to side 1 drop down rendered in input --%>
+		 <select id="paymentCodePool_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
+		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		</select>
+				</div>
+</div>		
+<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.name"/></div> 
 
 <div class="col-sm-10">
@@ -83,17 +93,24 @@ ${portal.toolkit()}
 </div>	
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.minPaymentCodes"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.entityReferenceCode"/></div> 
 
 <div class="col-sm-10">
-	<input id="paymentCodePool_minPaymentCodes" class="form-control" type="text" name="minpaymentcodes"  value='<c:out value='${not empty param.minpaymentcodes ? param.minpaymentcodes : paymentCodePool.minPaymentCodes }'/>' />
+	<input id="paymentCodePool_entityReferenceCode" class="form-control" type="text" name="entityreferencecode"  value='<c:out value='${not empty param.entityreferencecode ? param.entityreferencecode : paymentCodePool.entityReferenceCode }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.maxPaymentCodes"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.minReferenceCode"/></div> 
 
 <div class="col-sm-10">
-	<input id="paymentCodePool_maxPaymentCodes" class="form-control" type="text" name="maxpaymentcodes"  value='<c:out value='${not empty param.maxpaymentcodes ? param.maxpaymentcodes : paymentCodePool.maxPaymentCodes }'/>' />
+	<input id="paymentCodePool_minReferenceCode" class="form-control" type="text" name="minreferencecode"  value='<c:out value='${not empty param.minreferencecode ? param.minreferencecode : paymentCodePool.minReferenceCode }'/>' />
+</div>	
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.maxReferenceCode"/></div> 
+
+<div class="col-sm-10">
+	<input id="paymentCodePool_maxReferenceCode" class="form-control" type="text" name="maxreferencecode"  value='<c:out value='${not empty param.maxreferencecode ? param.maxreferencecode : paymentCodePool.maxReferenceCode }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
@@ -111,6 +128,22 @@ ${portal.toolkit()}
 </div>	
 </div>		
 <div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.validFrom"/></div> 
+
+<div class="col-sm-4">
+	<input id="paymentCodePool_validFrom" class="form-control" type="text" name="validfrom"  bennu-datetime 
+	value = '<c:out value='${not empty param.validfrom ? param.validfrom : paymentCodePool.validFrom }'/>' />
+</div>
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.validTo"/></div> 
+
+<div class="col-sm-4">
+	<input id="paymentCodePool_validTo" class="form-control" type="text" name="validto"  bennu-datetime 
+	value = '<c:out value='${not empty param.validto ? param.validto : paymentCodePool.validTo }'/>' />
+</div>
+</div>		
+<div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.active"/></div> 
 
 <div class="col-sm-2">
@@ -121,6 +154,34 @@ ${portal.toolkit()}
 </select>
 	<script>
 		$("#paymentCodePool_active").val('<c:out value='${not empty param.active ? param.active : paymentCodePool.active }'/>');
+	</script>	
+</div>
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.useCheckDigit"/></div> 
+
+<div class="col-sm-2">
+<select id="paymentCodePool_useCheckDigit" name="usecheckdigit" class="form-control">
+<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+<option value="false"><spring:message code="label.no"/></option>
+<option value="true"><spring:message code="label.yes"/></option>				
+</select>
+	<script>
+		$("#paymentCodePool_useCheckDigit").val('<c:out value='${not empty param.usecheckdigit ? param.usecheckdigit : paymentCodePool.useCheckDigit }'/>');
+	</script>	
+</div>
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.useAmountToValidateCheckDigit"/></div> 
+
+<div class="col-sm-2">
+<select id="paymentCodePool_useAmountToValidateCheckDigit" name="useamounttovalidatecheckdigit" class="form-control">
+<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+<option value="false"><spring:message code="label.no"/></option>
+<option value="true"><spring:message code="label.yes"/></option>				
+</select>
+	<script>
+		$("#paymentCodePool_useAmountToValidateCheckDigit").val('<c:out value='${not empty param.useamounttovalidatecheckdigit ? param.useamounttovalidatecheckdigit : paymentCodePool.useAmountToValidateCheckDigit }'/>');
 	</script>	
 </div>
 </div>		
@@ -138,12 +199,18 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+<th><spring:message code="label.PaymentCodePool.finantialInstitution"/></th>
 <th><spring:message code="label.PaymentCodePool.name"/></th>
-<th><spring:message code="label.PaymentCodePool.minPaymentCodes"/></th>
-<th><spring:message code="label.PaymentCodePool.maxPaymentCodes"/></th>
+<th><spring:message code="label.PaymentCodePool.entityReferenceCode"/></th>
+<th><spring:message code="label.PaymentCodePool.minReferenceCode"/></th>
+<th><spring:message code="label.PaymentCodePool.maxReferenceCode"/></th>
 <th><spring:message code="label.PaymentCodePool.minAmount"/></th>
 <th><spring:message code="label.PaymentCodePool.maxAmount"/></th>
+<th><spring:message code="label.PaymentCodePool.validFrom"/></th>
+<th><spring:message code="label.PaymentCodePool.validTo"/></th>
 <th><spring:message code="label.PaymentCodePool.active"/></th>
+<th><spring:message code="label.PaymentCodePool.useCheckDigit"/></th>
+<th><spring:message code="label.PaymentCodePool.useAmountToValidateCheckDigit"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -169,12 +236,18 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution}'/>",
 "name" : "<c:out value='${searchResult.name}'/>",
-"minpaymentcodes" : "<c:out value='${searchResult.minPaymentCodes}'/>",
-"maxpaymentcodes" : "<c:out value='${searchResult.maxPaymentCodes}'/>",
+"entityreferencecode" : "<c:out value='${searchResult.entityReferenceCode}'/>",
+"minreferencecode" : "<c:out value='${searchResult.minReferenceCode}'/>",
+"maxreferencecode" : "<c:out value='${searchResult.maxReferenceCode}'/>",
 "minamount" : "<c:out value='${searchResult.minAmount}'/>",
 "maxamount" : "<c:out value='${searchResult.maxAmount}'/>",
+"validfrom" : "<c:out value='${searchResult.validFrom}'/>",
+"validto" : "<c:out value='${searchResult.validTo}'/>",
 "active" : "<c:if test="${searchResult.active}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.active}"><spring:message code="label.false" /></c:if>",
+"usecheckdigit" : "<c:if test="${searchResult.useCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.useCheckDigit}"><spring:message code="label.false" /></c:if>",
+"useamounttovalidatecheckdigit" : "<c:if test="${searchResult.useAmountToValidateCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.useAmountToValidateCheckDigit}"><spring:message code="label.false" /></c:if>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -184,6 +257,26 @@ ${portal.toolkit()}
 	
 	$(document).ready(function() {
 
+	<%-- Block for providing finantialInstitution options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	finantialInstitution_options = [
+		<c:forEach items="${PaymentCodePool_finantialInstitution_options}" var="element"> 
+			{
+				text :"<c:out value='${element}'/>", 
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+	
+	$("#paymentCodePool_finantialInstitution").select2(
+		{
+			data : finantialInstitution_options,
+		}	  
+		    );
+		    
+		    <%-- If it's not from parameter change param.finantialInstitution to whatever you need (it's the externalId already) --%>
+		    $("#paymentCodePool_finantialInstitution").select2().select2('val', '<c:out value='${param.finantialInstitution}'/>');
+	<%-- End block for providing finantialInstitution options --%>
 	
 
 
@@ -191,19 +284,25 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
+			{ data: 'finantialinstitution' },
 			{ data: 'name' },
-			{ data: 'minpaymentcodes' },
-			{ data: 'maxpaymentcodes' },
+			{ data: 'entityreferencecode' },
+			{ data: 'minreferencecode' },
+			{ data: 'maxreferencecode' },
 			{ data: 'minamount' },
 			{ data: 'maxamount' },
+			{ data: 'validfrom' },
+			{ data: 'validto' },
 			{ data: 'active' },
+			{ data: 'usecheckdigit' },
+			{ data: 'useamounttovalidatecheckdigit' },
 			{ data: 'actions' }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 6 } 
+		               { "width": "54px", "targets": 12 } 
 		             ],
 		"data" : searchpaymentcodepoolDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

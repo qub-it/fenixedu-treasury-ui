@@ -35,8 +35,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGenerator;
-import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialPaymentWithCheckDigitCodeGenerator;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -47,21 +46,30 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 //		setBennu(Bennu.getInstance());
     }
 
-    protected PaymentCodePool(final String name, final Long minPaymentCodes, final Long maxPaymentCodes,
-            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
-            final FinantialInstitution finantialInstitution) {
+    protected PaymentCodePool(final String name, final String entityReferenceCode, final Integer minReferenceCode,
+            final Integer maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
+            final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
+            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
         this();
-        init(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);
+        init(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount, validFrom, validTo, active,
+                useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
     }
 
-    protected void init(final String name, final Long minPaymentCodes, final Long maxPaymentCodes, final BigDecimal minAmount,
-            final BigDecimal maxAmount, final Boolean active, final FinantialInstitution finantialInstitution) {
+    protected void init(final String name, final String entityReferenceCode, final Integer minReferenceCode,
+            final Integer maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
+            final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
+            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
         setName(name);
-        setMinReferenceCode(minPaymentCodes);
-        setMaxReferenceCode(maxPaymentCodes);
+        setEntityReferenceCode(entityReferenceCode);
+        setMinReferenceCode(minReferenceCode);
+        setMaxReferenceCode(maxReferenceCode);
         setMinAmount(minAmount);
         setMaxAmount(maxAmount);
+        setValidFrom(validFrom);
+        setValidTo(validTo);
         setActive(active);
+        setUseCheckDigit(useCheckDigit);
+        setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
         setFinantialInstitution(finantialInstitution);
         checkRules();
     }
@@ -132,10 +140,12 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public static PaymentCodePool create(final String name, final Long minPaymentCodes, final Long maxPaymentCodes,
-            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
-            final FinantialInstitution finantialInstitution) {
-        return new PaymentCodePool(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);
+    public static PaymentCodePool create(final String name, final String entityReferenceCode, final Integer minReferenceCode,
+            final Integer maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
+            final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
+            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
+        return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
+                validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
 
     }
 
