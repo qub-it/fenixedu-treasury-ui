@@ -135,7 +135,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             addInfoMessage("Sucess deleting FinantialInstitution ...", model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (TreasuryDomainException ex) {
-            addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getMessage(), model);
+            addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -191,7 +191,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
+            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
         }
         return _create(bean, model);
     }
@@ -252,7 +252,7 @@ public class FinantialInstitution2Controller extends TreasuryBaseController {
             return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
+            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
         }
 
         return _update(bean, finantialInstitution, model);

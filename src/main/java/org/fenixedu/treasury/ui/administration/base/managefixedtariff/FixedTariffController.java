@@ -26,51 +26,29 @@
  */
 package org.fenixedu.treasury.ui.administration.base.managefixedtariff;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.List;
-import java.util.ArrayList;
-import java.util.stream.Stream;
-
-import org.joda.time.DateTime;
-
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.spring.portal.SpringApplication;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.springframework.stereotype.Component;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.tariff.FixedTariff;
+import org.fenixedu.treasury.domain.tariff.InterestRate;
+import org.fenixedu.treasury.dto.FixedTariffBean;
+import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.administration.base.manageproduct.ProductController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 
 import pt.ist.fenixframework.Atomic;
-
-import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.administration.base.manageproduct.ProductController;
-import org.fenixedu.treasury.util.Constants;
-import org.fenixedu.treasury.domain.FinantialEntity;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.ProductGroup;
-import org.fenixedu.treasury.domain.VatType;
-import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
-import org.fenixedu.treasury.domain.tariff.FixedTariff;
-import org.fenixedu.treasury.domain.tariff.InterestRate;
-import org.fenixedu.treasury.dto.FixedTariffBean;
-import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
-import org.fenixedu.treasury.dto.InterestRateBean;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageFixedTariff") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageFixedTariff",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -136,11 +114,11 @@ public class FixedTariffController extends TreasuryBaseController {
 
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
         //The default mapping is the same Read View
         return redirect(ProductController.READ_URL + productId, model, redirectAttributes);

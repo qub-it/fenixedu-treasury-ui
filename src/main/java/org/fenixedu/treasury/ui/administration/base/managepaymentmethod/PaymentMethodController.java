@@ -155,11 +155,11 @@ public class PaymentMethodController extends TreasuryBaseController {
             return redirect("/treasury/administration/base/managepaymentmethod/paymentmethod/", model, redirectAttributes);
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View

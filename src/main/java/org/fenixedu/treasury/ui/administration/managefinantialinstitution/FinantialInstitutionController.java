@@ -150,7 +150,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getMessage(), model);
+            addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -219,7 +219,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     + getFinantialInstitution(model).getExternalId();
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
+            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
         }
         return create(model);
     }
@@ -298,7 +298,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     + getFinantialInstitution(model).getExternalId();
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getMessage(), model);
+            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
         }
 
         return update(finantialInstitution, model);

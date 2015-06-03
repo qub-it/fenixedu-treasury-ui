@@ -245,7 +245,7 @@ public class ERPExporter {
 //                    i++;
 
                 } catch (Exception ex) {
-                    logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getMessage());
+                    logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getLocalizedMessage());
                     throw ex;
                 }
             } else {
@@ -283,7 +283,7 @@ public class ERPExporter {
 //                    i++;
                 } catch (Exception ex) {
                     // persistenceSupport.flush();
-                    logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getMessage());
+                    logger.error("Error processing document " + document.getUiDocumentNumber() + ": " + ex.getLocalizedMessage());
                     throw ex;
                 }
             } else {
