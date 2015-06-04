@@ -28,13 +28,19 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 
 public abstract class Invoice extends Invoice_Base {
 
@@ -127,5 +133,63 @@ public abstract class Invoice extends Invoice_Base {
             vat = vat.add(((InvoiceEntry) entry).getVatAmount());
         }
         return vat;
+    }
+
+    public static Optional<Invoice> findByUIDocumentNumber(FinantialInstitution finantialInstitution,
+            String invoiceReferenceNumber) {
+
+        final String documentTypeCode;
+        final String seriesPrefixCode;
+        final String documentNumberCode;
+
+        List<String> splitValues =
+                Lists.newArrayList(Splitter.on(' ').trimResults().omitEmptyStrings().split(invoiceReferenceNumber));
+        if (splitValues.size() != 2) {
+            throw new TreasuryDomainException("");
+        }
+
+        documentTypeCode = splitValues.get(0);
+
+        splitValues = Lists.newArrayList(Splitter.on('/').trimResults().omitEmptyStrings().split(splitValues.get(1)));
+
+        if (splitValues.size() != 2) {
+            throw new TreasuryDomainException("");
+        }
+
+        seriesPrefixCode = splitValues.get(0);
+        documentNumberCode = splitValues.get(1);
+
+        FinantialDocumentType documentType = FinantialDocumentType.findByCode(documentTypeCode);
+
+        Series series = Series.findByCode(finantialInstitution, seriesPrefixCode);
+
+        DocumentNumberSeries ser;
+        DocumentNumberSeries documentNumberSeries =
+                series.getDocumentNumberSeriesSet().stream().filter(dns -> dns.getFinantialDocumentType().equals(documentType))
+                        .findFirst().orElse(null);
+
+        if (documentNumberSeries == null) {
+            throw new TreasuryDomainException("");
+        }
+
+        FinantialDocument document =
+                documentNumberSeries.getFinantialDocumentsSet().stream()
+                        .filter(x -> x.getDocumentNumber().equals(documentNumberCode)).findFirst().orElse(null);
+
+        if (document instanceof Invoice) {
+            return Optional.of((Invoice) document);
+        } else {
+            return Optional.of(null);
+        }
+    }
+
+    public InvoiceEntry getEntryInOrder(Integer lineNumber) {
+        FinantialDocumentEntry entry =
+                this.getFinantialDocumentEntriesSet().stream().filter(x -> x.getEntryOrder().equals(lineNumber)).findFirst()
+                        .orElse(null);
+        if (entry != null) {
+            return (InvoiceEntry) entry;
+        }
+        return null;
     }
 }

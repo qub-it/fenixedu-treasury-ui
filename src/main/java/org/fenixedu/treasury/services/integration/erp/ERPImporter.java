@@ -36,16 +36,27 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import oecd.standardauditfile_tax.pt_1.AuditFile;
+import oecd.standardauditfile_tax.pt_1.PaymentMethod;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line;
 
+import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.Invoice;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.PaymentEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.Atomic.TxMode;
 
 // ******************************************************************************************************************************
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/3B4FECDB-2380-45D7-9019-ABCA80A7E99E/0/Comunicacao_Dados_Doc_Transporte.pdf
@@ -83,7 +94,7 @@ public class ERPImporter {
         }
     }
 
-    @Atomic(mode = TxMode.WRITE)
+    @Atomic
     public void processAuditFile(ERPImportOperation eRPImportOperation) {
         AuditFile auditFile = readAuditFileFromXML();
         BigDecimal totalCredit = BigDecimal.ZERO;
@@ -111,6 +122,102 @@ public class ERPImporter {
 
     @Atomic
     private SettlementNote processErpPayment(Payment payment, ERPImportOperation eRPImportOperation) {
-        return null;
+        ERPConfiguration integrationConfig = eRPImportOperation.getFinantialInstitution().getErpIntegrationConfiguration();
+        DocumentNumberSeries seriesToIntegratePayments =
+                DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
+                        integrationConfig.getPaymentsIntegrationSeries());
+
+        if (seriesToIntegratePayments == null || seriesToIntegratePayments.getSeries().getExternSeries() == false) {
+            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.series.to.integrate.payments");
+        }
+
+        //Get the ExternalNumber 
+        String externalNumber = payment.getPaymentRefNo();
+        Customer customer = Customer.findByCode(payment.getCustomerID()).findFirst().orElse(null);
+        SettlementNote settlementNote = null;
+        DebtAccount customerDebtAccount = null;
+        if (customer != null) {
+            customerDebtAccount = DebtAccount.findUnique(eRPImportOperation.getFinantialInstitution(), customer).orElse(null);
+            if (customerDebtAccount != null) {
+                SettlementNote existingSettlementNote =
+                        SettlementNote
+                                .findByDocumentNumberSeries(seriesToIntegratePayments)
+                                .filter(x -> x.getOriginDocumentNumber() != null
+                                        && x.getOriginDocumentNumber().equals(externalNumber)).findFirst().orElse(null);
+
+                if (existingSettlementNote != null && existingSettlementNote.isAnnulled() == false) {
+                    //Already exists... //Update ?!??!!?
+                    settlementNote = existingSettlementNote;
+                    if (!settlementNote.getDebtAccount().equals(customerDebtAccount)) {
+                        throw new TreasuryDomainException(
+                                "label.error.integration.erpimporter.invalid.debtaccount.existing.payment");
+                    }
+
+                    //HACK: DONT Accept repeting Documents
+                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
+
+                } else {
+                    DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
+                    //Create a new SettlementNote
+                    settlementNote =
+                            SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate, externalNumber);
+                }
+            } else {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.debtaccount.to.integrate.payments");
+            }
+        } else {
+            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.customer.to.integrate.payments");
+        }
+
+        //Continue processing the Payment Document entries (New or Updating??!?!)
+        for (Line paymentLine : payment.getLine()) {
+            if (paymentLine.getSourceDocumentID().size() != 1) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+            }
+            String invoiceReferenceNumber = paymentLine.getSourceDocumentID().get(0).getOriginatingON();
+            Invoice referenceInvoice =
+                    Invoice.findByUIDocumentNumber(eRPImportOperation.getFinantialInstitution(), invoiceReferenceNumber).orElse(
+                            null);
+            if (referenceInvoice == null) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+            }
+            if (!referenceInvoice.getDebtAccount().equals(customerDebtAccount)) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.debtaccount.in.payment");
+            }
+            InvoiceEntry invoiceEntry = referenceInvoice.getEntryInOrder(paymentLine.getLineNumber().intValue());
+            if (invoiceEntry == null) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+            }
+
+            BigDecimal paymentAmount = paymentLine.getCreditAmount();
+
+            if (invoiceEntry.getOpenAmount().compareTo(paymentAmount) < 0) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.amount.in.payment");
+            }
+
+            //Create a new settlement entry for this payment
+            SettlementEntry settlementEntry =
+                    SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
+                            new DateTime(payment.getDocumentStatus().getPaymentStatusDate()));
+        }
+
+        //Continue processing the Payment Methods (New or Updating??!?!)
+        for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
+            PaymentEntry paymentEntry =
+                    PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), settlementNote,
+                            paymentMethod.getPaymentAmount());
+        }
+
+        return settlementNote;
+    }
+
+    //convert the saft payment method to fenixEdu payment entry
+    private org.fenixedu.treasury.domain.PaymentMethod convertFromSAFTPaymentMethod(String paymentMechanism) {
+        org.fenixedu.treasury.domain.PaymentMethod paymentMethod =
+                org.fenixedu.treasury.domain.PaymentMethod.findByCode(paymentMechanism);
+        if (paymentMethod == null) {
+            return org.fenixedu.treasury.domain.PaymentMethod.findAll().findFirst().orElse(null);
+        }
+        return paymentMethod;
     }
 }
