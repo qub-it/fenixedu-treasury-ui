@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -319,6 +321,29 @@ public class SibsReportFileController extends TreasuryBaseController {
                         documentSibsReportFile.getOriginalFilename(), getContent(documentSibsReportFile));
 
         return sibsReportFile;
+    }
+
+    private static final String _DOWNLOAD_URI = "/read/download/";
+    public static final String DOWNLOAD_URL = CONTROLLER_URL + _DOWNLOAD_URI;
+
+    @RequestMapping(value = _DOWNLOAD_URI + "{oid}", method = RequestMethod.GET)
+    public void processReadToDownloadFile(@PathVariable("oid") SibsReportFile sibsReportFile, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setSibsReportFile(sibsReportFile, model);
+        try {
+            response.setContentType(sibsReportFile.getContentType());
+            String filename = sibsReportFile.getFilename();
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(sibsReportFile.getContent());
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + getSibsReportFile(model).getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     public void uploadSibsReportFile(SibsReportFile sibsReportFile, MultipartFile requestFile, Model model) {

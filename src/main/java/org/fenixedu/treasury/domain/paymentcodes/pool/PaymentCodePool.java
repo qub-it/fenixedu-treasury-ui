@@ -48,8 +48,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 //		setBennu(Bennu.getInstance());
     }
 
-    protected PaymentCodePool(final String name, final String entityReferenceCode, final Integer minReferenceCode,
-            final Integer maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
+    protected PaymentCodePool(final String name, final String entityReferenceCode, final Long minReferenceCode,
+            final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
         this();
@@ -57,8 +57,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                 useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
     }
 
-    protected void init(final String name, final String entityReferenceCode, final Integer minReferenceCode,
-            final Integer maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
+    protected void init(final String name, final String entityReferenceCode, final Long minReferenceCode,
+            final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
         setName(name);
@@ -142,8 +142,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public static PaymentCodePool create(final String name, final String entityReferenceCode, final Integer minReferenceCode,
-            final Integer maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
+    public static PaymentCodePool create(final String name, final String entityReferenceCode, final Long minReferenceCode,
+            final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
         return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
