@@ -1,10 +1,10 @@
 /**
  * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
  * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
- * software development project between Quorum Born IT and ServiÃ§os Partilhados da
+ * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
- *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
- *  - Copyright Â© 2015 Universidade de Lisboa (after any Go-Live phase)
+ *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
  * Contributors: xpto@qub-it.com
  *
@@ -26,12 +26,11 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentcodepool;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -39,6 +38,7 @@ import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,9 +73,9 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     * This should be used when using AngularJS in the JSP
     */
 
-    //private PaymentCodePool getPaymentCodePoolBean(Model model)
+    //private PaymentCodePoolBean getPaymentCodePoolBean(Model model)
     //{
-    //	return (PaymentCodePool)model.asMap().get("paymentCodePoolBean");
+    //	return (PaymentCodePoolBean)model.asMap().get("paymentCodePoolBean");
     //}
     //				
     //private void setPaymentCodePoolBean (PaymentCodePoolBean bean, Model model)
@@ -96,7 +96,10 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @Atomic
     public void deletePaymentCodePool(PaymentCodePool paymentCodePool) {
-        paymentCodePool.delete();
+        // CHANGE_ME: Do the processing for deleting the paymentCodePool
+        // Do not catch any exception here
+
+        // paymentCodePool.delete();
     }
 
 //				
@@ -104,17 +107,28 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(
-            value = "minpaymentcodes", required = false) java.lang.Integer minPaymentCodes, @RequestParam(
-            value = "maxpaymentcodes", required = false) java.lang.Integer maxPaymentCodes, @RequestParam(value = "minamount",
-            required = false) java.math.BigDecimal minAmount,
-            @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount, @RequestParam(value = "active",
-                    required = false) java.lang.Boolean active, Model model) {
+    public String search(
+            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            @RequestParam(value = "name", required = false) java.lang.String name,
+            @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) java.lang.Integer minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) java.lang.Integer maxReferenceCode,
+            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
+            @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
+            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
+            @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
+                    required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
+                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, Model model) {
         List<PaymentCodePool> searchpaymentcodepoolResultsDataSet =
-                filterSearchPaymentCodePool(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active);
+                filterSearchPaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode,
+                        minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit);
 
         //add the results dataSet to the model
         model.addAttribute("searchpaymentcodepoolResultsDataSet", searchpaymentcodepoolResultsDataSet);
+        model.addAttribute("PaymentCodePool_finantialInstitution_options",
+                new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search";
     }
 
@@ -127,21 +141,35 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //        return new ArrayList<PaymentCodePool>().stream();
     }
 
-    private List<PaymentCodePool> filterSearchPaymentCodePool(java.lang.String name, java.lang.Integer minPaymentCodes,
-            java.lang.Integer maxPaymentCodes, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
-            java.lang.Boolean active) {
+    private List<PaymentCodePool> filterSearchPaymentCodePool(
+            org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution, java.lang.String name,
+            java.lang.String entityReferenceCode, java.lang.Integer minReferenceCode, java.lang.Integer maxReferenceCode,
+            java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount, org.joda.time.LocalDate validFrom,
+            org.joda.time.LocalDate validTo, java.lang.Boolean active, java.lang.Boolean useCheckDigit,
+            java.lang.Boolean useAmountToValidateCheckDigit) {
 
         return getSearchUniverseSearchPaymentCodePoolDataSet()
-                .filter(paymentCodePool -> name == null || name.length() == 0 || paymentCodePool.getName() != null
-                        && paymentCodePool.getName().length() > 0
-                        && paymentCodePool.getName().toLowerCase().contains(name.toLowerCase()))
-                .filter(paymentCodePool -> minPaymentCodes == null
-                        || minPaymentCodes.equals(paymentCodePool.getMinReferenceCode()))
-                .filter(paymentCodePool -> maxPaymentCodes == null
-                        || maxPaymentCodes.equals(paymentCodePool.getMaxReferenceCode()))
-                .filter(paymentCodePool -> minAmount == null || minAmount.equals(paymentCodePool.getMinAmount()))
-                .filter(paymentCodePool -> maxAmount == null || maxAmount.equals(paymentCodePool.getMaxAmount()))
-                .filter(paymentCodePool -> active == null || active.equals(paymentCodePool.getActive()))
+//                .filter(paymentCodePool -> finantialInstitution == null
+//                        || finantialInstitution == paymentCodePool.getFinantialInstitution())
+//                .filter(paymentCodePool -> name == null || name.length() == 0 || paymentCodePool.getName() != null
+//                        && paymentCodePool.getName().length() > 0
+//                        && paymentCodePool.getName().toLowerCase().contains(name.toLowerCase()))
+//                .filter(paymentCodePool -> entityReferenceCode == null || entityReferenceCode.length() == 0
+//                        || paymentCodePool.getEntityReferenceCode() != null
+//                        && paymentCodePool.getEntityReferenceCode().length() > 0
+//                        && paymentCodePool.getEntityReferenceCode().toLowerCase().contains(entityReferenceCode.toLowerCase()))
+//                .filter(paymentCodePool -> minReferenceCode == null
+//                        || minReferenceCode.equals(paymentCodePool.getMinReferenceCode()))
+//                .filter(paymentCodePool -> maxReferenceCode == null
+//                        || maxReferenceCode.equals(paymentCodePool.getMaxReferenceCode()))
+//                .filter(paymentCodePool -> minAmount == null || minAmount.equals(paymentCodePool.getMinAmount()))
+//                .filter(paymentCodePool -> maxAmount == null || maxAmount.equals(paymentCodePool.getMaxAmount()))
+//                .filter(paymentCodePool -> validFrom == null || validFrom.equals(paymentCodePool.getValidFrom()))
+//                .filter(paymentCodePool -> validTo == null || validTo.equals(paymentCodePool.getValidTo()))
+//                .filter(paymentCodePool -> active == null || active.equals(paymentCodePool.getActive()))
+//                .filter(paymentCodePool -> useCheckDigit == null || useCheckDigit.equals(paymentCodePool.getUseCheckDigit()))
+//                .filter(paymentCodePool -> useAmountToValidateCheckDigit == null
+//                        || useAmountToValidateCheckDigit.equals(paymentCodePool.getUseAmountToValidateCheckDigit()))
                 .collect(Collectors.toList());
     }
 
@@ -183,7 +211,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/", model,
                     redirectAttributes);
-        } catch (DomainException ex) {
+        } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
@@ -199,6 +227,10 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
+        model.addAttribute("PaymentCodePool_finantialInstitution_options",
+                new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
 
         //IF ANGULAR, initialize the Bean
         //PaymentCodePoolBean bean = new PaymentCodePoolBean();
@@ -213,7 +245,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //						// @formatter: off
 //			
 //				private static final String _CREATEPOSTBACK_URI ="/createpostback";
-//				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
+//				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _CREATEPOSTBACK_URI;
 //    			@RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 //  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) PaymentCodePoolBean bean,
 //            		Model model) {
@@ -241,7 +273,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //					model.addAttribute("paymentCodePool",paymentCodePool);
 //				    return redirect("/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/read/" + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
 //					}
-//					catch (DomainException de)
+//					catch (Exception de)
 //					{
 //
 //						/*
@@ -253,21 +285,29 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //					     * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
 //						
 //						addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//				     	return create(model);
+//						this.setPaymentCodePoolBean(bean, model);				
+//						return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/create";
+//                      
 //					}
 //    			}
 //						// @formatter: on
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(
-            value = "minpaymentcodes", required = false) java.lang.Long minPaymentCodes, @RequestParam(value = "maxpaymentcodes",
-            required = false) java.lang.Long maxPaymentCodes,
-            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount, @RequestParam(
-                    value = "maxamount", required = false) java.math.BigDecimal maxAmount, @RequestParam(value = "active",
-                    required = false) java.lang.Boolean active,
-            @RequestParam(value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String create(
+            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            @RequestParam(value = "name", required = false) java.lang.String name,
+            @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) java.lang.Integer minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) java.lang.Integer maxReferenceCode,
+            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
+            @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
+            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
+            @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
+                    required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
+                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, Model model,
+            RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         */
@@ -275,15 +315,15 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         try {
 
             PaymentCodePool paymentCodePool =
-                    createPaymentCodePool(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active,
-                            finantialInstitution);
+                    createPaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode,
+                            minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit);
 
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("paymentCodePool", paymentCodePool);
             return redirect("/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/read/"
                     + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
+        } catch (Exception de) {
 
             // @formatter: off
             /*
@@ -301,9 +341,11 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     @Atomic
-    public PaymentCodePool createPaymentCodePool(final String name, final Long minPaymentCodes, final Long maxPaymentCodes,
-            final BigDecimal minAmount, final BigDecimal maxAmount, final Boolean active,
-            final FinantialInstitution finantialInstitution) {
+    public PaymentCodePool createPaymentCodePool(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            java.lang.String name, java.lang.String entityReferenceCode, java.lang.Integer minReferenceCode,
+            java.lang.Integer maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
+            org.joda.time.LocalDate validFrom, org.joda.time.LocalDate validTo, java.lang.Boolean active,
+            java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit) {
 
         // @formatter: off
 
@@ -321,8 +363,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         // @formatter: on
 
         PaymentCodePool paymentCodePool =
-                PaymentCodePool
-                        .create(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, finantialInstitution);
+                PaymentCodePool.create(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
+                        validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
 
         return paymentCodePool;
     }
@@ -333,8 +375,18 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") PaymentCodePool paymentCodePool, Model model) {
+        model.addAttribute("PaymentCodePool_finantialInstitution_options",
+                new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         setPaymentCodePool(paymentCodePool, model);
+
+        //IF ANGULAR, initialize the Bean
+        //PaymentCodePoolBean bean = new PaymentCodePoolBean(paymentCodePool);
+        //this.setPaymentCodePoolBean(bean, model);
+
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/update";
+
     }
 
 //
@@ -344,7 +396,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //						// @formatter: off
 //			
 //				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
-//				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
+//				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _UPDATEPOSTBACK_URI;
 //    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 //  			  	public @ResponseBody String updatepostback(@PathVariable("oid") PaymentCodePool paymentCodePool, @RequestParam(value = "bean", required = false) PaymentCodePoolBean bean,
 //            		Model model) {
@@ -371,7 +423,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //
 //				    return redirect("/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/read/" + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
 //					}
-//					catch (DomainException de) 
+//					catch (Exception de) 
 //					{
 //				
 //						/*
@@ -384,21 +436,29 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //				     	*/
 //										     
 //				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(paymentCodePool,model);
-//					 
+//						setPaymentCodePool(paymentCodePool, model);
+//						this.setPaymentCodePoolBean(bean, model);
 //
+//						return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/update";
 //					}
 //				}
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") PaymentCodePool paymentCodePool,
-            @RequestParam(value = "name", required = false) java.lang.String name, @RequestParam(value = "minpaymentcodes",
-                    required = false) java.lang.Long minPaymentCodes,
-            @RequestParam(value = "maxpaymentcodes", required = false) java.lang.Long maxPaymentCodes, @RequestParam(
-                    value = "minamount", required = false) java.math.BigDecimal minAmount, @RequestParam(value = "maxamount",
-                    required = false) java.math.BigDecimal maxAmount,
-            @RequestParam(value = "active", required = false) java.lang.Boolean active, Model model,
+    public String update(
+            @PathVariable("oid") PaymentCodePool paymentCodePool,
+            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            @RequestParam(value = "name", required = false) java.lang.String name,
+            @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) java.lang.Integer minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) java.lang.Integer maxReferenceCode,
+            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
+            @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
+            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
+            @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
+                    required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
+                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, Model model,
             RedirectAttributes redirectAttributes) {
 
         setPaymentCodePool(paymentCodePool, model);
@@ -408,13 +468,14 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updatePaymentCodePool(name, minPaymentCodes, maxPaymentCodes, minAmount, maxAmount, active, model);
+            updatePaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount,
+                    maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, model);
 
             /*Succes Update */
 
             return redirect("/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/read/"
                     + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
+        } catch (Exception de) {
             // @formatter: off
 
             /*
@@ -434,8 +495,11 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updatePaymentCodePool(java.lang.String name, java.lang.Long minPaymentCodes, java.lang.Long maxPaymentCodes,
-            java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount, java.lang.Boolean active, Model model) {
+    public void updatePaymentCodePool(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            java.lang.String name, java.lang.String entityReferenceCode, java.lang.Integer minReferenceCode,
+            java.lang.Integer maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
+            org.joda.time.LocalDate validFrom, org.joda.time.LocalDate validTo, java.lang.Boolean active,
+            java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit, Model model) {
 
         // @formatter: off				
         /*
@@ -449,12 +513,18 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
+        getPaymentCodePool(model).setFinantialInstitution(finantialInstitution);
         getPaymentCodePool(model).setName(name);
-        getPaymentCodePool(model).setMinReferenceCode(minPaymentCodes);
-        getPaymentCodePool(model).setMaxReferenceCode(maxPaymentCodes);
+        getPaymentCodePool(model).setEntityReferenceCode(entityReferenceCode);
+        getPaymentCodePool(model).setMinReferenceCode(minReferenceCode);
+        getPaymentCodePool(model).setMaxReferenceCode(maxReferenceCode);
         getPaymentCodePool(model).setMinAmount(minAmount);
         getPaymentCodePool(model).setMaxAmount(maxAmount);
+        getPaymentCodePool(model).setValidFrom(validFrom);
+        getPaymentCodePool(model).setValidTo(validTo);
         getPaymentCodePool(model).setActive(active);
+        getPaymentCodePool(model).setUseCheckDigit(useCheckDigit);
+        getPaymentCodePool(model).setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
     }
 
 }

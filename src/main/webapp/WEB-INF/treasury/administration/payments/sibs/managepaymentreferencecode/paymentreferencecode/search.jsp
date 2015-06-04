@@ -32,10 +32,11 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
-<%-- NAVIGATION --%>
+<%-- NAVIGATION 
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/create"   ><spring:message code="label.event.create" /></a>
 |&nbsp;&nbsp;</div>
+--%>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
 					

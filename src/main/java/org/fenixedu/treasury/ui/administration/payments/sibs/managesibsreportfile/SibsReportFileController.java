@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -43,6 +45,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
@@ -253,7 +256,8 @@ public class SibsReportFileController extends TreasuryBaseController {
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs, @RequestParam(
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs, @RequestParam(
+            value = "documentSibsReportFile", required = true) MultipartFile documentSibsReportFile, @RequestParam(
             value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount, @RequestParam(
             value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
             RedirectAttributes redirectAttributes) {
@@ -263,13 +267,13 @@ public class SibsReportFileController extends TreasuryBaseController {
 
         try {
 
-            SibsReportFile sibsReportFile = createSibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost);
+            SibsReportFile sibsReportFile =
+                    createSibsReportFile(whenProcessedBySibs, documentSibsReportFile, transactionsTotalAmount, totalCost);
 
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("sibsReportFile", sibsReportFile);
-            return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/"
-                    + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
+            return redirect(READ_URL + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -288,7 +292,7 @@ public class SibsReportFileController extends TreasuryBaseController {
     }
 
     @Atomic
-    public SibsReportFile createSibsReportFile(org.joda.time.LocalDate whenProcessedBySibs,
+    public SibsReportFile createSibsReportFile(org.joda.time.DateTime whenProcessedBySibs, MultipartFile documentSibsReportFile,
             java.math.BigDecimal transactionsTotalAmount, java.math.BigDecimal totalCost) {
 
         // @formatter: off
@@ -306,9 +310,28 @@ public class SibsReportFileController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        SibsReportFile sibsReportFile = SibsReportFile.create(whenProcessedBySibs, transactionsTotalAmount, totalCost);
+        if (!documentSibsReportFile.getContentType().equals(SibsReportFile.CONTENT_TYPE)) {
+            throw new TreasuryDomainException("error.file.different.content.type");
+        }
+
+        SibsReportFile sibsReportFile =
+                SibsReportFile.create(whenProcessedBySibs, transactionsTotalAmount, totalCost, documentSibsReportFile.getName(),
+                        documentSibsReportFile.getOriginalFilename(), getContent(documentSibsReportFile));
 
         return sibsReportFile;
+    }
+
+    public void uploadSibsReportFile(SibsReportFile sibsReportFile, MultipartFile requestFile, Model model) {
+
+    }
+
+    //TODOJN - how to handle this exception
+    private byte[] getContent(MultipartFile requestFile) {
+        try {
+            return requestFile.getBytes();
+        } catch (IOException e) {
+            return null;
+        }
     }
 
 //				
@@ -376,9 +399,8 @@ public class SibsReportFileController extends TreasuryBaseController {
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") SibsReportFile sibsReportFile,
-            @RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs,
+    public String update(@PathVariable("oid") SibsReportFile sibsReportFile, @RequestParam(value = "whenprocessedbysibs",
+            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs,
             @RequestParam(value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount,
             @RequestParam(value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
             RedirectAttributes redirectAttributes) {
@@ -416,7 +438,7 @@ public class SibsReportFileController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateSibsReportFile(org.joda.time.LocalDate whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
+    public void updateSibsReportFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
             java.math.BigDecimal totalCost, Model model) {
 
         // @formatter: off				

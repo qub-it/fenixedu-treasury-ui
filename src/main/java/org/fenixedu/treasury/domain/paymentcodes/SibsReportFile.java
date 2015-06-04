@@ -27,113 +27,125 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile_Base;
-import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
 public class SibsReportFile extends SibsReportFile_Base {
-    
+
+    public static final String CONTENT_TYPE = "application/vnd.oasis.opendocument.text";
+
     protected SibsReportFile() {
         super();
         setBennu(Bennu.getInstance());
     }
-    
-    protected void init(final org.joda.time.LocalDate whenProcessedBySibs,final java.math.BigDecimal transactionsTotalAmount,final java.math.BigDecimal totalCost) {
-setWhenProcessedBySibs(whenProcessedBySibs);
-setTransactionsTotalAmount(transactionsTotalAmount);
-setTotalCost(totalCost);
-    	checkRules();
+
+    protected SibsReportFile(final org.joda.time.DateTime whenProcessedBySibs,
+            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, final String displayName,
+            final String fileName, final byte[] content) {
+        this();
+        this.init(whenProcessedBySibs, transactionsTotalAmount, totalCost, displayName, fileName, content);
+
+        checkRules();
     }
 
-	private void checkRules() {
-		//
-		//CHANGE_ME add more busines validations
-		//
-		
-		//CHANGE_ME In order to validate UNIQUE restrictions
-		//if (findByWhenProcessedBySibs(getWhenProcessedBySibs().count()>1)
-		//{
-		//	throw new TreasuryDomainException("error.SibsReportFile.whenProcessedBySibs.duplicated");
-		//}	
-		//if (findByTransactionsTotalAmount(getTransactionsTotalAmount().count()>1)
-		//{
-		//	throw new TreasuryDomainException("error.SibsReportFile.transactionsTotalAmount.duplicated");
-		//}	
-		//if (findByTotalCost(getTotalCost().count()>1)
-		//{
-		//	throw new TreasuryDomainException("error.SibsReportFile.totalCost.duplicated");
-		//}	
-	}
-	
-	@Atomic
-	public void edit(final org.joda.time.LocalDate whenProcessedBySibs,final java.math.BigDecimal transactionsTotalAmount,final java.math.BigDecimal totalCost) {
-	    setWhenProcessedBySibs(whenProcessedBySibs);
-	    setTransactionsTotalAmount(transactionsTotalAmount);
-	    setTotalCost(totalCost);
-	    checkRules();
-	}
-	
-	public boolean isDeletable() {
-	    return true;
-	}
-	
-	@Atomic
-	public void delete() {
-	    if(!isDeletable()) {
-	        throw new TreasuryDomainException("error.SibsReportFile.cannot.delete");
-	    }
-	    
-	    setBennu(null);
-	    
-	    deleteDomainObject();
-	}
-	
-	 
+    protected void init(final org.joda.time.DateTime whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
+            final java.math.BigDecimal totalCost, final String displayName, final String fileName, final byte[] content) {
+
+        super.init(displayName, fileName, content);
+        setWhenProcessedBySibs(whenProcessedBySibs);
+        setTransactionsTotalAmount(transactionsTotalAmount);
+        setTotalCost(totalCost);
+        checkRules();
+    }
+
+    private void checkRules() {
+        //
+        //CHANGE_ME add more busines validations
+        //
+
+        //CHANGE_ME In order to validate UNIQUE restrictions
+        //if (findByWhenProcessedBySibs(getWhenProcessedBySibs().count()>1)
+        //{
+        //	throw new TreasuryDomainException("error.SibsReportFile.whenProcessedBySibs.duplicated");
+        //}	
+        //if (findByTransactionsTotalAmount(getTransactionsTotalAmount().count()>1)
+        //{
+        //	throw new TreasuryDomainException("error.SibsReportFile.transactionsTotalAmount.duplicated");
+        //}	
+        //if (findByTotalCost(getTotalCost().count()>1)
+        //{
+        //	throw new TreasuryDomainException("error.SibsReportFile.totalCost.duplicated");
+        //}	
+    }
+
     @Atomic
-    public static SibsReportFile create(final org.joda.time.LocalDate whenProcessedBySibs,final java.math.BigDecimal transactionsTotalAmount,final java.math.BigDecimal totalCost) {
-    	SibsReportFile sibsReportFile = new SibsReportFile();
-        sibsReportFile.init( whenProcessedBySibs, transactionsTotalAmount, totalCost);
-        return sibsReportFile;
+    public void edit(final org.joda.time.DateTime whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
+            final java.math.BigDecimal totalCost) {
+        setWhenProcessedBySibs(whenProcessedBySibs);
+        setTransactionsTotalAmount(transactionsTotalAmount);
+        setTotalCost(totalCost);
+        checkRules();
     }
 
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-    // @formatter: on
-	
-	public static Stream<SibsReportFile> findAll() {
-	    return Bennu.getInstance().getSibsReportFilesSet().stream();
-	}
-	
-	public static Stream<SibsReportFile> findByBennu(final Bennu bennu) {
-		return findAll().filter(i->bennu.equals(i.getBennu()));
-	  }
-	public static Stream<SibsReportFile> findByWhenProcessedBySibs(final org.joda.time.LocalDate whenProcessedBySibs) {
-		return findAll().filter(i->whenProcessedBySibs.equals(i.getWhenProcessedBySibs()));
-	  }
-	public static Stream<SibsReportFile> findByTransactionsTotalAmount(final java.math.BigDecimal transactionsTotalAmount) {
-		return findAll().filter(i->transactionsTotalAmount.equals(i.getTransactionsTotalAmount()));
-	  }
-	public static Stream<SibsReportFile> findByTotalCost(final java.math.BigDecimal totalCost) {
-		return findAll().filter(i->totalCost.equals(i.getTotalCost()));
-	  }
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Override
-	public boolean isAccessible(User arg0) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-   
-    
+    @Override
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.SibsReportFile.cannot.delete");
+        }
+
+        setBennu(null);
+
+        deleteDomainObject();
+    }
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+
+    public static Stream<SibsReportFile> findAll() {
+        return Bennu.getInstance().getSibsReportFilesSet().stream();
+    }
+
+    public static Stream<SibsReportFile> findByBennu(final Bennu bennu) {
+        return findAll().filter(i -> bennu.equals(i.getBennu()));
+    }
+
+    public static Stream<SibsReportFile> findByWhenProcessedBySibs(final org.joda.time.LocalDate whenProcessedBySibs) {
+        return findAll().filter(i -> whenProcessedBySibs.equals(i.getWhenProcessedBySibs()));
+    }
+
+    public static Stream<SibsReportFile> findByTransactionsTotalAmount(final java.math.BigDecimal transactionsTotalAmount) {
+        return findAll().filter(i -> transactionsTotalAmount.equals(i.getTransactionsTotalAmount()));
+    }
+
+    public static Stream<SibsReportFile> findByTotalCost(final java.math.BigDecimal totalCost) {
+        return findAll().filter(i -> totalCost.equals(i.getTotalCost()));
+    }
+
+    @Override
+    public boolean isAccessible(User arg0) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Atomic
+    public static SibsReportFile create(final org.joda.time.DateTime whenProcessedBySibs,
+            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, final String displayName,
+            final String fileName, final byte[] content) {
+        return new SibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, displayName, fileName, content);
+
+    }
+
 }
