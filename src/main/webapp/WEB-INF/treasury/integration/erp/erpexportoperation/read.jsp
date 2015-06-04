@@ -133,6 +133,12 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 	</td> 
 </tr>
 <tr>
+    <th scope="row" class="col-xs-3"><spring:message code="label.ERPExportOperation.integrationLog"/></th> 
+    <td>
+        <c:out value='${eRPExportOperation.integrationLog}'/>
+    </td> 
+</tr>
+<tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.ERPExportOperation.finantialDocuments"/></th> 
 	<td>
 		<ul>

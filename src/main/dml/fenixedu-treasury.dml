@@ -393,6 +393,7 @@ class integration.IntegrationOperation
        boolean success;
        boolean corrected;
        String errorLog;
+       String integrationLog;
 }
 /* --- IntegrationOperation --- */
 
@@ -469,6 +470,7 @@ relation ERPExportOperationFinantialDocument {
 
 class integration.ERPImportOperation extends integration.IntegrationOperation
 {
+    
 }
 
 relation ERPImportOperationFinantialDocument {
