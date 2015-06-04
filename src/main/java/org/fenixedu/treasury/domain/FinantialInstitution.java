@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -220,5 +221,9 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     public Vat getActiveVat(VatType vatType, DateTime when) {
         return this.getVatsSet().stream().filter(x -> x.isActive(when) && x.getVatType().equals(vatType)).findFirst()
                 .orElse(null);
+    }
+
+    public static Optional<FinantialInstitution> findUniqueByFiscalCode(String fiscalNumber) {
+        return findAll().filter(x -> fiscalNumber.equals(x.getFiscalNumber())).findFirst();
     }
 }

@@ -1,10 +1,10 @@
 /**
  * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
  * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
- * software development project between Quorum Born IT and Serviços Partilhados da
+ * software development project between Quorum Born IT and ServiÃ§os Partilhados da
  * Universidade de Lisboa:
- *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
- *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
+ *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
+ *  - Copyright Â© 2015 Universidade de Lisboa (after any Go-Live phase)
  *
  * Contributors: xpto@qub-it.com
  *
@@ -26,26 +26,40 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
+import oecd.standardauditfile_tax.pt_1.AuditFile;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
+import org.fenixedu.treasury.domain.integration.OperationFile;
+import org.fenixedu.treasury.services.integration.erp.ERPImporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
+
+import com.google.common.base.Splitter;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import", accessGroup = "logged")
@@ -159,6 +173,95 @@ public class ERPImportOperationController extends TreasuryBaseController {
     }
 
 //				
+    private static final String _CREATE_URI = "/create";
+    public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
+
+    @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
+    public String create(Model model) {
+//        model.addAttribute("ERPImportOperation_file_options",
+//                new ArrayList<org.fenixedu.treasury.domain.integration.OperationFile>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("ERPImportOperation_file_options", org.fenixedu.treasury.domain.integration.OperationFile.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+
+        //IF ANGULAR, initialize the Bean
+        //ERPImportOperationBean bean = new ERPImportOperationBean();
+        //this.setERPImportOperationBean(bean, model);
+
+        return "treasury/integration/erp/erpimportoperation/create";
+    }
+
+//				
+    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
+    public String create(@RequestParam(value = "file", required = true) MultipartFile file, Model model,
+            RedirectAttributes redirectAttributes) {
+        /*
+        *  Creation Logic
+        */
+
+        try {
+
+            ERPImportOperation eRPImportOperation = createERPImportOperation(file);
+
+            //Success Validation
+            //Add the bean to be used in the View
+            model.addAttribute("eRPImportOperation", eRPImportOperation);
+            return redirect(READ_URL + getERPImportOperation(model).getExternalId(), model, redirectAttributes);
+        } catch (Exception de) {
+
+            // @formatter: off
+            /*
+             * If there is any error in validation 
+             *
+             * Add a error / warning message
+             * 
+             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
+            // @formatter: on
+
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            return create(model);
+        }
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    public ERPImportOperation createERPImportOperation(MultipartFile file) throws IOException {
+
+        // @formatter: off
+
+        /*
+         * Modify the creation code here if you do not want to create
+         * the object with the default constructor and use the setter
+         * for each field
+         * 
+         */
+
+        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+        //ERPImportOperation eRPImportOperation = eRPImportOperation.create(fields_to_create);
+
+        //Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
+
+        ERPImporter importer = new ERPImporter(file.getInputStream());
+        AuditFile auditFile = importer.readAuditFileFromXML();
+        if (auditFile != null) {
+            String fiscalNumber =
+                    Splitter.on(' ').trimResults().omitEmptyStrings().split(auditFile.getHeader().getCompanyID()).iterator()
+                            .next();
+            FinantialInstitution finantialInstitution = FinantialInstitution.findUniqueByFiscalCode(fiscalNumber).orElse(null);
+            if (finantialInstitution != null) {
+                OperationFile opeartionFile;
+                opeartionFile = OperationFile.create(file.getOriginalFilename(), file.getBytes());
+                ERPImportOperation eRPImportOperation =
+                        ERPImportOperation.create(opeartionFile, finantialInstitution, new DateTime(), false, false, false, "");
+                return eRPImportOperation;
+            } else {
+                throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.fiscalinstitution.file");
+            }
+        } else {
+            throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.audit.file");
+        }
+    }
+
+//				
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -181,7 +284,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteERPImportOperation(eRPImportOperation);
 
-            addInfoMessage("Sucess deleting ERPImportOperation ...", model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect("/treasury/integration/erp/erpimportoperation/", model, redirectAttributes);
         } catch (Exception ex) {
             //Add error messages to the list
@@ -194,20 +297,25 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
 //
 
-    //
-    // This is the EventdownloadFile Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/downloadfile")
-    public String processReadToDownloadFile(@PathVariable("oid") ERPImportOperation eRPImportOperation, Model model,
-            RedirectAttributes redirectAttributes) {
+    public void processReadToDownloadFile(@PathVariable("oid") ERPImportOperation eRPImportOperation, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setERPImportOperation(eRPImportOperation, model);
-//
-        /* Put here the logic for processing Event downloadFile 	*/
-        //doSomething();
-
-        // Now choose what is the Exit Screen	 
-        return redirect("/treasury/integration/erp/erpimportoperation/read/" + getERPImportOperation(model).getExternalId(),
-                model, redirectAttributes);
+        try {
+            response.setContentType(eRPImportOperation.getFile().getContentType());
+            String filename = eRPImportOperation.getFile().getFilename();
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(eRPImportOperation.getFile().getContent());
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + getERPImportOperation(model).getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return;
     }
 
     //
