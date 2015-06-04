@@ -111,8 +111,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
             @RequestParam(value = "name", required = false) java.lang.String name,
             @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
-            @RequestParam(value = "minreferencecode", required = false) java.lang.Integer minReferenceCode,
-            @RequestParam(value = "maxreferencecode", required = false) java.lang.Integer maxReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) java.lang.Long minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
             @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
             @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
             @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
@@ -143,7 +143,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     private List<PaymentCodePool> filterSearchPaymentCodePool(
             org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution, java.lang.String name,
-            java.lang.String entityReferenceCode, java.lang.Integer minReferenceCode, java.lang.Integer maxReferenceCode,
+            java.lang.String entityReferenceCode, java.lang.Long minReferenceCode, java.lang.Long maxReferenceCode,
             java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount, org.joda.time.LocalDate validFrom,
             org.joda.time.LocalDate validTo, java.lang.Boolean active, java.lang.Boolean useCheckDigit,
             java.lang.Boolean useAmountToValidateCheckDigit) {
@@ -298,8 +298,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
             @RequestParam(value = "name", required = false) java.lang.String name,
             @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
-            @RequestParam(value = "minreferencecode", required = false) java.lang.Integer minReferenceCode,
-            @RequestParam(value = "maxreferencecode", required = false) java.lang.Integer maxReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) java.lang.Long minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
             @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
             @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
             @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
@@ -342,8 +342,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @Atomic
     public PaymentCodePool createPaymentCodePool(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-            java.lang.String name, java.lang.String entityReferenceCode, java.lang.Integer minReferenceCode,
-            java.lang.Integer maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
+            java.lang.String name, java.lang.String entityReferenceCode, java.lang.Long minReferenceCode,
+            java.lang.Long maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
             org.joda.time.LocalDate validFrom, org.joda.time.LocalDate validTo, java.lang.Boolean active,
             java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit) {
 
@@ -450,8 +450,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
             @RequestParam(value = "name", required = false) java.lang.String name,
             @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
-            @RequestParam(value = "minreferencecode", required = false) java.lang.Integer minReferenceCode,
-            @RequestParam(value = "maxreferencecode", required = false) java.lang.Integer maxReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) java.lang.Long minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
             @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
             @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
             @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
@@ -496,8 +496,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @Atomic
     public void updatePaymentCodePool(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-            java.lang.String name, java.lang.String entityReferenceCode, java.lang.Integer minReferenceCode,
-            java.lang.Integer maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
+            java.lang.String name, java.lang.String entityReferenceCode, java.lang.Long minReferenceCode,
+            java.lang.Long maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
             org.joda.time.LocalDate validFrom, org.joda.time.LocalDate validTo, java.lang.Boolean active,
             java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit, Model model) {
 

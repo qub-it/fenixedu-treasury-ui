@@ -72,37 +72,37 @@ ${portal.toolkit()}
 
 
 
-<div class="panel panel-default">
-<form method="get" class="form-horizontal">
-<div class="panel-body">
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.whenProcessedBySibs"/></div> 
+<!-- <div class="panel panel-default"> -->
+<!-- <form method="get" class="form-horizontal"> -->
+<!-- <div class="panel-body"> -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.whenProcessedBySibs"/></div>  --%>
 
-<div class="col-sm-4">
-	<input id="sibsReportFile_whenProcessedBySibs" class="form-control" type="text" name="whenprocessedbysibs"  bennu-datetime 
-	value = '<c:out value='${not empty param.whenprocessedbysibs ? param.whenprocessedbysibs : sibsReportFile.whenProcessedBySibs }'/>' />
-</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.transactionsTotalAmount"/></div> 
+<!-- <div class="col-sm-4"> -->
+<!-- 	<input id="sibsReportFile_whenProcessedBySibs" class="form-control" type="text" name="whenprocessedbysibs"  bennu-datetime  -->
+<%-- 	value = '<c:out value='${not empty param.whenprocessedbysibs ? param.whenprocessedbysibs : sibsReportFile.whenProcessedBySibs }'/>' /> --%>
+<!-- </div> -->
+<!-- </div>		 -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.transactionsTotalAmount"/></div>  --%>
 
-<div class="col-sm-10">
-	<input id="sibsReportFile_transactionsTotalAmount" class="form-control" type="text" name="transactionstotalamount"  value='<c:out value='${not empty param.transactionstotalamount ? param.transactionstotalamount : sibsReportFile.transactionsTotalAmount }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.totalCost"/></div> 
+<!-- <div class="col-sm-10"> -->
+<%-- 	<input id="sibsReportFile_transactionsTotalAmount" class="form-control" type="text" name="transactionstotalamount"  value='<c:out value='${not empty param.transactionstotalamount ? param.transactionstotalamount : sibsReportFile.transactionsTotalAmount }'/>' /> --%>
+<!-- </div>	 -->
+<!-- </div>		 -->
+<!-- <div class="form-group row"> -->
+<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.totalCost"/></div>  --%>
 
-<div class="col-sm-10">
-	<input id="sibsReportFile_totalCost" class="form-control" type="text" name="totalcost"  value='<c:out value='${not empty param.totalcost ? param.totalcost : sibsReportFile.totalCost }'/>' />
-</div>	
-</div>		
-</div>
-<div class="panel-footer">
-	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
-</div>
-</form>
-</div>
+<!-- <div class="col-sm-10"> -->
+<%-- 	<input id="sibsReportFile_totalCost" class="form-control" type="text" name="totalcost"  value='<c:out value='${not empty param.totalcost ? param.totalcost : sibsReportFile.totalCost }'/>' /> --%>
+<!-- </div>	 -->
+<!-- </div>		 -->
+<!-- </div> -->
+<!-- <div class="panel-footer"> -->
+<%-- 	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/> --%>
+<!-- </div> -->
+<!-- </form> -->
+<!-- </div> -->
 
 
 <c:choose>
@@ -171,8 +171,8 @@ ${portal.toolkit()}
 		             ],
 		"data" : searchsibsreportfileDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
-//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+// "dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
