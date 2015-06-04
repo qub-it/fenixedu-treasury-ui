@@ -40,7 +40,9 @@ import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
@@ -55,6 +57,7 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -131,8 +134,8 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
     public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        BigDecimal debitSum = new BigDecimal(0);
-        BigDecimal creditSum = new BigDecimal(0);
+        BigDecimal debitSum = BigDecimal.ZERO;
+        BigDecimal creditSum = BigDecimal.ZERO;
         boolean error = false;
 
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
@@ -161,7 +164,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         }
         for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                creditSum = creditSum.add(creditEntryBean.getCreditEntry().getAmount());
+                creditSum = creditSum.add(creditEntryBean.getCreditEntry().getOpenAmount());
             }
         }
         if (creditSum.compareTo(debitSum) > 0) {
@@ -176,6 +179,10 @@ public class SettlementNoteController extends TreasuryBaseController {
             error = true;
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
         }
+        if (bean.getDocNumSeries() == null) {
+            error = true;
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.need.documentSeries"), model);
+        }
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -185,7 +192,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
                 InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateInterestValue(bean.getDate());
-                if (debitInterest != null) {
+                if (debitInterest.getInterestAmount().compareTo(BigDecimal.ZERO) != 0) {
                     bean.getInterestEntries().add(bean.new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest));
                 }
             }
@@ -253,40 +260,30 @@ public class SettlementNoteController extends TreasuryBaseController {
         settlementNote.processSettlementNoteCreation(bean);
     }
 
-//////// AUTO GENERATED ////////    
-    //
     @RequestMapping(value = SEARCH_URI)
     public String search(
-            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
-                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-            Model model) {
+            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
+            @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "currency", required = false) Currency currency,
+            @RequestParam(value = "documentnumber", required = false) String documentNumber,
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDate,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
+                    value = "state", required = false) FinantialDocumentStateType state, Model model) {
         List<SettlementNote> searchsettlementnoteResultsDataSet =
-                filterSearchSettlementNote(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
-                        documentDate, documentDueDate, originDocumentNumber, state);
+                filterSearchSettlementNote(debtAccount, documentNumberSeries, currency, documentNumber, documentDate,
+                        documentDueDate, originDocumentNumber, state);
 
         // add the results dataSet to the model
         model.addAttribute("searchsettlementnoteResultsDataSet", searchsettlementnoteResultsDataSet);
-        model.addAttribute("SettlementNote_finantialDocumentType_options", FinantialDocumentType.findAll());
-
-        model.addAttribute("SettlementNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                                  // -
-                                                                                                                                  // MUST
-                                                                                                                                  // DEFINE
-                                                                                                                                  // RELATION
-        // model.addAttribute("SettlementNote_debtAccount_options",
-        // org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); //
-        // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("SettlementNote_documentNumberSeries_options",
-                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll().collect(Collectors.toList()));
-        // // CHANGE_ME - MUST DEFINE RELATION
-
+        model.addAttribute("SettlementNote_finantialDocumentType_options",
+                FinantialDocumentType.findAll().collect(Collectors.toList()));
+        model.addAttribute("SettlementNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
+        model.addAttribute(
+                "SettlementNote_documentNumberSeries_options",
+                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()
+                        .filter(dNS -> dNS.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
+                        .collect(Collectors.toList()));
         model.addAttribute("SettlementNote_currency_options",
                 org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
@@ -294,16 +291,10 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     private List<SettlementNote> getSearchUniverseSearchSettlementNoteDataSet() {
-        //
-        // The initialization of the result list must be done here
-        //
-        //
         return SettlementNote.findAll().collect(Collectors.toList());
     }
 
-    private List<SettlementNote> filterSearchSettlementNote(
-            org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+    private List<SettlementNote> filterSearchSettlementNote(org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
             org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
             org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
             org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
@@ -311,8 +302,8 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         return getSearchUniverseSearchSettlementNoteDataSet()
                 .stream()
-                .filter(settlementNote -> finantialDocumentType == null
-                        || finantialDocumentType == settlementNote.getFinantialDocumentType())
+                .filter(settlementNote -> FinantialDocumentType.findForSettlementNote() == settlementNote
+                        .getFinantialDocumentType())
                 .filter(settlementNote -> debtAccount == null || debtAccount == settlementNote.getDebtAccount())
                 .filter(settlementNote -> documentNumberSeries == null
                         || documentNumberSeries == settlementNote.getDocumentNumberSeries())
@@ -332,21 +323,18 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use
-        // below
         return redirect("/treasury/document/managepayments/settlementnote/read" + "/" + settlementNote.getExternalId(), model,
                 redirectAttributes);
     }
 
-    //
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") SettlementNote settlementNote, Model model) {
         setSettlementNote(settlementNote, model);
         return "treasury/document/managepayments/settlementnote/read";
     }
 
+////////AUTO GENERATED ////////    
+//
     //
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") SettlementNote settlementNote, Model model, RedirectAttributes redirectAttributes) {

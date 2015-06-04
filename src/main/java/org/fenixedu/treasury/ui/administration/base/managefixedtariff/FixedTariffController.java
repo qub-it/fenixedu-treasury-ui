@@ -213,13 +213,7 @@ public class FixedTariffController extends TreasuryBaseController {
         FixedTariff fixedTariff =
                 FixedTariff.create(product, interestRate, finantialEntity, amount, beginDate.toDateTimeAtStartOfDay(),
                         endDate.toDateTimeAtStartOfDay(), dueDateCalculationType, fixedDueDate,
-                        numberOfDaysAfterCreationForDueDate, applyInterests);
-        fixedTariff.setAmount(amount);
-        fixedTariff.setApplyInterests(applyInterests);
-        fixedTariff.setDueDateCalculationType(dueDateCalculationType);
-        fixedTariff.setFinantialEntity(finantialEntity);
-        fixedTariff.setFixedDueDate(fixedDueDate);
-        fixedTariff.setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
+                        numberOfDaysAfterCreationForDueDate, false);
 
         if (applyInterests) {
             interestRate =
@@ -228,6 +222,7 @@ public class FixedTariffController extends TreasuryBaseController {
                             interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
                             interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
             fixedTariff.setInterestRate(interestRate);
+            fixedTariff.setApplyInterests(true);
         }
 
         fixedTariff.checkRules();

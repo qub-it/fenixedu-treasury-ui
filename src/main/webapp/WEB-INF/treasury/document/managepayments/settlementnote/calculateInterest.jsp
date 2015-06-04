@@ -133,6 +133,7 @@ ${portal.angularToolkit()}
 		</div>
 		<div class="panel-body">
 			<table id="debitEntriesTable" class="table responsive table-bordered table-hover">
+                <col style="width:3%"/>
 				<thead>
 					<tr>
 						<%-- Check Column --%>
@@ -149,7 +150,7 @@ ${portal.angularToolkit()}
 							<td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
 							<td><spring:message code="label.InterestEntry.interest" /> &nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" /></td>
 							<td><c:out value="${ interestEntryBean.interest }" /></td>
-							<td><c:out value="${ interestEntryBean.documentDate.toString('yyyy-MM-dd')}" /></td>
+							<td><c:out value="${ interestEntryBean.documentDueDate}" /></td>
 							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" /></td>
 						</tr>
 					</c:forEach>

@@ -191,6 +191,9 @@ public class SettlementNote extends SettlementNote_Base {
                 DocumentNumberSeries
                         .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
                         .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+        if (bean.getInterestEntries().size() == 0) {
+            return;
+        }
 
         DebitNote interestDebitNote =
                 DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
@@ -208,8 +211,10 @@ public class SettlementNote extends SettlementNote_Base {
 
     private void closeCreditNotes(SettlementNoteBean bean) {
         for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
-            if (creditEntryBean.isIncluded() && !creditEntryBean.getCreditEntry().getFinantialDocument().isClosed()) {
-                creditEntryBean.getCreditEntry().getFinantialDocument().closeDocument();
+            if (creditEntryBean.isIncluded()) {
+                if (!creditEntryBean.getCreditEntry().getFinantialDocument().isClosed()) {
+                    creditEntryBean.getCreditEntry().getFinantialDocument().closeDocument();
+                }
                 SettlementEntry.create(creditEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
             }
         }
@@ -234,9 +239,12 @@ public class SettlementNote extends SettlementNote_Base {
                 SettlementEntry.create(debitEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
             }
         }
-        DebitNote debitNote = DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
-        debitNote.addDebitNoteEntries(untiedDebitEntries);
-        debitNote.closeDocument();
+        if (untiedDebitEntries.size() != 0) {
+            DebitNote debitNote =
+                    DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
+            debitNote.addDebitNoteEntries(untiedDebitEntries);
+            debitNote.closeDocument();
+        }
     }
 
     @Atomic

@@ -82,7 +82,7 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-body">
 					<input type="file" name="documentTemplateFile"
-						accept="${ allowedFileType}" />
+						accept="${ allowedFileType }" />
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">

@@ -170,6 +170,7 @@ ${portal.angularToolkit()}
         <div class="panel-body">
             <table id="debitEntriesTable"
                 class="table responsive table-bordered table-hover">
+                <col style="width:3%"/>
                 <thead>
                     <tr>
                         <%-- Check Column --%>
@@ -203,7 +204,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ debitEntryBean.debitEntry.description }"/>
                             </td>
                             <td>
-                                <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                <c:out value="${ debitEntryBean.documentDueDate }"/>
                             </td>
                             <td>
                                 <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" />
@@ -238,6 +239,7 @@ ${portal.angularToolkit()}
         <div class="panel-body">            
             <table id="creditEntriesTable"
                 class="table responsive table-bordered table-hover">
+                <col style="width:3%"/>
                 <thead>
                     <tr>
                         <%-- Check Column --%>
@@ -262,7 +264,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ creditEntryBean.creditEntry.description }"/>
                             </td>
                             <td>
-                                <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                <c:out value="${ creditEntryBean.documentDueDate }"/>
                             </td>
                             <td>
                                 <c:out value="${ creditEntryBean.creditEntry.vat.taxRate }"/>
