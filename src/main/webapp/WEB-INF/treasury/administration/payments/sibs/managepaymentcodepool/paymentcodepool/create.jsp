@@ -79,8 +79,8 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
-		 <select id="paymentCodePool_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		 <select id="paymentCodePool_finantialInstitution" class="js-example-basic-single" name="finantialinstitution" required>
+		 <option value=""></option> required <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
 				</div>
 </div>		
@@ -116,14 +116,14 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.minAmount"/></div> 
 
 <div class="col-sm-10">
-	<input id="paymentCodePool_minAmount" class="form-control" type="text" name="minamount"  value='<c:out value='${not empty param.minamount ? param.minamount : paymentCodePool.minAmount }'/>' />
+	<input id="paymentCodePool_minAmount" class="form-control" type="text" name="minamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" value='<c:out value='${not empty param.minamount ? param.minamount : paymentCodePool.minAmount }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.maxAmount"/></div> 
 
 <div class="col-sm-10">
-	<input id="paymentCodePool_maxAmount" class="form-control" type="text" name="maxamount"  value='<c:out value='${not empty param.maxamount ? param.maxamount : paymentCodePool.maxAmount }'/>' />
+	<input id="paymentCodePool_maxAmount" class="form-control" type="text" name="maxamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" value='<c:out value='${not empty param.maxamount ? param.maxamount : paymentCodePool.maxAmount }'/>' />
 </div>	
 </div>		
 <div class="form-group row">
@@ -197,9 +197,9 @@ $(document).ready(function() {
 	<%-- Block for providing finantialInstitution options --%>
 	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
 	finantialInstitution_options = [
-		<c:forEach items="${PaymentCodePool_finantialInstitution_options}" var="element"> 
+		<c:forEach items="${finantialInstitutionList}" var="element"> 
 			{
-				text : "<c:out value='${element}'/>",  
+				text : "<c:out value='${element.name}'/>",  
 				id : "<c:out value='${element.externalId}'/>"
 			},
 		</c:forEach>

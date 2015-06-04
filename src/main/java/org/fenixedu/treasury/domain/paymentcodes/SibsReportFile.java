@@ -37,15 +37,26 @@ import pt.ist.fenixframework.Atomic;
 
 public class SibsReportFile extends SibsReportFile_Base {
 
+    public static final String CONTENT_TYPE = "application/vnd.oasis.opendocument.text";
+
     protected SibsReportFile() {
         super();
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(String fileName, final org.joda.time.LocalDate whenProcessedBySibs,
-            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, byte[] data) {
+    protected SibsReportFile(final org.joda.time.DateTime whenProcessedBySibs,
+            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, final String displayName,
+            final String fileName, final byte[] content) {
+        this();
+        this.init(whenProcessedBySibs, transactionsTotalAmount, totalCost, displayName, fileName, content);
 
-        super.init(fileName, fileName, data);
+        checkRules();
+    }
+
+    protected void init(final org.joda.time.DateTime whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
+            final java.math.BigDecimal totalCost, final String displayName, final String fileName, final byte[] content) {
+
+        super.init(displayName, fileName, content);
         setWhenProcessedBySibs(whenProcessedBySibs);
         setTransactionsTotalAmount(transactionsTotalAmount);
         setTotalCost(totalCost);
@@ -73,7 +84,7 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     @Atomic
-    public void edit(final org.joda.time.LocalDate whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
+    public void edit(final org.joda.time.DateTime whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
             final java.math.BigDecimal totalCost) {
         setWhenProcessedBySibs(whenProcessedBySibs);
         setTransactionsTotalAmount(transactionsTotalAmount);
@@ -95,14 +106,6 @@ public class SibsReportFile extends SibsReportFile_Base {
         setBennu(null);
 
         deleteDomainObject();
-    }
-
-    @Atomic
-    public static SibsReportFile create(final org.joda.time.LocalDate whenProcessedBySibs,
-            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost) {
-        SibsReportFile sibsReportFile = new SibsReportFile();
-        sibsReportFile.init(whenProcessedBySibs, transactionsTotalAmount, totalCost);
-        return sibsReportFile;
     }
 
     // @formatter: off
@@ -135,6 +138,14 @@ public class SibsReportFile extends SibsReportFile_Base {
     public boolean isAccessible(User arg0) {
         // TODO Auto-generated method stub
         return false;
+    }
+
+    @Atomic
+    public static SibsReportFile create(final org.joda.time.DateTime whenProcessedBySibs,
+            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, final String displayName,
+            final String fileName, final byte[] content) {
+        return new SibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, displayName, fileName, content);
+
     }
 
 }

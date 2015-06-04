@@ -54,10 +54,8 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
-data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
-				|&nbsp;&nbsp;
-	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/update/${paymentCodePool.externalId}"  ><spring:message code="label.event.update" /></a>
+<%-- |&nbsp;&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message code="label.event.delete" /></a> --%>
+|&nbsp;&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/update/${paymentCodePool.externalId}"  ><spring:message code="label.event.update" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -104,7 +102,7 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.finantialInstitution"/></th> 
 	<td>
-		<c:out value='${paymentCodePool.finantialInstitution}'/>
+		<c:out value='${paymentCodePool.finantialInstitution.name}'/>
 	</td> 
 </tr>
 <tr>
@@ -134,13 +132,13 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.minAmount"/></th> 
 	<td>
-		<c:out value='${paymentCodePool.minAmount}'/>
+		<c:out value='${paymentCodePool.minAmount} ${paymentCodePool.finantialInstitution.currency.symbol}'/>
 	</td> 
 </tr>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.maxAmount"/></th> 
 	<td>
-		<c:out value='${paymentCodePool.maxAmount}'/>
+		<c:out value='${paymentCodePool.maxAmount} ${paymentCodePool.finantialInstitution.currency.symbol}'/>
 	</td> 
 </tr>
 <tr>

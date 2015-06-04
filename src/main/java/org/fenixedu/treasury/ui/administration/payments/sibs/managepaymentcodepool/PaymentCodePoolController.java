@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -148,27 +149,27 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             java.lang.Boolean useAmountToValidateCheckDigit) {
 
         return getSearchUniverseSearchPaymentCodePoolDataSet()
-                .filter(paymentCodePool -> finantialInstitution == null
-                        || finantialInstitution == paymentCodePool.getFinantialInstitution())
-                .filter(paymentCodePool -> name == null || name.length() == 0 || paymentCodePool.getName() != null
-                        && paymentCodePool.getName().length() > 0
-                        && paymentCodePool.getName().toLowerCase().contains(name.toLowerCase()))
-                .filter(paymentCodePool -> entityReferenceCode == null || entityReferenceCode.length() == 0
-                        || paymentCodePool.getEntityReferenceCode() != null
-                        && paymentCodePool.getEntityReferenceCode().length() > 0
-                        && paymentCodePool.getEntityReferenceCode().toLowerCase().contains(entityReferenceCode.toLowerCase()))
-                .filter(paymentCodePool -> minReferenceCode == null
-                        || minReferenceCode.equals(paymentCodePool.getMinReferenceCode()))
-                .filter(paymentCodePool -> maxReferenceCode == null
-                        || maxReferenceCode.equals(paymentCodePool.getMaxReferenceCode()))
-                .filter(paymentCodePool -> minAmount == null || minAmount.equals(paymentCodePool.getMinAmount()))
-                .filter(paymentCodePool -> maxAmount == null || maxAmount.equals(paymentCodePool.getMaxAmount()))
-                .filter(paymentCodePool -> validFrom == null || validFrom.equals(paymentCodePool.getValidFrom()))
-                .filter(paymentCodePool -> validTo == null || validTo.equals(paymentCodePool.getValidTo()))
-                .filter(paymentCodePool -> active == null || active.equals(paymentCodePool.getActive()))
-                .filter(paymentCodePool -> useCheckDigit == null || useCheckDigit.equals(paymentCodePool.getUseCheckDigit()))
-                .filter(paymentCodePool -> useAmountToValidateCheckDigit == null
-                        || useAmountToValidateCheckDigit.equals(paymentCodePool.getUseAmountToValidateCheckDigit()))
+//                .filter(paymentCodePool -> finantialInstitution == null
+//                        || finantialInstitution == paymentCodePool.getFinantialInstitution())
+//                .filter(paymentCodePool -> name == null || name.length() == 0 || paymentCodePool.getName() != null
+//                        && paymentCodePool.getName().length() > 0
+//                        && paymentCodePool.getName().toLowerCase().contains(name.toLowerCase()))
+//                .filter(paymentCodePool -> entityReferenceCode == null || entityReferenceCode.length() == 0
+//                        || paymentCodePool.getEntityReferenceCode() != null
+//                        && paymentCodePool.getEntityReferenceCode().length() > 0
+//                        && paymentCodePool.getEntityReferenceCode().toLowerCase().contains(entityReferenceCode.toLowerCase()))
+//                .filter(paymentCodePool -> minReferenceCode == null
+//                        || minReferenceCode.equals(paymentCodePool.getMinReferenceCode()))
+//                .filter(paymentCodePool -> maxReferenceCode == null
+//                        || maxReferenceCode.equals(paymentCodePool.getMaxReferenceCode()))
+//                .filter(paymentCodePool -> minAmount == null || minAmount.equals(paymentCodePool.getMinAmount()))
+//                .filter(paymentCodePool -> maxAmount == null || maxAmount.equals(paymentCodePool.getMaxAmount()))
+//                .filter(paymentCodePool -> validFrom == null || validFrom.equals(paymentCodePool.getValidFrom()))
+//                .filter(paymentCodePool -> validTo == null || validTo.equals(paymentCodePool.getValidTo()))
+//                .filter(paymentCodePool -> active == null || active.equals(paymentCodePool.getActive()))
+//                .filter(paymentCodePool -> useCheckDigit == null || useCheckDigit.equals(paymentCodePool.getUseCheckDigit()))
+//                .filter(paymentCodePool -> useAmountToValidateCheckDigit == null
+//                        || useAmountToValidateCheckDigit.equals(paymentCodePool.getUseAmountToValidateCheckDigit()))
                 .collect(Collectors.toList());
     }
 
@@ -226,6 +227,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("PaymentCodePool_finantialInstitution_options",
                 new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
         //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
@@ -376,6 +378,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         model.addAttribute("PaymentCodePool_finantialInstitution_options",
                 new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
         //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         setPaymentCodePool(paymentCodePool, model);
 
         //IF ANGULAR, initialize the Bean

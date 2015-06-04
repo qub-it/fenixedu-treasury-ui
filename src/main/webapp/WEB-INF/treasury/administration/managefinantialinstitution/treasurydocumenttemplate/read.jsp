@@ -174,7 +174,8 @@ ${portal.toolkit()}
                             </tr>
                             <c:forEach items="${ documentTemplate.treasuryDocumentTemplateFilesSet }" var="submittedFile">
                                 <tr>
-<%-- ACFSILVA                       <td><c:out value='${submittedFile.creationDate.toString("yyyy-MM-dd")}' /> --%>
+<%--                        <td><c:out value='${submittedFile.creationDate.toString("yyyy-MM-dd")}' /> --%>
+                                    <td>
                                     <joda:format value='${submittedFile.creationDate}' style='S-' />
                                     </td>
                                     <td><c:out

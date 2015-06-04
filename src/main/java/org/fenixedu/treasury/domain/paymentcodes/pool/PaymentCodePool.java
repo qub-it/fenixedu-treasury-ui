@@ -35,6 +35,8 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGenerator;
+import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialPaymentWithCheckDigitCodeGenerator;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
