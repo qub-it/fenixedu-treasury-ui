@@ -139,6 +139,11 @@
             <artifactId>datatables-servlet2</artifactId>
             <version>0.8.11</version>
         </dependency>
+        <dependency>
+            <groupId>org.fenixedu</groupId>
+            <artifactId>fenixedu-commons</artifactId>
+            <version>1.1.0</version>
+        </dependency>
 
     </dependencies>
 

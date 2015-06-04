@@ -58,6 +58,8 @@ import pt.ist.fenixframework.Atomic;
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping(SibsInputFileController.CONTROLLER_URL)
 public class SibsInputFileController extends TreasuryBaseController {
+    static private final String PAYMENT_FILE_EXTENSION = "INP";
+    static private final String ZIP_FILE_EXTENSION = "ZIP";
 
     public static final String CONTROLLER_URL = "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile";
 

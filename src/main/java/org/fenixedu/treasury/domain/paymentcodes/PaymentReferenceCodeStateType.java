@@ -27,7 +27,6 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
-public enum PaymentReferenceCodeStateType 
-{
-	UNUSED, USED, ANNULLED
+public enum PaymentReferenceCodeStateType {
+    UNUSED, USED, ANNULLED, PROCESSED
 }

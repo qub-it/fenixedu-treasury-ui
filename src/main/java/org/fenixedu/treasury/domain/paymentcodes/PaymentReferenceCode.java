@@ -132,21 +132,29 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return Bennu.getInstance().getPaymentReferenceCodesSet().stream();
     }
 
-    public static Stream<PaymentReferenceCode> findByReferenceCode(final java.lang.String referenceCode) {
-        return findAll().filter(i -> referenceCode.equalsIgnoreCase(i.getReferenceCode()));
+    public static Stream<PaymentReferenceCode> findByReferenceCode(final java.lang.String referenceCode,
+            FinantialInstitution finantialInstitution) {
+        return findAll().filter(i -> referenceCode.equalsIgnoreCase(i.getReferenceCode())).filter(
+                x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
 
-    public static Stream<PaymentReferenceCode> findByBeginDate(final org.joda.time.LocalDate beginDate) {
-        return findAll().filter(i -> beginDate.equals(i.getBeginDate()));
+    public static Stream<PaymentReferenceCode> findByBeginDate(final org.joda.time.LocalDate beginDate,
+            FinantialInstitution finantialInstitution) {
+        return findAll().filter(i -> beginDate.equals(i.getBeginDate())).filter(
+                x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
 
-    public static Stream<PaymentReferenceCode> findByEndDate(final org.joda.time.LocalDate endDate) {
-        return findAll().filter(i -> endDate.equals(i.getEndDate()));
+    public static Stream<PaymentReferenceCode> findByEndDate(final org.joda.time.LocalDate endDate,
+            FinantialInstitution finantialInstitution) {
+        return findAll().filter(i -> endDate.equals(i.getEndDate())).filter(
+                x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
 
     public static Stream<PaymentReferenceCode> findByState(
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
-        return findAll().filter(i -> state.equals(i.getState()));
+            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state,
+            FinantialInstitution finantialInstitution) {
+        return findAll().filter(i -> state.equals(i.getState())).filter(
+                x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
 
 //    protected PaymentCode() {
@@ -265,6 +273,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return getState() == PaymentReferenceCodeStateType.ANNULLED;
     }
 
+    public boolean isProcessed() {
+        return getState() == PaymentReferenceCodeStateType.PROCESSED;
+    }
+
 //    public boolean isInvalid() {
 //        return getState() == PaymentCodeState.INVALID;
 //    }
@@ -356,6 +368,12 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             return this.getReferenceCode().substring(0, 6);
         }
         throw new TreasuryDomainException("error.PaymentReferenceCode.not.from.pool.with.checkdigit");
+    }
+
+    public SibsReportFile getReportOnDate(DateTime transactionWhenRegistered) {
+        //HACK: THIS SHOULD BE WRONG. MUST BE CHECKED
+        return this.getReportedInFilesSet().stream().filter(x -> x.getWhenProcessedBySibs().equals(transactionWhenRegistered))
+                .findFirst().orElse(null);
     }
 
 }

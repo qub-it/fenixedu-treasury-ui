@@ -1290,6 +1290,17 @@ relation PaymentReferenceCodeBennu {
 	    multiplicity *;
 	  }
 	}
+	
+	relation PaymentReferenceCodeSibsReportFile
+	{
+	   paymentcodes.SibsReportFile playsRole reportedInFiles{
+	       multiplicity *;
+	   }
+	   
+	   paymentcodes.PaymentReferenceCode playsRole referenceCodes{
+	       multiplicity *;
+	       }
+	}
 
 
 relation SibsReportFileBennu {
