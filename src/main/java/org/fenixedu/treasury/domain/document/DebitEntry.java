@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.document;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,7 +46,6 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
-import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.joda.time.DateTime;
@@ -107,29 +107,19 @@ public class DebitEntry extends DebitEntry_Base {
         checkRules();
     }
 
-    //TODOJN --
-    @Atomic
     public InterestRateBean calculateInterestValue(LocalDate whenToCalculate) {
-        //TODOJN - martelada..
-        if (getTariff() != null && getTariff().getInterestRate() != null) {
-            getTariff().getInterestRate();
-        } else {
-            Tariff tariff = Tariff.findAll().findAny().get();
-            if (tariff.getInterestRate() == null) {
-                InterestRate.create(tariff, InterestType.DAILY, 2, true, 50, 3, BigDecimal.valueOf(50.4), BigDecimal.valueOf(2));
-            }
-            setTariff(tariff);
-
+        if (!getTariff().getApplyInterests()) {
+            return new InterestRateBean();
         }
-        //TODOJN - fim de martelada..
         InterestRate rate = getTariff().getInterestRate();
 
         Map<DateTime, BigDecimal> payments = new HashMap<DateTime, BigDecimal>();
         for (SettlementEntry settlementEntry : getSettlementEntriesSet()) {
             payments.put(settlementEntry.getFinantialDocument().getDocumentDate(), settlementEntry.getAmount());
         }
+        payments.put(whenToCalculate.toDateTimeAtStartOfDay(), BigDecimal.ZERO);
 
-        BigDecimal openAmount = getAmountWithVat();
+        BigDecimal totalAmount = getAmount();
         LocalDate startDate = getDueDate();
         List<BigDecimal> interests = new ArrayList<BigDecimal>();
         for (DateTime date : payments.keySet().stream().sorted().collect(Collectors.toList())) {
@@ -139,24 +129,24 @@ public class DebitEntry extends DebitEntry_Base {
                 if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
                     int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
                     //TODOJN - get global rate
-                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(openAmount, daysInPreviousYear, rate));
+                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInPreviousYear, rate));
                     int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
-                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(openAmount, daysInNextYear, rate));
+                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInNextYear, rate));
                 } else {
                     int days = Days.daysBetween(startDate, date.toLocalDate()).getDays();
-                    interestAmount = getRateValueUsingDiaryRate(openAmount, days, rate);
+                    interestAmount = getRateValueUsingDiaryRate(totalAmount, days, rate);
                 }
                 break;
             case MONTHLY:
                 if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
                     int monthsInPreviousYear = 12 - startDate.getMonthOfYear();
                     //TODOJN - get global rate
-                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(openAmount, monthsInPreviousYear, rate));
+                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInPreviousYear, rate));
                     int monthsInNextYear = date.getMonthOfYear() - 1;
-                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(openAmount, monthsInNextYear, rate));
+                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInNextYear, rate));
                 } else {
                     int months = date.getMonthOfYear() - startDate.getMonthOfYear();
-                    interestAmount = getRateValueUsingMonthlyRate(openAmount, months, rate);
+                    interestAmount = getRateValueUsingMonthlyRate(totalAmount, months, rate);
                 }
                 break;
             case FIXED_AMOUNT:
@@ -164,19 +154,22 @@ public class DebitEntry extends DebitEntry_Base {
                 break;
             }
             interests.add(interestAmount);
-            openAmount.subtract(payments.get(date));
+            totalAmount = totalAmount.subtract(payments.get(date));
             startDate = date.toLocalDate();
         }
 
         BigDecimal totalInterestAmount = BigDecimal.ZERO;
         for (BigDecimal interestAmount : interests) {
-            totalInterestAmount.add(interestAmount);
+            totalInterestAmount = totalInterestAmount.add(interestAmount);
         }
 
         for (DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
-            totalInterestAmount.subtract(interestDebitEntry.getAmountWithVat());
+            totalInterestAmount = totalInterestAmount.subtract(interestDebitEntry.getAmountWithVat());
         }
-
+        if (getVatRate().compareTo(BigDecimal.ZERO) != 0) {
+            totalInterestAmount = totalInterestAmount.multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100))));
+        }
+        totalInterestAmount = totalInterestAmount.setScale(2, RoundingMode.HALF_EVEN);
         return new InterestRateBean(totalInterestAmount, getInterestValueDescription());
     }
 
@@ -184,7 +177,8 @@ public class DebitEntry extends DebitEntry_Base {
         int numberOfDays =
                 rate.getMaximumDaysToApplyPenalty() < days - rate.getNumberOfDaysAfterDueDate() ? rate
                         .getMaximumDaysToApplyPenalty() : days - rate.getNumberOfDaysAfterDueDate();
-        return amount.multiply(BigDecimal.valueOf(numberOfDays / 365)).multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
+        return amount.multiply(BigDecimal.valueOf(numberOfDays)).divide(BigDecimal.valueOf(365), 2, RoundingMode.HALF_EVEN)
+                .multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
     }
 
     private BigDecimal getRateValueUsingMonthlyRate(BigDecimal amount, int months, InterestRate rate) {
@@ -277,12 +271,6 @@ public class DebitEntry extends DebitEntry_Base {
         return getCurrency().getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
     }
 
-    @Override
-    public BigDecimal getAmountWithVat() {
-        BigDecimal amount = getAmount().multiply(BigDecimal.ONE.add(getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-        return getCurrency().getValueWithScale(amount);
-    }
-
     public BigDecimal getPayedAmount() {
         BigDecimal amount = BigDecimal.ZERO;
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
@@ -301,6 +289,9 @@ public class DebitEntry extends DebitEntry_Base {
     @Atomic
     public DebitEntry generateInterestRateDebitEntry(InterestRateBean interest, DateTime when, DebitNote debitNote) {
         Product product = TreasurySettings.getInstance().getInterestProduct();
+        if (product == null) {
+            throw new TreasuryDomainException("error.SettlementNote.need.interest.product");
+        }
         FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
         Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
 

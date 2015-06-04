@@ -235,7 +235,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${ debitEntryBean.debitEntry.description }" />
                             </td>
                             <td>
-                                <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                <c:out value="${ debitEntryBean.documentDueDate }"/>
                             </td>
                             <td>
                                 <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }"/>
@@ -256,14 +256,14 @@ ${portal.angularToolkit()}
                                 <c:out value="${ creditEntryBean.creditEntry.description }"/>
                             </td>
                             <td>
-                                <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                <c:out value="${ creditEntryBean.documentDueDate }"/>
                             </td>
                             <td>
                                 <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }"/>
                             </td>
                             <td>
                                 -
-                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.amount ) }" />
+                                <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmount ) }" />
                             </td>
                         </tr>
                     </c:if>

@@ -94,10 +94,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             throw new TreasuryDomainException("error.FinantialDocument.finantialinstitution.mismatch");
         }
 
-        if (getDocumentDueDate().isBefore(getDocumentDate().toLocalDate())) {
-            throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.invalid");
+        if (getDocumentNumberSeries().getSeries().getLegacy() == false) {
+            if (getDocumentDueDate().isBefore(getDocumentDate().toLocalDate())) {
+                throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.invalid");
+            }
         }
-
     }
 
     public String getUiDocumentNumber() {

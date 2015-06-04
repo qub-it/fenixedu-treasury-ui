@@ -163,16 +163,17 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public boolean isPendingForPayment() {
-        if (this.getFinantialDocument() != null && this.getFinantialDocument().getState().isAnnuled()) {
-            return false;
-        }
-        BigDecimal totalAmount = this.getAmount();
-        BigDecimal totalPayed = BigDecimal.ZERO;
-        //Only use Closed Payments
-        this.getSettlementEntriesSet().stream()
-                .filter(x -> x.getFinantialDocument() != null && x.getFinantialDocument().isClosed())
-                .map(x -> totalPayed.add(x.getAmount()));
-        return !totalAmount.equals(totalPayed);
+        return this.getOpenAmount().compareTo(BigDecimal.ZERO) != 0;
+//        if (this.getFinantialDocument() != null && this.getFinantialDocument().getState().isAnnuled()) {
+//            return false;
+//        }
+//        BigDecimal totalAmount = this.getTotalAmount();
+//        BigDecimal totalPayed = BigDecimal.ZERO;
+//        //Only use Closed Payments
+//        this.getSettlementEntriesSet().stream()
+//                .filter(x -> x.getFinantialDocument() != null && x.getFinantialDocument().isClosed())
+//                .map(x -> totalPayed.add(x.getAmount()));
+//        return !totalAmount.equals(totalPayed);
     }
 
     @Override

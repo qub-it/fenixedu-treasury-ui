@@ -239,7 +239,7 @@ ${portal.angularToolkit()}
                                     <c:out value="${ debitEntryBean.debitEntry.description }" />
                                 </td>
                                 <td>
-                                    <c:out value="${ debitEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                    <c:out value="${ debitEntryBean.documentDueDate }"/>
                                 </td>
                                 <td>
                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate ) }"/>
@@ -260,7 +260,7 @@ ${portal.angularToolkit()}
                                     <c:out value="${ creditEntryBean.creditEntry.description }"/>
                                 </td>
                                 <td>
-                                    <c:out value="${ creditEntryBean.documentDate.toString('yyyy-MM-dd')}"/>
+                                    <c:out value="${ creditEntryBean.documentDueDate }"/>
                                 </td>
                                 <td>
                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( creditEntryBean.creditEntry.vat.taxRate ) }"/>
@@ -334,9 +334,9 @@ ${portal.angularToolkit()}
                 </div>
                 <div class="col-sm-4">
                     <input id="settlementNote_paymentAmount" class="form-control" type="text" name="paymentAmount" ng-model="paymentAmount" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"/>
-                    <p class="alert alert-danger" ng-show="form.paymentAmount.$error.pattern"><spring:message code="error.invalid.format.input" /></p>
                 </div>
             </div> 
+            <p class="alert alert-danger" ng-show="form.paymentAmount.$error.pattern"><spring:message code="error.invalid.format.input" /></p>
             <div class="panel-footer">
                 <button type="button" class="btn btn-default" ng-click="addPaymentMethod()" ng-disabled="form.paymentAmount.$error.pattern" ><spring:message code="label.event.add" /></button>
             </div>  

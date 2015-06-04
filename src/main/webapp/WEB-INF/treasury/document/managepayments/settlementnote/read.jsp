@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -57,6 +58,39 @@ ${portal.toolkit()}
     <!-- /.modal-dialog -->
 </div>
 
+<div class="modal fade" id="closeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/settlementnote/read/${settlementNote.externalId}/closedebitnote" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.document.manageInvoice.readSettlementNote.confirmClose" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-primary" type="submit">
+                        <spring:message code="label.close" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -110,15 +144,15 @@ ${portal.toolkit()}
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
         <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.managePayments.anullSettlementNote" />
         </a> &nbsp;|&nbsp;      
-        </c:if>
+    </c:if>
     <c:if test="${not settlementNote.isPreparing()}">
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile"><spring:message
                 code="label.event.document.managePayments.exportIntegrationFile" /></a>
         &nbsp;|&nbsp;
-        </c:if>
-
+    </c:if>
 </div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
@@ -205,35 +239,29 @@ ${portal.toolkit()}
     </div>
 </div>
 <c:choose>
-    <c:when test="${not empty settlementNote.debitEntriesSet}">
-        <datatables:table id="debitEntries" row="debitEntry" data="${settlementNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
+    <c:when test="${not empty settlementNote.finantialDocumentEntriesSet}">
+        <datatables:table id="settlementEntries" row="settlementEntry" data="${settlementNote.finantialDocumentEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
             cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
-                    <spring:message code="label.InvoiceEntry.quantity" />
+                    <spring:message code="label.SettlementEntry.description" />
                 </datatables:columnHead>
-                <c:out value="${debitEntry.quantity}" />
-            </datatables:column>
-            <datatables:column>
-                <datatables:columnHead>
-                    <spring:message code="label.DebitEntry.description" />
-                </datatables:columnHead>
-                <c:out value="${debitEntry.description}" />
+                <c:out value="${settlementEntry.description}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.DebitEntry.amount" />
                 </datatables:columnHead>
-                <c:out value="${debitEntry.totalAmount}" />
+                <c:out value="${settlementEntry.totalAmount}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.DebitEntry.vat" />
                 </datatables:columnHead>
-                <c:out value="${debitEntry.vat.taxRate}" />
+                <c:out value="${settlementEntry.invoiceEntry.vat.taxRate}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
-                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}">
+                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/settlemententry/read/${settlementEntry.externalId}">
                     <button type="submit" class="btn btn-default btn-xs">
                         <spring:message code="label.view" />
                     </button>
@@ -241,14 +269,14 @@ ${portal.toolkit()}
             </datatables:column>
         </datatables:table>
         <script>
-									createDataTables(
-											'debitEntries',
-											false,
-											false,
-											false,
-											"${pageContext.request.contextPath}",
-											"${datatablesI18NUrl}");
-								</script>
+			createDataTables(
+					'settlementEntries',
+					false,
+					false,
+					false,
+					"${pageContext.request.contextPath}",
+					"${datatablesI18NUrl}");
+		</script>
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">

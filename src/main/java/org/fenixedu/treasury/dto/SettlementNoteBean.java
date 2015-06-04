@@ -18,7 +18,6 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 public class SettlementNoteBean implements IBean, Serializable {
@@ -108,16 +107,16 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.interestEntries = interestEntries;
     }
 
-    public DateTime getDebitNoteDate() {
-        DateTime lowerDate = new DateTime();
+    public LocalDate getDebitNoteDate() {
+        LocalDate lowerDate = new LocalDate();
         for (DebitEntryBean debitEntryBean : getDebitEntries()) {
-            if (debitEntryBean.isIncluded() && debitEntryBean.getDocumentDate().isBefore(lowerDate)) {
-                lowerDate = debitEntryBean.getDocumentDate();
+            if (debitEntryBean.isIncluded() && debitEntryBean.getDocumentDueDate().isBefore(lowerDate)) {
+                lowerDate = debitEntryBean.getDocumentDueDate();
             }
         }
         for (InterestEntryBean interestEntryBean : getInterestEntries()) {
-            if (interestEntryBean.isIncluded() && interestEntryBean.getDocumentDate().isBefore(lowerDate)) {
-                lowerDate = interestEntryBean.getDocumentDate();
+            if (interestEntryBean.isIncluded() && interestEntryBean.getDocumentDueDate().isBefore(lowerDate)) {
+                lowerDate = interestEntryBean.getDocumentDueDate();
             }
         }
         return lowerDate;
@@ -294,9 +293,9 @@ public class SettlementNoteBean implements IBean, Serializable {
             return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentNumber() : null;
         }
 
-        public DateTime getDocumentDate() {
-            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
-                    .getEntryDateTime();
+        public LocalDate getDocumentDueDate() {
+            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDueDate() : debitEntry
+                    .getDueDate();
         }
 
         public boolean isIncluded() {
@@ -358,9 +357,9 @@ public class SettlementNoteBean implements IBean, Serializable {
             return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument().getDocumentNumber() : null;
         }
 
-        public DateTime getDocumentDate() {
-            return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument().getDocumentDate() : creditEntry
-                    .getEntryDateTime();
+        public LocalDate getDocumentDueDate() {
+            return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument().getDocumentDueDate() : creditEntry
+                    .getEntryDateTime().toLocalDate();
         }
 
         public boolean isIncluded() {
@@ -408,9 +407,9 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.debitEntry = debitEntry;
         }
 
-        public DateTime getDocumentDate() {
-            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDate() : debitEntry
-                    .getEntryDateTime();
+        public LocalDate getDocumentDueDate() {
+            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDueDate() : debitEntry
+                    .getDueDate();
         }
 
         public boolean isIncluded() {
@@ -420,6 +419,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         public void setIncluded(boolean isIncluded) {
             this.isIncluded = isIncluded;
         }
+
     }
 
     public class PaymentEntryBean implements IBean, Serializable {
