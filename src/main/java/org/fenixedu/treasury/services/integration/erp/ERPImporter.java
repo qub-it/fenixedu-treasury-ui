@@ -29,14 +29,23 @@ package org.fenixedu.treasury.services.integration.erp;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import oecd.standardauditfile_tax.pt_1.AuditFile;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
 
+import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
 
 // ******************************************************************************************************************************
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/3B4FECDB-2380-45D7-9019-ABCA80A7E99E/0/Comunicacao_Dados_Doc_Transporte.pdf
@@ -72,5 +81,36 @@ public class ERPImporter {
         } catch (JAXBException e) {
             return null;
         }
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    public void processAuditFile(ERPImportOperation eRPImportOperation) {
+        AuditFile auditFile = readAuditFileFromXML();
+        BigDecimal totalCredit = BigDecimal.ZERO;
+        BigDecimal totalDebit = BigDecimal.ZERO;
+        BigInteger totalPayments = BigInteger.ZERO;
+        for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
+
+            SettlementNote note = processErpPayment(payment, eRPImportOperation);
+            if (note != null) {
+                totalPayments = totalPayments.add(BigInteger.ONE);
+                totalCredit = totalCredit.add(note.getTotalAmount());
+            }
+        }
+        if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
+            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
+        }
+        if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
+            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
+        }
+        if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
+            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
+        }
+
+    }
+
+    @Atomic
+    private SettlementNote processErpPayment(Payment payment, ERPImportOperation eRPImportOperation) {
+        return null;
     }
 }

@@ -420,6 +420,37 @@ relation IntegrationOperationOperationFile
     }
 }
 
+/* ERP Integration */
+class integration.ERPConfiguration extends integration.Configuration
+{
+    //No fields for now...
+}
+relation ERPConfigurationFinantialInstitution
+{
+    FinantialInstitution playsRole finantialInstitution {
+        multiplicity 1..1;
+    }
+    
+    integration.ERPConfiguration playsRole erpIntegrationConfiguration
+    {
+        multiplicity 0..1;
+    }
+}
+
+relation ERPConfigurationSeries
+{
+    document.Series playsRole paymentsIntegrationSeries {
+        multiplicity 1..1;
+    }
+    
+    integration.ERPConfiguration playsRole erpIntegrationConfiguration
+    {
+        multiplicity 0..1;
+    }
+}
+
+
+
 
 class integration.ERPExportOperation extends integration.IntegrationOperation
 {

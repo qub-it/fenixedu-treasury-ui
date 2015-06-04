@@ -252,6 +252,8 @@ public class ERPImportOperationController extends TreasuryBaseController {
                 opeartionFile = OperationFile.create(file.getOriginalFilename(), file.getBytes());
                 ERPImportOperation eRPImportOperation =
                         ERPImportOperation.create(opeartionFile, finantialInstitution, new DateTime(), false, false, false, "");
+
+                importer.processAuditFile(eRPImportOperation);
                 return eRPImportOperation;
             } else {
                 throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.fiscalinstitution.file");
