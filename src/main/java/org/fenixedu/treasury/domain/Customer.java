@@ -67,7 +67,15 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public boolean isDeletable() {
         return true;
     }
+    
+    public boolean isPersonCustomer() {
+        return false;
+    }
 
+    public boolean isAdhocCustomer() {
+        return false;
+    }
+    
     @Atomic
     public void delete() {
         if (!isDeletable()) {

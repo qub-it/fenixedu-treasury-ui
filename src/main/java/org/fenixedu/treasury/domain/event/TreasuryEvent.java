@@ -35,6 +35,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -72,6 +73,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public Map<String, String> getPropertiesMap() {
+        if (StringUtils.isEmpty(getPropertiesJsonMap())) {
+            return null;
+        }
+
         final GsonBuilder builder = new GsonBuilder();
 
         final Gson gson = builder.create();

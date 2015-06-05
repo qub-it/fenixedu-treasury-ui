@@ -122,16 +122,27 @@ ${portal.toolkit()}
 								code="label.TreasuryEvent.description" /></th>
 						<td><c:out value='${treasuryEvent.description.content}' /></td>
 					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.TreasuryEvent.propertiesJsonMap" /></th>
-						<td><c:out value='${treasuryEvent.propertiesJsonMap}' /></td>
-					</tr>
 				</tbody>
 			</table>
 		</form>
 	</div>
 </div>
+
+<c:if test="${not empty treasuryEvent.propertiesMap}">
+	<h2><spring:message code="label.TreasuryEvent.propertiesJsonMap"/></h2>
+
+	<table id="treasuryEventTableMap" class="table responsive table-bordered table-hover">
+		
+		<c:forEach var="property" items="${treasuryEvent.propertiesMap}">
+			<tr>
+				<th><c:out value="${property.key}" /></th>
+				<td><c:out value="${property.value}" /></td>
+			</tr>
+		</c:forEach>
+	</table>
+	
+</c:if>
+
 <h2><spring:message code="label.TreasuryEvent.allDebitEntries"/></h2>
 <div class="tab-pane" id="allDebitEntries">
 	<p></p>

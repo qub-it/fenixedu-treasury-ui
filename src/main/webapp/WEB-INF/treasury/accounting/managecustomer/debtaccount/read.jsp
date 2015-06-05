@@ -81,9 +81,18 @@ ${portal.angularToolkit()}
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><spring:message
             code="label.event.accounting.manageCustomer.createDebitNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"><spring:message
-            code="label.event.accounting.manageCustomer.createExemption" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"><spring:message
-            code="label.event.accounting.manageCustomer.readEvent" /></a>
+            code="label.event.accounting.manageCustomer.createExemption" /></a> 
+            &nbsp;|&nbsp; 
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            <a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent">
+            	<spring:message code="label.event.accounting.manageCustomer.readEvent" />
+            </a>
+            &nbsp;|&nbsp; 
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            <a class="" href="${pageContext.request.contextPath}/academictreasury/createdebts/operations/${debtAccount.externalId}">
+            	<spring:message code="label.event.accounting.manageCustomer.createDebt" />
+            </a>
+
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

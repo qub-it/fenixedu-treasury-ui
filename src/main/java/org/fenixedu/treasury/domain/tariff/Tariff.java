@@ -160,6 +160,10 @@ public abstract class Tariff extends Tariff_Base {
     }
 
     public boolean isDeletable() {
+        if(!getDebitEntrySet().isEmpty()) {
+            return false;
+        }
+        
         return true;
     }
 
@@ -202,7 +206,7 @@ public abstract class Tariff extends Tariff_Base {
         return v1.compareTo(v2) > 0;
     }
 
-    protected LocalDate dueDate(final LocalDate requestDate) {
+    public LocalDate dueDate(final LocalDate requestDate) {
 
         if (getDueDateCalculationType().isFixedDate()) {
             return getFixedDueDate();
