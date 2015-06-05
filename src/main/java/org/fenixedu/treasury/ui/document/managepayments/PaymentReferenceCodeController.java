@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
@@ -48,9 +48,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",accessGroup = "managers")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "managers")
+// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-@BennuSpringController(value = TreasuryController.class)
+//@BennuSpringController(value = TreasuryController.class)
 @RequestMapping(PaymentReferenceCodeController.CONTROLLER_URL)
 public class PaymentReferenceCodeController extends TreasuryBaseController {
 

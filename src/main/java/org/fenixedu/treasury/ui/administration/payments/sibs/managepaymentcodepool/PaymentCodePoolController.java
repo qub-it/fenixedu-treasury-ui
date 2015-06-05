@@ -34,6 +34,9 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.PaymentMethod;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -228,9 +231,14 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
-        model.addAttribute("PaymentCodePool_finantialInstitution_options",
-                new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+
+        model.addAttribute(
+                "PaymentCodePool_documentSeriesForPayments_options",
+                DocumentNumberSeries.findAll()
+                        .filter(x -> x.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
+                        .collect(Collectors.toList()));
+
+        model.addAttribute("PaymentCodePool_paymentMethod_options", PaymentMethod.findAll().collect(Collectors.toList()));
 
         //IF ANGULAR, initialize the Bean
         //PaymentCodePoolBean bean = new PaymentCodePoolBean();
@@ -295,8 +303,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(
-            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-            @RequestParam(value = "name", required = false) java.lang.String name,
+            @RequestParam(value = "finantialinstitution") org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            @RequestParam(value = "name") java.lang.String name,
             @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
             @RequestParam(value = "minreferencecode", required = false) java.lang.Long minReferenceCode,
             @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
@@ -306,8 +314,9 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
             @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
                     required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
-                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, Model model,
-            RedirectAttributes redirectAttributes) {
+                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, @RequestParam(
+                    value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
+                    value = "paymentmethod") PaymentMethod paymentMethod, Model model, RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
         */
@@ -316,7 +325,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
             PaymentCodePool paymentCodePool =
                     createPaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode,
-                            minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit);
+                            minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit,
+                            documentNumberSeries, paymentMethod);
 
             //Success Validation
             //Add the bean to be used in the View
@@ -345,7 +355,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             java.lang.String name, java.lang.String entityReferenceCode, java.lang.Long minReferenceCode,
             java.lang.Long maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
             org.joda.time.LocalDate validFrom, org.joda.time.LocalDate validTo, java.lang.Boolean active,
-            java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit) {
+            java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit,
+            DocumentNumberSeries documentNumberSeries, PaymentMethod paymentMethod) {
 
         // @formatter: off
 
@@ -364,7 +375,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
         PaymentCodePool paymentCodePool =
                 PaymentCodePool.create(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                        validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
+                        validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution,
+                        documentNumberSeries, paymentMethod);
 
         return paymentCodePool;
     }
@@ -375,10 +387,16 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") PaymentCodePool paymentCodePool, Model model) {
-        model.addAttribute("PaymentCodePool_finantialInstitution_options",
-                new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
+
+        model.addAttribute(
+                "PaymentCodePool_documentSeriesForPayments_options",
+                DocumentNumberSeries.findAll()
+                        .filter(x -> x.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
+                        .collect(Collectors.toList()));
+
+        model.addAttribute("PaymentCodePool_paymentMethod_options", PaymentMethod.findAll().collect(Collectors.toList()));
+
         setPaymentCodePool(paymentCodePool, model);
 
         //IF ANGULAR, initialize the Bean
@@ -458,8 +476,11 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
             @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
                     required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
-                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, Model model,
-            RedirectAttributes redirectAttributes) {
+                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, @RequestParam(
+                    value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
+                    value = "paymentmethod") PaymentMethod paymentMethod,
+
+            Model model, RedirectAttributes redirectAttributes) {
 
         setPaymentCodePool(paymentCodePool, model);
 
@@ -469,7 +490,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             */
 
             updatePaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount,
-                    maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, model);
+                    maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, documentNumberSeries,
+                    paymentMethod, model);
 
             /*Succes Update */
 
@@ -499,7 +521,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             java.lang.String name, java.lang.String entityReferenceCode, java.lang.Long minReferenceCode,
             java.lang.Long maxReferenceCode, java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount,
             org.joda.time.LocalDate validFrom, org.joda.time.LocalDate validTo, java.lang.Boolean active,
-            java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit, Model model) {
+            java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit,
+            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod, Model model) {
 
         // @formatter: off				
         /*
@@ -513,18 +536,9 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getPaymentCodePool(model).setFinantialInstitution(finantialInstitution);
-        getPaymentCodePool(model).setName(name);
-        getPaymentCodePool(model).setEntityReferenceCode(entityReferenceCode);
-        getPaymentCodePool(model).setMinReferenceCode(minReferenceCode);
-        getPaymentCodePool(model).setMaxReferenceCode(maxReferenceCode);
-        getPaymentCodePool(model).setMinAmount(minAmount);
-        getPaymentCodePool(model).setMaxAmount(maxAmount);
-        getPaymentCodePool(model).setValidFrom(validFrom);
-        getPaymentCodePool(model).setValidTo(validTo);
-        getPaymentCodePool(model).setActive(active);
-        getPaymentCodePool(model).setUseCheckDigit(useCheckDigit);
-        getPaymentCodePool(model).setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
+        getPaymentCodePool(model).edit(name, minReferenceCode, maxReferenceCode, minAmount, maxAmount, active,
+                seriesToUseInPayments, paymentMethod);
+
     }
 
 }

@@ -30,16 +30,22 @@ package org.fenixedu.treasury.domain.paymentcodes.pool;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.PaymentMethod;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGenerator;
 import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialPaymentWithCheckDigitCodeGenerator;
+import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.base.Strings;
 
 public class PaymentCodePool extends PaymentCodePool_Base {
 
@@ -51,16 +57,18 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     protected PaymentCodePool(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
-            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
+            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
+            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
         this();
         init(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount, validFrom, validTo, active,
-                useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
+                useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
     }
 
     protected void init(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
-            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
+            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
+            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
         setName(name);
         setEntityReferenceCode(entityReferenceCode);
         setMinReferenceCode(minReferenceCode);
@@ -73,6 +81,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         setUseCheckDigit(useCheckDigit);
         setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
         setFinantialInstitution(finantialInstitution);
+        setPaymentMethod(paymentMethod);
+        setDocumentSeriesForPayments(seriesToUseInPayments);
         checkRules();
     }
 
@@ -81,48 +91,72 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         // CHANGE_ME add more busines validations
         //
 
-        // CHANGE_ME In order to validate UNIQUE restrictions
-        // if (findByName(getName().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentCodePool.name.duplicated");
-        // }
-        // if (findByMinPaymentCodes(getMinPaymentCodes().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentCodePool.minPaymentCodes.duplicated");
-        // }
-        // if (findByMaxPaymentCodes(getMaxPaymentCodes().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentCodePool.maxPaymentCodes.duplicated");
-        // }
-        // if (findByMinAmount(getMinAmount().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentCodePool.minAmount.duplicated");
-        // }
-        // if (findByMaxAmount(getMaxAmount().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentCodePool.maxAmount.duplicated");
-        // }
-        // if (findByActive(getActive().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentCodePool.active.duplicated");
-        // }
+        Set<PaymentCodePool> allPools =
+                PaymentCodePool.findByActive(true, this.getFinantialInstitution()).collect(Collectors.toSet());
+
+        for (PaymentCodePool pool : allPools) {
+            if (this.getMinReferenceCode() >= pool.getMinReferenceCode()
+                    && this.getMinReferenceCode() <= pool.getMaxReferenceCode()) {
+                throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+            }
+
+            if (this.getMaxReferenceCode() >= pool.getMinReferenceCode()
+                    && this.getMaxReferenceCode() <= pool.getMinReferenceCode()) {
+                throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+            }
+        }
+
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.PaymentCodePool.name.required");
+        }
+
+        if (Strings.isNullOrEmpty(this.getEntityReferenceCode())) {
+            throw new TreasuryDomainException("error.PaymentCodePool.entityReferenceCode.required");
+        }
+
+        if (this.getMinReferenceCode() <= 0 || this.getMinReferenceCode() >= this.getMaxReferenceCode()) {
+            throw new TreasuryDomainException("error.PaymentCodePool.MinReferenceCode.invalid");
+        }
+
+        if (this.getMaxAmount().compareTo(this.getMinAmount()) < 0) {
+            throw new TreasuryDomainException("error.PaymentCodePool.MinMaxAmount.invalid");
+        }
+
+        if (this.getValidFrom().isBefore(this.getValidTo())) {
+            throw new TreasuryDomainException("error.PaymentCodePool.ValiddFrom.ValidTo.invalid");
+        }
+
+        if (this.getFinantialInstitution() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.required");
+        }
+
+        if (this.getDocumentSeriesForPayments() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.documentSeriesForPayments.required");
+        }
+
+        if (this.getPaymentMethod() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.paymentMethod.required");
+        }
+
+        if (this.getFinantialInstitution() != this.getDocumentSeriesForPayments().getSeries().getFinantialInstitution()) {
+            throw new TreasuryDomainException(
+                    "error.PaymentCodePool.documentNumberSeriesForPayments.invalid.finantialInstitution");
+        }
+
     }
 
     @Atomic
     public void edit(final java.lang.String name, final java.lang.Long minPaymentCodes, final java.lang.Long maxPaymentCodes,
-            final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount, final java.lang.Boolean active) {
+            final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount, final java.lang.Boolean active,
+            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
         setName(name);
         setMinReferenceCode(minPaymentCodes);
         setMaxReferenceCode(maxPaymentCodes);
         setMinAmount(minAmount);
         setMaxAmount(maxAmount);
         setActive(active);
+        setDocumentSeriesForPayments(seriesToUseInPayments);
+        setPaymentMethod(paymentMethod);
         checkRules();
     }
 
@@ -145,9 +179,11 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     public static PaymentCodePool create(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
-            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution) {
+            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
+            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
         return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution);
+                validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution,
+                seriesToUseInPayments, paymentMethod);
 
     }
 
