@@ -237,7 +237,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentseriesforpayments">
+                    <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentnumberseries">
                     </select>
                 </div>
             </div>

@@ -90,6 +90,7 @@ ${portal.toolkit()}
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
+                
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -157,7 +158,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-4">
-                    <input id="paymentCodePool_validFrom" class="form-control" type="text" name="validfrom" bennu-datetime
+                    <input id="paymentCodePool_validFrom" class="form-control" type="text" name="validfrom" bennu-date
                         value='<c:out value='${not empty param.validfrom ? param.validfrom : paymentCodePool.validFrom }'/>' />
                 </div>
             </div>
@@ -167,7 +168,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-4">
-                    <input id="paymentCodePool_validTo" class="form-control" type="text" name="validto" bennu-datetime
+                    <input id="paymentCodePool_validTo" class="form-control" type="text" name="validto" bennu-date
                         value='<c:out value='${not empty param.validto ? param.validto : paymentCodePool.validTo }'/>' />
                 </div>
             </div>
@@ -245,7 +246,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentseriesforpayments">
+                    <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentnumberseries">
                         <option value=""></option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
@@ -280,7 +281,7 @@ $(document).ready(function() {
             data : paymentMethod_options,
         }     
     );
-    $("#paymentCodePool_paymentMethod").select2().select2('val', '<c:out value='${param.paymentmethod}'/>');
+    $("#paymentCodePool_paymentMethod").select2().select2('val', '<c:out value='${not empty param.paymentmethod ? param.paymentmethod : paymentCodePool.paymentMethod.externalId }'/>');
     <%-- End block for providing paymentMethod options --%>
 
     <%-- Block for providing finantialInstitution options --%>
@@ -298,7 +299,9 @@ $(document).ready(function() {
             data : finantialInstitution_options,
         }     
     );
-    $("#paymentCodePool_finantialInstitution").select2().select2('val', '<c:out value='${param.finantialinstitution}'/>');
+
+
+    $("#paymentCodePool_finantialInstitution").select2().select2('val', '<c:out value='${not empty param.finantialinstitution ? param.finantialinstitution : paymentCodePool.finantialInstitution.externalId }'/>');
     <%-- End block for providing finantialInstitution options --%>
 
     
@@ -317,7 +320,7 @@ $(document).ready(function() {
                 data : documentSeriesForPayments_options,
             }     
         );
-        $("#paymentCodePool_documentSeriesForPayments").select2().select2('val', '<c:out value='${param.documentseriesforpayments}'/>');
+        $("#paymentCodePool_documentSeriesForPayments").select2().select2('val', '<c:out value='${not empty param.documentnumberseries ? param.documentnumberseries : paymentCodePool.documentSeriesForPayments.externalId}'/>');
         <%-- End block for providing documentSeriesForPayments options --%>
 
     });

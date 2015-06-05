@@ -95,14 +95,16 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                 PaymentCodePool.findByActive(true, this.getFinantialInstitution()).collect(Collectors.toSet());
 
         for (PaymentCodePool pool : allPools) {
-            if (this.getMinReferenceCode() >= pool.getMinReferenceCode()
-                    && this.getMinReferenceCode() <= pool.getMaxReferenceCode()) {
-                throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
-            }
+            if (!pool.equals(this)) {
+                if (this.getMinReferenceCode() >= pool.getMinReferenceCode()
+                        && this.getMinReferenceCode() <= pool.getMaxReferenceCode()) {
+                    throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+                }
 
-            if (this.getMaxReferenceCode() >= pool.getMinReferenceCode()
-                    && this.getMaxReferenceCode() <= pool.getMinReferenceCode()) {
-                throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+                if (this.getMaxReferenceCode() >= pool.getMinReferenceCode()
+                        && this.getMaxReferenceCode() <= pool.getMinReferenceCode()) {
+                    throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+                }
             }
         }
 
@@ -134,7 +136,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             throw new TreasuryDomainException("error.PaymentCodePool.MinMaxAmount.invalid");
         }
 
-        if (this.getValidFrom().isBefore(this.getValidTo())) {
+        if (this.getValidTo().isBefore(this.getValidFrom())) {
             throw new TreasuryDomainException("error.PaymentCodePool.ValiddFrom.ValidTo.invalid");
         }
 
@@ -260,6 +262,45 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             }
         }
         return _referenceCodeGenerator;
+    }
+
+    @Override
+    public void setFinantialInstitution(FinantialInstitution finantialInstitution) {
+        if (this.getPaymentReferenceCodesSet().size() > 0) {
+            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
+        }
+        super.setFinantialInstitution(finantialInstitution);
+    }
+
+    @Atomic
+    public void setNewValidPeriod(LocalDate validFrom, LocalDate validTo) {
+        if (this.getPaymentReferenceCodesSet().size() > 0) {
+            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
+        }
+        this.setValidFrom(validFrom);
+        this.setValidTo(validTo);
+        checkRules();
+    }
+
+    @Atomic
+    public void changePooltype(Boolean useCheckDigit, Boolean useAmountToValidateCheckDigit) {
+        if (this.getPaymentReferenceCodesSet().size() > 0) {
+            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
+        }
+
+        this.setUseCheckDigit(useCheckDigit);
+        this.setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
+        checkRules();
+    }
+
+    @Atomic
+    public void changeFinantialInstitution(FinantialInstitution finantialInstitution) {
+        if (this.getPaymentReferenceCodesSet().size() > 0) {
+            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
+        }
+        this.setFinantialInstitution(finantialInstitution);
+        checkRules();
+
     }
 
 }

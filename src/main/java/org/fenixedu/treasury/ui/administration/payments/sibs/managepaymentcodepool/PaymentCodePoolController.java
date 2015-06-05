@@ -502,6 +502,10 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         getPaymentCodePool(model).edit(name, minReferenceCode, maxReferenceCode, minAmount, maxAmount, active,
                 seriesToUseInPayments, paymentMethod);
 
+        getPaymentCodePool(model).changeFinantialInstitution(finantialInstitution);
+        getPaymentCodePool(model).setNewValidPeriod(validFrom, validTo);
+        getPaymentCodePool(model).changePooltype(useCheckDigit, useAmountToValidateCheckDigit);
+
     }
 
 }

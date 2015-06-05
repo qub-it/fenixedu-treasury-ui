@@ -171,6 +171,18 @@ ${portal.toolkit()}
 		<c:if test="${paymentCodePool.useAmountToValidateCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not paymentCodePool.useAmountToValidateCheckDigit}"><spring:message code="label.false" /></c:if>
 	</td> 
 </tr>
+<tr>
+    <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.documentSeriesForPayments"/></th> 
+    <td>
+        <c:out value="${paymentCodePool.documentSeriesForPayments.series.name.content}"/>
+    </td> 
+</tr>
+<tr>
+    <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.paymentMethod"/></th> 
+    <td>
+        <c:out value="${paymentCodePool.paymentMethod.name.content}"/>
+    </td> 
+</tr>
 </tbody>
 </table>
 </form>
