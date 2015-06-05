@@ -39,6 +39,7 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,9 +49,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCode") <-- Use for duplicate controller name disambiguation
+@Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCode")
 @SpringFunctionality(app = TreasuryController.class,
-        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "logged")
+        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 

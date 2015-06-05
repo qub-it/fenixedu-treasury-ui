@@ -43,7 +43,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.viewCustomerTreasuryEvents") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.viewCustomerTreasuryEvents",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.viewCustomerTreasuryEvents",accessGroup = "managers")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 @BennuSpringController(value = CustomerController.class)
 @RequestMapping(TreasuryEventController.CONTROLLER_URL)

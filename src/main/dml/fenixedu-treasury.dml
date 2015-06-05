@@ -300,26 +300,6 @@ class paymentcodes.PaymentReferenceCode
        BigDecimalT minAmount; 
 }
 
-	relation PaymentReferenceCodeFinantialDocument {
-		document.FinantialDocument playsRole finantialDocument {
-			multiplicity 0..1;
-		}
-	
-		paymentcodes.PaymentReferenceCode playsRole paymentCodes{
-			multiplicity *;
-		}
-	}
-
-	relation PaymentReferenceCodeInvoiceEntry {
-		document.InvoiceEntry playsRole invoiceEntries {
-			multiplicity *;
-		}
-	
-		paymentcodes.PaymentReferenceCode playsRole paymentCodes{
-			multiplicity *;
-		}
-	}
-
 
 	class paymentcodes.pool.PaymentCodePool  {
 	  String name;
@@ -335,7 +315,30 @@ class paymentcodes.PaymentReferenceCode
 	  Boolean useAmountToValidateCheckDigit;
 	}
 	
+
+    relation PaymentCodePoolPaymentMethod {
+       PaymentMethod playsRole paymentMethod
+       {
+           multiplicity 1..1;
+       }
+       
+       paymentcodes.pool.PaymentCodePool playsRole paymentCodePoolPaymentMethod
+       {
+           multiplicity *;
+       }
+    }
 	
+	relation PaymentCodePoolDocumentNumberSeries {
+	   document.DocumentNumberSeries playsRole documentSeriesForPayments
+	   {
+	       multiplicity 1..1;
+	   }
+	   
+	   paymentcodes.pool.PaymentCodePool playsRole paymentCodePoolPaymentSeries
+	   {
+	       multiplicity *;
+	   }
+	}
 	
 	relation PaymentCodePoolFinantialInstitution {
 		FinantialInstitution playsRole finantialInstitution {
@@ -357,6 +360,47 @@ class paymentcodes.PaymentReferenceCode
 		}
 	}
 	
+	class paymentcodes.PaymentCodeTarget {
+	   Boolean valid;
+    }
+
+    class paymentcodes.MultipleEntriesPaymentCode extends paymentcodes.PaymentCodeTarget {
+    }
+
+    class paymentcodes.FinantialDocumentPaymentCode extends paymentcodes.PaymentCodeTarget {
+    }
+    
+    relation PaymentReferenceCodeTargetPaymentCode {
+        paymentcodes.PaymentCodeTarget playsRole targetPayment {
+            multiplicity 0..1;
+        }
+    
+        paymentcodes.PaymentReferenceCode playsRole paymentReferenceCode{
+            multiplicity 1..1;
+        }
+    }
+    
+
+    relation FinantialDocumentPaymentCodeFinantialDocument {
+        document.FinantialDocument playsRole finantialDocument {
+            multiplicity 1..1;
+        }
+    
+        paymentcodes.FinantialDocumentPaymentCode playsRole paymentCodes{
+            multiplicity *;
+        }
+    }
+
+    relation MultipleEntriesPaymentCodeInvoiceEntry {
+        document.InvoiceEntry playsRole invoiceEntries {
+            multiplicity *;
+        }
+    
+        paymentcodes.MultipleEntriesPaymentCode playsRole paymentCodes{
+            multiplicity *;
+        }
+    }
+
 	
 	
 	class paymentcodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {

@@ -50,7 +50,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageProduct") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageProduct",
-        accessGroup = "logged")
+        accessGroup = "managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping(ProductController.CONTROLLER_URL)
 public class ProductController extends TreasuryBaseController {

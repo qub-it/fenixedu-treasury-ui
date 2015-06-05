@@ -53,7 +53,7 @@ import pt.ist.standards.geographic.Municipality;
 
 //@Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution2",
-        accessGroup = "logged")
+        accessGroup = "managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)

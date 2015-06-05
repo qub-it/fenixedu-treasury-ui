@@ -52,7 +52,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVat") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVat", accessGroup = "logged")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVat", accessGroup = "managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping(VatController.CONTROLLER_URL)
 public class VatController extends TreasuryBaseController {

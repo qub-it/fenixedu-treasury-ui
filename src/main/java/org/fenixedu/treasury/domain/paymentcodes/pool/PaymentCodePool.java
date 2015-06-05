@@ -202,7 +202,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     private static PaymentCodeGenerator _referenceCodeGenerator;
 
-    protected PaymentCodeGenerator getReferenceCodeGenerator() {
+    public PaymentCodeGenerator getReferenceCodeGenerator() {
 
         if (_referenceCodeGenerator == null) {
             if (Boolean.TRUE.equals(this.getUseCheckDigit())) {

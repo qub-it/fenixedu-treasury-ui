@@ -34,6 +34,8 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.joda.time.DateTime;
@@ -298,21 +300,19 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     @Atomic
-    public void process(User responsibleUser, BigDecimal amount, DateTime whenRegistered, String sibsTransactionId,
-            String comments) {
+    public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
+            String sibsTransactionId, String comments) {
 
-        if (isUsed()) {
-            return;
+        if (isProcessed()) {
+            return null;
         }
 
         if (isAnnulled()) {
             throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.process.invalid.codes");
         }
 
-        internalProcess(responsibleUser, amount, whenRegistered, sibsTransactionId, comments);
-//        if (!getPaymentCodePool().getType().isReusable()) {
-//            setState(PaymentReferenceCodeStateType.USED);
-//        }
+        return this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
+
     }
 
 //    public void delete() {
@@ -332,20 +332,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     public String getDescription() {
         return this.getPaymentCodePool().getEntityReferenceCode() + " " + this.getReferenceCode();
     }
-
-    protected void internalProcess(final User user, final BigDecimal amount, final DateTime whenRegistered,
-            final String sibsTransactionId, final String comments) {
-
-    }
-
-//    public PaymentCodeMapping getOldPaymentCodeMapping(final ExecutionYear executionYear) {
-//        for (final PaymentCodeMapping mapping : getOldPaymentCodeMappingsSet()) {
-//            if (mapping.has(executionYear)) {
-//                return mapping;
-//            }
-//        }
-//        return null;
-//    }
 
     static public PaymentReferenceCode readByCode(final String code, FinantialInstitution finantialInstitution) {
         if (StringUtils.isEmpty(code)) {
@@ -376,4 +362,14 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 .findFirst().orElse(null);
     }
 
+    @Atomic
+    public void createPaymentTargetTo(FinantialDocument finantialDocument) {
+        if (this.getTargetPayment() != null && Boolean.TRUE.equals(this.getTargetPayment().getValid())) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.payment.target.already.exists");
+        }
+        FinantialDocumentPaymentCode targetToFinantialDocument =
+                FinantialDocumentPaymentCode.create(finantialDocument, this, true);
+        this.setTargetPayment(targetToFinantialDocument);
+        checkRules();
+    }
 }

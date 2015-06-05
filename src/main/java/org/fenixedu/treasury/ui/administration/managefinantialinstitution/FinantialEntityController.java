@@ -45,7 +45,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution")
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",accessGroup = "logged")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",accessGroup = "managers")
 @BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(FinantialEntityController.CONTROLLER_URL)
 public class FinantialEntityController extends TreasuryBaseController {

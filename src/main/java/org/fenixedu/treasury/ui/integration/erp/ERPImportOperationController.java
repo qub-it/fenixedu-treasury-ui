@@ -62,7 +62,7 @@ import pt.ist.fenixframework.Atomic.TxMode;
 import com.google.common.base.Splitter;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import", accessGroup = "logged")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import", accessGroup = "managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)
