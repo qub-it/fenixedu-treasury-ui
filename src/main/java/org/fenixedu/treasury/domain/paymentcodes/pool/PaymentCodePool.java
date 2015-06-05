@@ -118,6 +118,18 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             throw new TreasuryDomainException("error.PaymentCodePool.MinReferenceCode.invalid");
         }
 
+        if (this.getValidFrom() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.validFrom.required");
+        }
+
+        if (this.getValidTo() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.validTo.required");
+        }
+
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.PaymentCodePool.name.required");
+        }
+
         if (this.getMaxAmount().compareTo(this.getMinAmount()) < 0) {
             throw new TreasuryDomainException("error.PaymentCodePool.MinMaxAmount.invalid");
         }

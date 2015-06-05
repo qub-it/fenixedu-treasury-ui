@@ -26,7 +26,6 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentcodepool;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -112,26 +111,14 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_URI)
     public String search(
             @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-            @RequestParam(value = "name", required = false) java.lang.String name,
-            @RequestParam(value = "entityreferencecode", required = false) java.lang.String entityReferenceCode,
-            @RequestParam(value = "minreferencecode", required = false) java.lang.Long minReferenceCode,
-            @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
-            @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
-            @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
-            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
-            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
-            @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
-                    required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
-                    required = false) java.lang.Boolean useAmountToValidateCheckDigit, Model model) {
-        List<PaymentCodePool> searchpaymentcodepoolResultsDataSet =
-                filterSearchPaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode,
-                        minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit);
+            Model model) {
+        List<PaymentCodePool> searchpaymentcodepoolResultsDataSet = filterSearchPaymentCodePool(finantialInstitution);
 
         //add the results dataSet to the model
         model.addAttribute("searchpaymentcodepoolResultsDataSet", searchpaymentcodepoolResultsDataSet);
         model.addAttribute("PaymentCodePool_finantialInstitution_options",
-                new ArrayList<org.fenixedu.treasury.domain.FinantialInstitution>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("PaymentCodePool_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+                FinantialInstitution.findAll().collect(Collectors.toList()));
+
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search";
     }
 
@@ -145,35 +132,11 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     private List<PaymentCodePool> filterSearchPaymentCodePool(
-            org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution, java.lang.String name,
-            java.lang.String entityReferenceCode, java.lang.Long minReferenceCode, java.lang.Long maxReferenceCode,
-            java.math.BigDecimal minAmount, java.math.BigDecimal maxAmount, org.joda.time.LocalDate validFrom,
-            org.joda.time.LocalDate validTo, java.lang.Boolean active, java.lang.Boolean useCheckDigit,
-            java.lang.Boolean useAmountToValidateCheckDigit) {
+            org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution) {
 
-        return getSearchUniverseSearchPaymentCodePoolDataSet()
-//                .filter(paymentCodePool -> finantialInstitution == null
-//                        || finantialInstitution == paymentCodePool.getFinantialInstitution())
-//                .filter(paymentCodePool -> name == null || name.length() == 0 || paymentCodePool.getName() != null
-//                        && paymentCodePool.getName().length() > 0
-//                        && paymentCodePool.getName().toLowerCase().contains(name.toLowerCase()))
-//                .filter(paymentCodePool -> entityReferenceCode == null || entityReferenceCode.length() == 0
-//                        || paymentCodePool.getEntityReferenceCode() != null
-//                        && paymentCodePool.getEntityReferenceCode().length() > 0
-//                        && paymentCodePool.getEntityReferenceCode().toLowerCase().contains(entityReferenceCode.toLowerCase()))
-//                .filter(paymentCodePool -> minReferenceCode == null
-//                        || minReferenceCode.equals(paymentCodePool.getMinReferenceCode()))
-//                .filter(paymentCodePool -> maxReferenceCode == null
-//                        || maxReferenceCode.equals(paymentCodePool.getMaxReferenceCode()))
-//                .filter(paymentCodePool -> minAmount == null || minAmount.equals(paymentCodePool.getMinAmount()))
-//                .filter(paymentCodePool -> maxAmount == null || maxAmount.equals(paymentCodePool.getMaxAmount()))
-//                .filter(paymentCodePool -> validFrom == null || validFrom.equals(paymentCodePool.getValidFrom()))
-//                .filter(paymentCodePool -> validTo == null || validTo.equals(paymentCodePool.getValidTo()))
-//                .filter(paymentCodePool -> active == null || active.equals(paymentCodePool.getActive()))
-//                .filter(paymentCodePool -> useCheckDigit == null || useCheckDigit.equals(paymentCodePool.getUseCheckDigit()))
-//                .filter(paymentCodePool -> useAmountToValidateCheckDigit == null
-//                        || useAmountToValidateCheckDigit.equals(paymentCodePool.getUseAmountToValidateCheckDigit()))
-                .collect(Collectors.toList());
+        return getSearchUniverseSearchPaymentCodePoolDataSet().filter(
+                paymentCodePool -> finantialInstitution == null
+                        || finantialInstitution == paymentCodePool.getFinantialInstitution()).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -310,8 +273,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
             @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
             @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
-            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
-            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate validFrom,
+            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate validTo,
             @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
                     required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
                     required = false) java.lang.Boolean useAmountToValidateCheckDigit, @RequestParam(
@@ -472,8 +435,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "maxreferencecode", required = false) java.lang.Long maxReferenceCode,
             @RequestParam(value = "minamount", required = false) java.math.BigDecimal minAmount,
             @RequestParam(value = "maxamount", required = false) java.math.BigDecimal maxAmount,
-            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validFrom,
-            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate validTo,
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate validFrom,
+            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate validTo,
             @RequestParam(value = "active", required = false) java.lang.Boolean active, @RequestParam(value = "usecheckdigit",
                     required = false) java.lang.Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
                     required = false) java.lang.Boolean useAmountToValidateCheckDigit, @RequestParam(

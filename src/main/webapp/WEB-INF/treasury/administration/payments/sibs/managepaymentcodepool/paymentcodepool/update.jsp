@@ -270,7 +270,7 @@ $(document).ready(function() {
     paymentMethod_options = [
         <c:forEach items="${PaymentCodePool_paymentMethod_options}" var="element"> 
             {
-                text : "<c:out value='${element}'/>",  
+                text : "<c:out value='${element.name.content}'/>",  
                 id : "<c:out value='${element.externalId}'/>"
             },
         </c:forEach>
@@ -307,7 +307,7 @@ $(document).ready(function() {
         documentSeriesForPayments_options = [
             <c:forEach items="${PaymentCodePool_documentSeriesForPayments_options}" var="element"> 
                 {
-                    text : "<c:out value='${element}'/>",  
+                    text : "<c:out value='${element.series.name.content}'/>",  
                     id : "<c:out value='${element.externalId}'/>"
                 },
             </c:forEach>

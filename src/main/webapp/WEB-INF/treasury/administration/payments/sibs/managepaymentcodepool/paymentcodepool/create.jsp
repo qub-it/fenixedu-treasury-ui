@@ -85,7 +85,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="paymentCodePool_finantialInstitution" class="js-example-basic-single" name="finantialinstitution" required>
-                        <option value=""></option> required
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
@@ -105,7 +104,7 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentCodePool.entityReferenceCode" />
                 </div>
 
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     <input id="paymentCodePool_entityReferenceCode" class="form-control" type="text" name="entityreferencecode"
                         value='<c:out value='${not empty param.entityreferencecode ? param.entityreferencecode : paymentCodePool.entityReferenceCode }'/>' />
                 </div>
@@ -115,7 +114,7 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentCodePool.minReferenceCode" />
                 </div>
 
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     <input id="paymentCodePool_minReferenceCode" class="form-control" type="text" name="minreferencecode"
                         value='<c:out value='${not empty param.minreferencecode ? param.minreferencecode : paymentCodePool.minReferenceCode }'/>' />
                 </div>
@@ -125,7 +124,7 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentCodePool.maxReferenceCode" />
                 </div>
 
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     <input id="paymentCodePool_maxReferenceCode" class="form-control" type="text" name="maxreferencecode"
                         value='<c:out value='${not empty param.maxreferencecode ? param.maxreferencecode : paymentCodePool.maxReferenceCode }'/>' />
                 </div>
@@ -135,7 +134,7 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentCodePool.minAmount" />
                 </div>
 
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     <input id="paymentCodePool_minAmount" class="form-control" type="text" name="minamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?"
                         value='<c:out value='${not empty param.minamount ? param.minamount : paymentCodePool.minAmount }'/>' />
                 </div>
@@ -145,7 +144,7 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentCodePool.maxAmount" />
                 </div>
 
-                <div class="col-sm-10">
+                <div class="col-sm-4">
                     <input id="paymentCodePool_maxAmount" class="form-control" type="text" name="maxamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?"
                         value='<c:out value='${not empty param.maxamount ? param.maxamount : paymentCodePool.maxAmount }'/>' />
                 </div>
@@ -156,7 +155,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-4">
-                    <input id="paymentCodePool_validFrom" class="form-control" type="text" name="validfrom" bennu-datetime
+                    <input id="paymentCodePool_validFrom" class="form-control" type="text" name="validfrom" bennu-date
                         value='<c:out value='${not empty param.validfrom ? param.validfrom : paymentCodePool.validFrom }'/>' />
                 </div>
             </div>
@@ -166,7 +165,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-4">
-                    <input id="paymentCodePool_validTo" class="form-control" type="text" name="validto" bennu-datetime
+                    <input id="paymentCodePool_validTo" class="form-control" type="text" name="validto" bennu-date
                         value='<c:out value='${not empty param.validto ? param.validto : paymentCodePool.validTo }'/>' />
                 </div>
             </div>
@@ -177,7 +176,6 @@ ${portal.toolkit()}
 
                 <div class="col-sm-2">
                     <select id="paymentCodePool_active" name="active" class="form-control">
-                        <option value=""></option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         <option value="false"><spring:message code="label.no" /></option>
                         <option value="true"><spring:message code="label.yes" /></option>
@@ -194,7 +192,6 @@ ${portal.toolkit()}
 
                 <div class="col-sm-2">
                     <select id="paymentCodePool_useCheckDigit" name="usecheckdigit" class="form-control">
-                        <option value=""></option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         <option value="false"><spring:message code="label.no" /></option>
                         <option value="true"><spring:message code="label.yes" /></option>
@@ -211,7 +208,6 @@ ${portal.toolkit()}
 
                 <div class="col-sm-2">
                     <select id="paymentCodePool_useAmountToValidateCheckDigit" name="useamounttovalidatecheckdigit" class="form-control">
-                        <option value=""></option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         <option value="false"><spring:message code="label.no" /></option>
                         <option value="true"><spring:message code="label.yes" /></option>
@@ -230,8 +226,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="paymentCodePool_paymentMethod" class="js-example-basic-single" name="paymentmethod">
-                        <option value=""></option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
             </div>
@@ -244,8 +238,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentseriesforpayments">
-                        <option value=""></option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
             </div>
@@ -266,7 +258,7 @@ $(document).ready(function() {
     paymentMethod_options = [
         <c:forEach items="${PaymentCodePool_paymentMethod_options}" var="element"> 
             {
-                text : "<c:out value='${element}'/>",  
+                text : "<c:out value='${element.name.content}'/>",  
                 id : "<c:out value='${element.externalId}'/>"
             },
         </c:forEach>
@@ -303,7 +295,7 @@ $(document).ready(function() {
 	    documentSeriesForPayments_options = [
 	        <c:forEach items="${PaymentCodePool_documentSeriesForPayments_options}" var="element"> 
 	            {
-	                text : "<c:out value='${element}'/>",  
+	                text : "<c:out value='${element.series.name.content}'/>",  
 	                id : "<c:out value='${element.externalId}'/>"
 	            },
 	        </c:forEach>
