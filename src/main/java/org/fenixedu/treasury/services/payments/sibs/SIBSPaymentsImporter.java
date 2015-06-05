@@ -115,10 +115,10 @@ public class SIBSPaymentsImporter {
                 zipFile.delete();
             }
 
-            recursiveZipProcess(unzipDir);
+            recursiveZipProcess(unzipDir, inputFile.getFinantialInstitution());
 
         } else if (StringUtils.endsWithIgnoreCase(inputFile.getFilename(), PAYMENT_FILE_EXTENSION)) {
-            InputStream inputStream = bean.getInputStream();
+            InputStream inputStream = inputFile.getStream();
             File dir = Files.createTempDir();
             File tmp = new File(dir, inputFile.getFilename());
             tmp.deleteOnExit();
@@ -132,7 +132,7 @@ public class SIBSPaymentsImporter {
             ProcessResult result = new ProcessResult(null);
             result.addMessage("label.manager.SIBS.processingFile", file.getName());
             try {
-                processFile(file);
+                processFile(file, inputFile.getFinantialInstitution());
             } catch (FileNotFoundException e) {
                 throw new TreasuryDomainException("error.manager.SIBS.zipException", getMessage(e));
             } catch (IOException e) {
@@ -145,7 +145,6 @@ public class SIBSPaymentsImporter {
         } else {
             throw new TreasuryDomainException("error.manager.SIBS.notSupportedExtension", inputFile.getFilename());
         }
-        return prepareUploadSIBSPaymentFiles(mapping, form, request, response);
     }
 
 //    private static String getMessage(Exception ex) {
@@ -153,14 +152,14 @@ public class SIBSPaymentsImporter {
 //        return BundleUtil.getString(Constants.BUNDLE, message);
 //    }
 
-    private void recursiveZipProcess(File unzipDir) {
+    private void recursiveZipProcess(File unzipDir, FinantialInstitution finantialInstitution) {
         File[] filesInZip = unzipDir.listFiles();
         Arrays.sort(filesInZip);
 
         for (File file : filesInZip) {
 
             if (file.isDirectory()) {
-                recursiveZipProcess(file);
+                recursiveZipProcess(file, finantialInstitution);
 
             } else {
 
@@ -171,7 +170,7 @@ public class SIBSPaymentsImporter {
 
                 try {
 
-                    processFile(file);
+                    processFile(file, finantialInstitution);
 
                 } catch (FileNotFoundException e) {
                     throw new TreasuryDomainException("error.manager.SIBS.zipException", getMessage(e));
@@ -304,7 +303,7 @@ public class SIBSPaymentsImporter {
         return message;
     }
 
-    protected void processFile(File file) throws IOException {
+    protected void processFile(File file, FinantialInstitution finantialInstitution) throws IOException {
         byte[] sibsInputFile = FileUtils.readByteArray(file);
         User x = null;
         SibsInputFile.create(file.getName(), file.getName(), sibsInputFile, x);
@@ -323,7 +322,7 @@ public class SIBSPaymentsImporter {
 
             for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
                 try {
-                    processCode(detailLine, person, result, file.getName().replace("\\.inp", ""));
+                    processCode(detailLine, person, result, finantialInstitution, file.getName().replace("\\.inp", ""));
                 } catch (Exception e) {
                     result.addError("error.manager.SIBS.processException", detailLine.getCode(), getMessage(e));
                 }
@@ -336,7 +335,7 @@ public class SIBSPaymentsImporter {
             }
 
             try {
-                createSibsFileReport(sibsFile, result);
+                createSibsFileReport(sibsFile, finantialInstitution, result);
             } catch (Exception ex) {
                 ex.printStackTrace();
                 result.addError("error.manager.SIBS.reportException", getMessage(ex));
@@ -352,34 +351,33 @@ public class SIBSPaymentsImporter {
     }
 
     protected void processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
-            final String sibsImportationFile) throws Exception {
+            FinantialInstitution finantialInstitution, final String sibsImportationFile) throws Exception {
 
-        final PaymentReferenceCode paymentCode = getPaymentCode(detailLine, result);
+        final PaymentReferenceCode paymentCode = getPaymentCode(detailLine.getCode(), finantialInstitution);
 
         if (paymentCode == null) {
             result.addMessage("error.manager.SIBS.codeNotFound", detailLine.getCode());
             throw new Exception();
         }
 
-        final PaymentReferenceCode codeToProcess =
-                getPaymentCodeToProcess(paymentCode, ExecutionYear.readByDateTime(detailLine.getWhenOccuredTransaction()), result);
+        final PaymentReferenceCode codeToProcess = getPaymentCodeToProcess(paymentCode, result);
 
         if (codeToProcess.getState() == PaymentReferenceCodeStateType.ANNULLED) {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
         }
 
-        if (codeToProcess.isProcessed() && codeToProcess.getWhenUpdated().isBefore(detailLine.getWhenOccuredTransaction())) {
-            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
-        }
+//        if (codeToProcess.isProcessed() && codeToProcess.getWhenUpdated().isBefore(detailLine.getWhenOccuredTransaction())) {
+//            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+//        }
 
         codeToProcess.process(person, detailLine.getAmount(), detailLine.getWhenOccuredTransaction(),
                 detailLine.getSibsTransactionId(), sibsImportationFile);
 
     }
 
-    protected void createSibsFileReport(final SibsIncommingPaymentFile sibsIncomingPaymentFile, final ProcessResult result)
-            throws Exception {
-        final SIBSImportationFileDTO reportDTO = new SIBSImportationFileDTO(sibsIncomingPaymentFile);
+    protected void createSibsFileReport(final SibsIncommingPaymentFile sibsIncomingPaymentFile,
+            final FinantialInstitution finantialInstitution, final ProcessResult result) throws Exception {
+        final SIBSImportationFileDTO reportDTO = new SIBSImportationFileDTO(sibsIncomingPaymentFile, finantialInstitution);
         SibsReportFile.create(reportDTO);
         result.addMessage("label.manager.SIBS.reportCreated");
     }
@@ -406,29 +404,22 @@ public class SIBSPaymentsImporter {
         return codeToProcess;
     }
 
-//    /**
-//     * Copied from head
-//     */
-//    private PaymentCode getPaymentCode(final SibsIncommingPaymentFileDetailLine detailLine, ProcessResult result) {
-//        return getPaymentCode(detailLine.getCode(), result);
-//    }
+    /**
+     * Copied from head
+     */
+    private PaymentReferenceCode getPaymentCode(final String code, FinantialInstitution finantialInstitution) {
+        /*
+         * TODO:
+         * 
+         * 09/07/2009 - Payments are not related only to students. readAll() may
+         * be heavy to get the PaymentCode.
+         * 
+         * 
+         * Ask Nadir and Joao what is best way to deal with PaymentCode
+         * retrieval.
+         */
 
-//    /**
-//     * Copied from head
-//     */
-//    private PaymentCode getPaymentCode(final String code, ProcessResult result) {
-//        /*
-//         * TODO:
-//         * 
-//         * 09/07/2009 - Payments are not related only to students. readAll() may
-//         * be heavy to get the PaymentCode.
-//         * 
-//         * 
-//         * Ask Nadir and Joao what is best way to deal with PaymentCode
-//         * retrieval.
-//         */
-//
-//        return PaymentCode.readByCode(code);
-//    }
+        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
+    }
 
 }

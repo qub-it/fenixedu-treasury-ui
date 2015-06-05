@@ -226,16 +226,21 @@ public class SibsReportFile extends SibsReportFile_Base {
         }
     }
 
-    protected String filenameFor(final SIBSImportationFileDTO reportFileDTO) {
+    protected static String filenameFor(final SIBSImportationFileDTO reportFileDTO) {
         final String date = new DateTime().toString("yyyyMMddHHmm");
         return "Relatorio-SIBS-" + date + ".xlsx";
     }
 
-    protected String displayNameFor(final SIBSImportationFileDTO reportFileDTO) {
+    protected static String displayNameFor(final SIBSImportationFileDTO reportFileDTO) {
         final String date = new DateTime().toString("yyyyMMddHHmm");
         return "Relatorio-SIBS-" + date;
     }
 
+    public static SibsReportFile create(SIBSImportationFileDTO reportDTO) {
+        return create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(), reportDTO.getTotalCost(),
+                displayNameFor(reportDTO), filenameFor(reportDTO), null);
+
+    }
 //    public static Set<SibsReportFile> findAll() {
 //        return RootDomainObject.getInstance().getSibsReportFilesSet();
 //    }

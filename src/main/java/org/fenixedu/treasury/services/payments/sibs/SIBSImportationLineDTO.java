@@ -6,7 +6,6 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 public class SIBSImportationLineDTO {
 
@@ -23,7 +22,7 @@ public class SIBSImportationLineDTO {
         this.setSibsImportationFileDTO(sibsImportationFileDTO);
     }
 
-    public LocalDate getWhenProcessedBySibs() {
+    public DateTime getWhenProcessedBySibs() {
         return getSibsImportationFileDTO().getWhenProcessedBySibs();
     }
 

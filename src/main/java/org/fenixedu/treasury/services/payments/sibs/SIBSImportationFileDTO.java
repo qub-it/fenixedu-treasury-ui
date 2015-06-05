@@ -6,14 +6,14 @@ import java.util.List;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
-import org.joda.time.LocalDate;
+import org.joda.time.DateTime;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
 
 public class SIBSImportationFileDTO {
 
-    protected LocalDate whenProcessedBySibs;
+    protected DateTime whenProcessedBySibs;
     protected String filename;
     protected BigDecimal transactionsTotalAmount;
     protected BigDecimal totalCost;
@@ -24,7 +24,7 @@ public class SIBSImportationFileDTO {
 
     public SIBSImportationFileDTO(final SibsIncommingPaymentFile sibsIncomingPaymentFile,
             final FinantialInstitution finantialInstitution) {
-        setWhenProcessedBySibs(sibsIncomingPaymentFile.getHeader().getWhenProcessedBySibs().toLocalDate());
+        setWhenProcessedBySibs(sibsIncomingPaymentFile.getHeader().getWhenProcessedBySibs().toDateTimeAtMidnight());
         setFilename(sibsIncomingPaymentFile.getFilename());
         setTransactionsTotalAmount(sibsIncomingPaymentFile.getFooter().getTransactionsTotalAmount());
         setTotalCost(sibsIncomingPaymentFile.getFooter().getTotalCost());
@@ -52,11 +52,11 @@ public class SIBSImportationFileDTO {
         this.lines = lines;
     }
 
-    public LocalDate getWhenProcessedBySibs() {
+    public DateTime getWhenProcessedBySibs() {
         return whenProcessedBySibs;
     }
 
-    public void setWhenProcessedBySibs(final LocalDate whenProcessedBySibs) {
+    public void setWhenProcessedBySibs(final DateTime whenProcessedBySibs) {
         this.whenProcessedBySibs = whenProcessedBySibs;
     }
 

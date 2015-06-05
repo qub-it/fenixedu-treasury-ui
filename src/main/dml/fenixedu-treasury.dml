@@ -368,6 +368,17 @@ class paymentcodes.PaymentReferenceCode
 	class paymentcodes.SibsInputFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 	}
 
+
+     class paymentcodes.SibsTransactionDetail  {
+        String comments;
+        DateTime whenProcessed;
+        DateTime whenRegistered;
+        BigDecimalT amountPayed;
+        String sibsEntityReferenceCode;
+            String sibsPaymentReferenceCode;
+            String sibsTransactionId;
+        }
+
 class paymentcodes.PaymentReferenceCodeManager
 {
        String code;
@@ -1323,6 +1334,18 @@ relation SibsReportFileBennu {
 	    multiplicity 1..1;
 	  }
 	}
+
+    relation SibsInputFinantialInstitution {
+      paymentcodes.SibsInputFile playsRole sibsInputFiles {
+        multiplicity *;
+      }
+      
+      FinantialInstitution playsRole finantialInstitution {
+        multiplicity 1..1;
+      }
+      
+    }
+
 	
 	relation SibsInputFileUser {
 	  paymentcodes.SibsInputFile playsRole sibsInputFiles {
