@@ -12,8 +12,8 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+${portal.angularToolkit()} 
+<%--${portal.toolkit()}--%>
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
@@ -24,6 +24,9 @@ ${portal.toolkit()}
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
+<script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
+<script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
 
 <%-- TITLE --%>
@@ -71,30 +74,58 @@ ${portal.toolkit()}
 				</div>	
 			</c:if>
 
-<form method="post" class="form-horizontal">
+<script>
+
+angular.module('angularAppPaymentReferenceCode', ['ngSanitize', 'ui.select']).controller('PaymentReferenceCodeController', ['$scope', function($scope) {
+	$scope.booleanvalues= [
+		                    {name: '<spring:message code="label.no"/>',    value: false},
+		                    {name: '<spring:message code="label.yes"/>',        value: true}
+		                  ];
+
+ 	$scope.object=angular.fromJson('${paymentReferenceCodeBeanJson}');
+	$scope.postBack = createAngularPostbackFunction($scope); 
+
+	//Begin here of Custom Screen business JS - code
+ 	
+}]);
+</script>
+
+<form name='form' method="post" class="form-horizontal"
+	ng-app="angularAppPaymentReferenceCode" ng-controller="PaymentReferenceCodeController"
+	action='${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote'>
+
+	<input type="hidden" name="postback"
+		value='${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnotepostback' />
+		
+	<input name="bean" type="hidden" value="{{ object }}" />
 <div class="panel panel-default">
   <div class="panel-body">
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.state"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.paymentCodePool"/></div> 
 
 <div class="col-sm-4">
-	<select id="paymentReferenceCode_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
-		<c:forEach items="${stateValues}" var="field">
-			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
-		</c:forEach>
-	</select>
-	<script>
-		$("#paymentReferenceCode_state").val('<c:out value='${not empty param.state ? param.state : paymentReferenceCode.state }'/>');
-	</script>	
-</div>
+	<%-- Relation to side 1 drop down rendered in input --%>
+		<ui-select id="paymentReferenceCode_paymentCodePool" class="form-control" name="paymentcodepool" ng-model="$parent.object.paymentCodePool" theme="bootstrap" ng-disabled="disabled" >
+    						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+    						<ui-select-choices repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search">
+      							<span ng-bind-html="paymentCodePool.text | highlight: $select.search"></span>
+    						</ui-select-choices>
+  						</ui-select>				
+				</div>
 </div>		
 <div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.referenceCode"/></div> 
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.beginDate"/></div> 
 
-<div class="col-sm-10">
-	<input id="paymentReferenceCode_referenceCode" class="form-control" type="text" name="referencecode"  value='<c:out value='${not empty param.referencecode ? param.referencecode : paymentReferenceCode.referenceCode }'/>' />
-</div>	
+<%-- <div class="col-sm-4">
+	<input id="paymentReferenceCode_beginDate" class="form-control" type="text" name="begindate"  bennu-datetime  />
+</div> --%>
+</div>		
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.endDate"/></div> 
+
+<%-- <div class="col-sm-4">
+	<input id="paymentReferenceCode_endDate" class="form-control" type="text" name="enddate"  bennu-datetime  />
+</div> --%>
 </div>		
   </div>
   <div class="panel-footer">
@@ -106,6 +137,6 @@ ${portal.toolkit()}
 <script>
 $(document).ready(function() {
 
-
+// Put here the initializing code for page
 	});
 </script>
