@@ -628,7 +628,7 @@ public class ERPExporter {
         }
 
         // Description
-        line.setDescription(currentProduct.getProductDescription());
+        line.setDescription(entry.getDescription());
         List<OrderReferences> orderReferences = line.getOrderReferences();
 
         //Add the references on the document creditEntries <-> debitEntries

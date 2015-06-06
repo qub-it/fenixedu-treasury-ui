@@ -274,8 +274,7 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal getPayedAmount() {
         BigDecimal amount = BigDecimal.ZERO;
         for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-            if (entry.getFinantialDocument() != null
-                    && (entry.getFinantialDocument().isClosed() || entry.getFinantialDocument().isPreparing())) {
+            if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isClosed()) {
                 amount = amount.add(entry.getTotalAmount());
             }
         }

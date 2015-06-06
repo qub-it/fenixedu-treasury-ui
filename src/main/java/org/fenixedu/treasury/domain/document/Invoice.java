@@ -28,8 +28,10 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -181,6 +183,21 @@ public abstract class Invoice extends Invoice_Base {
         } else {
             return Optional.of(null);
         }
+    }
+
+    public Set<SettlementEntry> getRelatedSettlementEntries() {
+        Set<SettlementEntry> result = new HashSet<SettlementEntry>();
+        for (FinantialDocumentEntry entry : this.getFinantialDocumentEntriesSet()) {
+            InvoiceEntry invoiceEntry = (InvoiceEntry) entry;
+            if (invoiceEntry.getSettlementEntriesSet().size() > 0) {
+                for (SettlementEntry settlementEntry : invoiceEntry.getSettlementEntriesSet()) {
+                    if (settlementEntry.getFinantialDocument().isClosed()) {
+                        result.add(settlementEntry);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     public InvoiceEntry getEntryInOrder(Integer lineNumber) {

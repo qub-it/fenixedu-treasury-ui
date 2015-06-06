@@ -268,6 +268,18 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
                         <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
                     </tr>
+                    <c:if test="${not empty debitNote.relatedSettlementEntries }">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
+                            <td>
+                                <ul>
+                                    <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}" >
+                                        <li><c:out value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                    </c:forEach>
+                                </ul>
+                            </td>
+                        </tr>
+                    </c:if>
                 </tbody>
             </table>
         </form>

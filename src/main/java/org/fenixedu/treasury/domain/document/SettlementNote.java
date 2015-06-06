@@ -328,8 +328,11 @@ public class SettlementNote extends SettlementNote_Base {
 
     @Override
     public void anullDocument(boolean freeEntries) {
-        // Settlement note can never free entries 
-        super.anullDocument(false);
+        if (this.isPreparing()) {
+            this.delete(true);
+        } else {
+            // Settlement note can never free entries 
+            super.anullDocument(false);
+        }
     }
-
 }

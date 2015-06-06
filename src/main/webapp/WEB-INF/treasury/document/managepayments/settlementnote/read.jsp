@@ -28,7 +28,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/anullsettlmentnote"
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/anullsettlement"
                 method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -61,7 +61,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="closeModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/settlementnote/read/${settlementNote.externalId}/closedebitnote" method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/settlementnote/read/${settlementNote.externalId}/closesettlementnote" method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -102,7 +102,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/delete/${settlementNote.externalId}" method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/anullsettlement" method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -134,7 +134,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp; <span
+        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message code="label.event.update" /></a>
@@ -198,50 +198,57 @@ ${portal.toolkit()}
             <table class="table">
                 <tbody>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.finantialDocumentType" /></th>
-                        <td><c:out value='${settlementNote.finantialDocumentType}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Series.finantialInstitution" /></th>
+                        <td><c:out value='${settlementNote.documentNumberSeries.series.finantialInstitution.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.debtAccount" /></th>
                         <td><c:out value='${settlementNote.debtAccount}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentNumberSeries" /></th>
-                        <td><c:out value='${settlementNote.documentNumberSeries}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.currency" /></th>
-                        <td><c:out value='${settlementNote.currency}' /></td>
-                    </tr>
-                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentNumber" /></th>
-                        <td><c:out value='${settlementNote.documentNumber}' /></td>
+                        <td><c:out value='${settlementNote.uiDocumentNumber}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.state" /></th>
+                        <td><c:if test="${settlementNote.isAnnulled()}">
+                                <span class="label label-danger">
+                            </c:if> <c:if test="${settlementNote.isPreparing() }">
+                                <span class="label label-warning">
+                            </c:if> <c:if test="${settlementNote.isClosed()}">
+                                <span class="label label-primary">
+                            </c:if> <c:out value='${settlementNote.state.descriptionI18N.content}' /> </span></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentDate" /></th>
                         <td><c:out value='${settlementNote.documentDate}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentDueDate" /></th>
-                        <td><c:out value='${settlementNote.documentDueDate}' /></td>
-                    </tr>
-                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.originDocumentNumber" /></th>
                         <td><c:out value='${settlementNote.originDocumentNumber}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.state" /></th>
-                        <td><c:out value='${settlementNote.state}' /></td>
                     </tr>
                 </tbody>
             </table>
         </form>
     </div>
 </div>
+
+<p></p>
+<p></p>
+<h2>
+    <spring:message code="label.SettlementNote.settlementEntries" />
+</h2>
+
 <c:choose>
     <c:when test="${not empty settlementNote.finantialDocumentEntriesSet}">
         <datatables:table id="settlementEntries" row="settlementEntry" data="${settlementNote.finantialDocumentEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
             cellspacing="2">
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.InvoiceEntry.document" />
+                </datatables:columnHead>
+                <c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+            </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.SettlementEntry.description" />
@@ -252,13 +259,19 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.DebitEntry.amount" />
                 </datatables:columnHead>
-                <c:out value="${settlementEntry.totalAmount}" />
+                <c:out value="${settlementEntry.invoiceEntry.totalAmount}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.DebitEntry.vat" />
                 </datatables:columnHead>
                 <c:out value="${settlementEntry.invoiceEntry.vat.taxRate}" />
+            </datatables:column>
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.SettlementEntry.amount" />
+                </datatables:columnHead>
+                <c:out value="${settlementEntry.totalAmount}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/settlemententry/read/${settlementEntry.externalId}">
@@ -277,6 +290,50 @@ ${portal.toolkit()}
 					"${pageContext.request.contextPath}",
 					"${datatablesI18NUrl}");
 		</script>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.noResultsFound" />
+            </p>
+        </div>
+
+    </c:otherwise>
+</c:choose>
+
+<p></p>
+<p></p>
+<h2>
+    <spring:message code="label.SettlementNote.paymentEntries" />
+</h2>
+
+<c:choose>
+    <c:when test="${not empty settlementNote.paymentEntriesSet}">
+        <datatables:table id="paymentEntries" row="payemntEntry" data="${settlementNote.paymentEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
+             cellspacing="2"> 
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentEntry.paymentMethod" />
+                </datatables:columnHead>
+                <c:out value="${payemntEntry.paymentMethod.name.content}" />
+            </datatables:column>
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentEntry.payedAmount" />
+                </datatables:columnHead>
+                <c:out value="${payemntEntry.payedAmount}" />
+            </datatables:column>
+        </datatables:table>
+        <script>
+            createDataTables(
+                    'paymentEntries',
+                    false,
+                    false,
+                    false,
+                    "${pageContext.request.contextPath}",
+                    "${datatablesI18NUrl}");
+         </script> 
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">

@@ -448,10 +448,10 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     //
-    // This is the EventanullDebitNote Method for Screen read
+    // This is the EventanullSettlementNote Method for Screen read
     //
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
-    public String processReadToAnullDebitNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
+    public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
 //
