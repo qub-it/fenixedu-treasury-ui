@@ -163,10 +163,11 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public boolean isPendingForPayment() {
+        if (this.getFinantialDocument() != null && this.getFinantialDocument().getState().isAnnuled()) {
+            return false;
+        }
         return this.getOpenAmount().compareTo(BigDecimal.ZERO) != 0;
-//        if (this.getFinantialDocument() != null && this.getFinantialDocument().getState().isAnnuled()) {
-//            return false;
-//        }
+
 //        BigDecimal totalAmount = this.getTotalAmount();
 //        BigDecimal totalPayed = BigDecimal.ZERO;
 //        //Only use Closed Payments

@@ -310,7 +310,7 @@ $(document).ready(function() {
         documentSeriesForPayments_options = [
             <c:forEach items="${PaymentCodePool_documentSeriesForPayments_options}" var="element"> 
                 {
-                    text : "<c:out value='${element.series.name.content}'/>",  
+                    text : "<c:out value='${element.series.finantialInstitution.name} - ${element.series.name.content}'/>",  
                     id : "<c:out value='${element.externalId}'/>"
                 },
             </c:forEach>

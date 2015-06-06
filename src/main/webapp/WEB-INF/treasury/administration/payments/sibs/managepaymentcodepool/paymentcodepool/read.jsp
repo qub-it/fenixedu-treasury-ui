@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -188,6 +189,75 @@ ${portal.toolkit()}
 </form>
 </div>
 </div>
+
+<p></p>
+<h2>
+    <spring:message code="label.PaymentCodePool.paymentReferenceCodes" />
+</h2>
+
+ <%-- NAVIGATION --%> 
+<%-- <c:if test="${debitNote.isPreparing()}"> --%>
+
+<!--     <div class="well well-sm" style="display: inline-block"> -->
+<!--         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a -->
+<%--             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message --%>
+<%--                 code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" --%>
+<%--             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message --%>
+<%--                 code="label.event.document.manageInvoice.addPendingEntries" /></a> --%>
+<!--     </div> -->
+<%-- </c:if> --%>
+<c:choose>
+    <c:when test="${not empty paymentCodePool.paymentReferenceCodesSet}">
+        <datatables:table id="referenceCodes" row="referenceCode" data="${ paymentCodePool.paymentReferenceCodesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentReferenceCode.referenceCode" />
+                </datatables:columnHead>
+                <c:out value="${referenceCode.formattedCode}" />
+            </datatables:column>
+            <datatables:column >
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentReferenceCode.description" />
+                </datatables:columnHead>
+                <c:out value="${referenceCode.description}" />
+            </datatables:column>
+            <datatables:column >
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentReferenceCode.state" />
+                </datatables:columnHead>
+                <c:out value="${referenceCode.state}" />
+            </datatables:column>
+
+            <datatables:column cssStyle="width:10%">
+                <form method="get" action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/${referenceCode.externalId}">
+                    <button type="submit" class="btn btn-default btn-xs">
+                        <spring:message code="label.view" />
+                    </button>
+                </form>
+            </datatables:column>
+        </datatables:table>
+        <script>
+                                    createDataTables(
+                                            'referenceCodes',
+                                            false,
+                                            false,
+                                            false,
+                                            "${pageContext.request.contextPath}",
+                                            "${datatablesI18NUrl}");
+                                </script>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.noResultsFound" />
+            </p>
+        </div>
+
+    </c:otherwise>
+</c:choose>
+
+
 
 <script>
 $(document).ready(function() {

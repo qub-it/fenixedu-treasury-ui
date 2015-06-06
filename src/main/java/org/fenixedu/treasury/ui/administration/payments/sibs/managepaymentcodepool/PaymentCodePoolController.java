@@ -487,23 +487,10 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             java.lang.Boolean useCheckDigit, java.lang.Boolean useAmountToValidateCheckDigit,
             DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod, Model model) {
 
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getPaymentCodePool(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
+        getPaymentCodePool(model).setNewValidPeriod(validFrom, validTo);
         getPaymentCodePool(model).edit(name, minReferenceCode, maxReferenceCode, minAmount, maxAmount, active,
                 seriesToUseInPayments, paymentMethod);
-
         getPaymentCodePool(model).changeFinantialInstitution(finantialInstitution);
-        getPaymentCodePool(model).setNewValidPeriod(validFrom, validTo);
         getPaymentCodePool(model).changePooltype(useCheckDigit, useAmountToValidateCheckDigit);
 
     }

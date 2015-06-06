@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -41,10 +42,7 @@ ${portal.angularToolkit()}
 		<div class="well well-sm">
 			<p>
 				<strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>${settlementNoteBean.debtAccount.finantialInstitution.name}</p>
-			<p>
-				<strong><spring:message code="label.DebtAccount.customer" />: </strong>${settlementNoteBean.debtAccount.customer.code} - ${settlementNoteBean.debtAccount.customer.name}
-			</p>
-			<p>
+            <p><strong><spring:message code="label.DebtAccount.customer" />: </strong><a href="${pageContext.request.contextPath}/<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}" >${settlementNoteBean.debtAccount.customer.code} - ${settlementNoteBean.debtAccount.customer.name}</a></p>			<p>
 				<strong><spring:message code="label.Customer.fiscalNumber" />: </strong>${ settlementNoteBean.debtAccount.customer.fiscalNumber }</p>
 		</div>
 

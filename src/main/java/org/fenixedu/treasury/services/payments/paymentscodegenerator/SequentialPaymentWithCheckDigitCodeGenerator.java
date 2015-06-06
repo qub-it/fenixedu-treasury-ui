@@ -111,9 +111,24 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
     }
 
     protected PaymentReferenceCode findLastPaymentReferenceCode() {
-        final Set<PaymentReferenceCode> paymentCodes = allPaymentCodes(referenceCodePool);
-        return paymentCodes.stream().sorted((x, y) -> y.getReferenceCode().compareTo(x.getReferenceCode())).findFirst()
-                .orElse(null);
+        //Sort the payment referenceCodes
+        final Set<PaymentReferenceCode> paymentCodes =
+                allPaymentCodes(referenceCodePool).stream()
+                        .sorted((x, y) -> Long.valueOf(x.getReferenceCode()).compareTo(Long.valueOf(y.getReferenceCode())))
+                        .collect(Collectors.toSet());
+
+        PaymentReferenceCode last = null;
+        for (PaymentReferenceCode referenceCode : paymentCodes) {
+            if (last == null) {
+                last = referenceCode;
+            } else {
+                //if there is an emptyspace in the pool, use the emptySpace
+                if (Long.parseLong(referenceCode.getReferenceCode()) > Long.parseLong(last.getReferenceCode()) + 1) {
+                    break;
+                }
+            }
+        }
+        return last;
     }
 
     protected Set<PaymentReferenceCode> allPaymentCodes(PaymentCodePool referenceCodePool) {
