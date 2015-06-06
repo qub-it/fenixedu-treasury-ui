@@ -102,6 +102,7 @@ public class PaymentEntry extends PaymentEntry_Base {
         }
 
         setBennu(null);
+        this.setPaymentMethod(null);
 
         deleteDomainObject();
     }

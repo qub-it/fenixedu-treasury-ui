@@ -451,12 +451,12 @@ public class SettlementNoteController extends TreasuryBaseController {
     // This is the EventanullSettlementNote Method for Screen read
     //
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
-    public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote,
+            @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
 //
         try {
-            settlementNote.changeState(FinantialDocumentStateType.ANNULED);
+            settlementNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
@@ -494,6 +494,26 @@ public class SettlementNoteController extends TreasuryBaseController {
                 e.printStackTrace();
             }
         }
+    }
+
+    // This is the EventcloseDebitNote Method for Screen read
+    //
+    @RequestMapping(value = "/read/{oid}/closesettlementnote", method = RequestMethod.POST)
+    public String processReadToCloseDebitNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        setSettlementNote(settlementNote, model);
+
+        try {
+            settlementNote.changeState(FinantialDocumentStateType.CLOSED, "");
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.Settlement.document.closed.sucess"),
+                    model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+
+        // Now choose what is the Exit Screen    
+        return redirect(SettlementNoteController.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
 
 }

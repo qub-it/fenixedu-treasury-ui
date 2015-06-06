@@ -203,9 +203,9 @@ public class CreditNote extends CreditNote_Base {
     }
 
     @Override
-    public void anullDocument(boolean freeEntries) {
+    public void anullDocument(boolean freeEntries, String reason) {
         // The Credit Note can neve free entries
-        super.anullDocument(false);
+        super.anullDocument(false, reason);
     }
 
 }

@@ -191,6 +191,7 @@ class document.FinantialDocument {
 	String originDocumentNumber;
 	FinantialDocumentStateType state;
 	String address;
+	String annulledReason;
 }
 
 

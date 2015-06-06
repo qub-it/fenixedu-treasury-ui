@@ -117,6 +117,19 @@ ${portal.toolkit()}
                     <p>
                         <spring:message code="label.document.manageInvoice.readCreditNote.confirmAnull" />
                     </p>
+                                        <div class="form">
+                    <div class="form-group row">
+                        <div class="col-sm-4 control-label">
+                            <spring:message code="label.CreditNote.annulledReason" />
+                        </div>
+
+                        <div class="col-sm-8">
+                            <input id="CreditNote_anullReason" class="form-control" type="text" name="anullReason" required value='' />
+                        </div>
+                    </div>
+                    </div>
+
+                    
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -247,6 +260,13 @@ ${portal.toolkit()}
                                 <span class="label label-primary">
                             </c:if> <c:out value='${creditNote.state.descriptionI18N.content}' /> </span></td>
                     </tr>
+                    <c:if test="${creditNote.isAnnulled()}">
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.annulledReason" /></th>
+                        <td><c:out value='${creditNote.annulledReason}' /></td>
+                    </tr>
+                    </c:if>
+                    
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
                         <td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalNetAmount)}' /></td>

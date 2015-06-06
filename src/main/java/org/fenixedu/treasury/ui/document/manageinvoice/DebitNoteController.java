@@ -79,7 +79,7 @@ public class DebitNoteController extends TreasuryBaseController {
     private static final String READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + READ_URI;
 
-    //
+    // 
 
     @RequestMapping
     public String home(Model model) {
@@ -453,7 +453,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
 
         try {
-            debitNote.changeState(FinantialDocumentStateType.CLOSED);
+            debitNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.closed.sucess"),
                     model);
@@ -469,12 +469,12 @@ public class DebitNoteController extends TreasuryBaseController {
     // This is the EventanullDebitNote Method for Screen read
     //
     @RequestMapping(value = "/read/{oid}/anulldebitnote", method = RequestMethod.POST)
-    public String processReadToAnullDebitNote(@PathVariable("oid") DebitNote debitNote, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processReadToAnullDebitNote(@PathVariable("oid") DebitNote debitNote,
+            @RequestParam("reason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setDebitNote(debitNote, model);
 //
         try {
-            debitNote.changeState(FinantialDocumentStateType.ANNULED);
+            debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.anulled.sucess"),
                     model);

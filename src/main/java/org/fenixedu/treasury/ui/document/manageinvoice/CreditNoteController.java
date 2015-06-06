@@ -138,7 +138,7 @@ public class CreditNoteController extends TreasuryBaseController {
 //
         /* Put here the logic for processing Event closeCreditNote 	*/
         try {
-            creditNote.changeState(FinantialDocumentStateType.CLOSED);
+            creditNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.closed.sucess"),
                     model);
@@ -153,12 +153,12 @@ public class CreditNoteController extends TreasuryBaseController {
     // This is the EventanullCreditNote Method for Screen read
     //
     @RequestMapping(value = "/read/{oid}/anullcreditnote", method = RequestMethod.POST)
-    public String processReadToAnullCreditNote(@PathVariable("oid") CreditNote creditNote, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processReadToAnullCreditNote(@PathVariable("oid") CreditNote creditNote,
+            @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
 //
         try {
-            creditNote.changeState(FinantialDocumentStateType.ANNULED);
+            creditNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.anulled.sucess"),
                     model);

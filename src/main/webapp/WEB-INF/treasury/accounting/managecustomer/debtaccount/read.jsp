@@ -389,7 +389,12 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <ul>
                                 <c:forEach var="settlementEntry" items="${payment.settlemetEntriesSet}">
-                                    <li><c:out value=" ${settlementEntry.description}    [ ${payment.currency.getValueFor(settlementEntry.amount)} ]" /></li>
+                                    <c:if test="${settlementEntry.invoiceEntry.isDebitNoteEntry() }">
+                                        <li><c:out value="[ ${payment.currency.getValueFor(settlementEntry.amount)} ] ${settlementEntry.description}" /></li>
+                                    </c:if>
+                                    <c:if test="${settlementEntry.invoiceEntry.isCreditNoteEntry() }">
+                                        <li><c:out value="[ -${payment.currency.getValueFor(settlementEntry.amount)} ] ${settlementEntry.description}    " /></li>
+                                    </c:if>
                                 </c:forEach>
                             </ul>
                         </datatables:column>
@@ -399,7 +404,7 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <ul>
                                 <c:forEach var="paymentEntry" items="${payment.paymentEntriesSet}">
-                                    <li><c:out value="${paymentEntry.paymentMethod.name.content} - ${payment.currency.getValueFor(paymentEntry.payedAmount)}" /></li>
+                                    <li><c:out value="[ ${payment.currency.getValueFor(paymentEntry.payedAmount)} ] ${paymentEntry.paymentMethod.name.content} " /></li>
                                 </c:forEach>
                             </ul>
                         </datatables:column>

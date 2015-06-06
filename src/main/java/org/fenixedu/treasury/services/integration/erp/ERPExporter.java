@@ -266,7 +266,7 @@ public class ERPExporter {
         paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
         paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
         for (FinantialDocument document : allDocuments) {
-            if (document.isSettlementNote() && Boolean.TRUE.equals(document.getClosed())) {
+            if (document.isSettlementNote() && (document.isClosed() || document.isAnnulled())) {
                 try {
                     Payment paymentDocument = convertToSAFTPaymentDocument((SettlementNote) document, customerMap, productMap);
                     paymentsDocuments.getPayment().add(paymentDocument);

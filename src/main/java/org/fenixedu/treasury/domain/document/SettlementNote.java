@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -64,6 +65,11 @@ public class SettlementNote extends SettlementNote_Base {
         super.init(debtAccount, documentNumberSeries, documentDate);
         setOriginDocumentNumber(originDocumentNumber);
         checkRules();
+    }
+
+    @Override
+    public boolean isSettlementNote() {
+        return true;
     }
 
     @Override
@@ -141,8 +147,8 @@ public class SettlementNote extends SettlementNote_Base {
 
     @Override
     public boolean isDeletable() {
-        //TODOJN
-        return false;
+        //We can only "delete" a settlement note if is in "Preparing"
+        return this.isPreparing();
     }
 
     @Override
@@ -327,12 +333,40 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     @Override
-    public void anullDocument(boolean freeEntries) {
+    public void anullDocument(boolean freeEntries, String reason) {
         if (this.isPreparing()) {
             this.delete(true);
         } else {
             // Settlement note can never free entries 
-            super.anullDocument(false);
+            super.anullDocument(false, reason);
         }
+    }
+
+    public BigDecimal getTotalDebitAmount() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (SettlementEntry entry : this.getSettlemetEntriesSet()) {
+            if (entry.getInvoiceEntry().isDebitNoteEntry()) {
+                total = total.add(entry.getTotalAmount());
+            }
+        }
+        return total;
+    }
+
+    public BigDecimal getTotalCreditAmount() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (SettlementEntry entry : this.getSettlemetEntriesSet()) {
+            if (entry.getInvoiceEntry().isCreditNoteEntry()) {
+                total = total.add(entry.getTotalAmount());
+            }
+        }
+        return total;
+    }
+
+    public BigDecimal getTotalPayedAmount() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (PaymentEntry entry : this.getPaymentEntriesSet()) {
+            total = total.add(entry.getPayedAmount());
+        }
+        return total;
     }
 }

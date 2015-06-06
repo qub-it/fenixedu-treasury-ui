@@ -119,6 +119,20 @@ ${portal.toolkit()}
                     <p>
                         <spring:message code="label.document.manageInvoice.readDebitNote.confirmAnull" />
                     </p>
+                    <br/><br/>
+                    <div class="form">
+                    <div class="form-group row">
+                        <div class="col-sm-4 control-label">
+                            <spring:message code="label.DebitNote.annulledReason" />
+                        </div>
+
+                        <div class="col-sm-8">
+                            <input id="debitNote_anullReason" class="form-control" type="text" name="reason" required value='' />
+                        </div>
+                    </div>
+                    </div>
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -251,6 +265,12 @@ ${portal.toolkit()}
                                 <span class="label label-primary">
                             </c:if> <c:out value='${debitNote.state.descriptionI18N.content}' /> </span></td>
                     </tr>
+                    <c:if test="${debitNote.isAnnulled()}">
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.annulledReason" /></th>
+                        <td><c:out value='${debitNote.annulledReason}' /></td>
+                    </tr>
+                    </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
                         <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalNetAmount)}' /></td>
@@ -273,8 +293,9 @@ ${portal.toolkit()}
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
                             <td>
                                 <ul>
-                                    <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}" >
-                                        <li><c:out value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                    <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
+                                        <li><c:out
+                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
                                     </c:forEach>
                                 </ul>
                             </td>

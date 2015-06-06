@@ -45,6 +45,13 @@ public class SettlementEntry extends SettlementEntry_Base {
         setBennu(Bennu.getInstance());
     }
 
+    @Override
+    public void delete() {
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
+        this.setInvoiceEntry(null);
+        super.delete();
+    }
+
     protected SettlementEntry(final InvoiceEntry invoiceEntry, final FinantialDocument finantialDocument,
             final BigDecimal amount, final String description, final DateTime entryDateTime) {
         this();
