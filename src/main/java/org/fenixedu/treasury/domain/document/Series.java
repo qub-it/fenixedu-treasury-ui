@@ -89,13 +89,39 @@ public class Series extends Series_Base {
     @Atomic
     public void edit(final String code, final LocalizedString name, final boolean externSeries, final boolean certificated,
             final boolean legacy) {
-        setCode(code);
         setName(name);
-        setExternSeries(externSeries);
-        setCertificated(certificated);
-        setLegacy(legacy);
+        if (code != getCode()) {
+            if (this.isSeriesUsedForAnyDocument()) {
+                throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");
+            }
+            setCode(code);
+        }
+        if (externSeries != getExternSeries()) {
+            if (this.isSeriesUsedForAnyDocument()) {
+                throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");
+            }
+            setExternSeries(externSeries);
+        }
+        if (certificated != getCertificated()) {
+            if (this.isSeriesUsedForAnyDocument()) {
+                throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");
+            }
+            setCertificated(certificated);
+        }
+
+        if (legacy != getLegacy()) {
+            if (this.isSeriesUsedForAnyDocument()) {
+                throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");
+            }
+            setLegacy(legacy);
+
+        }
 
         checkRules();
+    }
+
+    private boolean isSeriesUsedForAnyDocument() {
+        return this.getDocumentNumberSeriesSet().stream().anyMatch(x -> x.getFinantialDocumentsSet().size() > 0);
     }
 
     public boolean isDeletable() {

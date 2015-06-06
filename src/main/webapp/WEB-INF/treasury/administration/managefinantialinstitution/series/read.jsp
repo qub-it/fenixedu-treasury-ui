@@ -203,8 +203,8 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-<th><spring:message code="label.DocumentNumberSeries.FinantialDocumentType"/></th>
-<th><spring:message code="label.Customer.TotalDocuments"/></th>
+<th><spring:message code="label.DocumentNumberSeries.finantialDocumentType"/></th>
+<th><spring:message code="label.DocumentNumberSeries.sequenceNumber"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>

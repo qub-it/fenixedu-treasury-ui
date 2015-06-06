@@ -175,7 +175,7 @@ ${portal.toolkit()}
 "certificated" : "<c:if test="${searchResult.certificated}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.certificated}"><spring:message code="label.false" /></c:if>",
 "legacy" : "<c:if test="${searchResult.legacy}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.legacy}"><spring:message code="label.false" /></c:if>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/document/manageseries/series/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },
             </c:forEach>
     ];

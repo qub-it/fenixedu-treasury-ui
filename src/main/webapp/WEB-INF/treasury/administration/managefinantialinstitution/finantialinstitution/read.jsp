@@ -139,7 +139,7 @@ ${portal.toolkit()}
 			code="label.event.delete" /></a> &nbsp;|&nbsp; <span
 		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}"><spring:message
+		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
 			code="label.event.update" /></a> &nbsp;|&nbsp;
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class=""

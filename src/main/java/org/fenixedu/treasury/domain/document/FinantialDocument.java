@@ -62,6 +62,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setDocumentDueDate(documentDate.toLocalDate());
         setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         setState(FinantialDocumentStateType.PREPARING);
+        setAddress(debtAccount.getCustomer().getAddress());
         checkRules();
     }
 
