@@ -1103,7 +1103,7 @@ relation InvoiceDebtAccount {
 
 relation CreditNoteDebitNote {
 	document.DebitNote playsRole debitNote {
-		multiplicity 1..1;
+		multiplicity 0..1;
 	}
 	
 	document.CreditNote playsRole creditNote {

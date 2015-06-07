@@ -27,21 +27,33 @@
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.Vat;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.CreditNote;
+import org.fenixedu.treasury.domain.tariff.FixedTariff;
+import org.fenixedu.treasury.domain.tariff.Tariff;
+import org.fenixedu.treasury.dto.CreditEntryBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
@@ -70,16 +82,14 @@ public class CreditEntryController extends TreasuryBaseController {
     * This should be used when using AngularJS in the JSP
     */
 
-    //private CreditEntry getCreditEntryBean(Model model)
-    //{
-    //	return (CreditEntry)model.asMap().get("creditEntryBean");
-    //}
-    //				
-    //private void setCreditEntryBean (CreditEntryBean bean, Model model)
-    //{
-    //	model.addAttribute("creditEntryBeanJson", getBeanJson(bean));
-    //	model.addAttribute("creditEntryBean", bean);
-    //}
+    private CreditEntry getCreditEntryBean(Model model) {
+        return (CreditEntry) model.asMap().get("creditEntryBean");
+    }
+
+    private void setCreditEntryBean(CreditEntryBean bean, Model model) {
+        model.addAttribute("creditEntryBeanJson", getBeanJson(bean));
+        model.addAttribute("creditEntryBean", bean);
+    }
 
     // @formatter: on
 
@@ -96,144 +106,152 @@ public class CreditEntryController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the creditEntry
         // Do not catch any exception here
 
-        // creditEntry.delete();
+        creditEntry.delete();
     }
 
 //				
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
+//  
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
-    public String create(Model model) {
-        model.addAttribute("CreditEntry_finantialDocument_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocument>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditEntry_finantialDocument_options", org.fenixedu.treasury.domain.document.FinantialDocument.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditEntry_debitEntry_options", new ArrayList<org.fenixedu.treasury.domain.document.DebitEntry>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditEntry_debitEntry_options", org.fenixedu.treasury.domain.document.DebitEntry.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+    public String create(@RequestParam(value = "creditnote") CreditNote creditNote, Model model,
+            RedirectAttributes redirectAttributes) {
 
-        //IF ANGULAR, initialize the Bean
-        //CreditEntryBean bean = new CreditEntryBean();
-        //this.setCreditEntryBean(bean, model);
+        DebtAccount debtAccount = creditNote.getDebtAccount();
+        if (creditNote != null && !creditNote.isPreparing()) {
+            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
+            redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+        }
+
+        CreditEntryBean bean = new CreditEntryBean();
+
+        bean.setProductDataSource(Product.findAll().collect(Collectors.toList()));
+        bean.setDebtAccount(debtAccount);
+        bean.setFinantialDocument(creditNote);
+        bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
+        this.setCreditEntryBean(bean, model);
 
         return "treasury/document/manageinvoice/creditentry/create";
     }
 
-//
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-//                      // @formatter: off
-//          
-//              private static final String _CREATEPOSTBACK_URI ="/createpostback";
-//              public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
-//              @RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//                  public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) CreditEntryBean bean,
-//                  Model model) {
-//
-//                  // Do validation logic ?!?!
-//                  this.setCreditEntryBean(bean, model);
-//                  return getBeanJson(bean);
-//              }
-//              
-//              @RequestMapping(value = CREATE, method = RequestMethod.POST)
-//                  public String create(@RequestParam(value = "bean", required = false) CreditEntryBean bean,
-//                  Model model, RedirectAttributes redirectAttributes ) {
-//
-//                  /*
-//                  *  Creation Logic
-//                  */
-//                  
-//                  try
-//                  {
-//
-//                      CreditEntry creditEntry = createCreditEntry(... get properties from bean ...,model);
-//                      
-//                  //Success Validation
-//                   //Add the bean to be used in the View
-//                  model.addAttribute("creditEntry",creditEntry);
-//                  return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditEntry(model).getExternalId(), model, redirectAttributes);
-//                  }
-//                  catch (DomainException de)
-//                  {
-//
-//                      /*
-//                       * If there is any error in validation 
-//                       *
-//                       * Add a error / warning message
-//                       * 
-//                       * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//                       * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-//                      
-//                      addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//                      return create(model);
-//                  }
-//              }
-//                      // @formatter: on
+// @formatter: off
 
-//              
-    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "finantialdocument", required = false) org.fenixedu.treasury.domain.document.FinantialDocument finantialDocument,
-            @RequestParam(value = "description", required = false) java.lang.String description, @RequestParam(value = "amount",
-                    required = false) java.math.BigDecimal amount,
-            @RequestParam(value = "debitentry", required = false) org.fenixedu.treasury.domain.document.DebitEntry debitEntry,
-            Model model, RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        */
+    @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody ResponseEntity<String> createpostback(
+            @RequestParam(value = "bean", required = true) CreditEntryBean bean, Model model) {
+
+        Product product = bean.getProduct();
+        if (product != null) {
+            bean.setVat(bean.getDebtAccount().getFinantialInstitution().getActiveVat(product.getVatType(), new DateTime()));
+            Tariff tariff =
+                    product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime()).findFirst()
+                            .orElse(null);
+
+            if (tariff != null) {
+                bean.setTariff(tariff);
+                if (tariff instanceof FixedTariff) {
+                    bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
+                            .getValueWithScale(((FixedTariff) tariff).getAmount()));
+                } else {
+                    bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
+                            .getValueWithScale(BigDecimal.ZERO));
+
+                }
+            } else {
+                return new ResponseEntity<String>(BundleUtil.getString(Constants.BUNDLE, "label.Tariff.no.valid.fixed"),
+                        HttpStatus.BAD_REQUEST);
+            }
+            bean.setDescription(product.getName().getContent());
+        }
+        return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = _CREATE_URI + "{oid}", method = RequestMethod.POST)
+    public String create(@RequestParam(value = "bean", required = false) CreditEntryBean bean,
+            @PathVariable("oid") DebtAccount debtAccount, Model model, RedirectAttributes redirectAttributes) {
+
+/*
+*  Creation Logic
+*/
 
         try {
+            if (bean.getFinantialDocument() != null && !bean.getFinantialDocument().isPreparing()) {
+                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
+                redirect(CreditNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
+            }
 
-            CreditEntry creditEntry = createCreditEntry(finantialDocument, description, amount, debitEntry);
+            CreditEntry creditEntry =
+                    createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
+                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getFinantialDocument()
+                                    .getDocumentDueDate());
 
-            //Success Validation
-            //Add the bean to be used in the View
-            model.addAttribute("creditEntry", creditEntry);
-            return redirect("/treasury/document/manageinvoice/creditnote/read/"
-                    + getCreditEntry(model).getFinantialDocument().getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
-            // @formatter: off
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-            // @formatter: on
+//Success Validation
+//Add the bean to be used in the View
+            setCreditEntry(creditEntry, model);
+
+            if (getCreditEntry(model).getFinantialDocument() != null) {
+                return redirect(CreditNoteController.READ_URL + getCreditEntry(model).getFinantialDocument().getExternalId(),
+                        model, redirectAttributes);
+            } else {
+                return redirect(DebtAccountController.READ_URL + getCreditEntry(model).getDebtAccount().getExternalId(), model,
+                        redirectAttributes);
+            }
+        } catch (Exception de) {
+
+/*
+ * If there is any error in validation 
+ *
+ * Add a error / warning message
+ * 
+ * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
+ * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
+            this.setCreditEntryBean(bean, model);
+            return "treasury/document/manageinvoice/creditentry/create";
         }
     }
 
+// @formatter: on
+
+//  
+
     @Atomic
-    public CreditEntry createCreditEntry(org.fenixedu.treasury.domain.document.FinantialDocument finantialDocument,
-            java.lang.String description, java.math.BigDecimal amount, org.fenixedu.treasury.domain.document.DebitEntry debitEntry) {
+    public CreditEntry createCreditEntry(CreditNote creditNote, DebtAccount debtAccount, java.lang.String description,
+            org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, java.math.BigDecimal quantity,
+            LocalDate dueDate) {
 
-        // @formatter: off
+// @formatter: off
 
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         * 
-         */
+/*
+* Modify the creation code here if you do not want to create
+* the object with the default constructor and use the setter
+* for each field
+* 
+*/
 
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //CreditEntry creditEntry = creditEntry.create(fields_to_create);
+// CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+//CreditEntry creditEntry = creditEntry.create(fields_to_create);
 
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
+//Instead, use individual SETTERS and validate "CheckRules" in the end
+// @formatter: on
+
+        Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
+
+        Optional<Vat> activeVat =
+                Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
+
+//        CreditEntry.create(creditNote, debtAccount, null, activeVat.orElse(null), amount, dueDate, null, product,
+//                description, quantity, tariff.orElse(null), new DateTime());
 
         CreditEntry creditEntry =
-                CreditEntry.create(finantialDocument, description, debitEntry.getProduct(), debitEntry.getVat(), amount,
-                        new DateTime(), debitEntry, debitEntry.getQuantity());
-        creditEntry.setFinantialDocument(finantialDocument);
-        creditEntry.setDescription(description);
-        creditEntry.setAmount(amount);
-        creditEntry.setDebitEntry(debitEntry);
-
+                CreditEntry.create(creditNote, description, product, activeVat.orElse(null), amount, new DateTime(), null,
+                        quantity);
         return creditEntry;
     }
 

@@ -204,7 +204,8 @@ public class CreditNoteController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen	 
-        return redirect("/treasury/document/manageinvoice/creditentry/create/" + getCreditNote(model).getExternalId(), model,
+        return redirect(
+                "/treasury/document/manageinvoice/creditentry/create/?creditnote=" + getCreditNote(model).getExternalId(), model,
                 redirectAttributes);
     }
 
@@ -460,7 +461,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         } else {
             List<DocumentNumberSeries> availableSeries =
-                    org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
+                    org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(),
                             debtAccount.getFinantialInstitution()).collect(Collectors.toList());
             if (availableSeries.size() > 0) {
                 model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
@@ -508,7 +509,7 @@ public class CreditNoteController extends TreasuryBaseController {
             if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
-                return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
             }
         }
 
@@ -560,11 +561,13 @@ public class CreditNoteController extends TreasuryBaseController {
         CreditNote creditNote =
                 CreditNote.create(debtAccount, documentNumberSeries, documentDate, debitNote, originDocumentNumber);
 
-        for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
-            CreditEntry creditEntry =
-                    CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), entry.getAmount(),
-                            new DateTime(), entry, entry.getQuantity());
-            creditNote.addFinantialDocumentEntries(creditEntry);
+        if (debitNote != null) {
+            for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
+                CreditEntry creditEntry =
+                        CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(),
+                                entry.getAmount(), new DateTime(), entry, entry.getQuantity());
+                creditNote.addFinantialDocumentEntries(creditEntry);
+            }
         }
         return creditNote;
     }

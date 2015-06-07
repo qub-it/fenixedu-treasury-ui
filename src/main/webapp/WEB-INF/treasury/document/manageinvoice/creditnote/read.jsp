@@ -313,7 +313,7 @@ ${portal.toolkit()}
     <div class="well well-sm" style="display: inline-block">
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message
-                code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|
+                code="label.event.document.manageInvoice.addCreditEntry" /></a> &nbsp;|
     </div>
 </c:if>
 <c:choose>
