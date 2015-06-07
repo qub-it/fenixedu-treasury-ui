@@ -30,13 +30,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,10 +48,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "#managers")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "#managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-//@BennuSpringController(value = TreasuryController.class)
+@BennuSpringController(value = CustomerController.class)
 @RequestMapping(PaymentReferenceCodeController.CONTROLLER_URL)
 public class PaymentReferenceCodeController extends TreasuryBaseController {
 

@@ -80,6 +80,8 @@ ${portal.angularToolkit()}
             code="label.event.accounting.manageCustomer.createDebtEntry" /></a>&nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><spring:message
             code="label.event.accounting.manageCustomer.createDebitNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createcreditnote"><spring:message
+            code="label.event.accounting.manageCustomer.createCreditNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"><spring:message
             code="label.event.accounting.manageCustomer.createExemption" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"> <spring:message

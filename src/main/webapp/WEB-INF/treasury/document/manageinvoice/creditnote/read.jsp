@@ -117,19 +117,19 @@ ${portal.toolkit()}
                     <p>
                         <spring:message code="label.document.manageInvoice.readCreditNote.confirmAnull" />
                     </p>
-                                        <div class="form">
-                    <div class="form-group row">
-                        <div class="col-sm-4 control-label">
-                            <spring:message code="label.CreditNote.annulledReason" />
-                        </div>
+                    <div class="form">
+                        <div class="form-group row">
+                            <div class="col-sm-4 control-label">
+                                <spring:message code="label.CreditNote.annulledReason" />
+                            </div>
 
-                        <div class="col-sm-8">
-                            <input id="CreditNote_anullReason" class="form-control" type="text" name="anullReason" required value='' />
+                            <div class="col-sm-8">
+                                <input id="CreditNote_anullReason" class="form-control" type="text" name="anullReason" required value='' />
+                            </div>
                         </div>
                     </div>
-                    </div>
 
-                    
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -243,13 +243,17 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.originDocumentNumber" /></th>
                         <td><c:out value='${creditNote.originDocumentNumber}' /></td>
                     </tr>
-                    <c:if test="${not empty creditNote.debitNote}">
-                        <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.debitNote" /></th>
-                            <td><a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${creditNote.getDebitNote().externalId}"><c:out
-                                        value='${creditNote.getDebitNote().uiDocumentNumber}' /></a></td>
-                        </tr>
-                    </c:if>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.debitNote" /></th>
+                        <td><c:if test="${not creditNote.debitNote}">
+                                <span class="label label-warning"> <spring:message code="label.document.manageinvoice.creditnote.without.debitnote" />
+                                </span>
+                            </c:if> <c:if test="${not empty creditNote.debitNote}">
+
+                                <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${creditNote.getDebitNote().externalId}"><c:out
+                                        value='${creditNote.getDebitNote().uiDocumentNumber}' /></a>
+                            </c:if></td>
+                    </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.state" /></th>
                         <td><c:if test="${creditNote.isAnnulled()}">
@@ -261,12 +265,12 @@ ${portal.toolkit()}
                             </c:if> <c:out value='${creditNote.state.descriptionI18N.content}' /> </span></td>
                     </tr>
                     <c:if test="${creditNote.isAnnulled()}">
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.annulledReason" /></th>
-                        <td><c:out value='${creditNote.annulledReason}' /></td>
-                    </tr>
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.annulledReason" /></th>
+                            <td><c:out value='${creditNote.annulledReason}' /></td>
+                        </tr>
                     </c:if>
-                    
+
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
                         <td><c:out value='${creditNote.debtAccount.finantialInstitution.currency.getValueFor(creditNote.totalNetAmount)}' /></td>
@@ -304,15 +308,14 @@ ${portal.toolkit()}
     <spring:message code="label.CreditNote.creditEntries" />
 </h2>
 
-<%-- NAVIGATION --%>
-<%-- <c:if test="${creditNote.isPreparing()}"> --%>
-
-<!-- 	<div class="well well-sm" style="display: inline-block"> -->
-<!-- 		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a -->
-<%-- 			href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message --%>
-<%-- 				code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;| --%>
-<!-- 	</div> -->
-<%-- </c:if> --%>
+<!-- NAVIGATION -->
+<c:if test="${creditNote.isPreparing()}">
+    <div class="well well-sm" style="display: inline-block">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message
+                code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|
+    </div>
+</c:if>
 <c:choose>
     <c:when test="${not empty creditNote.creditEntriesSet}">
         <datatables:table id="creditEntries" row="creditEntry" data="${creditNote.creditEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"

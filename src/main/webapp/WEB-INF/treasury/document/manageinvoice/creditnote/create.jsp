@@ -28,137 +28,202 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1>
-		<spring:message code="label.document.manageInvoice.createCreditNote" />
-		<small></small>
-	</h1>
+    <h1>
+        <spring:message code="label.document.manageInvoice.createCreditNote" />
+        <small></small>
+    </h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<c:if test="${not empty debitNote }">
-		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}"><spring:message
-				code="label.event.back" /></a> &nbsp;|&nbsp;
+    <c:if test="${not empty debitNote }">
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp;
 	</c:if>
-	<c:if test="${empty debitNote }">
-		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/"><spring:message
-				code="label.event.back" /></a> &nbsp;|&nbsp;
+    <c:if test="${empty debitNote }">
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp;
 	</c:if>
 </div>
 <c:if test="${not empty infoMessages}">
-	<div class="alert alert-info" role="alert">
+    <div class="alert alert-info" role="alert">
 
-		<c:forEach items="${infoMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${infoMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 <c:if test="${not empty warningMessages}">
-	<div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning" role="alert">
 
-		<c:forEach items="${warningMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${warningMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 <c:if test="${not empty errorMessages}">
-	<div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" role="alert">
 
-		<c:forEach items="${errorMessages}" var="message">
-			<p>
-				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-			</p>
-		</c:forEach>
+        <c:forEach items="${errorMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
 
-	</div>
+    </div>
 </c:if>
 
 
-<c:if test="${not empty debitNote }">
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h3 class="panel-title">
-				<spring:message code="label.details" />
-			</h3>
-		</div>
-		<div class="panel-body">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.details" />
+        </h3>
+    </div>
+    <div class="panel-body">
 
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DebtAccount.finantialInstitution" />
-				</div>
+        <div class="form-group row">
+            <div class="col-sm-2 control-label">
+                <spring:message code="label.DebtAccount.finantialInstitution" />
+            </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value="${debitNote.debtAccount.finantialInstitution.name}" />
-					</div>
-				</div>
-			</div>
+            <div class="col-sm-10">
+                <div class="form-control">
+                    <c:out value="${debtAccount.finantialInstitution.name}" />
+                </div>
+            </div>
+        </div>
 
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.CreditNote.debtAccount" />
-				</div>
+        <div class="form-group row">
+            <div class="col-sm-2 control-label">
+                <spring:message code="label.CreditNote.debtAccount" />
+            </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value="${debitNote.debtAccount.customer.code} - ${debitNote.debtAccount.customer.name}" />
-					</div>
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.CreditNote.debitNote" />
-				</div>
+            <div class="col-sm-10">
+                <div class="form-control">
+                    <c:out value="${debtAccount.customer.code} - ${debtAccount.customer.name}" />
+                </div>
+            </div>
+        </div>
+        <c:if test="${not empty debitNote }">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.debitNote" />
+                </div>
 
-				<div class="col-sm-10">
-					<div class="form-control">
-						<c:out value='${debitNote.uiDocumentNumber}' />
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</c:if>
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value='${debitNote.uiDocumentNumber}' />
+                    </div>
+                </div>
+            </div>
+        </c:if>
+
+    </div>
+</div>
+
 
 <form method="post" class="form-horizontal">
-	<div class="panel panel-default">
-		<div class="panel-body">
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.CreditNote.documentDate" />
-				</div>
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.documentNumberSeries" />
+                </div>
 
-				<div class="col-sm-4">
-					<input id="creditNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date
-						value='<c:out value='${not empty param.documentdate ? param.documentdate : creditNote.documentDate }'/>' />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.CreditNote.originDocumentNumber" />
-				</div>
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select id="creditNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.documentDate" />
+                </div>
 
-				<div class="col-sm-10">
-					<input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"
-						value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
-				</div>
-			</div>
-		</div>
-		<div class="panel-footer">
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
-		</div>
-	</div>
+                <div class="col-sm-4">
+                    <input id="creditNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
+                        value='<c:out value='${not empty param.documentdate ? param.documentdate : creditNote.documentDate }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.originDocumentNumber" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"
+                        value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
+        </div>
+    </div>
 </form>
+
+<!-- <form method="post" class="form-horizontal"> -->
+<!-- 	<div class="panel panel-default"> -->
+<!-- 		<div class="panel-body"> -->
+<!-- 			<div class="form-group row"> -->
+<!-- 				<div class="col-sm-2 control-label"> -->
+<%-- 					<spring:message code="label.CreditNote.documentDate" /> --%>
+<!-- 				</div> -->
+
+<!-- 				<div class="col-sm-4"> -->
+<!-- 					<input id="creditNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date -->
+<%-- 						value='<c:out value='${not empty param.documentdate ? param.documentdate : creditNote.documentDate }'/>' /> --%>
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 			<div class="form-group row"> -->
+<!-- 				<div class="col-sm-2 control-label"> -->
+<%-- 					<spring:message code="label.CreditNote.originDocumentNumber" /> --%>
+<!-- 				</div> -->
+
+<!-- 				<div class="col-sm-10"> -->
+<!-- 					<input id="creditNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber" -->
+<%-- 						value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' /> --%>
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
+<!-- 		<div class="panel-footer"> -->
+<%-- 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" /> --%>
+<!-- 		</div> -->
+<!-- 	</div> -->
+<!-- </form> -->
 
 <script>
 	$(document).ready(function() {
-
+        <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+        documentNumberSeries_options = [
+            <c:forEach items="${CreditNote_documentNumberSeries_options}" var="element"> 
+                {
+                    text : "<c:out value='${element.series.code} - ${element.series.name.content}'/>",  
+                    id : "<c:out value='${element.externalId}'/>"
+                },
+            </c:forEach>
+        ];
+        
+        $("#creditNote_documentNumberSeries").select2(
+            {
+                data : documentNumberSeries_options,
+            }     
+        );
+        
+        
+        
+        $("#creditNote_documentNumberSeries").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
+    
+        <%-- End block for providing documentNumberSeries options --%>
 	});
 </script>

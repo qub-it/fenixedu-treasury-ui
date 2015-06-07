@@ -6,6 +6,15 @@ enum org.fenixedu.treasury.domain.document.FinantialDocumentStateType           
 enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                                     as DueDateCalculationType;
 enum org.fenixedu.treasury.domain.tariff.InterestType                                               as InterestType; 
 enum org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType						as PaymentReferenceCodeStateType;
+//enum org.fenixedu.treasury.domain.accesscontrol.TreasuryOperationType                               as TreasuryOperationType;
+//enum org.fenixedu.treasury.domain.accesscontrol.TreasuryOperationType.Scope                         as TreasuryOperationTypeScope;
+
+//valueType org.fenixedu.treasury.domain.accesscontrol.rules.TreasuryAccessOperation as TreasuryAccessOperation {
+//    externalizeWith {
+//        String exportAsString();
+//    }
+//    internalizeWith importFromString();
+//}
 
 external class .org.fenixedu.bennu.io.domain.GenericFile;
 
@@ -253,6 +262,41 @@ class debt.DebitEntrySuspensionRequest {
 class debt.DebitEntrySuspensionRequestEntry {
 }
 */
+
+/*************
+* ACCESS CONTROL
+****************/
+//
+//public class accesscontrol.academicAdministration.TreasuryAccessRule {
+//    protected DateTime created (REQUIRED);
+//    protected DateTime revoked;
+//    protected TreasuryAccessOperation operation (REQUIRED);
+//}
+//class accesscontrol.PersistentTreasuryOperationGroup extends .org.fenixedu.bennu.core.domain.groups.PersistentGroup {
+//    public TreasuryOperationType operation;
+//    public TreasuryOperationTypeScope scope;
+//}
+//
+//
+//relation TreasuryAuthorizationGroupFinantialInstitution {
+//    public accesscontrol.PersistentTreasuryOperationGroup playsRole treasuryAuthorizationGroup {
+//        multiplicity *;
+//    }
+//    public FinantialInstitution playsRole finantialInstitution {
+//        multiplicity *;
+//    }
+//}
+//
+//relation TreasuryAuthorizationGroupFinantialEntity {
+//    public accesscontrol.PersistentTreasuryOperationGroup playsRole treasuryAuthorizationGroup {
+//        multiplicity *;
+//    }
+//    public FinantialEntity playsRole finantialEntity {
+//        multiplicity *;
+//    }
+//}
+
+
 
 /*-----------
  * Tariff 

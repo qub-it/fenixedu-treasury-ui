@@ -189,7 +189,7 @@ $(document).ready(function() {
 		documentNumberSeries_options = [
 			<c:forEach items="${DebitNote_documentNumberSeries_options}" var="element"> 
 				{
-					text : "<c:out value='${element.series.code}'/>",  
+					text : "<c:out value='${element.series.code} - ${element.series.name.content}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>

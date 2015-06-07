@@ -55,10 +55,9 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
         //
 
         //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByYear(getYear().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.GlobalInterestRate.year.duplicated");
-        //}	
+        if (findByYear(getYear()).count() > 1) {
+            throw new TreasuryDomainException("error.GlobalInterestRate.year.duplicated");
+        }
         //if (findByDescription(getDescription().count()>1)
         //{
         //	throw new TreasuryDomainException("error.GlobalInterestRate.description.duplicated");

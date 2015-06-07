@@ -495,7 +495,7 @@ public class DebitNoteController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen    
-        return redirect(DebitEntryController.SEARCHPENDINGENTRIES_URL + "?debitNote=" + debitNote.getExternalId(), model,
+        return redirect(DebitEntryController.SEARCHPENDINGENTRIES_URL + "?debitnote=" + debitNote.getExternalId(), model,
                 redirectAttributes);
     }
 
