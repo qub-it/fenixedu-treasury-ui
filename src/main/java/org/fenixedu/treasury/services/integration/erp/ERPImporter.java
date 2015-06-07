@@ -118,6 +118,14 @@ public class ERPImporter {
             if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
             }
+
+            if (eRPImportOperation.getProcessed() == true) {
+                //this is a re-process. set as "corrected"
+                eRPImportOperation.setCorrected(true);
+            }
+            eRPImportOperation.setProcessed(true);
+            eRPImportOperation.setExecutionDate(new DateTime());
+            eRPImportOperation.setSuccess(true);
         } catch (Exception ex) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(eRPImportOperation.getErrorLog());
@@ -127,7 +135,7 @@ public class ERPImporter {
             }
 
             eRPImportOperation.setErrorLog(stringBuilder.toString());
-            eRPImportOperation.setProcessed(false);
+            eRPImportOperation.setProcessed(true);
             eRPImportOperation.setCorrected(false);
             eRPImportOperation.setExecutionDate(new DateTime());
             eRPImportOperation.setSuccess(false);

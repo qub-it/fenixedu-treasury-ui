@@ -338,8 +338,15 @@ public class ERPImportOperationController extends TreasuryBaseController {
         setERPImportOperation(eRPImportOperation, model);
 //
         /* Put here the logic for processing Event retryImport 	*/
-        //doSomething();
 
+        try {
+            ERPImporter erpImporter = new ERPImporter(eRPImportOperation.getFile().getStream());
+            erpImporter.processAuditFile(eRPImportOperation);
+        } catch (Exception ex) {
+            //Add error messages to the list
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+
+        }
         // Now choose what is the Exit Screen	 
         return redirect("/treasury/integration/erp/erpimportoperation/read/" + getERPImportOperation(model).getExternalId(),
                 model, redirectAttributes);
