@@ -51,7 +51,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageFixedTariff") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageFixedTariff",accessGroup = "managers")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageFixedTariff",accessGroup = "#managers")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 @BennuSpringController(value = ProductController.class)
 @RequestMapping(FixedTariffController.CONTROLLER_URL)

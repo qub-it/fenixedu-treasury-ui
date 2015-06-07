@@ -70,7 +70,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "managers")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "#managers")
 @RequestMapping(SettlementNoteController.CONTROLLER_URL)
 public class SettlementNoteController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/document/managepayments/settlementnote";

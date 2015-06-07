@@ -51,7 +51,7 @@ import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCode")
 @SpringFunctionality(app = TreasuryController.class,
-        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "managers")
+        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "#managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 

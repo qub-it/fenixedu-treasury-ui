@@ -47,7 +47,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageFiscalCountryRegion") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageFiscalCountryRegion",
-        accessGroup = "managers")
+        accessGroup = "#managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/treasury/administration/base/managefiscalcountryregion/fiscalcountryregion")
 public class FiscalCountryRegionController extends TreasuryBaseController {
