@@ -527,8 +527,8 @@ public class DebitNoteController extends TreasuryBaseController {
                     URLEncoder.encode(
                             StringNormalizer.normalizePreservingCapitalizedLetters((debitNote.getDebtAccount()
                                     .getFinantialInstitution().getFiscalNumber()
-                                    + "_" + debitNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_").replace(" ", "_")),
-                            "Windows-1252");
+                                    + "_" + debitNote.getUiDocumentNumber() + ".xml").replaceAll("/", "_").replaceAll("\\s", "_")
+                                    .replaceAll(" ", "_")), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {

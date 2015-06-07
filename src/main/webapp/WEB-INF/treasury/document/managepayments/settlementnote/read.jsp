@@ -61,7 +61,7 @@ ${portal.toolkit()}
                         <spring:message code="label.cancel" />
                     </button>
                     <button id="deleteButton" class="btn btn-danger" type="submit">
-                        <spring:message code="label.delete" />
+                        <spring:message code="label.annull" />
                     </button>
                 </div>
             </form>

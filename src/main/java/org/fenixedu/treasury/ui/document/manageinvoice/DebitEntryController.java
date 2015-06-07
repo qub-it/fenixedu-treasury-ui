@@ -176,7 +176,8 @@ public class DebitEntryController extends TreasuryBaseController {
         }
         this.setDebitEntryBean(bean, model);
 
-        model.addAttribute("DebitEntry_event_options", TreasuryEvent.findActiveBy(debtAccount).collect(Collectors.<TreasuryEvent> toList()));
+        model.addAttribute("DebitEntry_event_options",
+                TreasuryEvent.findActiveBy(debtAccount).collect(Collectors.<TreasuryEvent> toList()));
 
         if (debitNote == null) {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
@@ -408,7 +409,7 @@ public class DebitEntryController extends TreasuryBaseController {
     public static final String SEARCHPENDINGENTRIES_URL = CONTROLLER_URL + _SEARCHPENDINGENTRIES_URI;
 
     @RequestMapping(value = _SEARCHPENDINGENTRIES_URI)
-    public String searchPendingEntries(@RequestParam("debitNote") DebitNote debitNote, Model model) {
+    public String searchPendingEntries(@RequestParam("debitnote") DebitNote debitNote, Model model) {
         List<DebitEntry> searchpendingentriesResultsDataSet = filterSearchPendingEntries(debitNote.getDebtAccount());
 
         //add the results dataSet to the model
