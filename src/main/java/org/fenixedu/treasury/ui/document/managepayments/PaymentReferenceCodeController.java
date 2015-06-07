@@ -103,8 +103,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public static final String CREATEPAYMENTCODEINDEBITNOTE_URL = CONTROLLER_URL + _CREATEPAYMENTCODEINDEBITNOTE_URI;
 
     @RequestMapping(value = _CREATEPAYMENTCODEINDEBITNOTE_URI, method = RequestMethod.GET)
-    public String createpaymentcodeindebitnote(@RequestParam(value = "debitNote") DebitNote debitNote, Model model) {
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType.values());
+    public String createpaymentcodeindebitnote(@RequestParam(value = "debitnote") DebitNote debitNote, Model model) {
+//        model.addAttribute("stateValues", org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType.values());
 
         //IF ANGULAR, initialize the Bean
         PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();

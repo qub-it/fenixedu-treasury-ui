@@ -224,7 +224,11 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     @Override
     public void setReferenceCode(String code) {
-        throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.modify.code");
+        if (getReferenceCode() == null) {
+            super.setReferenceCode(code);
+        } else {
+            throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.modify.code");
+        }
     }
 
 //    @Override

@@ -8,7 +8,7 @@ import com.google.common.base.Strings;
 public class CheckDigitGenerator {
 
     public static String generateReferenceCodeWithCheckDigit(String entityCode, String referenceCode, BigDecimal amount) {
-        String fullCode = entityCode + referenceCode;
+        String fullCode = entityCode + Strings.padStart(referenceCode, 7, '0');
 
         String amountString =
                 amount.setScale(2, RoundingMode.HALF_EVEN).toPlainString().replaceAll("\\.", "").replaceAll(",", "");

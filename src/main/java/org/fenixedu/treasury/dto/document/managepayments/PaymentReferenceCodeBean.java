@@ -61,10 +61,10 @@ public class PaymentReferenceCodeBean implements IBean {
     public void setPaymentCodePoolDataSource(List<PaymentCodePool> value) {
         this.paymentCodePoolDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText("[" + x.getEntityReferenceCode() + "] - " + x.getName());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public java.lang.String getReferenceCode() {

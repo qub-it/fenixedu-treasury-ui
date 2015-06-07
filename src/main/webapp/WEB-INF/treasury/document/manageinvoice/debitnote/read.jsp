@@ -217,6 +217,10 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message
                     code="label.event.document.manageInvoice.createCreditNote" /></a>
 		&nbsp;|&nbsp;
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+                href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}"><spring:message
+                    code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" /></a>
+        &nbsp;|&nbsp;
 		</c:if>
         <c:if test="${not debitNote.isPreparing()}">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
