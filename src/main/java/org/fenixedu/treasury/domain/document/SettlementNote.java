@@ -369,4 +369,14 @@ public class SettlementNote extends SettlementNote_Base {
         }
         return total;
     }
+
+    @Override
+    public BigDecimal getTotalAmount() {
+        return this.getTotalDebitAmount().subtract(this.getTotalDebitAmount());
+    }
+
+    @Override
+    public BigDecimal getTotalNetAmount() {
+        throw new TreasuryDomainException("error.SettlementNote.totalNetAmount.not.available");
+    }
 }

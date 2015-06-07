@@ -307,10 +307,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public BigDecimal getDebtAmount() {
-            BigDecimal amount =
-                    debtAmount
-                            .multiply(BigDecimal.ONE.subtract(debitEntry.getVat().getTaxRate().divide(BigDecimal.valueOf(100))));
-            return debitEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
+
+            return debitEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(debtAmount);
         }
 
         public BigDecimal getDebtAmountWithVat() {

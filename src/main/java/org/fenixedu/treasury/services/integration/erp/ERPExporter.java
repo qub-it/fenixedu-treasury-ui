@@ -274,11 +274,9 @@ public class ERPExporter {
                     // AcumulateValues
                     numberOfPaymentsDocuments = numberOfPaymentsDocuments.add(BigInteger.ONE);
                     totalCreditOfPaymentsDocuments =
-                            totalCreditOfPaymentsDocuments.add(paymentDocument.getDocumentTotals().getSettlement()
-                                    .getSettlementAmount());
+                            totalCreditOfPaymentsDocuments.add(((SettlementNote) document).getTotalCreditAmount());
                     totalDebitOfPaymentsDocuments =
-                            totalDebitOfPaymentsDocuments.add(paymentDocument.getDocumentTotals().getSettlement()
-                                    .getSettlementAmount());
+                            totalDebitOfPaymentsDocuments.add(((SettlementNote) document).getTotalDebitAmount());
 
 //                    i++;
                 } catch (Exception ex) {
@@ -404,8 +402,11 @@ public class ERPExporter {
                 line.getSourceDocumentID().add(sourceDocument);
                 //SettlementAmount
                 line.setSettlementAmount(BigDecimal.ZERO);
-                line.setDebitAmount(settlementEntry.getTotalAmount());
-                line.setCreditAmount(BigDecimal.ZERO);
+                if (settlementEntry.getInvoiceEntry().isDebitNoteEntry()) {
+                    line.setDebitAmount(settlementEntry.getTotalAmount());
+                } else if (settlementEntry.getInvoiceEntry().isCreditNoteEntry()) {
+                    line.setCreditAmount(settlementEntry.getTotalAmount());
+                }
                 payment.getLine().add(line);
                 i = i.add(BigInteger.ONE);
             }

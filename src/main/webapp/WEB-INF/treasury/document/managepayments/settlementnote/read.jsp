@@ -314,6 +314,14 @@ ${portal.toolkit()}
                 </datatables:columnHead>
                 <c:out value="${settlementNote.currency.getValueFor(settlementEntry.totalAmount)}" />
             </datatables:column>
+            <datatables:column cssStyle="width:1%">
+                <c:if test="${settlementEntry.invoiceEntry.isDebitNoteEntry()}">
+                <c:out value=" [D] " />
+                </c:if>
+                <c:if test="${settlementEntry.invoiceEntry.isCreditNoteEntry()}">
+                <c:out value=" [C] " />
+                </c:if>
+            </datatables:column>
             <%--             <datatables:column cssStyle="width:10%"> --%>
             <%--                 <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/settlemententry/read/${settlementEntry.externalId}"> --%>
             <!--                     <button type="submit" class="btn btn-default btn-xs"> -->
