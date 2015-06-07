@@ -93,7 +93,11 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.IntegrationOperation.cannot.delete");
         }
-
+        this.setFinantialInstitution(null);
+        if (this.getFile() != null) {
+            this.getFile().delete();
+        }
+        this.setFile(null);
         deleteDomainObject();
     }
 

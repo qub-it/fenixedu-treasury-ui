@@ -27,10 +27,6 @@
  */
 package org.fenixedu.treasury.domain.integration;
 
-
-import java.util.stream.Stream;
-
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
@@ -38,63 +34,62 @@ import pt.ist.fenixframework.Atomic;
 
 public class OperationFile extends OperationFile_Base {
 
-	public OperationFile() {
-		super();
-		// this.setBennu(Bennu.getInstance());
-	}
+    public OperationFile() {
+        super();
+        // this.setBennu(Bennu.getInstance());
+    }
 
-	public OperationFile(String fileName, byte[] content) {
-		this();
-		this.init(fileName, fileName, content);
-	}
+    public OperationFile(String fileName, byte[] content) {
+        this();
+        this.init(fileName, fileName, content);
+    }
 
-	@Override
-	// TODO: Implement
-	public boolean isAccessible(User arg0) {
-		throw new RuntimeException("not implemented");
-	}
+    @Override
+    // TODO: Implement
+    public boolean isAccessible(User arg0) {
+        throw new RuntimeException("not implemented");
+    }
 
-	private void checkRules() {
-		//
-		// CHANGE_ME add more busines validations
-		//
+    private void checkRules() {
+        //
+        // CHANGE_ME add more busines validations
+        //
 
-		// CHANGE_ME In order to validate UNIQUE restrictions
-	}
+        // CHANGE_ME In order to validate UNIQUE restrictions
+    }
 
-	@Atomic
-	public void edit() {
-		checkRules();
-	}
+    @Atomic
+    public void edit() {
+        checkRules();
+    }
 
-	public boolean isDeletable() {
-		return true;
-	}
+    public boolean isDeletable() {
+        return true;
+    }
 
-	@Atomic
-	public void delete() {
-		if (!isDeletable()) {
-			throw new TreasuryDomainException(
-					"error.OperationFile.cannot.delete");
-		}
+    @Override
+    @Atomic
+    public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.OperationFile.cannot.delete");
+        }
 
-//		setBennu(null);
+        this.setIntegrationOperation(null);
+        super.delete();
+    }
 
-		deleteDomainObject();
-	}
+    @Atomic
+    public static OperationFile create(String fileName, byte[] bytes) {
+        OperationFile operationFile = new OperationFile();
+        operationFile.init(fileName, fileName, bytes);
+        return operationFile;
+    }
 
-	@Atomic
-	public static OperationFile create(String fileName, byte[] bytes) {
-		OperationFile operationFile = new OperationFile();
-		operationFile.init(fileName, fileName, bytes);
-		return operationFile;
-	}
-
-	// @formatter: off
-	/************
-	 * SERVICES *
-	 ************/
-	// @formatter: on
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
 //	public static Stream<OperationFile> findAll() {
 //		return Bennu.getInstance().getOperationFilesSet().stream();

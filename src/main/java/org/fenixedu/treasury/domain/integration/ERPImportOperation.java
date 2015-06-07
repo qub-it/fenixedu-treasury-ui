@@ -113,7 +113,7 @@ public class ERPImportOperation extends ERPImportOperation_Base {
         for (FinantialDocument document : this.getFinantialDocumentsSet()) {
             this.removeFinantialDocuments(document);
         }
-        deleteDomainObject();
+        super.delete();
     }
 
     @Atomic
