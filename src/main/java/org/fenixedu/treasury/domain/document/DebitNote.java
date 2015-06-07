@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -161,15 +162,19 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Override
-    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList) {
+    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList, Boolean includeAnulledDocuments) {
         documentsBaseList.add(this);
+        FinantialInstitution institution = this.getDebtAccount().getFinantialInstitution();
 
         for (DebitEntry entry : getDebitEntriesSet()) {
             if (entry.getCreditEntriesSet().size() > 0) {
                 for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
                     if (creditEntry.getFinantialDocument() != null && !creditEntry.getFinantialDocument().isPreparing()) {
-                        if (documentsBaseList.contains(creditEntry.getFinantialDocument()) == false) {
-                            documentsBaseList.addAll(creditEntry.getFinantialDocument().findRelatedDocuments(documentsBaseList));
+                        if (includeAnulledDocuments == false || this.isAnnulled() == false) {
+                            if (documentsBaseList.contains(creditEntry.getFinantialDocument()) == false) {
+                                documentsBaseList.addAll(creditEntry.getFinantialDocument().findRelatedDocuments(
+                                        documentsBaseList, includeAnulledDocuments));
+                            }
                         }
                     }
                 }
@@ -180,9 +185,11 @@ public class DebitNote extends DebitNote_Base {
             if (entry.getSettlementEntriesSet().size() > 0) {
                 for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
                     if (settlementEntry.getFinantialDocument() != null && !settlementEntry.getFinantialDocument().isPreparing()) {
-                        if (documentsBaseList.contains(settlementEntry.getFinantialDocument()) == false) {
-                            documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
-                                    documentsBaseList));
+                        if (includeAnulledDocuments == false || this.isAnnulled() == false) {
+                            if (documentsBaseList.contains(settlementEntry.getFinantialDocument()) == false) {
+                                documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
+                                        documentsBaseList, includeAnulledDocuments));
+                            }
                         }
                     }
                 }

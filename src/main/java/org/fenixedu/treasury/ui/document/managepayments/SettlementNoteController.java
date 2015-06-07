@@ -472,8 +472,11 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             String output =
-                    ERPExporter.exportFinantialDocument(settlementNote.getDebtAccount().getFinantialInstitution(),
-                            settlementNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
+                    ERPExporter.exportFinantialDocument(
+                            settlementNote.getDebtAccount().getFinantialInstitution(),
+                            settlementNote.findRelatedDocuments(new HashSet<FinantialDocument>(), settlementNote.getDebtAccount()
+                                    .getFinantialInstitution().getErpIntegrationConfiguration()
+                                    .getExportAnnulledRelatedDocuments()));
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =

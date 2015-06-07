@@ -317,14 +317,17 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     @Override
-    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList) {
+    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList, Boolean includeAnulledDocuments) {
 
         documentsBaseList.add(this);
 
         for (SettlementEntry entry : getSettlemetEntriesSet()) {
             if (entry.getInvoiceEntry() != null && entry.getInvoiceEntry().getFinantialDocument() != null) {
-                if (documentsBaseList.contains(entry.getFinantialDocument()) == false) {
-                    documentsBaseList.addAll(entry.getFinantialDocument().findRelatedDocuments(documentsBaseList));
+                if (includeAnulledDocuments == false || this.isAnnulled() == false) {
+                    if (documentsBaseList.contains(entry.getInvoiceEntry().getFinantialDocument()) == false) {
+                        documentsBaseList.addAll(entry.getInvoiceEntry().getFinantialDocument()
+                                .findRelatedDocuments(documentsBaseList, includeAnulledDocuments));
+                    }
                 }
             }
         }
@@ -379,4 +382,5 @@ public class SettlementNote extends SettlementNote_Base {
     public BigDecimal getTotalNetAmount() {
         throw new TreasuryDomainException("error.SettlementNote.totalNetAmount.not.available");
     }
+
 }

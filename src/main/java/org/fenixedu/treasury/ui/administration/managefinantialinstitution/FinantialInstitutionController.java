@@ -43,11 +43,14 @@ import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
+import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.integration.erp.ERPConfigurationController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -365,4 +368,24 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         }
     }
 
+    @RequestMapping(value = "/read/{oid}/erpconfigurationupdate")
+    public String processReadToERPConfigurationUpdate(@PathVariable("oid") FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            if (finantialInstitution.getErpIntegrationConfiguration() == null) {
+                DocumentNumberSeries paymentsIntegrationSeries =
+                        DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), finantialInstitution)
+                                .filter(x -> x.getSeries().getExternSeries() == true).findFirst().orElse(null);
+                ERPConfiguration erpIntegrationConfiguration =
+                        ERPConfiguration.create(paymentsIntegrationSeries.getSeries(), finantialInstitution, false, "", "", "",
+                                "");
+                finantialInstitution.setErpIntegrationConfiguration(erpIntegrationConfiguration);
+            }
+            return redirect(ERPConfigurationController.READ_URL
+                    + finantialInstitution.getErpIntegrationConfiguration().getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return read(finantialInstitution, model);
+        }
+    }
 }

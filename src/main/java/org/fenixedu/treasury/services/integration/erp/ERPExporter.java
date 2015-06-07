@@ -273,11 +273,12 @@ public class ERPExporter {
 
                     // AcumulateValues
                     numberOfPaymentsDocuments = numberOfPaymentsDocuments.add(BigInteger.ONE);
-                    totalCreditOfPaymentsDocuments =
-                            totalCreditOfPaymentsDocuments.add(((SettlementNote) document).getTotalCreditAmount());
-                    totalDebitOfPaymentsDocuments =
-                            totalDebitOfPaymentsDocuments.add(((SettlementNote) document).getTotalDebitAmount());
-
+                    if (!document.isAnnulled()) {
+                        totalCreditOfPaymentsDocuments =
+                                totalCreditOfPaymentsDocuments.add(((SettlementNote) document).getTotalCreditAmount());
+                        totalDebitOfPaymentsDocuments =
+                                totalDebitOfPaymentsDocuments.add(((SettlementNote) document).getTotalDebitAmount());
+                    }
 //                    i++;
                 } catch (Exception ex) {
                     // persistenceSupport.flush();
@@ -411,9 +412,8 @@ public class ERPExporter {
                 i = i.add(BigInteger.ONE);
             }
             docTotals.setGrossTotal(document.getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
-            docTotals.setNetTotal(document.getTotalNetAmount().setScale(2, RoundingMode.HALF_EVEN));
-            docTotals.setTaxPayable(document.getTotalAmount().subtract(document.getTotalNetAmount())
-                    .setScale(2, RoundingMode.HALF_EVEN));
+            docTotals.setNetTotal(document.getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
+            docTotals.setTaxPayable(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN));
             payment.setDocumentTotals(docTotals);
 
             // Period

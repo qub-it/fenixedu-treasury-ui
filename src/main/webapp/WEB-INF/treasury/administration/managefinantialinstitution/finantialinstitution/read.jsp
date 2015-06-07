@@ -149,6 +149,10 @@ ${portal.toolkit()}
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationfile"><spring:message
             code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERP" /></a> &nbsp;|&nbsp;
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/erpconfigurationupdate"><spring:message
+            code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" /></a> &nbsp;|&nbsp;
             
 </div>
 <c:if test="${not empty infoMessages}">

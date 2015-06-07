@@ -516,8 +516,11 @@ public class DebitNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             String output =
-                    ERPExporter.exportFinantialDocument(debitNote.getDebtAccount().getFinantialInstitution(),
-                            debitNote.findRelatedDocuments(new HashSet<FinantialDocument>()));
+                    ERPExporter.exportFinantialDocument(
+                            debitNote.getDebtAccount().getFinantialInstitution(),
+                            debitNote.findRelatedDocuments(new HashSet<FinantialDocument>(), debitNote.getDebtAccount()
+                                    .getFinantialInstitution().getErpIntegrationConfiguration()
+                                    .getExportAnnulledRelatedDocuments()));
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =

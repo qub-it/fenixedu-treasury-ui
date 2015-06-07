@@ -235,7 +235,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         deleteDomainObject();
     }
 
-    public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList);
+    public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList,
+            Boolean includeAnulledDocuments);
 
     // @formatter: off
     /************
