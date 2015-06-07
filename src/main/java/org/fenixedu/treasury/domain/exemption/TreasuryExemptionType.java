@@ -25,55 +25,68 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.domain;
+package org.fenixedu.treasury.domain.exemption;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
 
-public class TreasuryExemption extends TreasuryExemption_Base {
-    protected TreasuryExemption() {
+public class TreasuryExemptionType extends TreasuryExemptionType_Base {
+
+    protected TreasuryExemptionType() {
         super();
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final java.lang.String code, final org.fenixedu.commons.i18n.LocalizedString name,
-            final java.math.BigDecimal discountRate) {
+    protected TreasuryExemptionType(final String code, final LocalizedString name, final BigDecimal defaultExemptionPercentage,
+            final boolean active) {
+        this();
+        
         setCode(code);
         setName(name);
-        setDiscountRate(discountRate);
+        setDefaultExemptionPercentage(defaultExemptionPercentage);
+        setActive(active);
+        
         checkRules();
     }
 
     private void checkRules() {
 
         if (findByCode(getCode()).count() > 1) {
-            throw new TreasuryDomainException("error.TreasuryExemption.code.duplicated");
+            throw new TreasuryDomainException("error.TreasuryExemptionType.code.duplicated");
         }
 
     }
 
     @Atomic
-    public void edit(final java.lang.String code, final org.fenixedu.commons.i18n.LocalizedString name,
-            final java.math.BigDecimal discountRate) {
+    public void edit(final String code, final LocalizedString name, final BigDecimal discountRate, final boolean active) {
+
         setCode(code);
         setName(name);
-        setDiscountRate(discountRate);
+        setDefaultExemptionPercentage(discountRate);
+        setActive(active);
+
         checkRules();
     }
 
     public boolean isDeletable() {
+        if (!getTreasuryExemptionsSet().isEmpty()) {
+            return false;
+        }
+
         return true;
     }
 
     @Atomic
     public void delete() {
         if (!isDeletable()) {
-            throw new TreasuryDomainException("error.TreasuryExemption.cannot.delete");
+            throw new TreasuryDomainException("error.TreasuryExemptionType.cannot.delete");
         }
 
         setBennu(null);
@@ -82,11 +95,9 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     }
 
     @Atomic
-    public static TreasuryExemption create(final java.lang.String code, final org.fenixedu.commons.i18n.LocalizedString name,
-            final java.math.BigDecimal discountRate) {
-        TreasuryExemption treasuryExemption = new TreasuryExemption();
-        treasuryExemption.init(code, name, discountRate);
-        return treasuryExemption;
+    public static TreasuryExemptionType create(final String code, final LocalizedString name,
+            final BigDecimal defaultExemptionPercentage, final boolean active) {
+        return new TreasuryExemptionType(code, name, defaultExemptionPercentage, active);
     }
 
     // @formatter: off
@@ -95,23 +106,15 @@ public class TreasuryExemption extends TreasuryExemption_Base {
      ************/
     // @formatter: on
 
-    public static Stream<TreasuryExemption> findAll() {
-        return Bennu.getInstance().getTreasuryExemptionsSet().stream();
+    public static Stream<TreasuryExemptionType> findAll() {
+        return Bennu.getInstance().getTreasuryExemptionTypesSet().stream();
     }
 
-    public static Stream<TreasuryExemption> findByCode(final java.lang.String code) {
+    public static Stream<TreasuryExemptionType> findByCode(final String code) {
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
-    public static Stream<TreasuryExemption> findByName(final org.fenixedu.commons.i18n.LocalizedString name) {
-        return findAll().filter(i -> name.equals(i.getName()));
-    }
-
-    public static Stream<TreasuryExemption> findByDiscountRate(final java.math.BigDecimal discountRate) {
-        return findAll().filter(i -> discountRate.equals(i.getDiscountRate()));
-    }
-
-    public static Stream<TreasuryExemption> findByDebtAccount(DebtAccount debtAccount) {
+    public static Stream<TreasuryExemptionType> findByDebtAccount(DebtAccount debtAccount) {
         //return findAll().filter(x -> x.getDebitEntry() != null && debtAccount.equals(x.getDebitEntry().getDebtAccount()));
         return Stream.empty();
     }

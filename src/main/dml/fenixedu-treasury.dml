@@ -103,12 +103,6 @@ class Currency {
 	String symbol;
 }
 
-class TreasuryExemption {
-	String code;
-	LocalizedString name;
-	BigDecimalT discountRate;
-}
-
 class PaymentMethod {
 	String code;
 	LocalizedString name;
@@ -297,6 +291,64 @@ class debt.DebitEntrySuspensionRequestEntry {
 //}
 
 
+
+/*-----------
+ * Exemptions 
+ * ----------*/
+
+
+class exemption.TreasuryExemptionType {
+	String code;
+	LocalizedString name;
+	BigDecimalT defaultExemptionPercentage;
+	boolean active;
+}
+
+relation TreasuryExemptionTypeBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	exemption.TreasuryExemptionType playsRole treasuryExemptionTypes {
+		multiplicity *;
+	}
+}
+
+class exemption.TreasuryExemption {
+	String reason;
+	boolean exemptByPercentage;
+	BigDecimalT valueToExempt;
+}
+
+relation TreasuryExemptionBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+	
+	exemption.TreasuryExemption playsRole treasuryExemptions {
+		multiplicity *;
+	}
+}
+
+relation TreasuryExemptionTypeTreasuryExemption {
+	exemption.TreasuryExemptionType playsRole treasuryExemptionType {
+		multiplicity 1..1;
+	}
+	
+	exemption.TreasuryExemption playsRole treasuryExemptions {
+		multiplicity *;
+	}
+}
+
+relation TreasuryExemptionTreasuryEvent {
+	event.TreasuryEvent playsRole treasuryEvent {
+		multiplicity 1..1;
+	}
+	
+	exemption.TreasuryExemption playsRole treasuryExemption {
+		multiplicity 0..1;
+	}
+}
 
 /*-----------
  * Tariff 
@@ -770,16 +822,6 @@ relation CurrencyBennu {
 	Currency playsRole currencies {
 		multiplicity *;
 	}
-}
-
-relation TreasuryExemptionBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
-		multiplicity 1..1;
-	}
-	
-	TreasuryExemption playsRole treasuryExemptions {
-		multiplicity *;
-	}	
 }
 
 /*

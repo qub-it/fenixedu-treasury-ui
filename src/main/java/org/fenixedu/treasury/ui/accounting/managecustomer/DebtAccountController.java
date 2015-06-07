@@ -31,10 +31,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.treasury.domain.TreasuryExemption;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.dto.DebtAccountBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
