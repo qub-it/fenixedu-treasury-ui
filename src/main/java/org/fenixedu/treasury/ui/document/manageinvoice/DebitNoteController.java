@@ -525,11 +525,10 @@ public class DebitNoteController extends TreasuryBaseController {
             response.setCharacterEncoding("Windows-1252");
             String filename =
                     URLEncoder.encode(
-                            StringNormalizer
-                                    .normalizePreservingCapitalizedLetters(
-                                            debitNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
-                                                    + debitNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_")
-                                    .replace(" ", "_"), "Windows-1252");
+                            StringNormalizer.normalizePreservingCapitalizedLetters((debitNote.getDebtAccount()
+                                    .getFinantialInstitution().getFiscalNumber()
+                                    + "_" + debitNote.getUiDocumentNumber() + ".xml").replaceAll("\\s", "_").replace(" ", "_")),
+                            "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
