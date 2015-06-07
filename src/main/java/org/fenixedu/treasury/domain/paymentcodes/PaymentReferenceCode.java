@@ -43,7 +43,10 @@ import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.base.Strings;
+
 public class PaymentReferenceCode extends PaymentReferenceCode_Base {
+    private static final int LENGTH_REFERENCE_CODE = 9;
     private static final BigDecimal SIBS_IGNORE_MAX_AMOUNT = BigDecimal.ZERO;
 
     protected PaymentReferenceCode() {
@@ -53,11 +56,12 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     protected void init(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
             final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
-        setReferenceCode(referenceCode);
+            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool) {
+        setReferenceCode(Strings.padStart(referenceCode, LENGTH_REFERENCE_CODE, '0'));
         setBeginDate(beginDate);
         setEndDate(endDate);
         setState(state);
+        setPaymentCodePool(pool);
         checkRules();
     }
 
@@ -67,11 +71,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         //
 
         // CHANGE_ME In order to validate UNIQUE restrictions
-        // if (findByReferenceCode(getReferenceCode().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentReferenceCode.referenceCode.duplicated");
-        // }
+        if (findByReferenceCode(this.getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(),
+                this.getPaymentCodePool().getFinantialInstitution()).count() > 1) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.referenceCode.duplicated");
+        }
         // if (findByBeginDate(getBeginDate().count()>1)
         // {
         // throw new
@@ -111,16 +114,20 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         }
 
         setBennu(null);
-
+        setPaymentCodePool(null);
+        if (getTargetPayment() != null) {
+//            getTargetPayment().delete();
+        }
+        setTargetPayment(null);
         deleteDomainObject();
     }
 
     @Atomic
     public static PaymentReferenceCode create(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
             final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
+            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool) {
         PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
-        paymentReferenceCode.init(referenceCode, beginDate, endDate, state);
+        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool);
         return paymentReferenceCode;
     }
 
@@ -132,6 +139,12 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     public static Stream<PaymentReferenceCode> findAll() {
         return Bennu.getInstance().getPaymentReferenceCodesSet().stream();
+    }
+
+    private static Stream<PaymentReferenceCode> findByReferenceCode(String entityReferenceCode, String referenceCode,
+            FinantialInstitution finantialInstitution) {
+        return findByReferenceCode(referenceCode, finantialInstitution).filter(
+                x -> x.getPaymentCodePool().getEntityReferenceCode().equals(entityReferenceCode));
     }
 
     public static Stream<PaymentReferenceCode> findByReferenceCode(final java.lang.String referenceCode,
@@ -355,7 +368,11 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     public String getReferenceCodeWithoutCheckDigits() {
         if (Boolean.TRUE.equals(this.getPaymentCodePool().getUseCheckDigit())) {
-            return this.getReferenceCode().substring(0, 6);
+            if (this.getReferenceCode().length() >= 2) {
+                return this.getReferenceCode().substring(0, this.getReferenceCode().length() - 2);
+            } else {
+                return this.getReferenceCode();
+            }
         }
         throw new TreasuryDomainException("error.PaymentReferenceCode.not.from.pool.with.checkdigit");
     }
@@ -374,6 +391,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         FinantialDocumentPaymentCode targetToFinantialDocument =
                 FinantialDocumentPaymentCode.create(finantialDocument, this, true);
         this.setTargetPayment(targetToFinantialDocument);
+        this.setState(PaymentReferenceCodeStateType.USED);
         checkRules();
     }
 }

@@ -35,6 +35,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -264,7 +265,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
             @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate beginDate,
             @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate endDate,
-            @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, Model model,
+            @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, @RequestParam(
+                    value = "paymentcodepool", required = false) PaymentCodePool pool, Model model,
             RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
@@ -272,7 +274,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         try {
 
-            PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(referenceCode, beginDate, endDate, state);
+            PaymentReferenceCode paymentReferenceCode =
+                    createPaymentReferenceCode(referenceCode, beginDate, endDate, state, pool);
 
             //Success Validation
             //Add the bean to be used in the View
@@ -298,7 +301,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
     @Atomic
     public PaymentReferenceCode createPaymentReferenceCode(java.lang.String referenceCode, org.joda.time.LocalDate beginDate,
-            org.joda.time.LocalDate endDate, PaymentReferenceCodeStateType state) {
+            org.joda.time.LocalDate endDate, PaymentReferenceCodeStateType state, PaymentCodePool pool) {
 
         // @formatter: off
 
@@ -315,7 +318,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        PaymentReferenceCode paymentReferenceCode = PaymentReferenceCode.create(referenceCode, beginDate, endDate, state);
+        PaymentReferenceCode paymentReferenceCode = PaymentReferenceCode.create(referenceCode, beginDate, endDate, state, pool);
 
         return paymentReferenceCode;
     }

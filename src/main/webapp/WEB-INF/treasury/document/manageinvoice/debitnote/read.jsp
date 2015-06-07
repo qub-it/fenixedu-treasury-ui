@@ -327,7 +327,15 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
-                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' />
+                        <c:if test="${debitNote.paymentCodesSet.size()>0 }">
+                        <ul>
+                            <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
+                                <li> <c:out value="${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode} - ${paymentcode.paymentReferenceCode.formattedCode}"/></li>
+                            </c:forEach>
+                            </ul>
+                        </c:if>
+                        </td>
                     </tr>
                     <c:if test="${not empty debitNote.relatedSettlementEntries }">
                         <tr>
