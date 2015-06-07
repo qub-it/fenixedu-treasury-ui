@@ -96,28 +96,42 @@ public class ERPImporter {
 
     @Atomic
     public void processAuditFile(ERPImportOperation eRPImportOperation) {
-        AuditFile auditFile = readAuditFileFromXML();
-        BigDecimal totalCredit = BigDecimal.ZERO;
-        BigDecimal totalDebit = BigDecimal.ZERO;
-        BigInteger totalPayments = BigInteger.ZERO;
-        for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
+        try {
+            AuditFile auditFile = readAuditFileFromXML();
+            BigDecimal totalCredit = BigDecimal.ZERO;
+            BigDecimal totalDebit = BigDecimal.ZERO;
+            BigInteger totalPayments = BigInteger.ZERO;
+            for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
 
-            SettlementNote note = processErpPayment(payment, eRPImportOperation);
-            if (note != null) {
-                totalPayments = totalPayments.add(BigInteger.ONE);
-                totalCredit = totalCredit.add(note.getTotalAmount());
+                SettlementNote note = processErpPayment(payment, eRPImportOperation);
+                if (note != null) {
+                    totalPayments = totalPayments.add(BigInteger.ONE);
+                    totalCredit = totalCredit.add(note.getTotalAmount());
+                }
             }
-        }
-        if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
-            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
-        }
-        if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
-            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
-        }
-        if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
-            throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
-        }
+            if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
+            }
+            if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
+            }
+            if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
+            }
+        } catch (Exception ex) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(eRPImportOperation.getErrorLog());
+            stringBuilder.append("\n\n" + ex.getLocalizedMessage() + "\n\n");
+            for (StackTraceElement el : ex.getStackTrace()) {
+                stringBuilder.append(el.toString() + "\n");
+            }
 
+            eRPImportOperation.setErrorLog(stringBuilder.toString());
+            eRPImportOperation.setProcessed(false);
+            eRPImportOperation.setCorrected(false);
+            eRPImportOperation.setExecutionDate(new DateTime());
+            eRPImportOperation.setSuccess(false);
+        }
     }
 
     @Atomic

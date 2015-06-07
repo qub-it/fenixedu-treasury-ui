@@ -323,7 +323,7 @@ public class SettlementNote extends SettlementNote_Base {
 
         for (SettlementEntry entry : getSettlemetEntriesSet()) {
             if (entry.getInvoiceEntry() != null && entry.getInvoiceEntry().getFinantialDocument() != null) {
-                if (includeAnulledDocuments == false || this.isAnnulled() == false) {
+                if (includeAnulledDocuments == true || this.isAnnulled() == false) {
                     if (documentsBaseList.contains(entry.getInvoiceEntry().getFinantialDocument()) == false) {
                         documentsBaseList.addAll(entry.getInvoiceEntry().getFinantialDocument()
                                 .findRelatedDocuments(documentsBaseList, includeAnulledDocuments));

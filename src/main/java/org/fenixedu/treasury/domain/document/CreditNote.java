@@ -179,7 +179,7 @@ public class CreditNote extends CreditNote_Base {
         for (CreditEntry entry : getCreditEntriesSet()) {
             if (entry.getDebitEntry() != null && entry.getDebitEntry().getFinantialDocument() != null
                     && !entry.getDebitEntry().getFinantialDocument().isPreparing()) {
-                if (includeAnulledDocuments == false || this.isAnnulled() == false) {
+                if (includeAnulledDocuments == true || this.isAnnulled() == false) {
                     if (documentsBaseList.contains(entry.getDebitEntry().getFinantialDocument()) == false) {
                         documentsBaseList.addAll(entry.getDebitEntry().getFinantialDocument()
                                 .findRelatedDocuments(documentsBaseList, includeAnulledDocuments));
@@ -192,7 +192,7 @@ public class CreditNote extends CreditNote_Base {
             if (entry.getSettlementEntriesSet().size() > 0) {
                 for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
                     if (settlementEntry.getFinantialDocument() != null && !settlementEntry.getFinantialDocument().isPreparing()) {
-                        if (includeAnulledDocuments == false || this.isAnnulled() == false) {
+                        if (includeAnulledDocuments == true || settlementEntry.getFinantialDocument().isAnnulled() == false) {
                             if (documentsBaseList.contains(settlementEntry.getFinantialDocument()) == false) {
                                 documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
                                         documentsBaseList, includeAnulledDocuments));

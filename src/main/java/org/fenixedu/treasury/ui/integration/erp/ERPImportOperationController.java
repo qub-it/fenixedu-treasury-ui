@@ -27,7 +27,6 @@
 package org.fenixedu.treasury.ui.integration.erp;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -111,7 +110,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the eRPImportOperation
         // Do not catch any exception here
 
-        // eRPImportOperation.delete();
+        eRPImportOperation.delete();
     }
 
 //				
@@ -121,7 +120,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_URI)
     public String search(@RequestParam(value = "executiondate", required = false) @DateTimeFormat(
             pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime executionDate, @RequestParam(value = "success",
-            required = false) boolean success, Model model) {
+            required = false) Boolean success, Model model) {
         List<ERPImportOperation> searcherpimportoperationResultsDataSet = filterSearchERPImportOperation(executionDate, success);
 
         //add the results dataSet to the model
@@ -134,16 +133,17 @@ public class ERPImportOperationController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        // return ERPImportOperation.findAll(); //CHANGE_ME
-        return new ArrayList<ERPImportOperation>().stream();
+        return ERPImportOperation.findAll(); //CHANGE_ME
+//        return new ArrayList<ERPImportOperation>().stream();
     }
 
-    private List<ERPImportOperation> filterSearchERPImportOperation(org.joda.time.DateTime executionDate, boolean success) {
+    private List<ERPImportOperation> filterSearchERPImportOperation(org.joda.time.DateTime executionDate, Boolean success) {
 
         return getSearchUniverseSearchERPImportOperationDataSet()
                 .filter(eRPImportOperation -> executionDate == null
                         || executionDate.equals(eRPImportOperation.getExecutionDate()))
-                .filter(eRPImportOperation -> eRPImportOperation.getSuccess() == success).collect(Collectors.toList());
+                .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
+                .collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_DELETEMULTIPLE_URI = "/search/deletemultiple";
@@ -154,7 +154,14 @@ public class ERPImportOperationController extends TreasuryBaseController {
             @RequestParam("eRPImportOperations") List<ERPImportOperation> eRPImportOperations, Model model,
             RedirectAttributes redirectAttributes) {
 
-        // CHANGE_ME Insert code here for processing deleteMultiple
+        try {
+            for (ERPImportOperation operation : eRPImportOperations) {
+                deleteERPImportOperation(operation);
+            }
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        }
+
         // If you selected multiple exists you must choose which one to use below
         return redirect("/treasury/integration/erp/erpimportoperation/", model, redirectAttributes);
     }
@@ -201,6 +208,9 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
             ERPImportOperation eRPImportOperation = createERPImportOperation(file);
 
+            //The importOperation is created, now try to processit
+            ERPImporter importer = new ERPImporter(file.getInputStream());
+            importer.processAuditFile(eRPImportOperation);
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("eRPImportOperation", eRPImportOperation);
@@ -218,7 +228,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
             // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
+            return redirect(SEARCH_URL, model, redirectAttributes);
         }
     }
 
@@ -253,7 +263,6 @@ public class ERPImportOperationController extends TreasuryBaseController {
                 ERPImportOperation eRPImportOperation =
                         ERPImportOperation.create(opeartionFile, finantialInstitution, new DateTime(), false, false, false, "");
 
-                importer.processAuditFile(eRPImportOperation);
                 return eRPImportOperation;
             } else {
                 throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.fiscalinstitution.file");

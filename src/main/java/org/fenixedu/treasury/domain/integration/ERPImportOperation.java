@@ -3,9 +3,12 @@ package org.fenixedu.treasury.domain.integration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
@@ -105,6 +108,11 @@ public class ERPImportOperation extends ERPImportOperation_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.ERPImportOperation.cannot.delete");
         }
+
+        this.setFinantialInstitution(null);
+        for (FinantialDocument document : this.getFinantialDocumentsSet()) {
+            this.removeFinantialDocuments(document);
+        }
         deleteDomainObject();
     }
 
@@ -125,7 +133,10 @@ public class ERPImportOperation extends ERPImportOperation_Base {
 
     public static Stream<ERPImportOperation> findAll() {
         Set<ERPImportOperation> results = new HashSet<ERPImportOperation>();
-//      Bennu.getInstance().getFinantialInstitutionsSet().forEach(x->results.addAll(x.gete));
+        for (FinantialInstitution fi : Bennu.getInstance().getFinantialInstitutionsSet()) {
+            results.addAll(fi.getIntegrationOperationsSet().stream().filter(x -> x instanceof ERPImportOperation)
+                    .map(ERPImportOperation.class::cast).collect(Collectors.toList()));
+        }
         return results.stream();
     }
 

@@ -106,6 +106,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-2">
 <select id="eRPImportOperation_success" name="success" class="form-control">
+<option value=""></option>
 <option value="false"><spring:message code="label.no"/></option>
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
@@ -132,7 +133,6 @@ ${portal.toolkit()}
 <th><spring:message code="label.ERPImportOperation.finantialInstitution"/></th>
 <th><spring:message code="label.ERPImportOperation.success"/></th>
 <th><spring:message code="label.ERPImportOperation.corrected"/></th>
-<th><spring:message code="label.ERPImportOperation.errorLog"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -141,7 +141,7 @@ ${portal.toolkit()}
 				
 			</tbody>
 		</table>
-		<form id="deletemultiple" action="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/search/deleteMultiple" style="display:none;" method="POST">
+		<form id="deletemultiple" action="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/search/deletemultiple" style="display:none;" method="POST">
 		</form>
 		
 		<button type="button" onClick="javascript:submitOptions('searcherpimportoperationTable', 'deletemultiple', 'eRPImportOperations')">
@@ -165,10 +165,9 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "executiondate" : "<c:out value='${searchResult.executionDate}'/>",
-"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution}'/>",
+"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
-"errorlog" : "<c:out value='${searchResult.errorLog}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -189,14 +188,13 @@ ${portal.toolkit()}
 			{ data: 'finantialinstitution' },
 			{ data: 'success' },
 			{ data: 'corrected' },
-			{ data: 'errorlog' },
 			{ data: 'actions' }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 5 } 
+		               { "width": "54px", "targets": 4 } 
 		             ],
 		"data" : searcherpimportoperationDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
