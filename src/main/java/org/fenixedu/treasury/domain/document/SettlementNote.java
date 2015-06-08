@@ -182,7 +182,17 @@ public class SettlementNote extends SettlementNote_Base {
         closeDebitNotes(bean);
         closeCreditNotes(bean);
         processInterestEntries(bean);
-        processPaymentEntries(bean);
+        if (bean.isReimbursementNote()) {
+            processReimbursementEntries(bean);
+        } else {
+            processPaymentEntries(bean);
+        }
+    }
+
+    private void processReimbursementEntries(SettlementNoteBean bean) {
+        for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
+            ReimbursementEntry.create(this, paymentEntryBean.getPaymentMethod(), paymentEntryBean.getPaymentAmount());
+        }
     }
 
     private void processPaymentEntries(SettlementNoteBean bean) {
@@ -369,6 +379,14 @@ public class SettlementNote extends SettlementNote_Base {
         BigDecimal total = BigDecimal.ZERO;
         for (PaymentEntry entry : this.getPaymentEntriesSet()) {
             total = total.add(entry.getPayedAmount());
+        }
+        return total;
+    }
+
+    public BigDecimal getTotalReimbursementAmount() {
+        BigDecimal total = BigDecimal.ZERO;
+        for (ReimbursementEntry reimbursementEntry : getReimbursementEntriesSet()) {
+            total = total.add(reimbursementEntry.getReimbursedAmount());
         }
         return total;
     }

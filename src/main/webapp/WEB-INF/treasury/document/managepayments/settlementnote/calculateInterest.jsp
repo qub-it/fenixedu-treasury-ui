@@ -157,7 +157,7 @@ ${portal.angularToolkit()}
 		</div>
 		<div class="panel-footer">
 			<button type="button" class="btn btn-default"
-				onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL %>${settlementNoteBean.debtAccount.externalId}')">
+				onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL %>${settlementNoteBean.debtAccount.externalId}/${settlementNoteBean.reimbursementNote}')">
 				<spring:message code="label.event.back" />
 			</button>
 			<button type="button" class="btn btn-primary" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CALCULATE_INTEREST_URL %>')">

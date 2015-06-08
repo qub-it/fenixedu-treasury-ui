@@ -116,7 +116,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/anullsettlement"
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/delete/${settlementNote.externalId}"
                 method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -265,8 +265,14 @@ ${portal.toolkit()}
                         <td><c:out value='${settlementNote.currency.getValueFor(settlementNote.totalCreditAmount)}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.totalPayedAmount" /></th>
-                        <td><c:out value='${settlementNote.currency.getValueFor(settlementNote.totalPayedAmount)}' /></td>
+                        <c:if test="${ not empty settlementNote.paymentEntriesSet }">
+                            <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.totalPayedAmount" /></th>
+                            <td><c:out value='${settlementNote.currency.getValueFor(settlementNote.totalPayedAmount)}' /></td>
+                        </c:if>
+                        <c:if test="${ not empty settlementNote.reimbursementEntriesSet }">
+                            <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.totalReimbursementAmount" /></th>
+                            <td><c:out value='${settlementNote.currency.getValueFor(settlementNote.totalReimbursementAmount)}' /></td>
+                        </c:if>
                     </tr>
                 </tbody>
             </table>
@@ -353,12 +359,12 @@ ${portal.toolkit()}
 
 <p></p>
 <p></p>
-<h2>
-    <spring:message code="label.SettlementNote.paymentEntries" />
-</h2>
 
 <c:choose>
     <c:when test="${not empty settlementNote.paymentEntriesSet}">
+        <h2>
+            <spring:message code="label.SettlementNote.paymentEntries" />
+        </h2>
         <datatables:table id="paymentEntries" row="payemntEntry" data="${settlementNote.paymentEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
             cellspacing="2">
             <datatables:column cssStyle="width:10%">
@@ -375,14 +381,43 @@ ${portal.toolkit()}
             </datatables:column>
         </datatables:table>
         <script>
-									createDataTables(
-											'paymentEntries',
-											false,
-											false,
-											false,
-											"${pageContext.request.contextPath}",
-											"${datatablesI18NUrl}");
-								</script>
+			createDataTables(
+					'paymentEntries',
+					false,
+					false,
+					false,
+					"${pageContext.request.contextPath}",
+					"${datatablesI18NUrl}");
+		</script>
+    </c:when>
+    <c:when test="${not empty settlementNote.reimbursementEntriesSet}">
+        <h2>
+            <spring:message code="label.SettlementNote.reimbursementEntries" />
+        </h2>
+        <datatables:table id="reimbursementEntries" row="reimbursementEntry" data="${settlementNote.reimbursementEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
+            cellspacing="2">
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentEntry.paymentMethod" />
+                </datatables:columnHead>
+                <c:out value="${reimbursementEntry.paymentMethod.name.content}" />
+            </datatables:column>
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentEntry.reimbursementAmount" />
+                </datatables:columnHead>
+                <c:out value="${settlementNote.currency.getValueFor(reimbursementEntry.reimbursedAmount)}" />
+            </datatables:column>
+        </datatables:table>
+        <script>
+            createDataTables(
+                    'reimbursementEntries',
+                    false,
+                    false,
+                    false,
+                    "${pageContext.request.contextPath}",
+                    "${datatablesI18NUrl}");
+        </script>
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">

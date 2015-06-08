@@ -164,7 +164,7 @@ ${portal.angularToolkit()}
 <div class="panel panel-primary ">    
     <div class="panel-heading">
         <h3 class="panel-title">
-            <spring:message code="label.DebitEntry" />
+            <spring:message code="label.document.managepayments.settlementnote.InvoiceEntries" />
         </h3>
     </div>
     <div class="panel-body">
@@ -269,7 +269,7 @@ ${portal.angularToolkit()}
             </tbody>
         </table>
         <div class="panel-footer">
-            <p align="right"><b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat ) }</p>
+            <p align="right"><b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat.negate() ) }</p>
         </div>            
     </div>
 </div>
@@ -277,7 +277,12 @@ ${portal.angularToolkit()}
 <div class="panel panel-primary">    
     <div class="panel-heading">
         <h3 class="panel-title">
-            <spring:message code="label.PaymentMethod" />
+            <c:if test="${ settlementNoteBean.reimbursementNote }">
+                <spring:message code="label.document.managepayments.settlementnote.ReimbursementMethod" />
+            </c:if>
+            <c:if test="${ not settlementNoteBean.reimbursementNote }">
+                <spring:message code="label.document.managepayments.settlementnote.PaymentMethod" />
+            </c:if>
         </h3>
     </div>
     <div class="panel-body">            
@@ -285,7 +290,12 @@ ${portal.angularToolkit()}
             class="table responsive table-bordered table-hover">
             <thead>
                 <tr>
-                    <th><spring:message code="label.PaymentMethod" /></th>
+                    <c:if test="${ settlementNoteBean.reimbursementNote }">
+                        <th><spring:message code="label.document.managepayments.settlementnote.ReimbursementMethod" /></th>
+                    </c:if>
+                    <c:if test="${ not settlementNoteBean.reimbursementNote }">
+                        <th><spring:message code="label.document.managepayments.settlementnote.PaymentMethod" /></th>
+                    </c:if>
                     <th><spring:message code="label.PaymentMethod.value" /></th>
                 </tr>
             </thead>

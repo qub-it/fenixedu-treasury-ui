@@ -24,6 +24,8 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private boolean reimbursementNote;
+
     private DebtAccount debtAccount;
 
     private LocalDate date;
@@ -53,9 +55,10 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.setPaymentMethods(PaymentMethod.findAll().collect(Collectors.toList()));
     }
 
-    public SettlementNoteBean(DebtAccount debtAccount) {
+    public SettlementNoteBean(DebtAccount debtAccount, boolean reimbursementNote) {
         this();
         this.debtAccount = debtAccount;
+        this.reimbursementNote = reimbursementNote;
         for (InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet()) {
             if (invoiceEntry instanceof DebitEntry) {
                 debitEntries.add(new DebitEntryBean((DebitEntry) invoiceEntry));
@@ -252,6 +255,14 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     public void setOriginDocumentNumber(String originDocumentNumber) {
         this.originDocumentNumber = originDocumentNumber;
+    }
+
+    public boolean isReimbursementNote() {
+        return reimbursementNote;
+    }
+
+    public void setReimbursementNote(boolean reimbursementNote) {
+        this.reimbursementNote = reimbursementNote;
     }
 
     ///////////////////

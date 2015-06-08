@@ -1287,6 +1287,16 @@ relation ReimbursementEntrySettlementNote {
 	}
 }
 
+relation ReimbursementEntryPaymentMode {
+    PaymentMethod playsRole paymentMethod {
+        multiplicity 1..1;
+    }
+    
+    document.ReimbursementEntry playsRole reimbursementEntries {
+        multiplicity *;
+    }
+}
+
 /* SOMETHING IS MISSING HERE
 relation FinantialDocumentPendingForExportationBennu {
 	document.FinantialDocument playsRole finantialDocumentsPendingForExportation {
