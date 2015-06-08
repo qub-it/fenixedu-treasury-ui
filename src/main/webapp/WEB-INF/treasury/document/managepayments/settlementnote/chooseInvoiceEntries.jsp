@@ -215,11 +215,17 @@ ${portal.angularToolkit()}
                             <td>
                                 <c:out value="${ debitEntryBean.debitEntry.vat.taxRate }"/>
                             </td>
-                            <td>
-                                <input class="form-control" name="debtAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].debtAmount" type="text" ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" value='0.00'/>
-                                <p class="alert alert-danger" ng-show="form.debtAmount${ loop.index }.$error.pattern && object.debitEntries[${ loop.index }].isIncluded"><spring:message code="error.invalid.format.input" /></p>                    
-                            </td>
-                            
+                            <c:if test="${ not settlementNoteBean.reimbursementNote }">
+                                <td>
+                                    <input class="form-control" name="debtAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].debtAmount" type="text" ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" value='0.00'/>
+                                    <p class="alert alert-danger" ng-show="form.debtAmount${ loop.index }.$error.pattern && object.debitEntries[${ loop.index }].isIncluded"><spring:message code="error.invalid.format.input" /></p>                    
+                                </td>                            
+                            </c:if>
+                            <c:if test="${ settlementNoteBean.reimbursementNote }">
+                                <td>
+                                    <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmount ) }"></c:out>
+                                </td>                            
+                            </c:if>
                         </tr>
                     </c:forEach> 
                 </tbody>

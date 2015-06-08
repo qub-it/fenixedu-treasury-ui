@@ -140,6 +140,22 @@ public class DebtAccountController extends TreasuryBaseController {
     //
     // This is the EventcreatePayment Method for Screen read
     //
+    @RequestMapping(value = "/read/{oid}/createreimbursement")
+    public String processReadToCreateReimbursement(@PathVariable("oid") DebtAccount debtAccount, Model model,
+            RedirectAttributes redirectAttributes) {
+        setDebtAccount(debtAccount, model);
+//
+        /* Put here the logic for processing Event createPayment    */
+        //doSomething();
+
+        // Now choose what is the Exit Screen    
+        return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + true,
+                model, redirectAttributes);
+    }
+
+    //
+    // This is the EventcreatePayment Method for Screen read
+    //
     @RequestMapping(value = "/read/{oid}/createpayment")
     public String processReadToCreatePayment(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
@@ -149,7 +165,8 @@ public class DebtAccountController extends TreasuryBaseController {
         //doSomething();
 
         // Now choose what is the Exit Screen	 
-        return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId(), model,
+        return redirect(
+                SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + false, model,
                 redirectAttributes);
     }
 

@@ -122,11 +122,12 @@ public class SettlementNoteController extends TreasuryBaseController {
         settlementNote.delete(true);
     }
 
-    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}")
-    public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount, @RequestParam(
-            value = "bean", required = false) SettlementNoteBean bean, Model model) {
+    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}/{reimbursementNote}")
+    public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount, @PathVariable(
+            value = "reimbursementNote") boolean reimbursementNote,
+            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model) {
         if (bean == null) {
-            bean = new SettlementNoteBean(debtAccount);
+            bean = new SettlementNoteBean(debtAccount, reimbursementNote);
         }
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -167,11 +168,19 @@ public class SettlementNoteController extends TreasuryBaseController {
                 creditSum = creditSum.add(creditEntryBean.getCreditEntry().getOpenAmount());
             }
         }
-        if (creditSum.compareTo(debitSum) > 0) {
+        if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.negative.payment.value"), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.positive.payment.value"), model);
         }
-        if (debitSum.compareTo(BigDecimal.ZERO) == 0) {
+        if (!bean.isReimbursementNote() && creditSum.compareTo(debitSum) > 0) {
+            error = true;
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.negative.payment.value"), model);
+        }
+        if (bean.isReimbursementNote() && creditSum.compareTo(BigDecimal.ZERO) == 0) {
+            error = true;
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
+        }
+        if (!bean.isReimbursementNote() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
         }
@@ -198,6 +207,9 @@ public class SettlementNoteController extends TreasuryBaseController {
             }
         }
         setSettlementNoteBean(bean, model);
+        if (bean.getInterestEntries().size() == 0) {
+            return calculateInterest(bean, model);
+        }
         return "treasury/document/managepayments/settlementnote/calculateInterest";
     }
 
@@ -227,8 +239,10 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        BigDecimal debitSum = bean.getDebtAmountWithVat();
+        BigDecimal debitSum = bean.isReimbursementNote() ? bean.getDebtAmountWithVat().negate() : bean.getDebtAmountWithVat();
         BigDecimal paymentSum = bean.getPaymentAmount();
+        String error =
+                bean.isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
         if (debitSum.compareTo(paymentSum) != 0) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.no.match.payment.debit"), model);
             setSettlementNoteBean(bean, model);
@@ -341,11 +355,12 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         setSettlementNote(settlementNote, model);
         try {
+            DebtAccount debtAccount = settlementNote.getDebtAccount();
             // call the Atomic delete function
             deleteSettlementNote(settlementNote);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/document/managepayments/settlementnote/", model, redirectAttributes);
+            return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (DomainException ex) {
             // Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
