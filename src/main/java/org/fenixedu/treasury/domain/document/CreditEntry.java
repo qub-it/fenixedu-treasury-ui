@@ -33,8 +33,11 @@ import java.util.stream.Stream;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Sets;
 
 public class CreditEntry extends CreditEntry_Base {
 
@@ -132,4 +135,19 @@ public class CreditEntry extends CreditEntry_Base {
         return findAll().filter(d -> d.getFinantialDocument() == creditNote);
     }
 
+    public static Stream<? extends CreditEntry> find(final TreasuryEvent treasuryEvent) {
+        return DebitEntry.find(treasuryEvent).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
+                .orElse(Sets.newHashSet()).stream();
+    }
+    
+    public static Stream<? extends CreditEntry> findActive(final TreasuryEvent treasuryEvent) {
+        return DebitEntry.findActive(treasuryEvent).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
+                .orElse(Sets.newHashSet()).stream();
+    }
+    
+    public static Stream<? extends CreditEntry> findActive(final TreasuryEvent treasuryEvent, final Product product) {
+        return DebitEntry.findActive(treasuryEvent, product).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
+                .orElse(Sets.newHashSet()).stream();
+    }
+    
 }

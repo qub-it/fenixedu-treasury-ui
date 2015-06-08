@@ -28,17 +28,24 @@
 package org.fenixedu.treasury.domain.event;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -50,16 +57,80 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final Product product) {
+    protected void init(final DebtAccount debtAccount, final Product product) {
+        setDebtAccount(debtAccount);
         setProduct(product);
 
         setDescription(product.getName());
     }
 
     protected void checkRules() {
+        if (getDebtAccount() == null) {
+            throw new TreasuryDomainException("error.TreasuryEvent.debtAccount.required");
+        }
+
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.TreasuryEvent.product.required");
         }
+    }
+
+    /* -----------------------------
+     * FINANTIAL INFORMATION RELATED
+     * -----------------------------
+     */
+
+    public boolean isChargedWithDebitEntry() {
+        return isChargedWithDebitEntry(null);
+    }
+
+    public boolean isChargedWithDebitEntry(final Product product) {
+        if (product != null) {
+            return DebitEntry.findActive(this, product).count() > 0;
+        }
+
+        return DebitEntry.findActive(this).filter(d -> !d.isEventAnnuled()).count() > 0;
+    }
+
+    public boolean isAnyDebitEntryWithCreditApplied() {
+        return isAnyDebitEntryWithCreditApplied(null);
+    }
+
+    public boolean isAnyDebitEntryWithCreditApplied(final Product product) {
+        if (product != null) {
+            return CreditEntry.findActive(this, product).count() > 0;
+        }
+
+        return CreditEntry.findActive(this).count() > 0;
+    }
+
+    public BigDecimal getAmountToPay() {
+        return getAmountToPay(null);
+    }
+
+    public BigDecimal getAmountToPay(final Product product) {
+        final BigDecimal result =
+                (product != null ? DebitEntry.findActive(this, product) : DebitEntry.findActive(this))
+                        .map(d -> d.getAmountWithVat()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO)
+                        .subtract(getCreditAmount());
+
+        return Constants.isPositive(result) ? result : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCreditAmount() {
+        return getCreditAmount(null);
+    }
+
+    public BigDecimal getCreditAmount(final Product product) {
+        return (product != null ? CreditEntry.findActive(this) : CreditEntry.findActive(this, product))
+                .map(c -> c.getAmountWithVat()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
+    }
+
+    public BigDecimal getPayedAmount() {
+        return DebitEntry.payedAmount(this);
+    }
+
+    public BigDecimal getRemainingAmountToPay() {
+        return DebitEntry.remainingAmountToPay(this);
     }
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
@@ -88,6 +159,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         return propertiesMap;
     }
 
+    public Set<Product> getPossibleProductsToExempt() {
+        return Sets.newHashSet(getProduct());
+    }
+    
     public boolean isDeletable() {
         return true;
     }
@@ -100,12 +175,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
         setBennu(null);
 
-        deleteDomainObject();
-    }
-
-    public DebtAccount getDebtAccount() {
-        //ACFSILVA
-        return getDebitEntriesSet().stream().findFirst().get().getDebtAccount();
+        super.deleteDomainObject();
     }
 
     // @formatter: off
@@ -121,4 +191,6 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public static Stream<? extends TreasuryEvent> findActiveBy(DebtAccount debtAccount) {
         return findAll().filter(x -> x.getDebtAccount().equals(debtAccount));
     }
+
+
 }

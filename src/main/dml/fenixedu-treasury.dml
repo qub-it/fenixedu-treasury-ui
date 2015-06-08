@@ -320,35 +320,46 @@ class exemption.TreasuryExemption {
 	BigDecimalT valueToExempt;
 }
 
-relation TreasuryExemptionBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
-		multiplicity 1..1;
+	relation TreasuryExemptionBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		exemption.TreasuryExemption playsRole treasuryExemptions {
+			multiplicity *;
+		}
 	}
 	
-	exemption.TreasuryExemption playsRole treasuryExemptions {
-		multiplicity *;
-	}
-}
-
-relation TreasuryExemptionTypeTreasuryExemption {
-	exemption.TreasuryExemptionType playsRole treasuryExemptionType {
-		multiplicity 1..1;
-	}
-	
-	exemption.TreasuryExemption playsRole treasuryExemptions {
-		multiplicity *;
-	}
-}
-
-relation TreasuryExemptionTreasuryEvent {
-	event.TreasuryEvent playsRole treasuryEvent {
-		multiplicity 1..1;
+	relation TreasuryExemptionTypeTreasuryExemption {
+		exemption.TreasuryExemptionType playsRole treasuryExemptionType {
+			multiplicity 1..1;
+		}
+		
+		exemption.TreasuryExemption playsRole treasuryExemptions {
+			multiplicity *;
+		}
 	}
 	
-	exemption.TreasuryExemption playsRole treasuryExemption {
-		multiplicity 0..1;
+	relation TreasuryExemptionTreasuryEvent {
+		event.TreasuryEvent playsRole treasuryEvent {
+			multiplicity 1..1;
+		}
+		
+		exemption.TreasuryExemption playsRole treasuryExemption {
+			multiplicity 0..1;
+		}
 	}
-}
+	
+	relation TreasuryExemptionProduct {
+		
+	    Product playsRole product {
+	        multiplicity 0..1;
+	    }
+	
+		exemption.TreasuryExemption playsRole treasuryExemption {
+			multiplicity *;
+		}
+	}
 
 /*-----------
  * Tariff 
@@ -1076,6 +1087,18 @@ relation TreasuryEventProduct {
 		multiplicity *;
 	}
 }
+
+relation TreasuryEventDebtAccount {
+	
+	debt.DebtAccount playsRole debtAccount {
+		multiplicity 1..1;
+	}
+	
+	event.TreasuryEvent playsRole treasuryEvents {
+		multiplicity *;
+	}
+}
+
 
 /* --- FinantialDocument --- */
 

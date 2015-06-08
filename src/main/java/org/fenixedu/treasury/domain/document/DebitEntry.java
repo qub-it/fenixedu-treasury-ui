@@ -32,6 +32,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.joda.time.Days;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.DomainObject;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -60,11 +62,21 @@ import com.google.gson.reflect.TypeToken;
 
 public class DebitEntry extends DebitEntry_Base {
 
+    public static final Comparator<DebitEntry> COMPARE_BY_OPEN_AMOUNT_WITH_VAT = new Comparator<DebitEntry>() {
+
+        @Override
+        public int compare(final DebitEntry o1, final DebitEntry o2) {
+            final int c = o1.getAmountWithVat().compareTo(o2.getAmountWithVat());
+        
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+    
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
             final DateTime entryDateTime) {
-        init(debitNote, debtAccount, null, product, vat, amount, dueDate, propertiesMap, description, quantity, tariff,
+        init(debitNote, debtAccount, treasuryEvent, product, vat, amount, dueDate, propertiesMap, description, quantity, tariff,
                 entryDateTime);
     }
 
@@ -284,7 +296,7 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal getRemainingAmount() {
         return getOpenAmount().subtract(getPayedAmount());
     }
-
+    
     @Atomic
     public DebitEntry generateInterestRateDebitEntry(InterestRateBean interest, DateTime when, DebitNote debitNote) {
         Product product = TreasurySettings.getInstance().getInterestProduct();
@@ -327,12 +339,12 @@ public class DebitEntry extends DebitEntry_Base {
     public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent) {
         return find(treasuryEvent).filter(d -> d.isEventAnnuled());
     }
-
-    /* --- Math methods --- */
-
-    public static BigDecimal amountToPay(final TreasuryEvent treasuryEvent) {
-        return findActive(treasuryEvent).map(d -> d.getAmount()).reduce((x, y) -> x.add(y)).get();
+    
+    public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent, final Product product) {
+        return findActive(treasuryEvent).filter(d -> d.getProduct() == product);
     }
+    
+    /* --- Math methods --- */
 
     public static BigDecimal payedAmount(final TreasuryEvent treasuryEvent) {
         return findActive(treasuryEvent).map(d -> d.getPayedAmount()).reduce((x, y) -> x.add(y)).get();

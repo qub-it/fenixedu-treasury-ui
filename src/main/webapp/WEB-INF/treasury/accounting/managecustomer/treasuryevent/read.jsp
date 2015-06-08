@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.managetreasuryexemption.TreasuryExemptionController"%>
+<%@page import="org.fenixedu.treasury.domain.exemption.TreasuryExemption"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -74,10 +76,20 @@ ${portal.toolkit()}
 <!-- </div>/.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/treasuryevent/?debtAccount=${treasuryEvent.debtAccount.externalId}"><spring:message
-			code="label.event.back" /></a> &nbsp;|&nbsp;
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+	&nbsp;
+	<a class=""
+		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/treasuryevent/?debtAccount=${treasuryEvent.debtAccount.externalId}">
+		<spring:message code="label.event.back" />
+	</a>
+
+	<c:if test="${empty treasuryEvent.treasuryExemption}">
+	&nbsp;|&nbsp;
+	<a href="${pageContext.request.contextPath}<%= TreasuryExemptionController.CREATE_URL %>/${treasuryEvent.externalId}">
+		<spring:message code="label.TreasuryExemption.create" />
+	</a>
+	</c:if>
+	&nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -127,6 +139,112 @@ ${portal.toolkit()}
 		</form>
 	</div>
 </div>
+
+<c:if test="${not empty treasuryEvent.treasuryExemption}">
+
+<div class="modal fade" id="deleteModal"> 
+  <div class="modal-dialog">
+    <div class="modal-content">
+    	<form id ="deleteForm" action="${pageContext.request.contextPath}<%= TreasuryExemptionController.SEARCH_TO_DELETE_ACTION_URL %>${treasuryEvent.treasuryExemption.externalId}"   method="POST">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
+	      </div>
+	      <div class="modal-body">
+	        <p><spring:message code = "label.manageTreasuryExemption.searchTreasuryExemption.confirmDelete"/></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+	        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
+	      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="panel panel-primary">
+	<div class="panel-heading">
+		<h3 class="panel-title">
+			<spring:message code="label.TreasuryEvent.treasuryExemption" />
+		</h3>
+	</div>
+	<div class="panel-body">
+		<form method="post" class="form-horizontal">
+			<table class="table">
+				<tbody>
+					<tr>
+						<th scope="row" class="col-xs-3">
+							<spring:message code="label.TreasuryExemption.treasuryExemptionType" />
+						</th>
+						<td>
+							<c:out value='${treasuryEvent.treasuryExemption.treasuryExemptionType.name.content}' />
+						</td>
+					</tr>
+
+					<tr>
+						<th scope="row" class="col-xs-3">
+							<spring:message code="label.TreasuryExemption.exemptByPercentage" />
+						</th>
+						<td>
+							<c:if test="${treasuryEvent.treasuryExemption.exemptByPercentage}">
+								<spring:message code="label.yes" />
+							</c:if>
+							
+							<c:if test="${not treasuryEvent.treasuryExemption.exemptByPercentage}">
+								<spring:message code="label.no" />
+							</c:if>
+						</td>
+					</tr>
+
+					<tr>
+						<th scope="row" class="col-xs-3">
+							<spring:message code="label.TreasuryExemption.valueToExempt" />
+						</th>
+						<td>
+							<c:if test="${treasuryEvent.treasuryExemption.exemptByPercentage}">
+								<c:out value="${treasuryEvent.treasuryExemption.valueToExempt}" /> %
+							</c:if>
+							
+							<c:if test="${not treasuryEvent.treasuryExemption.exemptByPercentage}">
+								<c:out value="${treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(treasuryEvent.treasuryExemption.valueToExempt)}" />
+							</c:if>
+						</td>
+					</tr>
+
+					<c:if test="${not empty treasuryEvent.treasuryExemption.product}">
+					<tr>
+						<th scope="row" class="col-xs-3">
+							<spring:message code="label.TreasuryExemption.product" />
+						</th>
+						<td>
+							<c:out value='${treasuryEvent.treasuryExemption.product.name.content}' />
+						</td>
+					</tr>
+					</c:if>
+					
+					<tr>
+						<th scope="row" class="col-xs-3">
+							<spring:message code="label.TreasuryExemption.reason" />
+						</th>
+						<td>
+							<c:out value='${treasuryEvent.treasuryExemption.reason}' />
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</form>
+	</div>
+	<div class="panel-footer">
+		<div class="well well-sm" style="display:inline-block">
+			<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+			&nbsp;
+			<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
+		</div>
+	</div>	
+</div>
+
+</c:if>
 
 <c:if test="${not empty treasuryEvent.propertiesMap}">
 	<h2><spring:message code="label.TreasuryEvent.propertiesJsonMap"/></h2>

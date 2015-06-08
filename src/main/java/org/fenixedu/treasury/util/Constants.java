@@ -26,9 +26,45 @@
  */
 package org.fenixedu.treasury.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 
 public class Constants {
 
+    private static final int SCALE = 20;
+
     public static String BUNDLE = FenixeduTreasurySpringConfiguration.BUNDLE.replace('/', '.');
+    
+    // @formatter: off
+    /**************
+     * MATH UTILS *
+     **************/
+    // @formatter: on
+
+    public static boolean isNegative(final BigDecimal value) {
+        return !isZero(value) && !isPositive(value);
+    }
+
+    public static boolean isZero(final BigDecimal value) {
+        return BigDecimal.ZERO.compareTo(value) == 0;
+    }
+
+    public static boolean isPositive(final BigDecimal value) {
+        return BigDecimal.ZERO.compareTo(value) < 0;
+    }
+
+    public static boolean isGreaterThan(final BigDecimal v1, final BigDecimal v2) {
+        return v1.compareTo(v2) > 0;
+    }
+    
+    public static BigDecimal defaultScale(final BigDecimal v) {
+        return v.setScale(20, RoundingMode.HALF_EVEN);
+    }
+
+    public static BigDecimal divide(final BigDecimal a, BigDecimal b) {
+        return a.divide(b, SCALE, RoundingMode.HALF_EVEN);
+    }
+    
 }

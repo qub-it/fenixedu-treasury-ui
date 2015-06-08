@@ -45,8 +45,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
-
 //@Component("org.fenixedu.treasury.ui.document.manageExemption") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemptionType", accessGroup = "#managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -66,7 +64,6 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-    //
 
     @RequestMapping
     public String home(Model model) {

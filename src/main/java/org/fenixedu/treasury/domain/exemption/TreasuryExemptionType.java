@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.exemption;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -39,6 +40,17 @@ import pt.ist.fenixframework.Atomic;
 
 public class TreasuryExemptionType extends TreasuryExemptionType_Base {
 
+    public static final Comparator<? super TreasuryExemptionType> COMPARE_BY_NAME = new Comparator<TreasuryExemptionType>() {
+
+        @Override
+        public int compare(final TreasuryExemptionType o1, final TreasuryExemptionType o2) {
+            int c = o1.getName().getContent().compareTo(o2.getName().getContent());
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+
+    };
+
     protected TreasuryExemptionType() {
         super();
         setBennu(Bennu.getInstance());
@@ -47,12 +59,12 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
     protected TreasuryExemptionType(final String code, final LocalizedString name, final BigDecimal defaultExemptionPercentage,
             final boolean active) {
         this();
-        
+
         setCode(code);
         setName(name);
         setDefaultExemptionPercentage(defaultExemptionPercentage);
         setActive(active);
-        
+
         checkRules();
     }
 

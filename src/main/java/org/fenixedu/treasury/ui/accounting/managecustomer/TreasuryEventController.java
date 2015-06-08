@@ -125,11 +125,8 @@ public class TreasuryEventController extends TreasuryBaseController {
     }
 
     private List<? extends TreasuryEvent> filterSearchTreasuryEvents(DebtAccount debtAccount) {
-
-        return getSearchUniverseSearchTreasuryEventsDataSet().filter(
-                x -> x.getDebitEntriesSet().stream().anyMatch(entry -> entry.getDebtAccount().equals(debtAccount))).collect(
-                Collectors. <TreasuryEvent> toList());
-
+        return getSearchUniverseSearchTreasuryEventsDataSet().filter(x -> x.getDebtAccount() == debtAccount).collect(
+                Collectors.<TreasuryEvent> toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
