@@ -269,7 +269,7 @@ ${portal.toolkit()}
 			<datatables:table id="allDebitEntriesTable" row="debitEntry" data="${allDebitEntriesDataSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" /></datatables:columnHead>
-					<c:out value="${debitEntry.finantialDocument.finantialDocumentNumber}" /> 
+					<c:out value="${debitEntry.finantialDocument.documentNumber}" /> 
 				</datatables:column>
 				<datatables:column cssStyle="width:15%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.dueDate" /></datatables:columnHead>
