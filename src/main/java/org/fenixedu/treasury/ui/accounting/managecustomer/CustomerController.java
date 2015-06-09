@@ -81,7 +81,7 @@ public class CustomerController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the customer
         // Do not catch any exception here
 
-        // customer.delete(); 
+//         customer.delete(); 
     }
 
     //
