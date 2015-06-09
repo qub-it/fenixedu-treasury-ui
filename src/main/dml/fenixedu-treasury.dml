@@ -614,7 +614,15 @@ relation ERPConfigurationSeries
     }
 }
 
-
+relation ConfigurationBennu {
+    integration.Configuration playsRole configurations {
+        multiplicity *;
+    }
+    
+    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+        multiplicity 1..1;
+    }
+}
 
 
 class integration.ERPExportOperation extends integration.IntegrationOperation
