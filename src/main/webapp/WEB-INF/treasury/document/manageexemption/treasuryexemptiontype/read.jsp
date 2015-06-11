@@ -155,7 +155,7 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.TreasuryExemptionType.defaultExemptionPercentage" /></th>
-						<td><c:out value='${treasuryExemptionType.defaultExemptionPercentage}' /></td>
+						<td><c:out value='${treasuryExemptionType.defaultExemptionPercentage}' /> %</td>
 					</tr>
 				</tbody>
 			</table>

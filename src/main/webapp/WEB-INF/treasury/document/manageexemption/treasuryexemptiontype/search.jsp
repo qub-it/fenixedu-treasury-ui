@@ -133,7 +133,7 @@ ${portal.toolkit()}
 					<th><spring:message code="label.TreasuryExemptionType.code" /></th>
 					<th><spring:message code="label.TreasuryExemptionType.name" /></th>
 					<th><spring:message
-							code="label.TreasuryExemptionType.defaultExemptionPercentage" /></th>
+							code="label.TreasuryExemptionType.defaultExemptionPercentage" /> %</th>
 					<%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -165,7 +165,7 @@ ${portal.toolkit()}
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "code" : "<c:out value='${searchResult.code}'/>",
 "name" : "<c:out value='${searchResult.name.content}'/>",
-"discountrate" : "<c:out value='${searchResult.defaultExemptionPercentage}'/>",
+"discountrate" : "<c:out value='${searchResult.defaultExemptionPercentage}'/> %",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/document/manageexemption/treasuryexemptiontype/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },

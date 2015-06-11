@@ -91,11 +91,11 @@ ${portal.toolkit()}
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
 						<c:forEach items="${typeValues}" var="field">
 							<option value='<c:out value='${field}'/>'><c:out
-									value='${field}' /></option>
+									value='${field.descriptionI18N.content}' /></option>
 						</c:forEach>
 					</select>
 					<script>
-		$("#finantialDocumentType_type").val('<c:out value='${not empty param.type ? param.type : finantialDocumentType.type }'/>');
+						$("#finantialDocumentType_type").select2().select2('val', '<c:out value='${not empty param.type ? param.type : finantialDocumentType.type }'/>');
 	</script>
 				</div>
 			</div>
@@ -146,7 +146,7 @@ ${portal.toolkit()}
 						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
 					<script>
-		$("#finantialDocumentType_invoice").val('<c:out value='${not empty param.invoice ? param.invoice : finantialDocumentType.invoice }'/>');
+		$("#finantialDocumentType_invoice").select2().select2('val', '<c:out value='${not empty param.invoice ? param.invoice : finantialDocumentType.invoice }'/>');
 	</script>
 				</div>
 			</div>
@@ -177,7 +177,7 @@ $(document).ready(function() {
 		bennu_options = [
 			<c:forEach items="${FinantialDocumentType_bennu_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.descriptionI18N.content}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>

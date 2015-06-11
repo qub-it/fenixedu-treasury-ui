@@ -156,7 +156,7 @@ $(document).ready(function() {
 	vattype_options = [
 		<c:forEach items="${vattype_options}" var="element"> 
 			{
-				text : "<c:out value='${element.name}'/>",  
+				text : "<c:out value='${element.name.content}'/>",  
 				id : "<c:out value='${element.externalId}'/>"
 			},
 		</c:forEach>
@@ -167,8 +167,6 @@ $(document).ready(function() {
 			data : vattype_options,
 		}	  
     );
-    
-    
     
     $("#product_vatType").select2().select2('val', '<c:out value='${param.vattype}'/>');
 

@@ -111,19 +111,18 @@ ${portal.toolkit()}
 					</select>
 				</div>
 			</div>
-<!-- 			<div class="form-group row"> -->
-<!-- 				<div class="col-sm-2 control-label"> -->
-<%-- 					<spring:message code="label.Vat.vatExemptionReason" /> --%>
-<!-- 				</div> -->
+ 			<div class="form-group row">
+ 				<div class="col-sm-2 control-label">
+ 					<spring:message code="label.Vat.vatExemptionReason" />
+ 				</div>
 
-<!-- 				<div class="col-sm-10"> -->
-<!-- 					<select id="vat_vatExemptionReason" -->
-<!-- 						class="js-example-basic-single" name="vatExemptionReason"> -->
-<!-- 						<option value=""></option> -->
-<%-- 						empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-<!-- 					</select> -->
-<!-- 				</div> -->
-<!-- 			</div>			 -->
+ 				<div class="col-sm-10">
+ 					<select id="vat_vatExemptionReason" -->
+ 						class="js-example-basic-single" name="vatExemptionReason">
+ 						<option value=""></option>
+ 					</select>
+ 				</div>
+ 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.Vat.taxRate" />

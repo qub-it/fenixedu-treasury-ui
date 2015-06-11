@@ -150,7 +150,7 @@ $(document).ready(function() {
 		series_options = [
 			<c:forEach items="${DocumentNumberSeries_series_options}" var="element"> 
 				{
-					text : "<c:out value='${element.name}'/>",  
+					text : "<c:out value='${element.name.content}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -172,7 +172,7 @@ $(document).ready(function() {
 		finantialDocumentType_options = [
 			<c:forEach items="${DocumentNumberSeries_finantialDocumentType_options}" var="element"> 
 				{
-					text : "<c:out value='${element.name}'/>",  
+					text : "<c:out value='${element.name.content}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>

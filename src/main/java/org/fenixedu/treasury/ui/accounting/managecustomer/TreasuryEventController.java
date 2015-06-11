@@ -105,7 +105,7 @@ public class TreasuryEventController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = "/")
-    public String searchTreasuryEvents(@RequestParam(value = "debtAccount", required = true) DebtAccount debtAccount, Model model) {
+    public String searchTreasuryEvents(@RequestParam(value = "debtaccount", required = true) DebtAccount debtAccount, Model model) {
         List<? extends TreasuryEvent> searchtreasuryeventsResultsDataSet = filterSearchTreasuryEvents(debtAccount);
 
         //add the results dataSet to the model

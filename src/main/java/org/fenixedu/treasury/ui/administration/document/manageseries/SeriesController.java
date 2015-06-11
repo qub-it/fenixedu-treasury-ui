@@ -27,19 +27,25 @@
 package org.fenixedu.treasury.ui.administration.document.manageseries;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageSeries") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageSeries",
@@ -139,198 +145,198 @@ public class SeriesController extends TreasuryBaseController {
         return "treasury/administration/document/manageseries/series/read";
     }
 
-//
-//    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
-//    public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
-//
-//        setSeries(series, model);
-//        try {
-//            //call the Atomic delete function
-//            deleteSeries(series);
-//
-//            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-//            return redirect("/treasury/administration/document/manageseries/series/", model, redirectAttributes);
-//
-//        } catch (DomainException ex) {
-//            //Add error messages to the list 
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-//
-//        } catch (Exception ex) {
-//            //Add error messages to the list
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-//        }
-//
-//        //The default mapping is the same Read View
-//        return redirect("treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(), model,
-//                redirectAttributes);
-//    }
 
-//				
-//    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
-//    public String create(Model model) {
-//        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
-//
-//        //model.addAttribute("Series_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-//
-//        model.addAttribute("Series_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
-//        //model.addAttribute("Series_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-//        return "treasury/administration/document/manageseries/series/create";
-//    }
-//
-////				
-//    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-//    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-//            required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "externseries",
-//            required = false) boolean externSeries, @RequestParam(value = "certificated", required = false) boolean certificated,
-//            @RequestParam(value = "legacy", required = false) boolean legacy, @RequestParam(value = "finantialinstitution",
-//                    required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution, @RequestParam(
-//                    value = "bennu", required = false) org.fenixedu.bennu.core.domain.Bennu bennu, Model model,
-//            RedirectAttributes redirectAttributes) {
-//        /*
-//        *  Creation Logic
-//        */
-//
-//        try {
-//
-//            Series series = createSeries(code, name, externSeries, certificated, legacy, finantialInstitution, bennu);
-//
-//            //Success Validation
-//            //Add the bean to be used in the View
-//            model.addAttribute("series", series);
-//            return redirect("/treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(),
-//                    model, redirectAttributes);
-//
-//        } catch (DomainException de) {
-//
-//            // @formatter: off
-//            /*
-//             * If there is any error in validation 
-//             *
-//             * Add a error / warning message
-//             * 
-//             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-//            // @formatter: on
-//
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-//            return create(model);
-//
-//        } catch (Exception de) {
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-//            return create(model);
-//        }
-//    }
-//
-//    @Atomic
-//    public Series createSeries(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, boolean externSeries,
-//            boolean certificated, boolean legacy, org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-//            org.fenixedu.bennu.core.domain.Bennu bennu) {
-//
-//        // @formatter: off
-//
-//        /*
-//         * Modify the creation code here if you do not want to create
-//         * the object with the default constructor and use the setter
-//         * for each field
-//         * 
-//         */
-//
-//        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-//        //Series series = series.create(fields_to_create);
-//
-//        //Instead, use individual SETTERS and validate "CheckRules" in the end
-//        // @formatter: on
-//
-//        Series series = Series.create(finantialInstitution, code, name, externSeries, certificated, legacy, false);
-//
-//        return series;
-//    }
+    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
+    public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
 
-//				
-//    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
-//    public String update(@PathVariable("oid") Series series, Model model) {
-//        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
-//        //model.addAttribute("Series_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-//        model.addAttribute("Series_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
-//        //model.addAttribute("Series_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-//        setSeries(series, model);
-//        return "treasury/administration/document/manageseries/series/update";
-//    }
-//
-////				
-//    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//    public String update(
-//            @PathVariable("oid") Series series,
-//            @RequestParam(value = "code", required = false) java.lang.String code,
-//            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name,
-//            @RequestParam(value = "externseries", required = false) boolean externSeries,
-//            @RequestParam(value = "certificated", required = false) boolean certificated,
-//            @RequestParam(value = "legacy", required = false) boolean legacy,
-//            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-//            @RequestParam(value = "bennu", required = false) org.fenixedu.bennu.core.domain.Bennu bennu, Model model,
-//            RedirectAttributes redirectAttributes) {
-//
-//        setSeries(series, model);
-//
-//        try {
-//            /*
-//            *  UpdateLogic here
-//            */
-//
-//            updateSeries(code, name, externSeries, certificated, legacy, finantialInstitution, bennu, model);
-//
-//            /*Succes Update */
-//
-//            return redirect("/treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(),
-//                    model, redirectAttributes);
-//
-//        } catch (DomainException de) {
-//            // @formatter: off
-//
-//            /*
-//            * If there is any error in validation 
-//            *
-//            * Add a error / warning message
-//            * 
-//            * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-//            */
-//            // @formatter: on
-//
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-//            return update(series, model);
-//
-//        } catch (Exception de) {
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-//            return update(series, model);
-//
-//        }
-//    }
-//
-//    @Atomic
-//    public void updateSeries(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, boolean externSeries,
-//            boolean certificated, boolean legacy, org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-//            org.fenixedu.bennu.core.domain.Bennu bennu, Model model) {
-//
-//        // @formatter: off				
-//        /*
-//         * Modify the update code here if you do not want to update
-//         * the object with the default setter for each field
-//         */
-//
-//        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-//        //getSeries(model).edit(fields_to_edit);
-//
-//        //Instead, use individual SETTERS and validate "CheckRules" in the end
-//        // @formatter: on
-//
-//        getSeries(model).setCode(code);
-//        getSeries(model).setName(name);
-//        getSeries(model).setExternSeries(externSeries);
-//        getSeries(model).setCertificated(certificated);
-//        getSeries(model).setLegacy(legacy);
-//        getSeries(model).setFinantialInstitution(finantialInstitution);
-//        getSeries(model).setBennu(bennu);
-//    }
+        setSeries(series, model);
+        try {
+            //call the Atomic delete function
+            series.delete();
+
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            return redirect("/treasury/administration/document/manageseries/series/", model, redirectAttributes);
+
+        } catch (DomainException ex) {
+            //Add error messages to the list 
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+
+        } catch (Exception ex) {
+            //Add error messages to the list
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        }
+
+        //The default mapping is the same Read View
+        return redirect("treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(), model,
+                redirectAttributes);
+    }
+
+				
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
+    public String create(Model model) {
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
+
+        //model.addAttribute("Series_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+
+        model.addAttribute("Series_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("Series_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        return "treasury/administration/document/manageseries/series/create";
+    }
+
+				
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
+    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
+            required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "externseries",
+            required = false) boolean externSeries, @RequestParam(value = "certificated", required = false) boolean certificated,
+            @RequestParam(value = "legacy", required = false) boolean legacy, @RequestParam(value = "finantialinstitution",
+                    required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution, @RequestParam(
+                    value = "bennu", required = false) org.fenixedu.bennu.core.domain.Bennu bennu, Model model,
+            RedirectAttributes redirectAttributes) {
+        /*
+        *  Creation Logic
+        */
+
+        try {
+
+            Series series = createSeries(code, name, externSeries, certificated, legacy, finantialInstitution, bennu);
+
+            //Success Validation
+            //Add the bean to be used in the View
+            model.addAttribute("series", series);
+            return redirect("/treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(),
+                    model, redirectAttributes);
+
+        } catch (DomainException de) {
+
+            // @formatter: off
+            /*
+             * If there is any error in validation 
+             *
+             * Add a error / warning message
+             * 
+             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
+             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
+            // @formatter: on
+
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            return create(model);
+
+        } catch (Exception de) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            return create(model);
+        }
+    }
+
+    @Atomic
+    public Series createSeries(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, boolean externSeries,
+            boolean certificated, boolean legacy, org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            org.fenixedu.bennu.core.domain.Bennu bennu) {
+
+        // @formatter: off
+
+        /*
+         * Modify the creation code here if you do not want to create
+         * the object with the default constructor and use the setter
+         * for each field
+         * 
+         */
+
+        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+        //Series series = series.create(fields_to_create);
+
+        //Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
+
+        Series series = Series.create(finantialInstitution, code, name, externSeries, certificated, legacy, false);
+
+        return series;
+    }
+
+				
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
+    public String update(@PathVariable("oid") Series series, Model model) {
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
+        //model.addAttribute("Series_finantialInstitution_options", org.fenixedu.treasury.domain.FinantialInstitution.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        model.addAttribute("Series_bennu_options", new ArrayList<org.fenixedu.bennu.core.domain.Bennu>()); // CHANGE_ME - MUST DEFINE RELATION
+        //model.addAttribute("Series_bennu_options", org.fenixedu.bennu.core.domain.Bennu.findAll()); // CHANGE_ME - MUST DEFINE RELATION
+        setSeries(series, model);
+        return "treasury/administration/document/manageseries/series/update";
+    }
+
+				
+    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
+    public String update(
+            @PathVariable("oid") Series series,
+            @RequestParam(value = "code", required = false) java.lang.String code,
+            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name,
+            @RequestParam(value = "externseries", required = false) boolean externSeries,
+            @RequestParam(value = "certificated", required = false) boolean certificated,
+            @RequestParam(value = "legacy", required = false) boolean legacy,
+            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            @RequestParam(value = "bennu", required = false) org.fenixedu.bennu.core.domain.Bennu bennu, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        setSeries(series, model);
+
+        try {
+            /*
+            *  UpdateLogic here
+            */
+
+            updateSeries(code, name, externSeries, certificated, legacy, finantialInstitution, bennu, model);
+
+            /*Succes Update */
+
+            return redirect("/treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(),
+                    model, redirectAttributes);
+
+        } catch (DomainException de) {
+            // @formatter: off
+
+            /*
+            * If there is any error in validation 
+            *
+            * Add a error / warning message
+            * 
+            * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
+            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
+            */
+            // @formatter: on
+
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            return update(series, model);
+
+        } catch (Exception de) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            return update(series, model);
+
+        }
+    }
+
+    @Atomic
+    public void updateSeries(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, boolean externSeries,
+            boolean certificated, boolean legacy, org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
+            org.fenixedu.bennu.core.domain.Bennu bennu, Model model) {
+
+        // @formatter: off				
+        /*
+         * Modify the update code here if you do not want to update
+         * the object with the default setter for each field
+         */
+
+        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
+        //getSeries(model).edit(fields_to_edit);
+
+        //Instead, use individual SETTERS and validate "CheckRules" in the end
+        // @formatter: on
+
+        getSeries(model).setCode(code);
+        getSeries(model).setName(name);
+        getSeries(model).setExternSeries(externSeries);
+        getSeries(model).setCertificated(certificated);
+        getSeries(model).setLegacy(legacy);
+        getSeries(model).setFinantialInstitution(finantialInstitution);
+        getSeries(model).setBennu(bennu);
+    }
 
 }

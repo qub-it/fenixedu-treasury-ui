@@ -93,7 +93,7 @@ ${portal.toolkit()}
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
 	<script>
-		$("#series_externSeries").val('<c:out value='${not empty param.externseries ? param.externseries : series.externSeries }'/>');
+		$("#series_externSeries").select2().select2('val', '<c:out value='${not empty param.externseries ? param.externseries : series.externSeries }'/>');
 	</script>	
 </div>
 </div>		
@@ -106,7 +106,7 @@ ${portal.toolkit()}
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
 	<script>
-		$("#series_certificated").val('<c:out value='${not empty param.certificated ? param.certificated : series.certificated }'/>');
+		$("#series_certificated").select2().select2('val', '<c:out value='${not empty param.certificated ? param.certificated : series.certificated }'/>');
 	</script>	
 </div>
 </div>		
@@ -119,7 +119,7 @@ ${portal.toolkit()}
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
 	<script>
-		$("#series_legacy").val('<c:out value='${not empty param.legacy ? param.legacy : series.legacy }'/>');
+		$("#series_legacy").select2().select2('val', '<c:out value='${not empty param.legacy ? param.legacy : series.legacy }'/>');
 	</script>	
 </div>
 </div>		
@@ -162,7 +162,7 @@ $(document).ready(function() {
 		finantialInstitution_options = [
 			<c:forEach items="${finantialInstitutionList}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -182,7 +182,7 @@ $(document).ready(function() {
 		bennu_options = [
 			<c:forEach items="${Series_bennu_options}" var="element"> 
 				{
-					text : "<c:out value='${element}'/>",  
+					text : "<c:out value='${element.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>

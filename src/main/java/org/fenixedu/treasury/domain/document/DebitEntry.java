@@ -52,6 +52,7 @@ import org.fenixedu.treasury.dto.InterestRateBean;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.DomainObject;
@@ -316,6 +317,23 @@ public class DebitEntry extends DebitEntry_Base {
         return interestEntry;
     }
 
+    public Map<String, String> getPropertiesMap() {
+        if (StringUtils.isEmpty(getPropertiesJsonMap())) {
+            return null;
+        }
+
+        final GsonBuilder builder = new GsonBuilder();
+
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
+        final Map<String, String> propertiesMap = gson.fromJson(getPropertiesJsonMap(), stringStringMapType);
+
+        return propertiesMap;
+    }
+
+    
     // @formatter: off
     /************
      * SERVICES *
