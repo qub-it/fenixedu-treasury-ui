@@ -230,6 +230,7 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
                 invoice);
     }
 
+    @Atomic
     public static void initializeFinantialDocumentType() {
         if (FinantialDocumentType.findAll().count() == 0) {
             FinantialDocumentType.createForCreditNote(
