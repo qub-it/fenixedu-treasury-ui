@@ -377,8 +377,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                         DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), finantialInstitution)
                                 .filter(x -> x.getSeries().getExternSeries() == true).findFirst().orElse(null);
                 ERPConfiguration erpIntegrationConfiguration =
-                        ERPConfiguration.create(paymentsIntegrationSeries.getSeries(), finantialInstitution, false, "", "", "",
-                                "");
+                        ERPConfiguration.create(paymentsIntegrationSeries.getSeries(), finantialInstitution, "", "", "", "");
                 finantialInstitution.setErpIntegrationConfiguration(erpIntegrationConfiguration);
             }
             return redirect(ERPConfigurationController.READ_URL
