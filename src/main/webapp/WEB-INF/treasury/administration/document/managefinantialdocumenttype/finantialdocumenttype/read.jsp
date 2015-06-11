@@ -40,7 +40,7 @@ ${portal.toolkit()}
         <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
       </div>
       <div class="modal-body">
-        <p><spring:message code = "label.administration.document.manageFinantialDocumentType.readFinantialDocumentType.confirmDelete"/></p>
+        <p><spring:message code = "label.administration.document.manageFinantialDocumentType.readFinantialDocumentType.confirmDelete" arguments="${ finantialDocumentType.name.content }"/></p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>

@@ -87,16 +87,16 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.beginDate"/></div> 
 
 <div class="col-sm-4">
-	<input id="paymentReferenceCode_beginDate" class="form-control" type="text" name="begindate"  bennu-datetime 
-	value = '<c:out value='${not empty param.begindate ? param.begindate : paymentReferenceCode.beginDate }'/>' />
+	<input id="paymentReferenceCode_beginDate" class="form-control" type="text" name="begindate"  bennu-date 
+	value = '<c:out value='${not empty param.begindate ? param.begindate : paymentReferenceCode.beginDate.toString("yyyy-MM-dd") }'/>' />
 </div>
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentReferenceCode.endDate"/></div> 
 
 <div class="col-sm-4">
-	<input id="paymentReferenceCode_endDate" class="form-control" type="text" name="enddate"  bennu-datetime 
-	value = '<c:out value='${not empty param.enddate ? param.enddate : paymentReferenceCode.endDate }'/>' />
+	<input id="paymentReferenceCode_endDate" class="form-control" type="text" name="enddate"  bennu-date 
+	value = '<c:out value='${not empty param.enddate ? param.enddate : paymentReferenceCode.endDate.toString("yyyy-MM-dd") }'/>' />
 </div>
 </div>		
 <div class="form-group row">

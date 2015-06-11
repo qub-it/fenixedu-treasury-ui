@@ -47,7 +47,7 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-body">
 					<p>
-						<spring:message code="label.administration.base.manageProduct.readProduct.confirmDelete" />
+						<spring:message code="label.administration.base.manageProduct.readProduct.confirmDelete" arguments="${ product.name.content }" />
 					</p>
 				</div>
 				<div class="modal-footer">
