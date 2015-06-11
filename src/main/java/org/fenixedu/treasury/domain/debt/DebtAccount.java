@@ -140,6 +140,7 @@ public class DebtAccount extends DebtAccount_Base {
         return pendingInvoiceEntries().collect(Collectors.<InvoiceEntry> toSet());
     }
 
+    @Atomic
     public void closeDebtAccount() {
         if (this.getFinantialDocumentsSet().size() > 0) {
             throw new TreasuryDomainException("label.customer.error.debtaccountwithdocuments");

@@ -142,4 +142,9 @@ public class ProductGroup extends ProductGroup_Base {
         return new ProductGroup(code, name);
     }
 
+    public static void initializeProductGroup() {
+        // TODO Auto-generated method stub
+
+    }
+
 }

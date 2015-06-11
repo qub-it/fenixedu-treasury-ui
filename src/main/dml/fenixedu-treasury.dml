@@ -131,8 +131,11 @@ class FinantialEntity {
 	LocalizedString name (REQUIRED);
 } 
 
+
 class Customer {
 }
+
+
 
 class AdhocCustomer extends Customer {
 	String code;
@@ -147,6 +150,7 @@ class AdhocCustomer extends Customer {
 
 class debt.DebtAccount {
 	boolean closed;
+	String legacyCode;
 }
 
 class document.TreasuryDocumentTemplate {
@@ -741,6 +745,17 @@ relation CustomerTypeBennu {
 		multiplicity *;
 	}
 }
+
+relation CustomerCustomerType {
+    CustomerType playsRole customerType{
+        multiplicity 0..1;
+    }
+    
+    Customer playsRole customers {
+        multiplicity *;
+    }
+}
+
 
 relation VatTypeBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {

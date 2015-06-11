@@ -27,11 +27,14 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -60,10 +63,10 @@ public class CustomerType extends CustomerType_Base {
             throw new TreasuryDomainException("error.CustomerType.name.required");
         }
 
-        if(findByCode(getCode()).count() > 1) {
+        if (findByCode(getCode()).count() > 1) {
             throw new TreasuryDomainException("error.CustomerType.code.duplicated");
         }
-        
+
         getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
     }
 
@@ -112,5 +115,19 @@ public class CustomerType extends CustomerType_Base {
     public static CustomerType create(final String code, final LocalizedString name) {
         return new CustomerType(code, name);
     }
-    
+
+    @Atomic
+    public static void initializeCustomerType() {
+
+        if (CustomerType.findAll().count() == 0) {
+            CustomerType
+                    .create("STUDENT",
+                            new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                                    "label.CustomerType.STUDENT")));
+
+            CustomerType.create("ADHOC",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.CustomerType.ADHOC")));
+        }
+    }
+
 }

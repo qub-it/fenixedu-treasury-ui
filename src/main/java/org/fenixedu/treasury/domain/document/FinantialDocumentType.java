@@ -27,13 +27,16 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -225,6 +228,30 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
             final String documentNumberSeriesPrefix, boolean invoice) {
         return new FinantialDocumentType(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE, code, name, documentNumberSeriesPrefix,
                 invoice);
+    }
+
+    public static void initializeFinantialDocumentType() {
+        if (FinantialDocumentType.findAll().count() == 0) {
+            FinantialDocumentType.createForCreditNote(
+                    "NA",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FinantialDocumentType.CreditNote")), "NA", true);
+            FinantialDocumentType.createForDebitNote(
+                    "ND",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FinantialDocumentType.DebitNote")), "ND", true);
+            FinantialDocumentType.createForSettlementNote(
+                    "NP",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FinantialDocumentType.SettlementNote")), "NP", true);
+
+            FinantialDocumentType.createForReimbursementNote(
+                    "NR",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.FinantialDocumentType.ReimbursementNote")), "NR", true);
+
+        }
+
     }
 
 }

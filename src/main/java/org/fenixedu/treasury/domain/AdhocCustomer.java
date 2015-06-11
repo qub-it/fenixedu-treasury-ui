@@ -45,6 +45,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setBennu(Bennu.getInstance());
     }
 
+    @Override
+    public boolean isAdhocCustomer() {
+        return true;
+    }
+
     protected AdhocCustomer(final String code, final String fiscalNumber, final String name, final String address,
             final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
         this();
@@ -98,6 +103,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         }
 
         setBennu(null);
+        setCustomerType(null);
 
         deleteDomainObject();
     }
@@ -179,6 +185,10 @@ public class AdhocCustomer extends AdhocCustomer_Base {
             }
         }
 
+    }
+
+    public static CustomerType getDefaultCustomerType() {
+        return CustomerType.findByCode("ADHOC").findFirst().orElse(null);
     }
 
 }

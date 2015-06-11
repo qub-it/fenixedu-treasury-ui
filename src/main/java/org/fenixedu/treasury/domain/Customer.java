@@ -38,7 +38,7 @@ import pt.ist.fenixframework.Atomic;
 public abstract class Customer extends Customer_Base implements IFiscalContributor {
 
     public static final String DEFAULT_FISCAL_NUMBER = "9999999990";
-    public static final int MAX_CODE_LENGHT = 9;
+    public static final int MAX_CODE_LENGHT = 20;
 
     protected Customer() {
         super();

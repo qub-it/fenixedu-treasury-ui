@@ -52,10 +52,10 @@ public class Product extends Product_Base {
         @Override
         public int compare(Product o1, Product o2) {
             int c = o1.getName().getContent().compareTo(o2.getName().getContent());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
-        
+
     };
 
     protected Product() {
@@ -117,7 +117,10 @@ public class Product extends Product_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+
+        return this.getInvoiceEntriesSet().size() == 0 || this.getTreasuryExemptionSet().size() == 0
+                || this.getTariffSet().size() == 0;
+
     }
 
     @Atomic
@@ -127,6 +130,10 @@ public class Product extends Product_Base {
         }
         setProductGroup(null);
         setBennu(null);
+        setVatType(null);
+        for (FinantialInstitution inst : getFinantialInstitutionsSet()) {
+            this.removeFinantialInstitutions(inst);
+        }
 
         deleteDomainObject();
     }
@@ -183,7 +190,7 @@ public class Product extends Product_Base {
                 .getTariffSet()
                 .stream()
                 .filter(x -> x.getFinantialEntity().getFinantialInstitution().equals(finantialInstitution))
-                .filter(x -> (x.getBeginDate() != null && x.getBeginDate().isBefore(when))
+                .filter(x -> x.getBeginDate() != null && x.getBeginDate().isBefore(when)
                         && (x.getEndDate() == null || x.getEndDate().isAfter(when)));
 
     }

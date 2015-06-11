@@ -119,8 +119,8 @@ ${portal.toolkit()}
 
 				<div class="col-sm-2">
 					<select id="product_active" name="active" class="form-control">
-						<option value="false"><spring:message code="label.no" /></option>
 						<option value="true"><spring:message code="label.yes" /></option>
+                        <option value="false"><spring:message code="label.no" /></option>
 					</select>
 					<script>
 		$("#product_active").val('<c:out value='${not empty param.active ? param.active : product.active }'/>');
