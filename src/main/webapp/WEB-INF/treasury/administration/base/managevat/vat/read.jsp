@@ -47,7 +47,7 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-body">
 					<p>
-						<spring:message code="label.administration.base.manageVat.readVat.confirmDelete" />
+						<spring:message code="label.administration.base.manageVat.readVat.confirmDelete" arguments="${ vat.vatType.name.content }" />
 					</p>
 				</div>
 				<div class="modal-footer">
