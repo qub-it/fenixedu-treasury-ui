@@ -757,8 +757,8 @@ public class ERPExporter {
             //TODOJN Locale por resolver
             companyAddress =
                     convertAddressToAddressPT(finantialInstitution.getAddress(), finantialInstitution.getZipCode(),
-                            finantialInstitution.getMunicipality().getLocalizedName(new Locale("pt")),
-                            finantialInstitution.getAddress());
+                            finantialInstitution.getMunicipality() != null ? finantialInstitution.getMunicipality()
+                                    .getLocalizedName(new Locale("pt")) : "---", finantialInstitution.getAddress());
             header.setCompanyAddress(companyAddress);
 
             // CompanyID

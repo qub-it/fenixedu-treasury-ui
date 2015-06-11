@@ -31,6 +31,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -67,7 +68,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public boolean isDeletable() {
         return true;
     }
-    
+
     public boolean isPersonCustomer() {
         return false;
     }
@@ -75,7 +76,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public boolean isAdhocCustomer() {
         return false;
     }
-    
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -85,6 +86,24 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         setBennu(null);
 
         deleteDomainObject();
+    }
+
+    protected void checkRules() {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+            throw new TreasuryDomainException("error.AdhocCustomer.code.required");
+        }
+
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("e");
+        }
+
+        if (findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.AdhocCustomer.code.duplicated");
+        }
+
+        if (this.getCode().length() > Customer.MAX_CODE_LENGHT) {
+            throw new TreasuryDomainException("error.AdhocCustomer.code.maxlenght");
+        }
     }
 
     // @formatter: off

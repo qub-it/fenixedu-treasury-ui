@@ -33,22 +33,24 @@ import org.fenixedu.treasury.util.Constants;
 
 public enum InterestType {
 
-    DAILY,
-    MONTHLY,
-    FIXED_AMOUNT;
-    
+    DAILY, MONTHLY, GLOBAL_RATE, FIXED_AMOUNT;
+
     public boolean isDaily() {
         return this == DAILY;
     }
-    
+
+    public boolean isGlobalRate() {
+        return this == GLOBAL_RATE;
+    }
+
     public boolean isMonthly() {
         return this == MONTHLY;
     }
-    
+
     public boolean isFixedAmount() {
         return this == FIXED_AMOUNT;
     }
-    
+
     public LocalizedString getDescriptionI18N() {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, String.format("label.%s.%s", getClass().getSimpleName(), name()));
     }

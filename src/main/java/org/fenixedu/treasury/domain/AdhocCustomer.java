@@ -35,7 +35,6 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -61,25 +60,13 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         checkRules();
     }
 
-    private void checkRules() {
-        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-            throw new TreasuryDomainException("error.AdhocCustomer.code.required");
-        }
-
-        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-            throw new TreasuryDomainException("e");
-        }
-
-        if (findByCode(getCode()).count() > 1) {
-            throw new TreasuryDomainException("error.AdhocCustomer.code.duplicated");
-        }
-
-        if (this.getCode().length() > Customer.MAX_CODE_LENGHT) {
-            throw new TreasuryDomainException("error.AdhocCustomer.code.maxlenght");
-        }
+    @Override
+    protected void checkRules() {
+        super.checkRules();
 
     }
 
+    @Override
     public String getPaymentReferenceBaseCode() {
         return this.getCode();
     }

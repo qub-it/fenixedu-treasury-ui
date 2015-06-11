@@ -98,12 +98,9 @@ public class CustomerController extends TreasuryBaseController {
     }
 
     private List<Customer> getSearchUniverseSearchCustomerDataSet() {
-        //
-        // The initialization of the result list must be done here
-        //
-        //
-        return new ArrayList<Customer>(Customer.findAll().collect(Collectors.<Customer> toList()));
-        // return new ArrayList<Customer>();
+
+        return Customer.findAll().sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName()))
+                .collect(Collectors.<Customer> toList());
     }
 
     private List<Customer> filterSearchCustomer(FinantialInstitution institution) {

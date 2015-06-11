@@ -104,7 +104,8 @@ public class ProductController extends TreasuryBaseController {
     }
 
     private List<Product> getSearchUniverseSearchProductDataSet() {
-        return Product.findAll().collect(Collectors.toList());
+        return Product.findAll().sorted((x, y) -> x.getName().getContent().compareTo(y.getName().getContent()))
+                .collect(Collectors.toList());
     }
 
     private List<Product> filterSearchProduct(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
