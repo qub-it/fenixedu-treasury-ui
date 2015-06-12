@@ -179,13 +179,13 @@ ${portal.toolkit()}
                                 code="label.SibsReportFile.infoLog" /></th>
                         <td>
                         <pre><c:out
-                                value='${sibsReportFile.infoLog}' /></pre></td>)
+                                value='${sibsReportFile.infoLog}' /></pre></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.SibsReportFile.errorLog" /></th>
                         <td><pre><c:out
-                                value='${sibsReportFile.totalCost}' /></pre></td>
+                                value='${sibsReportFile.errorLog}' /></pre></td>
                     </tr>
                 </tbody>
             </table>

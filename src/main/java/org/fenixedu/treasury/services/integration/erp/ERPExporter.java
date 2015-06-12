@@ -946,10 +946,14 @@ public class ERPExporter {
          * ser preenchido com a designa??o ?Desconhecido?.
          */
 
-        if (customer instanceof AdhocCustomer) {
-            c.setAccountID("ADHOC");
+        if (customer.getCustomerType() != null) {
+            c.setAccountID(customer.getCustomerType().getCode());
         } else {
-            c.setAccountID("STUDENT");
+            if (customer instanceof AdhocCustomer) {
+                c.setAccountID("ADHOC");
+            } else {
+                c.setAccountID("STUDENT");
+            }
         }
 
         // BillingAddress
@@ -959,7 +963,7 @@ public class ERPExporter {
         // c.setBillingAddress(convertToSAFTAddressStructure(addresses.get(0)));
         // } else {
         // PhysicalAddress addr = new PhysicalAddress();
-        c.setBillingAddress(convertAddressToSAFTAddress(customer.getAddress(), customer.getZipCode(),
+        c.setBillingAddress(convertAddressToSAFTAddress(customer.getCountryCode(), customer.getAddress(), customer.getZipCode(),
                 customer.getDistrictSubdivision(), customer.getAddress()));
         // }
 
@@ -1001,15 +1005,28 @@ public class ERPExporter {
         return c;
     }
 
-    private AddressStructure convertAddressToSAFTAddress(String addressDetail, String zipCode, String zipCodeRegion, String street) {
+    private AddressStructure convertAddressToSAFTAddress(String country, String addressDetail, String zipCode,
+            String zipCodeRegion, String street) {
         AddressStructure companyAddress;
         companyAddress = new AddressStructure();
-        companyAddress.setCountry("PT");
-        companyAddress.setAddressDetail(Splitter.fixedLength(60).splitToList(addressDetail).get(0));
-        companyAddress.setCity(Splitter.fixedLength(49).splitToList(zipCodeRegion).get(0));
+        companyAddress.setCountry(country);
+        if (addressDetail != null) {
+            companyAddress.setAddressDetail(Splitter.fixedLength(60).splitToList(addressDetail).get(0));
+        } else {
+            companyAddress.setAddressDetail(".");
+        }
+        if (companyAddress.getCity() != null) {
+            companyAddress.setCity(Splitter.fixedLength(49).splitToList(zipCodeRegion).get(0));
+        } else {
+            companyAddress.setCity(".");
+        }
         companyAddress.setPostalCode(zipCode);
         companyAddress.setRegion(zipCodeRegion);
-        companyAddress.setStreetName(Splitter.fixedLength(49).splitToList(street).get(0));
+        if (street != null) {
+            companyAddress.setStreetName(Splitter.fixedLength(49).splitToList(street).get(0));
+        } else {
+            companyAddress.setStreetName(".");
+        }
         return companyAddress;
     }
 

@@ -26,21 +26,16 @@
  */
 package org.fenixedu.treasury.ui.administration.document.managedocumentnumberseries;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.administration.document.manageseries.SeriesController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
@@ -53,11 +48,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageDocumentNumberSeries") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageDocumentNumberSeries",
-        accessGroup = "#managers")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.document.manageDocumentNumberSeries",
+//        accessGroup = "#managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-//@BennuSpringController(value = SeriesController.class)
+@BennuSpringController(value = SeriesController.class)
 @RequestMapping(DocumentNumberSeriesController.CONTROLLER_URL)
 public class DocumentNumberSeriesController extends TreasuryBaseController {
     public static final String CONTROLLER_URL =

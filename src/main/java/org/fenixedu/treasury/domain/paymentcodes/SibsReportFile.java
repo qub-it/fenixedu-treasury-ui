@@ -41,6 +41,7 @@ import org.fenixedu.commons.spreadsheet.WorkbookExportFormat;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationFileDTO;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationLineDTO;
+import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.util.Constants;
 //import pt.utl.ist.fenix.tools.spreadsheet.SheetData;
 //import pt.utl.ist.fenix.tools.spreadsheet.SpreadsheetBuilder;
@@ -271,6 +272,20 @@ public class SibsReportFile extends SibsReportFile_Base {
             }
         }
         return BigDecimal.ZERO;
+    }
+
+    @Atomic
+    public void updateLogMessages(ProcessResult result) {
+        StringBuilder build = new StringBuilder();
+        for (String s : result.getErrorMessages()) {
+            build.append(s + "\n");
+        }
+        this.setErrorLog(build.toString());
+        build = new StringBuilder();
+        for (String s : result.getActionMessages()) {
+            build.append(s + "\n");
+        }
+        this.setInfoLog(build.toString());
     }
 
 //    public static Set<SibsReportFile> findAll() {

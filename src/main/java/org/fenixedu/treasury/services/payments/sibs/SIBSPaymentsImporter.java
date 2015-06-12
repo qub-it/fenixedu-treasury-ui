@@ -82,15 +82,7 @@ public class SIBSPaymentsImporter {
         }
 
         public SibsReportFile getReportFile() {
-            StringBuilder build = new StringBuilder();
-            for (String s : this.getActionMessages()) {
-                build.append(s + "\n");
-            }
-            this.reportFile.setErrorLog(build.toString());
-            for (String s : this.getActionMessages()) {
-                build.append(s + "\n");
-            }
-            this.reportFile.setInfoLog(build.toString());
+
             return reportFile;
         }
     }

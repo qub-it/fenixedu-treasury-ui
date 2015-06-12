@@ -28,50 +28,49 @@ ${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
-    <h1>
-        <spring:message code="label.document.manageInvoice.updateCreditEntry" />
-        <small></small>
-    </h1>
+	<h1>
+		<spring:message code="label.document.manageInvoice.updatesettlementNote" />
+		<small></small>
+	</h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${creditEntry.externalId}"><spring:message code="label.event.back" /></a>
-    &nbsp;|&nbsp;
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+		href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/${settlementNote.externalId}"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
-    <div class="alert alert-info" role="alert">
+	<div class="alert alert-info" role="alert">
 
-        <c:forEach items="${infoMessages}" var="message">
-            <p>
-                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
-            </p>
-        </c:forEach>
+		<c:forEach items="${infoMessages}" var="message">
+			<p>
+				<span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
+			</p>
+		</c:forEach>
 
-    </div>
+	</div>
 </c:if>
 <c:if test="${not empty warningMessages}">
-    <div class="alert alert-warning" role="alert">
+	<div class="alert alert-warning" role="alert">
 
-        <c:forEach items="${warningMessages}" var="message">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-            </p>
-        </c:forEach>
+		<c:forEach items="${warningMessages}" var="message">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+			</p>
+		</c:forEach>
 
-    </div>
+	</div>
 </c:if>
 <c:if test="${not empty errorMessages}">
-    <div class="alert alert-danger" role="alert">
+	<div class="alert alert-danger" role="alert">
 
-        <c:forEach items="${errorMessages}" var="message">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-            </p>
-        </c:forEach>
+		<c:forEach items="${errorMessages}" var="message">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+			</p>
+		</c:forEach>
 
-    </div>
+	</div>
 </c:if>
 
 <form method="post" class="form-horizontal">
@@ -80,45 +79,67 @@ ${portal.toolkit()}
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.quantity" />
+                    <spring:message code="label.DebtAccount.finantialInstitution" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="creditEntry_quantity" class="form-control" type="text" name="quantity"
-                        value='<c:out value='${not empty param.quantity ? param.quantity: creditEntry.quantity}'/>' />
+                    <div class="form-control">
+                        <c:out value="${settlementNote.debtAccount.finantialInstitution.name}" />
+                    </div>
                 </div>
             </div>
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.description" />
+                    <spring:message code="label.SettlementNote.debtAccount" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="creditEntry_description" class="form-control" type="text" name="description"
-                        value='<c:out value='${not empty param.description ? param.description : creditEntry.description }'/>' />
+                    <div class="form-control">
+                        <c:out value="${settlementNote.debtAccount.customer.code} - ${settlementNote.debtAccount.customer.name}" />
+                    </div>
                 </div>
             </div>
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.amount" />
+                    <spring:message code="label.SettlementNote.documentDate" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="creditEntry_amount" class="form-control" type="text" name="amount"
-                        value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
+                    <div class="form-control">
+                        <c:out value="${settlementNote.documentDate}" />
+                    </div>
                 </div>
             </div>
 
 
-        </div>
-        <div class="panel-footer">
-            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
         </div>
     </div>
+
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.settlementNote.originDocumentNumber" />
+				</div>
+
+				<div class="col-sm-10">
+					<input id="settlementNote_originDocumentNumber" class="form-control" type="text" name="origindocumentnumber"
+						value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : settlementNote.originDocumentNumber }'/>' />
+				</div>
+			</div>
+			
+			
+
+		</div>
+		<div class="panel-footer">
+			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
+		</div>
+	</div>
 </form>
 
 <script>
-	$(document).ready(function() {
+$(document).ready(function() {
 
-	});
 </script>

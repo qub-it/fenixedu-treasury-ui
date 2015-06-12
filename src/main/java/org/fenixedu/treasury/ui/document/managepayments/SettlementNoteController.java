@@ -391,17 +391,8 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     //
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") SettlementNote settlementNote,
-            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
-                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable("oid") SettlementNote settlementNote, @RequestParam(value = "origindocumentnumber",
+            required = false) java.lang.String originDocumentNumber, Model model, RedirectAttributes redirectAttributes) {
 
         setSettlementNote(settlementNote, model);
 
@@ -410,8 +401,7 @@ public class SettlementNoteController extends TreasuryBaseController {
              * UpdateLogic here
              */
 
-            updateSettlementNote(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
-                    documentDate, originDocumentNumber, state, model);
+            updateSettlementNote(originDocumentNumber, model);
 
             /* Succes Update */
 
@@ -439,12 +429,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateSettlementNote(org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
-            java.lang.String originDocumentNumber, org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-            Model model) {
+    public void updateSettlementNote(java.lang.String originDocumentNumber, Model model) {
 
         // @formatter: off
         /*
@@ -458,8 +443,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         // Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getSettlementNote(model).edit(finantialDocumentType, debtAccount, documentNumberSeries, currency, documentNumber,
-                documentDate, originDocumentNumber, state);
+        getSettlementNote(model).setOriginDocumentNumber(originDocumentNumber);
     }
 
     //
