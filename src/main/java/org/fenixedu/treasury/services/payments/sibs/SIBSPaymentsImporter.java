@@ -21,9 +21,12 @@ package org.fenixedu.treasury.services.payments.sibs;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.SettlementNote;
@@ -34,27 +37,35 @@ import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
-import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.util.Constants;
 
 public class SIBSPaymentsImporter {
 
     static private final String PAYMENT_FILE_EXTENSION = "INP";
 
-    private class ProcessResult {
+    public class ProcessResult {
+
+        List<String> actionMessages = new ArrayList<String>();
+        List<String> errorMessages = new ArrayList<String>();
+        SibsReportFile reportFile;
+
+        public List<String> getActionMessages() {
+            return actionMessages;
+        }
+
+        public List<String> getErrorMessages() {
+            return errorMessages;
+        }
 
 //        private final TreasuryBaseController baseController;
         private boolean processFailed = false;
 
-        public ProcessResult(TreasuryBaseController baseController) {
-//            this.baseController = baseController;
-        }
-
         public void addMessage(String message, String... args) {
-//            baseController.addActionMessage("message", request, message, args);
+            actionMessages.add(BundleUtil.getString(Constants.BUNDLE, message, args));
         }
 
         public void addError(String message, String... args) {
-//            addActionMessage("message", request, message, args);
+            errorMessages.add(BundleUtil.getString(Constants.BUNDLE, message, args));
             reportFailure();
         }
 
@@ -65,12 +76,29 @@ public class SIBSPaymentsImporter {
         public boolean hasFailed() {
             return processFailed;
         }
+
+        public void setReportFile(SibsReportFile reportFile) {
+            this.reportFile = reportFile;
+        }
+
+        public SibsReportFile getReportFile() {
+            StringBuilder build = new StringBuilder();
+            for (String s : this.getActionMessages()) {
+                build.append(s + "\n");
+            }
+            this.reportFile.setErrorLog(build.toString());
+            for (String s : this.getActionMessages()) {
+                build.append(s + "\n");
+            }
+            this.reportFile.setInfoLog(build.toString());
+            return reportFile;
+        }
     }
 
-    public void processSIBSPaymentFiles(SibsInputFile inputFile) throws IOException {
+    public ProcessResult processSIBSPaymentFiles(SibsInputFile inputFile) throws IOException {
+        ProcessResult result = new ProcessResult();
 
         if (StringUtils.endsWithIgnoreCase(inputFile.getFilename(), PAYMENT_FILE_EXTENSION)) {
-            ProcessResult result = new ProcessResult(null);
             result.addMessage("label.manager.SIBS.processingFile", inputFile.getFilename());
             try {
                 processFile(inputFile, result);
@@ -85,13 +113,14 @@ public class SIBSPaymentsImporter {
         } else {
             throw new TreasuryDomainException("error.manager.SIBS.notSupportedExtension", inputFile.getFilename());
         }
+        return result;
     }
 
-    private PaymentReferenceCode getPaymentReferenceCode(final FinantialInstitution finantialInstitution, final String code,
-            ProcessResult result) {
-
-        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
-    }
+//    private PaymentReferenceCode getPaymentReferenceCode(final FinantialInstitution finantialInstitution, final String code,
+//            ProcessResult result) {
+//
+//        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
+//    }
 
     protected String getMessage(Exception ex) {
         String message = ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage();
@@ -99,41 +128,46 @@ public class SIBSPaymentsImporter {
         return message;
     }
 
-    protected void processFile(SibsInputFile file, ProcessResult result) throws IOException {
-        result.addMessage("label.manager.SIBS.processingFile", file.getFilename());
+    protected void processFile(SibsInputFile inputFile, ProcessResult processResult) throws IOException {
+        processResult.addMessage("label.manager.SIBS.processingFile", inputFile.getFilename());
 
         InputStream fileInputStream = null;
         try {
-            fileInputStream = file.getStream();
+            fileInputStream = inputFile.getStream();
             final User person = Authenticate.getUser();
-            final SibsIncommingPaymentFile sibsFile = SibsIncommingPaymentFile.parse(file.getFilename(), fileInputStream);
+            final SibsIncommingPaymentFile sibsFile = SibsIncommingPaymentFile.parse(inputFile.getFilename(), fileInputStream);
 
-            result.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
-            result.addMessage("label.manager.SIBS.startingProcess");
+            processResult.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
+            processResult.addMessage("label.manager.SIBS.startingProcess");
 
             for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
                 try {
-                    processCode(detailLine, person, result, file.getFinantialInstitution(),
-                            file.getFilename().replace("\\.inp", ""));
+                    processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(), inputFile.getFilename()
+                            .replace("\\.inp", ""));
                 } catch (Exception e) {
-                    result.addError("error.manager.SIBS.processException", detailLine.getCode(), getMessage(e));
+                    processResult.addError("error.manager.SIBS.processException", detailLine.getCode(), getMessage(e));
                 }
             }
 
-            result.addMessage("label.manager.SIBS.creatingReport");
+            processResult.addMessage("label.manager.SIBS.creatingReport");
 
-            if (result.hasFailed()) {
-                result.addError("error.manager.SIBS.nonProcessedCodes");
+            if (processResult.hasFailed()) {
+                processResult.addError("error.manager.SIBS.nonProcessedCodes");
             }
 
             try {
-                createSibsFileReport(sibsFile, file.getFinantialInstitution(), result);
+                final SIBSImportationFileDTO reportDTO =
+                        new SIBSImportationFileDTO(sibsFile, inputFile.getFinantialInstitution());
+                SibsReportFile reportFile = SibsReportFile.processSIBSIncommingFile(reportDTO);
+                processResult.addMessage("label.manager.SIBS.reportCreated");
+                processResult.setReportFile(reportFile);
+
             } catch (Exception ex) {
                 ex.printStackTrace();
-                result.addError("error.manager.SIBS.reportException", getMessage(ex));
+                processResult.addError("error.manager.SIBS.reportException", getMessage(ex));
             }
 
-            result.addMessage("label.manager.SIBS.done");
+            processResult.addMessage("label.manager.SIBS.done");
 
         } finally {
             if (fileInputStream != null) {
@@ -158,9 +192,10 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
         }
 
-//        if (codeToProcess.isProcessed() && codeToProcess.getWhenUpdated().isBefore(detailLine.getWhenOccuredTransaction())) {
-//            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
-//        }
+        if (codeToProcess.isProcessed()
+                && codeToProcess.getVersioningUpdateDate().isBefore(detailLine.getWhenOccuredTransaction())) {
+            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+        }
 
         SettlementNote settlementNote =
                 codeToProcess.processPayment(person, detailLine.getAmount(), detailLine.getWhenOccuredTransaction(),
@@ -169,13 +204,6 @@ public class SIBSPaymentsImporter {
         if (settlementNote != null) {
             //HURRAY!!! Payment received....
         }
-    }
-
-    protected void createSibsFileReport(final SibsIncommingPaymentFile sibsIncomingPaymentFile,
-            final FinantialInstitution finantialInstitution, final ProcessResult result) throws Exception {
-        final SIBSImportationFileDTO reportDTO = new SIBSImportationFileDTO(sibsIncomingPaymentFile, finantialInstitution);
-        SibsReportFile.create(reportDTO);
-        result.addMessage("label.manager.SIBS.reportCreated");
     }
 
     /**

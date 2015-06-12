@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
@@ -105,7 +106,13 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.ERPExportOperation.cannot.delete");
         }
-        deleteDomainObject();
+        this.setFinantialInstitution(null);
+
+        for (FinantialDocument document : this.getFinantialDocumentsSet()) {
+            this.removeFinantialDocuments(document);
+        }
+
+        super.delete();
     }
 
     @Atomic

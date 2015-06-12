@@ -96,14 +96,16 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
         for (PaymentCodePool pool : allPools) {
             if (!pool.equals(this)) {
-                if (this.getMinReferenceCode() >= pool.getMinReferenceCode()
-                        && this.getMinReferenceCode() <= pool.getMaxReferenceCode()) {
-                    throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
-                }
+                if (pool.getEntityReferenceCode().equals(this.getEntityReferenceCode())) {
+                    if (this.getMinReferenceCode() >= pool.getMinReferenceCode()
+                            && this.getMinReferenceCode() <= pool.getMaxReferenceCode()) {
+                        throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+                    }
 
-                if (this.getMaxReferenceCode() >= pool.getMinReferenceCode()
-                        && this.getMaxReferenceCode() <= pool.getMinReferenceCode()) {
-                    throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+                    if (this.getMaxReferenceCode() >= pool.getMinReferenceCode()
+                            && this.getMaxReferenceCode() <= pool.getMinReferenceCode()) {
+                        throw new TreasuryDomainException("error.PaymentCodePool.invalid.reference.range.cross.other.pools");
+                    }
                 }
             }
         }
@@ -301,6 +303,10 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         this.setFinantialInstitution(finantialInstitution);
         checkRules();
 
+    }
+
+    public static Stream<PaymentCodePool> findByEntityCode(String entityCode) {
+        return findAll().filter(x -> x.getEntityReferenceCode().equals(entityCode));
     }
 
 }

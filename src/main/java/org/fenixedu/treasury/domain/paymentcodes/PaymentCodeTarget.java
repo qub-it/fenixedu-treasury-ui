@@ -21,4 +21,12 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 //    public IPaymentCodeTransactionReport getTransactionReportOnDate(final DateTime when);
 
     public abstract boolean isPaymentCodeFor(final TreasuryEvent event);
+
+    public boolean isMultipleEntriesPaymentCode() {
+        return false;
+    }
+
+    public boolean isFinantialDocumentPaymentCode() {
+        return false;
+    }
 }

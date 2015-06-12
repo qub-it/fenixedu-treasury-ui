@@ -32,6 +32,11 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
         super();
     }
 
+    @Override
+    public boolean isMultipleEntriesPaymentCode() {
+        return true;
+    }
+
     @Atomic
     protected SettlementNote internalProcessPayment(final User user, final BigDecimal amount, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments) {

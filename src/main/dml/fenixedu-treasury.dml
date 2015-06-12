@@ -519,9 +519,12 @@ class paymentcodes.PaymentReferenceCode
 	  DateTime whenProcessedBySibs;
 	  BigDecimalT transactionsTotalAmount;
 	  BigDecimalT totalCost;
+	  String errorLog;
+	  String infoLog;
 	}
 	
 	class paymentcodes.SibsInputFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	DateTime whenProcessedBySibs;
 	}
 
 
@@ -534,12 +537,19 @@ class paymentcodes.PaymentReferenceCode
             String sibsPaymentReferenceCode;
             String sibsTransactionId;
         }
-
-class paymentcodes.PaymentReferenceCodeManager
-{
-       String code;
-       String description;
-}
+        
+        relation SibsTransactionDetailSibsReportFile 
+        {
+            paymentcodes.SibsReportFile playsRole sibsReport{
+                multiplicity 1..1;
+            }
+            
+            paymentcodes.SibsTransactionDetail playsRole sibsTransactions
+            {
+             multiplicity *;
+            }
+        }
+        
 
 class integration.Configuration
 {
@@ -1470,15 +1480,6 @@ relation InterestRateTariff {
 
 
 
-relation PaymentReferenceCodeManagerBennu {
-	  .org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
-	    multiplicity 1..1;
-	  }
-	  
-	  paymentcodes.PaymentReferenceCodeManager playsRole paymentReferenceCodeManagers{
-	    multiplicity *;
-	  }
-	}
 
 relation PaymentReferenceCodeBennu {
 	  .org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {

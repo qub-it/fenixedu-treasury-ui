@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -20,10 +22,24 @@ import pt.ist.fenixframework.Atomic;
 public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_Base {
 
     @Override
+    @Atomic
     public SettlementNote processPayment(User person, BigDecimal amountToPay, DateTime whenRegistered, String sibsTransactionId,
             String comments) {
+
+        DebtAccount targetDebtAccount = this.getFinantialDocument().getDebtAccount();
+        DocumentNumberSeries documentSeriesForPayments =
+                this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments();
+
+        SettlementNote note =
+                SettlementNote.create(targetDebtAccount, documentSeriesForPayments, whenRegistered, sibsTransactionId);
+
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public boolean isFinantialDocumentPaymentCode() {
+        return true;
     }
 
     @Override

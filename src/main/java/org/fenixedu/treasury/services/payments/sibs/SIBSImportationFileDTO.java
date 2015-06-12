@@ -1,15 +1,13 @@
 package org.fenixedu.treasury.services.payments.sibs;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
 import org.joda.time.DateTime;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 
 public class SIBSImportationFileDTO {
 
@@ -35,13 +33,12 @@ public class SIBSImportationFileDTO {
     }
 
     protected List<SIBSImportationLineDTO> generateLines(final SibsIncommingPaymentFile sibsIncomingPaymentFile) {
-        return Lists.transform(sibsIncomingPaymentFile.getDetailLines(),
-                new Function<SibsIncommingPaymentFileDetailLine, SIBSImportationLineDTO>() {
-                    @Override
-                    public SIBSImportationLineDTO apply(final SibsIncommingPaymentFileDetailLine line) {
-                        return new SIBSImportationLineDTO(SIBSImportationFileDTO.this, line);
-                    }
-                });
+
+        ArrayList<SIBSImportationLineDTO> result = new ArrayList<SIBSImportationLineDTO>();
+        for (SibsIncommingPaymentFileDetailLine dto : sibsIncomingPaymentFile.getDetailLines()) {
+            result.add(new SIBSImportationLineDTO(SIBSImportationFileDTO.this, dto));
+        }
+        return result;
     }
 
     public List<SIBSImportationLineDTO> getLines() {

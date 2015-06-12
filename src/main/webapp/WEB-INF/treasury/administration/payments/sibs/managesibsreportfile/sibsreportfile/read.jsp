@@ -174,6 +174,19 @@ ${portal.toolkit()}
                         <td><c:out
                                 value='${sibsReportFile.totalCost}' /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.SibsReportFile.infoLog" /></th>
+                        <td>
+                        <pre><c:out
+                                value='${sibsReportFile.infoLog}' /></pre></td>)
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.SibsReportFile.errorLog" /></th>
+                        <td><pre><c:out
+                                value='${sibsReportFile.totalCost}' /></pre></td>
+                    </tr>
                 </tbody>
             </table>
         </form>

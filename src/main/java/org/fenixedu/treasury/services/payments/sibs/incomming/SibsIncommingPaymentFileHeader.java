@@ -33,14 +33,22 @@ public class SibsIncommingPaymentFileHeader {
 
     private Integer version;
 
-    private SibsIncommingPaymentFileHeader(YearMonthDay whenProcessedBySibs, Integer version) {
+    private String entityCode;
+
+    private SibsIncommingPaymentFileHeader(YearMonthDay whenProcessedBySibs, Integer version, String entityCode) {
         this.whenProcessedBySibs = whenProcessedBySibs;
         this.version = version;
+        this.entityCode = entityCode;
     }
 
     public static SibsIncommingPaymentFileHeader buildFrom(String rawLine) {
         final String[] fields = splitLine(rawLine);
-        return new SibsIncommingPaymentFileHeader(getWhenProcessedBySibsFrom(fields), getVersionFrom(fields));
+        return new SibsIncommingPaymentFileHeader(getWhenProcessedBySibsFrom(fields), getVersionFrom(fields),
+                getEntityCodeFrom(fields));
+    }
+
+    private static String getEntityCodeFrom(String[] fields) {
+        return fields[6];
     }
 
     private static YearMonthDay getWhenProcessedBySibsFrom(String[] fields) {
@@ -71,6 +79,14 @@ public class SibsIncommingPaymentFileHeader {
 
     public Integer getVersion() {
         return version;
+    }
+
+    public String getEntityCode() {
+        return entityCode;
+    }
+
+    public void setEntityCode(String entityCode) {
+        this.entityCode = entityCode;
     }
 
 }

@@ -36,7 +36,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -191,19 +190,19 @@ public class SibsReportFileController extends TreasuryBaseController {
     }
 
 //				
-    private static final String _CREATE_URI = "/create";
-    public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
-
-    @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
-    public String create(Model model) {
-
-        //IF ANGULAR, initialize the Bean
-        //SibsReportFileBean bean = new SibsReportFileBean();
-        //this.setSibsReportFileBean(bean, model);
-
-        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/create";
-    }
-
+//    private static final String _CREATE_URI = "/create";
+//    public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
+//
+//    @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
+//    public String create(Model model) {
+//
+//        //IF ANGULAR, initialize the Bean
+//        //SibsReportFileBean bean = new SibsReportFileBean();
+//        //this.setSibsReportFileBean(bean, model);
+//
+//        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/create";
+//    }
+//
 //
 //               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
 //
@@ -256,72 +255,72 @@ public class SibsReportFileController extends TreasuryBaseController {
 //						// @formatter: on
 
 //				
-    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs, @RequestParam(
-            value = "documentSibsReportFile", required = true) MultipartFile documentSibsReportFile, @RequestParam(
-            value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount, @RequestParam(
-            value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
-            RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        */
-
-        try {
-
-            SibsReportFile sibsReportFile =
-                    createSibsReportFile(whenProcessedBySibs, documentSibsReportFile, transactionsTotalAmount, totalCost);
-
-            //Success Validation
-            //Add the bean to be used in the View
-            model.addAttribute("sibsReportFile", sibsReportFile);
-            return redirect(READ_URL + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
-            // @formatter: off
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
-        }
-    }
-
-    @Atomic
-    public SibsReportFile createSibsReportFile(org.joda.time.DateTime whenProcessedBySibs, MultipartFile documentSibsReportFile,
-            java.math.BigDecimal transactionsTotalAmount, java.math.BigDecimal totalCost) {
-
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         * 
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //SibsReportFile sibsReportFile = sibsReportFile.create(fields_to_create);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
-        if (!documentSibsReportFile.getContentType().equals(SibsReportFile.CONTENT_TYPE)) {
-            throw new TreasuryDomainException("error.file.different.content.type");
-        }
-
-        SibsReportFile sibsReportFile =
-                SibsReportFile.create(whenProcessedBySibs, transactionsTotalAmount, totalCost, documentSibsReportFile.getName(),
-                        documentSibsReportFile.getOriginalFilename(), getContent(documentSibsReportFile));
-
-        return sibsReportFile;
-    }
+//    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
+//    public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
+//            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs, @RequestParam(
+//            value = "documentSibsReportFile", required = true) MultipartFile documentSibsReportFile, @RequestParam(
+//            value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount, @RequestParam(
+//            value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
+//            RedirectAttributes redirectAttributes) {
+//        /*
+//        *  Creation Logic
+//        */
+//
+//        try {
+//
+//            SibsReportFile sibsReportFile =
+//                    createSibsReportFile(whenProcessedBySibs, documentSibsReportFile, transactionsTotalAmount, totalCost);
+//
+//            //Success Validation
+//            //Add the bean to be used in the View
+//            model.addAttribute("sibsReportFile", sibsReportFile);
+//            return redirect(READ_URL + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
+//        } catch (DomainException de) {
+//
+//            // @formatter: off
+//            /*
+//             * If there is any error in validation 
+//             *
+//             * Add a error / warning message
+//             * 
+//             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
+//             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
+//            // @formatter: on
+//
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+//            return create(model);
+//        }
+//    }
+//
+//    @Atomic
+//    public SibsReportFile createSibsReportFile(org.joda.time.DateTime whenProcessedBySibs, MultipartFile documentSibsReportFile,
+//            java.math.BigDecimal transactionsTotalAmount, java.math.BigDecimal totalCost) {
+//
+//        // @formatter: off
+//
+//        /*
+//         * Modify the creation code here if you do not want to create
+//         * the object with the default constructor and use the setter
+//         * for each field
+//         * 
+//         */
+//
+//        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
+//        //SibsReportFile sibsReportFile = sibsReportFile.create(fields_to_create);
+//
+//        //Instead, use individual SETTERS and validate "CheckRules" in the end
+//        // @formatter: on
+//
+//        if (!documentSibsReportFile.getContentType().equals(SibsReportFile.CONTENT_TYPE)) {
+//            throw new TreasuryDomainException("error.file.different.content.type");
+//        }
+//
+//        SibsReportFile sibsReportFile =
+//                SibsReportFile.create(whenProcessedBySibs, transactionsTotalAmount, totalCost, documentSibsReportFile.getName(),
+//                        documentSibsReportFile.getOriginalFilename(), getContent(documentSibsReportFile));
+//
+//        return sibsReportFile;
+//    }
 
     private static final String _DOWNLOAD_URI = "/read/download/";
     public static final String DOWNLOAD_URL = CONTROLLER_URL + _DOWNLOAD_URI;
@@ -360,15 +359,15 @@ public class SibsReportFileController extends TreasuryBaseController {
     }
 
 //				
-    private static final String _UPDATE_URI = "/update/";
-    public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
-
-    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") SibsReportFile sibsReportFile, Model model) {
-        setSibsReportFile(sibsReportFile, model);
-        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/update";
-    }
-
+//    private static final String _UPDATE_URI = "/update/";
+//    public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
+//
+//    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
+//    public String update(@PathVariable("oid") SibsReportFile sibsReportFile, Model model) {
+//        setSibsReportFile(sibsReportFile, model);
+//        return "treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/update";
+//    }
+//
 //
 
 //               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
@@ -423,64 +422,64 @@ public class SibsReportFileController extends TreasuryBaseController {
 //				}
 //						// @formatter: on    			
 //				
-    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") SibsReportFile sibsReportFile, @RequestParam(value = "whenprocessedbysibs",
-            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs,
-            @RequestParam(value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount,
-            @RequestParam(value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
-            RedirectAttributes redirectAttributes) {
-
-        setSibsReportFile(sibsReportFile, model);
-
-        try {
-            /*
-            *  UpdateLogic here
-            */
-
-            updateSibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, model);
-
-            /*Succes Update */
-
-            return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/"
-                    + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-            * If there is any error in validation 
-            *
-            * Add a error / warning message
-            * 
-            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-            */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(sibsReportFile, model);
-
-        }
-    }
-
-    @Atomic
-    public void updateSibsReportFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
-            java.math.BigDecimal totalCost, Model model) {
-
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getSibsReportFile(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
-        getSibsReportFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
-        getSibsReportFile(model).setTransactionsTotalAmount(transactionsTotalAmount);
-        getSibsReportFile(model).setTotalCost(totalCost);
-    }
+//    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
+//    public String update(@PathVariable("oid") SibsReportFile sibsReportFile, @RequestParam(value = "whenprocessedbysibs",
+//            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs,
+//            @RequestParam(value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount,
+//            @RequestParam(value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
+//            RedirectAttributes redirectAttributes) {
+//
+//        setSibsReportFile(sibsReportFile, model);
+//
+//        try {
+//            /*
+//            *  UpdateLogic here
+//            */
+//
+//            updateSibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, model);
+//
+//            /*Succes Update */
+//
+//            return redirect("/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/"
+//                    + getSibsReportFile(model).getExternalId(), model, redirectAttributes);
+//        } catch (DomainException de) {
+//            // @formatter: off
+//
+//            /*
+//            * If there is any error in validation 
+//            *
+//            * Add a error / warning message
+//            * 
+//            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
+//            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
+//            */
+//            // @formatter: on
+//
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+//            return update(sibsReportFile, model);
+//
+//        }
+//    }
+//
+//    @Atomic
+//    public void updateSibsReportFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
+//            java.math.BigDecimal totalCost, Model model) {
+//
+//        // @formatter: off				
+//        /*
+//         * Modify the update code here if you do not want to update
+//         * the object with the default setter for each field
+//         */
+//
+//        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
+//        //getSibsReportFile(model).edit(fields_to_edit);
+//
+//        //Instead, use individual SETTERS and validate "CheckRules" in the end
+//        // @formatter: on
+//
+//        getSibsReportFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
+//        getSibsReportFile(model).setTransactionsTotalAmount(transactionsTotalAmount);
+//        getSibsReportFile(model).setTotalCost(totalCost);
+//    }
 
 }

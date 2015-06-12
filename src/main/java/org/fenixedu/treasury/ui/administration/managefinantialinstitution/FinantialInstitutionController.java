@@ -46,7 +46,9 @@ import org.fenixedu.treasury.domain.FiscalCountryRegion;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -139,7 +141,22 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         setFinantialInstitution(finantialInstitution, model);
         model.addAttribute("finantialDocumentTypeSet", FinantialDocumentType.findAll().collect(Collectors.toList()));
         model.addAttribute("allowedFileType", TreasuryDocumentTemplateFile.CONTENT_TYPE);
+
+        checkFinantialInstitutionsValidation(model);
         return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
+    }
+
+    private void checkFinantialInstitutionsValidation(Model model) {
+
+        if (getFinantialInstitution(model).getErpIntegrationConfiguration() == null) {
+            addWarningMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.warning.FinantialInstitution.invalid.erpconfiguration"), model);
+        }
+
+        if (TreasurySettings.getInstance().getInterestProduct() == null) {
+            addWarningMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.warning.FinantialInstitution.invalid.interest.product"), model);
+        }
     }
 
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
@@ -376,6 +393,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                 DocumentNumberSeries paymentsIntegrationSeries =
                         DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), finantialInstitution)
                                 .filter(x -> x.getSeries().getExternSeries() == true).findFirst().orElse(null);
+                if (paymentsIntegrationSeries == null) {
+                    throw new TreasuryDomainException("error.ERPIntegrationConfiguration.invalid.external.payments.series");
+                }
                 ERPConfiguration erpIntegrationConfiguration =
                         ERPConfiguration.create(paymentsIntegrationSeries.getSeries(), finantialInstitution, "", "", "", "");
                 finantialInstitution.setErpIntegrationConfiguration(erpIntegrationConfiguration);

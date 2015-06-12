@@ -93,7 +93,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.GlobalInterestRate.rate"/></div> 
 
 <div class="col-sm-10">
-	<input id="globalInterestRate_rate" class="form-control" type="text" pattern="^[0-9]+(\.[0-9]{1,3})?$" name="rate"  value='<c:out value='${not empty param.rate ? param.rate : globalInterestRate.rate }'/>' required/>
+	<input id="globalInterestRate_rate" class="form-control" type="text" pattern="^[0-9]+(\.[0-9]{1,4})?$" name="rate"  value='<c:out value='${not empty param.rate ? param.rate : globalInterestRate.rate }'/>' required/>
 </div>	
 </div>		
   </div>

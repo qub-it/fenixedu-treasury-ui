@@ -31,26 +31,34 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
 public class SibsInputFile extends SibsInputFile_Base {
+
+    public static final String CONTENT_TYPE = "text/plain";
 
     protected SibsInputFile() {
         super();
         setBennu(Bennu.getInstance());
     }
 
-    protected SibsInputFile(String displayName, String filename, byte[] content, User uploader) {
+    protected SibsInputFile(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
+            String filename, byte[] content, User uploader) {
         this();
-        init(displayName, filename, content, uploader);
+        init(finantialInstitution, whenProcessedBySIBS, displayName, filename, content, uploader);
 
     }
 
-    protected void init(String displayName, String filename, byte[] content, User uploader) {
+    protected void init(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
+            String filename, byte[] content, User uploader) {
         super.init(displayName, filename, content);
+        setWhenProcessedBySibs(whenProcessedBySIBS);
         setUploader(uploader);
+        setFinantialInstitution(finantialInstitution);
         checkRules();
     }
 
@@ -79,13 +87,15 @@ public class SibsInputFile extends SibsInputFile_Base {
         }
 
         setBennu(null);
-
-        deleteDomainObject();
+        setFinantialInstitution(null);
+        setUploader(null);
+        super.delete();
     }
 
     @Atomic
-    public static SibsInputFile create(String displayName, String filename, byte[] content, User uploader) {
-        return new SibsInputFile(displayName, filename, content, uploader);
+    public static SibsInputFile create(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS,
+            String displayName, String filename, byte[] content, User uploader) {
+        return new SibsInputFile(finantialInstitution, whenProcessedBySIBS, displayName, filename, content, uploader);
 
     }
 

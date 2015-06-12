@@ -382,6 +382,13 @@ ${portal.angularToolkit()}
                     <datatables:table id="paymentsDataSet" row="payment" data="${paymentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
                         <datatables:column>
                             <datatables:columnHead>
+                                <spring:message code="label.FinantialDocument.documentDate" />
+                            </datatables:columnHead>
+                            <c:out
+                                      value="${payment.documentDate}" />  
+                         </datatables:column> 
+                        <datatables:column>
+                            <datatables:columnHead>
                                 <spring:message code="label.SettlementEntry.finantialDocument" />
                             </datatables:columnHead>
                             <a href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${payment.externalId}"> <c:out

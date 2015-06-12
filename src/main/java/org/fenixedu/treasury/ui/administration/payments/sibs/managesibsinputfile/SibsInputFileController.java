@@ -27,19 +27,28 @@
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.User;
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
+import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter;
+import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
+import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile.SibsReportFileController;
 import org.fenixedu.treasury.util.Constants;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,8 +67,6 @@ import pt.ist.fenixframework.Atomic;
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping(SibsInputFileController.CONTROLLER_URL)
 public class SibsInputFileController extends TreasuryBaseController {
-    static private final String PAYMENT_FILE_EXTENSION = "INP";
-    static private final String ZIP_FILE_EXTENSION = "ZIP";
 
     public static final String CONTROLLER_URL = "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile";
 
@@ -108,14 +115,12 @@ public class SibsInputFileController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "uploader", required = false) org.fenixedu.bennu.core.domain.User uploader,
-            Model model) {
-        List<SibsInputFile> searchsibsinputfileResultsDataSet = filterSearchSibsInputFile(uploader);
+    public String search(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs, Model model) {
+        List<SibsInputFile> searchsibsinputfileResultsDataSet = filterSearchSibsInputFile(whenProcessedBySibs);
 
         //add the results dataSet to the model
         model.addAttribute("searchsibsinputfileResultsDataSet", searchsibsinputfileResultsDataSet);
-        model.addAttribute("SibsInputFile_uploader_options", new ArrayList<org.fenixedu.bennu.core.domain.User>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("SibsInputFile_uploader_options", org.fenixedu.bennu.core.domain.User.findAll()); // CHANGE_ME - MUST DEFINE RELATION
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search";
     }
 
@@ -128,10 +133,11 @@ public class SibsInputFileController extends TreasuryBaseController {
         //return new ArrayList<SibsInputFile>().stream();
     }
 
-    private List<SibsInputFile> filterSearchSibsInputFile(org.fenixedu.bennu.core.domain.User uploader) {
+    private List<SibsInputFile> filterSearchSibsInputFile(org.joda.time.LocalDate whenProcessedBySibs) {
 
         return getSearchUniverseSearchSibsInputFileDataSet().filter(
-                sibsInputFile -> uploader == null || uploader == sibsInputFile.getUploader()).collect(Collectors.toList());
+                sibsInputFile -> whenProcessedBySibs == null
+                        || whenProcessedBySibs.equals(sibsInputFile.getWhenProcessedBySibs())).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -189,8 +195,6 @@ public class SibsInputFileController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
-        model.addAttribute("SibsInputFile_uploader_options", new ArrayList<org.fenixedu.bennu.core.domain.User>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("SibsInputFile_uploader_options", org.fenixedu.bennu.core.domain.User.findAll()); // CHANGE_ME - MUST DEFINE RELATION
 
         //IF ANGULAR, initialize the Bean
         //SibsInputFileBean bean = new SibsInputFileBean();
@@ -252,8 +256,9 @@ public class SibsInputFileController extends TreasuryBaseController {
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "uploader", required = false) User uploader, @RequestParam(
-            value = "sibsInputFile", required = false) MultipartFile sibsInputFile, Model model,
+    public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs, @RequestParam(
+            value = "documentSibsInputFile", required = true) MultipartFile documentSibsInputFile, Model model,
             RedirectAttributes redirectAttributes) {
         /*
         *  Creation Logic
@@ -261,14 +266,12 @@ public class SibsInputFileController extends TreasuryBaseController {
 
         try {
 
-            SibsInputFile file = createSibsInputFile(uploader, sibsInputFile);
+            SibsInputFile sibsInputFile = createSibsInputFile(whenProcessedBySibs, documentSibsInputFile);
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("sibsInputFile", file);
-            return redirect(
-                    "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
-                            + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
+            model.addAttribute("sibsInputFile", sibsInputFile);
+            return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
 
             // @formatter: off
@@ -287,7 +290,7 @@ public class SibsInputFileController extends TreasuryBaseController {
     }
 
     @Atomic
-    public SibsInputFile createSibsInputFile(User uploader, MultipartFile requestFile) {
+    public SibsInputFile createSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, MultipartFile documentSibsInputFile) {
 
         // @formatter: off
 
@@ -304,13 +307,97 @@ public class SibsInputFileController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        SibsInputFile sibsInputFile =
-                SibsInputFile.create(requestFile.getName(), requestFile.getOriginalFilename(), getContent(requestFile), uploader);
+//        if (!documentSibsInputFile.getContentType().equals(SibsInputFile.CONTENT_TYPE)) {
+//            throw new TreasuryDomainException("error.file.different.content.type");
+//        }
 
+        PaymentCodePool pool = null;
+
+        try {
+            SibsIncommingPaymentFile file =
+                    SibsIncommingPaymentFile.parse(documentSibsInputFile.getOriginalFilename(),
+                            documentSibsInputFile.getInputStream());
+
+            String entityCode = file.getHeader().getEntityCode();
+
+            pool = PaymentCodePool.findByEntityCode(entityCode).findFirst().orElse(null);
+        } catch (IOException e) {
+            throw new TreasuryDomainException(
+                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile");
+        } catch (RuntimeException ex) {
+            throw new TreasuryDomainException(
+                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile");
+        }
+
+        if (pool == null) {
+
+        }
+
+        SibsInputFile sibsInputFile =
+                SibsInputFile.create(pool.getFinantialInstitution(), whenProcessedBySibs, documentSibsInputFile.getName(),
+                        documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile), Authenticate.getUser());
         return sibsInputFile;
+
     }
 
-    //ACFSILVA - how to handle this exception
+    private static final String _PROCESS_URI = "/read/process/";
+    public static final String PROCESS_URL = CONTROLLER_URL + _PROCESS_URI;
+
+    @RequestMapping(value = _PROCESS_URI + "{oid}", method = RequestMethod.POST)
+    public String processReadToProcessFile(@PathVariable("oid") SibsInputFile sibsInputFile, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setSibsInputFile(sibsInputFile, model);
+        try {
+            SIBSPaymentsImporter importer = new SIBSPaymentsImporter();
+            SibsReportFile reportFile = null;
+            try {
+                ProcessResult result = importer.processSIBSPaymentFiles(sibsInputFile);
+                result.getActionMessages().forEach(x -> addInfoMessage(x, model));
+                if (result.hasFailed()) {
+                    result.getErrorMessages().forEach(x -> addErrorMessage(x, model));
+                    return redirect(READ_URL + sibsInputFile.getExternalId(), model, redirectAttributes);
+                }
+                reportFile = result.getReportFile();
+
+            } catch (IOException e) {
+                throw new TreasuryDomainException("error.SibsInputFile.error.processing.sibs.input.file");
+            }
+
+            return SibsReportFileController.READ_URL + reportFile.getExternalId();
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return redirect(READ_URL + sibsInputFile.getExternalId(), model, redirectAttributes);
+        }
+    }
+
+    private static final String _DOWNLOAD_URI = "/read/download/";
+    public static final String DOWNLOAD_URL = CONTROLLER_URL + _DOWNLOAD_URI;
+
+    @RequestMapping(value = _DOWNLOAD_URI + "{oid}", method = RequestMethod.GET)
+    public void processReadToDownloadFile(@PathVariable("oid") SibsInputFile sibsInputFile, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setSibsInputFile(sibsInputFile, model);
+        try {
+            response.setContentType(sibsInputFile.getContentType());
+            String filename = sibsInputFile.getFilename();
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(sibsInputFile.getContent());
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void uploadSibsInputFile(SibsInputFile sibsInputFile, MultipartFile requestFile, Model model) {
+
+    }
+
+    //TODOJN - how to handle this exception
     private byte[] getContent(MultipartFile requestFile) {
         try {
             return requestFile.getBytes();
@@ -325,8 +412,6 @@ public class SibsInputFileController extends TreasuryBaseController {
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") SibsInputFile sibsInputFile, Model model) {
-        model.addAttribute("SibsInputFile_uploader_options", new ArrayList<org.fenixedu.bennu.core.domain.User>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("SibsInputFile_uploader_options", org.fenixedu.bennu.core.domain.User.findAll()); // CHANGE_ME - MUST DEFINE RELATION
         setSibsInputFile(sibsInputFile, model);
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/update";
     }
@@ -386,8 +471,10 @@ public class SibsInputFileController extends TreasuryBaseController {
 //						// @formatter: on    			
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") SibsInputFile sibsInputFile,
-            @RequestParam(value = "uploader", required = false) org.fenixedu.bennu.core.domain.User uploader, Model model,
+    public String update(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "whenprocessedbysibs",
+            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs,
+            @RequestParam(value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount,
+            @RequestParam(value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
             RedirectAttributes redirectAttributes) {
 
         setSibsInputFile(sibsInputFile, model);
@@ -397,7 +484,7 @@ public class SibsInputFileController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateSibsInputFile(uploader, model);
+            updateSibsInputFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, model);
 
             /*Succes Update */
 
@@ -424,7 +511,8 @@ public class SibsInputFileController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateSibsInputFile(org.fenixedu.bennu.core.domain.User uploader, Model model) {
+    public void updateSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
+            java.math.BigDecimal totalCost, Model model) {
 
         // @formatter: off				
         /*
@@ -438,7 +526,7 @@ public class SibsInputFileController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        getSibsInputFile(model).setUploader(uploader);
+        getSibsInputFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
     }
 
 }

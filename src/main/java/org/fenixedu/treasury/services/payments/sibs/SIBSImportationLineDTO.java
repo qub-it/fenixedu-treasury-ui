@@ -18,7 +18,9 @@ public class SIBSImportationLineDTO {
             final SibsIncommingPaymentFileDetailLine line) {
         this.line = line;
         this.paymentCode = PaymentReferenceCode.readByCode(line.getCode(), sibsImportationFileDTO.getFinantialInstitution());
-        this.report = paymentCode.getReportOnDate(getTransactionWhenRegistered());
+        if (paymentCode != null) {
+            this.report = paymentCode.getReportOnDate(getTransactionWhenRegistered());
+        }
         this.setSibsImportationFileDTO(sibsImportationFileDTO);
     }
 
@@ -70,21 +72,27 @@ public class SIBSImportationLineDTO {
         return report;
     }
 
-//    public Integer getNumberOfTransactions() {
-//        if (!hasPaymentCode()) {
-//            return 0;
-//        }
-//
-//        return getReport().getNumberOfTransactions();
-//    }
+    public Integer getNumberOfTransactions() {
+        if (!hasPaymentCode()) {
+            return 0;
+        }
 
-//    public String getTransactionDescription(final Integer index) {
-//        return getReport().getTransactionDescription(index);
-//    }
-//
-//    public BigDecimal getTransactionAmount(final Integer index) {
-//        return getReport().getTransactionsTotalAmount(index);
-//    }
+        return getReport().getNumberOfTransactions();
+    }
+
+    public String getTransactionDescription(final Integer index) {
+        if (getReport() != null) {
+            return getReport().getTransactionDescription(index);
+        }
+        return "";
+    }
+
+    public BigDecimal getTransactionAmount(final Integer index) {
+        if (getReport() != null) {
+            return getReport().getTransactionAmount(index);
+        }
+        return BigDecimal.ZERO;
+    }
 
     public String getPersonName() {
         if (!hasPaymentCode()) {

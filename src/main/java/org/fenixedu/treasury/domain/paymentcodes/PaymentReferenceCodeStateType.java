@@ -27,6 +27,31 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.Constants;
+
 public enum PaymentReferenceCodeStateType {
-    UNUSED, USED, ANNULLED, PROCESSED
+    UNUSED, USED, ANNULLED, PROCESSED;
+
+    public boolean isUnused() {
+        return this == UNUSED;
+    }
+
+    public boolean isUsed() {
+        return this == USED;
+    }
+
+    public boolean isAnnuled() {
+        return this == ANNULLED;
+    }
+
+    public boolean isProcessed() {
+        return this == PROCESSED;
+    }
+
+    public LocalizedString getDescriptionI18N() {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
+    }
+
 }

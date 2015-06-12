@@ -53,7 +53,7 @@ ${portal.toolkit()}
 </div><!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_readFinantialInstitution>"  ><spring:message code="label.event.back" /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${eRPConfiguration.finantialInstitution.externalId}"  ><spring:message code="label.event.back" /></a>
 |&nbsp;&nbsp;	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpconfiguration/update/${eRPConfiguration.externalId}"  ><spring:message code="label.event.update" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">

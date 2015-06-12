@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -50,7 +51,7 @@ import pt.ist.fenixframework.Atomic;
 
 public class SibsReportFile extends SibsReportFile_Base {
 
-    public static final String CONTENT_TYPE = "application/vnd.oasis.opendocument.text";
+    public static final String CONTENT_TYPE = "text/plain";
 
     protected SibsReportFile() {
         super();
@@ -118,7 +119,7 @@ public class SibsReportFile extends SibsReportFile_Base {
 
         setBennu(null);
 
-        deleteDomainObject();
+        super.delete();
     }
 
     // @formatter: off
@@ -161,7 +162,7 @@ public class SibsReportFile extends SibsReportFile_Base {
 
     }
 
-    protected byte[] buildContentFor(final SIBSImportationFileDTO reportFileDTO) {
+    protected static byte[] buildContentFor(final SIBSImportationFileDTO reportFileDTO) {
         final String whenProcessedBySibsLabel =
                 BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.whenProcessedBySibs");
         final String filenameLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.filename");
@@ -200,10 +201,10 @@ public class SibsReportFile extends SibsReportFile_Base {
                 addCell(personNameLabel, line.getPersonName());
                 addCell(descriptionLabel, line.getDescription());
 
-//                for (int i = 0; i < line.getNumberOfTransactions(); i++) {
-//                    addCell(transactionDescriptionLabel, line.getTransactionDescription(i));
-//                    addCell(transactionAmountLabel, line.getTransactionAmount(i));
-//                }
+                for (int i = 0; i < line.getNumberOfTransactions(); i++) {
+                    addCell(transactionDescriptionLabel, line.getTransactionDescription(i));
+                    addCell(transactionAmountLabel, line.getTransactionAmount(i));
+                }
             }
         };
 
@@ -236,11 +237,42 @@ public class SibsReportFile extends SibsReportFile_Base {
         return "Relatorio-SIBS-" + date;
     }
 
-    public static SibsReportFile create(SIBSImportationFileDTO reportDTO) {
-        return create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(), reportDTO.getTotalCost(),
-                displayNameFor(reportDTO), filenameFor(reportDTO), null);
+    @Atomic
+    public static SibsReportFile processSIBSIncommingFile(SIBSImportationFileDTO reportDTO) {
+        byte[] content = buildContentFor(reportDTO);
+        SibsReportFile result =
+                SibsReportFile.create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(),
+                        reportDTO.getTotalCost(), displayNameFor(reportDTO), filenameFor(reportDTO), content);
 
+        return result;
     }
+
+    public Integer getNumberOfTransactions() {
+        return this.getSibsTransactionsSet().size();
+    }
+
+    public String getTransactionDescription(Integer index) {
+        if (this.getSibsTransactionsSet().size() > index) {
+            if (index > 0) {
+                return this.getSibsTransactionsSet().stream().skip(index - 1).findFirst().get().toString();
+            } else if (index == 0) {
+                return this.getSibsTransactionsSet().iterator().next().toString();
+            }
+        }
+        return "";
+    }
+
+    public BigDecimal getTransactionAmount(Integer index) {
+        if (this.getSibsTransactionsSet().size() > index) {
+            if (index > 0) {
+                return this.getSibsTransactionsSet().stream().skip(index - 1).findFirst().get().getAmountPayed();
+            } else if (index == 0) {
+                return this.getSibsTransactionsSet().iterator().next().getAmountPayed();
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
 //    public static Set<SibsReportFile> findAll() {
 //        return RootDomainObject.getInstance().getSibsReportFilesSet();
 //    }
