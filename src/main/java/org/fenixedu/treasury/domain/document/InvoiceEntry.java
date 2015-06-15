@@ -60,6 +60,14 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         return false;
     }
 
+    public boolean isProcessedInDebitNote() {
+        return getFinantialDocument() != null;
+    }
+
+    public boolean isProcessedInClosedDebitNote() {
+        return isProcessedInDebitNote() && getFinantialDocument().isClosed();
+    }
+
     @Override
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());

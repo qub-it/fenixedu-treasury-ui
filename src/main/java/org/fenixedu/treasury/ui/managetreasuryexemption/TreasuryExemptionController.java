@@ -104,7 +104,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
 
         try {
 
-            TreasuryExemption.create(treasuryExemptionType, treasuryEvent, reason, exemptByPercentage, valueToExempt, product);
+            TreasuryExemption.create(treasuryExemptionType, treasuryEvent, reason, valueToExempt, product, true);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.creation.success"), model);
 

@@ -127,7 +127,7 @@ ${portal.toolkit()}
 						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
 					<script>
-						$("#treasuryExemption_exemptByPercentage").val('<c:out value='${not empty param.exemptbypercentage ? param.exemptbypercentage : treasuryExemption.exemptByPercentage }'/>');
+						$("#treasuryExemption_exemptByPercentage").select2().select2('val', '<c:out value='${not empty param.exemptbypercentage ? param.exemptbypercentage : treasuryExemption.exemptByPercentage }'/>');
 					</script>
 				</div>
 			</div>

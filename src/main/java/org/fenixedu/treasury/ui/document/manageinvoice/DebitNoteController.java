@@ -46,11 +46,13 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -268,6 +270,9 @@ public class DebitNoteController extends TreasuryBaseController {
             List<DocumentNumberSeries> availableSeries =
                     org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
                             debtAccount.getFinantialInstitution()).collect(Collectors.toList());
+
+            Collections.sort(availableSeries, DocumentNumberSeries.COMPARE_BY_DEFAULT);
+
             if (availableSeries.size() > 0) {
                 model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
             } else {
@@ -370,6 +375,7 @@ public class DebitNoteController extends TreasuryBaseController {
     public String update(
             @PathVariable("oid") DebitNote debitNote,
             @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDate,
             @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
                     value = "state", required = false) FinantialDocumentStateType state, Model model,
@@ -382,7 +388,7 @@ public class DebitNoteController extends TreasuryBaseController {
              * UpdateLogic here
              */
 
-            updateDebitNote(payorDebtAccount, documentDueDate, originDocumentNumber, state, model);
+            updateDebitNote(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber, state, model);
 
             /* Succes Update */
 
@@ -410,8 +416,8 @@ public class DebitNoteController extends TreasuryBaseController {
 
     @Atomic
     public void updateDebitNote(org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-            org.joda.time.LocalDate documentDueDate, java.lang.String originDocumentNumber, FinantialDocumentStateType state,
-            Model model) {
+            org.joda.time.LocalDate documentDate, LocalDate documentDueDate, java.lang.String originDocumentNumber,
+            FinantialDocumentStateType state, Model model) {
 
         // @formatter: off
         /*
@@ -425,7 +431,7 @@ public class DebitNoteController extends TreasuryBaseController {
         // Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
         DebitNote note = getDebitNote(model);
-        note.edit(payorDebtAccount, documentDueDate, originDocumentNumber);
+        note.edit(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber);
     }
 
     //

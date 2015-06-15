@@ -237,11 +237,19 @@ ${portal.toolkit()}
                     </div>
                 </datatables:column>
                 <datatables:column>
-                    <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
-                        <button type="submit" class="btn btn-default btn-xs">
-                            <spring:message code="label.view" />
-                        </button>
-                    </form>
+                            <c:if test="${not empty pendingEntry.finantialDocument }">
+                                <c:if test="${pendingEntry.isDebitNoteEntry() }">
+                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}">
+                                    	<spring:message code="label.view" />
+                                    </a>
+                                </c:if>
+                                <c:if test="${pendingEntry.isCreditNoteEntry() }">
+                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}">
+                                    	<spring:message code="label.view" />
+                                    </a>
+                                </c:if>
+                            </c:if>
+                
                     <%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
                     <!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
                     <!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->

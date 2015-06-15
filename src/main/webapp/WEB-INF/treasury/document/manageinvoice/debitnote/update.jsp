@@ -89,12 +89,22 @@ ${portal.toolkit()}
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
+					<spring:message code="label.DebitNote.documentDate" />
+				</div>
+
+				<div class="col-sm-10">
+					<input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date
+						value='<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>' />
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
 					<spring:message code="label.DebitNote.dueDate" />
 				</div>
 
 				<div class="col-sm-10">
 					<input id="debitNote_dueDate" class="form-control" type="text" name="documentduedate" bennu-date
-						value='<c:out value='${not empty param.duedate ? param.duedate : debitNote.documentDueDate }'/>' />
+						value='<c:out value='${not empty param.documentduedate ? param.documentduedate : debitNote.documentDueDate }'/>' />
 				</div>
 			</div>
 

@@ -30,11 +30,13 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Sets;
@@ -43,8 +45,8 @@ public class CreditEntry extends CreditEntry_Base {
 
     protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final Vat vat,
             final BigDecimal amount, String description, BigDecimal quantity, final DateTime entryDateTime,
-            final DebitEntry debitEntry) {
-        init(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
+            final DebitEntry debitEntry, final boolean fromExemption) {
+        init(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry, fromExemption);
 
     }
 
@@ -61,10 +63,13 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     protected void init(final FinantialDocument finantialDocument, final Product product, final Vat vat, final BigDecimal amount,
-            String description, BigDecimal quantity, final DateTime entryDateTime, final DebitEntry debitEntry) {
+            String description, BigDecimal quantity, final DateTime entryDateTime, final DebitEntry debitEntry,
+            final boolean fromExemption) {
         super.init(finantialDocument, finantialDocument.getDebtAccount(), product, FinantialEntryType.CREDIT_ENTRY, vat, amount,
                 description, quantity, entryDateTime);
         this.setDebitEntry(debitEntry);
+        this.setFromExemption(fromExemption);
+
         checkRules();
     }
 
@@ -73,8 +78,30 @@ public class CreditEntry extends CreditEntry_Base {
         super.checkRules();
 
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
-            throw new TreasuryDomainException("error.DebitEntry.finantialDocument.not.debit.entry.type");
+            throw new TreasuryDomainException("error.CreditEntry.finantialDocument.not.credit.entry.type");
         }
+        
+        // If from exemption than ensure debit entry is not null and the product is the same
+        if(getDebitEntry() == null) {
+            throw new TreasuryDomainException("error.CreditEntry.from.exemption.requires.debit.entry");
+        }
+        
+        if(getDebitEntry().getProduct() != getProduct()) {
+            throw new TreasuryDomainException("error.CreditEntry.product.must.be.the.same.as.debit.entry");
+        }
+        
+        /* If it is from exemption then ensure that there is no credit entries 
+         * from exemption created.
+         */
+        
+        if(CreditEntry.findActive(getDebitEntry().getTreasuryEvent(), getProduct()).count() > 1) {
+            throw new TreasuryDomainException("error.CreditEntry.from.exemption.at.most.one.per.product");
+        }
+        
+    }
+
+    public boolean isFromExemption() {
+        return getFromExemption();
     }
 
     @Override
@@ -83,15 +110,13 @@ public class CreditEntry extends CreditEntry_Base {
         super.delete();
     }
 
-//    @Override
-//    public BigDecimal getDebitAmount() {
-//        return Currency.getValueWithScale(BigDecimal.ZERO);
-//    }
-//
-//    @Override
-//    public BigDecimal getCreditAmount() {
-//        return this.getTotalAmount();
-//    }
+    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
+        this.setAmount(amount);
+        this.setQuantity(quantity);
+        this.setDescription(description);
+        this.recalculateAmountValues();
+        this.checkRules();
+    }
 
     // @formatter: off
     /************
@@ -115,22 +140,6 @@ public class CreditEntry extends CreditEntry_Base {
         return amount;
     }
 
-    public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
-            BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry, BigDecimal quantity) {
-        CreditEntry cr =
-                new CreditEntry(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry);
-        cr.recalculateAmountValues();
-        return cr;
-    }
-
-    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
-        this.setAmount(amount);
-        this.setQuantity(quantity);
-        this.setDescription(description);
-        this.recalculateAmountValues();
-        this.checkRules();
-    }
-
     public static Stream<? extends CreditEntry> find(final CreditNote creditNote) {
         return findAll().filter(d -> d.getFinantialDocument() == creditNote);
     }
@@ -139,15 +148,43 @@ public class CreditEntry extends CreditEntry_Base {
         return DebitEntry.find(treasuryEvent).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
                 .orElse(Sets.newHashSet()).stream();
     }
-    
+
     public static Stream<? extends CreditEntry> findActive(final TreasuryEvent treasuryEvent) {
         return DebitEntry.findActive(treasuryEvent).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
                 .orElse(Sets.newHashSet()).stream();
     }
-    
+
     public static Stream<? extends CreditEntry> findActive(final TreasuryEvent treasuryEvent, final Product product) {
         return DebitEntry.findActive(treasuryEvent, product).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
                 .orElse(Sets.newHashSet()).stream();
     }
-    
+
+    public static Stream<? extends CreditEntry> findActiveFromExemption(final TreasuryEvent treasuryEvent, final Product product) {
+        return findActive(treasuryEvent, product).filter(d -> d.isFromExemption());
+    }
+
+    public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,
+            BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry, BigDecimal quantity) {
+        CreditEntry cr =
+                new CreditEntry(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry, false);
+        cr.recalculateAmountValues();
+        return cr;
+    }
+
+    public static CreditEntry createFromExemption(final TreasuryExemption treasuryExemption,
+            final FinantialDocument finantialDocument, final String description, final BigDecimal amount,
+            final DateTime entryDateTime, final DebitEntry debitEntry) {
+        if (treasuryExemption == null) {
+            throw new TreasuryDomainException("error.CreditEntry.createFromExemption.requires.treasuryExemption");
+        }
+
+        final CreditEntry cr =
+                new CreditEntry(finantialDocument, debitEntry.getProduct(), debitEntry.getVat(), amount, description,
+                        BigDecimal.ONE, entryDateTime, debitEntry, true);
+
+        cr.recalculateAmountValues();
+
+        return cr;
+    }
+
 }

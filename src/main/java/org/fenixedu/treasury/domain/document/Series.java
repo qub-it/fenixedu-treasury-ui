@@ -27,7 +27,10 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -41,6 +44,31 @@ import com.google.common.collect.Sets;
 
 public class Series extends Series_Base {
 
+    private static final Comparator<Series> COMPARATOR_BY_CODE = new Comparator<Series>() {
+
+        @Override
+        public int compare(Series o1, Series o2) {
+            int c = o1.getCode().compareTo(o2.getCode());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+    
+    public static final Comparator<Series> COMPARATOR_BY_DEFAULT = new Comparator<Series>() {
+
+        @Override
+        public int compare(final Series o1, final Series o2) {
+            if(o1.isDefaultSeries() && o2.isDefaultSeries()) {
+                return 1;
+            } else if(!o1.isDefaultSeries() && o2.isDefaultSeries()) {
+                return -1;
+            }
+            
+            return COMPARATOR_BY_CODE.compare(o1, o2);
+        }
+        
+    };
+    
     protected Series() {
         super();
         setBennu(Bennu.getInstance());
@@ -84,6 +112,10 @@ public class Series extends Series_Base {
                 this.addDocumentNumberSeries(new DocumentNumberSeries(x, this));
             }
         });
+        
+        if(findDefault(getFinantialInstitution()).count() > 1) {
+            throw new TreasuryDomainException("error.Series.default.not.unique");
+        }
     }
 
     @Atomic
@@ -129,6 +161,10 @@ public class Series extends Series_Base {
             return false;
         }
         return true;
+    }
+    
+    public boolean isDefaultSeries() {
+        return super.getDefaultSeries();
     }
 
     @Atomic
@@ -204,6 +240,14 @@ public class Series extends Series_Base {
         }
 
         return result;
+    }
+    
+    protected static Stream<Series> findDefault(final FinantialInstitution finantialInstitution) {
+        return find(finantialInstitution).stream().filter(s -> s.isDefaultSeries());
+    }
+    
+    public static Optional<Series> findUniqueDefault(final FinantialInstitution finantialInstitution) {
+        return findDefault(finantialInstitution).findFirst();
     }
 
     @Atomic

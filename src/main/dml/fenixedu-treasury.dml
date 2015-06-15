@@ -224,11 +224,11 @@ class document.FinantialDocumentEntry {
 }
 
 	class document.InvoiceEntry extends document.FinantialDocumentEntry {
-	BigDecimalT quantity;
-	BigDecimalT vatAmount;
-	BigDecimalT vatRate;
-	BigDecimalT netAmount;
-	BigDecimalT amountWithVat;
+		BigDecimalT quantity;
+		BigDecimalT vatAmount;
+		BigDecimalT vatRate;
+		BigDecimalT netAmount;
+		BigDecimalT amountWithVat;
 	
 	}
 
@@ -236,9 +236,11 @@ class document.FinantialDocumentEntry {
 			boolean eventAnnuled;
 			LocalDate dueDate;
 			String propertiesJsonMap;
+			BigDecimalT exemptedAmount;
 	}
 		
 	class document.CreditEntry extends document.InvoiceEntry {
+		boolean fromExemption;
 	}
 
 	class document.SettlementEntry extends document.FinantialDocumentEntry {
@@ -349,8 +351,8 @@ class exemption.TreasuryExemption {
 			multiplicity 1..1;
 		}
 		
-		exemption.TreasuryExemption playsRole treasuryExemption {
-			multiplicity 0..1;
+		exemption.TreasuryExemption playsRole treasuryExemptions {
+			multiplicity *;
 		}
 	}
 	

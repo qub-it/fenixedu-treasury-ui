@@ -32,6 +32,8 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.ui.Model;
@@ -142,8 +144,11 @@ public class TreasuryEventController extends TreasuryBaseController {
 //				
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") TreasuryEvent treasuryEvent, Model model) {
-        model.addAttribute("allDebitEntriesDataSet", treasuryEvent.getDebitEntriesSet());
+        model.addAttribute("allActiveDebitEntriesDataSet", DebitEntry.findActive(treasuryEvent).collect(Collectors.<DebitEntry> toList()));
+        model.addAttribute("allInactiveDebitEntriesDataSet", DebitEntry.findEventAnnuled(treasuryEvent).collect(Collectors.<DebitEntry> toList()));
 
+        model.addAttribute("allActiveCreditEntriesDataSet", CreditEntry.findActive(treasuryEvent).collect(Collectors.<CreditEntry> toList()));
+        
         setTreasuryEvent(treasuryEvent, model);
         return "treasury/accounting/managecustomer/treasuryevent/read";
     }

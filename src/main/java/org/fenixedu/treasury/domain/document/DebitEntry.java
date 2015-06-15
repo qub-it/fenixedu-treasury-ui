@@ -39,16 +39,19 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -68,11 +71,11 @@ public class DebitEntry extends DebitEntry_Base {
         @Override
         public int compare(final DebitEntry o1, final DebitEntry o2) {
             final int c = o1.getAmountWithVat().compareTo(o2.getAmountWithVat());
-        
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
-    
+
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
@@ -117,6 +120,8 @@ public class DebitEntry extends DebitEntry_Base {
         setDueDate(dueDate);
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
         setTariff(tariff);
+        setExemptedAmount(BigDecimal.ZERO);
+        
         checkRules();
     }
 
@@ -236,6 +241,11 @@ public class DebitEntry extends DebitEntry_Base {
                 throw new TreasuryDomainException("error.DebitEntry.tariff.invalid");
             }
         }
+        
+        // If it exempted then it must be on itself or with credit entry but not both
+        if(isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
+            throw new TreasuryDomainException("error.DebitEntry.exemption.cannot.be.on.debit.entry.and.with.credit.entry.at.same.time");
+        }
     }
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
@@ -263,16 +273,6 @@ public class DebitEntry extends DebitEntry_Base {
         return false;
     }
 
-//    @Override
-//    public BigDecimal getDebitAmount() {
-//        return this.getTotalAmount();
-//    }
-//
-//    @Override
-//    public BigDecimal getCreditAmount() {
-//        return Currency.getValueWithScale(BigDecimal.ZERO);
-//    }
-
     public boolean isEventAnnuled() {
         return getEventAnnuled();
     }
@@ -297,7 +297,23 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal getRemainingAmount() {
         return getOpenAmount().subtract(getPayedAmount());
     }
-    
+
+    public Map<String, String> getPropertiesMap() {
+        if (StringUtils.isEmpty(getPropertiesJsonMap())) {
+            return null;
+        }
+
+        final GsonBuilder builder = new GsonBuilder();
+
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
+        final Map<String, String> propertiesMap = gson.fromJson(getPropertiesJsonMap(), stringStringMapType);
+
+        return propertiesMap;
+    }
+
     @Atomic
     public DebitEntry generateInterestRateDebitEntry(InterestRateBean interest, DateTime when, DebitNote debitNote) {
         Product product = TreasurySettings.getInstance().getInterestProduct();
@@ -317,23 +333,96 @@ public class DebitEntry extends DebitEntry_Base {
         return interestEntry;
     }
 
-    public Map<String, String> getPropertiesMap() {
-        if (StringUtils.isEmpty(getPropertiesJsonMap())) {
-            return null;
-        }
+    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
 
-        final GsonBuilder builder = new GsonBuilder();
-
-        final Gson gson = builder.create();
-        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
-        }.getType();
-
-        final Map<String, String> propertiesMap = gson.fromJson(getPropertiesJsonMap(), stringStringMapType);
-
-        return propertiesMap;
+        this.setDescription(description);
+        this.setAmount(amount);
+        this.setQuantity(quantity);
+        recalculateAmountValues();
+        
+        checkRules();
     }
 
-    
+    public boolean exempt(final TreasuryExemption treasuryExemption, final BigDecimal amountWithVat) {
+        if (treasuryExemption.getTreasuryEvent() != getTreasuryEvent()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        if (treasuryExemption.getProduct() != getProduct()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        if (isEventAnnuled()) {
+            throw new RuntimeException("error.DebitEntry.is.event.annuled.cannot.be.exempted");
+        }
+
+        final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(getVatRate()));
+
+        if (isProcessedInClosedDebitNote()) {
+            // If there is at least one credit entry from exemption then skip...
+            if (CreditEntry.findActiveFromExemption(getTreasuryEvent(), getProduct()).count() > 0) {
+                return false;
+            }
+
+            final String description =
+                    BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.credit.entry.exemption.description",
+                            treasuryExemption.getTreasuryExemptionType().getName().getContent());
+
+            final DocumentNumberSeries defaultNumberSeries =
+                    DocumentNumberSeries.findUniqueDefault(
+                            FinantialDocumentType.findByFinantialDocumentType(FinantialDocumentTypeEnum.CREDIT_NOTE),
+                            getDebtAccount().getFinantialInstitution()).get();
+
+            final CreditNote creditNote =
+                    CreditNote.create(getDebtAccount(), defaultNumberSeries, new DateTime(), (DebitNote) getFinantialDocument(),
+                            null);
+            CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountWithoutVat, new DateTime(), this);
+
+        } else {
+            BigDecimal originalAmount = getAmount();
+            if (Constants.isPositive(getExemptedAmount())) {
+                originalAmount = originalAmount.add(getExemptedAmount());
+                setExemptedAmount(BigDecimal.ZERO);
+            }
+
+            setAmount(originalAmount.subtract(amountWithoutVat));
+            setExemptedAmount(amountWithoutVat);
+
+            recalculateAmountValues();
+        }
+
+        checkRules();
+
+        return true;
+    }
+
+    public boolean revertExemptionIfPossible(final TreasuryExemption treasuryExemption) {
+        // For all credit entries found that are not processed nor closed, delete
+        for (final CreditEntry creditEntry : CreditEntry.findActiveFromExemption(getTreasuryEvent(), getProduct()).collect(
+                Collectors.<CreditEntry> toSet())) {
+
+            if (creditEntry.isProcessedInClosedDebitNote()) {
+                return false;
+            }
+
+            creditEntry.delete();
+            return true;
+        }
+        
+        if(isProcessedInClosedDebitNote()) {
+            return false;
+        }
+
+        setAmount(getAmount().add(getExemptedAmount()));
+        setExemptedAmount(BigDecimal.ZERO);
+
+        recalculateAmountValues();
+
+        checkRules();
+
+        return true;
+    }
+
     // @formatter: off
     /************
      * SERVICES *
@@ -355,13 +444,21 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent) {
-        return find(treasuryEvent).filter(d -> d.isEventAnnuled());
+        return find(treasuryEvent).filter(d -> !d.isEventAnnuled());
     }
-    
+
     public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent, final Product product) {
         return findActive(treasuryEvent).filter(d -> d.getProduct() == product);
     }
-    
+
+    public static Stream<? extends DebitEntry> findEventAnnuled(final TreasuryEvent treasuryEvent) {
+        return find(treasuryEvent).filter(d -> d.isEventAnnuled());
+    }
+
+    public static Stream<? extends DebitEntry> findEventAnnuled(final TreasuryEvent treasuryEvent, final Product product) {
+        return findEventAnnuled(treasuryEvent).filter(d -> d.getProduct() == product);
+    }
+
     /* --- Math methods --- */
 
     public static BigDecimal payedAmount(final TreasuryEvent treasuryEvent) {
@@ -383,16 +480,6 @@ public class DebitEntry extends DebitEntry_Base {
                         quantity, tariff, entryDateTime);
         entry.recalculateAmountValues();
         return entry;
-    }
-
-    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
-
-        this.setDescription(description);
-        this.setAmount(amount);
-        this.setQuantity(quantity);
-        recalculateAmountValues();
-        checkRules();
-
     }
 
 }

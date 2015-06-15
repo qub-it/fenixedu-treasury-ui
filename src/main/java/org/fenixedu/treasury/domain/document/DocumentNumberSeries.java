@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.Comparator;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +41,14 @@ import pt.ist.fenixframework.Atomic;
 
 public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
+    public static final Comparator<DocumentNumberSeries> COMPARE_BY_DEFAULT = new Comparator<DocumentNumberSeries>() {
+
+        @Override
+        public int compare(final DocumentNumberSeries o1, final DocumentNumberSeries o2) {
+            return Series.COMPARATOR_BY_DEFAULT.compare(o1.getSeries(), o2.getSeries());
+        }
+    };
+    
     protected DocumentNumberSeries() {
         super();
         setBennu(Bennu.getInstance());
@@ -63,6 +73,8 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
         // Try to find it and throw 
         find(getFinantialDocumentType(), getSeries());
+        
+        
     }
 
     public int getSequenceNumber() {
@@ -108,11 +120,20 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
         final Set<DocumentNumberSeries> result =
                 finantialDocumentType.getDocumentNumberSeriesSet().stream().filter(dns -> dns.getSeries() == series)
                         .collect(Collectors.toSet());
+        
         if (result.size() > 1) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.not.unique.in.finantialDocumentType.and.series");
         }
 
         return result.stream().findFirst().orElse(null);
+    }
+    
+    public static Optional<DocumentNumberSeries> findUniqueDefault(final FinantialDocumentType finantialDocumentType, final FinantialInstitution finantialInstitution) {
+        if(!Series.findUniqueDefault(finantialInstitution).isPresent()) {
+            return Optional.<DocumentNumberSeries>empty();
+        }
+        
+        return Optional.of(find(finantialDocumentType, Series.findUniqueDefault(finantialInstitution).get()));
     }
 
     @Atomic

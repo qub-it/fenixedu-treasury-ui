@@ -39,7 +39,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.util.StringUtils;
 
@@ -68,16 +68,16 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         if (getDebtAccount() == null) {
             throw new TreasuryDomainException("error.TreasuryEvent.debtAccount.required");
         }
-
-        if (getProduct() == null) {
-            throw new TreasuryDomainException("error.TreasuryEvent.product.required");
-        }
     }
 
     /* -----------------------------
      * FINANTIAL INFORMATION RELATED
      * -----------------------------
      */
+
+    public boolean isExempted(final Product product) {
+        return TreasuryExemption.find(this, product).count() > 0;
+    }
 
     public boolean isChargedWithDebitEntry() {
         return isChargedWithDebitEntry(null);
@@ -91,18 +91,6 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         return DebitEntry.findActive(this).filter(d -> !d.isEventAnnuled()).count() > 0;
     }
 
-    public boolean isAnyDebitEntryWithCreditApplied() {
-        return isAnyDebitEntryWithCreditApplied(null);
-    }
-
-    public boolean isAnyDebitEntryWithCreditApplied(final Product product) {
-        if (product != null) {
-            return CreditEntry.findActive(this, product).count() > 0;
-        }
-
-        return CreditEntry.findActive(this).count() > 0;
-    }
-
     public BigDecimal getAmountToPay() {
         return getAmountToPay(null);
     }
@@ -111,7 +99,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         final BigDecimal result =
                 (product != null ? DebitEntry.findActive(this, product) : DebitEntry.findActive(this))
                         .map(d -> d.getAmountWithVat()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO)
-                        .subtract(getCreditAmount());
+                        .subtract(getCreditAmount(product));
 
         return Constants.isPositive(result) ? result : BigDecimal.ZERO;
     }
@@ -121,7 +109,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public BigDecimal getCreditAmount(final Product product) {
-        return (product != null ? CreditEntry.findActive(this) : CreditEntry.findActive(this, product))
+        return (product != null ? CreditEntry.findActive(this, product) : CreditEntry.findActive(this))
                 .map(c -> c.getAmountWithVat()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
     }
 
@@ -130,7 +118,16 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public BigDecimal getRemainingAmountToPay() {
-        return DebitEntry.remainingAmountToPay(this);
+        return getRemainingAmountToPay(null);
+    }
+
+    public BigDecimal getRemainingAmountToPay(final Product product) {
+        final BigDecimal amountToPay = product != null ? getAmountToPay(product) : getAmountToPay();
+        final BigDecimal payedAmount = getPayedAmount();
+
+        final BigDecimal result = amountToPay.subtract(payedAmount);
+
+        return Constants.isPositive(result) ? result : BigDecimal.ZERO;
     }
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
@@ -162,7 +159,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public Set<Product> getPossibleProductsToExempt() {
         return Sets.newHashSet(getProduct());
     }
-    
+
     public boolean isDeletable() {
         return true;
     }
@@ -191,6 +188,5 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public static Stream<? extends TreasuryEvent> findActiveBy(DebtAccount debtAccount) {
         return findAll().filter(x -> x.getDebtAccount().equals(debtAccount));
     }
-
 
 }

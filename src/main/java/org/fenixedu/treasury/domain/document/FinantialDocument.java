@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -40,12 +41,42 @@ import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
+import com.google.common.collect.Ordering;
+
 import pt.ist.fenixframework.Atomic;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
-    protected FinantialDocument() {
+    protected static final Comparator<FinantialDocument> COMPARE_BY_DOCUMENT_DATE = new Comparator<FinantialDocument>() {
 
+        @Override
+        public int compare(final FinantialDocument o1, final FinantialDocument o2) {
+            int c = o1.getDocumentDate().compareTo(o2.getDocumentDate());
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+
+    protected static final Comparator<String> COMPARE_BY_DOCUMENT_NUMBER_STRING = new Comparator<String>() {
+
+        @Override
+        public int compare(final String o1, final String o2) {
+            return Ordering.<String> natural().compare(o1, o2);
+        }
+    };
+
+    protected static final Comparator<FinantialDocument> COMPARE_BY_DOCUMENT_NUMBER = new Comparator<FinantialDocument>() {
+
+        @Override
+        public int compare(FinantialDocument o1, FinantialDocument o2) {
+            int c = Ordering.<String> natural().compare(o1.getDocumentNumber(), o2.getDocumentNumber());
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+
+    };
+
+    protected FinantialDocument() {
         super();
         setBennu(Bennu.getInstance());
         setState(FinantialDocumentStateType.PREPARING);
@@ -98,6 +129,21 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         if (getDocumentNumberSeries().getSeries().getLegacy() == false) {
             if (getDocumentDueDate().isBefore(getDocumentDate().toLocalDate())) {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDueDate.invalid");
+            }
+        }
+
+        if (isClosed() && getFinantialDocumentEntriesSet().isEmpty()) {
+            throw new TreasuryDomainException("error.FinantialDocument.closed.but.empty.entries");
+        }
+
+        if (isClosed()) {
+            final Stream<? extends FinantialDocument> stream =
+                    findClosedUntilDocumentNumberExclusive(getDocumentNumberSeries(), getDocumentNumber());
+
+            final FinantialDocument previousFinantialDocument = stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
+
+            if (previousFinantialDocument != null && !previousFinantialDocument.getDocumentDate().isBefore(getDocumentDate())) {
+                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
             }
         }
     }
@@ -256,12 +302,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         return findAll().filter(x -> x.getDocumentNumberSeries() == documentNumberSeries);
     }
 
-    public static Stream<? extends FinantialDocument> find(final FinantialDocumentType finantialDocumentType,
-            final DocumentNumberSeries documentNumberSeries) {
-
-        return findAll()
-                .filter(x -> x.getDocumentNumberSeries() == documentNumberSeries
-                        && x.getFinantialDocumentType() == finantialDocumentType);
+    protected static Stream<? extends FinantialDocument> findClosedUntilDocumentNumberExclusive(
+            final DocumentNumberSeries documentNumberSeries, final String documentNumber) {
+        return find(documentNumberSeries).filter(
+                d -> d.isClosed() && COMPARE_BY_DOCUMENT_NUMBER_STRING.compare(d.getDocumentNumber(), documentNumber) < 0);
     }
 
     public Boolean getClosed() {
@@ -297,6 +341,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                     "error.FinantialDocumentState.invalid.state.change.request"));
         }
+
         checkRules();
     }
 }

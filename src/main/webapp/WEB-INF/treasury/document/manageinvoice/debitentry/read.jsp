@@ -215,6 +215,12 @@ ${portal.toolkit()}
 						<td><c:out
 								value='${debitEntry.currency.getValueFor(debitEntry.totalAmount)}' /></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.DebitEntry.exemptedAmount" /></th>
+						<td><c:out
+								value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>
+					</tr>
 				</tbody>
 			</table>
 			
