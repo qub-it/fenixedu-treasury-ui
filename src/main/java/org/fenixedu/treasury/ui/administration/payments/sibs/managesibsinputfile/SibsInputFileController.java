@@ -6,7 +6,7 @@
  *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright Â© 2015 Universidade de Lisboa (after any Go-Live phase)
  *
- * Contributors: xpto@qub-it.com
+ * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
  * 
  * This file is part of FenixEdu Treasury.
@@ -80,23 +80,6 @@ public class SibsInputFileController extends TreasuryBaseController {
 
     // @formatter: off
 
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    //private SibsInputFile getSibsInputFileBean(Model model)
-    //{
-    //	return (SibsInputFile)model.asMap().get("sibsInputFileBean");
-    //}
-    //				
-    //private void setSibsInputFileBean (SibsInputFileBean bean, Model model)
-    //{
-    //	model.addAttribute("sibsInputFileBeanJson", getBeanJson(bean));
-    //	model.addAttribute("sibsInputFileBean", bean);
-    //}
-
-    // @formatter: on
-
     private SibsInputFile getSibsInputFile(Model model) {
         return (SibsInputFile) model.asMap().get("sibsInputFile");
     }
@@ -147,7 +130,6 @@ public class SibsInputFileController extends TreasuryBaseController {
     public String processSearchToViewAction(@PathVariable("oid") SibsInputFile sibsInputFile, Model model,
             RedirectAttributes redirectAttributes) {
 
-        // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use below	 
         return redirect(
                 "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read" + "/"
@@ -196,63 +178,8 @@ public class SibsInputFileController extends TreasuryBaseController {
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
 
-        //IF ANGULAR, initialize the Bean
-        //SibsInputFileBean bean = new SibsInputFileBean();
-        //this.setSibsInputFileBean(bean, model);
-
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create";
     }
-
-//
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-//						// @formatter: off
-//			
-//				private static final String _CREATEPOSTBACK_URI ="/createpostback";
-//				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
-//    			@RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) SibsInputFileBean bean,
-//            		Model model) {
-//
-//        			// Do validation logic ?!?!
-//        			this.setSibsInputFileBean(bean, model);
-//        			return getBeanJson(bean);
-//    			}
-//    			
-//    			@RequestMapping(value = CREATE, method = RequestMethod.POST)
-//  			  	public String create(@RequestParam(value = "bean", required = false) SibsInputFileBean bean,
-//            		Model model, RedirectAttributes redirectAttributes ) {
-//
-//					/*
-//					*  Creation Logic
-//					*/
-//					
-//					try
-//					{
-//
-//				     	SibsInputFile sibsInputFile = createSibsInputFile(... get properties from bean ...,model);
-//				    	
-//					//Success Validation
-//				     //Add the bean to be used in the View
-//					model.addAttribute("sibsInputFile",sibsInputFile);
-//				    return redirect("/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/" + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
-//					}
-//					catch (DomainException de)
-//					{
-//
-//						/*
-//						 * If there is any error in validation 
-//					     *
-//					     * Add a error / warning message
-//					     * 
-//					     * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//					     * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-//						
-//						addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//				     	return create(model);
-//					}
-//    			}
-//						// @formatter: on
 
 //				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
@@ -268,21 +195,16 @@ public class SibsInputFileController extends TreasuryBaseController {
 
             SibsInputFile sibsInputFile = createSibsInputFile(whenProcessedBySibs, documentSibsInputFile);
 
+            if (sibsInputFile.getWhenProcessedBySibs().compareTo(whenProcessedBySibs) != 0) {
+                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "warning.SibsInputFileController.whenprocessedbysibs.different.in.file", sibsInputFile
+                                .getWhenProcessedBySibs().toString()), model);
+            }
             //Success Validation
             //Add the bean to be used in the View
             model.addAttribute("sibsInputFile", sibsInputFile);
             return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
-
-            // @formatter: off
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-            // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             return create(model);
@@ -292,31 +214,15 @@ public class SibsInputFileController extends TreasuryBaseController {
     @Atomic
     public SibsInputFile createSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, MultipartFile documentSibsInputFile) {
 
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         * 
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //SibsInputFile sibsInputFile = sibsInputFile.create(fields_to_create);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
-//        if (!documentSibsInputFile.getContentType().equals(SibsInputFile.CONTENT_TYPE)) {
-//            throw new TreasuryDomainException("error.file.different.content.type");
-//        }
-
         PaymentCodePool pool = null;
 
         try {
             SibsIncommingPaymentFile file =
                     SibsIncommingPaymentFile.parse(documentSibsInputFile.getOriginalFilename(),
                             documentSibsInputFile.getInputStream());
+            if (file.getHeader().getWhenProcessedBySibs().toDateTimeAtMidnight().compareTo(whenProcessedBySibs) != 0) {
+                whenProcessedBySibs = file.getHeader().getWhenProcessedBySibs().toDateTimeAtMidnight();
+            }
 
             String entityCode = file.getHeader().getEntityCode();
 
@@ -419,58 +325,6 @@ public class SibsInputFileController extends TreasuryBaseController {
 
 //
 
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-//						// @formatter: off
-//			
-//				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
-//				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
-//    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "bean", required = false) SibsInputFileBean bean,
-//            		Model model) {
-//
-//        			// Do validation logic ?!?!
-//        			this.setSibsInputFileBean(bean, model);
-//        			return getBeanJson(bean);
-//    			} 
-//    			
-//    			@RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//  			  	public String update(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "bean", required = false) SibsInputFileBean bean,
-//            		Model model, RedirectAttributes redirectAttributes ) {
-//					setSibsInputFile(sibsInputFile,model);
-//
-//				     try
-//				     {
-//					/*
-//					*  UpdateLogic here
-//					*/
-//				    		
-//						updateSibsInputFile( .. get fields from bean..., model);
-//
-//					/*Succes Update */
-//
-//				    return redirect("/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/" + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
-//					}
-//					catch (DomainException de) 
-//					{
-//				
-//						/*
-//					 	* If there is any error in validation 
-//				     	*
-//				     	* Add a error / warning message
-//				     	* 
-//				     	* addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	* addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-//				     	*/
-//										     
-//				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(sibsInputFile,model);
-//					 
-//
-//					}
-//				}
-//						// @formatter: on    			
-//				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "whenprocessedbysibs",
             required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs,
@@ -493,17 +347,6 @@ public class SibsInputFileController extends TreasuryBaseController {
                     "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
                             + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-            * If there is any error in validation 
-            *
-            * Add a error / warning message
-            * 
-            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-            */
-            // @formatter: on
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(sibsInputFile, model);
@@ -514,18 +357,6 @@ public class SibsInputFileController extends TreasuryBaseController {
     @Atomic
     public void updateSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
             java.math.BigDecimal totalCost, Model model) {
-
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getSibsInputFile(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
 
         getSibsInputFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
     }

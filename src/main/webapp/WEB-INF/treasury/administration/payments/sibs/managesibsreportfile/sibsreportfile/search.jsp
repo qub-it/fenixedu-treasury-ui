@@ -34,7 +34,7 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile"   ><spring:message code="label.event.administration.payments.sibs.managesibsreportfile.sibsinputfile" /></a>
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile"   ><spring:message code="label.event.administration.payments.sibs.managesibsreportfile.sibsinputfile" /></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -114,6 +114,7 @@ ${portal.toolkit()}
 <th><spring:message code="label.SibsReportFile.whenProcessedBySibs"/></th>
 <th><spring:message code="label.SibsReportFile.transactionsTotalAmount"/></th>
 <th><spring:message code="label.SibsReportFile.totalCost"/></th>
+<th><spring:message code="label.SibsReportFile.success"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -142,6 +143,7 @@ ${portal.toolkit()}
 "whenprocessedbysibs" : "<c:out value='${searchResult.whenProcessedBySibs}'/>",
 "transactionstotalamount" : "<c:out value='${searchResult.transactionsTotalAmount}'/>",
 "totalcost" : "<c:out value='${searchResult.totalCost}'/>",
+"error": "<c:if test='${empty searchResult.errorLog}'><span class='glyphicon glyphicon-ok-sign text-success'/></c:if><c:if test='${not empty searchResult.errorLog}'><span class='glyphicon glyphicon-remove-sign  text-danger'/></c:if>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -161,13 +163,14 @@ ${portal.toolkit()}
 			{ data: 'whenprocessedbysibs' },
 			{ data: 'transactionstotalamount' },
 			{ data: 'totalcost' },
+			{ data: 'error' },
 			{ data: 'actions' }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 3 } 
+		               { "width": "54px", "targets": 4 } 
 		             ],
 		"data" : searchsibsreportfileDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
