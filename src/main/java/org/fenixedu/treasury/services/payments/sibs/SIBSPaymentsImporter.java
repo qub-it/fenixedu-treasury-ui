@@ -82,7 +82,6 @@ public class SIBSPaymentsImporter {
         }
 
         public SibsReportFile getReportFile() {
-
             return reportFile;
         }
     }
@@ -204,19 +203,7 @@ public class SIBSPaymentsImporter {
     private PaymentReferenceCode getPaymentCodeToProcess(final PaymentReferenceCode paymentCode, ProcessResult result) {
 
         final PaymentReferenceCode codeToProcess;
-//        if (mapping != null) {
-//
-//            result.addMessage("warning.manager.SIBS.foundMapping", paymentCode.getReferenceCode(), mapping.getNewPaymentCode()
-//                    .getCode());
-//            result.addMessage("warning.manager.SIBS.invalidating", paymentCode.getReferenceCode());
-//
-//            codeToProcess = mapping.getNewPaymentCode();
-//            paymentCode.setState(PaymentReferenceCodeStateType.ANNULLED);
-//
-//        } else {
         codeToProcess = paymentCode;
-//        }
-
         return codeToProcess;
     }
 
@@ -224,18 +211,9 @@ public class SIBSPaymentsImporter {
      * Copied from head
      */
     private PaymentReferenceCode getPaymentCode(final String code, FinantialInstitution finantialInstitution) {
-        /*
-         * TODO:
-         * 
-         * 09/07/2009 - Payments are not related only to students. readAll() may
-         * be heavy to get the PaymentCode.
-         * 
-         * 
-         * Ask Nadir and Joao what is best way to deal with PaymentCode
-         * retrieval.
-         */
 
-        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
+        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution)
+                .filter(x -> x.getPaymentCodePool().getActive() == true).findFirst().orElse(null);
     }
 
 }

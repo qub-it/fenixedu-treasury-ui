@@ -95,6 +95,15 @@ ${portal.toolkit()}
                     </select>
                 </div>
             </div>      
+            <div class="form-group row">
+                <div class="col-sm-2 control-label"><spring:message code="label.TreasurySettings.advancedPaymentProduct"/></div> 
+                
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select id="treasurySettings_advancedPaymentProduct" class="js-example-basic-single" name="advancedpaymentproduct"> 
+                    </select>
+                </div>
+            </div>      
 
 		</div>
 		<div class="panel-footer">
@@ -149,6 +158,29 @@ $(document).ready(function() {
     $("#treasurySettings_interestProduct").select2().select2('val', '<c:out value='${not empty param.interestproduct ? param.interestproduct : treasurySettings.interestProduct.externalId }'/>');
 
     <%-- End block for providing interestProduct options --%>
+
+    
+    <%-- Block for providing advancePaymentProduct options --%>
+    <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+    advancedPaymentProduct_options = [
+        <c:forEach items="${TreasurySettings_advancePaymentProduct_options}" var="element"> 
+            {
+                text : "<c:out value='${element.name.content}'/>", 
+                id : "<c:out value='${element.externalId}'/>"
+            },
+        </c:forEach>
+    ];
+    
+    $("#treasurySettings_advancedPaymentProduct").select2(
+        {
+            data : advancedPaymentProduct_options,
+        }     
+            );
+            
+            
+    $("#treasurySettings_advancedPaymentProduct").select2().select2('val', '<c:out value='${not empty param.advancedpaymentproduct ? param.advancedpaymentproduct : treasurySettings.advancedPaymentProduct.externalId }'/>');
+
+    <%-- End block for providing advancedPaymentProduct options --%>
 
     
 });   

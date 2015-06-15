@@ -41,6 +41,10 @@ import pt.ist.fenixframework.Atomic;
 
 public class CreditNote extends CreditNote_Base {
 
+    public CreditNote() {
+        throw new TreasuryDomainException("error.CreditNote.invalid.constructor");
+    }
+
     protected CreditNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate, DebitNote debitNote) {
         super();

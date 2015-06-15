@@ -73,7 +73,8 @@ public class TreasurySettingsController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI, method = RequestMethod.POST)
     public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency, @RequestParam(
-            value = "interestproduct", required = true) final Product interestProduct, final Model model,
+            value = "interestproduct", required = true) final Product interestProduct, @RequestParam(
+            value = "advancedpaymentproduct", required = true) final Product advancedPaymentProduct, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         final TreasurySettings treasurySettings = TreasurySettings.getInstance();
@@ -81,7 +82,7 @@ public class TreasurySettingsController extends TreasuryBaseController {
         model.addAttribute("treasurySettings", treasurySettings);
 
         try {
-            treasurySettings.edit(defaultCurrency, interestProduct);
+            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct);
 
             return redirect("/treasury/managetreasurysettings/treasurysettings/read", model, redirectAttributes);
         } catch (final DomainException de) {

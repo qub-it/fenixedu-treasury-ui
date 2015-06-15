@@ -353,17 +353,18 @@ public class SibsInputFileController extends TreasuryBaseController {
             try {
                 ProcessResult result = importer.processSIBSPaymentFiles(sibsInputFile);
                 result.getActionMessages().forEach(x -> addInfoMessage(x, model));
+                result.getErrorMessages().forEach(x -> addErrorMessage(x, model));
                 reportFile = result.getReportFile();
-                reportFile.updateLogMessages(result);
                 if (result.getReportFile() == null) {
-                    result.getErrorMessages().forEach(x -> addErrorMessage(x, model));
                     return redirect(READ_URL + sibsInputFile.getExternalId(), model, redirectAttributes);
+                } else {
+                    reportFile.updateLogMessages(result);
                 }
             } catch (IOException e) {
                 throw new TreasuryDomainException("error.SibsInputFile.error.processing.sibs.input.file");
             }
 
-            return SibsReportFileController.READ_URL + reportFile.getExternalId();
+            return redirect(SibsReportFileController.READ_URL + reportFile.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return redirect(READ_URL + sibsInputFile.getExternalId(), model, redirectAttributes);

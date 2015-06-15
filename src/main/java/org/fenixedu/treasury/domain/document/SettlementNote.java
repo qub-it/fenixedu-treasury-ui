@@ -365,6 +365,14 @@ public class SettlementNote extends SettlementNote_Base {
         return total;
     }
 
+    @Override
+    public void closeDocument() {
+        if (this.getAdvancedPaymentCreditNote() != null) {
+            this.getAdvancedPaymentCreditNote().changeState(FinantialDocumentStateType.CLOSED, "");
+        }
+        super.closeDocument();
+    }
+
     public BigDecimal getTotalCreditAmount() {
         BigDecimal total = BigDecimal.ZERO;
         for (SettlementEntry entry : this.getSettlemetEntriesSet()) {

@@ -28,12 +28,15 @@ package org.fenixedu.treasury.services.integration.erp.dto;
 
 import java.math.BigDecimal;
 
+import org.joda.time.LocalDate;
+
 public class InterestRequestValueInput {
     private String finantialInstitutionFiscalNumber;
     private String customerCode;
     private String debitNoteNumber;
     private Integer lineNumber;
     private BigDecimal amount;
+    private LocalDate paymentDate;
     private Boolean generateInterestDebitNote;
 
     public Boolean getGenerateInterestDebitNote() {
@@ -82,5 +85,13 @@ public class InterestRequestValueInput {
 
     public void setCustomerCode(String customerCode) {
         this.customerCode = customerCode;
+    }
+
+    public LocalDate getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate;
     }
 }

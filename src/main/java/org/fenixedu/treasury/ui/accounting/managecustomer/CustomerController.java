@@ -29,6 +29,7 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Customer;
@@ -97,22 +98,20 @@ public class CustomerController extends TreasuryBaseController {
         return "treasury/accounting/managecustomer/customer/search";
     }
 
-    private List<Customer> getSearchUniverseSearchCustomerDataSet() {
+    private Stream<? extends Customer> getSearchUniverseSearchCustomerDataSet() {
 
-        return Customer.findAll().sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName()))
-                .collect(Collectors.<Customer> toList());
+        return Customer.findAll().sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName()));
     }
 
     private List<Customer> filterSearchCustomer(FinantialInstitution institution) {
 
         if (institution == null) {
-            return getSearchUniverseSearchCustomerDataSet().stream().collect(Collectors.toList());
+            return getSearchUniverseSearchCustomerDataSet().collect(Collectors.toList());
         } else {
-            return getSearchUniverseSearchCustomerDataSet()
-                    .stream()
-                    .filter(customer -> customer.getDebtAccountsSet().stream()
-                            .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution)))
-                    .collect(Collectors.toList());
+            return getSearchUniverseSearchCustomerDataSet().filter(
+                    customer -> customer.getDebtAccountsSet().stream()
+                            .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution))).collect(
+                    Collectors.toList());
         }
     }
 

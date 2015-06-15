@@ -118,6 +118,12 @@ ${portal.toolkit()}
                             <c:out value='${treasurySettings.interestProduct.name.content}'/>
                         </td> 
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.advancePaymentProduct"/></th> 
+                        <td>
+                            <c:out value='${treasurySettings.advancePaymentProduct.name.content}'/>
+                        </td> 
+                    </tr>
 				</tbody>
 			</table>
 		</form>

@@ -175,6 +175,7 @@ ${portal.toolkit()}
 		var table = $('#searchproductTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
 		},
+		"order": [[ 1, "asc" ]],
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },

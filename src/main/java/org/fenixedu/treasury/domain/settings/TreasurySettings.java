@@ -16,9 +16,10 @@ public class TreasurySettings extends TreasurySettings_Base {
     }
 
     @Atomic
-    public void edit(final Currency defaultCurrency, Product interestProduct) {
+    public void edit(final Currency defaultCurrency, Product interestProduct, Product advancePaymentProduct) {
         setDefaultCurrency(defaultCurrency);
         setInterestProduct(interestProduct);
+        setAdvancePaymentProduct(advancePaymentProduct);
     }
 
     protected static Optional<TreasurySettings> findUnique() {

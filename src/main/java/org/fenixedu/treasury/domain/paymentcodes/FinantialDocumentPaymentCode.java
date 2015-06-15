@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
@@ -11,6 +12,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -26,15 +28,11 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     public SettlementNote processPayment(User person, BigDecimal amountToPay, DateTime whenRegistered, String sibsTransactionId,
             String comments) {
 
-        DebtAccount targetDebtAccount = this.getFinantialDocument().getDebtAccount();
-        DocumentNumberSeries documentSeriesForPayments =
-                this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments();
-
-        SettlementNote note =
-                SettlementNote.create(targetDebtAccount, documentSeriesForPayments, whenRegistered, sibsTransactionId);
-
-        // TODO Auto-generated method stub
-        return null;
+        Set<InvoiceEntry> invoiceEntriesToPay =
+                this.getFinantialDocument().getFinantialDocumentEntriesSet().stream().filter(x -> x instanceof InvoiceEntry)
+                        .map(InvoiceEntry.class::cast).sorted((x, y) -> y.getOpenAmount().compareTo(x.getOpenAmount()))
+                        .collect(Collectors.toSet());
+        return internalProcessPayment(person, amountToPay, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
     }
 
     @Override
@@ -162,6 +160,16 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     public static Stream<FinantialDocumentPaymentCode> findByValid(final FinantialInstitution finantialInstitution,
             final java.lang.Boolean valid) {
         return findAll(finantialInstitution).filter(i -> valid.equals(i.getValid()));
+    }
+
+    @Override
+    protected DocumentNumberSeries getDocumentSeriesForPayments() {
+        return this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments();
+    }
+
+    @Override
+    protected DebtAccount getReferenceDebtAccount() {
+        return this.getFinantialDocument().getDebtAccount();
     }
 
 }

@@ -77,6 +77,9 @@ public class SIBSImportationLineDTO {
             return 0;
         }
 
+        if (getReport() == null) {
+            return 0;
+        }
         return getReport().getNumberOfTransactions();
     }
 

@@ -39,6 +39,8 @@ public class InterestRequestValueOuptut implements IBean, Serializable {
 
     private String description;
 
+    private byte[] interestDocumentsContent;
+
     public InterestRequestValueOuptut() {
         setInterestAmount(BigDecimal.ZERO);
         setDescription(new String());
@@ -63,6 +65,14 @@ public class InterestRequestValueOuptut implements IBean, Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public byte[] getInterestDocumentsContent() {
+        return interestDocumentsContent;
+    }
+
+    public void setInterestDocumentsContent(byte[] interestDocumentsContent) {
+        this.interestDocumentsContent = interestDocumentsContent;
     }
 
 }

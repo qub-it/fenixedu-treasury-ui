@@ -211,6 +211,9 @@ class document.FinantialDocument {
 		class document.CreditNote extends document.Invoice {
 			String reason;
 		}
+		
+		class document.AdvancedPaymentCreditNote extends document.CreditNote{
+		}
 	
 	class document.SettlementNote extends document.FinantialDocument {
 	}
@@ -698,6 +701,18 @@ relation TreasurySettingsInterestProduct {
         multiplicity 0..1;
     }
 }
+
+relation TreasurySettingsAdvancePaymentProduct {
+    
+    settings.TreasurySettings playsRole advancePaymentTreasurySettings {
+        multiplicity 0..1;
+    }
+    
+    Product playsRole advancePaymentProduct {
+        multiplicity 0..1;
+    }
+}
+
 
 relation TreasurySettingsCurrency {
 	
@@ -1330,6 +1345,18 @@ relation SettlementEntryInvoiceEntry {
 	document.SettlementEntry playsRole settlementEntries {
 		multiplicity *;
 	}
+}
+
+relation SettlementNoteAdvancedPaymentCreditNote{
+    document.AdvancedPaymentCreditNote playsRole advancedPaymentCreditNote
+    {
+        multiplicity 0..1;
+    }
+    
+    document.SettlementNote playsRole advancedPaymentSettlementNote
+    {
+        multiplicity 0..1;
+    }
 }
 
 /* --- PaymentEntry --- */

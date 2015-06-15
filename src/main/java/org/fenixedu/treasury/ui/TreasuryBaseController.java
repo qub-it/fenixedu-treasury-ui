@@ -30,7 +30,6 @@ package org.fenixedu.treasury.ui;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.fenixedu.bennu.BeanConverterService;
@@ -44,7 +43,6 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.convert.support.GenericConversionService;
-import org.springframework.http.HttpRequest;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -131,7 +129,9 @@ public class TreasuryBaseController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         GenericConversionService conversionService = (GenericConversionService) binder.getConversionService();
-        conversionService.addConverter(new BeanConverterService());
+        if (!conversionService.canConvert(String.class, IBean.class)) {
+            conversionService.addConverter(new BeanConverterService());
+        }
         conversionService.addConverter(new CountryConverterService());
         conversionService.addConverter(new DistrictConverterService());
         conversionService.addConverter(new MunicipalityConverterService());

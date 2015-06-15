@@ -169,6 +169,7 @@ ${portal.toolkit()}
 			{ data: 'actions' }
 			
 		],
+		"order": [[ 1, "asc" ]],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54

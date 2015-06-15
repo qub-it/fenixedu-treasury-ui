@@ -26,7 +26,6 @@
  */
 package org.fenixedu.bennu;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
@@ -73,7 +72,7 @@ public class BeanConverterService implements ConditionalGenericConverter {
 //			} catch (UnsupportedEncodingException e) {
 //				jsonStr = "";
 //			}
-        JsonElement parse = parser.parse((String) jsonStr);
+        JsonElement parse = parser.parse(jsonStr);
 
         if (parse instanceof JsonArray) {
             ArrayList list = new ArrayList();
