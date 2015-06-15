@@ -425,4 +425,12 @@ public class SettlementNote extends SettlementNote_Base {
         this.setAdvancedPaymentCreditNote(creditNote);
     }
 
+    @Override
+    protected boolean isDocumentEmpty() {
+        if (this.getAdvancedPaymentCreditNote() != null) {
+            return this.getAdvancedPaymentCreditNote().isDocumentEmpty() && this.getFinantialDocumentEntriesSet().isEmpty();
+        }
+        return this.getFinantialDocumentEntriesSet().isEmpty();
+    }
+
 }

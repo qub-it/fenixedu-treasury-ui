@@ -41,9 +41,9 @@ import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
-import com.google.common.collect.Ordering;
-
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.collect.Ordering;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
@@ -132,7 +132,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             }
         }
 
-        if (isClosed() && getFinantialDocumentEntriesSet().isEmpty()) {
+        if (isClosed() && isDocumentEmpty()) {
             throw new TreasuryDomainException("error.FinantialDocument.closed.but.empty.entries");
         }
 
@@ -140,12 +140,17 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             final Stream<? extends FinantialDocument> stream =
                     findClosedUntilDocumentNumberExclusive(getDocumentNumberSeries(), getDocumentNumber());
 
-            final FinantialDocument previousFinantialDocument = stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
+            final FinantialDocument previousFinantialDocument =
+                    stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
 
             if (previousFinantialDocument != null && !previousFinantialDocument.getDocumentDate().isBefore(getDocumentDate())) {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
             }
         }
+    }
+
+    protected boolean isDocumentEmpty() {
+        return this.getFinantialDocumentEntriesSet().isEmpty();
     }
 
     public String getUiDocumentNumber() {

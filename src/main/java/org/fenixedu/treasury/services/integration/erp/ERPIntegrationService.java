@@ -26,9 +26,13 @@
  */
 package org.fenixedu.treasury.services.integration.erp;
 
+import java.util.Optional;
+
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
@@ -39,9 +43,21 @@ import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebSer
 @WebService
 public class ERPIntegrationService extends BennuWebService {
 
+    public static boolean validate(String username, String password) {
+        Optional<FinantialInstitution> findUniqueByFiscalCode = FinantialInstitution.findUniqueByFiscalCode(username);
+        if (findUniqueByFiscalCode.isPresent()) {
+
+            ERPConfiguration configuration = findUniqueByFiscalCode.get().getErpIntegrationConfiguration();
+            if (configuration != null) {
+                return password.compareToIgnoreCase(configuration.getPassword()) == 0;
+            }
+        }
+        return false;
+    }
+
     @WebMethod
     public String sendInfoOnline(DocumentsInformationInput documentsInformation) {
-
+        validateRequestHeader(documentsInformation.getFinantialInstitution());
         String requestId = "Random_requestId";
         //Integrate the information from XML SAFT
 
@@ -50,7 +66,7 @@ public class ERPIntegrationService extends BennuWebService {
 
     @WebMethod
     public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
-
+        validateRequestHeader(documentsInformation.getFinantialInstitution());
         String requestId = "Random_requestId";
         //Integrate the information from XML SAFT
 
@@ -59,13 +75,15 @@ public class ERPIntegrationService extends BennuWebService {
 
     @WebMethod
     public IntegrationStatusOutput[] getIntegrationStatusFor(String requestIdentification) {
+
+//        validateRequestHeader();
         IntegrationStatusOutput[] status = null;
         return status;
     }
 
     @WebMethod
     public InterestRequestValueOuptut getInterestValueFor(InterestRequestValueInput interestRequest) {
-
+        validateRequestHeader(interestRequest.getFinantialInstitutionFiscalNumber());
         //1. Check if the the lineNumber+DebitNoteNumber is for the Customer of the FinantialInstitution
 
         //2. Check if the lineNumber+DebitNoteNumber Amount is correct
@@ -78,5 +96,12 @@ public class ERPIntegrationService extends BennuWebService {
             //Create DebitNote for the InterestRate
         }
         return bean;
+    }
+
+    private void validateRequestHeader(String finantialInstitution) {
+        if (finantialInstitution == null || getSecurityHeader() == null
+                || !finantialInstitution.equalsIgnoreCase(getSecurityHeader().getUsername())) {
+            throw new SecurityException("invalid request permission");
+        }
     }
 }
