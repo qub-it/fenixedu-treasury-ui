@@ -1,4 +1,5 @@
 
+<%@page import="org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile"%>
 <%@page
 	import="org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum"%>
 <%@page
@@ -82,7 +83,7 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-body">
 					<input type="file" name="documentTemplateFile"
-						accept="${ allowedFileType }" />
+						accept="<%= TreasuryDocumentTemplateFile.CONTENT_TYPE %>" />
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">
@@ -152,7 +153,7 @@ ${portal.toolkit()}
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/erpconfigurationupdate"><spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" /></a> &nbsp;|&nbsp;
+            code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" /></a> &nbsp;
             
 </div>
 <c:if test="${not empty infoMessages}">
@@ -281,7 +282,7 @@ ${portal.toolkit()}
 	&nbsp; <a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/create?finantialInstitutionId=${finantialInstitution.externalId }">
 		<spring:message code="label.event.create" />
-	</a> &nbsp;|&nbsp;
+	</a> &nbsp;
 </div>
 <c:choose>
 	<c:when test="${not empty finantialInstitution.finantialEntitiesSet}">
@@ -318,7 +319,7 @@ ${portal.toolkit()}
 	&nbsp; <a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/create?finantialInstitutionId=${finantialInstitution.externalId }">
 		<spring:message code="label.event.create" />
-	</a> &nbsp;|&nbsp;
+	</a> &nbsp;
 </div>
 <c:choose>
 	<c:when test="${not empty finantialInstitution.seriesSet}">
@@ -352,79 +353,88 @@ ${portal.toolkit()}
 	<spring:message
 		code="label.administration.manageFinantialInstitution.searchDocumentTemplate" />
 </h2>
-<table id="searchDocumentTemplateTable"
-    class="table responsive table-bordered table-hover">
-    <thead>
-        <tr>
-            <th><spring:message code="label.DocumentTemplate.finantialDocumentTypes" /></th>
-            <th><spring:message code="label.DocumentTemplate.finantialEntity" /></th>
-            <%-- Operations Column --%>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <c:forEach items="${finantialDocumentTypeSet}" var="type">
-        <tr>
-            <td>
-                <c:out value="${ type.type.descriptionI18N.content }" />
-            </td>
-            <td>
-                <table>
-                    <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
-                        <c:set var="documentTemplateFile" value="${ entity.hasDocumentTemplate(type).ativeDocumentTemplateFile }" />
-                        <tr>
-                            <th><c:out value="${ entity.name.content }" /><th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <c:if test="${not empty documentTemplateFile }" >
-                                    <a href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/download/${documentTemplateFile.externalId}">
-                                        <c:out value="${ documentTemplateFile.filename }" />
-                                    </a>
-                                    &nbsp;-&nbsp;
-                                    <fmt:formatNumber
-											var="documentTemplateFileSize"
-											value="${ documentTemplateFile.size / 1024 }"
-											maxFractionDigits="1" />
-										<c:out value="${ documentTemplateFileSize }" />
-                                    KB
-                                </c:if> <c:if
-										test="${empty documentTemplateFile }">
-										<span style="color: red; font-style: italic"> <spring:message
-												code="label.DocumentTemplate.not.defined" />
-										</span>
-									</c:if></td>
-							</tr>
-						</c:forEach>
-					</table>
-				</td>
-				<td>
-					<table>
-						<c:forEach items="${ finantialInstitution.finantialEntitiesSet }"
-							var="entity">
-							<c:set var="documentTemplate"
-								value="${ entity.hasDocumentTemplate(type) }" />
-							<tr>
-								<td><c:if test="${ empty documentTemplate }">
-										<a class="btn btn-default btn-xs"
-											href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message
-												code='label.create' /></a>
-									</c:if> <c:if test="${ not empty documentTemplate }">
-										<a class="btn btn-default btn-xs"
-											href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/view/${documentTemplate.externalId}"><spring:message
-												code='label.view' /></a>
-										<a class="btn btn-default btn-xs" href="#"
-											onClick="javascript:processUpload('${documentTemplate.externalId}')"><spring:message
-												code='label.upload' /></a>
-									</c:if></td>
-							</tr>
-						</c:forEach>
-					</table>
-				</td>
-			</tr>
-		</c:forEach>
-	</tbody>
-</table>
+<c:choose>
+    <c:when test="${not empty finantialInstitution.finantialEntitiesSet}">
+        <table id="searchDocumentTemplateTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th><spring:message code="label.DocumentTemplate.finantialDocumentTypes" /></th>
+                    <th><spring:message code="label.DocumentTemplate.finantialEntity" /></th>
+                    <%-- Operations Column --%>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach items="${finantialDocumentTypeSet}" var="type">
+                <tr>
+                    <td>
+                        <c:out value="${ type.type.descriptionI18N.content }" />
+                    </td>
+                    <td>
+                        <table>
+                            <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
+                                <c:set var="documentTemplateFile" value="${ entity.hasDocumentTemplate(type).ativeDocumentTemplateFile }" />
+                                <tr>
+                                    <th><c:out value="${ entity.name.content }" /><th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <c:if test="${not empty documentTemplateFile }" >
+                                            <a href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/download/${documentTemplateFile.externalId}">
+                                                <c:out value="${ documentTemplateFile.filename }" />
+                                            </a>
+                                            &nbsp;-&nbsp;
+                                            <fmt:formatNumber
+        											var="documentTemplateFileSize"
+        											value="${ documentTemplateFile.size / 1024 }"
+        											maxFractionDigits="1" />
+        										<c:out value="${ documentTemplateFileSize }" />
+                                            KB
+                                        </c:if> <c:if
+        										test="${empty documentTemplateFile }">
+        										<span style="color: red; font-style: italic"> <spring:message
+        												code="label.DocumentTemplate.not.defined" />
+        										</span>
+        									</c:if></td>
+        							</tr>
+        						</c:forEach>
+        					</table>
+        				</td>
+        				<td>
+        					<table>
+        						<c:forEach items="${ finantialInstitution.finantialEntitiesSet }"
+        							var="entity">
+        							<c:set var="documentTemplate"
+        								value="${ entity.hasDocumentTemplate(type) }" />
+        							<tr>
+        								<td><c:if test="${ empty documentTemplate }">
+        										<a class="btn btn-default btn-xs"
+        											href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message
+        												code='label.create' /></a>
+        									</c:if> <c:if test="${ not empty documentTemplate }">
+        										<a class="btn btn-default btn-xs"
+        											href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/view/${documentTemplate.externalId}"><spring:message
+        												code='label.view' /></a>
+        										<a class="btn btn-default btn-xs" href="#"
+        											onClick="javascript:processUpload('${documentTemplate.externalId}')"><spring:message
+        												code='label.upload' /></a>
+        									</c:if></td>
+        							</tr>
+        						</c:forEach>
+        					</table>
+        				</td>
+        			</tr>
+        		</c:forEach>
+        	</tbody>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+            <spring:message code="label.noResultsFound" />
+        </div>
+    </c:otherwise>
+</c:choose>
 
 <script>
 var searchfinantialentityDataSet = [

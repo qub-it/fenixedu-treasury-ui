@@ -35,9 +35,9 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.util.Constants;
@@ -155,7 +155,7 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
     }
 
     public void uploadDocumentTemplateFile(TreasuryDocumentTemplate documentTemplate, MultipartFile requestFile, Model model) {
-        if (!requestFile.getContentType().equals(TreasuryDocumentTemplateFile.CONTENT_TYPE)) {
+        if (!requestFile.getOriginalFilename().endsWith(TreasuryDocumentTemplateFile.FILE_EXTENSION)) {
             throw new TreasuryDomainException("error.file.different.content.type");
         }
 

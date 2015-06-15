@@ -33,8 +33,8 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.springframework.stereotype.Component;
 import org.fenixedu.treasury.util.Constants;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -102,9 +102,11 @@ public class FinantialEntityController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") FinantialEntity finantialEntity, Model model, RedirectAttributes redirectAttributes) {
         setFinantialEntity(finantialEntity, model);
         try {
+            FinantialInstitution finantialInstitution = finantialEntity.getFinantialInstitution();
             deleteFinantialEntity(finantialEntity);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/managefinantialinstitution/finantialentity/", model, redirectAttributes);
+            return redirect(FinantialInstitutionController.READ_URL + finantialInstitution.getExternalId(), model,
+                    redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage("Error deleting the FinantialEntity due to " + tde.getLocalizedMessage(), model);
         }

@@ -1,71 +1,92 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
-<spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<spring:url var="datatablesUrl"
+    value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
+<spring:url var="datatablesBootstrapJsUrl"
+    value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<spring:url var="datatablesCssUrl"
+    value="/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<link rel="stylesheet" href="${datatablesCssUrl}"/>
-<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<link rel="stylesheet" href="${datatablesCssUrl}" />
+<spring:url var="datatablesI18NUrl"
+    value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+<link rel="stylesheet" type="text/css"
+    href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
-<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet"/>
-<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>						
-<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+<link
+    href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link
+    href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link
+    href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript"
+    src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script
+    src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.integration.erp.searchERPExportOperation" />
-		<small></small>
-	</h1>
+    <h1>
+        <spring:message
+            code="label.integration.erp.searchERPExportOperation" />
+        <small></small>
+    </h1>
 </div>
 <%-- NAVIGATION --%>
-	<c:if test="${not empty infoMessages}">
-				<div class="alert alert-info" role="alert">
-					
-					<c:forEach items="${infoMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty warningMessages}">
-				<div class="alert alert-warning" role="alert">
-					
-					<c:forEach items="${warningMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty errorMessages}">
-				<div class="alert alert-danger" role="alert">
-					
-					<c:forEach items="${errorMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
+<c:if test="${not empty infoMessages}">
+    <div class="alert alert-info" role="alert">
+
+        <c:forEach items="${infoMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon glyphicon-ok-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
+
+    </div>
+</c:if>
+<c:if test="${not empty warningMessages}">
+    <div class="alert alert-warning" role="alert">
+
+        <c:forEach items="${warningMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
+
+    </div>
+</c:if>
+<c:if test="${not empty errorMessages}">
+    <div class="alert alert-danger" role="alert">
+
+        <c:forEach items="${errorMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
+
+    </div>
+</c:if>
 
 <script type="text/javascript">
 	function submitOptions(tableID, formID, attributeName) {
@@ -88,71 +109,109 @@ ${portal.toolkit()}
 
 
 <div class="panel panel-default">
-<form method="get" class="form-horizontal">
-<div class="panel-body">
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.ERPExportOperation.executionDate"/></div> 
+    <form method="get" class="form-horizontal">
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.ERPExportOperation.executionDate" />
+                </div>
+                <div class="col-sm-1 control-label">
+                    <spring:message
+                        code="label.ERPExportOperation.fromExecutionDate" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="eRPExportOperation_fromExecutionDate"
+                        class="form-control" type="text"
+                        name="fromexecutiondate" bennu-date
+                        value='<c:out value='${param.executiondate }'/>' />
+                </div>
+                <div class="col-sm-1 control-label">
+                    <spring:message
+                        code="label.ERPExportOperation.toExecutionDate" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="eRPExportOperation_toExecutionDate"
+                        class="form-control" type="text"
+                        name="toexecutiondate" bennu-date
+                        value='<c:out value='${param.executiondate }'/>' />
+                </div>
+            </div>
 
-<div class="col-sm-4">
-	<input id="eRPExportOperation_executionDate" class="form-control" type="text" name="executiondate"  bennu-datetime 
-	value = '<c:out value='${not empty param.executiondate ? param.executiondate : eRPExportOperation.executionDate }'/>' />
-</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.ERPExportOperation.success"/></div> 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.ERPExportOperation.success" />
+                </div>
 
-<div class="col-sm-2">
-<select id="eRPExportOperation_success" name="success" class="form-control">
-<option value="false"><spring:message code="label.no"/></option>
-<option value="true"><spring:message code="label.yes"/></option>				
-</select>
-	<script>
+                <div class="col-sm-2">
+                    <select id="eRPExportOperation_success"
+                        name="success" class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
 		$("#eRPExportOperation_success").val('<c:out value='${not empty param.success ? param.success : eRPExportOperation.success }'/>');
-	</script>	
-</div>
-</div>		
-</div>
-<div class="panel-footer">
-	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
-</div>
-</form>
+	</script>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-default" role="button"
+                value="<spring:message code="label.search" />" />
+        </div>
+    </form>
 </div>
 
 
 <c:choose>
-	<c:when test="${not empty searcherpexportoperationResultsDataSet}">
-		<table id="searcherpexportoperationTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<%--!!!  Field names here --%>
-<th><spring:message code="label.ERPExportOperation.executionDate"/></th>
-<th><spring:message code="label.ERPExportOperation.finantialInstitution"/></th>
-<th><spring:message code="label.ERPExportOperation.success"/></th>
-<th><spring:message code="label.ERPExportOperation.corrected"/></th>
-<th><spring:message code="label.ERPExportOperation.errorLog"/></th>
-<%-- Operations Column --%>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-		<form id="deletemultiple" action="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/search/deleteMultiple" style="display:none;" method="POST">
-		</form>
-		
-		<button type="button" onClick="javascript:submitOptions('searcherpexportoperationTable', 'deletemultiple', 'eRPExportOperations')">
-			<spring:message code='label.integration.erp..deleteMultiple'/>
-		</button>
-	</c:when>
-	<c:otherwise>
-				<div class="alert alert-warning" role="alert">
-					
-					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-					
-				</div>	
-		
-	</c:otherwise>
+    <c:when test="${not empty searcherpexportoperationResultsDataSet}">
+        <table id="searcherpexportoperationTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <%--!!!  Field names here --%>
+                    <th><spring:message
+                            code="label.ERPExportOperation.executionDate" /></th>
+                    <th><spring:message
+                            code="label.ERPExportOperation.finantialInstitution" /></th>
+                    <th><spring:message
+                            code="label.ERPExportOperation.success" /></th>
+                    <th><spring:message
+                            code="label.ERPExportOperation.corrected" /></th>
+                    <th><spring:message
+                            code="label.ERPExportOperation.errorLog" /></th>
+                    <%-- Operations Column --%>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <form id="deletemultiple"
+            action="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/search/deleteMultiple"
+            style="display: none;" method="POST"></form>
+
+        <button type="button"
+            onClick="javascript:submitOptions('searcherpexportoperationTable', 'deletemultiple', 'eRPExportOperations')">
+            <spring:message code='label.integration.erp..deleteMultiple' />
+        </button>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.noResultsFound" />
+            </p>
+
+        </div>
+
+    </c:otherwise>
 </c:choose>
 
 <script>

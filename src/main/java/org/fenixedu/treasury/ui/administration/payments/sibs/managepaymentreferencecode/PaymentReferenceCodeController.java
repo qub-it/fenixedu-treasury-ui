@@ -53,16 +53,12 @@ import pt.ist.fenixframework.Atomic;
 @Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCode")
 @SpringFunctionality(app = TreasuryController.class,
         title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping(PaymentReferenceCodeController.CONTROLLER_URL)
 public class PaymentReferenceCodeController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL =
             "/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode";
-
-//
 
     @RequestMapping
     public String home(Model model) {
@@ -109,8 +105,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_URI)
     public String search(
             @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, Model model) {
         List<PaymentReferenceCode> searchpaymentreferencecodeResultsDataSet =
                 filterSearchPaymentReferenceCode(referenceCode, beginDate, endDate, state);

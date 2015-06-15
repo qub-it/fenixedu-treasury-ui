@@ -52,6 +52,6 @@ public enum InterestType {
     }
 
     public LocalizedString getDescriptionI18N() {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, String.format("label.%s.%s", getClass().getSimpleName(), name()));
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
     }
 }

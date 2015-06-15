@@ -42,13 +42,9 @@ import pt.ist.standards.geographic.Country;
 import pt.ist.standards.geographic.District;
 import pt.ist.standards.geographic.GeographicInfoLoader;
 import pt.ist.standards.geographic.Municipality;
-import pt.ist.standards.geographic.Place;
 
 public class FinantialInstitutionBean implements IBean, Serializable {
 
-    /**
-     * 
-     */
     private static final long serialVersionUID = 1L;
 
     private String fiscalNumber;
@@ -83,6 +79,7 @@ public class FinantialInstitutionBean implements IBean, Serializable {
     public FinantialInstitutionBean() {
         this.updateModelLists();
         this.setCurrenciesDataSource(Currency.findAll().collect(Collectors.toList()));
+        this.setFiscalcountryregions(FiscalCountryRegion.findAll().collect(Collectors.toList()));
     }
 
     public FinantialInstitutionBean(FinantialInstitution finantialInstitution) {
@@ -99,8 +96,9 @@ public class FinantialInstitutionBean implements IBean, Serializable {
         this.name = finantialInstitution.getName();
         this.zipCode = finantialInstitution.getZipCode();
         this.setCurrency(finantialInstitution.getCurrency());
-        this.updateModelLists();
         this.setCurrenciesDataSource(Currency.findAll().collect(Collectors.toList()));
+        this.setFiscalcountryregions(FiscalCountryRegion.findAll().collect(Collectors.toList()));
+        this.updateModelLists();
     }
 
     public Country getCountry() {
@@ -282,7 +280,7 @@ public class FinantialInstitutionBean implements IBean, Serializable {
     public void setCurrenciesDataSource(List<Currency> currencies) {
         this.currenciesDataSource = currencies.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setText(x.getIsoCode() + "-" + x.getSymbol());
+            tuple.setText(x.getIsoCode() + " - " + x.getSymbol());
             tuple.setId(x.getExternalId());
             return tuple;
         }).collect(Collectors.toList());

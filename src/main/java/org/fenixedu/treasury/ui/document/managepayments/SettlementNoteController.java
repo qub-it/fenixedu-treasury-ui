@@ -100,10 +100,6 @@ public class SettlementNoteController extends TreasuryBaseController {
         return "forward:" + SEARCH_URL;
     }
 
-    private SettlementNoteBean getSettlementNoteBean(Model model) {
-        return (SettlementNoteBean) model.asMap().get("settlementNoteBean");
-    }
-
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
         model.addAttribute("settlementNoteBeanJson", getBeanJson(bean));
         model.addAttribute("settlementNoteBean", bean);

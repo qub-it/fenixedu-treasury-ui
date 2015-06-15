@@ -1,3 +1,4 @@
+<%@ page import="org.fenixedu.treasury.domain.paymentcodes.SibsReportFile" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -9,31 +10,44 @@
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
 <spring:url var="datatablesCssUrl"
     value="/CSS/dataTables/dataTables.bootstrap.min.css" />
+
 <link rel="stylesheet" href="${datatablesCssUrl}" />
 <spring:url var="datatablesI18NUrl"
     value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
-
 <link rel="stylesheet" type="text/css"
     href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
-
-<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
-<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet"/>
-<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>						
-<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
+<link
+    href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link
+    href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link
+    href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript"
+    src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script
+    src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+
+
+
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
         <spring:message
-            code="label.administration.manageFinantialInstitution.updateFinantialEntity" />
+            code="label.administration.payments.sibs.manageSibsReportFile.createSibsReportFile" />
         <small></small>
     </h1>
 </div>
@@ -42,14 +56,17 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/read/${finantialEntity.externalId}"><spring:message
-            code="label.event.back" /></a> &nbsp;
+        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/"><spring:message
+            code="label.event.back" /></a>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
         <c:forEach items="${infoMessages}" var="message">
-            <p>${message}</p>
+            <p>
+                <span class="glyphicon glyphicon glyphicon-ok-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
         </c:forEach>
 
     </div>
@@ -58,7 +75,10 @@ ${portal.toolkit()}
     <div class="alert alert-warning" role="alert">
 
         <c:forEach items="${warningMessages}" var="message">
-            <p>${message}</p>
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
         </c:forEach>
 
     </div>
@@ -67,49 +87,40 @@ ${portal.toolkit()}
     <div class="alert alert-danger" role="alert">
 
         <c:forEach items="${errorMessages}" var="message">
-            <p>${message}</p>
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
         </c:forEach>
 
     </div>
 </c:if>
 
-<form method="post" class="form-horizontal">
+<form method="post" class="form-horizontal"
+    enctype="multipart/form-data">
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.FinantialEntity.finantialInstitution" />
+                        code="label.SibsReportFile.whenProcessedBySibs" />
                 </div>
 
-                <div class="col-sm-4 ">
-                    <p>
-                    <c:out value='${finantialEntity.finantialInstitution.name}' />
-                    </p>
+                <div class="col-sm-4">
+                    <input id="sibsReportFile_whenProcessedBySibs"
+                        class="form-control" type="text"
+                        name="whenprocessedbysibs" bennu-datetime
+                        value='<c:out value='${not empty param.whenprocessedbysibs ? param.whenprocessedbysibs : sibsReportFile.whenProcessedBySibs }'/>' />
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.FinantialEntity.code" />
+                    <spring:message
+                        code="label.SibsReportFile.uploadFile" />
                 </div>
-
                 <div class="col-sm-10">
-                    <input id="finantialEntity_code"
-                        class="form-control" type="text" name="code"
-                        value='<c:out value='${not empty param.code ? param.code : finantialEntity.code }'/>'
-                        required />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.FinantialEntity.name" />
-                </div>
-
-                <div class="col-sm-10">
-                    <input id="finantialEntity_name"
-                        class="form-control" type="text" name="name"
-                        bennu-localized-string
-                        value='${not empty param.name ? param.name : finantialEntity.name.json() }'  required />
+                    <input type="file" name="documentSibsReportFile"
+                        accept="<%= SibsReportFile.CONTENT_TYPE %>" required />
                 </div>
             </div>
         </div>
@@ -121,7 +132,7 @@ ${portal.toolkit()}
 </form>
 
 <script>
-$(document).ready(function() {
+	$(document).ready(function() {
 
-});
+	});
 </script>

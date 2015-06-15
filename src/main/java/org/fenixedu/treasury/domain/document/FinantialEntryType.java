@@ -27,8 +27,14 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.Constants;
+
 public enum FinantialEntryType {
-	DEBIT_ENTRY,
-	CREDIT_ENTRY,
-	SETTLEMENT_ENTRY;
+    DEBIT_ENTRY, CREDIT_ENTRY, SETTLEMENT_ENTRY;
+
+    public LocalizedString getDescriptionI18N() {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
+    }
 }

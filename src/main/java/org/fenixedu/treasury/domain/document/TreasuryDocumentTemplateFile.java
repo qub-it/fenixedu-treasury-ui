@@ -38,6 +38,7 @@ import pt.ist.fenixframework.Atomic;
 public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_Base {
 
     public static final String CONTENT_TYPE = "application/vnd.oasis.opendocument.text";
+    public static final String FILE_EXTENSION = ".odt";
 
     protected TreasuryDocumentTemplateFile() {
         super();

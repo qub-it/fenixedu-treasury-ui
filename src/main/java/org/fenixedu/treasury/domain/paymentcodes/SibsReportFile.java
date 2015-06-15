@@ -53,6 +53,7 @@ import pt.ist.fenixframework.Atomic;
 public class SibsReportFile extends SibsReportFile_Base {
 
     public static final String CONTENT_TYPE = "text/plain";
+    public static final String FILE_EXTENSION = ".idm";
 
     protected SibsReportFile() {
         super();
@@ -108,7 +109,7 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getReferenceCodesSet().isEmpty();
     }
 
     @Override

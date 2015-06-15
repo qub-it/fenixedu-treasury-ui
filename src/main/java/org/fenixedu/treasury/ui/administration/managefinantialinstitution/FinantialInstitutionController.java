@@ -29,7 +29,6 @@ package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,15 +39,12 @@ import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.FiscalCountryRegion;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -59,13 +55,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.standards.geographic.Country;
-import pt.ist.standards.geographic.District;
-import pt.ist.standards.geographic.GeographicInfoLoader;
-import pt.ist.standards.geographic.Municipality;
 
 //@Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",
@@ -92,7 +85,17 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     @RequestMapping
     public String home(Model model) {
         //this is the default behavior, for handling in a Spring Functionality
-        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
+        return "forward:" + SEARCH_URL;
+    }
+
+    private FinantialInstitutionBean getFinantialInstitutionBean(Model model) {
+        return (FinantialInstitutionBean) model.asMap().get("finantialInstitutionBean");
+    }
+
+    private void setFinantialInstitutionBean(FinantialInstitutionBean bean, Model model) {
+        bean.updateModelLists();
+        model.addAttribute("finantialInstitutionBeanJson", getBeanJson(bean));
+        model.addAttribute("finantialInstitutionBean", bean);
     }
 
     private FinantialInstitution getFinantialInstitution(Model m) {
@@ -109,15 +112,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "fiscalnumber",
-            required = false) String fiscalNumber, @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
+    public String search(Model model) {
         List<FinantialInstitution> searchfinantialinstitutionResultsDataSet =
                 getSearchUniverseSearchFinantialInstitutionDataSet();
 
@@ -130,33 +125,19 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         return new ArrayList<FinantialInstitution>(Bennu.getInstance().getFinantialInstitutionsSet());
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    private static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
+    public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + SEARCH_TO_VIEW_ACTION_URI;
+
+    @RequestMapping(value = SEARCH_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
-        return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read" + "/"
-                + finantialInstitution.getExternalId();
+        return "redirect:" + READ_URL + finantialInstitution.getExternalId();
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
         setFinantialInstitution(finantialInstitution, model);
         model.addAttribute("finantialDocumentTypeSet", FinantialDocumentType.findAll().collect(Collectors.toList()));
-        model.addAttribute("allowedFileType", TreasuryDocumentTemplateFile.CONTENT_TYPE);
-
-        checkFinantialInstitutionsValidation(model);
         return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
-    }
-
-    private void checkFinantialInstitutionsValidation(Model model) {
-
-        if (getFinantialInstitution(model).getErpIntegrationConfiguration() == null) {
-            addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.warning.FinantialInstitution.invalid.erpconfiguration"), model);
-        }
-
-        if (TreasurySettings.getInstance().getInterestProduct() == null) {
-            addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.warning.FinantialInstitution.invalid.interest.product"), model);
-        }
     }
 
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
@@ -170,7 +151,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage("Error deleting the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         //The default mapping is the same Read View
@@ -179,158 +160,89 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
-        return _create(null, null, null, null, null, null, null, null, null, null, null, model);
-    }
-
-    @RequestMapping(value = "/createpostback", method = RequestMethod.POST)
-    public String createpostback(@RequestParam(value = "code", required = false) String code, @RequestParam(
-            value = "fiscalnumber", required = false) String fiscalNumber,
-            @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
-        return _create(code, fiscalNumber, companyId, name, companyName, address, country, district, municipality, locality,
-                zipCode, model);
-    }
-
-    public String _create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "fiscalnumber",
-            required = false) String fiscalNumber, @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
-        model.addAttribute("finantialInstitution_fiscalCountryRegion_options",
-                FiscalCountryRegion.findAll().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_currency_options", Currency.findAll().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_country_options",
-                GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_district_options", country != null ? country.getPlaces() : new HashSet<>());
-        model.addAttribute("finantialInstitution_municipality_options", district != null ? district.getPlaces() : new HashSet<>());
+        if (getFinantialInstitutionBean(model) == null) {
+            FinantialInstitutionBean bean = new FinantialInstitutionBean();
+            setFinantialInstitutionBean(bean, model);
+        }
         return "treasury/administration/managefinantialinstitution/finantialinstitution/create";
     }
 
+    private static final String CREATEPOSTBACK_URI = "/createpostback";
+    public static final String CREATEPOSTBACK_URL = CONTROLLER_URL + CREATEPOSTBACK_URI;
+
+    @RequestMapping(value = CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = true) FinantialInstitutionBean bean,
+            Model model) {
+        setFinantialInstitutionBean(bean, model);
+        return getBeanJson(bean);
+    }
+
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "fiscalcountryregion", required = false) FiscalCountryRegion fiscalCountryRegion,
-            @RequestParam(value = "currency", required = true) Currency currency,
-            @RequestParam(value = "code", required = false) String code,
-            @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber, @RequestParam(value = "companyid",
-                    required = false) String companyId, @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
+    public String create(@RequestParam(value = "bean", required = true) FinantialInstitutionBean bean, Model model,
+            RedirectAttributes redirectAttributes) {
         try {
-            FinantialInstitution finantialInstitution =
-                    createFinantialInstitution(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName,
-                            address, country, district, municipality, locality, zipCode);
-            //Add the bean to be used in the View
-            model.addAttribute("finantialInstitution", finantialInstitution);
-            addInfoMessage("Sucess creating FinantialInstitution ...", model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + getFinantialInstitution(model).getExternalId();
+            setFinantialInstitutionBean(bean, model);
+            FinantialInstitution finantialInstitution = createFinantialInstitution(bean);
+            setFinantialInstitution(finantialInstitution, model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(model);
     }
 
     @Atomic
-    public FinantialInstitution createFinantialInstitution(FiscalCountryRegion fiscalCountryRegion, Currency currency,
-            String code, String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
-            District district, Municipality municipality, String locality, String zipCode) {
+    public FinantialInstitution createFinantialInstitution(FinantialInstitutionBean bean) {
         FinantialInstitution finantialInstitution =
-                FinantialInstitution.create(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName,
-                        address, country, district, municipality, locality, zipCode);
+                FinantialInstitution.create(bean.getFiscalcountryregion(), bean.getCurrency(), bean.getCode(),
+                        bean.getFiscalNumber(), bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(),
+                        bean.getCountry(), bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode());
         return finantialInstitution;
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, Model model) {
-        return _update(finantialInstitution, finantialInstitution.getCode(), finantialInstitution.getFiscalNumber(),
-                finantialInstitution.getCompanyId(), finantialInstitution.getName(), finantialInstitution.getCompanyName(),
-                finantialInstitution.getAddress(), finantialInstitution.getCountry(), finantialInstitution.getDistrict(),
-                finantialInstitution.getMunicipality(), finantialInstitution.getLocality(), finantialInstitution.getZipCode(),
-                model);
-    }
-
-    @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST)
-    public String updatepostback(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(value = "code",
-            required = false) String code, @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber,
-            @RequestParam(value = "companyid", required = false) String companyId,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
-        return _update(finantialInstitution, code, fiscalNumber, companyId, name, companyName, address, country, district,
-                municipality, locality, zipCode, model);
-    }
-
-    public String _update(FinantialInstitution finantialInstitution, String code, String fiscalNumber, String companyId,
-            String name, String companyName, String address, Country country, District district, Municipality municipality,
-            String locality, String zipCode, Model model) {
         setFinantialInstitution(finantialInstitution, model);
-        model.addAttribute("finantialInstitution_fiscalCountryRegion_options",
-                FiscalCountryRegion.findAll().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_currency_options", Currency.findAll().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_country_options",
-                GeographicInfoLoader.getInstance().findAllCountries().collect(Collectors.toList()));
-        model.addAttribute("finantialInstitution_district_options", country != null ? country.getPlaces() : new HashSet<>());
-        model.addAttribute("finantialInstitution_municipality_options", district != null ? district.getPlaces() : new HashSet<>());
+        if (getFinantialInstitutionBean(model) == null) {
+            setFinantialInstitutionBean(new FinantialInstitutionBean(finantialInstitution), model);
+        }
         return "treasury/administration/managefinantialinstitution/finantialinstitution/update";
+    }
+
+    private static final String UPDATEPOSTBACK_URI = "/updatepostback/";
+    public static final String UPDATEPOSTBACK_URL = CONTROLLER_URL + UPDATEPOSTBACK_URI;
+
+    @RequestMapping(value = UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8")
+    public @ResponseBody String updatepostback(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(
+            value = "bean", required = true) FinantialInstitutionBean bean, Model model) {
+        setFinantialInstitutionBean(bean, model);
+        return getBeanJson(bean);
     }
 
 //				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(
-            value = "fiscalcountryregion", required = false) FiscalCountryRegion fiscalCountryRegion, @RequestParam(
-            value = "currency", required = false) Currency currency, @RequestParam(value = "code", required = false) String code,
-            @RequestParam(value = "fiscalnumber", required = false) String fiscalNumber, @RequestParam(value = "companyid",
-                    required = false) String companyId, @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "companyname", required = false) String companyName, @RequestParam(value = "address",
-                    required = false) String address, @RequestParam(value = "country", required = false) Country country,
-            @RequestParam(value = "district", required = false) District district, @RequestParam(value = "municipality",
-                    required = false) Municipality municipality,
-            @RequestParam(value = "locality", required = false) String locality, @RequestParam(value = "zipcode",
-                    required = false) String zipCode, Model model) {
-
+    public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(value = "bean",
+            required = true) FinantialInstitutionBean bean, Model model, RedirectAttributes redirectAttributes) {
         setFinantialInstitution(finantialInstitution, model);
-
+        setFinantialInstitutionBean(bean, model);
         try {
-            updateFinantialInstitution(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName, address,
-                    country, district, municipality, locality, zipCode, model);
+            updateFinantialInstitution(bean, model);
 
-            addInfoMessage("Sucess updating FinantialInstitution ...", model);
-            return "redirect:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + getFinantialInstitution(model).getExternalId();
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.edit"), model);
+            return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage("Error creating the FinantialInstitution due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.edit") + ex.getLocalizedMessage(), model);
         }
-
         return update(finantialInstitution, model);
     }
 
     @Atomic
-    public void updateFinantialInstitution(FiscalCountryRegion fiscalCountryRegion, Currency currency, String code,
-            String fiscalNumber, String companyId, String name, String companyName, String address, Country country,
-            District district, Municipality municipality, String locality, String zipCode, Model m) {
-
-        getFinantialInstitution(m).edit(fiscalCountryRegion, currency, code, fiscalNumber, companyId, name, companyName, address,
-                country, district, municipality, locality, zipCode);
+    public void updateFinantialInstitution(FinantialInstitutionBean bean, Model m) {
+        getFinantialInstitution(m).edit(bean.getFiscalcountryregion(), bean.getCurrency(), bean.getCode(),
+                bean.getFiscalNumber(), bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(),
+                bean.getCountry(), bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode());
     }
 
     @RequestMapping(value = "/read/{oid}/exportproductsintegrationfile", produces = "text/xml;charset=Windows-1252")

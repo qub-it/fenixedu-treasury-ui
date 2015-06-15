@@ -19,9 +19,7 @@
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 ${portal.angularToolkit()} 
-<%-- ${portal.toolkit()}--%>
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
@@ -50,7 +48,7 @@ ${portal.angularToolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}"><spring:message
-			code="label.event.back" /></a> &nbsp;|&nbsp;
+			code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -81,28 +79,55 @@ ${portal.angularToolkit()}
 </c:if>
 
 <script>
-angular.module('changeExample', []).controller('ExampleController', ['$scope', function($scope) {
-	$scope.country="uninitialized";
-	$scope.district="uninitialized";
-	$scope.municipality="uninitialized";
-	
-	$scope.change = function(newValue, oldValue) {
-		var form = $('form[name="' + $scope.form.$name + '"]');
-		
-		if(oldValue !== "uninitialized" && newValue !== oldValue) {
-			form.attr("action", form.find('input[name="postback"]').attr('value'));
-			form.submit();
-		}
-	};
-}]);
+    angular
+            .module('angularAppFinantialInstitution', [ 'ngSanitize', 'ui.select' ])
+            .controller(
+                    'FinantialInstitutionController',
+                    [
+                            '$scope',
+                            function($scope) {
+
+                                $scope.object = angular
+                                        .fromJson('${finantialInstitutionBeanJson}');
+
+                                $scope.postBack = createAngularPostbackFunction($scope);
+
+                                $scope.onCountryChange = function(country,
+                                        model) {
+                                    $scope.object.district = undefined;
+                                    $scope.object.municipality = undefined;
+                                    $scope.object.countries = undefined;
+                                    $scope.postBack(model);
+                                };
+
+                                $scope.onDistrictChange = function(district,
+                                        model) {
+                                    $scope.object.municipality = undefined;
+                                    $scope.object.countries = undefined;
+                                    $scope.object.districts = undefined;
+                                    $scope.postBack(model);
+                                };
+
+                                $scope.onMunicipalityChange = function(
+                                        municipality, model) {
+                                };
+
+                                $scope.submitForm = function (model) {
+                                    $scope.object.countries = undefined;
+                                    $scope.object.districts = undefined;
+                                    $scope.object.municipalities = undefined;
+                                }
+                            } ]);
 </script>
 
 <form name='form' method="post" class="form-horizontal"
-	ng-app="changeExample" ng-controller="ExampleController"
+	ng-app="angularAppFinantialInstitution" ng-controller="FinantialInstitutionController" ng-submit="submitForm($model)"
 	action='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}'>
 
 	<input type="hidden" name="postback"
 		value='${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/updatepostback/${finantialInstitution.externalId}' />
+    <input name="bean" type="hidden" value="{{ object }}" />
+
 	<div class="panel panel-default">
 		<div class="panel-body">
             <div class="form-group row">
@@ -110,9 +135,14 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
                     <spring:message code="label.FinantialInstitution.fiscalCountryRegion" />
                 </div>
                 <div class="col-sm-4">
-                    <select id="finantialInstitution_fiscalCountryRegion"
-                        class="js-example-basic-single" name="fiscalcountryregion">
-                    </select>
+                    <ui-select id="finantialInstitution_fiscalCountryRegion"
+                        ng-model="$parent.object.fiscalcountryregion" theme="bootstrap"
+                        ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="region.id as region in object.fiscalcountryregions| filter: $select.search">
+                            <span ng-bind-html="region.text | highlight: $select.search"></span>
+                        </ui-select-choices> 
+                    </ui-select>
                 </div>
             </div>
             <div class="form-group row">
@@ -120,9 +150,14 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
                     <spring:message code="label.FinantialInstitution.currency" />
                 </div>
                 <div class="col-sm-4">
-                    <select id="finantialInstitution_currency"
-                        class="js-example-basic-single" name="currency">
-                    </select>
+                    <ui-select id="finantialInstitution_currency"
+                        ng-model="$parent.object.currency" theme="bootstrap"
+                        ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="currency.id as currency in object.currenciesDataSource| filter: $select.search">
+                            <span ng-bind-html="currency.text | highlight: $select.search"></span>
+                        </ui-select-choices> 
+                    </ui-select>
                 </div>
             </div>
 			<div class="form-group row">
@@ -130,66 +165,67 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 					<spring:message code="label.FinantialInstitution.code" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_code" class="form-control"
-						type="text" name="code"
-						value='<c:out value='${not empty param.code ? param.code : finantialInstitution.code }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_code" class="form-control"
+                        ng-model="object.code" type="text" required
+                        value='<c:out value='${not empty param.code ? param.code : finantialInstitution.code }'/>' />
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.fiscalNumber" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_fiscalNumber" class="form-control"
-						type="text" name="fiscalnumber"
-						value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : finantialInstitution.fiscalNumber }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_fiscalNumber" class="form-control"
+                        type="text" ng-model="object.fiscalNumber"
+                        required
+                        value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : finantialInstitution.fiscalNumber }'/>' />
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.companyId" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_companyId" class="form-control"
-						type="text" name="companyid"
-						value='<c:out value='${not empty param.companyid ? param.companyid : finantialInstitution.companyId }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_companyId" class="form-control"
+                        ng-model="object.companyId" type="text"
+                        value='<c:out value='${not empty param.companyid ? param.companyid : finantialInstitution.companyId }'/>' />
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.name" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_name" class="form-control"
-						type="text" name="name"
-						value='<c:out value='${not empty param.name ? param.name : finantialInstitution.name }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_name" class="form-control"
+                        ng-model="object.name" type="text" required
+                        value='<c:out value='${not empty param.name ? param.name : finantialInstitution.name }'/>' />
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.companyName" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_companyName" class="form-control"
-						type="text" name="companyname"
-						value='<c:out value='${not empty param.companyname ? param.companyname : finantialInstitution.companyName }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_companyName" class="form-control"
+                        ng-model="object.companyName" type="text"
+                        value='<c:out value='${not empty param.companyname ? param.companyname : finantialInstitution.companyName }'/>' />
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.address" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_address" class="form-control"
-						type="text" name="address"
-						value='<c:out value='${not empty param.address ? param.address : finantialInstitution.address }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_address" class="form-control"
+                        ng-model="object.address" type="text" 
+                        value='<c:out value='${not empty param.address ? param.address : finantialInstitution.address }'/>' />
+                </div>
 			</div>
 			<div class="form-group row" id="finantialInstitution_country_div">
 				<div class="col-sm-2 control-label">
@@ -197,62 +233,64 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 				</div>
 
                 <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="finantialInstitution_country"
-                        class="js-example-basic-single" name="country" ng-model="country"
-                        ng-change="change(country, '{{country}}')">
-                        <option value=""></option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-                    </select>
+                    <ui-select ng-model="$parent.object.country" on-select="onCountryChange($item, $model)" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="country.id as country in object.countries | filter: $select.search"> 
+                            <span ng-bind-html="country.text | highlight: $select.search"></span> 
+                        </ui-select-choices> 
+                    </ui-select>
                 </div>
 			</div>
-			<div class="form-group row" id="finantialInstitution_district_div">
+			<div class="form-group row" id="finantialInstitution_district_div" ng-hide="object.districts === undefined || object.districts.length === 0">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.district" />
 				</div>
 
                 <div class="col-sm-4">
-                    <select id="finantialInstitution_district"
-                        class="js-example-basic-single" name="district"
-                        ng-model="district" ng-change="change(district, '{{district}}')">
-                        <option value=""></option>
-                    </select>
+                    <ui-select ng-model="$parent.object.district" on-select="onDistrictChange($item, $model)" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="district.id as district in object.districts | filter: $select.search">
+                            <span ng-bind-html="district.text | highlight: $select.search"></span>
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
 			</div>
-			<div class="form-group row" id="finantialInstitution_municipality_div">
+			<div class="form-group row" id="finantialInstitution_municipality_div" ng-hide="object.municipalities === undefined || object.municipalities.length === 0">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.municipality" />
 				</div>
 
-				<div class="col-sm-4">
-					<select id="finantialInstitution_municipality"
-						class="js-example-basic-single" name="municipality"
-						ng-model="municipality">
-						<option value=""></option>
-					</select>
-				</div>
+                <div class="col-sm-4">
+                    <ui-select ng-model="$parent.object.municipality" on-select="onMunicipalityChange($item, $model)" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="municipality.id as municipality in object.municipalities | filter: $select.search">
+                            <span ng-bind-html="municipality.text | highlight: $select.search"></span>
+                        </ui-select-choices> 
+                    </ui-select>
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.locality" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_locality" class="form-control"
-						type="text" name="locality"
-						value='<c:out value='${not empty param.locality ? param.locality : finantialInstitution.locality }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_locality" class="form-control"
+                        ng-model="object.locality" type="text"
+                        value='<c:out value='${not empty param.locality ? param.locality : finantialInstitution.locality }'/>' />
+                </div>
 			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialInstitution.zipCode" />
 				</div>
 
-				<div class="col-sm-10">
-					<input id="finantialInstitution_zipCode" class="form-control"
-						type="text" name="zipcode"
-						value='<c:out value='${not empty param.zipcode ? param.zipcode : finantialInstitution.zipCode }'/>' />
-				</div>
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_zipCode" class="form-control"
+                        ng-model="object.zipCode" type="text"
+                        display="none"
+                        value='<c:out value='${not empty param.zipcode ? param.zipcode : finantialInstitution.zipCode }'/>' />
+                </div>
 			</div>
 		</div>
 		<div class="panel-footer">
@@ -264,85 +302,5 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 <script>
 $(document).ready(function() {
-    fiscalCountryRegion_options = [
-        <c:forEach items="${finantialInstitution_fiscalCountryRegion_options}" var="fiscalCountryRegion">
-        {
-            "id"   : "<c:out value='${fiscalCountryRegion.externalId}'/>",
-            "text" : "<c:out value='${fiscalCountryRegion.name.content}'/>",
-        },
-        </c:forEach>
-    ];
-    currency_options = [
-       <c:forEach items="${finantialInstitution_currency_options}" var="currency">
-       {
-           "id"   : "<c:out value='${currency.externalId}'/>",
-           "text" : "<c:out value='${currency.isoCode}'/>",
-       },
-       </c:forEach>
-    ];        
-    country_options = [
-        <c:forEach items="${finantialInstitution_country_options}" var="country">
-        {
-            "id"   : "<pf:placeCode place='${country}'/>",
-            "text" : "<pf:placeName place='${country}'/>",
-        },
-        </c:forEach>
-    ];
-    district_options = [
-        <c:forEach items="${finantialInstitution_district_options}" var="district">
-        {
-            "id"   : "<pf:placeCode place='${district}'/>",
-            "text" : "<pf:placeName place='${district}'/>",
-        },
-        </c:forEach>
-    ];
-    municipality_options = [
-        <c:forEach items="${finantialInstitution_municipality_options}" var="municipality">
-        {
-            "id"   : "<pf:placeCode place='${municipality}'/>",
-            "text" : "<pf:placeName place='${municipality}'/>",
-        },
-        </c:forEach>
-    ];
-    var sortFunction = function(a,b) { return a.text.localeCompare(b.text) };
-	$("#finantialInstitution_country").select2(
-		{
-			data : country_options.sort( sortFunction ),
-		}	  
-	);
-	$("#finantialInstitution_district").select2(
-		{
-			data : district_options.sort( sortFunction ),
-		}	  
-    );
-	$("#finantialInstitution_municipality").select2(
-		{
-			data : municipality_options.sort( sortFunction ),
-		}	  
-	);
-    $("#finantialInstitution_fiscalCountryRegion").select2(
-        {
-            data : fiscalCountryRegion_options.sort( sortFunction ),
-        }     
-    );
-    $("#finantialInstitution_currency").select2(
-        {
-            data : currency_options.sort( sortFunction ),
-        }     
-    );  
-    <c:set var="savedCountry"><pf:placeCode place='${finantialInstitution.country}'/></c:set>
-    <c:set var="savedDistrict"><pf:placeCode place='${finantialInstitution.district}'/></c:set>
-    <c:set var="savedMunicipality"><pf:placeCode place='${finantialInstitution.municipality}'/></c:set>
-	$("#finantialInstitution_country").select2().select2('val', '${not empty param.country ? param.country : savedCountry}');
- 	$("#finantialInstitution_district").select2().select2('val', '${not empty param.country ? param.country : savedDistrict}');
- 	$("#finantialInstitution_municipality").select2().select2('val', '${not empty param.country ? param.country : savedMunicipality}');
-    $("#finantialInstitution_fiscalCountryRegion").select2().select2('val', '${not empty param.fiscalCountryRegion ? param.fiscalCountryRegion : finantialInstitution.fiscalCountryRegion.externalId}');
-    $("#finantialInstitution_currency").select2().select2('val', '${not empty param.currency ? param.currency : finantialInstitution.currency.externalId}');
-    if (district_options.length == 0) {
-        $("#finantialInstitution_district_div").hide();
-    } 
-    if (municipality_options.length == 0) {
-        $("#finantialInstitution_municipality_div").hide();
-    } 
 });
 </script>
