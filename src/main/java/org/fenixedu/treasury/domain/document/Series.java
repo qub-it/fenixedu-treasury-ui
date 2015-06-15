@@ -49,26 +49,26 @@ public class Series extends Series_Base {
         @Override
         public int compare(Series o1, Series o2) {
             int c = o1.getCode().compareTo(o2.getCode());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
-    
+
     public static final Comparator<Series> COMPARATOR_BY_DEFAULT = new Comparator<Series>() {
 
         @Override
         public int compare(final Series o1, final Series o2) {
-            if(o1.isDefaultSeries() && o2.isDefaultSeries()) {
+            if (o1.isDefaultSeries() && o2.isDefaultSeries()) {
                 return 1;
-            } else if(!o1.isDefaultSeries() && o2.isDefaultSeries()) {
+            } else if (!o1.isDefaultSeries() && o2.isDefaultSeries()) {
                 return -1;
             }
-            
+
             return COMPARATOR_BY_CODE.compare(o1, o2);
         }
-        
+
     };
-    
+
     protected Series() {
         super();
         setBennu(Bennu.getInstance());
@@ -112,8 +112,8 @@ public class Series extends Series_Base {
                 this.addDocumentNumberSeries(new DocumentNumberSeries(x, this));
             }
         });
-        
-        if(findDefault(getFinantialInstitution()).count() > 1) {
+
+        if (findDefault(getFinantialInstitution()).count() > 1) {
             throw new TreasuryDomainException("error.Series.default.not.unique");
         }
     }
@@ -122,7 +122,7 @@ public class Series extends Series_Base {
     public void edit(final String code, final LocalizedString name, final boolean externSeries, final boolean certificated,
             final boolean legacy) {
         setName(name);
-        if (code != getCode()) {
+        if (!code.equalsIgnoreCase(getCode())) {
             if (this.isSeriesUsedForAnyDocument()) {
                 throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");
             }
@@ -162,7 +162,7 @@ public class Series extends Series_Base {
         }
         return true;
     }
-    
+
     public boolean isDefaultSeries() {
         return super.getDefaultSeries();
     }
@@ -241,11 +241,11 @@ public class Series extends Series_Base {
 
         return result;
     }
-    
+
     protected static Stream<Series> findDefault(final FinantialInstitution finantialInstitution) {
         return find(finantialInstitution).stream().filter(s -> s.isDefaultSeries());
     }
-    
+
     public static Optional<Series> findUniqueDefault(final FinantialInstitution finantialInstitution) {
         return findDefault(finantialInstitution).findFirst();
     }

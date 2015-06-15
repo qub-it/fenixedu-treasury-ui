@@ -142,7 +142,7 @@ $(document).ready(function() {
     interestProduct_options = [
         <c:forEach items="${TreasurySettings_interestProduct_options}" var="element"> 
             {
-                text : "<c:out value='${element.name.content}'/>", 
+                text : "<c:out value='${element.code} - ${element.name.content}'/>", 
                 id : "<c:out value='${element.externalId}'/>"
             },
         </c:forEach>
@@ -163,9 +163,9 @@ $(document).ready(function() {
     <%-- Block for providing advancePaymentProduct options --%>
     <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
     advancedPaymentProduct_options = [
-        <c:forEach items="${TreasurySettings_advancePaymentProduct_options}" var="element"> 
+        <c:forEach items="${TreasurySettings_interestProduct_options}" var="element"> 
             {
-                text : "<c:out value='${element.name.content}'/>", 
+                text : "<c:out value='${element.code} - ${element.name.content}'/>", 
                 id : "<c:out value='${element.externalId}'/>"
             },
         </c:forEach>
@@ -178,7 +178,7 @@ $(document).ready(function() {
             );
             
             
-    $("#treasurySettings_advancedPaymentProduct").select2().select2('val', '<c:out value='${not empty param.advancedpaymentproduct ? param.advancedpaymentproduct : treasurySettings.advancedPaymentProduct.externalId }'/>');
+    $("#treasurySettings_advancedPaymentProduct").select2().select2('val', '<c:out value='${not empty param.advancedpaymentproduct ? param.advancedpaymentproduct : treasurySettings.advancePaymentProduct.externalId }'/>');
 
     <%-- End block for providing advancedPaymentProduct options --%>
 

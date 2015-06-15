@@ -116,6 +116,10 @@ public class SIBSPaymentsImporter {
     protected String getMessage(Exception ex) {
         String message = ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage();
 
+        message += "\n";
+        for (StackTraceElement el : ex.getStackTrace()) {
+            message = message + el.toString() + "\n";
+        }
         return message;
     }
 
@@ -136,6 +140,7 @@ public class SIBSPaymentsImporter {
                     processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(), inputFile.getFilename()
                             .replace("\\.inp", ""));
                 } catch (Exception e) {
+                    e.printStackTrace();
                     processResult.addError("error.manager.SIBS.processException", detailLine.getCode(), getMessage(e));
                 }
             }

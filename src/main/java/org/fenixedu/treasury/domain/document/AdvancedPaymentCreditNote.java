@@ -91,14 +91,18 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
         AdvancedPaymentCreditNote note = create(debtAccount, documentNumberSeries, documentDate);
 
         Product advancedPaymentProduct = TreasurySettings.getInstance().getAdvancePaymentProduct();
+        if (advancedPaymentProduct == null) {
+            throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.product.for.advanced.payment");
+        }
         Vat vat =
                 Vat.findActiveUnique(advancedPaymentProduct.getVatType(), debtAccount.getFinantialInstitution(), new DateTime())
                         .orElse(null);
         if (vat == null) {
-            throw new TreasuryDomainException("error.CreditNote.invalid.vat.type.for.advanced.payment");
+            throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.vat.type.for.advanced.payment");
         }
         String lineDescription =
-                BundleUtil.getString(Constants.BUNDLE, "label.CreditNote.advanced.payment.description") + description;
+                BundleUtil.getString(Constants.BUNDLE, "label.AdvancedPaymentCreditNote.advanced.payment.description")
+                        + description;
         CreditEntry entry =
                 CreditEntry.create(note, lineDescription, advancedPaymentProduct, vat, availableAmount, documentDate, null,
                         BigDecimal.ONE);

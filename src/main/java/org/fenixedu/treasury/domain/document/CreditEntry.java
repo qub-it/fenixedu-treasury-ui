@@ -30,7 +30,6 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -80,24 +79,23 @@ public class CreditEntry extends CreditEntry_Base {
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
             throw new TreasuryDomainException("error.CreditEntry.finantialDocument.not.credit.entry.type");
         }
-        
         // If from exemption than ensure debit entry is not null and the product is the same
-        if(getDebitEntry() == null) {
+        if (getFromExemption() == true && getDebitEntry() == null) {
             throw new TreasuryDomainException("error.CreditEntry.from.exemption.requires.debit.entry");
         }
-        
-        if(getDebitEntry().getProduct() != getProduct()) {
+
+        if (getDebitEntry() != null && getDebitEntry().getProduct() != getProduct()) {
             throw new TreasuryDomainException("error.CreditEntry.product.must.be.the.same.as.debit.entry");
         }
-        
+
         /* If it is from exemption then ensure that there is no credit entries 
          * from exemption created.
          */
-        
-        if(CreditEntry.findActive(getDebitEntry().getTreasuryEvent(), getProduct()).count() > 1) {
+
+        if (getFromExemption() == true && CreditEntry.findActive(getDebitEntry().getTreasuryEvent(), getProduct()).count() > 1) {
             throw new TreasuryDomainException("error.CreditEntry.from.exemption.at.most.one.per.product");
         }
-        
+
     }
 
     public boolean isFromExemption() {

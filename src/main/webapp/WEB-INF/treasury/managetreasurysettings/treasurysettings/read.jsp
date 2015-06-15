@@ -115,13 +115,13 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.interestProduct"/></th> 
                         <td>
-                            <c:out value='${treasurySettings.interestProduct.name.content}'/>
+                            <c:out value='${treasurySettings.interestProduct.code} - ${treasurySettings.interestProduct.name.content}'/>
                         </td> 
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.advancePaymentProduct"/></th> 
                         <td>
-                            <c:out value='${treasurySettings.advancePaymentProduct.name.content}'/>
+                            <c:out value='${treasurySettings.advancePaymentProduct.code} - ${treasurySettings.advancePaymentProduct.name.content}'/>
                         </td> 
                     </tr>
 				</tbody>

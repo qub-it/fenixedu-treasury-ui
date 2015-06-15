@@ -409,4 +409,20 @@ public class SettlementNote extends SettlementNote_Base {
         throw new TreasuryDomainException("error.SettlementNote.totalNetAmount.not.available");
     }
 
+    @Atomic
+    public void createAdvancedPaymentCreditNote(BigDecimal availableAmount, String comments) {
+        if (FinantialDocumentType.findForCreditNote() == null) {
+            throw new TreasuryDomainException("error.SettlementNote.non-existing.credit.note.document.type");
+        }
+        //Create the CreditNote for this amount and
+        DocumentNumberSeries documentNumberSeries =
+                DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getDocumentNumberSeries().getSeries());
+
+        AdvancedPaymentCreditNote creditNote =
+                AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries, this.getDebtAccount(),
+                        availableAmount, this.getDocumentDate(), comments);
+
+        this.setAdvancedPaymentCreditNote(creditNote);
+    }
+
 }

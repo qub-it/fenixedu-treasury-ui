@@ -7,11 +7,9 @@ import java.util.Set;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
@@ -125,17 +123,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
         //if "availableAmount" still exists, then we must create a "pending Payment" or "CreditNote"
         if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
-            //Create the CreditNote for this amount and
-            DocumentNumberSeries documentNumberSeries =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), settlementNote.getDocumentNumberSeries()
-                            .getSeries());
-
-            AdvancedPaymentCreditNote creditNote =
-                    AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries,
-                            settlementNote.getDebtAccount(), availableAmount, settlementNote.getDocumentDate(),
-                            "Adiantamento sobre pagamento SIBS Id ");
-
-            settlementNote.setAdvancedPaymentCreditNote(creditNote);
+            settlementNote.createAdvancedPaymentCreditNote(availableAmount, "Adiantamento em pagamento SIBS" + comments + "-"
+                    + sibsTransactionId);
         }
 
         PaymentEntry paymentEntry =
