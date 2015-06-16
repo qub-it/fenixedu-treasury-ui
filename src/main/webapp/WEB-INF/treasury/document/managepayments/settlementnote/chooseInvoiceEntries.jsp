@@ -131,7 +131,7 @@ ${portal.angularToolkit()}
                     <spring:message code="label.date"/>
                 </div> 
                 <div class="col-sm-4">
-                    <input  class="form-control" type="text" ng-model="object.date" required/>
+                    <input  class="form-control" type="date" ng-model="object.date" required/>
                 </div>
             </div>
             <div class="form-group row">

@@ -119,8 +119,7 @@ public class SibsInputFile extends SibsInputFile_Base {
 
     @Override
     public boolean isAccessible(User arg0) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
 }

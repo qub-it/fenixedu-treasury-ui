@@ -28,7 +28,9 @@
 package org.fenixedu.treasury.domain.paymentcodes.pool;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,7 +40,10 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.services.payments.paymentscodegenerator.PaymentCodeGenerator;
+import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialPaymentCodeGenerator;
 import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialPaymentWithCheckDigitCodeGenerator;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.LocalDate;
@@ -260,7 +265,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             if (Boolean.TRUE.equals(this.getUseCheckDigit())) {
                 _referenceCodeGenerator = new SequentialPaymentWithCheckDigitCodeGenerator(this);
             } else {
-                //Create a Sequencial CustomerFileCodeGenerator
+                _referenceCodeGenerator = new SequentialPaymentCodeGenerator(this);
             }
         }
         return _referenceCodeGenerator;
@@ -307,6 +312,37 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     public static Stream<PaymentCodePool> findByEntityCode(String entityCode) {
         return findAll().filter(x -> x.getEntityReferenceCode().equals(entityCode));
+    }
+
+    public List<PaymentReferenceCode> getPaymentCodesToExport(LocalDate localDate) {
+        if (this.getUseCheckDigit()) {
+            return Collections.EMPTY_LIST;
+        } else {
+            return this.getPaymentReferenceCodesSet().stream()
+                    .filter(x -> x.getState().equals(PaymentReferenceCodeStateType.ANNULLED) == false)
+                    .filter(x -> x.getBeginDate().isBefore(localDate) && x.getEndDate().isAfter(localDate))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public List<PaymentReferenceCode> getAnnulledPaymentCodesToExport(LocalDate localDate) {
+        if (this.getUseCheckDigit()) {
+            return Collections.EMPTY_LIST;
+        } else {
+            return this.getPaymentReferenceCodesSet().stream()
+                    .filter(x -> x.getState().equals(PaymentReferenceCodeStateType.ANNULLED) == true)
+                    .filter(x -> x.getBeginDate().isBefore(localDate) && x.getEndDate().isAfter(localDate))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    public void updatePoolReferences() {
+        if (this.getUseCheckDigit()) {
+            //do nothing
+        } else {
+            //check if needs to generate new references or not?!?!!
+        }
+
     }
 
 }

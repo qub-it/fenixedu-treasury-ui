@@ -22,11 +22,13 @@ import java.math.BigDecimal;
 
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
+import org.joda.time.LocalDate;
 
 public abstract class PaymentCodeGenerator {
     public abstract boolean canGenerateNewCode(final Customer person);
 
-    public abstract PaymentReferenceCode generateNewCodeFor(final Customer customer, BigDecimal amount);
+    public abstract PaymentReferenceCode generateNewCodeFor(final Customer customer, BigDecimal amount, LocalDate validFrom,
+            LocalDate validTo);
 
     public abstract boolean isCodeMadeByThisFactory(final PaymentReferenceCode paymentCode);
 

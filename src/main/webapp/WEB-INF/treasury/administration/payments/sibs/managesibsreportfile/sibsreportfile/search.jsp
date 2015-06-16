@@ -131,6 +131,7 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+<th><spring:message code="label.SibsReportFile.whenProcessed"/></th>
 <th><spring:message code="label.SibsReportFile.whenProcessedBySibs"/></th>
 <th><spring:message code="label.SibsReportFile.transactionsTotalAmount"/></th>
 <th><spring:message code="label.SibsReportFile.totalCost"/></th>
@@ -159,7 +160,8 @@ ${portal.toolkit()}
 			<c:forEach items="${searchsibsreportfileResultsDataSet}" var="searchResult">
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
-				"DT_RowId" : "<c:out value='${searchResult.externalId}'/>",
+				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+				"whencreated" : "<c:out value='${searchResult.versioningCreationDate}'/>",
 "whenprocessedbysibs" : '<joda:format value="${searchResult.whenProcessedBySibs}" style="S-"/>',
 "transactionstotalamount" : "<c:out value='${searchResult.transactionsTotalAmount}'/>",
 "totalcost" : "<c:out value='${searchResult.totalCost}'/>",
@@ -180,6 +182,7 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
+            { data: 'whencreated' },
 			{ data: 'whenprocessedbysibs' },
 			{ data: 'transactionstotalamount' },
 			{ data: 'totalcost' },
@@ -190,7 +193,7 @@ ${portal.toolkit()}
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 4 } 
+		               { "width": "54px", "targets": 5 } 
 		             ],
 		"data" : searchsibsreportfileDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

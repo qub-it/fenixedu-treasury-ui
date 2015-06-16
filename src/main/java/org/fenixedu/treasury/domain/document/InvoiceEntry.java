@@ -89,6 +89,11 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             final FinantialEntryType finantialEntryType, final Vat vat, final BigDecimal amount, String description,
             BigDecimal quantity, DateTime entryDateTime) {
         super.init(finantialDocument, finantialEntryType, amount, description, entryDateTime);
+
+        if (debtAccount.getClosed()) {
+            throw new TreasuryDomainException("error.InvoiceEntry.debtAccount.closed");
+        }
+
         this.setQuantity(quantity);
         this.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         this.setDebtAccount(debtAccount);

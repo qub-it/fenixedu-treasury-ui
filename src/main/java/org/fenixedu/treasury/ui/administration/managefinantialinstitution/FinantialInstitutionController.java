@@ -45,9 +45,12 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.dto.FinantialInstitutionBean;
+import org.fenixedu.treasury.domain.paymentcodes.SibsConfiguration;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsconfiguration.SibsConfigurationController;
 import org.fenixedu.treasury.ui.integration.erp.ERPConfigurationController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
@@ -314,6 +317,23 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             }
             return redirect(ERPConfigurationController.READ_URL
                     + finantialInstitution.getErpIntegrationConfiguration().getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return read(finantialInstitution, model);
+        }
+    }
+
+    @RequestMapping(value = "/read/{oid}/sibsconfigurationupdate")
+    public String processReadToSibsConfigurationUpdate(@PathVariable("oid") FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            if (finantialInstitution.getSibsConfiguration() == null) {
+                SibsConfiguration sibsConfiguration =
+                        SibsConfiguration.create(finantialInstitution, "00000", "000000000", "000000000");
+                finantialInstitution.setSibsConfiguration(sibsConfiguration);
+            }
+            return redirect(SibsConfigurationController.READ_URL + finantialInstitution.getSibsConfiguration().getExternalId(),
+                    model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return read(finantialInstitution, model);

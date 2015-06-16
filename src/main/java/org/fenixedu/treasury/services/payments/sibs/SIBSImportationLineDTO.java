@@ -105,17 +105,12 @@ public class SIBSImportationLineDTO {
         return getPaymentCode().getDescription();
     }
 
-    public Integer getStudentNumber() {
+    public String getStudentNumber() {
         if (!hasPaymentCode()) {
             return null;
         }
 
-        return null;
-//        if (!getPaymentCode().getPerson().hasStudent()) {
-//            return null;
-//        }
-//
-//        return getPaymentCode().getPerson().getStudent().getNumber();
+        return getPaymentCode().getTargetPayment().getDescription();
     }
 
     public String getDescription() {

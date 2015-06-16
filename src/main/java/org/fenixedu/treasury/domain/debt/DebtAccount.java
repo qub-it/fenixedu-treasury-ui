@@ -37,7 +37,9 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -143,10 +145,40 @@ public class DebtAccount extends DebtAccount_Base {
     @Atomic
     public void closeDebtAccount() {
         if (this.getFinantialDocumentsSet().size() > 0) {
-            throw new TreasuryDomainException("label.customer.error.debtaccountwithdocuments");
+
+            for (Invoice invoice : getInvoiceSet()) {
+                if (invoice.isPreparing()) {
+                    throw new TreasuryDomainException("label.customer.error.debtaccountwith.preparing.documents");
+                } else if (invoice.isClosed() && invoice.getOpenAmount().compareTo(BigDecimal.ZERO) > 0) {
+                    throw new TreasuryDomainException("label.customer.error.debtaccountwith.pending.documents");
+                }
+            }
+
+            for (SettlementNote settlementNote : getSettlementNoteSet()) {
+                if (settlementNote.getAdvancedPaymentCreditNote() != null) {
+
+                    if (settlementNote.getAdvancedPaymentCreditNote().isClosed()
+                            && settlementNote.getAdvancedPaymentCreditNote().getOpenAmount().compareTo(BigDecimal.ZERO) > 0) {
+                        throw new TreasuryDomainException("label.customer.error.debtaccountwith.pending.documents");
+                    } else if (settlementNote.isPreparing()) {
+                        throw new TreasuryDomainException("label.customer.error.debtaccountwith.preparing.documents");
+                    }
+                }
+            }
+
         } else {
             this.setClosed(true);
         }
+    }
+
+    @Atomic
+    public void reopenDebtAccount() {
+        this.setClosed(false);
+    }
+
+    private Set<SettlementNote> getSettlementNoteSet() {
+        return this.getFinantialDocumentsSet().stream().filter(x -> x.isSettlementNote()).map(SettlementNote.class::cast)
+                .collect(Collectors.toSet());
     }
 
     public String obtainUITotalInDebt() {
@@ -196,4 +228,5 @@ public class DebtAccount extends DebtAccount_Base {
                 .filter(x -> x.getFinantialDocument() == null || x.getFinantialDocument() != null
                         && x.getFinantialDocument().isAnnulled() == false);
     }
+
 }

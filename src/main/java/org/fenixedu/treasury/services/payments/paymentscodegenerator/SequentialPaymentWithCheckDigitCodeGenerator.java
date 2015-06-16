@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -62,8 +63,14 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
 
     @Override
     @Atomic
-    public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount) {
+    public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount, LocalDate validFrom, LocalDate validTo) {
 
+        if (validFrom == null) {
+            validFrom = referenceCodePool.getValidFrom();
+        }
+        if (validTo == null) {
+            validTo = referenceCodePool.getValidTo();
+        }
         PaymentReferenceCode lastReferenceCode = findLastPaymentReferenceCode();
         long nextReferenceCode = 0;
         if (lastReferenceCode == null) {
@@ -102,8 +109,8 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
                             + nextReferenceCode, BigDecimal.ZERO);
         }
         PaymentReferenceCode newPaymentReference =
-                PaymentReferenceCode.create(referenceCodeString, referenceCodePool.getValidFrom(),
-                        referenceCodePool.getValidTo(), PaymentReferenceCodeStateType.UNUSED, referenceCodePool);
+                PaymentReferenceCode.create(referenceCodeString, validFrom, validTo, PaymentReferenceCodeStateType.UNUSED,
+                        referenceCodePool);
         return newPaymentReference;
     }
 

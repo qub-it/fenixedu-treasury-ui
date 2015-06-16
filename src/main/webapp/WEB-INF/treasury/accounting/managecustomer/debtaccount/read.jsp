@@ -73,25 +73,31 @@ ${portal.angularToolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.externalId}"><spring:message code="label.event.back" /></a>
-    &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"><spring:message
-            code="label.event.accounting.manageCustomer.createPayment" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createreimbursement"><spring:message
-            code="label.event.accounting.manageCustomer.createReimbursement" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebtentry"><spring:message
-            code="label.event.accounting.manageCustomer.createDebtEntry" /></a>&nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><spring:message
-            code="label.event.accounting.manageCustomer.createDebitNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createcreditnote"><spring:message
-            code="label.event.accounting.manageCustomer.createCreditNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"><spring:message
-            code="label.event.accounting.manageCustomer.createExemption" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <a class=""
+    &nbsp;|&nbsp;
+
+    <c:if test='${not debtAccount.getClosed() }'>
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"><spring:message
+                code="label.event.accounting.manageCustomer.createPayment" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createreimbursement"><spring:message
+                code="label.event.accounting.manageCustomer.createReimbursement" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebtentry"><spring:message
+                code="label.event.accounting.manageCustomer.createDebtEntry" /></a>&nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><spring:message
+                code="label.event.accounting.manageCustomer.createDebitNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createcreditnote"><spring:message
+                code="label.event.accounting.manageCustomer.createCreditNote" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createexemption"><spring:message
+                code="label.event.accounting.manageCustomer.createExemption" /></a> &nbsp;|&nbsp;
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <a class=""
+            href="${pageContext.request.contextPath}/academictreasury/createdebts/operations/${debtAccount.externalId}"> <spring:message
+                code="label.event.accounting.manageCustomer.createDebt" />&nbsp;|&nbsp;
+        </a>
+    </c:if>
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"> <spring:message
             code="label.event.accounting.manageCustomer.readEvent" />
-    </a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <a class=""
-        href="${pageContext.request.contextPath}/academictreasury/createdebts/operations/${debtAccount.externalId}"> <spring:message
-            code="label.event.accounting.manageCustomer.createDebt" />
-    </a>
+    </a> 
 
 </div>
 <c:if test="${not empty infoMessages}">
@@ -384,16 +390,15 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.FinantialDocument.documentDate" />
                             </datatables:columnHead>
-                            <c:out
-                                      value="${payment.documentDate}" />  
-                         </datatables:column> 
+                            <c:out value="${payment.documentDate}" />
+                        </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
                                 <spring:message code="label.SettlementEntry.finantialDocument" />
                             </datatables:columnHead>
                             <a href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${payment.externalId}"> <c:out
-                                      value="${payment.uiDocumentNumber}" />  
-                         </datatables:column> 
+                                    value="${payment.uiDocumentNumber}" />
+                        </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
                                 <spring:message code="label.SettlementNote.settlementEntries" />
@@ -407,6 +412,11 @@ ${portal.angularToolkit()}
                                         <li><c:out value="[ -${payment.currency.getValueFor(settlementEntry.amount)} ] ${settlementEntry.description}    " /></li>
                                     </c:if>
                                 </c:forEach>
+                                <c:if test='${not empty payment.advancedPaymentCreditNote }'>
+                                    <c:forEach var="advancedPaymentEntry" items="${payment.advancedPaymentCreditNote.creditEntriesSet}">
+                                        <li><c:out value="[ -${payment.currency.getValueFor(advancedPaymentEntry.amount)} ] ${advancedPaymentEntry.description}    " /></li>
+                                    </c:forEach>
+                                </c:if>
                             </ul>
                         </datatables:column>
                         <datatables:column>
@@ -428,13 +438,13 @@ ${portal.angularToolkit()}
                         </datatables:column>
                     </datatables:table>
                     <script>
- 																					createDataTables(
- 																							'paymentsDataSet',
- 																							false,
- 																							false,
- 																							false,
- 																							"${pageContext.request.contextPath}",
- 																							"${datatablesI18NUrl}");
+																					createDataTables(
+																							'paymentsDataSet',
+																							false,
+																							false,
+																							false,
+																							"${pageContext.request.contextPath}",
+																							"${datatablesI18NUrl}");
 																				</script>
                 </c:when>
                 <c:otherwise>

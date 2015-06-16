@@ -28,9 +28,14 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
     public abstract SettlementNote processPayment(final User person, final BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments);
 
-    public abstract String getDescription(final PaymentCodeTarget targetPaymentCode);
+    public abstract String getDescription();
 
-//    public IPaymentCodeTransactionReport getTransactionReportOnDate(final DateTime when);
+    public String getTargetPayorDescription() {
+        if (getReferenceDebtAccount() != null) {
+            return getReferenceDebtAccount().getCustomer().getCode() + "-" + getReferenceDebtAccount().getCustomer().getName();
+        }
+        return "----";
+    }
 
     public abstract boolean isPaymentCodeFor(final TreasuryEvent event);
 

@@ -111,6 +111,7 @@ ${portal.toolkit()}
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
+                    <th><spring:message code="label.SibsInputFile.whenUploaded"/></th>
 <th><spring:message code="label.SibsInputFile.whenProcessedBySibs"/></th>
 <th><spring:message code="label.SibsInputFile.uploader"/></th>
 <%-- Operations Column --%>
@@ -138,6 +139,7 @@ ${portal.toolkit()}
                 <%-- Field access / formatting  here CHANGE_ME --%>
                 {
                 "DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+                "whencreated" : "<c:out value='${searchResult.versioningCreationDate}'/>",                
 "whenprocessedbysibs" : "<c:out value='${searchResult.whenProcessedBySibs}'/>",
 "uploader" : "<c:out value='${searchResult.uploader.name}'/>",
 "actions" :
@@ -156,6 +158,7 @@ ${portal.toolkit()}
             url : "${datatablesI18NUrl}",           
         },
         "columns": [
+{ data: 'whencreated' },
             { data: 'whenprocessedbysibs' },
             { data: 'uploader' },
             { data: 'actions' }
@@ -164,7 +167,7 @@ ${portal.toolkit()}
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [
         //54
-                       { "width": "54px", "targets": 2 } 
+                       { "width": "54px", "targets": 3 } 
                      ],
         "data" : searchsibsinputfileDataSet,
         //Documentation: https://datatables.net/reference/option/dom

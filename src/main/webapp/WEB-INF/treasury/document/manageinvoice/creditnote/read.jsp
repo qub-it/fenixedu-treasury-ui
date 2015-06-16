@@ -167,10 +167,12 @@ ${portal.toolkit()}
             </a> &nbsp;|&nbsp; 
 		</c:if>
         <c:if test="${creditNote.isClosed()}">
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-            <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullCreditNote" />
-            </a> &nbsp;|&nbsp;
-			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            <c:if test="${creditNote.openAmount > 0  }">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullCreditNote" />
+                </a> &nbsp;|&nbsp;
+            </c:if>
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationfile"><spring:message
                     code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
 

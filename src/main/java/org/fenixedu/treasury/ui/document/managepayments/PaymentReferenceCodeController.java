@@ -38,6 +38,7 @@ import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBea
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -113,6 +114,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                 debitNote.getDebtAccount().getFinantialInstitution().getPaymentCodePoolsSet().stream()
                         .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
         bean.setPaymentCodePoolDataSource(activePools);
+        bean.setBeginDate(new LocalDate());
+        bean.setEndDate(debitNote.getDocumentDueDate());
+
         this.setPaymentReferenceCodeBean(bean, model);
 
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
@@ -147,11 +151,13 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         try {
 
+            LocalDate fromDate = new LocalDate();
+
             PaymentReferenceCode paymentReferenceCode =
                     bean.getPaymentCodePool()
                             .getReferenceCodeGenerator()
                             .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(),
-                                    bean.getDebitNote().getOpenAmount());
+                                    bean.getDebitNote().getOpenAmount(), bean.getBeginDate(), bean.getEndDate());
 
             paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
             //Success Validation

@@ -152,8 +152,7 @@ public class SibsReportFile extends SibsReportFile_Base {
 
     @Override
     public boolean isAccessible(User arg0) {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
 
     @Atomic

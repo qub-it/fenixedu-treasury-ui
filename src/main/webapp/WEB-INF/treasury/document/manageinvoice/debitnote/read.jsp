@@ -1,5 +1,4 @@
 <%@page import="java.math.BigDecimal"%>
-<%@page import="org.fenixedu.treasury.services.payments.paymentscodegenerator.CheckDigitGenerator"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -119,17 +118,17 @@ ${portal.toolkit()}
                     <p>
                         <spring:message code="label.document.manageInvoice.readDebitNote.confirmAnull" />
                     </p>
-                    <br/><br/>
+                    <br /> <br />
                     <div class="form">
-                    <div class="form-group row">
-                        <div class="col-sm-4 control-label">
-                            <spring:message code="label.DebitNote.annulledReason" />
-                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-4 control-label">
+                                <spring:message code="label.DebitNote.annulledReason" />
+                            </div>
 
-                        <div class="col-sm-8">
-                            <input id="debitNote_anullReason" class="form-control" type="text" name="reason" required value='' />
+                            <div class="col-sm-8">
+                                <input id="debitNote_anullReason" class="form-control" type="text" name="reason" required value='' />
+                            </div>
                         </div>
-                    </div>
                     </div>
 
 
@@ -210,18 +209,22 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
             </a> &nbsp;|&nbsp; 
 		</c:if>
         <c:if test="${debitNote.isClosed()}">
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-            <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
-            </a> &nbsp;|&nbsp;		
-			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            <c:if test="${debitNote.openAmount > 0  }">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
+                </a> &nbsp;|&nbsp;		
+            </c:if>
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message
                     code="label.event.document.manageInvoice.createCreditNote" /></a>
 		&nbsp;|&nbsp;
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-                href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}"><spring:message
-                    code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" /></a>
+            <c:if test="${debitNote.openAmount > 0  }">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+                    href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}"><spring:message
+                        code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" /></a>
         &nbsp;|&nbsp;
-		</c:if>
+            </c:if>
+        </c:if>
         <c:if test="${not debitNote.isPreparing()}">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"><spring:message
@@ -307,10 +310,10 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                             </c:if> <c:out value='${debitNote.state.descriptionI18N.content}' /> </span></td>
                     </tr>
                     <c:if test="${debitNote.isAnnulled()}">
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.annulledReason" /></th>
-                        <td><c:out value='${debitNote.annulledReason}' /></td>
-                    </tr>
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.annulledReason" /></th>
+                            <td><c:out value='${debitNote.annulledReason}' /></td>
+                        </tr>
                     </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
@@ -327,15 +330,15 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
-                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' />
-                        <c:if test="${debitNote.paymentCodesSet.size()>0 }">
-                        <ul>
-                            <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
-                                <li> <c:out value="${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode} - ${paymentcode.paymentReferenceCode.formattedCode}"/></li>
-                            </c:forEach>
-                            </ul>
-                        </c:if>
-                        </td>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /> <c:if
+                                test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
+                                <ul>
+                                    <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
+                                        <li><c:out
+                                                value="${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode} - ${paymentcode.paymentReferenceCode.formattedCode}" /></li>
+                                    </c:forEach>
+                                </ul>
+                            </c:if></td>
                     </tr>
                     <c:if test="${not empty debitNote.relatedSettlementEntries }">
                         <tr>
@@ -344,7 +347,7 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                                 <ul>
                                     <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
                                         <li><c:out
-                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
                                     </c:forEach>
                                 </ul>
                             </td>

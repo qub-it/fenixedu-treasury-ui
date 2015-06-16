@@ -108,6 +108,15 @@ class PaymentMethod {
 	LocalizedString name;
 }
 
+
+class integration.Configuration
+{
+       String code;
+       String externalURL;
+       String username;
+       String password;
+}
+
 /*-----------
  * Finantial 
  * ----------*/
@@ -407,6 +416,27 @@ class tariff.GlobalInterestRate {
  * ----
  */
 
+class paymentcodes.SibsConfiguration extends integration.Configuration
+{
+    //No fields for now...
+    String entityReferenceCode;
+    String sourceInstitutionId;
+    String destinationInstitutionId;
+}
+
+ relation SibsConfigurationFinantialInstitution {
+       FinantialInstitution playsRole finantialInstitution
+       {
+           multiplicity 1..1;
+       }
+       
+       paymentcodes.SibsConfiguration playsRole sibsConfiguration
+       {
+           multiplicity 0..1;
+       }
+    }
+
+
 class paymentcodes.PaymentReferenceCode
 {
        String referenceCode;
@@ -555,14 +585,14 @@ class paymentcodes.PaymentReferenceCode
             }
         }
         
+        class paymentcodes.SibsOutputFile extends .org.fenixedu.bennu.io.domain.GenericFile
+        {
+      String errorLog;
+      String infoLog;
+      String printedPaymentCodes;
+        }
+        
 
-class integration.Configuration
-{
-       String code;
-       String externalURL;
-       String username;
-       String password;
-}
 
 class integration.OperationFile extends .org.fenixedu.bennu.io.domain.GenericFile 
 {

@@ -321,6 +321,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             String sibsTransactionId, String comments) {
 
         if (isProcessed()) {
+
+            //Check with SibsTransactionDetail if it is a new SIBS Payment
             return null;
         }
 
@@ -328,7 +330,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.process.invalid.codes");
         }
 
-        return this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
+        SettlementNote note =
+                this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
+
+        return note;
 
     }
 

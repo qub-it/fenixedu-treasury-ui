@@ -58,7 +58,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     }
 
     @Override
-    public String getDescription(PaymentCodeTarget targetPaymentCode) {
+    public String getDescription() {
         // TODO Auto-generated method stub
         return null;
     }

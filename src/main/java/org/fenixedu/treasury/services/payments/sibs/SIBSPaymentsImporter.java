@@ -188,8 +188,7 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
         }
 
-        if (codeToProcess.isProcessed()
-                && codeToProcess.getVersioningUpdateDate().isBefore(detailLine.getWhenOccuredTransaction())) {
+        if (codeToProcess.isProcessed()) {
             result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
         }
 

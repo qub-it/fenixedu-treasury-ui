@@ -140,6 +140,24 @@ ${portal.angularToolkit()}
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.beginDate" />
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="date" ng-model="object.beginDate" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.endDate" />
+                </div>
+
+                <div class="col-sm-8">
+                    <input type="date" ng-model="object.endDate" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentReferenceCode.paymentCodePool" />
                 </div>
 
