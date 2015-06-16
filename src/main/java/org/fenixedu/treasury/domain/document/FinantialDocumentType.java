@@ -94,10 +94,8 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     }
 
     public boolean isDeletable() {
-        if (this.getFinantialDocumentsSet().size() > 0) {
-            return false;
-        }
-        return true;
+        return getFinantialDocumentsSet().isEmpty() && getDocumentNumberSeriesSet().isEmpty()
+                && getTreasuryDocumentTemplatesSet().isEmpty();
     }
 
     @Atomic

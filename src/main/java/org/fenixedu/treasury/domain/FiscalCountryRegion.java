@@ -96,7 +96,7 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getFinantialInstitutionsSet().isEmpty();
     }
 
     @Atomic

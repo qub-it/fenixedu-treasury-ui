@@ -185,7 +185,7 @@ ${portal.toolkit()}
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 				"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 				"vattype" : "<c:out value='${searchResult.vatType.name.content}'/>",
-				"taxrate" : "<c:out value='${searchResult.taxRate}'/>",
+				"taxrate" : "<c:out value='${searchResult.taxRate}'/>%",
 // ACFSILVA "begindate" : "<c:out value='${searchResult.beginDate.toString(\'yyyy-MM-dd\')}'/>",
 				"begindate" : "<joda:format value='${searchResult.beginDate}' style='S-' />",
 // ACFSILVA "enddate" : "<c:out value='${searchResult.endDate.toString(\'yyyy-MM-dd\')}'/>",

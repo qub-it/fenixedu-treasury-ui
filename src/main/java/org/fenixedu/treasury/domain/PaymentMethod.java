@@ -28,11 +28,9 @@
 package org.fenixedu.treasury.domain;
 
 import java.util.Locale;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -79,7 +77,8 @@ public class PaymentMethod extends PaymentMethod_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getPaymentCodePoolPaymentMethodSet().isEmpty() && getPaymentEntriesSet().isEmpty()
+                && getReimbursementEntriesSet().isEmpty();
     }
 
     @Atomic
@@ -99,19 +98,19 @@ public class PaymentMethod extends PaymentMethod_Base {
      ************/
     // @formatter: on
 
-    
-	@Atomic
-	public static void initializePaymentMethod()
-	{
-		if (PaymentMethod.findAll().count() == 0)
-		{
-			PaymentMethod.create("MON", new LocalizedString(Locale.getDefault(),BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.MON")));
-			PaymentMethod.create("WTR", new LocalizedString(Locale.getDefault(),BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.WTR")));
-			PaymentMethod.create("ELE", new LocalizedString(Locale.getDefault(),BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")));
-			PaymentMethod.create("CCR", new LocalizedString(Locale.getDefault(),BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")));
-		}
-	}
-
+    @Atomic
+    public static void initializePaymentMethod() {
+        if (PaymentMethod.findAll().count() == 0) {
+            PaymentMethod.create("MON",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.MON")));
+            PaymentMethod.create("WTR",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.WTR")));
+            PaymentMethod.create("ELE",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")));
+            PaymentMethod.create("CCR",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")));
+        }
+    }
 
     public static Stream<PaymentMethod> findAll() {
         return Bennu.getInstance().getPaymentMethodsSet().stream();

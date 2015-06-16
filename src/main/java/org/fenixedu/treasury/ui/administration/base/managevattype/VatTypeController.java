@@ -150,7 +150,7 @@ public class VatTypeController extends TreasuryBaseController {
             deleteVatType(vatType);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/managevattype/vattype/", model, redirectAttributes);
+            return redirect(SEARCH_URL, model, redirectAttributes);
 
         } catch (DomainException ex) {
             // Add error messages to the list
@@ -161,9 +161,8 @@ public class VatTypeController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        // The default mapping is the same Read View
-        return redirect("treasury/administration/base/managevattype/vattype/read/" + getVatType(model).getExternalId(), model,
-                redirectAttributes);
+        // The default mapping is the same Read View                         
+        return redirect(READ_URL + getVatType(model).getExternalId(), model, redirectAttributes);
     }
 
     //
