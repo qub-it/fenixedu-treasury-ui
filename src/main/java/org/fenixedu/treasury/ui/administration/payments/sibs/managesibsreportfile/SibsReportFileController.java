@@ -27,6 +27,7 @@
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

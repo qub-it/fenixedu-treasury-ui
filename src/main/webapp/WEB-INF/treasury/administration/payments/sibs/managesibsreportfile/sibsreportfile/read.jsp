@@ -68,7 +68,7 @@ ${portal.toolkit()}
                 <div class="modal-body">
                     <p>
                         <spring:message
-                            code="label.administration.payments.sibs.manageSibsReportFile.readSibsReportFile.confirmDelete" />
+                            code="label.administration.payments.sibs.manageSibsReportFile.readSibsReportFile.confirmDelete" arguments="${sibsReportFile.filename }"/>
                     </p>
                 </div>
                 <div class="modal-footer">
@@ -96,7 +96,7 @@ ${portal.toolkit()}
             code="label.event.back" /></a> |&nbsp;&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> |&nbsp;&nbsp; 
+            code="label.event.delete" /></a>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -157,7 +157,7 @@ ${portal.toolkit()}
                                 code="label.SibsReportFile.file" /></th>
                         <td><a
                             href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/read/download/${sibsReportFile.externalId}">
-                                <c:out                              
+                                <c:out
                                     value="${sibsReportFile.filename }" />
                         </a></td>
                     </tr>

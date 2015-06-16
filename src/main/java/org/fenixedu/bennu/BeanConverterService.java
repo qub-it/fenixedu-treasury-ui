@@ -104,8 +104,8 @@ public class BeanConverterService implements ConditionalGenericConverter {
             //throws ClassCastException if not required domain type
             return targetType.getType().cast(beanObject);
         } catch (Exception e) {
-            System.out.print("Error deserializing bean :" + e.getMessage());
-            System.out.print("Bean JSON :" + jsonElement.toString());
+            System.out.print("Error deserializing bean :" + e.getMessage() + "\n");
+            System.out.print("Bean JSON :" + jsonElement.toString() + "\n");
             return null;
         }
     }

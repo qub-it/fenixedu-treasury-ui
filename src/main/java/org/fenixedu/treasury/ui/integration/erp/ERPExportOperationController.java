@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -105,10 +106,12 @@ public class ERPExportOperationController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "executiondate", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime executionDate, @RequestParam(value = "success",
-            required = false) boolean success, Model model) {
-        List<ERPExportOperation> searcherpexportoperationResultsDataSet = filterSearchERPExportOperation(executionDate, success);
+    public String search(
+            @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime fromExecutionDate,
+            @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime toExecutionDate,
+            @RequestParam(value = "success", required = false) boolean success, Model model) {
+        List<ERPExportOperation> searcherpexportoperationResultsDataSet =
+                filterSearchERPExportOperation(fromExecutionDate, toExecutionDate, success);
 
         //add the results dataSet to the model
         model.addAttribute("searcherpexportoperationResultsDataSet", searcherpexportoperationResultsDataSet);
@@ -124,11 +127,14 @@ public class ERPExportOperationController extends TreasuryBaseController {
         return new ArrayList<ERPExportOperation>().stream();
     }
 
-    private List<ERPExportOperation> filterSearchERPExportOperation(org.joda.time.DateTime executionDate, boolean success) {
+    private List<ERPExportOperation> filterSearchERPExportOperation(DateTime fromExecutionDate, DateTime toExecutionDate,
+            boolean success) {
 
         return getSearchUniverseSearchERPExportOperationDataSet()
-                .filter(eRPExportOperation -> executionDate == null
-                        || executionDate.equals(eRPExportOperation.getExecutionDate()))
+                .filter(eRPExportOperation -> fromExecutionDate == null
+                        || toExecutionDate == null
+                        || (eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate) && eRPExportOperation
+                                .getExecutionDate().isBefore(toExecutionDate)))
                 .filter(eRPExportOperation -> eRPExportOperation.getSuccess() == success).collect(Collectors.toList());
     }
 

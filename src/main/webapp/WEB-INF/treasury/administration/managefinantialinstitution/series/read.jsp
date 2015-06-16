@@ -89,7 +89,7 @@ ${portal.toolkit()}
         class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/update/${series.externalId}"><spring:message
-            code="label.event.update" /></a> &nbsp;|&nbsp;
+            code="label.event.update" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

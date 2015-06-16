@@ -161,7 +161,6 @@ ${portal.angularToolkit()}
 						repeat="region.id as region in object.fiscalcountryregions| filter: $select.search">
 					<span ng-bind-html="region.text | highlight: $select.search"></span>
 					</ui-select-choices> </ui-select>
-
 				</div>
 			</div>
 			<div class="form-group row">
