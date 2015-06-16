@@ -173,7 +173,7 @@ public class ProductController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return redirect("treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(), model,
+        return redirect("/treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(), model,
                 redirectAttributes);
     }
 

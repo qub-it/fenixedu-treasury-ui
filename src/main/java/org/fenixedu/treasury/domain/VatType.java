@@ -79,7 +79,7 @@ public class VatType extends VatType_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getProductsSet().isEmpty() && getVatsSet().isEmpty();
     }
 
     @Atomic

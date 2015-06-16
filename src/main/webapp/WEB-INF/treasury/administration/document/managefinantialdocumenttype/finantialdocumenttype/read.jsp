@@ -100,7 +100,7 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentType.type"/></th> 
 	<td>
-		<c:out value='${finantialDocumentType.type}'/>
+		<c:out value='${finantialDocumentType.type.descriptionI18N.content}'/>
 	</td> 
 </tr>
 <tr>

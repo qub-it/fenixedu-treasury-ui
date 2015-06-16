@@ -163,7 +163,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"type" : "<c:out value='${searchResult.type}'/>",
+"type" : "<c:out value='${searchResult.type.descriptionI18N.content}'/>",
 "code" : "<c:out value='${searchResult.code}'/>",
 "name" : "<c:out value='${searchResult.name.content}'/>",
 "documentnumberseriesprefix" : "<c:out value='${searchResult.documentNumberSeriesPrefix}'/>",

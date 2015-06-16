@@ -145,7 +145,6 @@ public class SeriesController extends TreasuryBaseController {
         return "treasury/administration/document/manageseries/series/read";
     }
 
-
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
 
@@ -167,11 +166,10 @@ public class SeriesController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return redirect("treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(), model,
+        return redirect("/treasury/administration/document/manageseries/series/read/" + getSeries(model).getExternalId(), model,
                 redirectAttributes);
     }
 
-				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
@@ -183,7 +181,6 @@ public class SeriesController extends TreasuryBaseController {
         return "treasury/administration/document/manageseries/series/create";
     }
 
-				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "externseries",
@@ -252,7 +249,6 @@ public class SeriesController extends TreasuryBaseController {
         return series;
     }
 
-				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") Series series, Model model) {
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toSet()));
@@ -263,7 +259,6 @@ public class SeriesController extends TreasuryBaseController {
         return "treasury/administration/document/manageseries/series/update";
     }
 
-				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(
             @PathVariable("oid") Series series,

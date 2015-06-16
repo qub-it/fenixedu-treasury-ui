@@ -73,10 +73,7 @@ public class ProductGroup extends ProductGroup_Base {
     }
 
     public boolean isDeletable() {
-        if (getProductsSet().isEmpty()) {
-            return true;
-        }
-        return false;
+        return getProductsSet().isEmpty();
     }
 
     @Atomic

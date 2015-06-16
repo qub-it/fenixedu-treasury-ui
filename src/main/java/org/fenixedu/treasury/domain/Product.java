@@ -117,9 +117,8 @@ public class Product extends Product_Base {
     }
 
     public boolean isDeletable() {
-
-        return this.getInvoiceEntriesSet().size() == 0 || this.getTreasuryExemptionSet().size() == 0
-                || this.getTariffSet().size() == 0;
+        return getFinantialInstitutionsSet().isEmpty() && getInvoiceEntriesSet().isEmpty() && getTariffSet().isEmpty()
+                && getTreasuryExemptionSet().isEmpty() && getTreasuryEventsSet().isEmpty();
 
     }
 

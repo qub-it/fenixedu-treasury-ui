@@ -32,11 +32,11 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.administration.document.manageseries.SeriesController;
+import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -160,7 +160,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         }
 
         //The default mapping is the same Read View
-        return redirect("treasury/administration/document/managedocumentnumberseries/documentnumberseries/read/"
+        return redirect("/treasury/administration/document/managedocumentnumberseries/documentnumberseries/read/"
                 + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
     }
 

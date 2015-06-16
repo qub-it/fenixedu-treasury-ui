@@ -91,7 +91,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     }
 
     public boolean isDeletable() {
-        return this.getFinantialDocumentsSet().size() == 0;
+        return getFinantialDocumentsSet().isEmpty() && getPaymentCodePoolPaymentSeriesSet().isEmpty();
     }
 
     @Atomic
