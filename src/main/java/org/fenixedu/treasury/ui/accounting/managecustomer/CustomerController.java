@@ -106,12 +106,12 @@ public class CustomerController extends TreasuryBaseController {
     private List<Customer> filterSearchCustomer(FinantialInstitution institution) {
 
         if (institution == null) {
-            return getSearchUniverseSearchCustomerDataSet().collect(Collectors.toList());
+            return getSearchUniverseSearchCustomerDataSet().collect(Collectors.<Customer> toList());
         } else {
             return getSearchUniverseSearchCustomerDataSet().filter(
                     customer -> customer.getDebtAccountsSet().stream()
                             .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution))).collect(
-                    Collectors.toList());
+                    Collectors.<Customer> toList());
         }
     }
 

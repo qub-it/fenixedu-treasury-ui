@@ -147,7 +147,8 @@ public class DebitEntry extends DebitEntry_Base {
             return new InterestRateBean();
         }
 
-        return getTariff().getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(), getDueDate(), whenToCalculate);
+        return getTariff().getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(),
+                getDueDate(), whenToCalculate);
 
 //        if (!getTariff().getApplyInterests()) {
 //            return new InterestRateBean();
@@ -325,13 +326,14 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     @Atomic
-    public DebitEntry generateInterestRateDebitEntry(final InterestRateBean interest, final DateTime when, final DebitNote debitNote) {
+    public DebitEntry generateInterestRateDebitEntry(final InterestRateBean interest, final DateTime when,
+            final DebitNote debitNote) {
         Product product = TreasurySettings.getInstance().getInterestProduct();
-        
+
         if (product == null) {
             throw new TreasuryDomainException("error.SettlementNote.need.interest.product");
         }
-        
+
         FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
         Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
 
@@ -341,9 +343,9 @@ public class DebitEntry extends DebitEntry_Base {
                 create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
                         propertiesJsonToMap(getPropertiesJsonMap()), product, interest.getDescription(), BigDecimal.ONE,
                         activeTariff, when);
-        
+
         addInterestDebitEntries(interestEntry);
-        
+
         return interestEntry;
     }
 
@@ -410,6 +412,21 @@ public class DebitEntry extends DebitEntry_Base {
         return true;
     }
 
+    public BigDecimal amountInDebt(final LocalDate paymentDate) {
+        final Set<SettlementEntry> entries = new TreeSet<SettlementEntry>(SettlementEntry.COMPARATOR_BY_ENTRY_DATE_TIME);
+
+        BigDecimal amountToPay = getAmountWithVat();
+        for (final SettlementEntry settlementEntry : entries) {
+            if (!settlementEntry.getEntryDateTime().toLocalDate().isBefore(paymentDate)) {
+                break;
+            }
+
+            amountToPay = amountToPay.subtract(settlementEntry.getAmount());
+        }
+
+        return amountToPay;
+    }
+
     public boolean revertExemptionIfPossible(final TreasuryExemption treasuryExemption) {
         // For all credit entries found that are not processed nor closed, delete
         for (final CreditEntry creditEntry : CreditEntry.findActiveFromExemption(getTreasuryEvent(), getProduct()).collect(
@@ -449,38 +466,22 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         for (LocalDate date : eventDates) {
-            result.put(date, amountInDebtInThisDay(date));
+            result.put(date, amountInDebt(date));
         }
 
         return result;
-    }
-
-    private BigDecimal amountInDebtInThisDay(final LocalDate paymentDate) {
-        final Set<SettlementEntry> entries = new TreeSet<SettlementEntry>(SettlementEntry.COMPARATOR_BY_ENTRY_DATE_TIME);
-
-        BigDecimal amountToPay = getAmountWithVat();
-        for (final SettlementEntry settlementEntry : entries) {
-            if (!settlementEntry.getEntryDateTime().toLocalDate().isBefore(paymentDate)) {
-                break;
-            }
-
-            amountToPay = amountToPay.subtract(settlementEntry.getAmount());
-        }
-
-        return amountToPay;
     }
 
     private Map<LocalDate, BigDecimal> createdInterestEntriesMap() {
         final Map<LocalDate, BigDecimal> result = Maps.newHashMap();
-        
+
         for (final DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
             result.put(interestDebitEntry.getEntryDateTime().toLocalDate(), interestDebitEntry.getAmountWithVat());
         }
-        
+
         return result;
     }
 
-    
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
         final GsonBuilder builder = new GsonBuilder();
 
@@ -549,13 +550,12 @@ public class DebitEntry extends DebitEntry_Base {
 
     /* --- Creation methods --- */
 
-    public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
-            final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
-            final DateTime entryDateTime) {
+    public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final Vat vat,
+            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap, final Product product,
+            final String description, final BigDecimal quantity, final Tariff tariff, final DateTime entryDateTime) {
         DebitEntry entry =
-                new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
-                        quantity, tariff, entryDateTime);
+                new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap,
+                        product, description, quantity, tariff, entryDateTime);
         entry.recalculateAmountValues();
         return entry;
     }

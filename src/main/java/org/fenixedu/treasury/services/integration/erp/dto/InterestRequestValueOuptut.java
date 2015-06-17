@@ -35,7 +35,6 @@ public class InterestRequestValueOuptut implements IBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private boolean invocationSuccess = false;
     private BigDecimal interestAmount;
     private String description;
 
@@ -67,14 +66,6 @@ public class InterestRequestValueOuptut implements IBean, Serializable {
         this.description = description;
     }
     
-    public boolean isInvocationSuccess() {
-        return invocationSuccess;
-    }
-    
-    public void setInvocationSuccess(boolean invocationSuccess) {
-        this.invocationSuccess = invocationSuccess;
-    }
-
     public byte[] getInterestDocumentsContent() {
         return interestDocumentsContent;
     }

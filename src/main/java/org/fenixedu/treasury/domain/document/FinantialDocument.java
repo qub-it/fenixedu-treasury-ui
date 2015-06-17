@@ -313,31 +313,6 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList,
             Boolean includeAnulledDocuments);
 
-    @Atomic
-    public void changeState(FinantialDocumentStateType newState, String reason) {
-        //Same state, do nothing...
-        if (newState == this.getState()) {
-            return;
-        }
-
-        if (this.isPreparing()) {
-            if (newState == FinantialDocumentStateType.ANNULED) {
-                this.anullDocument(true, reason);
-            }
-
-            if (newState == FinantialDocumentStateType.CLOSED) {
-                this.closeDocument();
-            }
-        } else if (this.isClosed() && newState == FinantialDocumentStateType.ANNULED) {
-            this.anullDocument(false, reason);
-        } else {
-            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
-                    "error.FinantialDocumentState.invalid.state.change.request"));
-        }
-
-        checkRules();
-    }
-    
     // @formatter: off
     /************
      * SERVICES *

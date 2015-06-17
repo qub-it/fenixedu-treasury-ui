@@ -29,6 +29,12 @@ package org.fenixedu.treasury.services.integration.erp;
 import java.io.File;
 import java.util.Optional;
 import java.util.Set;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.nio.charset.Charset;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -40,9 +46,14 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.DocumentStatusWS;
@@ -52,6 +63,10 @@ import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueOu
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.FenixFramework;
+import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
+
+import pt.ist.fenixframework.Atomic;
 
 import com.google.common.io.Files;
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
@@ -147,40 +162,96 @@ public class ERPIntegrationService extends BennuWebService {
         validateRequestHeader(interestRequest.getFinantialInstitutionFiscalNumber());
 
         //1. Check if the the lineNumber+DebitNoteNumber is for the Customer of the FinantialInstitution
-        final Optional<? extends FinantialDocument> optionalFinantialDocument = FinantialDocument.findUniqueByDocumentNumber(interestRequest.getDebitNoteNumber());
-        
-        if(!optionalFinantialDocument.isPresent()) {
-            bean.setInvocationSuccess(false);
-            bean.setDescription("Debit note not found");
-            
-            return bean;
+        final Optional<? extends FinantialDocument> optionalFinantialDocument =
+                FinantialDocument.findUniqueByDocumentNumber(interestRequest.getDebitNoteNumber());
+
+        if (!optionalFinantialDocument.isPresent()) {
+            throw new RuntimeException("Debit note not found");
         }
-        
+
         final FinantialDocument finantialDocument = optionalFinantialDocument.get();
-        
-        if(!finantialDocument.isDebitNote()) {
-            bean.setInvocationSuccess(false);
-            bean.setDescription("Finantial document was not debit note");
-            
-            return bean;            
+
+        if (!finantialDocument.isDebitNote()) {
+            throw new RuntimeException("Finantial document was not debit note");
         }
-        
+
+        if (finantialDocument.getDebtAccount().getFinantialInstitution().getFiscalNumber()
+                .equals(interestRequest.getFinantialInstitutionFiscalNumber())) {
+            throw new RuntimeException("Finantial institution fiscal number invalid");
+        }
+
+        if (!finantialDocument.getDebtAccount().getCustomer().getCode().equals(interestRequest.getCustomerCode())) {
+            throw new RuntimeException("Customer code invalid");
+        }
+
         //2. Check if the lineNumber+DebitNoteNumber Amount is correct
-        final DebitNote debitNote = (DebitNote) finantialDocument;
-        
-        Optional<? extends FinantialDocumentEntry> debitEntry = FinantialDocumentEntry.findUniqueByEntryOrder(finantialDocument, interestRequest.getLineNumber());
-        
-        if(!debitEntry.isPresent()) {
-            
+        final Optional<? extends FinantialDocumentEntry> optionalDebitEntry =
+                FinantialDocumentEntry.findUniqueByEntryOrder(finantialDocument, interestRequest.getLineNumber());
+
+        if (!optionalDebitEntry.isPresent()) {
+            throw new RuntimeException("Debit entry not found");
         }
-        
+
+        FinantialDocumentEntry finantialDocumentEntry = optionalDebitEntry.get();
+
+        if (!(finantialDocumentEntry instanceof DebitEntry)) {
+            throw new RuntimeException("Finantial document entry not debit entry");
+        }
+
+        final DebitEntry debitEntry = (DebitEntry) finantialDocumentEntry;
+
+        final BigDecimal amountInDebt = debitEntry.amountInDebt(interestRequest.getPaymentDate());
+
+        if (!Constants.isPositive(amountInDebt)) {
+            throw new RuntimeException("Debit entry has no debt");
+        }
+
+        if (!Constants.isEqual(amountInDebt, interestRequest.getAmount())) {
+            throw new RuntimeException("Amount in debt not equal");
+        }
+
         //3 . calculate the amount of interest
+        final InterestRateBean interestRateBean = debitEntry.calculateUndebitedInterestValue(interestRequest.getPaymentDate());
 
+        bean.setInterestAmount(interestRateBean.getInterestAmount());
+        bean.setDescription(interestRateBean.getDescription());
 
-        if (interestRequest.getGenerateInterestDebitNote()) {
-            //Create DebitNote for the InterestRate
+        if (Constants.isGreaterThan(interestRateBean.getInterestAmount(), BigDecimal.ZERO)
+                && interestRequest.getGenerateInterestDebitNote()) {
+            processInterestEntries(debitEntry, interestRateBean, interestRequest.getPaymentDate());
         }
+
+        final Set<FinantialDocument> interestFinantialDocumentsSet =
+                debitEntry.getInterestDebitEntriesSet().stream().filter(l -> l.isProcessedInClosedDebitNote())
+                        .map(l -> l.getFinantialDocument()).collect(Collectors.toSet());
+
+        final String saftResult =
+                ERPExporter.exportFinantialDocumentToXML(debitEntry.getDebtAccount().getFinantialInstitution(),
+                        interestFinantialDocumentsSet);
+
+        try {
+            bean.setInterestDocumentsContent(saftResult.getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
         return bean;
+    }
+
+    @Atomic
+    private void processInterestEntries(final DebitEntry debitEntry, final InterestRateBean interestRateBean,
+            final LocalDate paymentDate) {
+
+        DocumentNumberSeries debitNoteSeries =
+                DocumentNumberSeries
+                        .find(FinantialDocumentType.findForDebitNote(), debitEntry.getDebtAccount().getFinantialInstitution())
+                        .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+
+        final DebitNote interestDebitNote =
+                DebitNote.create(debitEntry.getDebtAccount(), debitNoteSeries, paymentDate.toDateTimeAtStartOfDay());
+
+        debitEntry.generateInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(), interestDebitNote);
+        interestDebitNote.closeDocument();
     }
 
     private void validateRequestHeader(String finantialInstitution) {
