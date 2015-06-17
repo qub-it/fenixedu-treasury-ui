@@ -229,12 +229,24 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 entry.setEntryOrder(Integer.valueOf(order));
                 order = order + 1;
             }
+            this.markDocumentToExport();
         } else {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                     "error.FinantialDocumentState.invalid.state.change.request"));
 
         }
         checkRules();
+    }
+
+    @Atomic
+    public void markDocumentToExport() {
+        if (getInstitutionForExportation() == null) {
+            this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
+        }
+    }
+
+    public boolean isDocumentToExport() {
+        return getInstitutionForExportation() != null;
     }
 
     @Atomic
@@ -249,6 +261,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             if (freeEntries && this.isPreparing()) {
                 this.getFinantialDocumentEntriesSet().forEach(x -> this.removeFinantialDocumentEntries(x));
             }
+            this.markDocumentToExport();
         }
         checkRules();
     }

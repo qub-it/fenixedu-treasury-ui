@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -120,7 +119,7 @@ public class ERPExporter {
 
         // Build SAFT-AuditFile
         AuditFile auditFile = new AuditFile();
-        // ThreadInformation information =
+        // ThreadInformation information = 
         // SaftThreadRegister.retrieveCurrentThreadInformation();
 
         // Build SAFT-HEADER (Chapter 1 in AuditFile)
@@ -1101,11 +1100,9 @@ public class ERPExporter {
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
             ERPExporter saftExporter = new ERPExporter();
-            List<FinantialDocument> documents = institution.getExportableDocuments(fromDate, toDate);
+            Set<FinantialDocument> documents = institution.getExportableDocuments(fromDate, toDate);
             logger.info("Collecting " + documents.size() + " documents to export to institution " + institution.getCode());
-            String xml =
-                    saftExporter.generateERPFile(institution, fromDate, toDate, documents.stream().collect(Collectors.toSet()),
-                            true, true);
+            String xml = saftExporter.generateERPFile(institution, fromDate, toDate, documents, true, true);
 
             writeContentToExportOperation(xml, operation);
 
@@ -1166,26 +1163,26 @@ public class ERPExporter {
         operation.setFile(binaryStream);
     }
 
-    public static ERPExportOperation exportPendingsDocumentsToIntegration(String username, FinantialInstitution institution,
-            DateTime fromDate, DateTime toDate) {
-
-        List<FinantialDocument> pendingDocuments = institution.findPendingDocumentsNotExported(fromDate, toDate);
-
-        ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
-        try {
-            ERPExporter saftExporter = new ERPExporter();
-            String xml =
-                    saftExporter.generateERPFile(institution, fromDate, toDate,
-                            pendingDocuments.stream().collect(Collectors.toSet()), false, false);
-            writeContentToExportOperation(xml, operation);
-            sendDocumentsInformationToIntegration(institution, operation);
-            operation.getFinantialDocumentsSet().addAll(pendingDocuments);
-            operation.setSuccess(true);
-        } catch (Throwable t) {
-            writeError(operation, t);
-        }
-        return operation;
-    }
+//    public static ERPExportOperation exportPendingsDocumentsToIntegration(String username, FinantialInstitution institution,
+//            DateTime fromDate, DateTime toDate) {
+//
+//        List<FinantialDocument> pendingDocuments = institution.findPendingDocumentsNotExported(fromDate, toDate);
+//
+//        ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
+//        try {
+//            ERPExporter saftExporter = new ERPExporter();
+//            String xml =
+//                    saftExporter.generateERPFile(institution, fromDate, toDate,
+//                            pendingDocuments.stream().collect(Collectors.toSet()), false, false);
+//            writeContentToExportOperation(xml, operation);
+//            sendDocumentsInformationToIntegration(institution, operation);
+//            operation.getFinantialDocumentsSet().addAll(pendingDocuments);
+//            operation.setSuccess(true);
+//        } catch (Throwable t) {
+//            writeError(operation, t);
+//        }
+//        return operation;
+//    }
 
     public static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {
         documents.forEach(x -> {

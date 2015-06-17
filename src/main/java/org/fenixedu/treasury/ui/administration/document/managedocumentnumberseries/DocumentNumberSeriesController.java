@@ -36,7 +36,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.administration.document.manageseries.SeriesController;
+import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,7 +52,7 @@ import pt.ist.fenixframework.Atomic;
 //        accessGroup = "#managers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-@BennuSpringController(value = SeriesController.class)
+@BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(DocumentNumberSeriesController.CONTROLLER_URL)
 public class DocumentNumberSeriesController extends TreasuryBaseController {
     public static final String CONTROLLER_URL =

@@ -1454,13 +1454,15 @@ relation ReimbursementEntryPaymentMode {
     }
 }
 
-/* SOMETHING IS MISSING HERE
-relation FinantialDocumentPendingForExportationBennu {
+relation FinantialDocumentPendingForExportationFinantialInstitution {
 	document.FinantialDocument playsRole finantialDocumentsPendingForExportation {
 		multiplicity *;
 	}
+	
+	FinantialInstitution playsRole institutionForExportation {
+        multiplicity 0..1;
+    }
 }
-*/
 
 /* --- Tariff --- */
 

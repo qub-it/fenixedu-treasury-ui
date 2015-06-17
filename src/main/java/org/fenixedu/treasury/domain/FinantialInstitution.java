@@ -27,12 +27,15 @@
  */
 package org.fenixedu.treasury.domain;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -208,14 +211,22 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
                 country, district, municipality, locality, zipCode);
     }
 
-    public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {
-        // TODO Auto-generated method stub
-        return null;
-    }
+//    public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {
+//        // TODO Auto-generated method stub
+//        return null;
+//    }
+//
+    public Set<FinantialDocument> getExportableDocuments(DateTime fromDate, DateTime toDate) {
+        Set<FinantialDocument> result = new HashSet<FinantialDocument>();
+        for (Series series : this.getSeriesSet()) {
+            for (DocumentNumberSeries documentNumberSeries : series.getDocumentNumberSeriesSet()) {
+                result.addAll(documentNumberSeries.getFinantialDocumentsSet().stream()
+                        .filter(x -> x.getDocumentDate().isAfter(fromDate) && x.getDocumentDate().isBefore(toDate))
+                        .collect(Collectors.toSet()));
+            }
+        }
 
-    public List<FinantialDocument> getExportableDocuments(DateTime fromDate, DateTime toDate) {
-        // TODO Auto-generated method stub
-        return null;
+        return result;
     }
 
     public Vat getActiveVat(VatType vatType, DateTime when) {
