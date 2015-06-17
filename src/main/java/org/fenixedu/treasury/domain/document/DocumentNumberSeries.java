@@ -42,13 +42,12 @@ import pt.ist.fenixframework.Atomic;
 public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     public static final Comparator<DocumentNumberSeries> COMPARE_BY_DEFAULT = new Comparator<DocumentNumberSeries>() {
-
         @Override
         public int compare(final DocumentNumberSeries o1, final DocumentNumberSeries o2) {
             return Series.COMPARATOR_BY_DEFAULT.compare(o1.getSeries(), o2.getSeries());
         }
     };
-    
+
     protected DocumentNumberSeries() {
         super();
         setBennu(Bennu.getInstance());
@@ -56,6 +55,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     protected DocumentNumberSeries(final FinantialDocumentType finantialDocumentType, final Series series) {
         this();
+        setCounter(0);
         setFinantialDocumentType(finantialDocumentType);
         setSeries(series);
 
@@ -71,10 +71,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
             throw new TreasuryDomainException("error.DocumentNumberSeries.series.required");
         }
 
-        // Try to find it and throw 
         find(getFinantialDocumentType(), getSeries());
-        
-        
     }
 
     public int getSequenceNumber() {
@@ -106,44 +103,39 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<DocumentNumberSeries> findAll() {
         return Bennu.getInstance().getDocumentNumberSeriesSet().stream();
     }
 
     public static DocumentNumberSeries find(final FinantialDocumentType finantialDocumentType, final Series series) {
         final Set<DocumentNumberSeries> result =
-                finantialDocumentType.getDocumentNumberSeriesSet().stream().filter(dns -> dns.getSeries() == series)
-                        .collect(Collectors.toSet());
-        
+                finantialDocumentType.getDocumentNumberSeriesSet().stream()
+                        .filter(dns -> dns.getSeries().getCode().equals(series.getCode())).collect(Collectors.toSet());
         if (result.size() > 1) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.not.unique.in.finantialDocumentType.and.series");
         }
-
         return result.stream().findFirst().orElse(null);
     }
-    
-    public static Optional<DocumentNumberSeries> findUniqueDefault(final FinantialDocumentType finantialDocumentType, final FinantialInstitution finantialInstitution) {
-        if(!Series.findUniqueDefault(finantialInstitution).isPresent()) {
-            return Optional.<DocumentNumberSeries>empty();
+
+    public static Stream<DocumentNumberSeries> find(final FinantialDocumentType finantialDocumentType,
+            final FinantialInstitution finantialInstitution) {
+        return findAll().filter(x -> x.getSeries().getFinantialInstitution().getCode().equals(finantialInstitution.getCode()))
+                .filter(x -> x.getFinantialDocumentType().getType().getDescriptionI18N().getContent()
+                        .equals(finantialDocumentType.getType().getDescriptionI18N().getContent()));
+    }
+
+    public static Optional<DocumentNumberSeries> findUniqueDefault(final FinantialDocumentType finantialDocumentType,
+            final FinantialInstitution finantialInstitution) {
+        if (!Series.findUniqueDefault(finantialInstitution).isPresent()) {
+            return Optional.<DocumentNumberSeries> empty();
         }
-        
+
         return Optional.of(find(finantialDocumentType, Series.findUniqueDefault(finantialInstitution).get()));
     }
 
     @Atomic
     public static DocumentNumberSeries create(final FinantialDocumentType finantialDocumentType, final Series series) {
         return new DocumentNumberSeries(finantialDocumentType, series);
-    }
-
-    public static Stream<DocumentNumberSeries> find(FinantialDocumentType documentType, FinantialInstitution finantialInstitution) {
-        return findAll().filter(x -> x.getSeries().getFinantialInstitution().equals(finantialInstitution)).filter(
-                x -> x.getFinantialDocumentType().equals(documentType));
     }
 
 }

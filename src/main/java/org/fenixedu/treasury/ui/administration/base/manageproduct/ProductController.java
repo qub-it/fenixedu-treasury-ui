@@ -32,10 +32,12 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
 import org.fenixedu.treasury.domain.VatType;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -51,7 +53,6 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.administration.base.manageProduct") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageProduct",
         accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping(ProductController.CONTROLLER_URL)
 public class ProductController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/administration/base/manageproduct/product";
@@ -66,12 +67,9 @@ public class ProductController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/administration/base/manageproduct/product/";
+        return "forward:" + SEARCH_URL;
     }
 
     private Product getProduct(Model m) {
@@ -84,21 +82,16 @@ public class ProductController extends TreasuryBaseController {
 
     @Atomic
     public void deleteProduct(Product product) {
-        // CHANGE_ME: Do the processing for deleting the product
-        // Do not catch any exception here
-
         product.delete();
     }
 
-//				
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(value = "unitofmeasure",
-            required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, @RequestParam(value = "active",
-            required = false) Boolean active, Model model) {
+    public String search(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
+            required = false) LocalizedString name,
+            @RequestParam(value = "unitofmeasure", required = false) LocalizedString unitOfMeasure, @RequestParam(
+                    value = "active", required = false) Boolean active, Model model) {
         List<Product> searchproductResultsDataSet = filterSearchProduct(code, name, unitOfMeasure, active);
 
-        //add the results dataSet to the model
         model.addAttribute("searchproductResultsDataSet", searchproductResultsDataSet);
         return "treasury/administration/base/manageproduct/product/search";
     }
@@ -110,134 +103,74 @@ public class ProductController extends TreasuryBaseController {
 
     private List<Product> filterSearchProduct(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
             org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, Boolean active) {
-        return getSearchUniverseSearchProductDataSet().stream()
-//                .filter(product -> code == null || code.length() == 0 || product.getCode() != null
-//                        && product.getCode().length() > 0 && product.getCode().toLowerCase().contains(code.toLowerCase()))
-//                .filter(product -> name == null
-//                        || name.isEmpty()
-//                        || name.getLocales()
-//                                .stream()
-//                                .allMatch(
-//                                        locale -> product.getName().getContent(locale) != null
-//                                                && product.getName().getContent(locale).toLowerCase()
-//                                                        .contains(name.getContent(locale).toLowerCase())))
-//                .filter(product -> unitOfMeasure == null
-//                        || unitOfMeasure.isEmpty()
-//                        || unitOfMeasure
-//                                .getLocales()
-//                                .stream()
-//                                .allMatch(
-//                                        locale -> product.getUnitOfMeasure().getContent(locale) != null
-//                                                && product.getUnitOfMeasure().getContent(locale).toLowerCase()
-//                                                        .contains(unitOfMeasure.getContent(locale).toLowerCase())))
-//                .filter(product -> (active != null && product.getActive() == active))
-                .collect(Collectors.toList());
+        return getSearchUniverseSearchProductDataSet().stream().collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") Product product, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/base/manageproduct/product/read" + "/" + product.getExternalId(), model,
-                redirectAttributes);
+        return redirect(READ_URL + product.getExternalId(), model, redirectAttributes);
     }
 
-//				
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Product product, Model model) {
         setProduct(product, model);
         return "treasury/administration/base/manageproduct/product/read";
     }
 
-//
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") Product product, Model model, RedirectAttributes redirectAttributes) {
-
         setProduct(product, model);
         try {
-            //call the Atomic delete function
             deleteProduct(product);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/manageproduct/product/", model, redirectAttributes);
-
+            return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (DomainException ex) {
-            //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
-            //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        //The default mapping is the same Read View
-        return redirect("/treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(), model,
-                redirectAttributes);
+        return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
     }
 
-//				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("productGroupList", ProductGroup.readAll());
         model.addAttribute("vattype_options", VatType.findAll().collect(Collectors.toList()));
+        model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/administration/base/manageproduct/product/create";
     }
 
-//				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "productGroup", required = false) ProductGroup productGroup, @RequestParam(
-            value = "code", required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(
-                    value = "unitofmeasure", required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
-            @RequestParam(value = "active", required = false) boolean active,
-            @RequestParam(value = "vattype", required = false) VatType vatType, Model model, RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        *	
-        	do something();
-        *    		
-        */
+            value = "code", required = false) String code, @RequestParam(value = "name", required = false) LocalizedString name,
+            @RequestParam(value = "unitofmeasure", required = false) LocalizedString unitOfMeasure, @RequestParam(
+                    value = "active", required = false) boolean active,
+            @RequestParam(value = "vattype", required = false) VatType vatType, @RequestParam(value = "finantialInstitution",
+                    required = false) List<FinantialInstitution> finantialInstitutions, Model model,
+            RedirectAttributes redirectAttributes) {
         try {
-            Product product = createProduct(productGroup, code, name, unitOfMeasure, active, vatType);
+            Product product = createProduct(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions);
 
-            /*
-             * Success Validation
-             */
-
-            //Add the bean to be used in the View
             model.addAttribute("product", product);
-
-            return redirect("/treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(),
-                    model, redirectAttributes);
-
-        } catch (DomainException tde) {
-
+            return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
             return create(model);
-
         } catch (Exception tde) {
-
             addErrorMessage(tde.getLocalizedMessage(), model);
             return create(model);
         }
     }
 
     @Atomic
-    public Product createProduct(ProductGroup productGroup, java.lang.String code,
-            org.fenixedu.commons.i18n.LocalizedString name, org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
-            boolean active, VatType vatType) {
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         */
-        Product product = Product.create(productGroup, code, name, unitOfMeasure, active, vatType);
+    public Product createProduct(ProductGroup productGroup, String code, LocalizedString name, LocalizedString unitOfMeasure,
+            boolean active, VatType vatType, List<FinantialInstitution> finantialInstitutions) {
+        Product product = Product.create(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions);
         return product;
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") Product product, Model model) {
         setProduct(product, model);
@@ -247,78 +180,33 @@ public class ProductController extends TreasuryBaseController {
         return "treasury/administration/base/manageproduct/product/update";
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@RequestParam(value = "productGroup", required = false) ProductGroup productGroup,
-            @PathVariable("oid") Product product, @RequestParam(value = "code", required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, @RequestParam(
-                    value = "unitofmeasure", required = false) org.fenixedu.commons.i18n.LocalizedString unitOfMeasure,
+            @PathVariable("oid") Product product, @RequestParam(value = "code", required = false) String code, @RequestParam(
+                    value = "name", required = false) LocalizedString name, @RequestParam(value = "unitofmeasure",
+                    required = false) LocalizedString unitOfMeasure,
             @RequestParam(value = "active", required = false) boolean active,
             @RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(value = "finantialInstitution",
                     required = false) List<FinantialInstitution> finantialInstitutions, Model model,
             RedirectAttributes redirectAttributes) {
-
         setProduct(product, model);
-
-        /*
-        *  UpdateLogic here
-        *	
-        	do something();
-        *    		
-        */
-
-        /*
-         * Succes Update
-         */
         try {
             updateProduct(productGroup, code, name, unitOfMeasure, active, finantialInstitutions, vatType, model);
 
-            return redirect("/treasury/administration/base/manageproduct/product/read/" + getProduct(model).getExternalId(),
-                    model, redirectAttributes);
-
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning updating due to " +
-             * de.getLocalizedMessage(),model);
-             */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-
+            return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
             return update(product, model);
-
         } catch (Exception de) {
-
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             return update(product, model);
         }
     }
 
     @Atomic
-    public void updateProduct(ProductGroup productGroup, java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
-            org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, boolean active,
-            List<FinantialInstitution> finantialInstitutions, VatType vatType, Model m) {
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-        Product product = getProduct(m);
-        product.setProductGroup(productGroup);
-        product.setCode(code);
-        product.setName(name);
-        product.setUnitOfMeasure(unitOfMeasure);
-        product.setActive(active);
-        product.updateFinantialInstitutions(finantialInstitutions);
-        product.setVatType(vatType);
-        product.checkRules();
+    public void updateProduct(ProductGroup productGroup, String code, LocalizedString name, LocalizedString unitOfMeasure,
+            boolean active, List<FinantialInstitution> finantialInstitutions, VatType vatType, Model m) {
+        getProduct(m).edit(code, name, unitOfMeasure, active, vatType, productGroup, finantialInstitutions);
     }
 
 }

@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.SeriesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -42,8 +44,8 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/"><spring:message
-			code="label.event.back" /></a> &nbsp;|&nbsp;
+		href="${pageContext.request.contextPath}<%= SeriesController.READ_URL %>${ series.externalId }"><spring:message
+			code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -76,34 +78,11 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
-<form method="post" class="form-horizontal">
+<form method="post" class="form-horizontal" action="${pageContext.request.contextPath}<%= DocumentNumberSeriesController.CREATE_URL %>">
+
+    <input type="hidden" name="series" value="${ series.externalId }">
 	<div class="panel panel-default">
 		<div class="panel-body">
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DocumentNumberSeries.counter" />
-				</div>
-
-				<div class="col-sm-10">
-					<input id="documentNumberSeries_counter" class="form-control"
-						type="text" name="counter"
-						value='<c:out value='${not empty param.counter ? param.counter : documentNumberSeries.counter }'/>' />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.DocumentNumberSeries.series" />
-				</div>
-
-				<div class="col-sm-4">
-					<%-- Relation to side 1 drop down rendered in input --%>
-					<select id="documentNumberSeries_series"
-						class="js-example-basic-single" name="series">
-						<option value=""></option>
-						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-					</select>
-				</div>
-			</div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message
@@ -144,31 +123,6 @@ ${portal.toolkit()}
 
 <script>
 $(document).ready(function() {
-
-		<%-- Block for providing series options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		series_options = [
-			<c:forEach items="${DocumentNumberSeries_series_options}" var="element"> 
-				{
-					text : "<c:out value='${element.name.content}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#documentNumberSeries_series").select2(
-			{
-				data : series_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#documentNumberSeries_series").select2().select2('val', '<c:out value='${param.series}'/>');
-	
-		<%-- End block for providing series options --%>
-		<%-- Block for providing finantialDocumentType options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
 		finantialDocumentType_options = [
 			<c:forEach items="${DocumentNumberSeries_finantialDocumentType_options}" var="element"> 
 				{
@@ -184,12 +138,7 @@ $(document).ready(function() {
 			}	  
 	    );
 	    
-	    
-	    
 	    $("#documentNumberSeries_finantialDocumentType").select2().select2('val', '<c:out value='${param.finantialdocumenttype}'/>');
-	
-		<%-- End block for providing bennu options --%>
-	
 	
 	});
 </script>

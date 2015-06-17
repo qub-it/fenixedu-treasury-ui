@@ -102,12 +102,6 @@ public class VatExemptionReason extends VatExemptionReason_Base {
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<VatExemptionReason> findAll() {
         return Bennu.getInstance().getVatExemptionReasonsSet().stream();
     }

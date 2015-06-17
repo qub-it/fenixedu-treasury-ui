@@ -39,6 +39,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -87,10 +88,9 @@ public class FixedTariff extends FixedTariff_Base {
     }
 
     protected void init(final Product product, final InterestRate interestRate, final FinantialEntity finantialEntity,
-            final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate, final org.joda.time.DateTime endDate,
-            final org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType,
-            final org.joda.time.LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate,
-            final boolean applyInterests) {
+            final BigDecimal amount, final DateTime beginDate, final DateTime endDate,
+            final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
+            final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests) {
         setProduct(product);
         setInterestRate(interestRate);
         setFinantialEntity(finantialEntity);
@@ -118,58 +118,14 @@ public class FixedTariff extends FixedTariff_Base {
         if (this.getAmount() == null || this.getAmount().compareTo(BigDecimal.ZERO) <= 0) {
             throw new TreasuryDomainException("error.FixedTariff.amount.invalid");
         }
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByProduct(getProduct().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.product.duplicated");
-        //} 
-        //if (findByInterestRate(getInterestRate().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.interestRate.duplicated");
-        //} 
-        //if (findByFinantialEntity(getFinantialEntity().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.finantialEntity.duplicated");
-        //} 
-        //if (findByAmount(getAmount().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.amount.duplicated");
-        //} 
-        //if (findByBeginDate(getBeginDate().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.beginDate.duplicated");
-        //} 
-        //if (findByEndDate(getEndDate().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.endDate.duplicated");
-        //} 
-        //if (findByDueDateCalculationType(getDueDateCalculationType().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.dueDateCalculationType.duplicated");
-        //} 
-        //if (findByFixedDueDate(getFixedDueDate().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.fixedDueDate.duplicated");
-        //} 
-        //if (findByNumberOfDaysAfterCreationForDueDate(getNumberOfDaysAfterCreationForDueDate().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.numberOfDaysAfterCreationForDueDate.duplicated");
-        //} 
-        //if (findByApplyInterests(getApplyInterests().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.FixedTariff.applyInterests.duplicated");
-        //} 
     }
 
     @Atomic
-    public void edit(final Product product, final InterestRate InterestRate, final FinantialEntity finantialEntity,
-            final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate, final org.joda.time.DateTime endDate,
-            final org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType,
-            final org.joda.time.LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate,
-            final boolean applyInterests) {
+    public void edit(final Product product, final FinantialEntity finantialEntity, final BigDecimal amount,
+            final DateTime beginDate, final DateTime endDate, final DueDateCalculationType dueDateCalculationType,
+            final LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests,
+            final FixedTariffInterestRateBean rateBean) {
         setProduct(product);
-        setInterestRate(InterestRate);
         setFinantialEntity(finantialEntity);
         setAmount(amount);
         setBeginDate(beginDate);
@@ -178,12 +134,34 @@ public class FixedTariff extends FixedTariff_Base {
         setFixedDueDate(fixedDueDate);
         setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
         setApplyInterests(applyInterests);
+
+        if (applyInterests) {
+            if (getInterestRate() == null) {
+                InterestRate rate =
+                        InterestRate.create(this, rateBean.getInterestType(), rateBean.getNumberOfDaysAfterDueDate(),
+                                rateBean.getApplyInFirstWorkday(), rateBean.getMaximumDaysToApplyPenalty(),
+                                rateBean.getMaximumMonthsToApplyPenalty(), rateBean.getInterestFixedAmount(), rateBean.getRate());
+                setInterestRate(rate);
+            } else {
+                InterestRate rate = getInterestRate();
+                rate.setApplyInFirstWorkday(rateBean.getApplyInFirstWorkday());
+                rate.setInterestFixedAmount(rateBean.getInterestFixedAmount());
+                rate.setInterestType(rateBean.getInterestType());
+                rate.setMaximumDaysToApplyPenalty(rateBean.getMaximumDaysToApplyPenalty());
+                rate.setMaximumMonthsToApplyPenalty(rateBean.getMaximumDaysToApplyPenalty());
+                rate.setNumberOfDaysAfterDueDate(rateBean.getNumberOfDaysAfterDueDate());
+                rate.setRate(rateBean.getRate());
+            }
+        } else {
+            getInterestRate().delete();
+        }
+
         checkRules();
     }
 
     @Override
     public boolean isDeletable() {
-        return true;
+        return super.isDeletable();
     }
 
     @Override
@@ -198,22 +176,14 @@ public class FixedTariff extends FixedTariff_Base {
 
     @Atomic
     public static FixedTariff create(final Product product, final InterestRate interestRate,
-            final FinantialEntity finantialEntity, final java.math.BigDecimal amount, final org.joda.time.DateTime beginDate,
-            final org.joda.time.DateTime endDate,
-            final org.fenixedu.treasury.domain.tariff.DueDateCalculationType dueDateCalculationType,
-            final org.joda.time.LocalDate fixedDueDate, final int numberOfDaysAfterCreationForDueDate,
-            final boolean applyInterests) {
+            final FinantialEntity finantialEntity, final BigDecimal amount, final DateTime beginDate, final DateTime endDate,
+            final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
+            final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests) {
         FixedTariff fixedTariff = new FixedTariff();
         fixedTariff.init(product, interestRate, finantialEntity, amount, beginDate, endDate, dueDateCalculationType,
                 fixedDueDate, numberOfDaysAfterCreationForDueDate, applyInterests);
         return fixedTariff;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<FixedTariff> findAll(FinantialInstitution institution) {
         Set<FixedTariff> result = new HashSet<FixedTariff>();
@@ -235,16 +205,15 @@ public class FixedTariff extends FixedTariff_Base {
         return findAll(institution).filter(i -> finantialEntity.equals(i.getFinantialEntity()));
     }
 
-    public static Stream<FixedTariff> findByAmount(final FinantialInstitution institution, final java.math.BigDecimal amount) {
+    public static Stream<FixedTariff> findByAmount(final FinantialInstitution institution, final BigDecimal amount) {
         return findAll(institution).filter(i -> amount.equals(i.getAmount()));
     }
 
-    public static Stream<FixedTariff> findByBeginDate(final FinantialInstitution institution,
-            final org.joda.time.DateTime beginDate) {
+    public static Stream<FixedTariff> findByBeginDate(final FinantialInstitution institution, final DateTime beginDate) {
         return findAll(institution).filter(i -> beginDate.equals(i.getBeginDate()));
     }
 
-    public static Stream<FixedTariff> findByEndDate(final FinantialInstitution institution, final org.joda.time.DateTime endDate) {
+    public static Stream<FixedTariff> findByEndDate(final FinantialInstitution institution, final DateTime endDate) {
         return findAll(institution).filter(i -> endDate.equals(i.getEndDate()));
     }
 

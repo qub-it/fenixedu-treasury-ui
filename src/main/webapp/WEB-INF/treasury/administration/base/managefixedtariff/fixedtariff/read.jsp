@@ -76,7 +76,7 @@ ${portal.angularToolkit()}
 	&nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
 			code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
 		href="${pageContext.request.contextPath}/treasury/administration/base/managefixedtariff/fixedtariff/update/${fixedTariff.externalId}"><spring:message
-			code="label.event.update" /></a> &nbsp;|&nbsp;
+			code="label.event.update" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -182,27 +182,34 @@ ${portal.angularToolkit()}
 							</tr>
 							<tr>
 								<th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.applyInFirstWorkday" /></th>
-								<td><c:out value='${fixedTariff.interestRate.applyInFirstWorkday}' /></td>
+		                        <td>
+                                    <c:if test="${fixedTariff.interestRate.applyInFirstWorkday}">
+                                        <spring:message code="label.true" />
+                                    </c:if>
+                                    <c:if test="${not fixedTariff.interestRate.applyInFirstWorkday}">
+                                        <spring:message code="label.false" />
+                                    </c:if>
+                                </td>
 							</tr>
 							<tr>
 								<th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.maximumDaysToApplyPenalty" /></th>
 								<td><c:out value='${fixedTariff.interestRate.maximumDaysToApplyPenalty}' /></td>
 							</tr>
 						</c:if>
-						<c:if test="${interestRate.interestType=='MONTHLY' }">
+						<c:if test="${fixedTariff.interestRate.interestType=='MONTHLY' }">
 							<tr>
 								<th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.maximumMonthsToApplyPenalty" /></th>
 								<td><c:out value='${fixedTariff.interestRate.maximumMonthsToApplyPenalty}' /></td>
 							</tr>
 						</c:if>
-						<c:if test="${interestRate.interestType=='FIXED_AMOUNT' }">
+						<c:if test="${fixedTariff.interestRate.interestType=='FIXED_AMOUNT' }">
 							<tr>
 								<th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.interestFixedAmount" /></th>
 								<td><c:out value='${fixedTariff.interestRate.interestFixedAmount}' /></td>
 							</tr>
 						</c:if>
 
-						<c:if test="${ interestRate.interestType != 'FIXED_AMOUNT' }">
+						<c:if test="${ fixedTariff.interestRate.interestType != 'FIXED_AMOUNT' }">
 							<tr>
 								<th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.rate" /></th>
 								<td><c:out value='${fixedTariff.interestRate.rate}' /></td>

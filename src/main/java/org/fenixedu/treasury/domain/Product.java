@@ -64,7 +64,8 @@ public class Product extends Product_Base {
     }
 
     protected Product(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, final boolean active, final VatType vatType) {
+            final LocalizedString unitOfMeasure, final boolean active, final VatType vatType,
+            final List<FinantialInstitution> finantialInstitutions) {
         this();
         setProductGroup(productGroup);
         setCode(code);
@@ -72,6 +73,7 @@ public class Product extends Product_Base {
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
         setVatType(vatType);
+        updateFinantialInstitutions(finantialInstitutions);
 
         checkRules();
     }
@@ -106,20 +108,27 @@ public class Product extends Product_Base {
 
     @Atomic
     public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active,
-            VatType vatType) {
+            VatType vatType, final ProductGroup productGroup, final List<FinantialInstitution> finantialInstitutions) {
         setCode(code);
         setName(name);
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
         setVatType(vatType);
+        setProductGroup(productGroup);
+        updateFinantialInstitutions(finantialInstitutions);
 
         checkRules();
     }
 
     public boolean isDeletable() {
-        return getFinantialInstitutionsSet().isEmpty() && getInvoiceEntriesSet().isEmpty() && getTariffSet().isEmpty()
-                && getTreasuryExemptionSet().isEmpty() && getTreasuryEventsSet().isEmpty();
-
+        for (FinantialInstitution finantialInstitution : getFinantialInstitutionsSet()) {
+            if (!canRemoveFinantialInstitution(finantialInstitution)) {
+                return false;
+            }
+        }
+        return getInvoiceEntriesSet().isEmpty() && getTariffSet().isEmpty() && getTreasuryExemptionSet().isEmpty()
+                && getTreasuryEventsSet().isEmpty() && getAdvancePaymentTreasurySettings() == null
+                && getTreasurySettings() == null;
     }
 
     @Atomic
@@ -161,8 +170,9 @@ public class Product extends Product_Base {
 
     @Atomic
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, final boolean active, final VatType vatType) {
-        return new Product(productGroup, code, name, unitOfMeasure, active, vatType);
+            final LocalizedString unitOfMeasure, final boolean active, final VatType vatType,
+            final List<FinantialInstitution> finantialInstitutions) {
+        return new Product(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions);
     }
 
     public Stream<Tariff> getTariffs(FinantialInstitution finantialInstitution) {
@@ -219,7 +229,7 @@ public class Product extends Product_Base {
     }
 
     private boolean canRemoveFinantialInstitution(FinantialInstitution inst) {
-        return inst.getFinantialEntitiesSet().stream()
+        return !inst.getFinantialEntitiesSet().stream()
                 .anyMatch(x -> x.getTariffSet().stream().anyMatch(y -> y.getProduct().equals(this)));
     }
 }

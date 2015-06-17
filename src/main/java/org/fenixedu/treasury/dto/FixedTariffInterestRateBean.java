@@ -27,14 +27,12 @@
 
 package org.fenixedu.treasury.dto;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 
@@ -123,7 +121,7 @@ public class FixedTariffInterestRateBean implements IBean {
         for (InterestType type : InterestType.values()) {
             TupleDataSourceBean typeBean = new TupleDataSourceBean();
             typeBean.setId(type.toString());
-            typeBean.setText(type.toString());
+            typeBean.setText(type.getDescriptionI18N().getContent());
             this.interestTypeDataSource.add(typeBean);
         }
     }
