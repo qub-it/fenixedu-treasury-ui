@@ -1222,6 +1222,9 @@ public class ERPExporter {
 
             sendDocumentsInformationToIntegration(institution, operation);
             operation.getFinantialDocumentsSet().addAll(documents);
+//            for (FinantialDocument document : documents) {
+//                document.clearDocumentToExport();
+//            }
             operation.setSuccess(true);
         } catch (Exception ex) {
             writeError(operation, ex);

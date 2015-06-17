@@ -27,6 +27,7 @@
 package org.fenixedu.treasury.ui.integration.erp;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
@@ -105,15 +106,19 @@ public class FinantialDocumentController extends TreasuryBaseController {
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
-            @RequestParam(value = "finantialinstitution", required = false) FinantialInstitution finantialInstitution, Model model) {
+            @RequestParam(value = "finantialinstitution", required = false) FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes) {
         if (finantialInstitution == null) {
             finantialInstitution = FinantialInstitution.findAll().findFirst().orElse(null);
-            model.addAttribute("finantialinstitution", finantialInstitution.getExternalId());
+            return redirect(SEARCH_URL + "?finantialinstitution=" + finantialInstitution.getExternalId(), model,
+                    redirectAttributes);
         }
         Set<FinantialDocument> searchfinantialdocumentResultsDataSet = filterSearchFinantialDocument(finantialInstitution);
 
         //add the results dataSet to the model
         model.addAttribute("searchfinantialdocumentResultsDataSet", searchfinantialdocumentResultsDataSet);
+        model.addAttribute("FinantialDocument_finantialInstitution_options",
+                FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/integration/erp/finantialdocument/search";
     }
 
@@ -142,7 +147,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
         }
 
         addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.invalid.document.type"), model);
-        return search(finantialDocument.getInstitutionForExportation(), model);
+        return search(finantialDocument.getInstitutionForExportation(), model, redirectAttributes);
     }
 
 //
@@ -151,11 +156,11 @@ public class FinantialDocumentController extends TreasuryBaseController {
     // This is the EventforceIntegrationExport Method for Screen 
     //
     private static final String _SEARCH_TO_FORCEINTEGRATIONEXPORT_URI = "/search/forceintegrationexport";
-    public static final String _TO_FORCEINTEGRATIONEXPORT_URL = CONTROLLER_URL + _SEARCH_URI;
+    public static final String SEARCH_TO_FORCEINTEGRATIONEXPORT_URL = CONTROLLER_URL + _SEARCH_URI;
 
-    @RequestMapping(value = _SEARCH_URI)
+    @RequestMapping(value = _SEARCH_TO_FORCEINTEGRATIONEXPORT_URI)
     public String processSearchToForceIntegrationExport(
-            @RequestParam(value = "finantialinstitutiton", required = true) FinantialInstitution finantialInstitution,
+            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution,
             Model model, RedirectAttributes redirectAttributes) {
 //
         /* Put here the logic for processing Event forceIntegrationExport 	*/
@@ -172,7 +177,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
                     redirectAttributes);
         } else {
             addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"), model);
-            return this.search(finantialInstitution, model);
+            return this.search(finantialInstitution, model, redirectAttributes);
         }
     }
 

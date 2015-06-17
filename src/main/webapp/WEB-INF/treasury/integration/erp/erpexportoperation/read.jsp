@@ -54,10 +54,10 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
+&nbsp;|&nbsp;				<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
 data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
-				|&nbsp;&nbsp;
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/read/${eRPExportOperation.externalId}/downloadfile"  ><spring:message code="label.event.integration.erp.downloadFile" /></a>	|&nbsp;&nbsp;
+				&nbsp;|&nbsp;
+	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/read/${eRPExportOperation.externalId}/downloadfile"  ><spring:message code="label.event.integration.erp.downloadFile" /></a>	&nbsp;|&nbsp;
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/read/${eRPExportOperation.externalId}/retryimport"  ><spring:message code="label.event.integration.erp.retryImport" /></a>	
 </div>
 	<c:if test="${not empty infoMessages}">
@@ -111,7 +111,7 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.ERPExportOperation.finantialInstitution"/></th> 
 	<td>
-		<c:out value='${eRPExportOperation.finantialInstitution}'/>
+		<c:out value='${eRPExportOperation.finantialInstitution.name}'/>
 	</td> 
 </tr>
 <tr>
@@ -144,7 +144,7 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 		<ul>
 		<c:forEach items="${eRPExportOperation.finantialDocuments}" var="element">
 			<li>
-				<c:out value="${element}" />  <%-- CHANGE_ME --%> 
+				<c:out value="${element.uiDocumentNumber}" />   
 			</li>
 		</c:forEach>
 		<ul>

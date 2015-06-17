@@ -93,7 +93,7 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsreportfile/sibsreportfile/"><spring:message
-            code="label.event.back" /></a> |&nbsp;&nbsp; <span
+            code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a>

@@ -51,6 +51,11 @@ ${portal.toolkit()}
     </h1>
 </div>
 <%-- NAVIGATION --%>
+<div class="well well-sm" style="display:inline-block">
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument"  ><spring:message code="label.event.integration.erp.searchPendingDocuments" /></a>   
+</div>
+
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
@@ -174,15 +179,13 @@ ${portal.toolkit()}
                 <tr>
                     <%--!!!  Field names here --%>
                     <th><spring:message
-                            code="label.ERPExportOperation.executionDate" /></th>
-                    <th><spring:message
                             code="label.ERPExportOperation.finantialInstitution" /></th>
+                    <th><spring:message
+                            code="label.ERPExportOperation.executionDate" /></th>
                     <th><spring:message
                             code="label.ERPExportOperation.success" /></th>
                     <th><spring:message
                             code="label.ERPExportOperation.corrected" /></th>
-                    <th><spring:message
-                            code="label.ERPExportOperation.errorLog" /></th>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -221,10 +224,9 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "executiondate" : "<c:out value='${searchResult.executionDate}'/>",
-"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution}'/>",
+"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
-"errorlog" : "<c:out value='${searchResult.errorLog}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -241,18 +243,17 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
+		            { data: 'finantialinstitution' },
 			{ data: 'executiondate' },
-			{ data: 'finantialinstitution' },
 			{ data: 'success' },
 			{ data: 'corrected' },
-			{ data: 'errorlog' },
 			{ data: 'actions' }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 5 } 
+		               { "width": "54px", "targets": 4 } 
 		             ],
 		"data" : searcherpexportoperationDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

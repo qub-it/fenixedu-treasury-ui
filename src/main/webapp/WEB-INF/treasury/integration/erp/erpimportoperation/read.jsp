@@ -68,10 +68,10 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/"><spring:message
-            code="label.event.back" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
-        data-target="#deleteModal"><spring:message code="label.event.delete" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            code="label.event.back" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
+        data-target="#deleteModal"><spring:message code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/read/${eRPImportOperation.externalId}/downloadfile"><spring:message
-            code="label.event.integration.erp.downloadFile" /></a> |&nbsp;&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            code="label.event.integration.erp.downloadFile" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/read/${eRPImportOperation.externalId}/retryimport"><spring:message
             code="label.event.integration.erp.retryImport" /></a>
 </div>

@@ -26,14 +26,17 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -98,7 +101,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
         // CHANGE_ME: Do the processing for deleting the eRPExportOperation
         // Do not catch any exception here
 
-        // eRPExportOperation.delete();
+        eRPExportOperation.delete();
     }
 
 //				
@@ -123,18 +126,17 @@ public class ERPExportOperationController extends TreasuryBaseController {
         //The initialization of the result list must be done here
         //
         //
-        // return ERPExportOperation.findAll(); //CHANGE_ME
-        return new ArrayList<ERPExportOperation>().stream();
+        return ERPExportOperation.findAll();
+
     }
 
     private List<ERPExportOperation> filterSearchERPExportOperation(DateTime fromExecutionDate, DateTime toExecutionDate,
             boolean success) {
 
         return getSearchUniverseSearchERPExportOperationDataSet()
-                .filter(eRPExportOperation -> fromExecutionDate == null
-                        || toExecutionDate == null
-                        || (eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate) && eRPExportOperation
-                                .getExecutionDate().isBefore(toExecutionDate)))
+                .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null
+                        || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
+                        && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
                 .filter(eRPExportOperation -> eRPExportOperation.getSuccess() == success).collect(Collectors.toList());
     }
 
@@ -204,16 +206,23 @@ public class ERPExportOperationController extends TreasuryBaseController {
     // This is the EventdownloadFile Method for Screen read
     //
     @RequestMapping(value = "/read/{oid}/downloadfile")
-    public String processReadToDownloadFile(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
-            RedirectAttributes redirectAttributes) {
+    public void processReadToDownloadFile(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setERPExportOperation(eRPExportOperation, model);
-//
-        /* Put here the logic for processing Event downloadFile 	*/
-        //doSomething();
-
-        // Now choose what is the Exit Screen	 
-        return redirect("/treasury/integration/erp/erpexportoperation/read/" + getERPExportOperation(model).getExternalId(),
-                model, redirectAttributes);
+        try {
+            response.setContentType(eRPExportOperation.getFile().getContentType());
+            String filename = eRPExportOperation.getFile().getFilename();
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(eRPExportOperation.getFile().getContent());
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
     //
@@ -223,13 +232,24 @@ public class ERPExportOperationController extends TreasuryBaseController {
     public String processReadToRetryImport(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
             RedirectAttributes redirectAttributes) {
         setERPExportOperation(eRPExportOperation, model);
-//
-        /* Put here the logic for processing Event retryImport 	*/
-        //doSomething();
+        //
+        /* Put here the logic for processing Event retryImport  */
 
-        // Now choose what is the Exit Screen	 
-        return redirect("/treasury/integration/erp/erpexportoperation/read/" + getERPExportOperation(model).getExternalId(),
-                model, redirectAttributes);
+        try {
+            ERPExportOperation retryExportOperation =
+                    ERPExporter.exportFinantialDocumentToIntegration(eRPExportOperation.getFinantialInstitution(),
+                            eRPExportOperation.getFinantialDocumentsSet());
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.retry"), model);
+
+            //redirect to the retried export operation
+            return redirect(READ_URL + retryExportOperation.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            //Add error messages to the list
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+
+        }
+        // Now choose what is the Exit Screen    
+        return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }
 
 }

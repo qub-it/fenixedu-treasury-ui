@@ -3,8 +3,10 @@ package org.fenixedu.treasury.domain.integration;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -121,8 +123,11 @@ public class ERPExportOperation extends ERPExportOperation_Base {
             final boolean success, final boolean corrected, final java.lang.String errorLog) {
         ERPExportOperation eRPExportOperation = new ERPExportOperation();
         OperationFile file;
-        file = OperationFile.create(filename, data);
-
+        if (data == null) {
+            file = OperationFile.create(filename, new byte[0]);
+        } else {
+            file = OperationFile.create(filename, data);
+        }
         eRPExportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected, errorLog);
         return eRPExportOperation;
     }
@@ -135,36 +140,44 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
     public static Stream<ERPExportOperation> findAll() {
         Set<ERPExportOperation> results = new HashSet<ERPExportOperation>();
-//        Bennu.getInstance().getFinantialInstitutionsSet().forEach(x->results.addAll(x.gete));
+        for (FinantialInstitution fi : Bennu.getInstance().getFinantialInstitutionsSet()) {
+            results.addAll(fi.getIntegrationOperationsSet().stream().filter(x -> x instanceof ERPExportOperation)
+                    .map(ERPExportOperation.class::cast).collect(Collectors.toList()));
+        }
         return results.stream();
     }
 
-    public static Stream<ERPExportOperation> findByFile(final OperationFile file) {
-        return findAll().filter(i -> file.equals(i.getFile()));
+    public static Stream<ERPExportOperation> findByFile(final FinantialInstitution finantialInstitution, final OperationFile file) {
+        return findByFinantialInstitution(finantialInstitution).filter(i -> file.equals(i.getFile()));
     }
 
     public static Stream<ERPExportOperation> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
+        return finantialInstitution.getIntegrationOperationsSet().stream().filter(x -> x instanceof ERPExportOperation)
+                .map(ERPExportOperation.class::cast);
     }
 
-    public static Stream<ERPExportOperation> findByExecutionDate(final org.joda.time.DateTime executionDate) {
-        return findAll().filter(i -> executionDate.equals(i.getExecutionDate()));
+    public static Stream<ERPExportOperation> findByExecutionDate(final FinantialInstitution finantialInstitution,
+            final org.joda.time.DateTime executionDate) {
+        return findByFinantialInstitution(finantialInstitution).filter(i -> executionDate.equals(i.getExecutionDate()));
     }
 
-    public static Stream<ERPExportOperation> findByProcessed(final boolean processed) {
-        return findAll().filter(i -> processed == i.getProcessed());
+    public static Stream<ERPExportOperation> findByProcessed(final FinantialInstitution finantialInstitution,
+            final boolean processed) {
+        return findByFinantialInstitution(finantialInstitution).filter(i -> processed == i.getProcessed());
     }
 
-    public static Stream<ERPExportOperation> findBySuccess(final boolean success) {
-        return findAll().filter(i -> success == i.getSuccess());
+    public static Stream<ERPExportOperation> findBySuccess(final FinantialInstitution finantialInstitution, final boolean success) {
+        return findByFinantialInstitution(finantialInstitution).filter(i -> success == i.getSuccess());
     }
 
-    public static Stream<ERPExportOperation> findByCorrected(final boolean corrected) {
-        return findAll().filter(i -> corrected == i.getCorrected());
+    public static Stream<ERPExportOperation> findByCorrected(final FinantialInstitution finantialInstitution,
+            final boolean corrected) {
+        return findByFinantialInstitution(finantialInstitution).filter(i -> corrected == i.getCorrected());
     }
 
-    public static Stream<ERPExportOperation> findByErrorLog(final java.lang.String errorLog) {
-        return findAll().filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
+    public static Stream<ERPExportOperation> findByErrorLog(final FinantialInstitution finantialInstitution,
+            final java.lang.String errorLog) {
+        return findByFinantialInstitution(finantialInstitution).filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
     }
 
 }

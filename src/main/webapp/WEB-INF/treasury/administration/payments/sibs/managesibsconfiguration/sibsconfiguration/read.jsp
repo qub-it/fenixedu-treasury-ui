@@ -54,7 +54,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/sibs/managesibsconfiguration/sibsconfiguration/update/${sibsConfiguration.externalId}"  ><spring:message code="label.event.update" /></a>
-|&nbsp;&nbsp;</div>
+&nbsp;|&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
 					

@@ -245,6 +245,13 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         }
     }
 
+    @Atomic
+    public void clearDocumentToExport() {
+        if (getInstitutionForExportation() == null) {
+            this.setInstitutionForExportation(null);
+        }
+    }
+
     public boolean isDocumentToExport() {
         return getInstitutionForExportation() != null;
     }
@@ -362,4 +369,5 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         checkRules();
     }
+
 }

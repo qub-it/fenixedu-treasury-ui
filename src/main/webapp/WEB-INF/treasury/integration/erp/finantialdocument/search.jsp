@@ -34,7 +34,8 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/forceintegrationexport"  ><spring:message code="label.event.integration.erp.forceIntegrationExport" /></a>	
+<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/"  ><spring:message code="label.event.back" /></a>&nbsp;|&nbsp;
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forceintegrationexport/?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceIntegrationExport" /></a>
 </div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -70,6 +71,24 @@ ${portal.toolkit()}
 				</div>	
 			</c:if>
 
+<div class="panel panel-default">
+<form method="get" class="form-horizontal">
+<div class="panel-body">
+<div class="form-group row">
+<div class="col-sm-2 control-label"><spring:message code="label.Series.finantialInstitution"/></div> 
+
+<div class="col-sm-4">
+    <%-- Relation to side 1 drop down rendered in input --%>
+         <select id="finantialDocument_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
+        </select>
+                </div>
+</div>      
+</div>
+<div class="panel-footer">
+    <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
+</div>
+</form>
+</div>
 
 
 
@@ -120,7 +139,31 @@ ${portal.toolkit()}
 	
 	$(document).ready(function() {
 
-	
+		<%-- Block for providing finantialInstitution options --%>
+	    <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	    finantialInstitution_options = [
+	        <c:forEach items="${FinantialDocument_finantialInstitution_options}" var="element"> 
+	            {
+	                text :"<c:out value='${element.name}'/>", 
+	                id : "<c:out value='${element.externalId}'/>"
+	            },
+	        </c:forEach>
+	    ];
+	    
+	    $("#finantialDocument_finantialInstitution").select2(
+	        {
+	            data : finantialInstitution_options,
+	        }     
+	            );
+	            
+	            <%-- If it's not from parameter change param.finantialInstitution to whatever you need (it's the externalId already) --%>
+	            <c:if test ='${not empty param.finantialinstitution}'>
+	            $("#finantialDocument_finantialInstitution").select2().select2('val', '<c:out value='${param.finantialinstitution}'/>');
+	            </c:if>
+                <c:if test ='${not empty finantialinstitution}'>
+                $("#finantialDocument_finantialInstitution").select2().select2('val', '<c:out value='${finantialinstitution}'/>');
+                </c:if>
+	    <%-- End block for providing finantialDocumentType options --%>
 
 
 		var table = $('#searchfinantialdocumentTable').DataTable({language : {

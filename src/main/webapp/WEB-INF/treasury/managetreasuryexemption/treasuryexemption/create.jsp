@@ -59,7 +59,7 @@ ${portal.toolkit()}
 		href="${pageContext.request.contextPath}<%= TreasuryEventController.READ_URL %>/${treasuryEvent.externalId}">
 			<spring:message code="label.event.back" />
 		</a> 
-	|&nbsp;&nbsp;
+	&nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
