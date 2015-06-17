@@ -16,12 +16,13 @@ public class PrintedPaymentCodes {
     public String exportAsString() {
         StringBuilder result = new StringBuilder();
 
-        for (String code : this.paymentCodes) {
-            result.append(code).append(",");
+        if (this.paymentCodes.size() > 0) {
+            for (String code : this.paymentCodes) {
+                result.append(code).append(",");
+            }
+
+            result.delete(result.length() - 1, result.length());
         }
-
-        result.delete(result.length() - 1, result.length());
-
         return result.toString();
     }
 
@@ -34,14 +35,14 @@ public class PrintedPaymentCodes {
     }
 
     public static PrintedPaymentCodes importFromString(final String value) {
-        String[] codes = value.split(",");
-
         PrintedPaymentCodes printPaymentCodes = new PrintedPaymentCodes();
+        if (value.contains(",")) {
+            String[] codes = value.split(",");
 
-        for (String c : codes) {
-            printPaymentCodes.paymentCodes.add(c);
+            for (String c : codes) {
+                printPaymentCodes.paymentCodes.add(c);
+            }
         }
-
         return printPaymentCodes;
     }
 }

@@ -120,6 +120,10 @@ ${portal.toolkit()}
             <table class="table">
                 <tbody>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.finantialInstitution" /></th>
+                        <td><c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.name}' /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.entityReferenceCode" /></th>
                         <td><c:out value='${paymentReferenceCode.paymentCodePool.entityReferenceCode}' /></td>
                     </tr>

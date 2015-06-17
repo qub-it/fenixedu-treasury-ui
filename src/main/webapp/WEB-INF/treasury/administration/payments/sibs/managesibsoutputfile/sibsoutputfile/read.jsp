@@ -29,14 +29,16 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message code="label.integration.erp.readERPImportOperation" />
+        <spring:message code="label.administration.payments.sibs.manageSibsOutputFile.readSibsOutputFile" />
         <small></small>
     </h1>
 </div>
-<div class="modal fade" id="deleteModal">
+<div class="modal fade" id="processModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/delete/${eRPImportOperation.externalId}" method="POST">
+            <form id="deleteForm"
+                action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/read/process/${sibsOutputFile.externalId}"
+                method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -47,12 +49,48 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message code="label.integration.erp.readERPImportOperation.confirmDelete" />
+                        <spring:message code="label.administration.payments.sibs.manageSibsOutputFile.readSibsOutputFile.confirmProcess" />
                     </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <spring:message code="label.close" />
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
+                        <spring:message code="label.ok" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+
+
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm"
+                action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/delete/${sibsOutputFile.externalId}" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.administration.payments.sibs.manageSibsOutputFile.readSibsOutputFile.confirmDelete" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
                     </button>
                     <button id="deleteButton" class="btn btn-danger" type="submit">
                         <spring:message code="label.delete" />
@@ -67,13 +105,10 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
-        data-target="#deleteModal"><spring:message code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/read/${eRPImportOperation.externalId}/downloadfile"><spring:message
-            code="label.event.integration.erp.downloadFile" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/read/${eRPImportOperation.externalId}/retryimport"><spring:message
-            code="label.event.integration.erp.retryImport" /></a>
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/"><spring:message code="label.event.back" /></a>
+    &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+            code="label.event.delete" /></a> &nbsp;|&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -120,54 +155,36 @@ ${portal.toolkit()}
             <table class="table">
                 <tbody>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.executionDate" /></th>
-                        <td><c:out value='${eRPImportOperation.executionDate}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.whenCreated" /></th>
+                        <td><c:out value='${sibsOutputFile.versioningCreationDate}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.executor" /></th>
-                        <td><c:out value='${eRPImportOperation.versioningCreator}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.uploader" /></th>
+                        <td><c:out value='${sibsOutputFile.versioningCreator}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.finantialInstitution" /></th>
-                        <td><c:out value='${eRPImportOperation.finantialInstitution.name}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.lastSuccessfulExportation" /></th>
+                        <td><c:out value='${sibsOutputFile.lastSuccessfulExportation}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.success" /></th>
-                        <td><c:if test="${eRPImportOperation.success}">
-                                <span class="label label-primary"> <spring:message code="label.true" />
-                                </span>
-                            </c:if> <c:if test="${not eRPImportOperation.success}">
-                                <span class="label label-danger"> <spring:message code="label.false" />
-                                </span>
-                            </c:if></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.file" /></th>
+                        <td><a
+                            href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/read/download/${sibsOutputFile.externalId}">
+                                <c:out value="${sibsOutputFile.filename }" />
+                        </a></td>
                     </tr>
-<!--                     <tr> -->
-<%--                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.corrected" /></th> --%>
-<%--                         <td><c:if test="${eRPImportOperation.corrected}"> --%>
-<%--                                 <span class="label label-primary"> <spring:message code="label.true" /> --%>
-<!--                                 </span> -->
-<%--                             </c:if> <c:if test="${not eRPImportOperation.corrected}"> --%>
-<%--                                 <span class="label label-danger"> <spring:message code="label.false" /> --%>
-<!--                                 </span> -->
-<%--                             </c:if></td> --%>
-<!--                     </tr> -->
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.errorLog" /></th>
-                        <td><c:out value='${eRPImportOperation.errorLog}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.integrationLog" /></th>
-                        <td><c:out value='${eRPImportOperation.integrationLog}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPImportOperation.finantialDocuments" /></th>
+                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.SibsOutputFile.infoLog" /></th>
                         <td>
-                            <ul>
-                                <c:forEach items="${eRPImportOperation.finantialDocuments}" var="element">
-                                    <li><c:out value="${element}" /> <%-- CHANGE_ME --%></li>
-                                </c:forEach>
-                                <ul>
-                        </td>
+                        <pre><c:out
+                                value='${sibsOutputFile.infoLog}' /></pre></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.SibsOutputFile.errorLog" /></th>
+                        <td><pre><c:out
+                                value='${sibsOutputFile.errorLog}' /></pre></td>
                     </tr>
                 </tbody>
             </table>

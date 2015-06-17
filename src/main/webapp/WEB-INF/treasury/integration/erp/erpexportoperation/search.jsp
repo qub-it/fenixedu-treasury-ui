@@ -184,8 +184,10 @@ ${portal.toolkit()}
                             code="label.ERPExportOperation.executionDate" /></th>
                     <th><spring:message
                             code="label.ERPExportOperation.success" /></th>
-                    <th><spring:message
-                            code="label.ERPExportOperation.corrected" /></th>
+<%--                     <th><spring:message --%>
+<%--                             code="label.ERPExportOperation.corrected" /></th> --%>
+<%--                     <th><spring:message --%>
+<%--                             code="label.ERPExportOperation.creator" /></th> --%>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -217,10 +219,11 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"executiondate" : "<c:out value='${searchResult.executionDate}'/>",
+				"creator" : "<c:out value='${searchResult.versioningCreator}'/>",
+				"executiondate" : "<c:out value='${searchResult.executionDate}'/>",
 "finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
-"corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
+// "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -240,14 +243,15 @@ ${portal.toolkit()}
 		            { data: 'finantialinstitution' },
 			{ data: 'executiondate' },
 			{ data: 'success' },
-			{ data: 'corrected' },
+// 			{ data: 'corrected' },
+//			{ data: 'creator' },
 			{ data: 'actions' }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 4 } 
+		               { "width": "54px", "targets": 3 } 
 		             ],
 		"data" : searcherpexportoperationDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

@@ -1221,6 +1221,7 @@ public class ERPExporter {
         return input;
     }
 
+    @Atomic
     public static ERPExportOperation retryExportToIntegration(ERPExportOperation eRPExportOperation) {
         ERPExportOperation operation =
                 createSaftExportOperation(eRPExportOperation.getFile().getContent(),

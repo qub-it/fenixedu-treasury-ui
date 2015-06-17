@@ -35,6 +35,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.base.Strings;
+
 public class SibsConfiguration extends SibsConfiguration_Base {
 
     protected SibsConfiguration() {
@@ -140,6 +142,11 @@ public class SibsConfiguration extends SibsConfiguration_Base {
         SibsConfiguration sibsConfiguration = new SibsConfiguration();
         sibsConfiguration.init(finantialInstitution, entityReferenceCode, sourceInstitutionId, destinationInstitutionId);
         return sibsConfiguration;
+    }
+
+    public boolean isValid() {
+        return !Strings.isNullOrEmpty(this.getDestinationInstitutionId())
+                && !Strings.isNullOrEmpty(this.getSourceInstitutionId()) && !Strings.isNullOrEmpty(this.getEntityReferenceCode());
     }
 
     // @formatter: off

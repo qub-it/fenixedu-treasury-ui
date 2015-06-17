@@ -42,7 +42,8 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
     @Override
     public boolean canGenerateNewCode(Customer customer) {
         final PaymentReferenceCode lastPaymentCode = findLastPaymentCode();
-        return lastPaymentCode == null ? true : Integer.valueOf(getSequentialNumber(lastPaymentCode)) < 9999999;
+        return lastPaymentCode == null ? true : Integer.valueOf(getSequentialNumber(lastPaymentCode)) < referenceCodePool
+                .getMaxReferenceCode();
     }
 
     protected PaymentReferenceCode findLastPaymentCode() {
@@ -62,7 +63,9 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
         }
 
         final PaymentReferenceCode lastPaymentCode = findLastPaymentCode();
-        int nextSequentialNumber = lastPaymentCode != null ? Integer.valueOf(getSequentialNumber(lastPaymentCode)) + 1 : 0;
+        long nextSequentialNumber =
+                lastPaymentCode != null ? Integer.valueOf(getSequentialNumber(lastPaymentCode)) + 1 : referenceCodePool
+                        .getMinReferenceCode();
 
         String sequentialNumberPadded =
                 StringUtils.leftPad(String.valueOf(nextSequentialNumber), NUM_SEQUENTIAL_NUMBERS, CODE_FILLER);

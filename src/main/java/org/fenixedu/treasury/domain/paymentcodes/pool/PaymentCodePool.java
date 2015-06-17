@@ -56,7 +56,6 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     protected PaymentCodePool() {
         super();
-//		setBennu(Bennu.getInstance());
     }
 
     protected PaymentCodePool(final String name, final String entityReferenceCode, final Long minReferenceCode,
@@ -96,6 +95,13 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         // CHANGE_ME add more busines validations
         //
 
+        if (this.getFinantialInstitution() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.required");
+        }
+
+        if (this.getFinantialInstitution().getSibsConfiguration() == null) {
+            throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.required");
+        }
         Set<PaymentCodePool> allPools =
                 PaymentCodePool.findByActive(true, this.getFinantialInstitution()).collect(Collectors.toSet());
 
@@ -202,6 +208,10 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
             DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
+        if (!entityReferenceCode.equals(finantialInstitution.getSibsConfiguration().getEntityReferenceCode())) {
+            throw new TreasuryDomainException(
+                    "error.administration.payments.sibs.managepaymentcodepool.invalid.entity.reference.code.from.finantial.institution");
+        }
         return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
                 validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution,
                 seriesToUseInPayments, paymentMethod);
@@ -331,8 +341,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         } else {
             return this.getPaymentReferenceCodesSet().stream()
                     .filter(x -> x.getState().equals(PaymentReferenceCodeStateType.ANNULLED) == true)
-                    .filter(x -> x.getBeginDate().isBefore(localDate) && x.getEndDate().isAfter(localDate))
-                    .collect(Collectors.toList());
+                    .filter(x -> x.getValidInterval().contains(localDate.toDateTimeAtStartOfDay())).collect(Collectors.toList());
         }
     }
 

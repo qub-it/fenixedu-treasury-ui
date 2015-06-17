@@ -1,10 +1,12 @@
 package org.fenixedu.treasury.domain.paymentcodes;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -32,17 +34,25 @@ public class SibsOutputFile extends SibsOutputFile_Base {
             byte[] paymentFileContents =
                     file.createPaymentFile(finantialInstitution, lastSuccessfulSentDateTime, errorsBuilder).getBytes("ASCII");
             file.init(file.outgoingFilename(), file.outgoingFilename(), paymentFileContents);
+            file.setFinantialInstitution(finantialInstitution);
+            file.setLastSuccessfulExportation(lastSuccessfulSentDateTime);
             file.setErrorLog(errorsBuilder.toString());
-        } catch (UnsupportedEncodingException e) {
-            throw new TreasuryDomainException(e.getMessage());
+        } catch (Exception e) {
+            StringBuilder builder = new StringBuilder();
+            builder.append(e.getLocalizedMessage()).append("\n");
+            for (StackTraceElement el : e.getStackTrace()) {
+                builder.append(el.toString()).append("\n");
+            }
+            file.setFinantialInstitution(finantialInstitution);
+            file.setLastSuccessfulExportation(lastSuccessfulSentDateTime);
+            file.setErrorLog(builder.toString());
         }
         return file;
     }
 
     protected String createPaymentFile(FinantialInstitution finantialInstiution, DateTime lastSuccessfulSentDateTime,
             StringBuilder errorsBuilder) {
-//        final ExecutionYear executionYear = subjectExecutionYear();
-        final SibsOutgoingPaymentFile sibsOutgoingPaymentFile =
+        SibsOutgoingPaymentFile sibsOutgoingPaymentFile =
                 new SibsOutgoingPaymentFile(finantialInstiution.getSibsConfiguration().getSourceInstitutionId(),
                         finantialInstiution.getSibsConfiguration().getDestinationInstitutionId(), finantialInstiution
                                 .getSibsConfiguration().getEntityReferenceCode(), lastSuccessfulSentDateTime);
@@ -149,6 +159,110 @@ public class SibsOutputFile extends SibsOutputFile_Base {
     @Override
     public boolean isAccessible(User arg0) {
         return true;
+    }
+
+    protected void init(final FinantialInstitution finantialInstitution, final java.lang.String errorLog,
+            final java.lang.String infoLog, final java.lang.String printedPaymentCodes) {
+        setFinantialInstitution(finantialInstitution);
+        setErrorLog(errorLog);
+        setInfoLog(infoLog);
+        setPrintedPaymentCodes(printedPaymentCodes);
+        checkRules();
+    }
+
+    private void checkRules() {
+        //
+        //CHANGE_ME add more busines validations
+        //
+        if (getFinantialInstitution() == null) {
+            throw new TreasuryDomainException("error.SibsOutputFile.finantialInstitution.required");
+        }
+
+        //CHANGE_ME In order to validate UNIQUE restrictions
+        //if (findByFinantialInstitution(getFinantialInstitution().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.SibsOutputFile.finantialInstitution.duplicated");
+        //} 
+        //if (findByErrorLog(getErrorLog().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.SibsOutputFile.errorLog.duplicated");
+        //} 
+        //if (findByInfoLog(getInfoLog().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.SibsOutputFile.infoLog.duplicated");
+        //} 
+        //if (findByPrintedPaymentCodes(getPrintedPaymentCodes().count()>1)
+        //{
+        //  throw new TreasuryDomainException("error.SibsOutputFile.printedPaymentCodes.duplicated");
+        //} 
+    }
+
+    @Atomic
+    public void edit(final FinantialInstitution finantialInstitution, final java.lang.String errorLog,
+            final java.lang.String infoLog, final java.lang.String printedPaymentCodes) {
+        setFinantialInstitution(finantialInstitution);
+        setErrorLog(errorLog);
+        setInfoLog(infoLog);
+        setPrintedPaymentCodes(printedPaymentCodes);
+        checkRules();
+    }
+
+    @Override
+    protected void checkForDeletionBlockers(Collection<String> blockers) {
+        super.checkForDeletionBlockers(blockers);
+
+        //add more logical tests for checking deletion rules
+        //if (getXPTORelation() != null)
+        //{
+        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.SibsOutputFile.cannot.be.deleted"));
+        //}
+    }
+
+    @Override
+    @Atomic
+    public void delete() {
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
+
+        setFinantialInstitution(null);
+        super.delete();
+    }
+
+    @Atomic
+    public static SibsOutputFile create(final FinantialInstitution finantialInstitution, final java.lang.String errorLog,
+            final java.lang.String infoLog, final java.lang.String printedPaymentCodes) {
+        SibsOutputFile sibsOutputFile = new SibsOutputFile();
+        sibsOutputFile.init(finantialInstitution, errorLog, infoLog, printedPaymentCodes);
+        return sibsOutputFile;
+    }
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
+
+    public static Stream<SibsOutputFile> findAll() {
+        Set<SibsOutputFile> result = new HashSet<SibsOutputFile>();
+        for (FinantialInstitution finantialInstitution : FinantialInstitution.findAll().collect(Collectors.toList())) {
+            result.addAll(finantialInstitution.getSibsOutputFilesSet());
+        }
+        return result.stream();
+    }
+
+    public static Stream<SibsOutputFile> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
+        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
+    }
+
+    public static Stream<SibsOutputFile> findByErrorLog(final java.lang.String errorLog) {
+        return findAll().filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
+    }
+
+    public static Stream<SibsOutputFile> findByInfoLog(final java.lang.String infoLog) {
+        return findAll().filter(i -> infoLog.equalsIgnoreCase(i.getInfoLog()));
+    }
+
+    public static Stream<SibsOutputFile> findByPrintedPaymentCodes(final java.lang.String printedPaymentCodes) {
+        return findAll().filter(i -> printedPaymentCodes.equalsIgnoreCase(i.getPrintedPaymentCodes()));
     }
 
 }

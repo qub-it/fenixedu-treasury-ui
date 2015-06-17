@@ -27,9 +27,11 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -43,7 +45,6 @@ public class SibsInputFile extends SibsInputFile_Base {
 
     protected SibsInputFile() {
         super();
-        setBennu(Bennu.getInstance());
     }
 
     protected SibsInputFile(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
@@ -86,7 +87,6 @@ public class SibsInputFile extends SibsInputFile_Base {
             throw new TreasuryDomainException("error.SibsInputFile.cannot.delete");
         }
 
-        setBennu(null);
         setFinantialInstitution(null);
         setUploader(null);
         super.delete();
@@ -106,15 +106,15 @@ public class SibsInputFile extends SibsInputFile_Base {
     // @formatter: on
 
     public static Stream<SibsInputFile> findAll() {
-        return Bennu.getInstance().getSibsInputFilesSet().stream();
+        Set<SibsInputFile> result = new HashSet<SibsInputFile>();
+        for (FinantialInstitution finantialInstitution : FinantialInstitution.findAll().collect(Collectors.toList())) {
+            result.addAll(finantialInstitution.getSibsInputFilesSet());
+        }
+        return result.stream();
     }
 
     public static Stream<SibsInputFile> findByUploader(final User uploader) {
         return findAll().filter(i -> uploader.equals(i.getUploader()));
-    }
-
-    public static Stream<SibsInputFile> findByBennu(final Bennu bennu) {
-        return findAll().filter(i -> bennu.equals(i.getBennu()));
     }
 
     @Override

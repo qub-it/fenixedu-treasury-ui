@@ -73,7 +73,7 @@ public class SibsConfigurationController extends TreasuryBaseController {
     @RequestMapping(value = _READ_URI + "{oid}")
     public String read(@PathVariable("oid") SibsConfiguration sibsConfiguration, Model model) {
         setSibsConfiguration(sibsConfiguration, model);
-        return "treasury/administration/sibs/managesibsconfiguration/sibsconfiguration/read";
+        return "treasury/administration/payments/sibs/managesibsconfiguration/sibsconfiguration/read";
     }
 
 //				
@@ -84,7 +84,7 @@ public class SibsConfigurationController extends TreasuryBaseController {
     public String update(@PathVariable("oid") SibsConfiguration sibsConfiguration, Model model) {
         setSibsConfiguration(sibsConfiguration, model);
 
-        return "treasury/administration/sibs/managesibsconfiguration/sibsconfiguration/update";
+        return "treasury/administration/payments/sibs/managesibsconfiguration/sibsconfiguration/update";
 
     }
 
@@ -108,8 +108,7 @@ public class SibsConfigurationController extends TreasuryBaseController {
 
             /*Succes Update */
 
-            return redirect("/treasury/administration/sibs/managesibsconfiguration/sibsconfiguration/read/"
-                    + getSibsConfiguration(model).getExternalId(), model, redirectAttributes);
+            return redirect(READ_URL + getSibsConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (Exception de) {
             // @formatter: off
 

@@ -100,7 +100,7 @@ ${portal.toolkit()}
 <tr>
 	<th scope="row" class="col-xs-3"><spring:message code="label.SibsConfiguration.finantialInstitution"/></th> 
 	<td>
-		<c:out value='${sibsConfiguration.finantialInstitution}'/>
+		<c:out value='${sibsConfiguration.finantialInstitution.name}'/>
 	</td> 
 </tr>
 <tr>

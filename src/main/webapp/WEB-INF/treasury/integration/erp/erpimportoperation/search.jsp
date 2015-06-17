@@ -132,7 +132,7 @@ ${portal.toolkit()}
 <th><spring:message code="label.ERPImportOperation.executionDate"/></th>
 <th><spring:message code="label.ERPImportOperation.finantialInstitution"/></th>
 <th><spring:message code="label.ERPImportOperation.success"/></th>
-<th><spring:message code="label.ERPImportOperation.corrected"/></th>
+<%-- <th><spring:message code="label.ERPImportOperation.corrected"/></th> --%>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -167,7 +167,7 @@ ${portal.toolkit()}
 "executiondate" : "<c:out value='${searchResult.executionDate}'/>",
 "finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
-"corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
+// "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -187,14 +187,14 @@ ${portal.toolkit()}
 			{ data: 'executiondate' },
 			{ data: 'finantialinstitution' },
 			{ data: 'success' },
-			{ data: 'corrected' },
+// 			{ data: 'corrected' },
 			{ data: 'actions' }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 4 } 
+		               { "width": "54px", "targets": 3 } 
 		             ],
 		"data" : searcherpimportoperationDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

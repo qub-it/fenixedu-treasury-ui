@@ -28,10 +28,12 @@
 package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -39,6 +41,7 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -51,7 +54,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     protected PaymentReferenceCode() {
         super();
-        setBennu(Bennu.getInstance());
     }
 
     protected void init(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
@@ -63,6 +65,12 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         setState(state);
         setPaymentCodePool(pool);
         checkRules();
+    }
+
+    public Interval getValidInterval() {
+        return new Interval(getBeginDate().toDateTimeAtStartOfDay(), getEndDate().plusDays(1).toDateTimeAtStartOfDay()
+                .minusSeconds(1));
+
     }
 
     private void checkRules() {
@@ -113,7 +121,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             throw new TreasuryDomainException("error.PaymentReferenceCode.cannot.delete");
         }
 
-        setBennu(null);
         setPaymentCodePool(null);
         if (getTargetPayment() != null) {
 //            getTargetPayment().delete();
@@ -138,7 +145,13 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     // @formatter: on
 
     public static Stream<PaymentReferenceCode> findAll() {
-        return Bennu.getInstance().getPaymentReferenceCodesSet().stream();
+        Set<PaymentReferenceCode> result = new HashSet<PaymentReferenceCode>();
+
+        for (PaymentCodePool pool : PaymentCodePool.findAll().collect(Collectors.toList())) {
+            result.addAll(pool.getPaymentReferenceCodesSet());
+        }
+
+        return result.stream();
     }
 
     private static Stream<PaymentReferenceCode> findByReferenceCode(String entityReferenceCode, String referenceCode,
