@@ -46,7 +46,6 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -155,11 +154,6 @@ public class DebitNoteController extends TreasuryBaseController {
 
         // add the results dataSet to the model
         model.addAttribute("searchdebitnoteResultsDataSet", searchdebitnoteResultsDataSet);
-        model.addAttribute("DebitNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                                  // -
-                                                                                                                                  // MUST
-                                                                                                                                  // DEFINE
-                                                                                                                                  // RELATION
         model.addAttribute("DebitNote_payorDebtAccount_options",
                 org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
         model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType

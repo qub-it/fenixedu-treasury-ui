@@ -170,7 +170,7 @@ ${portal.angularToolkit()}
 					<spring:message code="label.DebitEntry.product" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-10">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="debitEntry_product" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" on-select="onProductChange($product, $model)">
 					<ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search">

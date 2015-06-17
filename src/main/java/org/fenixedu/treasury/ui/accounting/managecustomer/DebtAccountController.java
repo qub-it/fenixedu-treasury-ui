@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
@@ -41,9 +42,13 @@ import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
@@ -249,4 +254,22 @@ public class DebtAccountController extends TreasuryBaseController {
                 redirectAttributes);
     }
 
+    //
+    // This is the EventreadEvent Method for Screen read
+    //
+    @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
+    public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(@RequestParam(value = "q",
+            required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
+
+        List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
+        List<DebtAccount> debtAccounts =
+                DebtAccount.findAll().filter(x -> x.getCustomer().getName().toLowerCase().contains(searchField.toLowerCase()))
+                        .collect(Collectors.toList());
+
+        for (DebtAccount debt : debtAccounts) {
+            bean.add(new TupleDataSourceBean(debt.getExternalId(), debt.getCustomer().getName() + "["
+                    + debt.getFinantialInstitution().getCode() + "] (" + debt.getCustomer().getIdentificationNumber() + ")"));
+        }
+        return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
+    }
 }

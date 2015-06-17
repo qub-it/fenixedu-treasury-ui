@@ -78,11 +78,10 @@ ${portal.toolkit()}
 					<spring:message code="label.DebitNote.debtAccount" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-10" >
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<select id="debitNote_debtAccount" class="js-example-basic-single" name="debtaccount">
+					<select id="debitNote_debtAccount" class="select2 col-sm-10" name="debtaccount">
 						<option value=""></option>
-						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 				</div>
 			</div>
@@ -216,28 +215,29 @@ ${portal.toolkit()}
 <script>
 	$(document).ready(function() {
 
-	<%-- Block for providing debtAccount options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	debtAccount_options = [
-		<c:forEach items="${DebitNote_debtAccount_options}" var="element"> 
-			{
-				text :"<c:out value='${element.customer.name}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
 	
-	$("#debitNote_debtAccount").select2(
-		{
-			data : debtAccount_options,
-		}	  
-		    );
-		    
-		    <%-- If it's not from parameter change param.debtAccount to whatever you need (it's the externalId already) --%>
-		    $("#debitNote_debtAccount").select2().select2('val', '<c:out value='${param.debtAccount}'/>');
-	<%-- End block for providing debtAccount options --%>
 	
-
+	$("#debitNote_debtAccount").select2({
+		  ajax: {
+		    url: "${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/autocompletehelper",
+		    dataType: 'json',
+		    delay: 250,
+		    data: function (params) {
+		      return {
+		        q: params.term, // search term
+		        page: params.page
+		      };
+		    },
+		    processResults: function (data, page) {
+		      return {
+		        results: data
+		      };
+		    },
+		    cache: true
+		  },
+		  escapeMarkup: function (markup) { return markup; }, 
+		  minimumInputLength: 3,
+		});
 
 	}); 
 </script>

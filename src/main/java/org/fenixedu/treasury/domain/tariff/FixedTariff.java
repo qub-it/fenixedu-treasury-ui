@@ -104,6 +104,7 @@ public class FixedTariff extends FixedTariff_Base {
         checkRules();
     }
 
+    @Override
     public void checkRules() {
         super.checkRules();
         if (getProduct() == null) {
@@ -180,10 +181,12 @@ public class FixedTariff extends FixedTariff_Base {
         checkRules();
     }
 
+    @Override
     public boolean isDeletable() {
         return true;
     }
 
+    @Override
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -281,8 +284,14 @@ public class FixedTariff extends FixedTariff_Base {
             }
         } else if (this.getDueDateCalculationType().equals(DueDateCalculationType.FIXED_DATE)) {
             return this.getFixedDueDate();
+        } else if (finantialDocument != null) {
+            if (finantialDocument.getDocumentDueDate() != null) {
+                return finantialDocument.getDocumentDueDate();
+            } else {
+                return finantialDocument.getDocumentDate().toLocalDate();
+            }
         } else {
-            return null;
+            return new LocalDate();
         }
     }
 
