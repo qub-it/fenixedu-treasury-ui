@@ -78,7 +78,7 @@ ${portal.angularToolkit()}
 </c:if>
 
 <script>
-	angular.module('angularAppFixedTariff', [ 'ngSanitize', 'ui.select' ])
+	angular.module('angularAppFixedTariff', [ 'ngSanitize', 'ui.select','bennuToolkit' ])
 			.controller('FixedTariffController', [ '$scope', function($scope) {
 				$scope.booleanvalues = [ {
 					name : '<spring:message code="label.no"/>',
@@ -121,7 +121,7 @@ ${portal.angularToolkit()}
 				</div>
 
 				<div class="col-sm-4">
-					<input required id="fixedTariff_beginDate" class="form-control" type="date" name="beginDate" ng-model="object.beginDate" />
+					<input required id="fixedTariff_beginDate" class="form-control" type="text" name="beginDate" bennu-date="object.beginDate" />
 				</div>
 			</div>
 			<div class="form-group row">
@@ -130,7 +130,7 @@ ${portal.angularToolkit()}
 				</div>
 
 				<div class="col-sm-4">
-					<input required id="fixedTariff_endDate" class="form-control" type="date" name="endDate" ng-model="object.endDate" />
+					<input required id="fixedTariff_endDate" class="form-control" type="text" name="endDate" bennu-date="object.endDate" />
 				</div>
 			</div>
 			<div class="form-group row">
@@ -163,7 +163,7 @@ ${portal.angularToolkit()}
 				</div>
 
 				<div class="col-sm-4">
-					<input id="fixedTariff_fixedDueDate" class="form-control" type="date" name="fixedDueDate" ng-model="object.fixedDueDate" />
+					<input id="fixedTariff_fixedDueDate" class="form-control" type="text" name="fixedDueDate" bennu-date="object.fixedDueDate" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION'">

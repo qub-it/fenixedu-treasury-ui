@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -314,7 +315,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        PaymentReferenceCode paymentReferenceCode = PaymentReferenceCode.create(referenceCode, beginDate, endDate, state, pool);
+        PaymentReferenceCode paymentReferenceCode =
+                PaymentReferenceCode.create(referenceCode, beginDate, endDate, state, pool, BigDecimal.ZERO, BigDecimal.ZERO);
 
         return paymentReferenceCode;
     }

@@ -58,12 +58,15 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     protected void init(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
             final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool) {
+            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool,
+            BigDecimal minAmount, BigDecimal maxAmount) {
         setReferenceCode(Strings.padStart(referenceCode, LENGTH_REFERENCE_CODE, '0'));
         setBeginDate(beginDate);
         setEndDate(endDate);
         setState(state);
         setPaymentCodePool(pool);
+        setMinAmount(minAmount);
+        setMaxAmount(maxAmount);
         checkRules();
     }
 
@@ -132,9 +135,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     @Atomic
     public static PaymentReferenceCode create(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
             final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool) {
+            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool,
+            BigDecimal minAmount, BigDecimal maxAmount) {
         PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
-        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool);
+        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, minAmount, maxAmount);
         return paymentReferenceCode;
     }
 

@@ -80,7 +80,7 @@ ${portal.angularToolkit()}
 
 <script>
 	angular
-			.module('angularAppAdhocCustomer', [ 'ngSanitize', 'ui.select' ])
+			.module('angularAppAdhocCustomer', [ 'ngSanitize', 'ui.select' ,'bennuToolkit'])
 			.controller(
 					'AdhocCustomerController',
 					[

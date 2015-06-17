@@ -79,7 +79,7 @@ ${portal.angularToolkit()}
 <script>
 	angular
 			.module('angularAppPaymentReferenceCode',
-					[ 'ngSanitize', 'ui.select' ])
+					[ 'ngSanitize', 'ui.select','bennuToolkit' ])
 			.controller(
 					'PaymentReferenceCodeController',
 					[
@@ -144,7 +144,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-8">
-                    <input type="date" ng-model="object.beginDate" />
+                    <input type="text" bennu-date="object.beginDate" />
                 </div>
             </div>
             <div class="form-group row">
@@ -153,7 +153,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-8">
-                    <input type="date" ng-model="object.endDate" />
+                    <input type="text" bennu-date="object.endDate" />
                 </div>
             </div>
             <div class="form-group row">

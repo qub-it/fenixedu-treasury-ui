@@ -56,7 +56,8 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
-    public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount, LocalDate validFrom, LocalDate validTo) {
+    public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount, LocalDate validFrom, LocalDate validTo,
+            boolean useFixedAmount) {
 
         if (!canGenerateNewCode(customer)) {
             throw new RuntimeException("Cannot generate new payment codes");
@@ -74,9 +75,17 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
 
         String referenceCodeString = sequentialNumberPadded + controDigitsPadded;
 
+        BigDecimal minAmount = referenceCodePool.getMinAmount();
+        BigDecimal maxAmount = referenceCodePool.getMaxAmount();
+        if (useFixedAmount) {
+            minAmount = amount;
+            maxAmount = amount;
+        }
+
         PaymentReferenceCode newPaymentReference =
                 PaymentReferenceCode.create(referenceCodeString, validFrom, validTo, PaymentReferenceCodeStateType.UNUSED,
-                        referenceCodePool);
+                        referenceCodePool, minAmount, maxAmount);
+
         return newPaymentReference;
     }
 

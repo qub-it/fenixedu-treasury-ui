@@ -104,7 +104,7 @@ ${portal.angularToolkit()}
 
 <script>
 	angular
-			.module('changeExample', [ 'ngSanitize', 'ui.select' ])
+			.module('changeExample', [ 'ngSanitize', 'ui.select','bennuToolkit' ])
 			.controller(
 					'ExampleController',
 					[

@@ -94,7 +94,7 @@ ${portal.angularToolkit()}
    angular.isUndefinedOrNull = function(val) {
         return angular.isUndefined(val) || val === null };
    angular
-        .module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ])
+        .module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ,'bennuToolkit'])
         .controller(
                   'SettlementNoteController',
                   [

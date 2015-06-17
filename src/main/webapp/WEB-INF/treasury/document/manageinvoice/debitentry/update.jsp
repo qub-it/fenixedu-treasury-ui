@@ -86,7 +86,7 @@ ${portal.angularToolkit()}
 </c:if>
 
 <script>
-	angular.module('angularAppDebitEntry', [ 'ngSanitize', 'ui.select' ])
+	angular.module('angularAppDebitEntry', [ 'ngSanitize', 'ui.select','bennuToolkit' ])
 			.controller('DebitEntryController', [ '$scope', function($scope) {
 
 	            $scope.eventsDataSource = [

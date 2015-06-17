@@ -74,7 +74,7 @@ ${portal.angularToolkit()}
 			</c:if>
 
 <script>
-    angular.module('angularAppCreditEntry', [ 'ngSanitize', 'ui.select' ])
+    angular.module('angularAppCreditEntry', [ 'ngSanitize', 'ui.select','bennuToolkit' ])
             .controller('CreditEntryController', [ '$scope', function($scope) {
 
                 $scope.object = angular.fromJson('${creditEntryBeanJson}');

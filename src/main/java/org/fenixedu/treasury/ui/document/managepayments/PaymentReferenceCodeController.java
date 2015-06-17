@@ -157,7 +157,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                     bean.getPaymentCodePool()
                             .getReferenceCodeGenerator()
                             .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(),
-                                    bean.getDebitNote().getOpenAmount(), bean.getBeginDate(), bean.getEndDate());
+                                    bean.getDebitNote().getOpenAmount(), bean.getBeginDate(), bean.getEndDate(), true);
 
             paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
             //Success Validation
@@ -188,29 +188,4 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     }
     // @formatter: on
 
-//				
-//    @Atomic
-//    public PaymentReferenceCode createPaymentReferenceCode(java.lang.String referenceCode, Deb) {
-//
-//        // @formatter: off
-//
-//        /*
-//         * Modify the creation code here if you do not want to create
-//         * the object with the default constructor and use the setter
-//         * for each field
-//         * 
-//         */
-//
-//        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-//        //PaymentReferenceCode paymentReferenceCode = paymentReferenceCode.create(fields_to_create);
-//
-//        //Instead, use individual SETTERS and validate "CheckRules" in the end
-//        // @formatter: on
-//
-//        PaymentReferenceCode paymentReferenceCode = PaymentReferenceCode.create(referenceCode, beginDate, endDate, state)
-//        paymentReferenceCode.setState(state);
-//        paymentReferenceCode.setReferenceCode(referenceCode);
-//
-//        return paymentReferenceCode;
-//    }
 }

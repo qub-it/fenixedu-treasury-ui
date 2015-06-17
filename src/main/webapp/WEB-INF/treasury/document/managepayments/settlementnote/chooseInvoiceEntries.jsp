@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<!--  ${portal.toolkit()} -->
+  ${portal.toolkit()}
 ${portal.angularToolkit()}
 
 
@@ -27,7 +27,7 @@ ${portal.angularToolkit()}
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
+ <script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script> 
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
 <script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
@@ -85,7 +85,7 @@ ${portal.angularToolkit()}
 	angular.isUndefinedOrNull = function(val) {
 		return angular.isUndefined(val) || val === null
 	};
-	angular.module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select' ])
+	angular.module('angularAppSettlementNote', [ 'ngSanitize', 'ui.select','bennuToolkit' ])
 			.controller(
 					'SettlementNoteController',
 					[
@@ -131,7 +131,7 @@ ${portal.angularToolkit()}
                     <spring:message code="label.date"/>
                 </div> 
                 <div class="col-sm-4">
-                    <input  class="form-control" type="date" ng-model="object.date" required/>
+                    <input  class="form-control" type="text" bennu-date="object.date" />
                 </div>
             </div>
             <div class="form-group row">

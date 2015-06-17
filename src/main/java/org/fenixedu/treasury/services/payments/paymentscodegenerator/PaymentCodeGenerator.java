@@ -28,7 +28,7 @@ public abstract class PaymentCodeGenerator {
     public abstract boolean canGenerateNewCode(final Customer person);
 
     public abstract PaymentReferenceCode generateNewCodeFor(final Customer customer, BigDecimal amount, LocalDate validFrom,
-            LocalDate validTo);
+            LocalDate validTo, boolean useFixedAmount);
 
     public abstract boolean isCodeMadeByThisFactory(final PaymentReferenceCode paymentCode);
 

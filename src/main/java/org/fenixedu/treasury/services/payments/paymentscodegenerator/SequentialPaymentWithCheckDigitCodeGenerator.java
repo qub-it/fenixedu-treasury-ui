@@ -63,7 +63,8 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
 
     @Override
     @Atomic
-    public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount, LocalDate validFrom, LocalDate validTo) {
+    public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount, LocalDate validFrom, LocalDate validTo,
+            boolean useFixedAmount) {
 
         if (validFrom == null) {
             validFrom = referenceCodePool.getValidFrom();
@@ -108,9 +109,17 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
                     CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
                             + nextReferenceCode, BigDecimal.ZERO);
         }
+
+        BigDecimal minAmount = referenceCodePool.getMinAmount();
+        BigDecimal maxAmount = referenceCodePool.getMaxAmount();
+        if (useFixedAmount) {
+            minAmount = amount;
+            maxAmount = amount;
+        }
         PaymentReferenceCode newPaymentReference =
                 PaymentReferenceCode.create(referenceCodeString, validFrom, validTo, PaymentReferenceCodeStateType.UNUSED,
-                        referenceCodePool);
+                        referenceCodePool, minAmount, maxAmount);
+
         return newPaymentReference;
     }
 

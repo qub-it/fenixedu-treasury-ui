@@ -82,7 +82,7 @@ ${portal.angularToolkit()}
 
 <script>
     angular
-            .module('angularAppFinantialInstitution', [ 'ngSanitize', 'ui.select' ])
+            .module('angularAppFinantialInstitution', [ 'ngSanitize', 'ui.select','bennuToolkit' ])
             .controller(
                     'FinantialInstitutionController',
                     [

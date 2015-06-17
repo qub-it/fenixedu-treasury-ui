@@ -330,8 +330,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         } else {
             return this.getPaymentReferenceCodesSet().stream()
                     .filter(x -> x.getState().equals(PaymentReferenceCodeStateType.ANNULLED) == false)
-                    .filter(x -> x.getBeginDate().isBefore(localDate) && x.getEndDate().isAfter(localDate))
-                    .collect(Collectors.toList());
+                    .filter(x -> x.getValidInterval().contains(localDate.toDateTimeAtStartOfDay())).collect(Collectors.toList());
         }
     }
 

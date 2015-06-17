@@ -76,7 +76,7 @@ ${portal.angularToolkit()}
 
 <script>
 
-angular.module('angularAppAdhocCustomer', ['ngSanitize', 'ui.select']).controller('AdhocCustomerController', ['$scope', function($scope) {
+angular.module('angularAppAdhocCustomer', ['ngSanitize', 'ui.select','bennuToolkit']).controller('AdhocCustomerController', ['$scope', function($scope) {
 
  	$scope.object=angular.fromJson('${adhocCustomerBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 

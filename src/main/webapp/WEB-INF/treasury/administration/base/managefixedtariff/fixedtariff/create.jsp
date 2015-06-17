@@ -75,7 +75,7 @@ ${portal.angularToolkit()}
 
 <script>
 
-angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller('FixedTariffController', ['$scope', function($scope) {
+angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select','bennuToolkit']).controller('FixedTariffController', ['$scope', function($scope) {
 	$scope.booleanvalues= [
 		                    {name: '<spring:message code="label.no"/>',    value: false},
 		                    {name: '<spring:message code="label.yes"/>',        value: true}
@@ -110,14 +110,14 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.beginDate"/></div> 
 
 <div class="col-sm-4">
-	<input required id="fixedTariff_beginDate" class="form-control" type="date" name="beginDate"  ng-model="object.beginDate"/>
+	<input required id="fixedTariff_beginDate" class="form-control" type="text" name="beginDate"  bennu-date="object.beginDate"/>
 </div> 
 </div>		
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.endDate"/></div> 
 
  <div class="col-sm-4">
-	<input required id="fixedTariff_endDate" class="form-control" type="date" name="endDate"   ng-model="object.endDate"/>
+	<input required id="fixedTariff_endDate" class="form-control" type="text" name="endDate"   bennu-date="object.endDate"/>
 </div> 
 </div>		
 <div class="form-group row">
@@ -149,7 +149,7 @@ angular.module('angularAppFixedTariff', ['ngSanitize', 'ui.select']).controller(
 <div class="col-sm-2 control-label"><spring:message code="label.FixedTariff.fixedDueDate"/></div> 
 
  <div class="col-sm-4">
-	<input id="fixedTariff_fixedDueDate" class="form-control" type="date" name="fixedDueDate"  ng-model="object.fixedDueDate"/>
+	<input id="fixedTariff_fixedDueDate" class="form-control" type="text" name="fixedDueDate"  bennu-date="object.fixedDueDate"/>
 </div> 
 </div>		
 <div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION'">
