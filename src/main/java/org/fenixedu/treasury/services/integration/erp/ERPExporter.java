@@ -96,6 +96,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -1139,6 +1140,7 @@ public class ERPExporter {
         operation.setErrorLog(out.toString());
     }
 
+    @Atomic(mode = TxMode.WRITE)
     private static ERPExportOperation createSaftExportOperation(byte[] data, FinantialInstitution institution, DateTime when) {
         String filename = institution.getFiscalNumber() + "_" + when.toString() + ".xml";
         ERPExportOperation operation = ERPExportOperation.create(data, filename, institution, when, false, false, false, null);
@@ -1162,27 +1164,6 @@ public class ERPExporter {
         }
         operation.setFile(binaryStream);
     }
-
-//    public static ERPExportOperation exportPendingsDocumentsToIntegration(String username, FinantialInstitution institution,
-//            DateTime fromDate, DateTime toDate) {
-//
-//        List<FinantialDocument> pendingDocuments = institution.findPendingDocumentsNotExported(fromDate, toDate);
-//
-//        ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
-//        try {
-//            ERPExporter saftExporter = new ERPExporter();
-//            String xml =
-//                    saftExporter.generateERPFile(institution, fromDate, toDate,
-//                            pendingDocuments.stream().collect(Collectors.toSet()), false, false);
-//            writeContentToExportOperation(xml, operation);
-//            sendDocumentsInformationToIntegration(institution, operation);
-//            operation.getFinantialDocumentsSet().addAll(pendingDocuments);
-//            operation.setSuccess(true);
-//        } catch (Throwable t) {
-//            writeError(operation, t);
-//        }
-//        return operation;
-//    }
 
     public static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {
         documents.forEach(x -> {
@@ -1238,5 +1219,19 @@ public class ERPExporter {
             input.getData().add(b);
         }
         return input;
+    }
+
+    public static ERPExportOperation retryExportToIntegration(ERPExportOperation eRPExportOperation) {
+        ERPExportOperation operation =
+                createSaftExportOperation(eRPExportOperation.getFile().getContent(),
+                        eRPExportOperation.getFinantialInstitution(), new DateTime());
+        try {
+
+            sendDocumentsInformationToIntegration(eRPExportOperation.getFinantialInstitution(), operation);
+            operation.setSuccess(true);
+        } catch (Exception ex) {
+            writeError(operation, ex);
+        }
+        return operation;
     }
 }

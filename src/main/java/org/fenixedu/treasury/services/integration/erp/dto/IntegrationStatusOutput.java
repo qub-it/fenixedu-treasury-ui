@@ -78,7 +78,7 @@ public class IntegrationStatusOutput {
 
     public IntegrationStatusOutput(String requestId) {
         this.setRequestId(requestId);
-        set_documentStatus(new ArrayList<DocumentStatusWS>());
+        setDocumentStatus(new ArrayList<DocumentStatusWS>());
     }
 
     public String getRequestId() {
@@ -89,11 +89,11 @@ public class IntegrationStatusOutput {
         this.requestId = requestId;
     }
 
-    public List<DocumentStatusWS> get_documentStatus() {
+    public List<DocumentStatusWS> getDocumentStatus() {
         return _documentStatus;
     }
 
-    public void set_documentStatus(List<DocumentStatusWS> _documentStatus) {
+    public void setDocumentStatus(List<DocumentStatusWS> _documentStatus) {
         this._documentStatus = _documentStatus;
     }
 }

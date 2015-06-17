@@ -29,11 +29,13 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
@@ -43,6 +45,7 @@ import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.Ordering;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
@@ -370,4 +373,34 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         checkRules();
     }
 
+    public static FinantialDocument findByUiDocumentNumber(FinantialInstitution finantialInstitution, String docNumber) {
+        //parse the Document Number in {DOCUMENT_TYPE} {DOCUMENT_SERIES}/{DOCUMENT_NUMBER}
+        String documentType;
+        String seriesNumber;
+        String documentNumber;
+
+        try {
+            List<String> values = Splitter.on(' ').splitToList(docNumber);
+            List<String> values2 = Splitter.on('/').splitToList(values.get(1));
+
+            documentType = values.get(0);
+            seriesNumber = values2.get(0);
+            documentNumber = values2.get(1);
+
+            FinantialDocumentType type = FinantialDocumentType.findByCode(documentType);
+            if (type != null) {
+                Series series = Series.findByCode(finantialInstitution, seriesNumber);
+                if (series != null) {
+                    DocumentNumberSeries dns = DocumentNumberSeries.find(type, series);
+                    if (dns != null) {
+                        return dns.getFinantialDocumentsSet().stream().filter(x -> x.getDocumentNumber().equals(documentNumber))
+                                .findFirst().orElse(null);
+                    }
+                }
+            }
+        } catch (Exception ex) {
+
+        }
+        return null;
+    }
 }

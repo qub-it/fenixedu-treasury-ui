@@ -129,7 +129,7 @@ ${portal.toolkit()}
                     <input id="eRPExportOperation_fromExecutionDate"
                         class="form-control" type="text"
                         name="fromexecutiondate" bennu-date
-                        value='<c:out value='${param.executiondate }'/>' />
+                        value='<c:out value='${param.fromexecutiondate }'/>' />
                 </div>
                 <div class="col-sm-1 control-label">
                     <spring:message
@@ -139,7 +139,7 @@ ${portal.toolkit()}
                     <input id="eRPExportOperation_toExecutionDate"
                         class="form-control" type="text"
                         name="toexecutiondate" bennu-date
-                        value='<c:out value='${param.executiondate }'/>' />
+                        value='<c:out value='${param.toexecutiondate }'/>' />
                 </div>
             </div>
 
@@ -194,14 +194,8 @@ ${portal.toolkit()}
 
             </tbody>
         </table>
-        <form id="deletemultiple"
-            action="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/search/deleteMultiple"
-            style="display: none;" method="POST"></form>
 
-        <button type="button"
-            onClick="javascript:submitOptions('searcherpexportoperationTable', 'deletemultiple', 'eRPExportOperations')">
-            <spring:message code='label.integration.erp..deleteMultiple' />
-        </button>
+     
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">

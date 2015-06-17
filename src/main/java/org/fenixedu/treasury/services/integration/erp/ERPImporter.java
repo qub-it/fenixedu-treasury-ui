@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -39,6 +41,7 @@ import oecd.standardauditfile_tax.pt_1.AuditFile;
 import oecd.standardauditfile_tax.pt_1.PaymentMethod;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
 
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -241,5 +244,23 @@ public class ERPImporter {
             return org.fenixedu.treasury.domain.PaymentMethod.findAll().findFirst().orElse(null);
         }
         return paymentMethod;
+    }
+
+    public Set<String> getRelatedDocumentsNumber() {
+        Set<String> result = new HashSet<String>();
+
+        AuditFile file = readAuditFileFromXML();
+
+        for (WorkDocument w : file.getSourceDocuments().getWorkingDocuments().getWorkDocument()) {
+            result.add(w.getDocumentNumber());
+        }
+        for (oecd.standardauditfile_tax.pt_1.SourceDocuments.SalesInvoices.Invoice i : file.getSourceDocuments()
+                .getSalesInvoices().getInvoice()) {
+            result.add(i.getInvoiceNo());
+        }
+        for (Payment p : file.getSourceDocuments().getPayments().getPayment()) {
+            result.add(p.getPaymentRefNo());
+        }
+        return result;
     }
 }

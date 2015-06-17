@@ -236,9 +236,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
         /* Put here the logic for processing Event retryImport  */
 
         try {
-            ERPExportOperation retryExportOperation =
-                    ERPExporter.exportFinantialDocumentToIntegration(eRPExportOperation.getFinantialInstitution(),
-                            eRPExportOperation.getFinantialDocumentsSet());
+            ERPExportOperation retryExportOperation = ERPExporter.retryExportToIntegration(eRPExportOperation);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.retry"), model);
 
             //redirect to the retried export operation
