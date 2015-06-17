@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -312,6 +313,31 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList,
             Boolean includeAnulledDocuments);
 
+    @Atomic
+    public void changeState(FinantialDocumentStateType newState, String reason) {
+        //Same state, do nothing...
+        if (newState == this.getState()) {
+            return;
+        }
+
+        if (this.isPreparing()) {
+            if (newState == FinantialDocumentStateType.ANNULED) {
+                this.anullDocument(true, reason);
+            }
+
+            if (newState == FinantialDocumentStateType.CLOSED) {
+                this.closeDocument();
+            }
+        } else if (this.isClosed() && newState == FinantialDocumentStateType.ANNULED) {
+            this.anullDocument(false, reason);
+        } else {
+            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
+                    "error.FinantialDocumentState.invalid.state.change.request"));
+        }
+
+        checkRules();
+    }
+    
     // @formatter: off
     /************
      * SERVICES *
@@ -329,7 +355,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public static Stream<? extends FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
         return findAll().filter(x -> x.getDocumentNumberSeries() == documentNumberSeries);
     }
-
+    
+    public static Optional<? extends FinantialDocument> findUniqueByDocumentNumber(final String documentNumber) {
+        return findAll().filter(x -> documentNumber.equals(x.getUiDocumentNumber())).findFirst();
+    }
+    
     protected static Stream<? extends FinantialDocument> findClosedUntilDocumentNumberExclusive(
             final DocumentNumberSeries documentNumberSeries, final String documentNumber) {
         return find(documentNumberSeries).filter(

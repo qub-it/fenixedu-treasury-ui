@@ -40,6 +40,9 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
+import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.DocumentStatusWS;
@@ -140,14 +143,39 @@ public class ERPIntegrationService extends BennuWebService {
 
     @WebMethod
     public InterestRequestValueOuptut getInterestValueFor(InterestRequestValueInput interestRequest) {
+        final InterestRequestValueOuptut bean = new InterestRequestValueOuptut();
         validateRequestHeader(interestRequest.getFinantialInstitutionFiscalNumber());
+
         //1. Check if the the lineNumber+DebitNoteNumber is for the Customer of the FinantialInstitution
-
+        final Optional<? extends FinantialDocument> optionalFinantialDocument = FinantialDocument.findUniqueByDocumentNumber(interestRequest.getDebitNoteNumber());
+        
+        if(!optionalFinantialDocument.isPresent()) {
+            bean.setInvocationSuccess(false);
+            bean.setDescription("Debit note not found");
+            
+            return bean;
+        }
+        
+        final FinantialDocument finantialDocument = optionalFinantialDocument.get();
+        
+        if(!finantialDocument.isDebitNote()) {
+            bean.setInvocationSuccess(false);
+            bean.setDescription("Finantial document was not debit note");
+            
+            return bean;            
+        }
+        
         //2. Check if the lineNumber+DebitNoteNumber Amount is correct
-
+        final DebitNote debitNote = (DebitNote) finantialDocument;
+        
+        Optional<? extends FinantialDocumentEntry> debitEntry = FinantialDocumentEntry.findUniqueByEntryOrder(finantialDocument, interestRequest.getLineNumber());
+        
+        if(!debitEntry.isPresent()) {
+            
+        }
+        
         //3 . calculate the amount of interest
 
-        InterestRequestValueOuptut bean = new InterestRequestValueOuptut();
 
         if (interestRequest.getGenerateInterestDebitNote()) {
             //Create DebitNote for the InterestRate

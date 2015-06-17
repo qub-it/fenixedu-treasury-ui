@@ -215,7 +215,7 @@ public class DebtAccount extends DebtAccount_Base {
         for (InvoiceEntry entry : this.getPendingInvoiceEntriesSet()) {
             if (entry.isDebitNoteEntry()) {
                 interestAmount =
-                        interestAmount.add(((DebitEntry) entry).calculateInterestValue(whenToCalculate).getInterestAmount());
+                        interestAmount.add(((DebitEntry) entry).calculateUndebitedInterestValue(whenToCalculate).getInterestAmount());
             }
         }
         return interestAmount;

@@ -7,15 +7,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
-import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
 

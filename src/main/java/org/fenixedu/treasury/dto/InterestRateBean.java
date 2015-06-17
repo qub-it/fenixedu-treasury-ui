@@ -2,33 +2,147 @@ package org.fenixedu.treasury.dto;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.fenixedu.bennu.IBean;
+import org.fenixedu.treasury.domain.tariff.InterestType;
+import org.joda.time.LocalDate;
+
+import com.google.common.collect.Lists;
 
 public class InterestRateBean implements IBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private BigDecimal interestAmount;
+    public static class InterestInformationDetail implements IBean, Serializable {
 
-    private String description;
+        private static final long serialVersionUID = 1L;
 
-    public InterestRateBean() {
-        setInterestAmount(BigDecimal.ZERO);
-        setDescription(new String());
+        private BigDecimal amount;
+        private LocalDate begin;
+        private LocalDate end;
+        private BigDecimal amountPerUnit;
+
+        private InterestInformationDetail(final BigDecimal amount, final LocalDate begin, final LocalDate end,
+                final BigDecimal amountPerUnit) {
+            this.amount = amount;
+            this.begin = begin;
+            this.end = end;
+        }
+
+        public BigDecimal getAmount() {
+            return amount;
+        }
+
+        public LocalDate getBegin() {
+            return begin;
+        }
+
+        public LocalDate getEnd() {
+            return end;
+        }
+
+        public BigDecimal getAmountPerUnit() {
+            return amountPerUnit;
+        }
     }
 
-    public InterestRateBean(BigDecimal interestAmount, String description) {
-        this.setInterestAmount(interestAmount);
-        this.setDescription(description);
+    public static class CreatedInterestEntry implements IBean, Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private LocalDate entryDate;
+        private BigDecimal amount;
+
+        private CreatedInterestEntry(final LocalDate entryDate, final BigDecimal amount) {
+            this.entryDate = entryDate;
+            this.amount = amount;
+        }
+
+        public LocalDate getEntryDate() {
+            return entryDate;
+        }
+
+        public BigDecimal getAmount() {
+            return amount;
+        }
+    }
+
+    private BigDecimal interestAmount;
+    private InterestType interestType;
+    private int numberOfDays;
+    private int numberOfMonths;
+    private String description;
+
+    private List<InterestInformationDetail> interestInformationList = Lists.newArrayList();
+    private List<CreatedInterestEntry> createdInterestEntriesList = Lists.newArrayList();
+
+    public InterestRateBean() {
+        setInterestType(null);
+        setInterestAmount(BigDecimal.ZERO);
+        setNumberOfDays(0);
+        setNumberOfMonths(0);
+    }
+
+    public InterestRateBean(final InterestType interestType) {
+        setInterestType(interestType);
+    }
+
+    public InterestInformationDetail addDetail(final BigDecimal amount, final LocalDate begin, final LocalDate end,
+            final BigDecimal amountPerUnit) {
+        final InterestInformationDetail detail = new InterestInformationDetail(amount, begin, end, amountPerUnit);
+
+        interestInformationList.add(detail);
+
+        return detail;
+    }
+
+    public CreatedInterestEntry addCreatedInterestEntry(final LocalDate entryDate, final BigDecimal amount) {
+        final CreatedInterestEntry entry = new CreatedInterestEntry(entryDate, amount);
+
+        createdInterestEntriesList.add(entry);
+
+        return entry;
     }
 
     public BigDecimal getInterestAmount() {
         return interestAmount;
     }
 
-    public void setInterestAmount(BigDecimal interestAmount) {
-        this.interestAmount = interestAmount;
+    public void setInterestAmount(BigDecimal amount) {
+        this.interestAmount = amount;
+    }
+
+    public InterestType getInterestType() {
+        return interestType;
+    }
+
+    public void setInterestType(InterestType interestType) {
+        this.interestType = interestType;
+    }
+
+    public int getNumberOfDays() {
+        return numberOfDays;
+    }
+
+    public void setNumberOfDays(int numberOfDays) {
+        this.numberOfDays = numberOfDays;
+    }
+
+    public int getNumberOfMonths() {
+        return numberOfMonths;
+    }
+
+    public void setNumberOfMonths(int numberOfMonths) {
+        this.numberOfMonths = numberOfMonths;
+    }
+
+    public List<InterestInformationDetail> getInterestInformationList() {
+        return interestInformationList;
+    }
+
+    public List<CreatedInterestEntry> getCreatedInterestEntriesList() {
+        return createdInterestEntriesList;
     }
 
     public String getDescription() {

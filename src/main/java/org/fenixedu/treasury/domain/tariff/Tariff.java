@@ -150,6 +150,10 @@ public abstract class Tariff extends Tariff_Base {
     public boolean isActive(final Interval dateInterval) {
         return new Interval(getBeginDate(), getEndDate()).overlaps(dateInterval);
     }
+    
+    public boolean isApplyInterests() {
+        return getApplyInterests();
+    }
 
     @Atomic
     public void edit(final DateTime beginDate, final DateTime endDate) {

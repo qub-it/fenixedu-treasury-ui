@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -39,6 +40,17 @@ import org.joda.time.DateTime;
 import pt.ist.fenixframework.Atomic;
 
 public class SettlementEntry extends SettlementEntry_Base {
+
+    public static final Comparator<SettlementEntry> COMPARATOR_BY_ENTRY_DATE_TIME = new Comparator<SettlementEntry>() {
+
+        @Override
+        public int compare(final SettlementEntry o1, final SettlementEntry o2) {
+            int c = o1.getEntryDateTime().compareTo(o2.getEntryDateTime());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+        
+    };
 
     protected SettlementEntry() {
         super();

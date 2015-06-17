@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -132,6 +133,10 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
 
     public static Stream<? extends FinantialDocumentEntry> findAll() {
         return Bennu.getInstance().getFinantialDocumentEntriesSet().stream();
+    }
+    
+    public static Optional<? extends FinantialDocumentEntry> findUniqueByEntryOrder(final FinantialDocument finantialDocument, int entryOrder) {
+        return finantialDocument.getFinantialDocumentEntriesSet().stream().filter(e -> e.getEntryOrder() != null && e.getEntryOrder() == entryOrder).findFirst();
     }
 
 }

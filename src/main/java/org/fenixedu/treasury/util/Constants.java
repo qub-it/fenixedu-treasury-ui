@@ -30,10 +30,14 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
+import org.joda.time.LocalDate;
+import org.joda.time.ReadablePartial;
 
 public class Constants {
 
     private static final int SCALE = 20;
+
+    public static final BigDecimal HUNDRED_PERCENT = new BigDecimal("100.00");
 
     public static String BUNDLE = FenixeduTreasurySpringConfiguration.BUNDLE.replace('/', '.');
     
@@ -66,5 +70,28 @@ public class Constants {
     public static BigDecimal divide(final BigDecimal a, BigDecimal b) {
         return a.divide(b, SCALE, RoundingMode.HALF_EVEN);
     }
+ 
     
+    // @formatter: off
+    /**************
+     * DATE UTILS *
+     **************/
+    // @formatter: on
+    
+    public static int numberOfDaysInYear(final int year) {
+        
+        if(new LocalDate(year, 1, 1).year().isLeap()) {
+            return 366;
+        }
+        
+        return 365;
+    }
+
+    public static LocalDate lastDayInYear(final int year) {
+        return new LocalDate(year, 12, 31);
+    }
+    
+    public static LocalDate firstDayInYear(final int year) {
+        return new LocalDate(year, 1, 1);
+    }
 }

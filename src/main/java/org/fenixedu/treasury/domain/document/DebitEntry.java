@@ -30,12 +30,12 @@ package org.fenixedu.treasury.domain.document;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,13 +53,13 @@ import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.DomainObject;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -121,76 +121,104 @@ public class DebitEntry extends DebitEntry_Base {
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
         setTariff(tariff);
         setExemptedAmount(BigDecimal.ZERO);
-        
+
         checkRules();
     }
 
-    public InterestRateBean calculateInterestValue(LocalDate whenToCalculate) {
-        if (!getTariff().getApplyInterests()) {
+    public InterestRateBean calculateAllInterestValue(final LocalDate whenToCalculate) {
+        if (!getTariff().isApplyInterests()) {
             return new InterestRateBean();
         }
-        InterestRate rate = getTariff().getInterestRate();
 
-        Map<DateTime, BigDecimal> payments = new HashMap<DateTime, BigDecimal>();
-        for (SettlementEntry settlementEntry : getSettlementEntriesSet()) {
-            payments.put(settlementEntry.getFinantialDocument().getDocumentDate(), settlementEntry.getAmount());
-        }
-        payments.put(whenToCalculate.toDateTimeAtStartOfDay(), BigDecimal.ZERO);
-
-        BigDecimal totalAmount = getAmount();
-        LocalDate startDate = getDueDate();
-        List<BigDecimal> interests = new ArrayList<BigDecimal>();
-        for (DateTime date : payments.keySet().stream().sorted().collect(Collectors.toList())) {
-            BigDecimal interestAmount = BigDecimal.ZERO;
-            switch (rate.getInterestType()) {
-            case DAILY:
-                if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
-                    int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
-                    //TODOJN - get global rate
-                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInPreviousYear, rate));
-                    int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
-                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInNextYear, rate));
-                } else {
-                    int days = Days.daysBetween(startDate, date.toLocalDate()).getDays();
-                    interestAmount = getRateValueUsingDiaryRate(totalAmount, days, rate);
-                }
-                break;
-            case MONTHLY:
-                if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
-                    int monthsInPreviousYear = 12 - startDate.getMonthOfYear();
-                    //TODOJN - get global rate
-                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInPreviousYear, rate));
-                    int monthsInNextYear = date.getMonthOfYear() - 1;
-                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInNextYear, rate));
-                } else {
-                    int months = date.getMonthOfYear() - startDate.getMonthOfYear();
-                    interestAmount = getRateValueUsingMonthlyRate(totalAmount, months, rate);
-                }
-                break;
-            case FIXED_AMOUNT:
-                interestAmount = rate.getInterestFixedAmount();
-                break;
-            }
-            interests.add(interestAmount);
-            totalAmount = totalAmount.subtract(payments.get(date));
-            startDate = date.toLocalDate();
+        if (!toCalculateInterests(whenToCalculate)) {
+            return new InterestRateBean();
         }
 
-        BigDecimal totalInterestAmount = BigDecimal.ZERO;
-        for (BigDecimal interestAmount : interests) {
-            totalInterestAmount = totalInterestAmount.add(interestAmount);
-        }
-
-        for (DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
-            totalInterestAmount = totalInterestAmount.subtract(interestDebitEntry.getAmountWithVat());
-        }
-        if (getVatRate().compareTo(BigDecimal.ZERO) != 0) {
-            totalInterestAmount = totalInterestAmount.multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100))));
-        }
-        totalInterestAmount = totalInterestAmount.setScale(2, RoundingMode.HALF_EVEN);
-        return new InterestRateBean(totalInterestAmount, getInterestValueDescription());
+        return getTariff().getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate),
+                Maps.<LocalDate, BigDecimal> newHashMap(), getDueDate(), whenToCalculate);
     }
 
+    public InterestRateBean calculateUndebitedInterestValue(final LocalDate whenToCalculate) {
+        if (!getTariff().isApplyInterests()) {
+            return new InterestRateBean();
+        }
+
+        if (!toCalculateInterests(whenToCalculate)) {
+            return new InterestRateBean();
+        }
+
+        return getTariff().getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(), getDueDate(), whenToCalculate);
+
+//        if (!getTariff().getApplyInterests()) {
+//            return new InterestRateBean();
+//        }
+//        InterestRate rate = getTariff().getInterestRate();
+//
+//        Map<DateTime, BigDecimal> payments = new HashMap<DateTime, BigDecimal>();
+//        for (SettlementEntry settlementEntry : getSettlementEntriesSet()) {
+//            payments.put(settlementEntry.getFinantialDocument().getDocumentDate(), settlementEntry.getAmount());
+//        }
+//        payments.put(whenToCalculate.toDateTimeAtStartOfDay(), BigDecimal.ZERO);
+//
+//        BigDecimal totalAmount = getAmount();
+//        LocalDate startDate = getDueDate();
+//        List<BigDecimal> interests = new ArrayList<BigDecimal>();
+//        for (DateTime date : payments.keySet().stream().sorted().collect(Collectors.toList())) {
+//            BigDecimal interestAmount = BigDecimal.ZERO;
+//            switch (rate.getInterestType()) {
+//            case DAILY:
+//                if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
+//                    int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
+//                    //TODOJN - get global rate
+//                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInPreviousYear, rate));
+//                    int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
+//                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInNextYear, rate));
+//                } else {
+//                    int days = Days.daysBetween(startDate, date.toLocalDate()).getDays();
+//                    interestAmount = getRateValueUsingDiaryRate(totalAmount, days, rate);
+//                }
+//                break;
+//            case MONTHLY:
+//                if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
+//                    int monthsInPreviousYear = 12 - startDate.getMonthOfYear();
+//                    //TODOJN - get global rate
+//                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInPreviousYear, rate));
+//                    int monthsInNextYear = date.getMonthOfYear() - 1;
+//                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInNextYear, rate));
+//                } else {
+//                    int months = date.getMonthOfYear() - startDate.getMonthOfYear();
+//                    interestAmount = getRateValueUsingMonthlyRate(totalAmount, months, rate);
+//                }
+//                break;
+//            case FIXED_AMOUNT:
+//                interestAmount = rate.getInterestFixedAmount();
+//                break;
+//            }
+//            interests.add(interestAmount);
+//            totalAmount = totalAmount.subtract(payments.get(date));
+//            startDate = date.toLocalDate();
+//        }
+//
+//        BigDecimal totalInterestAmount = BigDecimal.ZERO;
+//        for (BigDecimal interestAmount : interests) {
+//            totalInterestAmount = totalInterestAmount.add(interestAmount);
+//        }
+//
+//        for (DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
+//            totalInterestAmount = totalInterestAmount.subtract(interestDebitEntry.getAmountWithVat());
+//        }
+//        if (getVatRate().compareTo(BigDecimal.ZERO) != 0) {
+//            totalInterestAmount = totalInterestAmount.multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100))));
+//        }
+//        totalInterestAmount = totalInterestAmount.setScale(2, RoundingMode.HALF_EVEN);
+//        return new InterestRateBean(totalInterestAmount, getInterestValueDescription());
+    }
+
+    private boolean toCalculateInterests(final LocalDate whenToCalculate) {
+        return !whenToCalculate.isBefore(getDueDate().plusDays(getTariff().getInterestRate().getNumberOfDaysAfterDueDate()));
+    }
+
+    // CHECK
     private BigDecimal getRateValueUsingDiaryRate(BigDecimal amount, int days, InterestRate rate) {
         int numberOfDays =
                 rate.getMaximumDaysToApplyPenalty() < days - rate.getNumberOfDaysAfterDueDate() ? rate
@@ -199,6 +227,7 @@ public class DebitEntry extends DebitEntry_Base {
                 .multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
     }
 
+    // CHECK
     private BigDecimal getRateValueUsingMonthlyRate(BigDecimal amount, int months, InterestRate rate) {
         int numberOfMonths = rate.getMaximumMonthsToApplyPenalty() < months ? rate.getMaximumMonthsToApplyPenalty() : months;
         return amount.multiply(BigDecimal.valueOf(numberOfMonths)).multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
@@ -241,31 +270,12 @@ public class DebitEntry extends DebitEntry_Base {
                 throw new TreasuryDomainException("error.DebitEntry.tariff.invalid");
             }
         }
-        
+
         // If it exempted then it must be on itself or with credit entry but not both
-        if(isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
-            throw new TreasuryDomainException("error.DebitEntry.exemption.cannot.be.on.debit.entry.and.with.credit.entry.at.same.time");
+        if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
+            throw new TreasuryDomainException(
+                    "error.DebitEntry.exemption.cannot.be.on.debit.entry.and.with.credit.entry.at.same.time");
         }
-    }
-
-    protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
-        final GsonBuilder builder = new GsonBuilder();
-
-        final Gson gson = builder.create();
-        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
-        }.getType();
-
-        return gson.toJson(propertiesMap, stringStringMapType);
-    }
-
-    protected Map<String, String> propertiesJsonToMap(final String propertiesMapJson) {
-        final GsonBuilder builder = new GsonBuilder();
-
-        final Gson gson = builder.create();
-        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
-        }.getType();
-
-        return gson.fromJson(propertiesMapJson, stringStringMapType);
     }
 
     @Override
@@ -315,11 +325,13 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     @Atomic
-    public DebitEntry generateInterestRateDebitEntry(InterestRateBean interest, DateTime when, DebitNote debitNote) {
+    public DebitEntry generateInterestRateDebitEntry(final InterestRateBean interest, final DateTime when, final DebitNote debitNote) {
         Product product = TreasurySettings.getInstance().getInterestProduct();
+        
         if (product == null) {
             throw new TreasuryDomainException("error.SettlementNote.need.interest.product");
         }
+        
         FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
         Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
 
@@ -329,7 +341,9 @@ public class DebitEntry extends DebitEntry_Base {
                 create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
                         propertiesJsonToMap(getPropertiesJsonMap()), product, interest.getDescription(), BigDecimal.ONE,
                         activeTariff, when);
+        
         addInterestDebitEntries(interestEntry);
+        
         return interestEntry;
     }
 
@@ -339,7 +353,7 @@ public class DebitEntry extends DebitEntry_Base {
         this.setAmount(amount);
         this.setQuantity(quantity);
         recalculateAmountValues();
-        
+
         checkRules();
     }
 
@@ -408,8 +422,8 @@ public class DebitEntry extends DebitEntry_Base {
             creditEntry.delete();
             return true;
         }
-        
-        if(isProcessedInClosedDebitNote()) {
+
+        if (isProcessedInClosedDebitNote()) {
             return false;
         }
 
@@ -421,6 +435,70 @@ public class DebitEntry extends DebitEntry_Base {
         checkRules();
 
         return true;
+    }
+
+    private Map<LocalDate, BigDecimal> amountInDebtMap(final LocalDate paymentDate) {
+        final Map<LocalDate, BigDecimal> result = new HashMap<LocalDate, BigDecimal>();
+
+        final Set<LocalDate> eventDates = Sets.newHashSet();
+
+        eventDates.add(getDueDate());
+
+        for (final SettlementEntry settlementEntry : getSettlementEntriesSet()) {
+            eventDates.add(settlementEntry.getEntryDateTime().toLocalDate());
+        }
+
+        for (LocalDate date : eventDates) {
+            result.put(date, amountInDebtInThisDay(date));
+        }
+
+        return result;
+    }
+
+    private BigDecimal amountInDebtInThisDay(final LocalDate paymentDate) {
+        final Set<SettlementEntry> entries = new TreeSet<SettlementEntry>(SettlementEntry.COMPARATOR_BY_ENTRY_DATE_TIME);
+
+        BigDecimal amountToPay = getAmountWithVat();
+        for (final SettlementEntry settlementEntry : entries) {
+            if (!settlementEntry.getEntryDateTime().toLocalDate().isBefore(paymentDate)) {
+                break;
+            }
+
+            amountToPay = amountToPay.subtract(settlementEntry.getAmount());
+        }
+
+        return amountToPay;
+    }
+
+    private Map<LocalDate, BigDecimal> createdInterestEntriesMap() {
+        final Map<LocalDate, BigDecimal> result = Maps.newHashMap();
+        
+        for (final DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
+            result.put(interestDebitEntry.getEntryDateTime().toLocalDate(), interestDebitEntry.getAmountWithVat());
+        }
+        
+        return result;
+    }
+
+    
+    protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
+        final GsonBuilder builder = new GsonBuilder();
+
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
+        return gson.toJson(propertiesMap, stringStringMapType);
+    }
+
+    protected Map<String, String> propertiesJsonToMap(final String propertiesMapJson) {
+        final GsonBuilder builder = new GsonBuilder();
+
+        final Gson gson = builder.create();
+        final Type stringStringMapType = new TypeToken<Map<String, String>>() {
+        }.getType();
+
+        return gson.fromJson(propertiesMapJson, stringStringMapType);
     }
 
     // @formatter: off

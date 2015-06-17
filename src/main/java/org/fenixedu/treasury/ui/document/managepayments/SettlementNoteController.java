@@ -196,7 +196,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         bean.setInterestEntries(new ArrayList<InterestEntryBean>());
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
             if (debitEntryBean.isIncluded()) {
-                InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateInterestValue(bean.getDate());
+                InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateUndebitedInterestValue(bean.getDate());
                 if (debitInterest.getInterestAmount().compareTo(BigDecimal.ZERO) != 0) {
                     bean.getInterestEntries().add(bean.new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest));
                 }
@@ -254,8 +254,12 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         //TODOJN
         //Surround by try/catch block
-        /////////////
-        processSettlementNoteCreation(bean);
+        
+        try {
+            processSettlementNoteCreation(bean);
+        } catch(final DomainException de) {
+            addErrorMessage(de.getLocalizedMessage(), model);
+        }
         ////////////
 
         addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);

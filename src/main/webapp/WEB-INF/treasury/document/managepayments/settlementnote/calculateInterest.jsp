@@ -1,8 +1,12 @@
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+
+
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -146,10 +150,26 @@ ${portal.angularToolkit()}
 					<c:forEach items="${ settlementNoteBean.interestEntries}" var="interestEntryBean" varStatus="loop">
 						<tr>
 							<td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
-							<td><spring:message code="label.InterestEntry.interest" /> &nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" /></td>
-							<td><c:out value="${ interestEntryBean.interest }" /></td>
+							<td><spring:message code="label.InterestEntry.interest" />: &nbsp;<c:out value="${ interestEntryBean.debitEntry.description }" /></td>
+							<td>
+								<p><strong><spring:message code="label.InterestEntry.calculatedInterest" /> </strong></p>
+								<c:forEach var="detail" items="${interestEntryBean.interest.interestInformationList}">
+									<p>
+										[<joda:format value="${detail.begin}" style="S-" /> - <joda:format value="${detail.end}" style="S-" />]:
+										${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.amount, 4)}
+									</p>
+								</c:forEach>
+								<p>&nbsp;</p>
+								<p><strong><spring:message code="label.InterestEntry.createdInterest" /> </strong></p>
+								<c:forEach var="interestEntry" items="${interestEntryBean.interest.createdInterestEntriesList}">
+									<p>
+										[<joda:format value="${interestEntry.entryDate}" style="S-" />]:
+										${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntry.amount)}
+									</p>
+								</c:forEach>
+							</td>
 							<td><c:out value="${ interestEntryBean.documentDueDate}" /></td>
-							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" /></td>
+							<td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntryBean.interest.interestAmount) }" /></td>
 						</tr>
 					</c:forEach>
 				</tbody>
