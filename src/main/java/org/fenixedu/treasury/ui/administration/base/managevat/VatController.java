@@ -272,7 +272,7 @@ public class VatController extends TreasuryBaseController {
          */
 
         try {
-            updateVat(vat.getVatType(), vat.getFinantialInstitution(), vatExemptionReason, taxRate, beginDate, endDate, model);
+            updateVat(vatExemptionReason, taxRate, beginDate, endDate, model);
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);
@@ -292,18 +292,9 @@ public class VatController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateVat(VatType vatType, FinantialInstitution finantialInstitution, VatExemptionReason vatExemptionReason,
-            java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate, Model m) {
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-        getVat(m).setVatType(vatType);
-        getVat(m).setFinantialInstitution(finantialInstitution);
-        getVat(m).setVatExemptionReason(vatExemptionReason);
-        getVat(m).setTaxRate(taxRate);
-        getVat(m).setBeginDate(beginDate);
-        getVat(m).setEndDate(endDate);
+    public void updateVat(VatExemptionReason vatExemptionReason, java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate,
+            org.joda.time.DateTime endDate, Model m) {
+        getVat(m).edit(taxRate, vatExemptionReason, beginDate, endDate);
     }
 
 }

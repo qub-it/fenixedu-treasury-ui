@@ -79,7 +79,7 @@ public class CustomerType extends CustomerType_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getCustomersSet().isEmpty();
     }
 
     @Atomic

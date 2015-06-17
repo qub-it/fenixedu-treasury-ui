@@ -54,7 +54,7 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/base/managevat/vat/read/${vat.externalId}"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp;
+            code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -124,12 +124,27 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <input id="vat_taxRate" class="form-control"
                         type="text"
-                        pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?"
+                        pattern="^100(\.0{1,2})?|[0-9]{1,2}(\.[0-9]{1,2})?$"
                         name="taxrate"
+                        onkeyup="checkValue(this)"
                         value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>'
                         required />
                 </div>
             </div>
+            <div class="form-group row" id="vatExemptionReasonId">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.Vat.vatExemptionReason" />
+                </div>
+
+                <div class="col-sm-10">
+                    <select id="vat_vatExemptionReason" 
+                        class="js-example-basic-single"
+                        name="vatExemptionReason">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>            
+            
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.Vat.beginDate" />
@@ -163,6 +178,16 @@ ${portal.toolkit()}
 </form>
 
 <script>
+function checkValue(elem) {
+    if(elem.value != 0){
+        $('#vatExemptionReasonId').hide();
+        $("#vat_vatExemptionReason").select2().select2('val','');
+    } else {
+    	$('#vatExemptionReasonId').show();                      
+        $("#vat_vatExemptionReason").select2({ width: 'resolve' });
+    }
+};
+
 $(document).ready(function() {
 	<%-- Block for providing administrativeOffice options --%>
 	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
@@ -215,7 +240,7 @@ $(document).ready(function() {
 	                        		}	  
 	                            );
 	                        	
-	                        	$("#vat_vatExemptionReason").select2().select2('val','${param.vatExemptionReason}');
-	
+	                        	$("#vat_vatExemptionReason").select2().select2('val','${not empty param.vatExemptionReason ? param.vatExemptionReason : vat.vatExemptionReason.externalId }');
+	checkValue({value : ${not empty param.taxrate ? param.taxrate : vat.taxRate }});
 	});
 </script>

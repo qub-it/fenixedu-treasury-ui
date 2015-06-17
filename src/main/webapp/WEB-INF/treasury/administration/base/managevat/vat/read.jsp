@@ -70,7 +70,7 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/base/managevat/vat/"><spring:message
 			code="label.event.back" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
 		data-target="#deleteModal"><spring:message code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/administration/base/managevat/vat/update/${vat.externalId}"><spring:message code="label.event.update" /></a> &nbsp;|&nbsp;
+		href="${pageContext.request.contextPath}/treasury/administration/base/managevat/vat/update/${vat.externalId}"><spring:message code="label.event.update" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -125,6 +125,10 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.Vat.taxRate" /></th>
 						<td><c:out value='${vat.taxRate}' />%</td>
 					</tr>
+                    <tr>
+                    <th scope="row" class="col-xs-3"><spring:message code="label.Vat.vatExemptionReason" /></th>
+                        <td><c:out value='${vat.vatExemptionReason.name.content}' /></td>
+                    </tr>                    
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.Vat.beginDate" /></th>
 <%-- ACFSILVA 			<td><c:out value='${vat.beginDate.toString("yyyy-MM-dd")}' /></td> --%>

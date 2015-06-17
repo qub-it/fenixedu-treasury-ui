@@ -76,11 +76,19 @@ public class Vat extends Vat_Base {
             throw new TreasuryDomainException("error.Vat.taxRate.cannot.be.negative");
         }
 
+        if (getTaxRate().compareTo(BigDecimal.ZERO) == 0 && getVatExemptionReason() == null) {
+            throw new TreasuryDomainException("error.Vat.taxRate.without.exemption.reason");
+        }
+
         if (getBeginDate() == null) {
             throw new TreasuryDomainException("error.Vat.beginDate.required");
         }
 
-        if (getEndDate() != null && !getEndDate().isAfter(getBeginDate())) {
+        if (getEndDate() == null) {
+            throw new TreasuryDomainException("error.Vat.endDate.required");
+        }
+
+        if (!getEndDate().isAfter(getBeginDate())) {
             throw new TreasuryDomainException("error.Vat.endDate.end.date.must.be.after.begin.date");
         }
 
@@ -90,8 +98,10 @@ public class Vat extends Vat_Base {
     }
 
     @Atomic
-    public void edit(final BigDecimal taxRate, final DateTime beginDate, final DateTime endDate) {
+    public void edit(final BigDecimal taxRate, final VatExemptionReason vatExemptionReason, final DateTime beginDate,
+            final DateTime endDate) {
         setTaxRate(taxRate);
+        setVatExemptionReason(vatExemptionReason);
         setBeginDate(beginDate);
         setEndDate(endDate);
 
@@ -99,7 +109,8 @@ public class Vat extends Vat_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getInvoiceEntriesSet().isEmpty();
+
     }
 
     @Atomic
