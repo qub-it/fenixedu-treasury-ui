@@ -252,7 +252,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     public void processReadToExportProductIntegrationFile(@PathVariable("oid") FinantialInstitution finantialInstitution,
             Model model, RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
-            String output = ERPExporter.exportsProducts(finantialInstitution);
+            String output = ERPExporter.exportsProductsToXML(finantialInstitution);
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =
@@ -278,7 +278,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     public void processReadToExportCustomerIntegrationFile(@PathVariable("oid") FinantialInstitution finantialInstitution,
             Model model, RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
-            String output = ERPExporter.exportsCustomers(finantialInstitution);
+            String output = ERPExporter.exportsCustomersToXML(finantialInstitution);
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =

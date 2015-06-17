@@ -25,7 +25,7 @@
     <name>Treasury</name>
 
     <properties>
-        <version.org.fenixedu.bennu>3.4.1</version.org.fenixedu.bennu>
+        <version.org.fenixedu.bennu>3.4.2-SNAPSHOT</version.org.fenixedu.bennu>
         <version.org.fenixedu.bennu.spring>1.2.0</version.org.fenixedu.bennu.spring>
         <version.org.fenixedu.bennu.io>3.4.1</version.org.fenixedu.bennu.io>
         <version.pt.ist.standards>1.1.0-SNAPSHOT</version.pt.ist.standards>
@@ -144,7 +144,13 @@
             <artifactId>fenixedu-commons</artifactId>
             <version>1.1.0</version>
         </dependency>
-
+        
+        <!--  Dependency needed because we cannot be a child of 2 parent projects (versioning and webservices) -->
+        <dependency>
+            <groupId>com.sun.xml.ws</groupId>
+            <artifactId>jaxws-rt</artifactId>
+            <version>2.2.10</version>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
@@ -204,6 +210,8 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -228,6 +236,59 @@
                     <source>8</source>
                     <target>8</target>
                 </configuration>
+            </plugin>
+                    <!--  Dependency needed because we cannot be a child of 2 parent projects (versioning and webservices) -->
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <packageName>org.fenixedu.treasury.services.integration</packageName>
+                    <wsdlDirectory>
+                        src/main/wsdl
+                    </wsdlDirectory>
+                    <vmArgs>
+                        <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                    </vmArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.3</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
+                            <silent>true</silent>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>javax.xml.bind</groupId>
+                                    <artifactId>jaxb-api</artifactId>
+                                    <version>2.2.7</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>javax.xml.ws</groupId>
+                                    <artifactId>jaxws-api</artifactId>
+                                    <version>2.2.9</version>
+                                    <type>jar</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -578,7 +578,7 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             creditNote.recalculateAmountValues();
             String output =
-                    ERPExporter.exportFinantialDocument(
+                    ERPExporter.exportFinantialDocumentToXML(
                             creditNote.getDebtAccount().getFinantialInstitution(),
                             creditNote.findRelatedDocuments(new HashSet<FinantialDocument>(), creditNote.getDebtAccount()
                                     .getFinantialInstitution().getErpIntegrationConfiguration()

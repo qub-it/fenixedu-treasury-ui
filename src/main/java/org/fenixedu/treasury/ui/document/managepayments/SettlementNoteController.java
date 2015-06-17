@@ -467,7 +467,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             String output =
-                    ERPExporter.exportFinantialDocument(
+                    ERPExporter.exportFinantialDocumentToXML(
                             settlementNote.getDebtAccount().getFinantialInstitution(),
                             settlementNote.findRelatedDocuments(new HashSet<FinantialDocument>(), settlementNote.getDebtAccount()
                                     .getFinantialInstitution().getErpIntegrationConfiguration()

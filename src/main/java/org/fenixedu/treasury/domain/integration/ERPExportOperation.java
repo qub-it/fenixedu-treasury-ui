@@ -116,10 +116,13 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     }
 
     @Atomic
-    public static ERPExportOperation create(final OperationFile file, final FinantialInstitution finantialInstitution,
-            final org.joda.time.DateTime executionDate, final boolean processed, final boolean success, final boolean corrected,
-            final java.lang.String errorLog) {
+    public static ERPExportOperation create(final byte[] data, final String filename,
+            final FinantialInstitution finantialInstitution, final org.joda.time.DateTime executionDate, final boolean processed,
+            final boolean success, final boolean corrected, final java.lang.String errorLog) {
         ERPExportOperation eRPExportOperation = new ERPExportOperation();
+        OperationFile file;
+        file = OperationFile.create(filename, data);
+
         eRPExportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected, errorLog);
         return eRPExportOperation;
     }
