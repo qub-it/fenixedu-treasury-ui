@@ -153,12 +153,6 @@ ${portal.toolkit()}
 <%-- 				<c:out value="${debitNote.documentDate}" /> --%>
 				<joda:format value="${debitNote.documentDate}" style="S-" />
 			</datatables:column>
-<%-- 			<datatables:column> --%>
-<%-- 				<datatables:columnHead> --%>
-<%-- 					<spring:message code="label.DebitNote.documentNumberSeries" /> --%>
-<%-- 				</datatables:columnHead> --%>
-<%-- 				<c:out value="${debitNote.documentNumberSeries.series.name.content}" /> --%>
-<%-- 			</datatables:column> --%>
 			<datatables:column>
 				<datatables:columnHead>
 					<spring:message code="label.DebitNote.documentNumber" />

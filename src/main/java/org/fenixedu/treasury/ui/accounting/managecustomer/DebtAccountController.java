@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -260,14 +261,15 @@ public class DebtAccountController extends TreasuryBaseController {
     @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(@RequestParam(value = "q",
             required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
+        final String searchFieldDecoded = URLDecoder.decode(searchField);
 
         List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
         List<DebtAccount> debtAccounts =
-                DebtAccount.findAll().filter(x -> x.getCustomer().getName().toLowerCase().contains(searchField.toLowerCase()))
+                DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
                         .collect(Collectors.toList());
 
         for (DebtAccount debt : debtAccounts) {
-            bean.add(new TupleDataSourceBean(debt.getExternalId(), debt.getCustomer().getName() + "["
+            bean.add(new TupleDataSourceBean(debt.getExternalId(), debt.getCustomer().getName() + " ["
                     + debt.getFinantialInstitution().getCode() + "] (" + debt.getCustomer().getIdentificationNumber() + ")"));
         }
         return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);

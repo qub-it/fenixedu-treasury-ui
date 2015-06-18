@@ -76,40 +76,13 @@ ${portal.toolkit()}
                     <spring:message code="label.SettlementNote.debtAccount" />
                 </div>
 
-                <div class="col-sm-4">
+                <div class="col-sm-10" >
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="settlementNote_debtAccount" class="js-example-basic-single" name="debtaccount">
+                    <select id="settlementNote_debtAccount" class="select2 col-sm-10" name="debtaccount">
                         <option value=""></option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
             </div>
-<!--             <div class="form-group row"> -->
-<!--                 <div class="col-sm-2 control-label"> -->
-<%--                     <spring:message code="label.SettlementNote.documentNumberSeries" /> --%>
-<!--                 </div> -->
-
-<!--                 <div class="col-sm-4"> -->
-<%--                     Relation to side 1 drop down rendered in input --%>
-<!--                     <select id="settlementNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries"> -->
-<!--                         <option value=""></option> -->
-<%--                         empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-<!--                     </select> -->
-<!--                 </div> -->
-<!--             </div> -->
-<!--             <div class="form-group row"> -->
-<!--                 <div class="col-sm-2 control-label"> -->
-<%--                     <spring:message code="label.SettlementNote.currency" /> --%>
-<!--                 </div> -->
-
-<!--                 <div class="col-sm-4"> -->
-<%--                     Relation to side 1 drop down rendered in input --%>
-<!--                     <select id="settlementNote_currency" class="js-example-basic-single" name="currency"> -->
-<!--                         <option value=""></option> -->
-<%--                         empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-<!--                     </select> -->
-<!--                 </div> -->
-<!--             </div> -->
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.SettlementNote.documentNumber" />
@@ -130,16 +103,6 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.documentdate ? param.documentdate : settlementNote.documentDate }'/>' />
                 </div>
             </div>
-<!--             <div class="form-group row"> -->
-<!--                 <div class="col-sm-2 control-label"> -->
-<%--                     <spring:message code="label.SettlementNote.documentDueDate" /> --%>
-<!--                 </div> -->
-
-<!--                 <div class="col-sm-4"> -->
-<!--                     <input id="settlementNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date -->
-<%--                         value='<c:out value='${not empty param.documentduedate ? param.documentduedate : settlementNote.documentDueDate }'/>' /> --%>
-<!--                 </div> -->
-<!--             </div> -->
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.SettlementNote.originDocumentNumber" />
@@ -150,24 +113,6 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : settlementNote.originDocumentNumber }'/>' />
                 </div>
             </div>
-<!--             <div class="form-group row"> -->
-<!--                 <div class="col-sm-2 control-label"> -->
-<%--                     <spring:message code="label.SettlementNote.state" /> --%>
-<!--                 </div> -->
-
-<!--                 <div class="col-sm-4"> -->
-<!--                     <select id="settlementNote_state" class="form-control" name="state"> -->
-<!--                         <option value=""></option> -->
-<%--                         empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-<%--                         <c:forEach items="${stateValues}" var="field"> --%>
-<%--                             <option value='<c:out value='${field}'/>'><c:out value='${field}' /></option> --%>
-<%--                         </c:forEach> --%>
-<!--                     </select> -->
-<!--                     <script> -->
-<!--                      $("#settlementNote_state").val('<c:out value='${not empty param.state ? param.state : settlementNote.state }'/>'); -->
-<!--                     </script> -->
-<!--                 </div> -->
-<!--             </div> -->
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />" />
@@ -233,24 +178,30 @@ ${portal.toolkit()}
     ];
 	
 $(document).ready(function() {
-	<%-- Block for providing debtAccount options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	debtAccount_options = [
-		<c:forEach items="${SettlementNote_debtAccount_options}" var="element"> 
-			{
-				text :"<c:out value='${element.finantialInstitution.code} - ${element.customer.code} - ${element.customer.name}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	$("#settlementNote_debtAccount").select2(
-		{
-			data : debtAccount_options,
-		} 
-	);	    
-    <%-- If it's not from parameter change param.debtAccount to whatever you need (it's the externalId already) --%>
-	$("#settlementNote_debtAccount").select2().select2('val', '<c:out value='${param.debtAccount}'/>');
-	<%-- End block for providing debtAccount options --%>
+
+    
+    $("#settlementNote_debtAccount").select2({
+          ajax: {
+            url: "${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/autocompletehelper",
+            dataType: 'json',
+            delay: 250,
+            contentType: 'application/json;charset=UTF-8',
+            data: function (params) {
+              return {
+                q: params.term, // search term
+                page: params.page
+              };
+            },
+            processResults: function (data, page) {
+              return {
+                results: data
+              };
+            },
+            cache: true
+          },
+          escapeMarkup: function (markup) { return markup; }, 
+          minimumInputLength: 3,
+        });
 
 	
 	var table = $('#searchsettlementnoteTable').DataTable({

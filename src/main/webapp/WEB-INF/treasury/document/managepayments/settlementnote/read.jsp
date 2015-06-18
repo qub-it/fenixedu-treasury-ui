@@ -360,8 +360,7 @@ ${portal.toolkit()}
 <p></p>
 <p></p>
 
-<c:choose>
-    <c:when test="${not empty settlementNote.advancedPaymentCreditNote}">
+    <c:if test="${not empty settlementNote.advancedPaymentCreditNote}">
         <h2>
             <spring:message code="label.SettlementNote.advancedPaymentCreditNote" />
         </h2>        
@@ -405,8 +404,10 @@ ${portal.toolkit()}
                     "${pageContext.request.contextPath}",
                     "${datatablesI18NUrl}");
         </script>
-    </c:when>
-    <c:when test="${not empty settlementNote.reimbursementEntriesSet}">
+    </c:if>
+
+
+    <c:if test="${not empty settlementNote.reimbursementEntriesSet}">
         <h2>
             <spring:message code="label.SettlementNote.reimbursementEntries" />
         </h2>
@@ -434,17 +435,7 @@ ${portal.toolkit()}
                     "${pageContext.request.contextPath}",
                     "${datatablesI18NUrl}");
         </script>
-    </c:when>
-    <c:otherwise>
-        <div class="alert alert-warning" role="alert">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-                <spring:message code="label.noResultsFound" />
-            </p>
-        </div>
-
-    </c:otherwise>
-</c:choose>
+    </c:if>
 
 
 <p></p>
