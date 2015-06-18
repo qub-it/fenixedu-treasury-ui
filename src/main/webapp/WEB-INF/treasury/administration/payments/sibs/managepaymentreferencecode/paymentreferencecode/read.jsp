@@ -33,11 +33,11 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
-<div class="modal fade" id="deleteModal">
+<div class="modal fade" id="anullModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/delete/${paymentReferenceCode.externalId}"
+                action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${paymentReferenceCode.externalId}/anull"
                 method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -49,15 +49,15 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message code="label.administration.payments.sibs.managePaymentReferenceCode.readPaymentReferenceCode.confirmDelete" />
+                        <spring:message code="label.administration.payments.sibs.managePaymentReferenceCode.readPaymentReferenceCode.confirmAnull" />
                     </p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <spring:message code="label.close" />
+                        <spring:message code="label.cancel" />
                     </button>
                     <button id="deleteButton" class="btn btn-danger" type="submit">
-                        <spring:message code="label.delete" />
+                        <spring:message code="label.annull" />
                     </button>
                 </div>
             </form>
@@ -71,8 +71,8 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/"><spring:message code="label.event.back" /></a>
-    <!-- &nbsp;|&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
-&nbsp;|&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/update/${paymentReferenceCode.externalId}"  ><spring:message code="label.event.update" /></a>
+     &nbsp;|&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#anullModal"><spring:message code="label.annull" /></a>
+<!--&nbsp;|&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/update/${paymentReferenceCode.externalId}"  ><spring:message code="label.event.update" /></a>
 &nbsp;|&nbsp; -->
 </div>
 <c:if test="${not empty infoMessages}">
@@ -138,6 +138,14 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.endDate" /></th>
                         <td><c:out value='${paymentReferenceCode.endDate}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.minAmount" /></th>
+                        <td><c:out value='${paymentReferenceCode.minAmount}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.maxAmount" /></th>
+                        <td><c:out value='${paymentReferenceCode.maxAmount}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.state" /></th>

@@ -78,8 +78,14 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     private void checkRules() {
         //
-        // CHANGE_ME add more busines validations
+        // CHANGE_ME add more business validations
         //
+        if (this.getMinAmount() == null) {
+            this.setMinAmount(BigDecimal.ZERO);
+        }
+        if (this.getMaxAmount() == null) {
+            this.setMaxAmount(BigDecimal.ZERO);
+        }
 
         // CHANGE_ME In order to validate UNIQUE restrictions
         if (findByReferenceCode(this.getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(),
@@ -256,7 +262,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     public void setReferenceCode(String code) {
         if (getReferenceCode() == null) {
             super.setReferenceCode(code);
-        } else {
+        } else if (code != getReferenceCode()) {
             throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.modify.code");
         }
     }
@@ -414,6 +420,14 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 FinantialDocumentPaymentCode.create(finantialDocument, this, true);
         this.setTargetPayment(targetToFinantialDocument);
         this.setState(PaymentReferenceCodeStateType.USED);
+        checkRules();
+    }
+
+    @Atomic
+    public void anullPaymentReferenceCode() {
+        if (!this.getState().equals(PaymentReferenceCodeStateType.ANNULLED)) {
+            this.setState(PaymentReferenceCodeStateType.ANNULLED);
+        }
         checkRules();
     }
 }

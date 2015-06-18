@@ -449,4 +449,10 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         getPaymentReferenceCode(model).setState(state);
     }
 
+    @RequestMapping(value = "/read/{oid}/anull", method = RequestMethod.POST)
+    public String processReadToAnull(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, Model model,
+            RedirectAttributes redirectAttributes) {
+        paymentReferenceCode.anullPaymentReferenceCode();
+        return redirect(READ_URL + paymentReferenceCode.getExternalId(), model, redirectAttributes);
+    }
 }
