@@ -65,8 +65,8 @@ public abstract class Tariff extends Tariff_Base {
         setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
         setApplyInterests(applyInterests);
         if (getApplyInterests()) {
-            InterestRate.create(this, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
-                    maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
+            InterestRate.create(this, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday, maximumDaysToApplyPenalty,
+                    maximumMonthsToApplyPenalty, interestFixedAmount, rate);
         }
     }
 
@@ -164,11 +164,7 @@ public abstract class Tariff extends Tariff_Base {
     }
 
     public boolean isDeletable() {
-        if(!getDebitEntrySet().isEmpty()) {
-            return false;
-        }
-        
-        return true;
+        return getDebitEntrySet().isEmpty();
     }
 
     @Atomic
@@ -218,7 +214,7 @@ public abstract class Tariff extends Tariff_Base {
 
         return requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());
     }
-    
+
     // @formatter: off
     /************
      * SERVICES *

@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -39,7 +40,7 @@ ${portal.toolkit()}
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/delete/${documentNumberSeries.externalId}"
+                action="${pageContext.request.contextPath}<%= DocumentNumberSeriesController.DELETE_URL %>${documentNumberSeries.externalId}"
                 method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -71,17 +72,23 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${documentNumberSeries.series.externalId}"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal"
-        data-target="#deleteModal"><spring:message code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
-        class=""
-        href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/update/${documentNumberSeries.externalId}"><spring:message
-            code="label.event.update" /></a> &nbsp;|
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+    &nbsp;
+    <a class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${documentNumberSeries.series.externalId}">
+        <spring:message code="label.event.back" />
+    </a> 
+    &nbsp;|&nbsp; 
+    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+    &nbsp;
+    <a class="" href="#" data-toggle="modal" data-target="#deleteModal">
+        <spring:message code="label.event.delete" />
+    </a> 
+    &nbsp; 
     <c:if test="${ documentNumberSeries.finantialDocumentType.type == 'DEBIT_NOTE'}">		 
-&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?documentnumberseries=${documentNumberSeries.externalId}"><spring:message
-                code="label.event.createdebitnote" /></a>
+        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?documentnumberseries=${documentNumberSeries.externalId}">
+            <spring:message code="label.event.createdebitnote" /></a>
     </c:if>
 </div>
 <c:if test="${not empty infoMessages}">

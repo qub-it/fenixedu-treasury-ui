@@ -103,18 +103,8 @@ public class Currency extends Currency_Base {
     }
 
     public boolean isDeletable() {
-        if (this.getFinantialDocumentsSet().size() > 0) {
-            return false;
-        }
-        if (this.getFinantialInstitutionsSet().size() > 0) {
-            return false;
-        }
-
-        if (this.getInvoiceEntrySet().size() > 0) {
-            return false;
-        }
-
-        return true;
+        return getFinantialDocumentsSet().isEmpty() && getFinantialInstitutionsSet().isEmpty() && getInvoiceEntrySet().isEmpty()
+                && getTreasurySettings() == null;
     }
 
     @Atomic
@@ -127,12 +117,6 @@ public class Currency extends Currency_Base {
 
         deleteDomainObject();
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<Currency> findAll() {
         return Bennu.getInstance().getCurrenciesSet().stream();

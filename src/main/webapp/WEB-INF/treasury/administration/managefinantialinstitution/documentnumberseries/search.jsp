@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -33,8 +34,8 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/create"   ><spring:message code="label.event.create" /></a>
-&nbsp;|&nbsp;</div>
+
+</div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 
@@ -124,7 +125,7 @@ ${portal.toolkit()}
 "finantialInstitution" : "<c:out value='${searchResult.series.finantialInstitution.name}'/>",
 "finantialDocumentType" : "<c:out value='${searchResult.finantialDocumentType.name.content}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/document/managedocumentnumberseries/documentnumberseries/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}<%= DocumentNumberSeriesController.SEARCH_VIEW_URL %>${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },
             </c:forEach>
     ];

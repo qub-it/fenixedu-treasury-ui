@@ -29,10 +29,11 @@ package org.fenixedu.treasury.ui.administration.base.managevatexemptionreason;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.VatExemptionReason;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -48,7 +49,6 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVatExemptionReason") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVatExemptionReason",
         accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping(VatExemptionReasonController.CONTROLLER_URL)
 public class VatExemptionReasonController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/administration/base/managevatexemptionreason/vatexemptionreason";
@@ -63,12 +63,9 @@ public class VatExemptionReasonController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/administration/base/managevatexemptionreason/vatexemptionreason/";
+        return "forward:" + SEARCH_URL;
     }
 
     private VatExemptionReason getVatExemptionReason(Model m) {
@@ -81,34 +78,23 @@ public class VatExemptionReasonController extends TreasuryBaseController {
 
     @Atomic
     public void deleteVatExemptionReason(VatExemptionReason vatExemptionReason) {
-        // CHANGE_ME: Do the processing for deleting the vatExemptionReason
-        // Do not catch any exception here
-
         vatExemptionReason.delete();
     }
 
-//				
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model) {
+    public String search(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
+            required = false) LocalizedString name, Model model) {
         List<VatExemptionReason> searchvatexemptionreasonResultsDataSet = filterSearchVatExemptionReason(code, name);
 
-        //add the results dataSet to the model
         model.addAttribute("searchvatexemptionreasonResultsDataSet", searchvatexemptionreasonResultsDataSet);
         return "treasury/administration/base/managevatexemptionreason/vatexemptionreason/search";
     }
 
     private List<VatExemptionReason> getSearchUniverseSearchVatExemptionReasonDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
-        return VatExemptionReason.findAll().collect(Collectors.toList()); //CHANGE_ME
+        return VatExemptionReason.findAll().collect(Collectors.toList());
     }
 
-    private List<VatExemptionReason> filterSearchVatExemptionReason(java.lang.String code,
-            org.fenixedu.commons.i18n.LocalizedString name) {
-
+    private List<VatExemptionReason> filterSearchVatExemptionReason(String code, LocalizedString name) {
         return getSearchUniverseSearchVatExemptionReasonDataSet()
                 .stream()
                 .filter(vatExemptionReason -> code == null || code.length() == 0 || vatExemptionReason.getCode() != null
@@ -125,180 +111,90 @@ public class VatExemptionReasonController extends TreasuryBaseController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    private static final String SEARCH_VIEW_URI = "/search/view/";
+    public static final String SEARCH_VIEW_URL = CONTROLLER_URL + SEARCH_VIEW_URI;
+
+    @RequestMapping(value = SEARCH_VIEW_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") VatExemptionReason vatExemptionReason, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/base/managevatexemptionreason/vatexemptionreason/read" + "/"
-                + vatExemptionReason.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + vatExemptionReason.getExternalId(), model, redirectAttributes);
     }
 
-//				
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") VatExemptionReason vatExemptionReason, Model model) {
         setVatExemptionReason(vatExemptionReason, model);
         return "treasury/administration/base/managevatexemptionreason/vatexemptionreason/read";
     }
 
-//
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") VatExemptionReason vatExemptionReason, Model model,
             RedirectAttributes redirectAttributes) {
-
         setVatExemptionReason(vatExemptionReason, model);
         try {
-            //call the Atomic delete function
             deleteVatExemptionReason(vatExemptionReason);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/managevatexemptionreason/vatexemptionreason/", model,
-                    redirectAttributes);
-
-        } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        //The default mapping is the same Read View
-        return redirect(
-                "treasury/administration/base/managevatexemptionreason/vatexemptionreason/read/"
-                        + getVatExemptionReason(model).getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + getVatExemptionReason(model).getExternalId(), model, redirectAttributes);
     }
 
-//				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         return "treasury/administration/base/managevatexemptionreason/vatexemptionreason/create";
     }
 
-//				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        *	
-        	do something();
-        *    		
-        */
-
-        /*
-         * Success Validation
-         */
-
-        //Add the bean to be used in the View
+    public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
+            required = false) LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
         try {
             VatExemptionReason vatExemptionReason = createVatExemptionReason(code, name);
             model.addAttribute("vatExemptionReason", vatExemptionReason);
 
-            return redirect("/treasury/administration/base/managevatexemptionreason/vatexemptionreason/read/"
-                    + getVatExemptionReason(model).getExternalId(), model, redirectAttributes);
-
-        } catch (DomainException de) {
-
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(" Error because ...",model);
-             * addWarningMessage(" Waring becaus ...",model);
-             
-             
-             * 
-             * return create(model);
-             */
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
-
+            return redirect(READ_URL + getVatExemptionReason(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
         }
+        return create(model);
     }
 
     @Atomic
     public VatExemptionReason createVatExemptionReason(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name) {
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         */
-        VatExemptionReason vatExemptionReason = VatExemptionReason.create(code, name);
-        return vatExemptionReason;
+        return VatExemptionReason.create(code, name);
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") VatExemptionReason vatExemptionReason, Model model) {
         setVatExemptionReason(vatExemptionReason, model);
         return "treasury/administration/base/managevatexemptionreason/vatexemptionreason/update";
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") VatExemptionReason vatExemptionReason, @RequestParam(value = "code",
-            required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,
+            required = false) String code, @RequestParam(value = "name", required = false) LocalizedString name, Model model,
             RedirectAttributes redirectAttributes) {
-
         setVatExemptionReason(vatExemptionReason, model);
-
-        /*
-        *  UpdateLogic here
-        *	
-        	do something();
-        *    		
-        */
-
-        /*
-         * Succes Update
-         */
         try {
             updateVatExemptionReason(code, name, model);
 
-            return redirect("/treasury/administration/base/managevatexemptionreason/vatexemptionreason/read/"
-                    + getVatExemptionReason(model).getExternalId(), model, redirectAttributes);
-
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning updating due to " +
-             * de.getLocalizedMessage(),model);
-             */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(vatExemptionReason, model);
-
+            return redirect(READ_URL + getVatExemptionReason(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(vatExemptionReason, model);
-
         }
+        return update(vatExemptionReason, model);
     }
 
     @Atomic
     public void updateVatExemptionReason(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, Model m) {
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-        getVatExemptionReason(m).setCode(code);
-        getVatExemptionReason(m).setName(name);
+        getVatExemptionReason(m).edit(code, name);
     }
 
 }
