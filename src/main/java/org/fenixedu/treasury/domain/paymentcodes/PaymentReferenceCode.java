@@ -277,15 +277,15 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 //        throw new DomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.endDate");
 //    }
 
-    @Override
-    public void setMinAmount(BigDecimal minAmount) {
-        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.minAmount");
-    }
-
-    @Override
-    public void setMaxAmount(BigDecimal maxAmount) {
-        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.maxAmount");
-    }
+//    @Override
+//    public void setMinAmount(BigDecimal minAmount) {
+//        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.minAmount");
+//    }
+//
+//    @Override
+//    public void setMaxAmount(BigDecimal maxAmount) {
+//        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.maxAmount");
+//    }
 
     @Override
     @Atomic
