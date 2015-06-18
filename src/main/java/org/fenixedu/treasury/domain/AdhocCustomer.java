@@ -92,7 +92,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     @Override
     public boolean isDeletable() {
-        return true;
+        return getDebtAccountsSet().isEmpty();
     }
 
     @Override
@@ -114,12 +114,6 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return new AdhocCustomer(code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
                 identificationNumber);
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<AdhocCustomer> findAll() {
         return Bennu.getInstance().getCustomersSet().stream().filter(x -> x instanceof AdhocCustomer)
@@ -169,16 +163,13 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         Set<FinantialInstitution> actualInstitutions = getFinantialInstitutions();
         for (FinantialInstitution newInst : newFinantialInstitutions) {
             if (actualInstitutions.contains(newInst)) {
-                //do nothing
             } else {
-                //Create a new DebtAccount for this institution
                 DebtAccount.create(newInst, this);
             }
         }
 
         for (FinantialInstitution actualInst : actualInstitutions) {
             if (newFinantialInstitutions.contains(actualInst)) {
-                //do nothing
             } else {
                 DebtAccount account = getDebtAccountFor(actualInst);
                 account.closeDebtAccount();

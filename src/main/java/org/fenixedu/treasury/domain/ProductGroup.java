@@ -87,12 +87,6 @@ public class ProductGroup extends ProductGroup_Base {
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Set<ProductGroup> readAll() {
         return Bennu.getInstance().getProductGroupsSet();
     }
@@ -140,8 +134,6 @@ public class ProductGroup extends ProductGroup_Base {
     }
 
     public static void initializeProductGroup() {
-        // TODO Auto-generated method stub
-
     }
 
 }

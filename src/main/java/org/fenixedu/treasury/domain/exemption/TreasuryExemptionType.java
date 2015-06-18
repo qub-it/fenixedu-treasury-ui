@@ -35,20 +35,18 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
 
 public class TreasuryExemptionType extends TreasuryExemptionType_Base {
 
     public static final Comparator<? super TreasuryExemptionType> COMPARE_BY_NAME = new Comparator<TreasuryExemptionType>() {
-
         @Override
         public int compare(final TreasuryExemptionType o1, final TreasuryExemptionType o2) {
             int c = o1.getName().getContent().compareTo(o2.getName().getContent());
-
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
-
     };
 
     protected TreasuryExemptionType() {
@@ -59,7 +57,6 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
     protected TreasuryExemptionType(final String code, final LocalizedString name, final BigDecimal defaultExemptionPercentage,
             final boolean active) {
         this();
-
         setCode(code);
         setName(name);
         setDefaultExemptionPercentage(defaultExemptionPercentage);
@@ -69,16 +66,21 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
     }
 
     private void checkRules() {
+        if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
+            throw new TreasuryDomainException("error.Currency.code.required");
+        }
+
+        if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
+            throw new TreasuryDomainException("error.Currency.name.required");
+        }
 
         if (findByCode(getCode()).count() > 1) {
             throw new TreasuryDomainException("error.TreasuryExemptionType.code.duplicated");
         }
-
     }
 
     @Atomic
     public void edit(final String code, final LocalizedString name, final BigDecimal discountRate, final boolean active) {
-
         setCode(code);
         setName(name);
         setDefaultExemptionPercentage(discountRate);
@@ -88,11 +90,7 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
     }
 
     public boolean isDeletable() {
-        if (!getTreasuryExemptionsSet().isEmpty()) {
-            return false;
-        }
-
-        return true;
+        return getTreasuryExemptionsSet().isEmpty();
     }
 
     @Atomic
@@ -100,9 +98,7 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.TreasuryExemptionType.cannot.delete");
         }
-
         setBennu(null);
-
         deleteDomainObject();
     }
 
@@ -111,12 +107,6 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
             final BigDecimal defaultExemptionPercentage, final boolean active) {
         return new TreasuryExemptionType(code, name, defaultExemptionPercentage, active);
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<TreasuryExemptionType> findAll() {
         return Bennu.getInstance().getTreasuryExemptionTypesSet().stream();

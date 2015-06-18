@@ -30,10 +30,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.PaymentMethod;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -49,7 +50,6 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.administration.base.managePaymentMethod") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.managePaymentMethod",
         accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping(PaymentMethodController.CONTROLLER_URL)
 public class PaymentMethodController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/administration/base/managepaymentmethod/paymentmethod";
@@ -64,12 +64,9 @@ public class PaymentMethodController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/administration/base/managepaymentmethod/paymentmethod/";
+        return "forward:" + SEARCH_URL;
     }
 
     private PaymentMethod getPaymentMethod(Model m) {
@@ -82,33 +79,22 @@ public class PaymentMethodController extends TreasuryBaseController {
 
     @Atomic
     public void deletePaymentMethod(PaymentMethod paymentMethod) {
-        // CHANGE_ME: Do the processing for deleting the paymentMethod
-        // Do not catch any exception here
-
         paymentMethod.delete();
     }
 
-//				
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model) {
+    public String search(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
+            required = false) LocalizedString name, Model model) {
         List<PaymentMethod> searchpaymentmethodResultsDataSet = filterSearchPaymentMethod(code, name);
-
-        //add the results dataSet to the model
         model.addAttribute("searchpaymentmethodResultsDataSet", searchpaymentmethodResultsDataSet);
         return "treasury/administration/base/managepaymentmethod/paymentmethod/search";
     }
 
     private Stream<PaymentMethod> getSearchUniverseSearchPaymentMethodDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
-        return PaymentMethod.findAll(); //CHANGE_ME
+        return PaymentMethod.findAll();
     }
 
-    private List<PaymentMethod> filterSearchPaymentMethod(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name) {
-
+    private List<PaymentMethod> filterSearchPaymentMethod(String code, LocalizedString name) {
         return getSearchUniverseSearchPaymentMethodDataSet()
                 .filter(paymentMethod -> code == null || code.length() == 0 || paymentMethod.getCode() != null
                         && paymentMethod.getCode().length() > 0
@@ -124,178 +110,90 @@ public class PaymentMethodController extends TreasuryBaseController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    private static final String SEARCH_VIEW_URI = "/search/view/";
+    public static final String SEARCH_VIEW_URL = CONTROLLER_URL + SEARCH_VIEW_URI;
+
+    @RequestMapping(value = SEARCH_VIEW_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") PaymentMethod paymentMethod, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect(
-                "/treasury/administration/base/managepaymentmethod/paymentmethod/read" + "/" + paymentMethod.getExternalId(),
-                model, redirectAttributes);
+        return redirect(READ_URL + paymentMethod.getExternalId(), model, redirectAttributes);
     }
 
-//				
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") PaymentMethod paymentMethod, Model model) {
         setPaymentMethod(paymentMethod, model);
         return "treasury/administration/base/managepaymentmethod/paymentmethod/read";
     }
 
-//
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") PaymentMethod paymentMethod, Model model, RedirectAttributes redirectAttributes) {
-
         setPaymentMethod(paymentMethod, model);
         try {
-            //call the Atomic delete function
             deletePaymentMethod(paymentMethod);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/base/managepaymentmethod/paymentmethod/", model, redirectAttributes);
-        } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        //The default mapping is the same Read View
-        return redirect("/treasury/administration/base/managepaymentmethod/paymentmethod/read/"
-                + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
     }
 
-//				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         return "treasury/administration/base/managepaymentmethod/paymentmethod/create";
     }
 
-//				
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
-            required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        *	
-        	do something();
-        *    		
-        */
+    public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
+            required = false) LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
         try {
             PaymentMethod paymentMethod = createPaymentMethod(code, name);
-
-            /*
-             * Success Validation
-             */
-
-            //Add the bean to be used in the View
             model.addAttribute("paymentMethod", paymentMethod);
 
-            return redirect("/treasury/administration/base/managepaymentmethod/paymentmethod/read/"
-                    + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
-
-        } catch (DomainException de) {
-
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(" Error because ...",model);
-             * addWarningMessage(" Waring becaus ...",model);
-             
-             
-             * 
-             * return create(model);
-             */
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
-
+            return redirect(READ_URL + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
         }
+        return create(model);
     }
 
     @Atomic
-    public PaymentMethod createPaymentMethod(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name) {
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         */
+    public PaymentMethod createPaymentMethod(String code, LocalizedString name) {
         PaymentMethod paymentMethod = PaymentMethod.create(code, name);
         return paymentMethod;
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") PaymentMethod paymentMethod, Model model) {
         setPaymentMethod(paymentMethod, model);
         return "treasury/administration/base/managepaymentmethod/paymentmethod/update";
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") PaymentMethod paymentMethod,
-            @RequestParam(value = "code", required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,
+            @RequestParam(value = "code", required = false) String code,
+            @RequestParam(value = "name", required = false) LocalizedString name, Model model,
             RedirectAttributes redirectAttributes) {
-
         setPaymentMethod(paymentMethod, model);
-
-        /*
-        *  UpdateLogic here
-        *	
-        	do something();
-        *    		
-        */
-
-        /*
-         * Succes Update
-         */
         try {
             updatePaymentMethod(code, name, model);
-
-            return redirect("/treasury/administration/base/managepaymentmethod/paymentmethod/read/"
-                    + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
-
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning updating due to " +
-             * de.getLocalizedMessage(),model);
-             */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-
-            return update(paymentMethod, model);
-
+            return redirect(READ_URL + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-
-            return update(paymentMethod, model);
         }
+        return update(paymentMethod, model);
     }
 
     @Atomic
-    public void updatePaymentMethod(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, Model m) {
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-        getPaymentMethod(m).setCode(code);
-        getPaymentMethod(m).setName(name);
+    public void updatePaymentMethod(String code, LocalizedString name, Model m) {
+        getPaymentMethod(m).edit(code, name);
     }
 
 }

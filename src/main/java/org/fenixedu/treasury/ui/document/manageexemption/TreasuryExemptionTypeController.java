@@ -30,10 +30,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -45,11 +45,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import pt.ist.fenixframework.Atomic;
+
 //@Component("org.fenixedu.treasury.ui.document.manageExemption") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemptionType", accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-// or
-// @BennuSpringController(value=TreasuryController.class)
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemptionType",
+        accessGroup = "#managers")
 @RequestMapping(TreasuryExemptionTypeController.CONTROLLER_URL)
 public class TreasuryExemptionTypeController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/document/manageexemption/treasuryexemptiontype";
@@ -64,11 +64,9 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-
     @RequestMapping
     public String home(Model model) {
-        // this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/document/manageexemption/treasuryexemptiontype/";
+        return "forward:" + SEARCH_URL;
     }
 
     private TreasuryExemptionType getTreasuryExemptionType(final Model model) {
@@ -79,50 +77,9 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
         model.addAttribute("treasuryExemptionType", treasuryExemptionType);
     }
 
-    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
-    public String create(Model model) {
-        return "treasury/document/manageexemption/treasuryexemptiontype/create";
-    }
-
-    //
-    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
-            required = false) LocalizedString name,
-            @RequestParam(value = "defaultexemptionpercentage", required = false) BigDecimal defaultExemptionPercentage,
-            Model model, RedirectAttributes redirectAttributes) {
-        /*
-         * Creation Logic
-         */
-
-        try {
-
-            TreasuryExemptionType treasuryExemptionType =
-                    TreasuryExemptionType.create(code, name, defaultExemptionPercentage, true);
-
-            // Success Validation
-            // Add the bean to be used in the View
-            model.addAttribute("treasuryExemptionType", treasuryExemptionType);
-
-            return redirect("/treasury/document/manageexemption/treasuryexemptiontype/read/"
-                    + getTreasuryExemptionType(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
-            // @formatter: off
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+
-             * ex.getLocalizedMessage(),model);
-             */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
-        }
+    @Atomic
+    public void deleteTreasuryExemptionType(TreasuryExemptionType treasuryExemptionType) {
+        treasuryExemptionType.delete();
     }
 
     @RequestMapping(value = SEARCH_URI)
@@ -131,22 +88,16 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
             @RequestParam(value = "discountrate", required = false) BigDecimal discountRate, Model model) {
         List<TreasuryExemptionType> searchtreasuryexemptiontypeResultsDataSet =
                 filterSearchTreasuryExemptionType(code, name, discountRate);
-
-        // add the results dataSet to the model
         model.addAttribute("searchtreasuryexemptiontypeResultsDataSet", searchtreasuryexemptiontypeResultsDataSet);
-
         return "treasury/document/manageexemption/treasuryexemptiontype/search";
     }
 
     private List<TreasuryExemptionType> getSearchUniverseSearchtreasuryExemptionTypeDataSet() {
-        //
-        // The initialization of the result list must be done here
-        //
-        //
         return TreasuryExemptionType.findAll().collect(Collectors.toList());
     }
 
-    private List<TreasuryExemptionType> filterSearchTreasuryExemptionType(String code, LocalizedString name, BigDecimal discountRate) {
+    private List<TreasuryExemptionType> filterSearchTreasuryExemptionType(String code, LocalizedString name,
+            BigDecimal discountRate) {
 
         return getSearchUniverseSearchtreasuryExemptionTypeDataSet()
                 .stream()
@@ -166,54 +117,75 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
                 .collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    private static final String SEARCH_VIEW_URI = "/search/view/";
+    public static final String SEARCH_VIEW_URL = CONTROLLER_URL + SEARCH_VIEW_URI;
+
+    @RequestMapping(value = SEARCH_VIEW_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") TreasuryExemptionType treasuryExemptionType, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use
-        // below
-        return redirect(
-                "/treasury/document/manageexemption/treasuryexemptiontype/read" + "/" + treasuryExemptionType.getExternalId(),
-                model, redirectAttributes);
+        return redirect(READ_URL + treasuryExemptionType.getExternalId(), model, redirectAttributes);
     }
 
-    //
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") TreasuryExemptionType treasuryExemptionType, Model model) {
         setTreasuryExemptionType(treasuryExemptionType, model);
         return "treasury/document/manageexemption/treasuryexemptiontype/read";
     }
 
-    //
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") TreasuryExemptionType treasuryExemptionType, Model model,
             RedirectAttributes redirectAttributes) {
-
         setTreasuryExemptionType(treasuryExemptionType, model);
         try {
-            // call the Atomic delete function
-            treasuryExemptionType.delete();
+            deleteTreasuryExemptionType(treasuryExemptionType);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/document/manageexemption/treasuryexemptiontype/", model, redirectAttributes);
-        } catch (DomainException ex) {
-            // Add error messages to the list
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        // The default mapping is the same Read View
-        return "treasury/document/manageexemption/treasuryexemptiontype/read/" + getTreasuryExemptionType(model).getExternalId();
+        return redirect(READ_URL + getTreasuryExemptionType(model).getExternalId(), model, redirectAttributes);
     }
 
-    //
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
+    public String create(Model model) {
+        return "treasury/document/manageexemption/treasuryexemptiontype/create";
+    }
+
+    @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
+    public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
+            required = false) LocalizedString name,
+            @RequestParam(value = "defaultexemptionpercentage", required = false) BigDecimal defaultExemptionPercentage,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            TreasuryExemptionType treasuryExemptionType =
+                    TreasuryExemptionType.create(code, name, defaultExemptionPercentage, true);
+
+            model.addAttribute("treasuryExemptionType", treasuryExemptionType);
+
+            return redirect(READ_URL + getTreasuryExemptionType(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception de) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+        }
+        return create(model);
+    }
+
+    @Atomic
+    public TreasuryExemptionType createTreasuryExemptionType(String code, LocalizedString name, BigDecimal discountRate) {
+        TreasuryExemptionType treasuryExemptionType = TreasuryExemptionType.create(code, name, discountRate, true);
+        return treasuryExemptionType;
+    }
+
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") TreasuryExemptionType treasuryExemptionType, Model model) {
         setTreasuryExemptionType(treasuryExemptionType, model);
         return "treasury/document/manageexemption/treasuryexemptiontype/update";
     }
 
-    //
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") TreasuryExemptionType treasuryExemptionType, @RequestParam(value = "code",
             required = false) String code, @RequestParam(value = "name", required = false) LocalizedString name, @RequestParam(
@@ -223,22 +195,19 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
         setTreasuryExemptionType(treasuryExemptionType, model);
 
         try {
-            /*
-             * UpdateLogic here
-             */
-
             getTreasuryExemptionType(model).edit(code, name, defaultExemptionPercentage, true);
 
-            /* Succes Update */
-
-            return redirect("/treasury/document/manageexemption/treasuryexemptiontype/read/"
-                    + getTreasuryExemptionType(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
+            return redirect(READ_URL + getTreasuryExemptionType(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+        } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(treasuryExemptionType, model);
-
         }
+        return update(treasuryExemptionType, model);
     }
 
+    @Atomic
+    public void updateTreasuryExemptionType(String code, LocalizedString name, BigDecimal discountRate, Model m) {
+        getTreasuryExemptionType(m).edit(code, name, discountRate, true);
+    }
 }
