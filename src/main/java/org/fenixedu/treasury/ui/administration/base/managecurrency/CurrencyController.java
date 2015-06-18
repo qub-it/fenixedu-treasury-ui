@@ -51,7 +51,6 @@ import pt.ist.fenixframework.Atomic;
         accessGroup = "#managers")
 @RequestMapping(CurrencyController.CONTROLLER_URL)
 public class CurrencyController extends TreasuryBaseController {
-
     public static final String CONTROLLER_URL = "/treasury/administration/base/managecurrency/currency";
     private static final String SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
@@ -158,8 +157,8 @@ public class CurrencyController extends TreasuryBaseController {
             @RequestParam(value = "symbol", required = false) String symbol, Model model, RedirectAttributes redirectAttributes) {
         try {
             Currency currency = createCurrency(code, name, isoCode, symbol);
-
             model.addAttribute("currency", currency);
+
             return redirect(READ_URL + getCurrency(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
@@ -170,8 +169,7 @@ public class CurrencyController extends TreasuryBaseController {
     }
 
     @Atomic
-    public Currency createCurrency(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
-            java.lang.String isoCode, java.lang.String symbol) {
+    public Currency createCurrency(String code, LocalizedString name, String isoCode, String symbol) {
         Currency currency = Currency.create(code, name, isoCode, symbol);
         return currency;
     }

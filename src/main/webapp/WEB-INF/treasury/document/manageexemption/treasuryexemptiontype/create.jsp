@@ -56,7 +56,7 @@ ${portal.toolkit()}
 		class=""
 		href="${pageContext.request.contextPath}<%= TreasuryExemptionTypeController.SEARCH_URL %>">
 		<spring:message code="label.event.back" /></a>
-	&nbsp;|&nbsp;
+	&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -124,10 +124,13 @@ ${portal.toolkit()}
 				</div>
 
 				<div class="col-sm-10">
-					<input id="treasuryExemptionType_defaultExemptionPercentage" class="form-control"
-						type="text" name="defaultexemptionpercentage"
-						value='<c:out value='${not empty param.defaultexemptionpercentage ? param.defaultexemptionpercentage : treasuryExemptionType.defaultExemptionPercentage }'/>' />
-				</div>
+                    <input
+                        id="treasuryExemptionType_defaultExemptionPercentage"
+                        class="form-control" type="text" 
+                        name="defaultexemptionpercentage"
+                        pattern="^100(\.0{1,2})?|[0-9]{1,2}(\.[0-9]{1,2})?$"
+                        value='<c:out value='0'/>' />
+                </div>
 			</div>
 		</div>
 		<div class="panel-footer">

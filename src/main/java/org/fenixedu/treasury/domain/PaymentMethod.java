@@ -92,12 +92,6 @@ public class PaymentMethod extends PaymentMethod_Base {
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     @Atomic
     public static void initializePaymentMethod() {
         if (PaymentMethod.findAll().count() == 0) {

@@ -29,10 +29,10 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.util.Constants;
@@ -64,8 +64,6 @@ public class AdhocCustomerController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-    //
-
     private AdhocCustomer getAdhocCustomer(Model model) {
         return (AdhocCustomer) model.asMap().get("adhocCustomer");
     }
@@ -76,9 +74,6 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
     @Atomic
     public void deleteAdhocCustomer(AdhocCustomer adhocCustomer) {
-        // CHANGE_ME: Do the processing for deleting the adhocCustomer
-        // Do not catch any exception here
-
         // adhocCustomer.delete();
     }
 
@@ -91,41 +86,30 @@ public class AdhocCustomerController extends TreasuryBaseController {
         model.addAttribute("adhocCustomerBean", bean);
     }
 
-    //
     @RequestMapping(value = SEARCH_URI)
     public String search(Model model) {
         List<AdhocCustomer> searchadhoccustomerResultsDataSet = filterSearchAdhocCustomer();
-
-        // add the results dataSet to the model
         model.addAttribute("searchadhoccustomerResultsDataSet", searchadhoccustomerResultsDataSet);
         return "treasury/accounting/managecustomer/adhoccustomer/search";
     }
 
     private List<AdhocCustomer> getSearchUniverseSearchAdhocCustomerDataSet() {
-        //
-        // The initialization of the result list must be done here
-        //
-        //
         return AdhocCustomer.findAll().collect(Collectors.toList());
     }
 
     private List<AdhocCustomer> filterSearchAdhocCustomer() {
-
         return getSearchUniverseSearchAdhocCustomerDataSet().stream().collect(Collectors.toList());
     }
 
-    @RequestMapping(value = "/search/view/{oid}")
+    private static final String SEARCH_VIEW_URI = "/search/view/";
+    public static final String SEARCH_VIEW_URL = CONTROLLER_URL + SEARCH_VIEW_URI;
+
+    @RequestMapping(value = SEARCH_VIEW_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use
-        // below
-        return redirect("/treasury/accounting/managecustomer/customer/read" + "/" + adhocCustomer.getExternalId(), model,
-                redirectAttributes);
+        return redirect(READ_URL + adhocCustomer.getExternalId(), model, redirectAttributes);
     }
 
-    //
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         this.setAdhocCustomerBean(new AdhocCustomerBean(), model);
@@ -134,8 +118,6 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
     @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model) {
-
-        // Do validation logic ?!?!
         this.setAdhocCustomerBean(bean, model);
         return getBeanJson(bean);
     }
@@ -143,58 +125,28 @@ public class AdhocCustomerController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
             RedirectAttributes redirectAttributes) {
-
-        /*
-        *  Creation Logic
-        */
-
         try {
 
             AdhocCustomer adhocCustomer =
                     createAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber());
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
-            //Success Validation
-            //Add the bean to be used in the View
             setAdhocCustomer(adhocCustomer, model);
 
             return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
+        return create(model);
     }
 
     @Atomic
-    public AdhocCustomer createAdhocCustomer(java.lang.String code, java.lang.String name, java.lang.String fiscalNumber,
-            java.lang.String identificationNumber) {
-
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create the object
-         * with the default constructor and use the setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        // AdhocCustomer adhocCustomer = adhocCustomer.create(fields_to_create);
-
-        // Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
+    public AdhocCustomer createAdhocCustomer(String code, String name, String fiscalNumber, String identificationNumber) {
         AdhocCustomer adhocCustomer = AdhocCustomer.create(code, fiscalNumber, name, "", "", "", "", identificationNumber);
         return adhocCustomer;
     }
 
-    //
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model) {
         setAdhocCustomer(adhocCustomer, model);
@@ -205,8 +157,6 @@ public class AdhocCustomerController extends TreasuryBaseController {
     @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody String updatepostback(@PathVariable("oid") AdhocCustomer adhocCustomer, @RequestParam(value = "bean",
             required = false) AdhocCustomerBean bean, Model model) {
-
-        // Do validation logic ?!?!
         this.setAdhocCustomerBean(bean, model);
         return getBeanJson(bean);
     }
@@ -218,50 +168,20 @@ public class AdhocCustomerController extends TreasuryBaseController {
         setAdhocCustomer(adhocCustomer, model);
 
         try {
-            /*
-            *  UpdateLogic here
-            */
-
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             updateAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber(), model);
 
-            /*Succes Update */
-
-            return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
-                    model, redirectAttributes);
-        } catch (DomainException de) {
-
-            /*
-            * If there is any error in validation 
-            *
-            * Add a error / warning message
-            * 
-            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-            */
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(adhocCustomer, model);
-
+            return redirect(READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
+        return update(adhocCustomer, model);
     }
 
     @Atomic
-    public void updateAdhocCustomer(java.lang.String code, java.lang.String name, java.lang.String fiscalNumber,
-            java.lang.String identificationNumber, Model model) {
-
-        // @formatter: off
-        /*
-         * Modify the update code here if you do not want to update the object
-         * with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        // getAdhocCustomer(model).edit(fields_to_edit);
-
-        // Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
+    public void updateAdhocCustomer(String code, String name, String fiscalNumber, String identificationNumber, Model model) {
         getAdhocCustomer(model).edit(code, fiscalNumber, name, "", "", "", "", identificationNumber);
     }
 
