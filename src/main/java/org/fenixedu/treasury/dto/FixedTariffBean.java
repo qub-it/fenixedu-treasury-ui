@@ -27,7 +27,6 @@
 
 package org.fenixedu.treasury.dto;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,10 +37,10 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
+import org.joda.time.LocalDate;
 
 public class FixedTariffBean implements IBean {
 
@@ -190,7 +189,7 @@ public class FixedTariffBean implements IBean {
             dueDates.add(dueDate);
         }
         this.setDueDateCalculationTypeDataSource(dueDates);
-
+        this.setFixedDueDate(new LocalDate());
     }
 
     public FixedTariffBean(FixedTariff fixedTariff) {

@@ -136,12 +136,17 @@ ${portal.angularToolkit()}
                     <spring:message code="label.FixedTariff.amount" />
                 </div>
 
-                <div class="col-sm-10">
+                <div class="col-sm-4">
+                <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${fixedTariffBean.finantialInstitution.currency.symbol}" />
+                        </div>
                     <input required id="fixedTariff_amount"
                         class="form-control" type="text"
                         pattern="[0-9]+(\.[0-9]{1,3})?"
                         ng-model="object.amount" name="amount"
                         value='<c:out value='${not empty param.amount ? param.amount : fixedTariff.amount }'/>' />
+                        </div>
                 </div>
             </div>
             <div class="form-group row">

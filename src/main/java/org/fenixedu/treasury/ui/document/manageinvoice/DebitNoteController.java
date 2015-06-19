@@ -154,8 +154,10 @@ public class DebitNoteController extends TreasuryBaseController {
 
         // add the results dataSet to the model
         model.addAttribute("searchdebitnoteResultsDataSet", searchdebitnoteResultsDataSet);
-        model.addAttribute("DebitNote_payorDebtAccount_options",
-                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
+        model.addAttribute(
+                "DebitNote_payorDebtAccount_options",
+                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().filter(x -> x.getCustomer().isAdhocCustomer())
+                        .collect(Collectors.toList()));
         model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
                 .findAll().collect(Collectors.toList()));
         model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
@@ -249,7 +251,8 @@ public class DebitNoteController extends TreasuryBaseController {
         }
 
         model.addAttribute("DebitNote_payorDebtAccount_options",
-                DebtAccount.find(finantialInstitution).collect(Collectors.toList()));
+                DebtAccount.find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
+                        .collect(Collectors.toList()));
 
         if (debtAccount != null) {
             model.addAttribute("DebitNote_debtAccount_options", Collections.singleton(debtAccount));
@@ -356,8 +359,10 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitNote debitNote, Model model) {
 
-        model.addAttribute("DebitNote_payorDebtAccount_options", debitNote.getDebtAccount().getFinantialInstitution()
-                .getDebtAccountsSet()); //
+        model.addAttribute(
+                "DebitNote_payorDebtAccount_options",
+                DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
+                        .filter(x -> x.getCustomer().isAdhocCustomer()).collect(Collectors.toSet())); //
 
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
         setDebitNote(debitNote, model);
