@@ -75,6 +75,16 @@ public class DebitEntry extends DebitEntry_Base {
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
+    
+    public static final Comparator<DebitEntry> COMPARE_BY_DUE_DATE = new Comparator<DebitEntry>() {
+
+        @Override
+        public int compare(DebitEntry o1, DebitEntry o2) {
+            int c = o1.getDueDate().compareTo(o2.getDueDate());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
 
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
@@ -122,6 +132,12 @@ public class DebitEntry extends DebitEntry_Base {
         setTariff(tariff);
         setExemptedAmount(BigDecimal.ZERO);
 
+        /* This property has academic significance but is meaningless in treasury scope
+         * It is false by default but can be set with markAcademicalActBlockingSuspension
+         * service method
+         */
+        setAcademicalActBlockingSuspension(false);
+        
         checkRules();
     }
 
@@ -308,6 +324,14 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal getRemainingAmount() {
         return getOpenAmount().subtract(getPayedAmount());
     }
+    
+    public boolean isInDebt() {
+        return Constants.isPositive(getRemainingAmount());
+    }
+    
+    public boolean isDueDateExpired(final LocalDate when) {
+        return getDueDate().isBefore(when);
+    }
 
     public Map<String, String> getPropertiesMap() {
         if (StringUtils.isEmpty(getPropertiesJsonMap())) {
@@ -357,6 +381,10 @@ public class DebitEntry extends DebitEntry_Base {
         recalculateAmountValues();
 
         checkRules();
+    }
+    
+    public boolean isAcademicalActBlockingSuspension() {
+        return getAcademicalActBlockingSuspension();
     }
 
     public boolean exempt(final TreasuryExemption treasuryExemption, final BigDecimal amountWithVat) {
@@ -452,6 +480,11 @@ public class DebitEntry extends DebitEntry_Base {
         checkRules();
 
         return true;
+    }
+    
+    @Atomic
+    public void markAcademicalActBlockingSuspension() {
+        setAcademicalActBlockingSuspension(true);
     }
 
     private Map<LocalDate, BigDecimal> amountInDebtMap(final LocalDate paymentDate) {

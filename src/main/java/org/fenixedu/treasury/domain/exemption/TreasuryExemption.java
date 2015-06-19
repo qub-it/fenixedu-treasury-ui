@@ -14,6 +14,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 public class TreasuryExemption extends TreasuryExemption_Base {
@@ -176,8 +177,12 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         return Bennu.getInstance().getTreasuryExemptionsSet().stream().filter(t -> t.getTreasuryEvent() == treasuryEvent);
     }
     
-    public static Stream<TreasuryExemption> find(final TreasuryEvent treasuryEvent, final Product product) {
+    protected static Stream<TreasuryExemption> find(final TreasuryEvent treasuryEvent, final Product product) {
         return find(treasuryEvent).filter(t -> t.getProduct() == product);
+    }
+    
+    public static java.util.Optional<TreasuryExemption> findUnique(final TreasuryEvent treasuryEvent, final Product product) {
+        return find(treasuryEvent, product).findFirst();
     }
 
     public static Stream<TreasuryExemption> findByDebtAccount(final DebtAccount debtAccount) {

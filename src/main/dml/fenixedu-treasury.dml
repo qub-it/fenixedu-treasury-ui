@@ -249,6 +249,10 @@ class document.FinantialDocumentEntry {
 			LocalDate dueDate;
 			String propertiesJsonMap;
 			BigDecimalT exemptedAmount;
+	
+			// This property has academic significance but  
+			// is meaningless in treasury scope			
+			boolean academicalActBlockingSuspension;
 	}
 		
 	class document.CreditEntry extends document.InvoiceEntry {

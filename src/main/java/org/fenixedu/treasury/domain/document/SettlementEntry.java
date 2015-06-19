@@ -101,7 +101,7 @@ public class SettlementEntry extends SettlementEntry_Base {
     public static Stream<SettlementEntry> findAll() {
         return (Stream<SettlementEntry>) FinantialDocumentEntry.findAll().filter(f -> f instanceof SettlementEntry);
     }
-
+    
     @Atomic
     public static SettlementEntry create(final InvoiceEntry invoiceEntry, final FinantialDocument finantialDocument,
             final BigDecimal amount, final String description, final DateTime entryDateTime) {

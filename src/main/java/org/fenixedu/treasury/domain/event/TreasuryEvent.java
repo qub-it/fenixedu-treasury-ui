@@ -76,7 +76,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
      */
 
     public boolean isExempted(final Product product) {
-        return TreasuryExemption.find(this, product).count() > 0;
+        return TreasuryExemption.findUnique(this, product).isPresent();
     }
 
     public boolean isChargedWithDebitEntry() {
@@ -128,6 +128,16 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         final BigDecimal result = amountToPay.subtract(payedAmount);
 
         return Constants.isPositive(result) ? result : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getExemptedAmount() {
+        BigDecimal result =
+                DebitEntry.findActive(this).map(l -> l.getExemptedAmount()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
+
+        result = result.add(CreditEntry.findActive(this).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat()).reduce((a, b) -> a.add(b))
+                .orElse(BigDecimal.ZERO));
+        
+        return result;
     }
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
