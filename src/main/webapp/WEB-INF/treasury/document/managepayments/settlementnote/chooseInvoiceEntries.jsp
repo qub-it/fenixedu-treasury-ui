@@ -172,13 +172,13 @@ ${portal.toolkit()} ${portal.angularToolkit()}
                     <tr>
                         <%-- Check Column --%>
                         <th></th>
-                        <th><spring:message code="label.DebitEntry.documentNumber" /></th>
+                        <th  class="col-sm-2"><spring:message code="label.DebitEntry.documentNumber" /></th>
                         <th><spring:message code="label.DebitEntry.description" /></th>
-                        <th><spring:message code="label.DebitEntry.date" /></th>
-                        <th><spring:message code="label.DebitEntry.totalAmount" /></th>
-                        <th><spring:message code="label.DebitEntry.openAmount" /></th>
-                        <th><spring:message code="label.DebitEntry.vat" /></th>
-                        <th class="col-sm-4"><spring:message code="label.DebitEntry.debtAmount" /></th>
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.date" /></th>
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.totalAmount" /></th>
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.vat" /></th>
+                        <th class="col-sm-2"><spring:message code="label.DebitEntry.debtAmount" /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -238,11 +238,11 @@ ${portal.toolkit()} ${portal.angularToolkit()}
                     <tr>
                         <%-- Check Column --%>
                         <th></th>
-                        <th><spring:message code="label.CreditEntry.documentNumber" /></th>
+                        <th  class="col-sm-2"><spring:message code="label.CreditEntry.documentNumber" /></th>
                         <th><spring:message code="label.CreditEntry.motive" /></th>
-                        <th><spring:message code="label.CreditEntry.date" /></th>
-                        <th><spring:message code="label.DebitEntry.vat" /></th>
-                        <th><spring:message code="label.CreditEntry.totalAmount" /></th>
+                        <th  class="col-sm-1"><spring:message code="label.CreditEntry.date" /></th>
+                        <th  class="col-sm-1"><spring:message code="label.DebitEntry.vat" /></th>
+                        <th  class="col-sm-2"><spring:message code="label.CreditEntry.totalAmount" /></th>
                     </tr>
                 </thead>
                 <tbody>

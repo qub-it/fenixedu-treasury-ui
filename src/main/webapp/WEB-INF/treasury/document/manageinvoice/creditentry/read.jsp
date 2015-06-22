@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -141,7 +143,10 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.entryDate" /></th>
-                        <td><c:out value='${creditEntry.entryDateTime}' /></td>
+                        <td> <joda:format value="${creditEntry.entryDateTime}" style="SS" />
+<%--                         <c:out value='${creditEntry.entryDateTime}' /> --%>
+                        </td>
+                        
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditEntry.debitNote" /></th>

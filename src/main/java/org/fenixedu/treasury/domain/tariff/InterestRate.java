@@ -225,7 +225,7 @@ public class InterestRate extends InterestRate_Base {
                 int secondYearDays = Days.daysBetween(Constants.firstDayInYear(endDate.getYear()), endDate).getDays();
 
                 {
-                    if (isMaximumDaysToApplyPenaltyApplied() && (totalOfDays + firstYearDays) >= getMaximumDaysToApplyPenalty()) {
+                    if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + firstYearDays >= getMaximumDaysToApplyPenalty()) {
                         firstYearDays = getMaximumDaysToApplyPenalty() - totalOfDays;
                         reachedMaxDays = true;
                     }
@@ -248,7 +248,7 @@ public class InterestRate extends InterestRate_Base {
                 if (!reachedMaxDays) {
 
                     if (isMaximumDaysToApplyPenaltyApplied()
-                            && (totalOfDays + firstYearDays + secondYearDays) >= getMaximumDaysToApplyPenalty()) {
+                            && totalOfDays + firstYearDays + secondYearDays >= getMaximumDaysToApplyPenalty()) {
                         firstYearDays = getMaximumDaysToApplyPenalty() - totalOfDays - firstYearDays;
                     }
 
@@ -275,7 +275,7 @@ public class InterestRate extends InterestRate_Base {
                     numberOfDays++;
                 }
 
-                if (isMaximumDaysToApplyPenaltyApplied() && (totalOfDays + numberOfDays) >= getMaximumDaysToApplyPenalty()) {
+                if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + numberOfDays >= getMaximumDaysToApplyPenalty()) {
                     numberOfDays = getMaximumDaysToApplyPenalty() - totalOfDays;
                 }
 
@@ -286,7 +286,8 @@ public class InterestRate extends InterestRate_Base {
                                 .multiply(new BigDecimal(numberOfDays));
 
                 if (Constants.isPositive(partialInterestAmount)) {
-                    result.addDetail(partialInterestAmount, startDate, endDate.isEqual(paymentDate) ? endDate : endDate.minusDays(1), amountPerDay);
+                    result.addDetail(partialInterestAmount, startDate,
+                            endDate.isEqual(paymentDate) ? endDate : endDate.minusDays(1), amountPerDay);
                 }
             }
 
@@ -377,6 +378,11 @@ public class InterestRate extends InterestRate_Base {
             final BigDecimal interestFixedAmount, final BigDecimal rate) {
         return new InterestRate(tariff, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday, maximumDaysToApplyPenalty,
                 maximumMonthsToApplyPenalty, interestFixedAmount, rate);
+    }
+
+    public String getUiFullDescription() {
+        //Todo: expand this
+        return this.getInterestType().getDescriptionI18N().getContent();
     }
 
 }

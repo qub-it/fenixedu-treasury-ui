@@ -10,6 +10,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />

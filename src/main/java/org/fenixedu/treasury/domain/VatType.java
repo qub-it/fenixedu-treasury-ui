@@ -42,8 +42,6 @@ import pt.ist.fenixframework.Atomic;
 
 public class VatType extends VatType_Base {
 
-    private static final String EXEMPT_CODE = "EXEMPT";
-
     protected VatType() {
         super();
         setBennu(Bennu.getInstance());

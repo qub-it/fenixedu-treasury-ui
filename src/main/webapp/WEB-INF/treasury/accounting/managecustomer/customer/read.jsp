@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
@@ -68,11 +69,11 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp; 
-            <c:if test='${customer.isAdhocCustomer() }'>
-            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"><spring:message code="label.event.update" /></a>
-        </c:if>
+            code="label.event.back" /></a> &nbsp;|&nbsp;
+    <c:if test='${customer.isAdhocCustomer() }'>
+        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"><spring:message code="label.event.update" /></a>
+    </c:if>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -156,8 +157,7 @@ ${portal.toolkit()}
                                     <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
                                 </div> &nbsp;&nbsp;<a class="btn btn-default btn-xs"
                                 href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message
-                                        code="label.customer.read.showdebtaccount"></spring:message></a> <c:if
-                                    test="${debtAccount.totalInDebt < 0 }">
+                                        code="label.customer.read.showdebtaccount"></spring:message></a> <c:if test="${debtAccount.totalInDebt < 0 }">
                                     <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                     </span>
                                 </c:if>
@@ -180,45 +180,43 @@ ${portal.toolkit()}
             <datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
                 <datatables:column cssStyle="width:10%;align:right">
                     <datatables:columnHead>
+                        <spring:message code="label.InvoiceEntry.date" />
+                    </datatables:columnHead>
+                    <joda:format value="${pendingEntry.entryDateTime}" style="S-" />
+                    <%--                     <c:out value="${pendingEntry.entryDateTime}" /> --%>
+
+                </datatables:column>
+                <datatables:column cssStyle="width:10%;">
+                    <datatables:columnHead>
+                        <spring:message code="label.InvoiceEntry.finantialDocument" />
+                    </datatables:columnHead>
+                    <c:if test="${not empty pendingEntry.finantialDocument }">
+                        <c:if test="${pendingEntry.isDebitNoteEntry() }">
+                            <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
+                                    value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
+                        </c:if>
+                        <c:if test="${pendingEntry.isCreditNoteEntry() }">
+                            <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
+                                    value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
+                        </c:if>
+                    </c:if>
+                    <c:if test="${empty pendingEntry.finantialDocument }">
+                     ---
+                     </c:if>
+                </datatables:column>
+                <datatables:column cssStyle="width:15%;align:right">
+                    <datatables:columnHead>
                         <spring:message code="label.DebtAccount.finantialInstitution" />
                     </datatables:columnHead>
                     <c:out value="${pendingEntry.debtAccount.finantialInstitution.name}" />
                 </datatables:column>
                 <datatables:column>
                     <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.finantialDocument" />
-                    </datatables:columnHead>
-                    <c:if test="${pendingEntry.isDebitNoteEntry() }">
-                        <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
-                                value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
-                    </c:if>
-                    <c:if test="${pendingEntry.isCreditNoteEntry() }">
-                        <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> <c:out
-                                value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></a>
-                    </c:if>
-                </datatables:column>
-                <datatables:column cssStyle="width:10%;align:right">
-                    <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.description" />
                     </datatables:columnHead>
                     <c:out value="${pendingEntry.description}" />
                 </datatables:column>
-                <datatables:column>
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.date" />
-                    </datatables:columnHead>
-                    <c:out value="${pendingEntry.entryDateTime}" />
-
-                </datatables:column>
-                <%-- 						<datatables:column> --%>
-                <%-- 							<datatables:columnHead> --%>
-                <%-- 								<spring:message code="label.Invoice.debitAmount" /> --%>
-                <%-- 							</datatables:columnHead> --%>
-                <!-- 							<div align=right> -->
-                <%-- 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" /> --%>
-                <!-- 							</div> -->
-                <%-- 						</datatables:column> --%>
-                <datatables:column>
+                <datatables:column cssStyle="width:15%;align:right">
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.totalAmount" />
                     </datatables:columnHead>
@@ -227,7 +225,7 @@ ${portal.toolkit()}
                         <c:out value="${pendingEntry.currency.getValueFor(pendingEntry.totalAmount)}" />
                     </div>
                 </datatables:column>
-                <datatables:column>
+                <datatables:column cssStyle="width:15%;align:right">
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.openAmount" />
                     </datatables:columnHead>
@@ -237,19 +235,21 @@ ${portal.toolkit()}
                     </div>
                 </datatables:column>
                 <datatables:column>
-                            <c:if test="${not empty pendingEntry.finantialDocument }">
-                                <c:if test="${pendingEntry.isDebitNoteEntry() }">
-                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}">
-                                    	<spring:message code="label.view" />
-                                    </a>
-                                </c:if>
-                                <c:if test="${pendingEntry.isCreditNoteEntry() }">
-                                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}">
-                                    	<spring:message code="label.view" />
-                                    </a>
-                                </c:if>
-                            </c:if>
-                
+                    <c:if test="${not empty pendingEntry.finantialDocument }">
+                        <c:if test="${pendingEntry.isDebitNoteEntry() }">
+                            <a class="btn btn-default btn-xs"
+                                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}"> <spring:message
+                                    code="label.view" />
+                            </a>
+                        </c:if>
+                        <c:if test="${pendingEntry.isCreditNoteEntry() }">
+                            <a class="btn btn-default btn-xs"
+                                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> <spring:message
+                                    code="label.view" />
+                            </a>
+                        </c:if>
+                    </c:if>
+
                     <%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
                     <!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
                     <!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->

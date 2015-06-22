@@ -2,6 +2,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -172,10 +173,10 @@ ${portal.angularToolkit()}
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 
-        <li class="active"><a href="#pending" data-toggle="tab">Docs. Pendentes</a></li>
-        <li><a href="#details" data-toggle="tab">Extracto</a></li>
-        <li><a href="#payments" data-toggle="tab">Pagamentos</a></li>
-        <li><a href="#exemptions" data-toggle="tab">Isencoes</a></li>
+        <li class="active"><a href="#pending" data-toggle="tab"><spring:message code="label.DebtAccount.pendingDocumentEntries" /></a></li>
+        <li><a href="#details" data-toggle="tab"><spring:message code="label.DebtAccount.allDocumentEntries" /></a></li>
+        <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payments" /></a></li>
+        <li><a href="#exemptions" data-toggle="tab"><spring:message code="label.DebtAccount.exemptions" /></a></li>
     </ul>
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="pending">
@@ -185,7 +186,15 @@ ${portal.angularToolkit()}
                 <c:when test="${not empty pendingDocumentsDataSet}">
                     <datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false"
                         cellspacing="2">
-                        <datatables:column>
+                                                <datatables:column cssStyle="width:10%;align:right">
+                            <datatables:columnHead>
+                                <spring:message code="label.InvoiceEntry.date" />
+                            </datatables:columnHead>
+<%--                             <c:out value="${pendingEntry.entryDateTime}" /> --%>
+                            <joda:format value="${pendingEntry.entryDateTime}" style="S-" />
+                        </datatables:column>
+                        
+                        <datatables:column cssStyle="width:10%;">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.finantialDocument" />
                             </datatables:columnHead>
@@ -203,27 +212,13 @@ ${portal.angularToolkit()}
 							---
 							</c:if>
                         </datatables:column>
-                        <datatables:column cssStyle="width:10%;align:right">
+                        <datatables:column >
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.description" />
                             </datatables:columnHead>
                             <c:out value="${pendingEntry.description}" />
                         </datatables:column>
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message code="label.InvoiceEntry.date" />
-                            </datatables:columnHead>
-                            <c:out value="${pendingEntry.entryDateTime}" />
-                        </datatables:column>
-                        <%-- 						<datatables:column> --%>
-                        <%-- 							<datatables:columnHead> --%>
-                        <%-- 								<spring:message code="label.Invoice.debitAmount" /> --%>
-                        <%-- 							</datatables:columnHead> --%>
-                        <!-- 							<div align=right> -->
-                        <%-- 								<c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.debitAmount)}" /> --%>
-                        <!-- 							</div> -->
-                        <%-- 						</datatables:column> --%>
-                        <datatables:column>
+                        <datatables:column cssStyle="width:15%;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.totalAmount" />
                             </datatables:columnHead>
@@ -232,7 +227,7 @@ ${portal.angularToolkit()}
                                 <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
                             </div>
                         </datatables:column>
-                        <datatables:column>
+                        <datatables:column cssStyle="width:15%;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.openAmount" />
                             </datatables:columnHead>
@@ -243,21 +238,12 @@ ${portal.angularToolkit()}
                         </datatables:column>
                         <datatables:column>
                             <c:if test="${pendingEntry.isDebitNoteEntry() }">
-                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
+                                <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
                             </c:if>
                             <c:if test="${pendingEntry.isCreditNoteEntry() }">
-                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${pendingEntry.externalId}">
+                                <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${pendingEntry.externalId}">
                             </c:if>
-                            <button type="submit" class="btn btn-default btn-xs">
-                                <spring:message code="label.view" />
-                            </button>
-                            </form>
-                            <%-- 				<form method="post" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/deleteentry/${debitEntry.externalId}"> --%>
-                            <!-- 					<button type="submit" class="btn btn-default btn-xs"> -->
-                            <!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->
-                            <%-- 						<spring:message code="label.event.document.manageInvoice.deleteEntry" /> --%>
-                            <!-- 					</button> -->
-                            <!-- 				</form> -->
+                                <spring:message code="label.view" /> </a>
                         </datatables:column>
                     </datatables:table>
                     <script>
@@ -291,6 +277,13 @@ ${portal.angularToolkit()}
                     <datatables:table id="allDocuments" row="entry" data="${allDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
                         <datatables:column>
                             <datatables:columnHead>
+                                <spring:message code="label.InvoiceEntry.date" />
+                            </datatables:columnHead>
+<%--                             <c:out value="${entry.entryDateTime}" /> --%>
+                            <joda:format value="${entry.entryDateTime}" style="S-" />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.finantialDocument" />
                             </datatables:columnHead>
                             <c:if test="${not empty entry.finantialDocument }">
@@ -306,12 +299,6 @@ ${portal.angularToolkit()}
                                 <spring:message code="label.InvoiceEntry.description" />
                             </datatables:columnHead>
                             <c:out value="${entry.description}" />
-                        </datatables:column>
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message code="label.InvoiceEntry.date" />
-                            </datatables:columnHead>
-                            <c:out value="${entry.entryDateTime}" />
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
@@ -390,7 +377,8 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.FinantialDocument.documentDate" />
                             </datatables:columnHead>
-                            <c:out value="${payment.documentDate}" />
+<%--                             <c:out value="${payment.documentDate}" /> --%>
+                            <joda:format value="${payment.documentDate}" style="S-" />
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
@@ -538,3 +526,4 @@ ${portal.angularToolkit()}
 		table.columns.adjust().draw();
 
 	});
+</script>
