@@ -14,7 +14,6 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 
 public class TreasuryExemption extends TreasuryExemption_Base {
@@ -99,8 +98,12 @@ public class TreasuryExemption extends TreasuryExemption_Base {
 
         // We're in conditions to create credit entries. But first
         // calculate the amount to exempt
-        BigDecimal amountToExempt = getValueToExempt();
+        BigDecimal amountToExempt = getValueToExempt().subtract(getTreasuryEvent().getExemptedAmount(getProduct()));
 
+        if(!Constants.isPositive(amountToExempt)) {
+            return;
+        }
+        
         final List<DebitEntry> activeDebitEntries =
                 DebitEntry.findActive(getTreasuryEvent(), getProduct())
                         .sorted(Collections.reverseOrder(DebitEntry.COMPARE_BY_OPEN_AMOUNT_WITH_VAT))
@@ -114,7 +117,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
 
             debitEntry.exempt(this, amountToUse);
 
-            amountToExempt = amountToExempt.min(amountToUse);
+            amountToExempt = amountToExempt.subtract(amountToUse);
 
             if (!Constants.isPositive(amountToExempt)) {
                 break;

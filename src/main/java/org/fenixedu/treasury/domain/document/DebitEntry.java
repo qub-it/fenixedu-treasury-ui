@@ -574,11 +574,11 @@ public class DebitEntry extends DebitEntry_Base {
     /* --- Math methods --- */
 
     public static BigDecimal payedAmount(final TreasuryEvent treasuryEvent) {
-        return findActive(treasuryEvent).map(d -> d.getPayedAmount()).reduce((x, y) -> x.add(y)).get();
+        return findActive(treasuryEvent).map(d -> d.getPayedAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
     }
 
     public static BigDecimal remainingAmountToPay(final TreasuryEvent treasuryEvent) {
-        return findActive(treasuryEvent).map(d -> d.getRemainingAmount()).reduce((x, y) -> x.add(y)).get();
+        return findActive(treasuryEvent).map(d -> d.getRemainingAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
     }
 
     /* --- Creation methods --- */

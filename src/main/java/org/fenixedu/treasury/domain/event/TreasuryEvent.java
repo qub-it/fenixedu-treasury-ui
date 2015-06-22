@@ -139,6 +139,16 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         
         return result;
     }
+    
+    public BigDecimal getExemptedAmount(final Product product) {
+        BigDecimal result =
+                DebitEntry.findActive(this, product).map(l -> l.getExemptedAmount()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
+
+        result = result.add(CreditEntry.findActive(this, product).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat()).reduce((a, b) -> a.add(b))
+                .orElse(BigDecimal.ZERO));
+        
+        return result;        
+    }
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
         final GsonBuilder builder = new GsonBuilder();
