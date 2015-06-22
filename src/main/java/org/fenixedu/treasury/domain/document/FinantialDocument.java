@@ -233,6 +233,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 entry.setEntryOrder(Integer.valueOf(order));
                 order = order + 1;
             }
+            this.setAddress(this.getDebtAccount().getCustomer().getAddress() + this.getDebtAccount().getCustomer().getZipCode());
             this.markDocumentToExport();
         } else {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
@@ -330,11 +331,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public static Stream<? extends FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
         return findAll().filter(x -> x.getDocumentNumberSeries() == documentNumberSeries);
     }
-    
+
     public static Optional<? extends FinantialDocument> findUniqueByDocumentNumber(final String documentNumber) {
         return findAll().filter(x -> documentNumber.equals(x.getUiDocumentNumber())).findFirst();
     }
-    
+
     protected static Stream<? extends FinantialDocument> findClosedUntilDocumentNumberExclusive(
             final DocumentNumberSeries documentNumberSeries, final String documentNumber) {
         return find(documentNumberSeries).filter(

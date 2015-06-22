@@ -127,7 +127,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         String nameClear = Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD);
         nameClear = nameClear.replaceAll("[^\\p{ASCII}]", "");
         return nameClear.contains(searchFieldClear) || getIdentificationNumber().contains(searchFieldClear)
-                || getFiscalNumber().contains(searchFieldClear);
+                || getFiscalNumber().contains(searchFieldClear) || getCode().contains(searchFieldClear);
     }
 //    public Set<PaymentReferenceCode> getPaymentCodesBy(FinantialInstitution institution) {
 //        Set<PaymentReferenceCode> references = new HashSet<PaymentReferenceCode>();
