@@ -30,8 +30,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.joda.time.ReadablePartial;
 
 public class Constants {
 
@@ -40,6 +40,9 @@ public class Constants {
     public static final BigDecimal HUNDRED_PERCENT = new BigDecimal("100.00");
 
     public static String BUNDLE = FenixeduTreasurySpringConfiguration.BUNDLE.replace('/', '.');
+    
+    // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
+    public static DateTime INFINITY_DATE = new DateTime().plusYears(500);
     
     // @formatter: off
     /**************

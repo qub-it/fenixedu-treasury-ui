@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController"%>
 <%@page import="org.fenixedu.treasury.ui.managetreasuryexemption.TreasuryExemptionController"%>
 <%@page import="org.fenixedu.treasury.domain.exemption.TreasuryExemption"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -263,15 +264,19 @@ ${portal.toolkit()}
 			<datatables:table id="allDebitEntriesTable" row="debitEntry" data="${allActiveDebitEntriesDataSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" /></datatables:columnHead>
-					<c:out value="${debitEntry.finantialDocument.documentNumber}" /> 
+					<c:out value="${debitEntry.finantialDocument.uiDocumentNumber}" /> 
 				</datatables:column>
 				<datatables:column cssStyle="width:15%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.dueDate" /></datatables:columnHead>
 					<p align=center><joda:format value="${debitEntry.dueDate}" style="S-" /></p>
 				</datatables:column>
-				<datatables:column cssStyle="width:60%">
-					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.description" /></datatables:columnHead>
-					<c:out value="${debitEntry.description}" />
+				<datatables:column cssStyle="width:50%">
+						<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.description" /></datatables:columnHead>
+						<p><c:out value="${debitEntry.description}" /></p>
+					
+					<c:if test="${debitEntry.eventAnnuled}">
+						<p class="label label-danger"><spring:message code="label.annuled" /></p>
+					</c:if>
 				</datatables:column>
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.amount" /></datatables:columnHead>
@@ -280,7 +285,21 @@ ${portal.toolkit()}
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.exemptedAmount" /></datatables:columnHead>
 					<p align=right><c:out value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmount)}" /></p> 
-				</datatables:column>			
+				</datatables:column>
+				<datatables:column cssStyle="width:10%">
+					<p align=left>
+						<c:if test="${!debitEntry.eventAnnuled}">
+							<a class="" href="${pageContext.request.contextPath}<%= TreasuryEventController.ANNULDEBITENTRY_URL %>${treasuryEvent.externalId}/${debitEntry.externalId}" >
+								<spring:message code="label.annul" />
+							</a>
+						</c:if>
+						<c:if test="${debitEntry.eventAnnuled}">
+							<a class="" href="${pageContext.request.contextPath}<%= TreasuryEventController.REVERTANNULDEBITENTRY_URL %>${treasuryEvent.externalId}/${debitEntry.externalId}" >
+								<spring:message code="label.revert" />
+							</a>
+						</c:if>
+					</p> 
+				</datatables:column>
 			</datatables:table>
 	 		<script>
 	 		createDataTables('allDebitEntriesTable',false,false,false,"${pageContext.request.contextPath}","${datatablesI18NUrl}");
@@ -293,43 +312,6 @@ ${portal.toolkit()}
 		</c:otherwise>
 	</c:choose>
 </div>
-
-<c:choose>
-	<c:when test="${not empty allInactiveDebitEntriesDataSet}">
-		<h2><spring:message code="label.TreasuryEvent.all.annuled.debitEntries"/></h2>
-		<div class="tab-pane" id="allInactiveDebitEntriesDataSet">
-			<p></p>
-			<datatables:table id="allAnnuledDebitEntriesTable" row="debitEntry" data="${allInactiveDebitEntriesDataSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
-				<datatables:column cssStyle="width:10%">
-					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" /></datatables:columnHead>
-					<c:out value="${debitEntry.finantialDocument.documentNumber}" /> 
-				</datatables:column>
-				<datatables:column cssStyle="width:15%">
-					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.dueDate" /></datatables:columnHead>
-					<p align=center><joda:format value="${debitEntry.dueDate}" style="S-" /></p>
-				</datatables:column>
-				<datatables:column cssStyle="width:60%">
-					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.description" /></datatables:columnHead>
-					<c:out value="${debitEntry.description}" />
-				</datatables:column>
-				<datatables:column cssStyle="width:10%">
-					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.amount" /></datatables:columnHead>
-					<p align=right><c:out value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.amountWithVat)}" /></p> 
-				</datatables:column>
-				<datatables:column cssStyle="width:10%">
-					<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.exemptedAmount" /></datatables:columnHead>
-					<p align=right><c:out value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmount)}" /></p> 
-				</datatables:column>			
-
-			</datatables:table>
-	 		<script>
-	 		createDataTables('allDebitEntriesTable',false,false,false,"${pageContext.request.contextPath}","${datatablesI18NUrl}");
-	 		</script> 	
-		</div>
-	</c:when>
-</c:choose>
-
-
 <c:choose>
 	<c:when test="${not empty allActiveCreditEntriesDataSet}">
 		<h2><spring:message code="label.TreasuryEvent.allActiveCreditEntries"/></h2>
@@ -338,7 +320,7 @@ ${portal.toolkit()}
 					<datatables:table id="allActiveCreditEntriesDataSet" row="creditEntry" data="${allActiveCreditEntriesDataSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 						<datatables:column cssStyle="width:10%">
 							<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" /></datatables:columnHead>
-							<c:out value="${creditEntry.finantialDocument.documentNumber}" /> 
+							<c:out value="${creditEntry.finantialDocument.uiDocumentNumber}" /> 
 						</datatables:column>
 						<datatables:column cssStyle="width:15%">
 							<datatables:columnHead ><spring:message code="label.TreasuryEvent.allDebitEntries.entryDateTime" /></datatables:columnHead>

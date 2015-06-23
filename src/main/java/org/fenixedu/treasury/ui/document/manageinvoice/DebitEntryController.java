@@ -238,7 +238,7 @@ public class DebitEntryController extends TreasuryBaseController {
 
             DebitEntry debitEntry =
                     createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
-                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate());
+                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate(), bean.getTreasuryEvent());
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
@@ -276,7 +276,7 @@ public class DebitEntryController extends TreasuryBaseController {
     @Atomic
     public DebitEntry createDebitEntry(DebitNote debitNote, DebtAccount debtAccount, java.lang.String description,
             org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, java.math.BigDecimal quantity,
-            LocalDate dueDate) {
+            LocalDate dueDate, final TreasuryEvent treasuryEvent) {
 
         // @formatter: off
 
@@ -299,7 +299,7 @@ public class DebitEntryController extends TreasuryBaseController {
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
         DebitEntry debitEntry =
-                DebitEntry.create(debitNote, debtAccount, null, activeVat.orElse(null), amount, dueDate, null, product,
+                DebitEntry.create(debitNote, debtAccount, treasuryEvent, activeVat.orElse(null), amount, dueDate, null, product,
                         description, quantity, tariff.orElse(null), new DateTime());
         return debitEntry;
     }
@@ -356,7 +356,7 @@ public class DebitEntryController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), model);
+            updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(), model);
 
             /*Succes Update */
 
@@ -386,7 +386,7 @@ public class DebitEntryController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity,
+    public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity, final TreasuryEvent treasuryEvent,
             Model model) {
 
         // @formatter: off				
@@ -402,7 +402,7 @@ public class DebitEntryController extends TreasuryBaseController {
         // @formatter: on
 
         DebitEntry debitEntry = getDebitEntry(model);
-        debitEntry.edit(description, amount, quantity);
+        debitEntry.edit(description, amount, quantity, treasuryEvent);
     }
 
     private static final String _SEARCHPENDINGENTRIES_URI = "/searchpendingentries/";

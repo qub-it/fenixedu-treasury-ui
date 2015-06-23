@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
@@ -170,7 +171,8 @@ public class Vat extends Vat_Base {
      */
 
     private Interval interval() {
-        return new Interval(getBeginDate(), getEndDate() != null ? getEndDate() : new DateTime().plusYears(10));
+        // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
+        return new Interval(getBeginDate(), getEndDate() != null ? getEndDate() : Constants.INFINITY_DATE);
     }
 
     public boolean isActiveNow() {

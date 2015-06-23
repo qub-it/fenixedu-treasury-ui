@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -41,6 +42,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -62,7 +65,11 @@ public class TreasuryEventController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-//
+    private static final String ANNULDEBITENTRY_URI = "/anulldebitentry/";
+    public static final String ANNULDEBITENTRY_URL = CONTROLLER_URL + ANNULDEBITENTRY_URI;
+
+    private static final String REVERTANNULDEBITENTRY_URI = "/revertanulldebitentry/";
+    public static final String REVERTANNULDEBITENTRY_URL = CONTROLLER_URL + REVERTANNULDEBITENTRY_URI;
 
     @RequestMapping
     public String home(Model model) {
@@ -144,12 +151,50 @@ public class TreasuryEventController extends TreasuryBaseController {
 //				
     @RequestMapping(value = "/read/{oid}")
     public String read(@PathVariable("oid") TreasuryEvent treasuryEvent, Model model) {
-        model.addAttribute("allActiveDebitEntriesDataSet", DebitEntry.findActive(treasuryEvent).collect(Collectors.<DebitEntry> toList()));
-        model.addAttribute("allInactiveDebitEntriesDataSet", DebitEntry.findEventAnnuled(treasuryEvent).collect(Collectors.<DebitEntry> toList()));
+        model.addAttribute(
+                "allActiveDebitEntriesDataSet",
+                DebitEntry.find(treasuryEvent).sorted(DebitEntry.COMPARE_BY_EVENT_ANNULED_AND_BY_DATE)
+                        .collect(Collectors.<DebitEntry> toList()));
 
-        model.addAttribute("allActiveCreditEntriesDataSet", CreditEntry.findActive(treasuryEvent).collect(Collectors.<CreditEntry> toList()));
-        
+        model.addAttribute("allActiveCreditEntriesDataSet",
+                CreditEntry.find(treasuryEvent).collect(Collectors.<CreditEntry> toList()));
+
         setTreasuryEvent(treasuryEvent, model);
         return "treasury/accounting/managecustomer/treasuryevent/read";
     }
+
+    @RequestMapping(value = ANNULDEBITENTRY_URI + "{treasuryEventId}/{debitEntryId}")
+    public String anullDebitEntry(@PathVariable("treasuryEventId") final TreasuryEvent treasuryEvent,
+            @PathVariable("debitEntryId") final DebitEntry debitEntry, final Model model) {
+
+        try {
+
+            if (!debitEntry.isEventAnnuled()) {
+                debitEntry.annulOnEvent();
+            }
+
+        } catch (final DomainException e) {
+            addInfoMessage(e.getLocalizedMessage(), model);
+        }
+
+        return read(treasuryEvent, model);
+    }
+
+    @RequestMapping(value = REVERTANNULDEBITENTRY_URI + "{treasuryEventId}/{debitEntryId}")
+    public String revertAnullDebitEntry(@PathVariable("treasuryEventId") final TreasuryEvent treasuryEvent,
+            @PathVariable("debitEntryId") final DebitEntry debitEntry, final Model model) {
+
+        try {
+
+            if (debitEntry.isEventAnnuled()) {
+                debitEntry.revertEventAnnuled();
+            }
+
+        } catch (final DomainException e) {
+            addInfoMessage(e.getLocalizedMessage(), model);
+        }
+
+        return read(treasuryEvent, model);
+    }
+
 }

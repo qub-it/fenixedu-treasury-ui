@@ -86,6 +86,24 @@ public class DebitEntry extends DebitEntry_Base {
         }
     };
 
+    public static final Comparator<DebitEntry> COMPARE_BY_EVENT_ANNULED_AND_BY_DATE = new Comparator<DebitEntry>() {
+
+        @Override
+        public int compare(DebitEntry o1, DebitEntry o2) {
+            
+            if(!o1.isEventAnnuled() && o2.isEventAnnuled()) {
+                return -1;
+            } else if(o1.isEventAnnuled() && !o2.isEventAnnuled()) {
+                return 1;
+            }
+            
+            int c = o1.getEntryDateTime().compareTo(o2.getEntryDateTime());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+        
+    };
+    
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
@@ -373,11 +391,13 @@ public class DebitEntry extends DebitEntry_Base {
         return interestEntry;
     }
 
-    public void edit(String description, BigDecimal amount, BigDecimal quantity) {
+    public void edit(String description, BigDecimal amount, BigDecimal quantity, final TreasuryEvent treasuryEvent) {
 
         this.setDescription(description);
         this.setAmount(amount);
         this.setQuantity(quantity);
+        this.setTreasuryEvent(treasuryEvent);
+        
         recalculateAmountValues();
 
         checkRules();
@@ -487,6 +507,16 @@ public class DebitEntry extends DebitEntry_Base {
         setAcademicalActBlockingSuspension(true);
     }
 
+    @Atomic
+    public void annulOnEvent() {
+        setEventAnnuled(true);
+    }
+
+    @Atomic
+    public void revertEventAnnuled() {
+        setEventAnnuled(false);
+    }
+    
     private Map<LocalDate, BigDecimal> amountInDebtMap(final LocalDate paymentDate) {
         final Map<LocalDate, BigDecimal> result = new HashMap<LocalDate, BigDecimal>();
 
