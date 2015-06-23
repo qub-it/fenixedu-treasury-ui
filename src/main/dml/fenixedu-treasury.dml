@@ -208,6 +208,7 @@ class document.FinantialDocument {
 	FinantialDocumentStateType state;
 	String address;
 	String annulledReason;
+	String documentObservations;
 }
 
 
