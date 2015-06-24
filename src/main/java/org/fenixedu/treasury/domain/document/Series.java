@@ -66,7 +66,6 @@ public class Series extends Series_Base {
 
             return COMPARATOR_BY_CODE.compare(o1, o2);
         }
-
     };
 
     protected Series() {
@@ -146,14 +145,12 @@ public class Series extends Series_Base {
                 throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");
             }
             setLegacy(legacy);
-
         }
-
         checkRules();
     }
 
     private boolean isSeriesUsedForAnyDocument() {
-        return this.getDocumentNumberSeriesSet().stream().anyMatch(x -> x.getFinantialDocumentsSet().size() > 0);
+        return this.getDocumentNumberSeriesSet().stream().anyMatch(x -> !x.getFinantialDocumentsSet().isEmpty());
     }
 
     public boolean isDeletable() {
@@ -183,12 +180,6 @@ public class Series extends Series_Base {
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Set<Series> readAll() {
         return Bennu.getInstance().getSeriesSet();
     }
@@ -212,7 +203,6 @@ public class Series extends Series_Base {
             if (!it.getCode().equalsIgnoreCase(code)) {
                 continue;
             }
-
             if (result != null) {
                 throw new TreasuryDomainException("error.Series.duplicated.code");
             }
@@ -225,13 +215,10 @@ public class Series extends Series_Base {
 
     public static Series findByName(final FinantialInstitution finantialInstitution, final String name) {
         Series result = null;
-
         for (final Series it : find(finantialInstitution)) {
-
             if (!LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(it.getName(), name)) {
                 continue;
             }
-
             if (result != null) {
                 throw new TreasuryDomainException("error.Series.duplicated.name");
             }
@@ -253,9 +240,8 @@ public class Series extends Series_Base {
     @Atomic
     public static Series create(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
             final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries) {
-        Series series = new Series(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries);
+        return new Series(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries);
 
-        return series;
     }
 
 }

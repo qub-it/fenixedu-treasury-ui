@@ -171,7 +171,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             updateAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber(), model);
 
-            return redirect(READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
+            return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
+                    model, redirectAttributes); //ACFSILVA
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {

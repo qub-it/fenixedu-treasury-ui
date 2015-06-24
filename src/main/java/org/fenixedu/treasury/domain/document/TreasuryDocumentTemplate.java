@@ -72,8 +72,7 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base {
     }
 
     public boolean isDeletable() {
-        //TODOJN
-        return false;
+        return true;
     }
 
     @Atomic
@@ -113,23 +112,17 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base {
         return treasuryDocumentTemplateFile;
     }
 
-    /**
-     * 
-     * Activate document template file
-     */
     void activateFile(TreasuryDocumentTemplateFile treasuryDocumentTemplateFile) {
         for (TreasuryDocumentTemplateFile file : getTreasuryDocumentTemplateFilesSet()) {
             file.setActive(false);
         }
-
         treasuryDocumentTemplateFile.setActive(true);
     }
 
     @Atomic
     public static TreasuryDocumentTemplate create(final FinantialDocumentType finantialDocumentTypes,
             final FinantialEntity finantialEntity) {
-        TreasuryDocumentTemplate documentTemplate = new TreasuryDocumentTemplate(finantialDocumentTypes, finantialEntity);
-        return documentTemplate;
+        return new TreasuryDocumentTemplate(finantialDocumentTypes, finantialEntity);
     }
 
     public static Stream<TreasuryDocumentTemplate> findAll() {

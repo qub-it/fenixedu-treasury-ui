@@ -150,8 +150,8 @@ ${portal.toolkit()}
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.SibsReportFile.whenProcessedBySibs" /></th>
-                        <td><c:out
-                                value='${sibsReportFile.whenProcessedBySibs}' />
+                        <td><joda:format
+                                value='${sibsReportFile.whenProcessedBySibs}' style='S-' />
                         </td>
                     </tr>
                     <tr>

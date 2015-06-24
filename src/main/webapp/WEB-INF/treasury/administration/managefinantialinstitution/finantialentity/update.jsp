@@ -43,7 +43,11 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/read/${finantialEntity.externalId}"><spring:message
-            code="label.event.back" /></a> &nbsp;
+            code="label.title.administration.manageFinantialEntity" /></a> &nbsp;|&nbsp;
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialEntity.finantialInstitution.externalId}"><spring:message
+            code="label.title.administration.manageFinantialInstitution" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

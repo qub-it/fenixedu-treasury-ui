@@ -61,6 +61,8 @@ public class CustomerController extends TreasuryBaseController {
     private static final String READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URI + READ_URI;
 
+    public static final long SEARCH_CUSTOMER_LIST_LIMIT_SIZE = 100;
+
     //
 
     @RequestMapping
@@ -88,10 +90,13 @@ public class CustomerController extends TreasuryBaseController {
     //
     @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "finantialInstitution", required = false) FinantialInstitution institution,
-            Model model) {
-        List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution);
+            @RequestParam(value = "customer", required = false) String customer, Model model) {
+        List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution, customer);
+        model.addAttribute("limit_exceeded", searchcustomerResultsDataSet.size() > SEARCH_CUSTOMER_LIST_LIMIT_SIZE);
+        searchcustomerResultsDataSet =
+                searchcustomerResultsDataSet.stream().limit(SEARCH_CUSTOMER_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
-        model.addAttribute("finantialinstitution_options", FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
+        model.addAttribute("finantialinstitution_options", FinantialInstitution.findAll().collect(Collectors.toList()));
 
         // add the results dataSet to the model
         model.addAttribute("searchcustomerResultsDataSet", searchcustomerResultsDataSet);
@@ -103,16 +108,13 @@ public class CustomerController extends TreasuryBaseController {
         return Customer.findAll().sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName()));
     }
 
-    private List<Customer> filterSearchCustomer(FinantialInstitution institution) {
-
-        if (institution == null) {
-            return getSearchUniverseSearchCustomerDataSet().collect(Collectors.<Customer> toList());
-        } else {
-            return getSearchUniverseSearchCustomerDataSet().filter(
-                    customer -> customer.getDebtAccountsSet().stream()
-                            .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution))).collect(
-                    Collectors.<Customer> toList());
-        }
+    private List<Customer> filterSearchCustomer(FinantialInstitution institution, String customerString) {
+        return getSearchUniverseSearchCustomerDataSet()
+                .filter(customer -> customerString == null || customer.matchesMultiFilter(customerString))
+                .filter(customer -> institution == null
+                        || customer.getDebtAccountsSet().stream()
+                                .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution)))
+                .collect(Collectors.<Customer> toList());
     }
 
     public static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";

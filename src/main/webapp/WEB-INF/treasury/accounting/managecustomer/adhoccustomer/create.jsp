@@ -34,7 +34,7 @@ ${portal.angularToolkit()}
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
-		<spring:message code="label.accounting.manageCustomer.updateAdhocCustomer" />
+		<spring:message code="label.accounting.manageCustomer.createAdhocCustomer" />
 		<small></small>
 	</h1>
 </div>
@@ -42,7 +42,7 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${adhocCustomer.externalId}"><spring:message code="label.event.back" /></a>
+		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/"><spring:message code="label.event.back" /></a>
 	&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">

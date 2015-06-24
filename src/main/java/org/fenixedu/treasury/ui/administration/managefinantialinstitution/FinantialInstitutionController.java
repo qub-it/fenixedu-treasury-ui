@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
@@ -44,9 +43,8 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
-import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.domain.paymentcodes.SibsConfiguration;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -66,9 +64,6 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",
         accessGroup = "treasuryManagers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
-//@BennuSpringController(value = TreasuryController.class)
 @RequestMapping(FinantialInstitutionController.CONTROLLER_URL)
 public class FinantialInstitutionController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/administration/managefinantialinstitution/finantialinstitution";
@@ -83,11 +78,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behavior, for handling in a Spring Functionality
         return "forward:" + SEARCH_URL;
     }
 
@@ -153,11 +145,11 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        //The default mapping is the same Read View
         return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
     }
 
@@ -189,7 +181,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             setFinantialInstitution(finantialInstitution, model);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
             return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException ex) {
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(model);
@@ -224,7 +218,6 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         return getBeanJson(bean);
     }
 
-//				
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") FinantialInstitution finantialInstitution, @RequestParam(value = "bean",
             required = true) FinantialInstitutionBean bean, Model model, RedirectAttributes redirectAttributes) {
@@ -235,7 +228,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.edit"), model);
             return redirect(READ_URL + getFinantialInstitution(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException ex) {
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.edit") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.edit") + ex.getLocalizedMessage(), model);
         }
         return update(finantialInstitution, model);
@@ -264,11 +259,10 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload") + ex.getLocalizedMessage(), model);
             try {
                 response.sendRedirect(redirect(READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -290,11 +284,10 @@ public class FinantialInstitutionController extends TreasuryBaseController {
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
             response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload") + ex.getLocalizedMessage(), model);
             try {
                 response.sendRedirect(redirect(READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

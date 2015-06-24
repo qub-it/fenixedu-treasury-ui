@@ -35,6 +35,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile;
@@ -62,12 +63,10 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         if (model.containsAttribute("finantialInstitutionId")) {
-            return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + model.asMap().get("finantialInstitutionId");
+            return "forward:" + FinantialInstitutionController.READ_URL + model.asMap().get("finantialInstitutionId");
         }
-        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
+        return "forward:" + FinantialInstitutionController.SEARCH_URL;
     }
 
     private TreasuryDocumentTemplate getDocumentTemplate(Model model) {
@@ -86,8 +85,7 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read" + "/"
-                + documentTemplate.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + documentTemplate.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
@@ -101,16 +99,17 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setDocumentTemplate(documentTemplate, model);
         try {
+            FinantialInstitution finantialInstitution = documentTemplate.getFinantialEntity().getFinantialInstitution();
             deleteDocumentTemplate(documentTemplate);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/", model,
+            return redirect(FinantialInstitutionController.READ_URL + finantialInstitution.getExternalId(), model,
                     redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            //Add error messages to the list
-            addErrorMessage("Error deleting the TreasuryDocumentTemplate due to " + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-        return "treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
-                + getDocumentTemplate(model).getExternalId();
+        return redirect(READ_URL + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/create")
@@ -120,23 +119,20 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
             TreasuryDocumentTemplate documentTemplate = createDocumentTemplate(finantialDocumentTypes, finantialEntity);
-            //Success Validation
-            //Add the bean to be used in the View
             model.addAttribute("documentTemplate", documentTemplate);
-            return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
-                    + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(" Error creating due to " + tde.getLocalizedMessage(), model);
-            return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + finantialEntity.getFinantialInstitution().getExternalId(), model, redirectAttributes);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return redirect(FinantialInstitutionController.READ_URL + finantialEntity.getFinantialInstitution().getExternalId(),
+                model, redirectAttributes);
     }
 
     @Atomic
     public TreasuryDocumentTemplate createDocumentTemplate(FinantialDocumentType finantialDocumentTypes,
             FinantialEntity finantialEntity) {
-        TreasuryDocumentTemplate documentTemplate = TreasuryDocumentTemplate.create(finantialDocumentTypes, finantialEntity);
-        return documentTemplate;
+        return TreasuryDocumentTemplate.create(finantialDocumentTypes, finantialEntity);
     }
 
     @RequestMapping(value = "/search/upload/{oid}", method = RequestMethod.POST)
@@ -148,10 +144,11 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
             uploadDocumentTemplateFile(documentTemplate, documentTemplateFile, model);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.upload"), model);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload") + ex.getLocalizedMessage(), model);
         }
-        return redirect("/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/read/"
-                + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + getDocumentTemplate(model).getExternalId(), model, redirectAttributes);
     }
 
     public void uploadDocumentTemplateFile(TreasuryDocumentTemplate documentTemplate, MultipartFile requestFile, Model model) {

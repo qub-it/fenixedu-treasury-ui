@@ -36,7 +36,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/create"   ><spring:message code="label.event.create" /></a>
-&nbsp;|&nbsp;</div>
+&nbsp;</div>
     <c:if test="${not empty infoMessages}">
                 <div class="alert alert-info" role="alert">
                     
@@ -108,7 +108,7 @@ ${portal.toolkit()}
                 <%-- Field access / formatting  here CHANGE_ME --%>
                 {
                 "DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-                "whencreated" : "<c:out value='${searchResult.versioningCreationDate}'/>",                
+                "whencreated" : "<joda:format value='${searchResult.versioningCreationDate}'  style='SS'/>",                
 "uploader" : "<c:out value='${searchResult.versioningCreator}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +

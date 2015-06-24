@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -96,7 +96,7 @@ ${portal.toolkit()}
             code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> &nbsp;|&nbsp;
+            code="label.event.delete" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -157,11 +157,13 @@ ${portal.toolkit()}
 </div>
 
 <c:choose>
-    <c:when test="${ not empty documentTemplate.treasuryDocumentTemplateFilesSet }">
+    <c:when
+        test="${ not empty documentTemplate.treasuryDocumentTemplateFilesSet }">
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h3 class="panel-title">
-                    <spring:message code="label.DocumentTemplateFile.history" />
+                    <spring:message
+                        code="label.DocumentTemplateFile.history" />
                 </h3>
             </div>
             <div class="panel-body">
@@ -169,15 +171,19 @@ ${portal.toolkit()}
                     <table class="table">
                         <tbody>
                             <tr>
-                                <th><spring:message code="label.DocumentTemplateFile.date" /></th>
-                                <th><spring:message code="label.DocumentTemplateFile.name" /></th>                                                
+                                <th><spring:message
+                                        code="label.DocumentTemplateFile.date" /></th>
+                                <th><spring:message
+                                        code="label.DocumentTemplateFile.name" /></th>
                             </tr>
-                            <c:forEach items="${ documentTemplate.treasuryDocumentTemplateFilesSet }" var="submittedFile">
+                            <c:forEach
+                                items="${ documentTemplate.treasuryDocumentTemplateFilesSet }"
+                                var="submittedFile">
                                 <tr>
-<%--                        <td><c:out value='${submittedFile.creationDate.toString("yyyy-MM-dd")}' /> --%>
-                                    <td>
-                                    <joda:format value='${submittedFile.creationDate}' style='S-' />
-                                    </td>
+                                    <%--                        <td><c:out value='${submittedFile.creationDate.toString("yyyy-MM-dd")}' /> --%>
+                                    <td><joda:format
+                                            value='${submittedFile.creationDate}'
+                                            style='S-' /></td>
                                     <td><c:out
                                             value='${submittedFile.filename}' />
                                     </td>
@@ -191,13 +197,14 @@ ${portal.toolkit()}
     </c:when>
     <c:otherwise>
         <div class="alert alert-info" role="alert">
-            <spring:message code="label.documentTemplateFile.noResultsFound" />
+            <spring:message
+                code="label.documentTemplateFile.noResultsFound" />
         </div>
     </c:otherwise>
 </c:choose>
 
 <script>
-$(document).ready(function() {
+	$(document).ready(function() {
 
-});
+	});
 </script>

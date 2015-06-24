@@ -1,4 +1,5 @@
-<%@ page import="org.fenixedu.treasury.domain.paymentcodes.SibsReportFile" %>
+<%@ page
+    import="org.fenixedu.treasury.domain.paymentcodes.SibsReportFile"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -120,7 +121,8 @@ ${portal.toolkit()}
                 </div>
                 <div class="col-sm-10">
                     <input type="file" name="documentSibsReportFile"
-                        accept="<%= SibsReportFile.CONTENT_TYPE %>" required />
+                        accept="<%=SibsReportFile.CONTENT_TYPE%>"
+                        required />
                 </div>
             </div>
         </div>

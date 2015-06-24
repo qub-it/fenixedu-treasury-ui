@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -53,42 +53,49 @@ ${portal.toolkit()}
     </h1>
 </div>
 <%-- NAVIGATION --%>
-<div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile"   ><spring:message code="label.event.administration.payments.sibs.managesibsreportfile.sibsinputfile" /></a>
-&nbsp;|&nbsp;</div>
-	<c:if test="${not empty infoMessages}">
-				<div class="alert alert-info" role="alert">
-					
-					<c:forEach items="${infoMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty warningMessages}">
-				<div class="alert alert-warning" role="alert">
-					
-					<c:forEach items="${warningMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty errorMessages}">
-				<div class="alert alert-danger" role="alert">
-					
-					<c:forEach items="${errorMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
+<div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile"><spring:message
+            code="label.event.administration.payments.sibs.managesibsreportfile.sibsinputfile" /></a>
+    &nbsp;
+</div>
+<c:if test="${not empty infoMessages}">
+    <div class="alert alert-info" role="alert">
+
+        <c:forEach items="${infoMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon glyphicon-ok-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
+
+    </div>
+</c:if>
+<c:if test="${not empty warningMessages}">
+    <div class="alert alert-warning" role="alert">
+
+        <c:forEach items="${warningMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
+
+    </div>
+</c:if>
+<c:if test="${not empty errorMessages}">
+    <div class="alert alert-danger" role="alert">
+
+        <c:forEach items="${errorMessages}" var="message">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
+            </p>
+        </c:forEach>
+
+    </div>
+</c:if>
 
 
 
@@ -126,33 +133,43 @@ ${portal.toolkit()}
 
 
 <c:choose>
-	<c:when test="${not empty searchsibsreportfileResultsDataSet}">
-		<table id="searchsibsreportfileTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<%--!!!  Field names here --%>
-<th><spring:message code="label.SibsReportFile.whenProcessed"/></th>
-<th><spring:message code="label.SibsReportFile.whenProcessedBySibs"/></th>
-<th><spring:message code="label.SibsReportFile.transactionsTotalAmount"/></th>
-<th><spring:message code="label.SibsReportFile.totalCost"/></th>
-<th><spring:message code="label.SibsReportFile.success"/></th>
-<%-- Operations Column --%>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-	</c:when>
-	<c:otherwise>
-				<div class="alert alert-warning" role="alert">
-					
-					<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-					
-				</div>	
-		
-	</c:otherwise>
+    <c:when test="${not empty searchsibsreportfileResultsDataSet}">
+        <table id="searchsibsreportfileTable"
+            class="table responsive table-bordered table-hover">
+            <thead>
+                <tr>
+                    <%--!!!  Field names here --%>
+                    <th><spring:message
+                            code="label.SibsReportFile.whenCreated" /></th>
+                    <th><spring:message
+                            code="label.SibsReportFile.whenProcessedBySibs" /></th>
+                    <th><spring:message
+                            code="label.SibsReportFile.transactionsTotalAmount" /></th>
+                    <th><spring:message
+                            code="label.SibsReportFile.totalCost" /></th>
+                    <th><spring:message
+                            code="label.SibsReportFile.success" /></th>
+                    <%-- Operations Column --%>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <div class="alert alert-warning" role="alert">
+
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.noResultsFound" />
+            </p>
+
+        </div>
+
+    </c:otherwise>
 </c:choose>
 
 <script>
@@ -161,7 +178,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-				"whencreated" : "<c:out value='${searchResult.versioningCreationDate}'/>",
+				"whencreated" : "<joda:format value='${searchResult.versioningCreationDate}' style='SS'/>",
 "whenprocessedbysibs" : '<joda:format value="${searchResult.whenProcessedBySibs}" style="S-"/>',
 "transactionstotalamount" : "<c:out value='${searchResult.transactionsTotalAmount}'/>",
 "totalcost" : "<c:out value='${searchResult.totalCost}'/>",

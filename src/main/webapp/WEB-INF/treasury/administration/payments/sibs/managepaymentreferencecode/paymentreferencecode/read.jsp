@@ -1,36 +1,53 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
-<spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
-<spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
+<spring:url var="datatablesUrl"
+    value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
+<spring:url var="datatablesBootstrapJsUrl"
+    value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css" />
+<spring:url var="datatablesCssUrl"
+    value="/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <link rel="stylesheet" href="${datatablesCssUrl}" />
-<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
+<spring:url var="datatablesI18NUrl"
+    value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+<link rel="stylesheet" type="text/css"
+    href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
-<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
-<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+<link
+    href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link
+    href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link
+    href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
+    rel="stylesheet" />
+<script
+    src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript"
+    src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script
+    src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 
 
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message code="label.administration.payments.sibs.managePaymentReferenceCode.readPaymentReferenceCode" />
+        <spring:message
+            code="label.administration.payments.sibs.managePaymentReferenceCode.readPaymentReferenceCode" />
         <small></small>
     </h1>
 </div>
@@ -41,7 +58,8 @@ ${portal.toolkit()}
                 action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${paymentReferenceCode.externalId}/anull"
                 method="POST">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close"
+                        data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title">
@@ -50,14 +68,17 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message code="label.administration.payments.sibs.managePaymentReferenceCode.readPaymentReferenceCode.confirmAnull" />
+                        <spring:message
+                            code="label.administration.payments.sibs.managePaymentReferenceCode.readPaymentReferenceCode.confirmAnull" />
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <button type="button" class="btn btn-default"
+                        data-dismiss="modal">
                         <spring:message code="label.cancel" />
                     </button>
-                    <button id="deleteButton" class="btn btn-danger" type="submit">
+                    <button id="deleteButton" class="btn btn-danger"
+                        type="submit">
                         <spring:message code="label.annull" />
                     </button>
                 </div>
@@ -70,19 +91,27 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/"><spring:message code="label.event.back" /></a>
-    &nbsp;|&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#anullModal"><spring:message
-            code="label.annull" /></a>
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/"><spring:message
+            code="label.event.back" /></a> &nbsp;
+    <c:if test="${paymentReferenceCode.state!='ANNULLED'}">
+    |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
+            class="" href="#" data-toggle="modal"
+            data-target="#anullModal"><spring:message
+                code="label.annull" /></a>
+    </c:if>
     <!--&nbsp;|&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/update/${paymentReferenceCode.externalId}"  ><spring:message code="label.event.update" /></a>
-&nbsp;|&nbsp; -->
+&nbsp; -->
 </div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
         <c:forEach items="${infoMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon glyphicon-ok-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
 
@@ -93,7 +122,8 @@ ${portal.toolkit()}
 
         <c:forEach items="${warningMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
 
@@ -104,7 +134,8 @@ ${portal.toolkit()}
 
         <c:forEach items="${errorMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon-exclamation-sign"
+                    aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
 
@@ -122,68 +153,99 @@ ${portal.toolkit()}
             <table class="table">
                 <tbody>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.finantialInstitution" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.name}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentCodePool.finantialInstitution" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.paymentCodePool.finantialInstitution.name}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.paymentCodePool" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.name}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentReferenceCode.paymentCodePool" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.paymentCodePool.name}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.entityReferenceCode" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.entityReferenceCode}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentCodePool.entityReferenceCode" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.paymentCodePool.entityReferenceCode}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.referenceCode" /></th>
-                        <td><c:out value='${paymentReferenceCode.formattedCode}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentReferenceCode.referenceCode" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.formattedCode}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.beginDate" /></th>
-                        <td><c:out value='${paymentReferenceCode.beginDate}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentReferenceCode.beginDate" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.beginDate}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.endDate" /></th>
-                        <td><c:out value='${paymentReferenceCode.endDate}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentReferenceCode.endDate" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.endDate}' /></td>
                     </tr>
-                    <c:if test='${not paymentReferenceCode.paymentCodePool.useCheckDigit }'>
+                    <c:if
+                        test='${not paymentReferenceCode.paymentCodePool.useCheckDigit }'>
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.minAmount" /></th>
-                            <td><c:out value='${paymentReferenceCode.minAmount}' /></td>
+                            <th scope="row" class="col-xs-3"><spring:message
+                                    code="label.PaymentReferenceCode.minAmount" /></th>
+                            <td><c:out
+                                    value='${paymentReferenceCode.minAmount}' /></td>
                         </tr>
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.maxAmount" /></th>
-                            <td><c:out value='${paymentReferenceCode.maxAmount}' /></td>
+                            <th scope="row" class="col-xs-3"><spring:message
+                                    code="label.PaymentReferenceCode.maxAmount" /></th>
+                            <td><c:out
+                                    value='${paymentReferenceCode.maxAmount}' /></td>
                         </tr>
                     </c:if>
-                    <c:if test='${paymentReferenceCode.paymentCodePool.useCheckDigit }'>
-                        <c:if test='${paymentReferenceCode.paymentCodePool.useAmountToValidateCheckDigit }'>
+                    <c:if
+                        test='${paymentReferenceCode.paymentCodePool.useCheckDigit }'>
+                        <c:if
+                            test='${paymentReferenceCode.paymentCodePool.useAmountToValidateCheckDigit }'>
                             <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.minAmount" /></th>
-                                <td><c:out value='${paymentReferenceCode.minAmount}' /></td>
+                                <th scope="row" class="col-xs-3"><spring:message
+                                        code="label.PaymentReferenceCode.minAmount" /></th>
+                                <td><c:out
+                                        value='${paymentReferenceCode.minAmount}' /></td>
                             </tr>
                             <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.maxAmount" /></th>
-                                <td><c:out value='${paymentReferenceCode.maxAmount}' /></td>
+                                <th scope="row" class="col-xs-3"><spring:message
+                                        code="label.PaymentReferenceCode.maxAmount" /></th>
+                                <td><c:out
+                                        value='${paymentReferenceCode.maxAmount}' /></td>
                             </tr>
                         </c:if>
                     </c:if>
 
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.state" /></th>
-                        <td><c:out value='${paymentReferenceCode.state.getDescriptionI18N().content}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentReferenceCode.state" /></th>
+                        <td><c:out
+                                value='${paymentReferenceCode.state.getDescriptionI18N().content}' /></td>
                     </tr>
-                    <c:if test='${not empty paymentReferenceCode.targetPayment }'>
+                    <c:if
+                        test='${not empty paymentReferenceCode.targetPayment }'>
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.targetPayment" /></th>
-                            <td><c:if test='${paymentReferenceCode.targetPayment.isFinantialDocumentPaymentCode() }'>
+                            <th scope="row" class="col-xs-3"><spring:message
+                                    code="label.PaymentReferenceCode.targetPayment" /></th>
+                            <td><c:if
+                                    test='${paymentReferenceCode.targetPayment.isFinantialDocumentPaymentCode() }'>
                                     <ul>
-                                        <li><c:out value='${paymentReferenceCode.targetPayment.finantialDocument.uiDocumentNumber}' /></li>
+                                        <li><c:out
+                                                value='${paymentReferenceCode.targetPayment.finantialDocument.uiDocumentNumber}' /></li>
                                         <li><c:out
                                                 value='${paymentReferenceCode.targetPayment.finantialDocument.currency.getValueFor(paymentReferenceCode.targetPayment.finantialDocument.openAmount)}' />
                                         </li>
                                     </ul>
-                                </c:if> <c:if test='${paymentReferenceCode.targetPayment.isMultipleEntriesPaymentCode() }'>
-                                    <c:out value='${paymentReferenceCode.targetPayment}' />
+                                </c:if> <c:if
+                                    test='${paymentReferenceCode.targetPayment.isMultipleEntriesPaymentCode() }'>
+                                    <c:out
+                                        value='${paymentReferenceCode.targetPayment}' />
                                 </c:if></td>
                         </tr>
                     </c:if>

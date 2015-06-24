@@ -38,7 +38,7 @@ ${portal.toolkit()}
 	<a class="" href="${pageContext.request.contextPath}/treasury/managetreasurysettings/treasurysettings/read" >
 		<spring:message code="label.event.back" />
 	</a>
-&nbsp;|&nbsp;</div>
+&nbsp;</div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 		

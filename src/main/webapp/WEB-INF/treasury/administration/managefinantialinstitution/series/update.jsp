@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController"%>
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.SeriesController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -42,9 +44,14 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${series.externalId}"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp;
+        href="${pageContext.request.contextPath}<%= SeriesController.READ_URL %>${series.externalId}"><spring:message
+            code="label.title.administration.document.manageSeries" /></a> &nbsp;|&nbsp;
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}<%= FinantialInstitutionController.READ_URL %>${series.finantialInstitution.externalId}"><spring:message
+            code="label.title.administration.manageFinantialInstitution" /></a> &nbsp;
 </div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 

@@ -56,10 +56,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         super();
     }
 
-    protected void init(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
-            final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool,
-            BigDecimal minAmount, BigDecimal maxAmount) {
+    protected void init(final String referenceCode, final LocalDate beginDate, final LocalDate endDate,
+            final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal minAmount, BigDecimal maxAmount) {
         setReferenceCode(Strings.padStart(referenceCode, LENGTH_REFERENCE_CODE, '0'));
         setBeginDate(beginDate);
         setEndDate(endDate);
@@ -77,9 +75,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     private void checkRules() {
-        //
-        // CHANGE_ME add more business validations
-        //
         if (this.getMinAmount() == null) {
             this.setMinAmount(BigDecimal.ZERO);
         }
@@ -87,32 +82,15 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             this.setMaxAmount(BigDecimal.ZERO);
         }
 
-        // CHANGE_ME In order to validate UNIQUE restrictions
         if (findByReferenceCode(this.getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(),
                 this.getPaymentCodePool().getFinantialInstitution()).count() > 1) {
             throw new TreasuryDomainException("error.PaymentReferenceCode.referenceCode.duplicated");
         }
-        // if (findByBeginDate(getBeginDate().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentReferenceCode.beginDate.duplicated");
-        // }
-        // if (findByEndDate(getEndDate().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentReferenceCode.endDate.duplicated");
-        // }
-        // if (findByState(getState().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.PaymentReferenceCode.state.duplicated");
-        // }
     }
 
     @Atomic
-    public void edit(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
-            final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state) {
+    public void edit(final String referenceCode, final LocalDate beginDate, final LocalDate endDate,
+            final PaymentReferenceCodeStateType state) {
         setReferenceCode(referenceCode);
         setBeginDate(beginDate);
         setEndDate(endDate);
@@ -121,7 +99,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        return getReportedInFilesSet().isEmpty();
     }
 
     @Atomic
@@ -131,28 +109,17 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         }
 
         setPaymentCodePool(null);
-        if (getTargetPayment() != null) {
-//            getTargetPayment().delete();
-        }
         setTargetPayment(null);
         deleteDomainObject();
     }
 
     @Atomic
-    public static PaymentReferenceCode create(final java.lang.String referenceCode, final org.joda.time.LocalDate beginDate,
-            final org.joda.time.LocalDate endDate,
-            final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state, PaymentCodePool pool,
-            BigDecimal minAmount, BigDecimal maxAmount) {
+    public static PaymentReferenceCode create(final String referenceCode, final LocalDate beginDate, final LocalDate endDate,
+            final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal minAmount, BigDecimal maxAmount) {
         PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
         paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, minAmount, maxAmount);
         return paymentReferenceCode;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<PaymentReferenceCode> findAll() {
         Set<PaymentReferenceCode> result = new HashSet<PaymentReferenceCode>();
@@ -170,20 +137,19 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 x -> x.getPaymentCodePool().getEntityReferenceCode().equals(entityReferenceCode));
     }
 
-    public static Stream<PaymentReferenceCode> findByReferenceCode(final java.lang.String referenceCode,
+    public static Stream<PaymentReferenceCode> findByReferenceCode(final String referenceCode,
             FinantialInstitution finantialInstitution) {
         return findAll().filter(i -> referenceCode.equalsIgnoreCase(i.getReferenceCode())).filter(
                 x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
 
-    public static Stream<PaymentReferenceCode> findByBeginDate(final org.joda.time.LocalDate beginDate,
+    public static Stream<PaymentReferenceCode> findByBeginDate(final LocalDate beginDate,
             FinantialInstitution finantialInstitution) {
         return findAll().filter(i -> beginDate.equals(i.getBeginDate())).filter(
                 x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
 
-    public static Stream<PaymentReferenceCode> findByEndDate(final org.joda.time.LocalDate endDate,
-            FinantialInstitution finantialInstitution) {
+    public static Stream<PaymentReferenceCode> findByEndDate(final LocalDate endDate, FinantialInstitution finantialInstitution) {
         return findAll().filter(i -> endDate.equals(i.getEndDate())).filter(
                 x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
@@ -194,54 +160,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return findAll().filter(i -> state.equals(i.getState())).filter(
                 x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
     }
-
-//    protected PaymentCode() {
-//        super();
-//        super.setRootDomainObject(Bennu.getInstance());
-//        super.setWhenCreated(new LocalDate());
-//        super.setWhenUpdated(new LocalDate());
-//        super.setState(PaymentCodeState.NEW);
-//        super.setEntityCode(ENTITY_CODE);
-//    }
-//
-//    protected void init(final PaymentCodeType paymentCodeType, final YearMonthDay startDate, final YearMonthDay endDate,
-//            final Money minAmount, final Money maxAmount, final Person person) {
-//
-//        checkParameters(paymentCodeType, startDate, endDate, minAmount, maxAmount, person);
-//
-//        super.setCode(getPaymentCodeGenerator(paymentCodeType).generateNewCodeFor(paymentCodeType, person));
-//
-//        super.setType(paymentCodeType);
-//        super.setStartDate(startDate);
-//        super.setEndDate(endDate);
-//        super.setMinAmount(minAmount);
-//        super.setMaxAmount(maxAmount != null ? maxAmount : new Money(SIBS_IGNORE_MAX_AMOUNT));
-//        super.setPerson(person);
-//    }
-
-//    private void checkParameters(PaymentCodeType paymentCodeType, YearMonthDay startDate, YearMonthDay endDate, Money minAmount,
-//            Money maxAmount, final Person person) {
-//
-//        if (paymentCodeType == null) {
-//            throw new DomainException("error.accounting.PaymentCode.paymentCodeType.cannot.be.null");
-//        }
-//
-//        checkParameters(startDate, endDate, minAmount, maxAmount);
-//    }
-//
-//    private void checkParameters(YearMonthDay startDate, YearMonthDay endDate, Money minAmount, Money maxAmount) {
-//        if (startDate == null) {
-//            throw new DomainException("error.accounting.PaymentCode.startDate.cannot.be.null");
-//        }
-//
-//        if (endDate == null) {
-//            throw new DomainException("error.accounting.PaymentCode.endDate.cannot.be.null");
-//        }
-//
-//        if (minAmount == null) {
-//            throw new DomainException("error.accounting.PaymentCode.minAmount.cannot.be.null");
-//        }
-//    }
 
     public String getFormattedCode() {
         final StringBuilder result = new StringBuilder();
@@ -267,37 +185,11 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         }
     }
 
-//    @Override
-//    public void setBeginDate(LocalDate startDate) {
-//        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.startDate");
-//    }
-//
-//    @Override
-//    public void setEndDate(LocalDate endDate) {
-//        throw new DomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.endDate");
-//    }
-
-//    @Override
-//    public void setMinAmount(BigDecimal minAmount) {
-//        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.minAmount");
-//    }
-//
-//    @Override
-//    public void setMaxAmount(BigDecimal maxAmount) {
-//        throw new TreasuryDomainException("error.org.fenixedu.academic.domain.accounting.PaymentCode.cannot.modify.maxAmount");
-//    }
-
     @Override
     @Atomic
     public void setState(PaymentReferenceCodeStateType state) {
-//        super.setWhenUpdated(new LocalDate());
         super.setState(state);
     }
-
-//    @Override
-//    public void setEntityCode(String entityCode) {
-//        throw new DomainException("error.accounting.PaymentCode.cannot.modify.entityCode");
-//    }
 
     public boolean isNew() {
         return getState() == PaymentReferenceCodeStateType.UNUSED;
@@ -319,10 +211,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return getState() == PaymentReferenceCodeStateType.PROCESSED;
     }
 
-//    public boolean isInvalid() {
-//        return getState() == PaymentCodeState.INVALID;
-//    }
-
     public void anull() {
         setState(PaymentReferenceCodeStateType.ANNULLED);
     }
@@ -342,10 +230,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     @Atomic
     public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments) {
-
         if (isProcessed()) {
-
-            //Check with SibsTransactionDetail if it is a new SIBS Payment
             return null;
         }
 
@@ -359,20 +244,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return note;
 
     }
-
-//    public void delete() {
-//        super.setPerson(null);
-//        for (PaymentCodeMapping mapping : getOldPaymentCodeMappingsSet()) {
-//            mapping.delete();
-//        }
-//        for (PaymentCodeMapping mapping : getNewPaymentCodeMappingsSet()) {
-//            removeNewPaymentCodeMappings(mapping);
-//        }
-//        setStudentCandidacy(null);
-//
-//        setRootDomainObject(null);
-//        deleteDomainObject();
-//    }
 
     public String getDescription() {
         return this.getPaymentCodePool().getEntityReferenceCode() + " " + this.getReferenceCode();
@@ -406,7 +277,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     public SibsReportFile getReportOnDate(DateTime transactionWhenRegistered) {
-        //HACK: THIS SHOULD BE WRONG. MUST BE CHECKED
         return this.getReportedInFilesSet().stream().filter(x -> x.getWhenProcessedBySibs().equals(transactionWhenRegistered))
                 .findFirst().orElse(null);
     }

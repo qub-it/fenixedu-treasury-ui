@@ -35,8 +35,8 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
@@ -135,12 +135,6 @@ public class FinantialEntity extends FinantialEntity_Base {
         return null;
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<FinantialEntity> findAll() {
         return Bennu.getInstance().getFinantialEntitiesSet().stream();
     }
@@ -158,7 +152,6 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     public static Stream<FinantialEntity> findWithPermissionsFor(final User user) {
-        // TODO: ACCESS CONTROL
         return findAll();
     }
 
