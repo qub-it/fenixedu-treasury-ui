@@ -1340,7 +1340,7 @@ relation DebitEntryTreasuryEvent {
 
 relation DebitEntryInterestRate {
     document.DebitEntry playsRole debitEntry {
-        multiplicity 1..1;
+        multiplicity 0..1;
     }
     
     tariff.InterestRate playsRole interestRate {
