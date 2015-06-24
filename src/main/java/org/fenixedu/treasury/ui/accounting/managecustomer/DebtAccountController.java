@@ -271,7 +271,8 @@ public class DebtAccountController extends TreasuryBaseController {
 
         for (DebtAccount debt : debtAccounts) {
             bean.add(new TupleDataSourceBean(debt.getExternalId(), debt.getCustomer().getName() + " ["
-                    + debt.getFinantialInstitution().getCode() + "] (" + debt.getCustomer().getBusinessIdentification() + ")"));
+                    + debt.getFinantialInstitution().getCode() + "] (#" + debt.getCustomer().getBusinessIdentification() + ") ("
+                    + debt.getCustomer().getIdentificationNumber() + ")"));
         }
         return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
     }

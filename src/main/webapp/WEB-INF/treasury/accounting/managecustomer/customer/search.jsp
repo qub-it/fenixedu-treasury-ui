@@ -133,7 +133,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-10">
                     <input id="customer_name" class="form-control" type="text" name="customer"
-                        value='<c:out value='${param.name}'/>' />
+                        value='<c:out value='${param.customer}'/>' />
                 </div>
             </div>
         </div>
@@ -238,7 +238,7 @@ ${portal.toolkit()}
 //"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
 //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
 //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
             "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
         }

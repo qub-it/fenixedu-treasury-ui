@@ -125,7 +125,7 @@ ${portal.toolkit()}
 						<option value=""></option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
 						<c:forEach items="${stateValues}" var="field">
-							<option value='<c:out value='${field}'/>'><c:out value='${field}' /></option>
+							<option value='<c:out value='${field}'/>'><c:out value='${field.descriptionI18N.content}' /></option>
 						</c:forEach>
 					</select>
 					<script>

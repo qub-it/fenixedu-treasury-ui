@@ -124,6 +124,16 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     }
 
     public boolean matchesMultiFilter(String searchText) {
+        if (searchText == null) {
+            return false;
+        }
+
+        //Use the # to filter for Business Identification (Student, Candidacy, professor, etc...)
+        if (searchText.startsWith("#") && searchText.length() > 1) {
+            String codeToSearch = searchText.replace("#", "");
+            return getBusinessIdentification() != null && getBusinessIdentification().contains(codeToSearch);
+        }
+
         String searchFieldClear = Normalizer.normalize(searchText.toLowerCase(), Normalizer.Form.NFD);
         searchFieldClear = searchFieldClear.replaceAll("[^\\p{ASCII}]", "");
         String nameClear = Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD);
