@@ -47,6 +47,7 @@ import org.fenixedu.treasury.util.Constants;
 //import pt.utl.ist.fenix.tools.spreadsheet.SpreadsheetBuilder;
 //import pt.utl.ist.fenix.tools.spreadsheet.WorkbookExportFormat
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -60,17 +61,16 @@ public class SibsReportFile extends SibsReportFile_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected SibsReportFile(final org.joda.time.DateTime whenProcessedBySibs,
-            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, final String displayName,
-            final String fileName, final byte[] content) {
+    protected SibsReportFile(final DateTime whenProcessedBySibs, final BigDecimal transactionsTotalAmount,
+            final BigDecimal totalCost, final String displayName, final String fileName, final byte[] content) {
         this();
         this.init(whenProcessedBySibs, transactionsTotalAmount, totalCost, displayName, fileName, content);
 
         checkRules();
     }
 
-    protected void init(final org.joda.time.DateTime whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
-            final java.math.BigDecimal totalCost, final String displayName, final String fileName, final byte[] content) {
+    protected void init(final DateTime whenProcessedBySibs, final BigDecimal transactionsTotalAmount, final BigDecimal totalCost,
+            final String displayName, final String fileName, final byte[] content) {
 
         super.init(displayName, fileName, content);
         setWhenProcessedBySibs(whenProcessedBySibs);
@@ -80,28 +80,10 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByWhenProcessedBySibs(getWhenProcessedBySibs().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsReportFile.whenProcessedBySibs.duplicated");
-        //}	
-        //if (findByTransactionsTotalAmount(getTransactionsTotalAmount().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsReportFile.transactionsTotalAmount.duplicated");
-        //}	
-        //if (findByTotalCost(getTotalCost().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsReportFile.totalCost.duplicated");
-        //}	
     }
 
     @Atomic
-    public void edit(final org.joda.time.DateTime whenProcessedBySibs, final java.math.BigDecimal transactionsTotalAmount,
-            final java.math.BigDecimal totalCost) {
+    public void edit(final DateTime whenProcessedBySibs, final BigDecimal transactionsTotalAmount, final BigDecimal totalCost) {
         setWhenProcessedBySibs(whenProcessedBySibs);
         setTransactionsTotalAmount(transactionsTotalAmount);
         setTotalCost(totalCost);
@@ -109,7 +91,7 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     public boolean isDeletable() {
-        return getReferenceCodesSet().isEmpty();
+        return getReferenceCodesSet().isEmpty() && getSibsTransactionsSet().isEmpty();
     }
 
     @Override
@@ -124,12 +106,6 @@ public class SibsReportFile extends SibsReportFile_Base {
         super.delete();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<SibsReportFile> findAll() {
         return Bennu.getInstance().getSibsReportFilesSet().stream();
     }
@@ -138,15 +114,15 @@ public class SibsReportFile extends SibsReportFile_Base {
         return findAll().filter(i -> bennu.equals(i.getBennu()));
     }
 
-    public static Stream<SibsReportFile> findByWhenProcessedBySibs(final org.joda.time.LocalDate whenProcessedBySibs) {
+    public static Stream<SibsReportFile> findByWhenProcessedBySibs(final LocalDate whenProcessedBySibs) {
         return findAll().filter(i -> whenProcessedBySibs.equals(i.getWhenProcessedBySibs()));
     }
 
-    public static Stream<SibsReportFile> findByTransactionsTotalAmount(final java.math.BigDecimal transactionsTotalAmount) {
+    public static Stream<SibsReportFile> findByTransactionsTotalAmount(final BigDecimal transactionsTotalAmount) {
         return findAll().filter(i -> transactionsTotalAmount.equals(i.getTransactionsTotalAmount()));
     }
 
-    public static Stream<SibsReportFile> findByTotalCost(final java.math.BigDecimal totalCost) {
+    public static Stream<SibsReportFile> findByTotalCost(final BigDecimal totalCost) {
         return findAll().filter(i -> totalCost.equals(i.getTotalCost()));
     }
 
@@ -156,9 +132,8 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     @Atomic
-    public static SibsReportFile create(final org.joda.time.DateTime whenProcessedBySibs,
-            final java.math.BigDecimal transactionsTotalAmount, final java.math.BigDecimal totalCost, final String displayName,
-            final String fileName, final byte[] content) {
+    public static SibsReportFile create(final DateTime whenProcessedBySibs, final BigDecimal transactionsTotalAmount,
+            final BigDecimal totalCost, final String displayName, final String fileName, final byte[] content) {
         return new SibsReportFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, displayName, fileName, content);
 
     }
@@ -287,14 +262,4 @@ public class SibsReportFile extends SibsReportFile_Base {
         }
         this.setInfoLog(build.toString());
     }
-
-//    public static Set<SibsReportFile> findAll() {
-//        return RootDomainObject.getInstance().getSibsReportFilesSet();
-//    }
-//
-//    @Atomic
-//    public static SibsReportFile create(final SIBSImportationFileDTO reportFileDTO) {
-//        return new SibsReportFile(reportFileDTO);
-//    }
-
 }

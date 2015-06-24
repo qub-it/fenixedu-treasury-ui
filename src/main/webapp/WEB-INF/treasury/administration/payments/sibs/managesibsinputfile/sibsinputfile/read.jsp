@@ -143,7 +143,7 @@ ${portal.toolkit()}
             
              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#processModal"><spring:message
-            code="label.event.process" /> </a>&nbsp;|&nbsp;
+            code="label.event.process" /> </a>&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

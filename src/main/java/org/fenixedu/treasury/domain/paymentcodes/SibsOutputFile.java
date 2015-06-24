@@ -43,6 +43,7 @@ public class SibsOutputFile extends SibsOutputFile_Base {
             for (StackTraceElement el : e.getStackTrace()) {
                 builder.append(el.toString()).append("\n");
             }
+            file.init(file.outgoingFilename(), file.outgoingFilename(), new byte[0]);
             file.setFinantialInstitution(finantialInstitution);
             file.setLastSuccessfulExportation(lastSuccessfulSentDateTime);
             file.setErrorLog(builder.toString());
@@ -106,7 +107,6 @@ public class SibsOutputFile extends SibsOutputFile_Base {
         errorsBuilder.append("Error in : " + externalId + "-" + e.getLocalizedMessage()).append("\n");
 
         this.setErrorLog(errorsBuilder.toString());
-
     }
 
     protected void addCalculatedPaymentCodesFromEvent(final SibsOutgoingPaymentFile file,
@@ -118,7 +118,6 @@ public class SibsOutputFile extends SibsOutputFile_Base {
         } catch (Throwable e) {
             appendToErrors(errorsBuilder, referenceCode.getExternalId(), e);
         }
-
     }
 
     private String outgoingFilename() {
@@ -171,30 +170,9 @@ public class SibsOutputFile extends SibsOutputFile_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
         if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.SibsOutputFile.finantialInstitution.required");
         }
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByFinantialInstitution(getFinantialInstitution().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsOutputFile.finantialInstitution.duplicated");
-        //} 
-        //if (findByErrorLog(getErrorLog().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsOutputFile.errorLog.duplicated");
-        //} 
-        //if (findByInfoLog(getInfoLog().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsOutputFile.infoLog.duplicated");
-        //} 
-        //if (findByPrintedPaymentCodes(getPrintedPaymentCodes().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsOutputFile.printedPaymentCodes.duplicated");
-        //} 
     }
 
     @Atomic
@@ -210,12 +188,6 @@ public class SibsOutputFile extends SibsOutputFile_Base {
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
-
-        //add more logical tests for checking deletion rules
-        //if (getXPTORelation() != null)
-        //{
-        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.SibsOutputFile.cannot.be.deleted"));
-        //}
     }
 
     @Override
@@ -234,12 +206,6 @@ public class SibsOutputFile extends SibsOutputFile_Base {
         sibsOutputFile.init(finantialInstitution, errorLog, infoLog, printedPaymentCodes);
         return sibsOutputFile;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<SibsOutputFile> findAll() {
         Set<SibsOutputFile> result = new HashSet<SibsOutputFile>();
@@ -264,5 +230,4 @@ public class SibsOutputFile extends SibsOutputFile_Base {
     public static Stream<SibsOutputFile> findByPrintedPaymentCodes(final java.lang.String printedPaymentCodes) {
         return findAll().filter(i -> printedPaymentCodes.equalsIgnoreCase(i.getPrintedPaymentCodes()));
     }
-
 }

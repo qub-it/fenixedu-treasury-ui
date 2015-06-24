@@ -31,15 +31,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -67,25 +69,6 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         return "forward:" + CONTROLLER_URL + "/";
     }
 
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    //private PaymentReferenceCode getPaymentReferenceCodeBean(Model model)
-    //{
-    //	return (PaymentReferenceCode)model.asMap().get("paymentReferenceCodeBean");
-    //}
-    //				
-    //private void setPaymentReferenceCodeBean (PaymentReferenceCodeBean bean, Model model)
-    //{
-    //	model.addAttribute("paymentReferenceCodeBeanJson", getBeanJson(bean));
-    //	model.addAttribute("paymentReferenceCodeBean", bean);
-    //}
-
-    // @formatter: on
-
     private PaymentReferenceCode getPaymentReferenceCode(Model model) {
         return (PaymentReferenceCode) model.asMap().get("paymentReferenceCode");
     }
@@ -99,36 +82,28 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         paymentReferenceCode.delete();
     }
 
-//				
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(
-            @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
-            @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, Model model) {
+    public String search(@RequestParam(value = "referencecode", required = false) String referenceCode, @RequestParam(
+            value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate, @RequestParam(
+            value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate, @RequestParam(
+            value = "state", required = false) PaymentReferenceCodeStateType state, Model model) {
         List<PaymentReferenceCode> searchpaymentreferencecodeResultsDataSet =
                 filterSearchPaymentReferenceCode(referenceCode, beginDate, endDate, state);
 
-        //add the results dataSet to the model
         model.addAttribute("searchpaymentreferencecodeResultsDataSet", searchpaymentreferencecodeResultsDataSet);
         model.addAttribute("stateValues", PaymentReferenceCodeStateType.values());
         return "treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/search";
     }
 
     private Stream<PaymentReferenceCode> getSearchUniverseSearchPaymentReferenceCodeDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
         return PaymentReferenceCode.findAll();
-        //return new ArrayList<PaymentReferenceCode>().stream();
     }
 
-    private List<PaymentReferenceCode> filterSearchPaymentReferenceCode(java.lang.String referenceCode,
-            org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate, PaymentReferenceCodeStateType state) {
+    private List<PaymentReferenceCode> filterSearchPaymentReferenceCode(String referenceCode, DateTime beginDate,
+            DateTime endDate, PaymentReferenceCodeStateType state) {
 
         return getSearchUniverseSearchPaymentReferenceCodeDataSet()
                 .filter(paymentReferenceCode -> referenceCode == null || referenceCode.length() == 0
@@ -147,14 +122,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read" + "/"
-                + paymentReferenceCode.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + paymentReferenceCode.getExternalId(), model, redirectAttributes);
     }
 
-//				
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -164,7 +134,6 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         return "treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read";
     }
 
-//
     private static final String _DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
@@ -174,23 +143,19 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         setPaymentReferenceCode(paymentReferenceCode, model);
         try {
-            //call the Atomic delete function
             deletePaymentReferenceCode(paymentReferenceCode);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/", model,
-                    redirectAttributes);
-        } catch (DomainException ex) {
-            //Add error messages to the list
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        //The default mapping is the same Read View
-        return "treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/"
-                + getPaymentReferenceCode(model).getExternalId();
+        return redirect(READ_URL + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
     }
 
-//				
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
@@ -198,130 +163,40 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public String create(Model model) {
         model.addAttribute("stateValues", PaymentReferenceCodeStateType.values());
 
-        //IF ANGULAR, initialize the Bean
-        //PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
-        //this.setPaymentReferenceCodeBean(bean, model);
-
         return "treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/create";
     }
 
-//
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-//						// @formatter: off
-//			
-//				private static final String _CREATEPOSTBACK_URI ="/createpostback";
-//				public static final String  CREATEPOSTBACK_URL = CONTROLLER_URL + _createPOSTBACK_URI;
-//    			@RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
-//            		Model model) {
-//
-//        			// Do validation logic ?!?!
-//        			this.setPaymentReferenceCodeBean(bean, model);
-//        			return getBeanJson(bean);
-//    			}
-//    			
-//    			@RequestMapping(value = CREATE, method = RequestMethod.POST)
-//  			  	public String create(@RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
-//            		Model model, RedirectAttributes redirectAttributes ) {
-//
-//					/*
-//					*  Creation Logic
-//					*/
-//					
-//					try
-//					{
-//
-//				     	PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(... get properties from bean ...,model);
-//				    	
-//					//Success Validation
-//				     //Add the bean to be used in the View
-//					model.addAttribute("paymentReferenceCode",paymentReferenceCode);
-//				    return redirect("/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/" + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
-//					}
-//					catch (DomainException de)
-//					{
-//
-//						/*
-//						 * If there is any error in validation 
-//					     *
-//					     * Add a error / warning message
-//					     * 
-//					     * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//					     * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-//						
-//						addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-//				     	return create(model);
-//					}
-//    			}
-//						// @formatter: on
-
-//				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate endDate,
-            @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, @RequestParam(
-                    value = "paymentcodepool", required = false) PaymentCodePool pool, Model model,
-            RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        */
-
+    public String create(@RequestParam(value = "referencecode", required = false) String referenceCode, @RequestParam(
+            value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginDate, @RequestParam(
+            value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate, @RequestParam(
+            value = "state", required = false) PaymentReferenceCodeStateType state, @RequestParam(value = "paymentcodepool",
+            required = false) PaymentCodePool pool, Model model, RedirectAttributes redirectAttributes) {
         try {
 
             PaymentReferenceCode paymentReferenceCode =
                     createPaymentReferenceCode(referenceCode, beginDate, endDate, state, pool);
-
-            //Success Validation
-            //Add the bean to be used in the View
             model.addAttribute("paymentReferenceCode", paymentReferenceCode);
-            return redirect("/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/"
-                    + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
-            // @formatter: off
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
+            return redirect(READ_URL + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(model);
     }
 
     @Atomic
-    public PaymentReferenceCode createPaymentReferenceCode(java.lang.String referenceCode, org.joda.time.LocalDate beginDate,
-            org.joda.time.LocalDate endDate, PaymentReferenceCodeStateType state, PaymentCodePool pool) {
-
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         * 
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //PaymentReferenceCode paymentReferenceCode = paymentReferenceCode.create(fields_to_create);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
+    public PaymentReferenceCode createPaymentReferenceCode(String referenceCode, LocalDate beginDate, LocalDate endDate,
+            PaymentReferenceCodeStateType state, PaymentCodePool pool) {
         PaymentReferenceCode paymentReferenceCode =
                 PaymentReferenceCode.create(referenceCode, beginDate, endDate, state, pool, BigDecimal.ZERO, BigDecimal.ZERO);
 
         return paymentReferenceCode;
     }
 
-//				
     private static final String _UPDATE_URI = "/update/";
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
@@ -332,127 +207,48 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         return "treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/update";
     }
 
-//
-
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-//						// @formatter: off
-//			
-//				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
-//				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
-//    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, @RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
-//            		Model model) {
-//
-//        			// Do validation logic ?!?!
-//        			this.setPaymentReferenceCodeBean(bean, model);
-//        			return getBeanJson(bean);
-//    			} 
-//    			
-//    			@RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//  			  	public String update(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, @RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
-//            		Model model, RedirectAttributes redirectAttributes ) {
-//					setPaymentReferenceCode(paymentReferenceCode,model);
-//
-//				     try
-//				     {
-//					/*
-//					*  UpdateLogic here
-//					*/
-//				    		
-//						updatePaymentReferenceCode( .. get fields from bean..., model);
-//
-//					/*Succes Update */
-//
-//				    return redirect("/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/" + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
-//					}
-//					catch (DomainException de) 
-//					{
-//				
-//						/*
-//					 	* If there is any error in validation 
-//				     	*
-//				     	* Add a error / warning message
-//				     	* 
-//				     	* addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	* addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-//				     	*/
-//										     
-//				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(paymentReferenceCode,model);
-//					 
-//
-//					}
-//				}
-//						// @formatter: on    			
-//				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") PaymentReferenceCode paymentReferenceCode,
-            @RequestParam(value = "referencecode", required = false) java.lang.String referenceCode,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate endDate,
+    public String update(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, @RequestParam(value = "referencecode",
+            required = false) String referenceCode, @RequestParam(value = "begindate", required = false) @DateTimeFormat(
+            pattern = "yyyy-MM-dd") LocalDate beginDate, @RequestParam(value = "enddate", required = false) @DateTimeFormat(
+            pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(value = "state", required = false) PaymentReferenceCodeStateType state, Model model,
             RedirectAttributes redirectAttributes) {
 
         setPaymentReferenceCode(paymentReferenceCode, model);
 
         try {
-            /*
-            *  UpdateLogic here
-            */
-
             updatePaymentReferenceCode(referenceCode, beginDate, endDate, state, model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.update"), model);
 
-            /*Succes Update */
-
-            return redirect("/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/"
-                    + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-            * If there is any error in validation 
-            *
-            * Add a error / warning message
-            * 
-            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-            */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(paymentReferenceCode, model);
-
+            return redirect(READ_URL + getPaymentReferenceCode(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(paymentReferenceCode, model);
     }
 
     @Atomic
-    public void updatePaymentReferenceCode(java.lang.String referenceCode, org.joda.time.LocalDate beginDate,
-            org.joda.time.LocalDate endDate, PaymentReferenceCodeStateType state, Model model) {
-
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getPaymentReferenceCode(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
-        getPaymentReferenceCode(model).setReferenceCode(referenceCode);
-        getPaymentReferenceCode(model).setBeginDate(beginDate);
-        getPaymentReferenceCode(model).setEndDate(endDate);
-        getPaymentReferenceCode(model).setState(state);
+    public void updatePaymentReferenceCode(String referenceCode, LocalDate beginDate, LocalDate endDate,
+            PaymentReferenceCodeStateType state, Model model) {
+        getPaymentReferenceCode(model).edit(referenceCode, beginDate, endDate, state);
     }
 
     @RequestMapping(value = "/read/{oid}/anull", method = RequestMethod.POST)
     public String processReadToAnull(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, Model model,
             RedirectAttributes redirectAttributes) {
-        paymentReferenceCode.anullPaymentReferenceCode();
+        try {
+            paymentReferenceCode.anullPaymentReferenceCode();
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.update"), model);
+
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+        }
         return redirect(READ_URL + paymentReferenceCode.getExternalId(), model, redirectAttributes);
+
     }
 }

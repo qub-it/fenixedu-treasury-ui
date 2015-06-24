@@ -109,7 +109,7 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/"><spring:message code="label.event.back" /></a>
     &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> &nbsp;|&nbsp;
+            code="label.event.delete" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -157,7 +157,7 @@ ${portal.toolkit()}
                 <tbody>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.whenCreated" /></th>
-                        <td><c:out value='${sibsOutputFile.versioningCreationDate}' /></td>
+                        <td><joda:format value='${sibsOutputFile.versioningCreationDate}' style='SS'/></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.uploader" /></th>
@@ -165,7 +165,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.lastSuccessfulExportation" /></th>
-                        <td><c:out value='${sibsOutputFile.lastSuccessfulExportation}' /></td>
+                        <td><joda:format value='${sibsOutputFile.lastSuccessfulExportation}' style='SS'/></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.file" /></th>

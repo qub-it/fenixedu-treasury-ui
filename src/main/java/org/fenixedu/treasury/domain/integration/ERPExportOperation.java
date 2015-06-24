@@ -10,6 +10,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -19,9 +20,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         super();
     }
 
-    protected void init(final OperationFile file, final FinantialInstitution finantialInstitution,
-            final org.joda.time.DateTime executionDate, final boolean processed, final boolean success, final boolean corrected,
-            final java.lang.String errorLog) {
+    protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final DateTime executionDate,
+            final boolean processed, final boolean success, final boolean corrected, final String errorLog) {
         setFile(file);
         setFinantialInstitution(finantialInstitution);
         setExecutionDate(executionDate);
@@ -33,9 +33,6 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
         if (getFile() == null) {
             throw new TreasuryDomainException("error.ERPExportOperation.file.required");
         }
@@ -43,42 +40,11 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.ERPExportOperation.finantialInstitution.required");
         }
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByFile(getFile().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.file.duplicated");
-        //} 
-        //if (findByFinantialInstitution(getFinantialInstitution().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.finantialInstitution.duplicated");
-        //} 
-        //if (findByExecutionDate(getExecutionDate().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.executionDate.duplicated");
-        //} 
-        //if (findByProcessed(getProcessed().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.processed.duplicated");
-        //} 
-        //if (findBySuccess(getSuccess().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.success.duplicated");
-        //} 
-        //if (findByCorrected(getCorrected().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.corrected.duplicated");
-        //} 
-        //if (findByErrorLog(getErrorLog().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPExportOperation.errorLog.duplicated");
-        //} 
     }
 
     @Atomic
-    public void edit(final OperationFile file, final FinantialInstitution finantialInstitution,
-            final org.joda.time.DateTime executionDate, final boolean processed, final boolean success, final boolean corrected,
-            final java.lang.String errorLog) {
+    public void edit(final OperationFile file, final FinantialInstitution finantialInstitution, final DateTime executionDate,
+            final boolean processed, final boolean success, final boolean corrected, final String errorLog) {
         setFile(file);
         setFinantialInstitution(finantialInstitution);
         setExecutionDate(executionDate);
@@ -92,12 +58,6 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
-
-        //add more logical tests for checking deletion rules
-        //if (getXPTORelation() != null)
-        //{
-        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.ERPExportOperation.cannot.be.deleted"));
-        //}
     }
 
     @Override
@@ -119,8 +79,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
     @Atomic
     public static ERPExportOperation create(final byte[] data, final String filename,
-            final FinantialInstitution finantialInstitution, final org.joda.time.DateTime executionDate, final boolean processed,
-            final boolean success, final boolean corrected, final java.lang.String errorLog) {
+            final FinantialInstitution finantialInstitution, final DateTime executionDate, final boolean processed,
+            final boolean success, final boolean corrected, final String errorLog) {
         ERPExportOperation eRPExportOperation = new ERPExportOperation();
         OperationFile file;
         if (data == null) {
@@ -131,12 +91,6 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         eRPExportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected, errorLog);
         return eRPExportOperation;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<ERPExportOperation> findAll() {
         Set<ERPExportOperation> results = new HashSet<ERPExportOperation>();
@@ -157,7 +111,7 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     }
 
     public static Stream<ERPExportOperation> findByExecutionDate(final FinantialInstitution finantialInstitution,
-            final org.joda.time.DateTime executionDate) {
+            final DateTime executionDate) {
         return findByFinantialInstitution(finantialInstitution).filter(i -> executionDate.equals(i.getExecutionDate()));
     }
 
@@ -179,5 +133,4 @@ public class ERPExportOperation extends ERPExportOperation_Base {
             final java.lang.String errorLog) {
         return findByFinantialInstitution(finantialInstitution).filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
     }
-
 }

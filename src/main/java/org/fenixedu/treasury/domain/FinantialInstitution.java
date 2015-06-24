@@ -184,12 +184,6 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         series.setDefaultSeries(true);
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<FinantialInstitution> findAll() {
         return Bennu.getInstance().getFinantialInstitutionsSet().stream();
     }

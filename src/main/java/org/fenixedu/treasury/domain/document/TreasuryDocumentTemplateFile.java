@@ -84,7 +84,7 @@ public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_B
 
         setBennu(null);
         setTreasuryDocumentTemplate(null);
-        deleteDomainObject();
+        super.delete();
     }
 
     @Atomic
@@ -105,8 +105,6 @@ public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_B
 
     @Override
     public boolean isAccessible(User user) {
-        // TODOJN
         return user != null;
     }
-
 }

@@ -44,8 +44,8 @@ public class SibsConfiguration extends SibsConfiguration_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final FinantialInstitution finantialInstitution, final java.lang.String entityReferenceCode,
-            final java.lang.String sourceInstitutionId, final java.lang.String destinationInstitutionId) {
+    protected void init(final FinantialInstitution finantialInstitution, final String entityReferenceCode,
+            final String sourceInstitutionId, final String destinationInstitutionId) {
         setFinantialInstitution(finantialInstitution);
         setEntityReferenceCode(entityReferenceCode);
         setSourceInstitutionId(sourceInstitutionId);
@@ -54,91 +54,37 @@ public class SibsConfiguration extends SibsConfiguration_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
         if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.SibsConfiguration.finantialInstitution.required");
         }
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByFinantialInstitution(getFinantialInstitution().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.finantialInstitution.duplicated");
-        //}	
-        //if (findByEntityReferenceCode(getEntityReferenceCode().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.entityReferenceCode.duplicated");
-        //}	
-        //if (findBySourceInstitutionId(getSourceInstitutionId().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.sourceInstitutionId.duplicated");
-        //}	
-        //if (findByDestinationInstitutionId(getDestinationInstitutionId().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.destinationInstitutionId.duplicated");
-        //}	
-        //if (findByCode(getCode().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.code.duplicated");
-        //}	
-        //if (findByExternalURL(getExternalURL().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.externalURL.duplicated");
-        //}	
-        //if (findByUsername(getUsername().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.username.duplicated");
-        //}	
-        //if (findByPassword(getPassword().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.SibsConfiguration.password.duplicated");
-        //}	
     }
 
     @Atomic
-    public void edit(final FinantialInstitution finantialInstitution, final java.lang.String entityReferenceCode,
-            final java.lang.String sourceInstitutionId, final java.lang.String destinationInstitutionId,
-            final java.lang.String code, final java.lang.String externalURL, final java.lang.String username,
-            final java.lang.String password) {
-        setFinantialInstitution(finantialInstitution);
+    public void edit(final String entityReferenceCode, final String sourceInstitutionId, final String destinationInstitutionId) {
         setEntityReferenceCode(entityReferenceCode);
         setSourceInstitutionId(sourceInstitutionId);
         setDestinationInstitutionId(destinationInstitutionId);
-        setCode(code);
-        setExternalURL(externalURL);
-        setUsername(username);
-        setPassword(password);
+
         checkRules();
     }
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
-        super.checkForDeletionBlockers(blockers);
 
-        //add more logical tests for checking deletion rules
-        //if (getXPTORelation() != null)
-        //{
-        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.SibsConfiguration.cannot.be.deleted"));
-        //}
+        super.checkForDeletionBlockers(blockers);
     }
 
     @Atomic
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
-
-//        if (!isDeletable()) {
-//            throw new TreasuryDomainException("error.SibsConfiguration.cannot.delete");
-//        }
         setBennu(null);
-
+        setFinantialInstitution(null);
         deleteDomainObject();
     }
 
     @Atomic
-    public static SibsConfiguration create(final FinantialInstitution finantialInstitution,
-            final java.lang.String entityReferenceCode, final java.lang.String sourceInstitutionId,
-            final java.lang.String destinationInstitutionId) {
+    public static SibsConfiguration create(final FinantialInstitution finantialInstitution, final String entityReferenceCode,
+            final String sourceInstitutionId, final String destinationInstitutionId) {
         SibsConfiguration sibsConfiguration = new SibsConfiguration();
         sibsConfiguration.init(finantialInstitution, entityReferenceCode, sourceInstitutionId, destinationInstitutionId);
         return sibsConfiguration;
@@ -148,47 +94,4 @@ public class SibsConfiguration extends SibsConfiguration_Base {
         return !Strings.isNullOrEmpty(this.getDestinationInstitutionId())
                 && !Strings.isNullOrEmpty(this.getSourceInstitutionId()) && !Strings.isNullOrEmpty(this.getEntityReferenceCode());
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
-//    public static Stream<SibsConfiguration> findAll() {
-//        return Bennu.getInstance().getSibsConfigurationsSet().stream();
-//    }
-//
-//    public static Stream<SibsConfiguration> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
-//        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findByEntityReferenceCode(final java.lang.String entityReferenceCode) {
-//        return findAll().filter(i -> entityReferenceCode.equalsIgnoreCase(i.getEntityReferenceCode()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findBySourceInstitutionId(final java.lang.String sourceInstitutionId) {
-//        return findAll().filter(i -> sourceInstitutionId.equalsIgnoreCase(i.getSourceInstitutionId()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findByDestinationInstitutionId(final java.lang.String destinationInstitutionId) {
-//        return findAll().filter(i -> destinationInstitutionId.equalsIgnoreCase(i.getDestinationInstitutionId()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findByCode(final java.lang.String code) {
-//        return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findByExternalURL(final java.lang.String externalURL) {
-//        return findAll().filter(i -> externalURL.equalsIgnoreCase(i.getExternalURL()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findByUsername(final java.lang.String username) {
-//        return findAll().filter(i -> username.equalsIgnoreCase(i.getUsername()));
-//    }
-//
-//    public static Stream<SibsConfiguration> findByPassword(final java.lang.String password) {
-//        return findAll().filter(i -> password.equalsIgnoreCase(i.getPassword()));
-//    }
-
 }

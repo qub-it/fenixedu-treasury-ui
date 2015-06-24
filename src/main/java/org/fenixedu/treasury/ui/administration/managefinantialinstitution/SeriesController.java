@@ -45,8 +45,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution.series")
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 @BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(SeriesController.CONTROLLER_URL)
 public class SeriesController extends TreasuryBaseController {
@@ -64,12 +62,10 @@ public class SeriesController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         if (model.containsAttribute("finantialInstitutionId")) {
-            return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + model.asMap().get("finantialInstitutionId");
+            return "forward:" + FinantialInstitutionController.READ_URL + model.asMap().get("finantialInstitutionId");
         }
-        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
+        return "forward:" + FinantialInstitutionController.SEARCH_URL;
     }
 
     private Series getSeries(Model model) {
@@ -87,8 +83,7 @@ public class SeriesController extends TreasuryBaseController {
 
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
-        return redirect("/treasury/administration/managefinantialinstitution/series/read" + "/" + series.getExternalId(), model,
-                redirectAttributes);
+        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
@@ -105,7 +100,9 @@ public class SeriesController extends TreasuryBaseController {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(FinantialInstitutionController.READ_URL + series.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage("Error deleting the Series due to " + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
@@ -129,18 +126,18 @@ public class SeriesController extends TreasuryBaseController {
         try {
             Series series = createSeries(finantialInstitution, code, name, externSeries, certificated, legacy);
             model.addAttribute("series", series);
-            return redirect(
-                    "/treasury/administration/managefinantialinstitution/series/read/" + getSeries(model).getExternalId(), model,
-                    redirectAttributes);
+            return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(" Error creating due to " + tde.getLocalizedMessage(), model);
-            return create(finantialInstitution, model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(finantialInstitution, model);
     }
 
     @Atomic
-    public Series createSeries(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution, java.lang.String code,
-            org.fenixedu.commons.i18n.LocalizedString name, boolean externSeries, boolean certificated, boolean legacy) {
+    public Series createSeries(FinantialInstitution finantialInstitution, String code, LocalizedString name,
+            boolean externSeries, boolean certificated, boolean legacy) {
         //When creating the first series, it is the default series.
         boolean defaultSeries = finantialInstitution.getSeriesSet().size() == 0;
         Series series = Series.create(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries);
@@ -149,8 +146,7 @@ public class SeriesController extends TreasuryBaseController {
 
     @RequestMapping(value = "/search/edit/{oid}")
     public String processSearchToEditAction(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
-        return redirect("/treasury/administration/managefinantialinstitution/series/update" + "/" + series.getExternalId(),
-                model, redirectAttributes);
+        return redirect(UPDATE_URL + series.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/search/editDefault/{oid}")
@@ -158,8 +154,8 @@ public class SeriesController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setSeries(series, model);
         setSeriesDefault(model);
-        return redirect("/treasury/administration/managefinantialinstitution/finantialinstitution/read" + "/"
-                + series.getFinantialInstitution().getExternalId(), model, redirectAttributes);
+        return redirect(FinantialInstitutionController.READ_URL + series.getFinantialInstitution().getExternalId(), model,
+                redirectAttributes);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
@@ -177,14 +173,13 @@ public class SeriesController extends TreasuryBaseController {
         setSeries(series, model);
         try {
             updateSeries(code, name, externSeries, certificated, legacy, model);
-            /*Success Update */
-            return redirect(
-                    "/treasury/administration/managefinantialinstitution/series/read/" + getSeries(model).getExternalId(), model,
-                    redirectAttributes);
+            return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
-            return update(series, model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(series, model);
     }
 
     public void updateSeries(String code, LocalizedString name, boolean externSeries, boolean certificated, boolean legacy,

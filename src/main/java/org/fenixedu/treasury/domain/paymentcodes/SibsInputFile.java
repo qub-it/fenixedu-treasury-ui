@@ -51,7 +51,6 @@ public class SibsInputFile extends SibsInputFile_Base {
             String filename, byte[] content, User uploader) {
         this();
         init(finantialInstitution, whenProcessedBySIBS, displayName, filename, content, uploader);
-
     }
 
     protected void init(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
@@ -64,11 +63,6 @@ public class SibsInputFile extends SibsInputFile_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
     }
 
     @Atomic
@@ -99,12 +93,6 @@ public class SibsInputFile extends SibsInputFile_Base {
 
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<SibsInputFile> findAll() {
         Set<SibsInputFile> result = new HashSet<SibsInputFile>();
         for (FinantialInstitution finantialInstitution : FinantialInstitution.findAll().collect(Collectors.toList())) {
@@ -121,5 +109,4 @@ public class SibsInputFile extends SibsInputFile_Base {
     public boolean isAccessible(User arg0) {
         return true;
     }
-
 }

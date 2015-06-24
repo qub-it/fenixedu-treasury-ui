@@ -28,10 +28,10 @@ package org.fenixedu.treasury.ui.managetreasurysettings;
 
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -76,7 +76,6 @@ public class TreasurySettingsController extends TreasuryBaseController {
             value = "interestproduct", required = true) final Product interestProduct, @RequestParam(
             value = "advancedpaymentproduct", required = true) final Product advancedPaymentProduct, final Model model,
             final RedirectAttributes redirectAttributes) {
-
         final TreasurySettings treasurySettings = TreasurySettings.getInstance();
 
         model.addAttribute("treasurySettings", treasurySettings);
@@ -84,11 +83,10 @@ public class TreasurySettingsController extends TreasuryBaseController {
         try {
             treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct);
 
-            return redirect("/treasury/managetreasurysettings/treasurysettings/read", model, redirectAttributes);
-        } catch (final DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
+            return redirect(READ_URI, model, redirectAttributes);
+        } catch (final TreasuryDomainException tde) {
+            addErrorMessage(tde.getLocalizedMessage(), model);
             return update(model);
         }
     }
-
 }

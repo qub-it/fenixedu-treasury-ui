@@ -27,13 +27,13 @@
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfile;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -48,6 +48,8 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile.SibsReportFileController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -62,23 +64,15 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.administration.payments.sibs.manageSibsInputFile") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.manageSibsInputFile",
         accessGroup = "treasuryBackOffice")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
-//@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping(SibsInputFileController.CONTROLLER_URL)
 public class SibsInputFileController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile";
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URL + "/";
     }
-
-    // @formatter: off
 
     private SibsInputFile getSibsInputFile(Model model) {
         return (SibsInputFile) model.asMap().get("sibsInputFile");
@@ -93,31 +87,23 @@ public class SibsInputFileController extends TreasuryBaseController {
         sibsInputFile.delete();
     }
 
-//				
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.LocalDate whenProcessedBySibs, Model model) {
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate whenProcessedBySibs, Model model) {
         List<SibsInputFile> searchsibsinputfileResultsDataSet = filterSearchSibsInputFile(whenProcessedBySibs);
 
-        //add the results dataSet to the model
         model.addAttribute("searchsibsinputfileResultsDataSet", searchsibsinputfileResultsDataSet);
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search";
     }
 
     private Stream<SibsInputFile> getSearchUniverseSearchSibsInputFileDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
         return SibsInputFile.findAll();
-        //return new ArrayList<SibsInputFile>().stream();
     }
 
     private List<SibsInputFile> filterSearchSibsInputFile(org.joda.time.LocalDate whenProcessedBySibs) {
-
         return getSearchUniverseSearchSibsInputFileDataSet().filter(
                 sibsInputFile -> whenProcessedBySibs == null
                         || whenProcessedBySibs.equals(sibsInputFile.getWhenProcessedBySibs())).collect(Collectors.toList());
@@ -130,13 +116,9 @@ public class SibsInputFileController extends TreasuryBaseController {
     public String processSearchToViewAction(@PathVariable("oid") SibsInputFile sibsInputFile, Model model,
             RedirectAttributes redirectAttributes) {
 
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect(
-                "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read" + "/"
-                        + sibsInputFile.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + sibsInputFile.getExternalId(), model, redirectAttributes);
     }
 
-//				
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -146,7 +128,6 @@ public class SibsInputFileController extends TreasuryBaseController {
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read";
     }
 
-//
     private static final String _DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
@@ -155,23 +136,19 @@ public class SibsInputFileController extends TreasuryBaseController {
 
         setSibsInputFile(sibsInputFile, model);
         try {
-            //call the Atomic delete function
             deleteSibsInputFile(sibsInputFile);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect("/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/", model,
-                    redirectAttributes);
-        } catch (DomainException ex) {
-            //Add error messages to the list
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        //The default mapping is the same Read View
-        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
-                + getSibsInputFile(model).getExternalId();
+        return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
     }
 
-//				
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
@@ -181,15 +158,10 @@ public class SibsInputFileController extends TreasuryBaseController {
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create";
     }
 
-//				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs, @RequestParam(
-            value = "documentSibsInputFile", required = true) MultipartFile documentSibsInputFile, Model model,
-            RedirectAttributes redirectAttributes) {
-        /*
-        *  Creation Logic
-        */
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime whenProcessedBySibs, @RequestParam(value = "documentSibsInputFile",
+            required = true) MultipartFile documentSibsInputFile, Model model, RedirectAttributes redirectAttributes) {
 
         try {
 
@@ -200,19 +172,18 @@ public class SibsInputFileController extends TreasuryBaseController {
                         "warning.SibsInputFileController.whenprocessedbysibs.different.in.file", sibsInputFile
                                 .getWhenProcessedBySibs().toString()), model);
             }
-            //Success Validation
-            //Add the bean to be used in the View
             model.addAttribute("sibsInputFile", sibsInputFile);
             return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(model);
     }
 
     @Atomic
-    public SibsInputFile createSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, MultipartFile documentSibsInputFile) {
+    public SibsInputFile createSibsInputFile(DateTime whenProcessedBySibs, MultipartFile documentSibsInputFile) {
 
         PaymentCodePool pool = null;
 
@@ -236,7 +207,8 @@ public class SibsInputFileController extends TreasuryBaseController {
         }
 
         if (pool == null) {
-
+            throw new TreasuryDomainException(
+                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile.poolNull");
         }
 
         SibsInputFile sibsInputFile =
@@ -294,14 +266,9 @@ public class SibsInputFileController extends TreasuryBaseController {
             try {
                 response.sendRedirect(redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
-    }
-
-    public void uploadSibsInputFile(SibsInputFile sibsInputFile, MultipartFile requestFile, Model model) {
-
     }
 
     //TODOJN - how to handle this exception
@@ -313,7 +280,6 @@ public class SibsInputFileController extends TreasuryBaseController {
         }
     }
 
-//				
     private static final String _UPDATE_URI = "/update/";
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
@@ -323,42 +289,30 @@ public class SibsInputFileController extends TreasuryBaseController {
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/update";
     }
 
-//
-
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "whenprocessedbysibs",
-            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime whenProcessedBySibs,
-            @RequestParam(value = "transactionstotalamount", required = false) java.math.BigDecimal transactionsTotalAmount,
-            @RequestParam(value = "totalcost", required = false) java.math.BigDecimal totalCost, Model model,
+            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime whenProcessedBySibs,
+            @RequestParam(value = "transactionstotalamount", required = false) BigDecimal transactionsTotalAmount, @RequestParam(
+                    value = "totalcost", required = false) BigDecimal totalCost, Model model,
             RedirectAttributes redirectAttributes) {
 
         setSibsInputFile(sibsInputFile, model);
 
         try {
-            /*
-            *  UpdateLogic here
-            */
-
             updateSibsInputFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, model);
 
-            /*Succes Update */
-
-            return redirect(
-                    "/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/"
-                            + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(sibsInputFile, model);
-
+            return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(sibsInputFile, model);
     }
 
     @Atomic
     public void updateSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
             java.math.BigDecimal totalCost, Model model) {
-
         getSibsInputFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
     }
-
 }

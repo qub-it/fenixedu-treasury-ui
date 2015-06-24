@@ -28,6 +28,7 @@ package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsconfigur
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsConfiguration;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
@@ -42,19 +43,14 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.sibs.manageSibsConfiguration") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.sibs.manageSibsConfiguration",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 @BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(SibsConfigurationController.CONTROLLER_URL)
 public class SibsConfigurationController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/administration/sibs/managesibsconfiguration/sibsconfiguration";
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URL + "/";
     }
 
@@ -66,7 +62,6 @@ public class SibsConfigurationController extends TreasuryBaseController {
         model.addAttribute("sibsConfiguration", sibsConfiguration);
     }
 
-//				
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -76,7 +71,6 @@ public class SibsConfigurationController extends TreasuryBaseController {
         return "treasury/administration/payments/sibs/managesibsconfiguration/sibsconfiguration/read";
     }
 
-//				
     private static final String _UPDATE_URI = "/update/";
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
@@ -85,46 +79,32 @@ public class SibsConfigurationController extends TreasuryBaseController {
         setSibsConfiguration(sibsConfiguration, model);
 
         return "treasury/administration/payments/sibs/managesibsconfiguration/sibsconfiguration/update";
-
     }
 
-//
-//				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") SibsConfiguration sibsConfiguration, @RequestParam(value = "entityreferencecode",
-            required = false) java.lang.String entityReferenceCode,
-            @RequestParam(value = "sourceinstitutionid", required = false) java.lang.String sourceInstitutionId, @RequestParam(
-                    value = "destinationinstitutionid", required = false) java.lang.String destinationInstitutionId, Model model,
+            required = false) String entityReferenceCode,
+            @RequestParam(value = "sourceinstitutionid", required = false) String sourceInstitutionId, @RequestParam(
+                    value = "destinationinstitutionid", required = false) String destinationInstitutionId, Model model,
             RedirectAttributes redirectAttributes) {
 
         setSibsConfiguration(sibsConfiguration, model);
 
         try {
-            /*
-            *  UpdateLogic here
-            */
-
             updateSibsConfiguration(entityReferenceCode, sourceInstitutionId, destinationInstitutionId, model);
 
-            /*Succes Update */
-
             return redirect(READ_URL + getSibsConfiguration(model).getExternalId(), model, redirectAttributes);
-        } catch (Exception de) {
-            // @formatter: off
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(sibsConfiguration, model);
-
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(sibsConfiguration, model);
     }
 
     @Atomic
-    public void updateSibsConfiguration(java.lang.String entityReferenceCode, java.lang.String sourceInstitutionId,
-            java.lang.String destinationInstitutionId, Model model) {
-
-        getSibsConfiguration(model).setEntityReferenceCode(entityReferenceCode);
-        getSibsConfiguration(model).setSourceInstitutionId(sourceInstitutionId);
-        getSibsConfiguration(model).setDestinationInstitutionId(destinationInstitutionId);
+    public void updateSibsConfiguration(String entityReferenceCode, String sourceInstitutionId, String destinationInstitutionId,
+            Model model) {
+        getSibsConfiguration(model).edit(entityReferenceCode, sourceInstitutionId, destinationInstitutionId);
     }
-
 }

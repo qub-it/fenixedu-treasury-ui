@@ -91,10 +91,6 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     private void checkRules() {
-        //
-        // CHANGE_ME add more busines validations
-        //
-
         if (this.getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.required");
         }
@@ -153,10 +149,6 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             throw new TreasuryDomainException("error.PaymentCodePool.ValiddFrom.ValidTo.invalid");
         }
 
-        if (this.getFinantialInstitution() == null) {
-            throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.required");
-        }
-
         if (this.getDocumentSeriesForPayments() == null) {
             throw new TreasuryDomainException("error.PaymentCodePool.documentSeriesForPayments.required");
         }
@@ -173,14 +165,9 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public void edit(final java.lang.String name, final java.lang.Long minPaymentCodes, final java.lang.Long maxPaymentCodes,
-            final java.math.BigDecimal minAmount, final java.math.BigDecimal maxAmount, final java.lang.Boolean active,
-            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
+    public void edit(final String name, final Boolean active, DocumentNumberSeries seriesToUseInPayments,
+            PaymentMethod paymentMethod) {
         setName(name);
-        setMinReferenceCode(minPaymentCodes);
-        setMaxReferenceCode(maxPaymentCodes);
-        setMinAmount(minAmount);
-        setMaxAmount(maxAmount);
         setActive(active);
         setDocumentSeriesForPayments(seriesToUseInPayments);
         setPaymentMethod(paymentMethod);
@@ -208,7 +195,9 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
             DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
-        if (!entityReferenceCode.equals(finantialInstitution.getSibsConfiguration().getEntityReferenceCode())) {
+
+        if (finantialInstitution.getSibsConfiguration() != null
+                && !entityReferenceCode.equals(finantialInstitution.getSibsConfiguration().getEntityReferenceCode())) {
             throw new TreasuryDomainException(
                     "error.administration.payments.sibs.managepaymentcodepool.invalid.entity.reference.code.from.finantial.institution");
         }
@@ -217,12 +206,6 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                 seriesToUseInPayments, paymentMethod);
 
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<PaymentCodePool> findAll() {
         Set<PaymentCodePool> codes = new HashSet<PaymentCodePool>();
@@ -281,17 +264,10 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return _referenceCodeGenerator;
     }
 
-    @Override
-    public void setFinantialInstitution(FinantialInstitution finantialInstitution) {
-        if (this.getPaymentReferenceCodesSet().size() > 0) {
-            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
-        }
-        super.setFinantialInstitution(finantialInstitution);
-    }
-
     @Atomic
     public void setNewValidPeriod(LocalDate validFrom, LocalDate validTo) {
-        if (this.getPaymentReferenceCodesSet().size() > 0) {
+        if (this.getPaymentReferenceCodesSet().size() > 0
+                && (this.getValidFrom().compareTo(validFrom) != 0 || this.getValidTo().compareTo(validTo) != 0)) {
             throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
         }
         this.setValidFrom(validFrom);
@@ -301,7 +277,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     @Atomic
     public void changePooltype(Boolean useCheckDigit, Boolean useAmountToValidateCheckDigit) {
-        if (this.getPaymentReferenceCodesSet().size() > 0) {
+        if (this.getPaymentReferenceCodesSet().size() > 0
+                && (this.getUseCheckDigit() != useCheckDigit || this.getUseAmountToValidateCheckDigit() != useAmountToValidateCheckDigit)) {
             throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
         }
 
@@ -312,10 +289,36 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     @Atomic
     public void changeFinantialInstitution(FinantialInstitution finantialInstitution) {
-        if (this.getPaymentReferenceCodesSet().size() > 0) {
+        if (this.getPaymentReferenceCodesSet().size() > 0 && this.getFinantialInstitution() != finantialInstitution) {
             throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
         }
         this.setFinantialInstitution(finantialInstitution);
+        checkRules();
+
+    }
+
+    @Atomic
+    public void changeReferenceCode(String entityReferenceCode, Long minReferenceCode, Long maxReferenceCode) {
+        if (this.getPaymentReferenceCodesSet().size() > 0
+                && (!this.getEntityReferenceCode().equals(entityReferenceCode) || this.getMinReferenceCode() != minReferenceCode || this
+                        .getMaxReferenceCode() != maxReferenceCode)) {
+            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
+        }
+        this.setEntityReferenceCode(entityReferenceCode);
+        this.setMinReferenceCode(minReferenceCode);
+        this.setMaxReferenceCode(maxReferenceCode);
+        checkRules();
+
+    }
+
+    @Atomic
+    public void changeAmount(BigDecimal minAmount, BigDecimal maxAmount) {
+        if (this.getPaymentReferenceCodesSet().size() > 0
+                && (this.getMinAmount().compareTo(minAmount) != 0 || this.getMaxAmount().compareTo(maxAmount) != 0)) {
+            throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
+        }
+        this.setMinAmount(minAmount);
+        this.setMaxAmount(maxAmount);
         checkRules();
 
     }
@@ -346,9 +349,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     public void updatePoolReferences() {
         if (this.getUseCheckDigit()) {
-            //do nothing
         } else {
-            //check if needs to generate new references or not?!?!!
         }
 
     }

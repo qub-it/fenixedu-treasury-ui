@@ -94,8 +94,15 @@ public class Product extends Product_Base {
             throw new TreasuryDomainException("error.Product.name.required");
         }
 
-        findByCode(getCode());
-        getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
+        if (findByCode(getCode()).count() > 1) {
+            throw new TreasuryDomainException("error.Product.code.duplicated");
+        }
+
+        getName().getLocales().stream().forEach(l -> {
+            if (findByName(getName().getContent(l)).count() > 1) {
+                throw new TreasuryDomainException("error.Product.name.duplicated", l.toString());
+            };
+        });
 
         if (LocalizedStringUtil.isTrimmedEmpty(getUnitOfMeasure())) {
             throw new TreasuryDomainException("error.Product.unitOfMeasure.required");

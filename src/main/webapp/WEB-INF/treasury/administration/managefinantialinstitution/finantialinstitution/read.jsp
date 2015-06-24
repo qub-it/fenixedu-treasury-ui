@@ -158,7 +158,7 @@ ${portal.toolkit()}
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate"><spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" /></a> &nbsp;|&nbsp;
+            code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" /></a> &nbsp;
             
 </div>
 <c:if test="${not empty infoMessages}">
@@ -468,7 +468,7 @@ var searchseriesDataSet = [
                               "<spring:message code='label.Series.defaultSeries' />"
                           </c:if>
                           <c:if test="${not searchResult.defaultSeries}">
-                              "<a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.defaultSeries'/></a>"
+                              "<a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.makeDefaultSeries'/></a>"
                           </c:if>,
         "actions" :
              " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"

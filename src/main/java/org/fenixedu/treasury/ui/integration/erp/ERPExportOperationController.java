@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -53,40 +54,15 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.export", accessGroup = "treasuryManagers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
-//@BennuSpringController(value = TreasuryController.class)
 @RequestMapping(ERPExportOperationController.CONTROLLER_URL)
 public class ERPExportOperationController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/integration/erp/erpexportoperation";
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URL + "/";
     }
-
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    //private ERPExportOperationBean getERPExportOperationBean(Model model)
-    //{
-    //	return (ERPExportOperationBean)model.asMap().get("eRPExportOperationBean");
-    //}
-    //				
-    //private void setERPExportOperationBean (ERPExportOperationBean bean, Model model)
-    //{
-    //	model.addAttribute("eRPExportOperationBeanJson", getBeanJson(bean));
-    //	model.addAttribute("eRPExportOperationBean", bean);
-    //}
-
-    // @formatter: on
 
     private ERPExportOperation getERPExportOperation(Model model) {
         return (ERPExportOperation) model.asMap().get("eRPExportOperation");
@@ -98,9 +74,6 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
     @Atomic
     public void deleteERPExportOperation(ERPExportOperation eRPExportOperation) {
-        // CHANGE_ME: Do the processing for deleting the eRPExportOperation
-        // Do not catch any exception here
-
         eRPExportOperation.delete();
     }
 
@@ -110,22 +83,17 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
-            @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime fromExecutionDate,
-            @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime toExecutionDate,
+            @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime fromExecutionDate,
+            @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
             @RequestParam(value = "success", required = false) boolean success, Model model) {
         List<ERPExportOperation> searcherpexportoperationResultsDataSet =
                 filterSearchERPExportOperation(fromExecutionDate, toExecutionDate, success);
 
-        //add the results dataSet to the model
         model.addAttribute("searcherpexportoperationResultsDataSet", searcherpexportoperationResultsDataSet);
         return "treasury/integration/erp/erpexportoperation/search";
     }
 
     private Stream<ERPExportOperation> getSearchUniverseSearchERPExportOperationDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
         return ERPExportOperation.findAll();
 
     }
@@ -148,9 +116,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
             @RequestParam("eRPExportOperations") List<ERPExportOperation> eRPExportOperations, Model model,
             RedirectAttributes redirectAttributes) {
 
-        // CHANGE_ME Insert code here for processing deleteMultiple
-        // If you selected multiple exists you must choose which one to use below
-        return redirect("/treasury/integration/erp/erpexportoperation/", model, redirectAttributes);
+        return redirect(SEARCH_URL, model, redirectAttributes);
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -159,14 +125,9 @@ public class ERPExportOperationController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/integration/erp/erpexportoperation/read" + "/" + eRPExportOperation.getExternalId(), model,
-                redirectAttributes);
+        return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }
 
-//				
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -176,7 +137,6 @@ public class ERPExportOperationController extends TreasuryBaseController {
         return "treasury/integration/erp/erpexportoperation/read";
     }
 
-//
     private static final String _DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
@@ -186,25 +146,19 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
         setERPExportOperation(eRPExportOperation, model);
         try {
-            //call the Atomic delete function
             deleteERPExportOperation(eRPExportOperation);
 
-            addInfoMessage("Sucess deleting ERPExportOperation ...", model);
-            return redirect("/treasury/integration/erp/erpexportoperation/", model, redirectAttributes);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            //Add error messages to the list
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        //The default mapping is the same Read View
-        return "treasury/integration/erp/erpexportoperation/read/" + getERPExportOperation(model).getExternalId();
+        return redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes);
     }
 
-//
-
-    //
-    // This is the EventdownloadFile Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/downloadfile")
     public void processReadToDownloadFile(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
@@ -219,35 +173,25 @@ public class ERPExportOperationController extends TreasuryBaseController {
             try {
                 response.sendRedirect(redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
 
-    //
-    // This is the EventretryImport Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/retryimport")
     public String processReadToRetryImport(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
             RedirectAttributes redirectAttributes) {
         setERPExportOperation(eRPExportOperation, model);
-        //
-        /* Put here the logic for processing Event retryImport  */
-
         try {
             ERPExportOperation retryExportOperation = ERPExporter.retryExportToIntegration(eRPExportOperation);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.retry"), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 
-            //redirect to the retried export operation
             return redirect(READ_URL + retryExportOperation.getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
-
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
-        // Now choose what is the Exit Screen    
         return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }
-
 }

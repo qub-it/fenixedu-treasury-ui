@@ -28,7 +28,6 @@
 package org.fenixedu.treasury.domain.integration;
 
 import java.util.Collection;
-import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -45,8 +44,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     }
 
     protected void init(final Series paymentsIntegrationSeries, final FinantialInstitution finantialInstitution,
-            final java.lang.String code, final java.lang.String externalURL, final java.lang.String username,
-            final java.lang.String password) {
+            final String code, final String externalURL, final String username, final String password) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setFinantialInstitution(finantialInstitution);
         setCode(code);
@@ -57,9 +55,6 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
         if (getPaymentsIntegrationSeries() == null) {
             throw new TreasuryDomainException("error.ERPConfiguration.paymentsIntegrationSeries.required");
         }
@@ -67,60 +62,26 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.ERPConfiguration.finantialInstitution.required");
         }
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findByPaymentsIntegrationSeries(getPaymentsIntegrationSeries().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPConfiguration.paymentsIntegrationSeries.duplicated");
-        //} 
-        //if (findByFinantialInstitution(getFinantialInstitution().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPConfiguration.finantialInstitution.duplicated");
-        //} 
-        //if (findByCode(getCode().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPConfiguration.code.duplicated");
-        //} 
-        //if (findByExternalURL(getExternalURL().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPConfiguration.externalURL.duplicated");
-        //} 
-        //if (findByUsername(getUsername().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPConfiguration.username.duplicated");
-        //} 
-        //if (findByPassword(getPassword().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.ERPConfiguration.password.duplicated");
-        //} 
     }
 
     @Atomic
-    public void edit(final Series paymentsIntegrationSeries, final FinantialInstitution finantialInstitution,
-            final java.lang.String code, final java.lang.String externalURL, final java.lang.String username,
-            final java.lang.String password) {
+    public void edit(final Series paymentsIntegrationSeries, final String externalURL, final String username,
+            final String password, final boolean exportAnnulledRelatedDocuments) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
-        setFinantialInstitution(finantialInstitution);
-        setCode(code);
         setExternalURL(externalURL);
         setUsername(username);
         setPassword(password);
+        setExportAnnulledRelatedDocuments(exportAnnulledRelatedDocuments);
         checkRules();
     }
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
-
-        //add more logical tests for checking deletion rules
-        //if (getXPTORelation() != null)
-        //{
-        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.ERPConfiguration.cannot.be.deleted"));
-        //}
     }
 
     public boolean isDeletable() {
-        return false; // ACFSILVA
+        return true;
     }
 
     @Atomic
@@ -131,52 +92,17 @@ public class ERPConfiguration extends ERPConfiguration_Base {
             throw new TreasuryDomainException("error.ERPConfiguration.cannot.delete");
         }
         setBennu(null);
-
+        setFinantialInstitution(null);
+        setPaymentsIntegrationSeries(null);
         deleteDomainObject();
     }
 
     @Atomic
     public static ERPConfiguration create(final Series paymentsIntegrationSeries,
-            final FinantialInstitution finantialInstitution, final java.lang.String code, final java.lang.String externalURL,
-            final java.lang.String username, final java.lang.String password) {
+            final FinantialInstitution finantialInstitution, final String code, final String externalURL, final String username,
+            final String password) {
         ERPConfiguration eRPConfiguration = new ERPConfiguration();
         eRPConfiguration.init(paymentsIntegrationSeries, finantialInstitution, code, externalURL, username, password);
         return eRPConfiguration;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
-    public static Stream<ERPConfiguration> findAll() {
-        return Bennu.getInstance().getConfigurationsSet().stream().filter(c -> c instanceof ERPConfiguration)
-                .map(ERPConfiguration.class::cast);
-    }
-
-    public static Stream<ERPConfiguration> findByPaymentsIntegrationSeries(final Series paymentsIntegrationSeries) {
-        return findAll().filter(i -> paymentsIntegrationSeries.equals(i.getPaymentsIntegrationSeries()));
-    }
-
-    public static Stream<ERPConfiguration> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
-    }
-
-    public static Stream<ERPConfiguration> findByCode(final java.lang.String code) {
-        return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
-    }
-
-    public static Stream<ERPConfiguration> findByExternalURL(final java.lang.String externalURL) {
-        return findAll().filter(i -> externalURL.equalsIgnoreCase(i.getExternalURL()));
-    }
-
-    public static Stream<ERPConfiguration> findByUsername(final java.lang.String username) {
-        return findAll().filter(i -> username.equalsIgnoreCase(i.getUsername()));
-    }
-
-    public static Stream<ERPConfiguration> findByPassword(final java.lang.String password) {
-        return findAll().filter(i -> password.equalsIgnoreCase(i.getPassword()));
-    }
-
 }

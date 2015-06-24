@@ -45,7 +45,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.treasury.ui.administration.manageFinantialInstitution")
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.manageFinantialInstitution",accessGroup = "#managers")
 @BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(FinantialEntityController.CONTROLLER_URL)
 public class FinantialEntityController extends TreasuryBaseController {
@@ -63,12 +62,10 @@ public class FinantialEntityController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         if (model.containsAttribute("finantialInstitutionId")) {
-            return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/read/"
-                    + model.asMap().get("finantialInstitutionId");
+            return "forward:" + FinantialInstitutionController.READ_URL + model.asMap().get("finantialInstitutionId");
         }
-        return "forward:/treasury/administration/managefinantialinstitution/finantialinstitution/";
+        return "forward:" + FinantialInstitutionController.SEARCH_URL;
     }
 
     private FinantialEntity getFinantialEntity(Model model) {
@@ -87,9 +84,7 @@ public class FinantialEntityController extends TreasuryBaseController {
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") FinantialEntity finantialEntity, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect(
-                "/treasury/administration/managefinantialinstitution/finantialentity/read" + "/"
-                        + finantialEntity.getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + finantialEntity.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
@@ -107,11 +102,12 @@ public class FinantialEntityController extends TreasuryBaseController {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(FinantialInstitutionController.READ_URL + finantialInstitution.getExternalId(), model,
                     redirectAttributes);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage("Error deleting the FinantialEntity due to " + tde.getLocalizedMessage(), model);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-        return "treasury/administration/managefinantialinstitution/finantialentity/read/"
-                + getFinantialEntity(model).getExternalId();
+        return redirect(READ_URL + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
@@ -131,13 +127,13 @@ public class FinantialEntityController extends TreasuryBaseController {
         try {
             FinantialEntity finantialEntity = createFinantialEntity(finantialInstitution, code, name);
             model.addAttribute("finantialEntity", finantialEntity);
-            return redirect(
-                    "/treasury/administration/managefinantialinstitution/finantialentity/read/"
-                            + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(" Error creating due to " + tde.getLocalizedMessage(), model);
-            return create(finantialInstitution, model);
+            return redirect(READ_URL + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(finantialInstitution, model);
     }
 
     @Atomic
@@ -149,9 +145,7 @@ public class FinantialEntityController extends TreasuryBaseController {
     @RequestMapping(value = "/search/edit/{oid}")
     public String processSearchToEditAction(@PathVariable("oid") FinantialEntity finantialEntity, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect(
-                "/treasury/administration/managefinantialinstitution/finantialentity/update" + "/"
-                        + finantialEntity.getExternalId(), model, redirectAttributes);
+        return redirect(UPDATE_URL + finantialEntity.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
@@ -168,14 +162,13 @@ public class FinantialEntityController extends TreasuryBaseController {
         setFinantialEntity(finantialEntity, model);
         try {
             updateFinantialEntity(code, name, model);
-            /*Success Update */
-            return redirect(
-                    "/treasury/administration/managefinantialinstitution/finantialentity/read/"
-                            + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
-            return update(finantialEntity, model);
+            return redirect(READ_URL + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(finantialEntity, model);
     }
 
     @Atomic

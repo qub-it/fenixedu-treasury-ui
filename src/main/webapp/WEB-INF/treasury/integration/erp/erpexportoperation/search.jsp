@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -52,8 +52,11 @@ ${portal.toolkit()}
     </h1>
 </div>
 <%-- NAVIGATION --%>
-<div class="well well-sm" style="display:inline-block">
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument"  ><spring:message code="label.event.integration.erp.searchPendingDocuments" /></a>   
+<div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
+        class=""
+        href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument"><spring:message
+            code="label.event.integration.erp.searchPendingDocuments" /></a>
 </div>
 
 
@@ -120,10 +123,6 @@ ${portal.toolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.ERPExportOperation.executionDate" />
-                </div>
-                <div class="col-sm-1 control-label">
-                    <spring:message
                         code="label.ERPExportOperation.fromExecutionDate" />
                 </div>
                 <div class="col-sm-3">
@@ -132,7 +131,9 @@ ${portal.toolkit()}
                         name="fromexecutiondate" bennu-date
                         value='<c:out value='${param.fromexecutiondate }'/>' />
                 </div>
-                <div class="col-sm-1 control-label">
+            </div>
+            <div class="form-group row">                
+                <div class="col-sm-2 control-label">
                     <spring:message
                         code="label.ERPExportOperation.toExecutionDate" />
                 </div>
@@ -185,10 +186,10 @@ ${portal.toolkit()}
                             code="label.ERPExportOperation.executionDate" /></th>
                     <th><spring:message
                             code="label.ERPExportOperation.success" /></th>
-<%--                     <th><spring:message --%>
-<%--                             code="label.ERPExportOperation.corrected" /></th> --%>
-<%--                     <th><spring:message --%>
-<%--                             code="label.ERPExportOperation.creator" /></th> --%>
+                    <%--                     <th><spring:message --%>
+                    <%--                             code="label.ERPExportOperation.corrected" /></th> --%>
+                    <%--                     <th><spring:message --%>
+                    <%--                             code="label.ERPExportOperation.creator" /></th> --%>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -198,7 +199,7 @@ ${portal.toolkit()}
             </tbody>
         </table>
 
-     
+
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">
@@ -221,7 +222,7 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 				"creator" : "<c:out value='${searchResult.versioningCreator}'/>",
-				"executiondate" : "<c:out value='${searchResult.executionDate}'/>",
+				"executiondate" : "<joda:format value='${searchResult.executionDate}' style='SS'/>",
 "finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 // "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
