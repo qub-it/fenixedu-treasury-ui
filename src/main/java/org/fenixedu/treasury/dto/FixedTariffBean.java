@@ -148,7 +148,11 @@ public class FixedTariffBean implements IBean {
     }
 
     public void setFixedDueDate(org.joda.time.LocalDate value) {
-        fixedDueDate = value;
+        if (value == null) {
+            fixedDueDate = value;
+        } else {
+            fixedDueDate = new LocalDate();
+        }
     }
 
     public int getNumberOfDaysAfterCreationForDueDate() {

@@ -131,7 +131,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         //Use the # to filter for Business Identification (Student, Candidacy, professor, etc...)
         if (searchText.startsWith("#") && searchText.length() > 1) {
             String codeToSearch = searchText.replace("#", "");
-            return getBusinessIdentification() != null && getBusinessIdentification().contains(codeToSearch);
+            return getBusinessIdentification() != null && getBusinessIdentification().equals(codeToSearch);
         }
 
         String searchFieldClear = Normalizer.normalize(searchText.toLowerCase(), Normalizer.Form.NFD);

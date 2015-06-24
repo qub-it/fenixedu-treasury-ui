@@ -258,7 +258,7 @@ ${portal.angularToolkit()}
                 </div>
             </div>
 
-            <div class="form-group row" ng-show="object.interestRate.interestType != 'FIXED_AMOUNT' && object.applyInterests">
+            <div class="form-group row" ng-show="object.interestRate.interestType != 'FIXED_AMOUNT' && object.applyInterests && object.interestRate.interestType != 'GLOBAL_RATE'">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.InterestRate.rate" />
                 </div>

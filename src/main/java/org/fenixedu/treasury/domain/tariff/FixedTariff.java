@@ -138,7 +138,7 @@ public class FixedTariff extends FixedTariff_Base {
         if (applyInterests) {
             if (getInterestRate() == null) {
                 InterestRate rate =
-                        InterestRate.create(this, rateBean.getInterestType(), rateBean.getNumberOfDaysAfterDueDate(),
+                        InterestRate.createForTariff(this, rateBean.getInterestType(), rateBean.getNumberOfDaysAfterDueDate(),
                                 rateBean.getApplyInFirstWorkday(), rateBean.getMaximumDaysToApplyPenalty(),
                                 rateBean.getMaximumMonthsToApplyPenalty(), rateBean.getInterestFixedAmount(), rateBean.getRate());
                 setInterestRate(rate);

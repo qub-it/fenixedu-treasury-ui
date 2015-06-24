@@ -49,7 +49,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
-import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
@@ -106,10 +105,10 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
+            final Product product, final String description, final BigDecimal quantity, final InterestRate interestRate,
             final DateTime entryDateTime) {
-        init(debitNote, debtAccount, treasuryEvent, product, vat, amount, dueDate, propertiesMap, description, quantity, tariff,
-                entryDateTime);
+        init(debitNote, debtAccount, treasuryEvent, product, vat, amount, dueDate, propertiesMap, description, quantity,
+                interestRate, entryDateTime);
     }
 
     @Override
@@ -125,7 +124,11 @@ public class DebitEntry extends DebitEntry_Base {
     @Override
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
-        this.setTariff(null);
+        if (this.getInterestRate() != null) {
+            InterestRate oldRate = this.getInterestRate();
+            this.setInterestRate(null);
+            oldRate.delete();
+        }
         this.setTreasuryEvent(null);
         super.delete();
     }
@@ -139,16 +142,16 @@ public class DebitEntry extends DebitEntry_Base {
 
     protected void init(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Product product, final Vat vat, final BigDecimal amount, final LocalDate dueDate,
-            final Map<String, String> propertiesMap, final String description, final BigDecimal quantity, final Tariff tariff,
-            final DateTime entryDateTime) {
+            final Map<String, String> propertiesMap, final String description, final BigDecimal quantity,
+            final InterestRate interestRate, final DateTime entryDateTime) {
         super.init(debitNote, debtAccount, product, FinantialEntryType.DEBIT_ENTRY, vat, amount, description, quantity,
                 entryDateTime);
 
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
         setPropertiesJsonMap(propertiesMapToJson(propertiesMap));
-        setTariff(tariff);
         setExemptedAmount(BigDecimal.ZERO);
+        setInterestRate(interestRate);
 
         /* This property has academic significance but is meaningless in treasury scope
          * It is false by default but can be set with markAcademicalActBlockingSuspension
@@ -160,7 +163,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public InterestRateBean calculateAllInterestValue(final LocalDate whenToCalculate) {
-        if (!getTariff().isApplyInterests()) {
+        if (this.getInterestRate() == null) {
             return new InterestRateBean();
         }
 
@@ -168,12 +171,12 @@ public class DebitEntry extends DebitEntry_Base {
             return new InterestRateBean();
         }
 
-        return getTariff().getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate),
+        return this.getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate),
                 Maps.<LocalDate, BigDecimal> newHashMap(), getDueDate(), whenToCalculate);
     }
 
     public InterestRateBean calculateUndebitedInterestValue(final LocalDate whenToCalculate) {
-        if (!getTariff().isApplyInterests()) {
+        if (!this.isApplyInterests()) {
             return new InterestRateBean();
         }
 
@@ -181,8 +184,8 @@ public class DebitEntry extends DebitEntry_Base {
             return new InterestRateBean();
         }
 
-        return getTariff().getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(),
-                getDueDate(), whenToCalculate);
+        return getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(), getDueDate(),
+                whenToCalculate);
 
 //        if (!getTariff().getApplyInterests()) {
 //            return new InterestRateBean();
@@ -249,8 +252,12 @@ public class DebitEntry extends DebitEntry_Base {
 //        return new InterestRateBean(totalInterestAmount, getInterestValueDescription());
     }
 
+    public boolean isApplyInterests() {
+        return this.getInterestRate() != null;
+    }
+
     private boolean toCalculateInterests(final LocalDate whenToCalculate) {
-        return !whenToCalculate.isBefore(getDueDate().plusDays(getTariff().getInterestRate().getNumberOfDaysAfterDueDate()));
+        return !whenToCalculate.isBefore(getDueDate().plusDays(getInterestRate().getNumberOfDaysAfterDueDate()));
     }
 
     // CHECK
@@ -293,18 +300,18 @@ public class DebitEntry extends DebitEntry_Base {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.invalid");
         }
 
-        if (this.getTariff() == null) {
-            //HACK: Correct invalid, missing tariff
-            Tariff t =
-                    getProduct().getActiveTariffs(getDebtAccount().getFinantialInstitution(), this.getEntryDateTime())
-                            .findFirst().orElse(null);
-
-            if (t != null) {
-                this.setTariff(t);
-            } else {
-                throw new TreasuryDomainException("error.DebitEntry.tariff.invalid");
-            }
-        }
+//        if (this.getTariff() == null) {
+//            //HACK: Correct invalid, missing tariff
+//            Tariff t =
+//                    getProduct().getActiveTariffs(getDebtAccount().getFinantialInstitution(), this.getEntryDateTime())
+//                            .findFirst().orElse(null);
+//
+//            if (t != null) {
+//                this.setTariff(t);
+//            } else {
+//                throw new TreasuryDomainException("error.DebitEntry.tariff.invalid");
+//            }
+//        }
 
         // If it exempted then it must be on itself or with credit entry but not both
         if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
@@ -379,12 +386,10 @@ public class DebitEntry extends DebitEntry_Base {
         FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
         Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
 
-        Tariff activeTariff = product.getFixedTariffs(finantialInstitution).findFirst().orElse(null);
-
         DebitEntry interestEntry =
                 create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
-                        propertiesJsonToMap(getPropertiesJsonMap()), product, interest.getDescription(), BigDecimal.ONE,
-                        activeTariff, when);
+                        propertiesJsonToMap(getPropertiesJsonMap()), product, interest.getDescription(), BigDecimal.ONE, null,
+                        when);
 
         addInterestDebitEntries(interestEntry);
 
@@ -615,7 +620,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
+            final Product product, final String description, final BigDecimal quantity, final InterestRate interestRate,
             final DateTime entryDateTime) {
 
         if (product.getActive() == false) {
@@ -623,9 +628,19 @@ public class DebitEntry extends DebitEntry_Base {
         }
         DebitEntry entry =
                 new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
-                        quantity, tariff, entryDateTime);
+                        quantity, interestRate, entryDateTime);
         entry.recalculateAmountValues();
         return entry;
     }
 
+    @Atomic
+    public void changeInterestRate(InterestRate newInterestRate) {
+        if (this.getInterestRate() != null) {
+            InterestRate oldRate = this.getInterestRate();
+            this.setInterestRate(null);
+            oldRate.delete();
+        }
+        this.setInterestRate(newInterestRate);
+        checkRules();
+    }
 }

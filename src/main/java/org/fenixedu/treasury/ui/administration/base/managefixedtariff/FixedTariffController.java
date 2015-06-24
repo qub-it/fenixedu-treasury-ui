@@ -175,7 +175,7 @@ public class FixedTariffController extends TreasuryBaseController {
                         numberOfDaysAfterCreationForDueDate, false);
         if (applyInterests) {
             interestRate =
-                    InterestRate.create(fixedTariff, interestRateBean.getInterestType(),
+                    InterestRate.createForTariff(fixedTariff, interestRateBean.getInterestType(),
                             interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
                             interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
                             interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
@@ -219,7 +219,7 @@ public class FixedTariffController extends TreasuryBaseController {
                     bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.getInterestRate(),
                     bean.getProduct(), model);
             return redirect(FixedTariffController.READ_URL + getFixedTariff(model).getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tde) {
+        } catch (Exception tde) {
             setFixedTariffBean(bean, model);
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         }

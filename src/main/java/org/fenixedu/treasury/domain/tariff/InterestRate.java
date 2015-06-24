@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
@@ -51,12 +52,13 @@ public class InterestRate extends InterestRate_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected InterestRate(final Tariff tariff, final InterestType interestType, final int numberOfDaysAfterDueDate,
-            final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty,
-            final BigDecimal interestFixedAmount, final BigDecimal rate) {
+    protected InterestRate(final Tariff tariff, final DebitEntry debitEntry, final InterestType interestType,
+            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
+            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
         this();
 
         setTariff(tariff);
+        setDebitEntry(debitEntry);
         setInterestType(interestType);
         setNumberOfDaysAfterDueDate(numberOfDaysAfterDueDate);
         setApplyInFirstWorkday(applyInFirstWorkday);
@@ -69,8 +71,12 @@ public class InterestRate extends InterestRate_Base {
     }
 
     private void checkRules() {
-        if (getTariff() == null) {
-            throw new TreasuryDomainException("error.InterestRate.product.required");
+        if (getTariff() == null && getDebitEntry() == null) {
+            throw new TreasuryDomainException("error.InterestRate.product.or.debit.entry.required");
+        }
+
+        if (getTariff() != null && getDebitEntry() != null) {
+            throw new TreasuryDomainException("error.InterestRate.product.or.debit.entry.only.one");
         }
 
         if (getInterestType() == null) {
@@ -350,7 +356,7 @@ public class InterestRate extends InterestRate_Base {
 
         setBennu(null);
         setTariff(null);
-
+        setDebitEntry(null);
         deleteDomainObject();
     }
 
@@ -373,11 +379,11 @@ public class InterestRate extends InterestRate_Base {
     }
 
     @Atomic
-    public static InterestRate create(final Tariff tariff, final InterestType interestType, final int numberOfDaysAfterDueDate,
-            final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty,
-            final BigDecimal interestFixedAmount, final BigDecimal rate) {
-        return new InterestRate(tariff, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday, maximumDaysToApplyPenalty,
-                maximumMonthsToApplyPenalty, interestFixedAmount, rate);
+    public static InterestRate createForTariff(final Tariff tariff, final InterestType interestType,
+            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
+            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+        return new InterestRate(tariff, null, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
+                maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
     }
 
     public String getUiFullDescription() {
@@ -385,4 +391,13 @@ public class InterestRate extends InterestRate_Base {
         return this.getInterestType().getDescriptionI18N().getContent();
     }
 
+    @Atomic
+    public static InterestRate createForDebitEntry(DebitEntry debitEntry, InterestRate interestRate) {
+        if (interestRate != null) {
+            return new InterestRate(null, debitEntry, interestRate.getInterestType(), interestRate.getNumberOfDaysAfterDueDate(),
+                    interestRate.getApplyInFirstWorkday(), interestRate.getMaximumDaysToApplyPenalty(),
+                    interestRate.getMaximumMonthsToApplyPenalty(), interestRate.getInterestFixedAmount(), interestRate.getRate());
+        }
+        return null;
+    }
 }

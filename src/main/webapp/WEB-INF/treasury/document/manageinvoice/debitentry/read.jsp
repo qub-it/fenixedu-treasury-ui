@@ -177,13 +177,13 @@ ${portal.toolkit()}
                         <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>
                     </tr>
 
-                    <c:if test='${debitEntry.tariff.applyInterests}'>
+                    <c:if test='${ not empty debitEntry.interestRate}'>
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.interestType" /></th>
-                            <td><c:out value='${debitEntry.tariff.interestRate.uiFullDescription} % ' /></td>
+                            <td><c:out value='${debitEntry.interestRate.uiFullDescription} % ' /></td>
                         </tr>
                     </c:if>
-                    <c:if test='${not debitEntry.tariff.applyInterests}'>
+                    <c:if test='${empty debitEntry.interestRate}'>
                     <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.interestType" /></th>
                             <td><spring:message code="label.DebitEntry.no.interest.rate.applies"/></td>

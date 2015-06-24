@@ -42,6 +42,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
+import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.DebitEntryBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -173,6 +174,8 @@ public class DebitEntryController extends TreasuryBaseController {
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         if (debitNote != null) {
             bean.setDueDate(debitNote.getDocumentDueDate());
+        } else {
+            bean.setDueDate(new LocalDate());
         }
         this.setDebitEntryBean(bean, model);
 
@@ -201,7 +204,6 @@ public class DebitEntryController extends TreasuryBaseController {
                             .orElse(null);
 
             if (tariff != null) {
-                bean.setTariff(tariff);
                 if (tariff instanceof FixedTariff) {
                     bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
                             .getValueWithScale(((FixedTariff) tariff).getAmount()));
@@ -210,7 +212,6 @@ public class DebitEntryController extends TreasuryBaseController {
                     bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
                             .getValueWithScale(BigDecimal.ZERO));
                     bean.setDueDate(new LocalDate());
-
                 }
             } else {
                 return new ResponseEntity<String>(BundleUtil.getString(Constants.BUNDLE, "label.Tariff.no.valid.fixed"),
@@ -300,7 +301,13 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry =
                 DebitEntry.create(debitNote, debtAccount, treasuryEvent, activeVat.orElse(null), amount, dueDate, null, product,
-                        description, quantity, tariff.orElse(null), new DateTime());
+                        description, quantity, null, new DateTime());
+
+        InterestRate interestRate = null;
+        if (tariff.isPresent()) {
+            interestRate = InterestRate.createForDebitEntry(debitEntry, tariff.get().getInterestRate());
+        }
+
         return debitEntry;
     }
 

@@ -172,7 +172,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
             if (newFinantialInstitutions.contains(actualInst)) {
             } else {
                 DebtAccount account = getDebtAccountFor(actualInst);
-                account.closeDebtAccount();
+                if (account.isDeletable()) {
+                    account.delete();
+                } else {
+                    account.closeDebtAccount();
+                }
             }
         }
 
