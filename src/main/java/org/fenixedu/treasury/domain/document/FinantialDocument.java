@@ -43,6 +43,7 @@ import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -149,6 +150,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
             if (previousFinantialDocument != null && !previousFinantialDocument.getDocumentDate().isBefore(getDocumentDate())) {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
+            }
+        }
+        //If document is closed, all entries must be after of DocumentDate
+        if (isClosed()) {
+            LocalDate documentDate = this.getDocumentDate().toLocalDate();
+            if (getFinantialDocumentEntriesSet().stream()
+                    .anyMatch(x -> x.getEntryDateTime().toLocalDate().isBefore(documentDate))) {
+                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.after.entries.date");
             }
         }
     }

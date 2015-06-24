@@ -134,20 +134,20 @@ ${portal.toolkit()}
 						value='<c:out value='${not empty param.documentnumberseriesprefix ? param.documentnumberseriesprefix : finantialDocumentType.documentNumberSeriesPrefix }'/>' />
 				</div>
 			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.FinantialDocumentType.invoice" />
-				</div>
+<!-- 			<div class="form-group row"> -->
+<!-- 				<div class="col-sm-2 control-label"> -->
+<%-- 					<spring:message code="label.FinantialDocumentType.invoice" /> --%>
+<!-- 				</div> -->
 
-				<div class="col-sm-2">
-					<select id="finantialDocumentType_invoice" name="invoice"
-						class="form-control">
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
-					</select>
-					<script>
-		$("#finantialDocumentType_invoice").select2().select2('val', '<c:out value='${not empty param.invoice ? param.invoice : finantialDocumentType.invoice }'/>');
-	</script>
+<!-- 				<div class="col-sm-2"> -->
+<!-- 					<select id="finantialDocumentType_invoice" name="invoice" -->
+<!-- 						class="form-control"> -->
+<%-- 						<option value="false"><spring:message code="label.no" /></option> --%>
+<%-- 						<option value="true"><spring:message code="label.yes" /></option> --%>
+<!-- 					</select> -->
+<!-- 					<script> 
+ 		$("#finantialDocumentType_invoice").select2().select2('val', '<c:out value='${not empty param.invoice ? param.invoice : finantialDocumentType.invoice }'/>');
+ 	</script> -->
 				</div>
 			</div>
 			<%--	

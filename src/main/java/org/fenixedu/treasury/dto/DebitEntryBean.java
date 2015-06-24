@@ -111,8 +111,8 @@ public class DebitEntryBean implements IBean {
 
     public void setProductDataSource(List<Product> value) {
         this.productDataSource =
-                value.stream().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent()))
-                        .map(x -> {
+                value.stream().filter(x -> x.getActive())
+                        .sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent())).map(x -> {
                             TupleDataSourceBean tuple = new TupleDataSourceBean();
                             tuple.setId(x.getExternalId());
                             tuple.setText(x.getName().getContent());

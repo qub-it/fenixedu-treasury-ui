@@ -123,12 +123,12 @@ data-target="#deleteModal"><spring:message code="label.event.delete" /></a>
 		<c:out value='${finantialDocumentType.documentNumberSeriesPrefix}'/>
 	</td> 
 </tr>
-<tr>
-	<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentType.invoice"/></th> 
-	<td>
-		<c:if test="${finantialDocumentType.invoice}"><spring:message code="label.true" /></c:if><c:if test="${not finantialDocumentType.invoice}"><spring:message code="label.false" /></c:if>
-	</td> 
-</tr>
+<!-- <tr> -->
+<%-- 	<th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentType.invoice"/></th>  --%>
+<!-- 	<td> -->
+<%-- 		<c:if test="${finantialDocumentType.invoice}"><spring:message code="label.true" /></c:if><c:if test="${not finantialDocumentType.invoice}"><spring:message code="label.false" /></c:if> --%>
+<!-- 	</td>  -->
+<!-- </tr> -->
 </tbody>
 </table>
 </form>

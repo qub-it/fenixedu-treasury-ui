@@ -116,10 +116,18 @@ ${portal.toolkit()}
         <form method="post" class="form-horizontal">
             <table class="table">
                 <tbody>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.code" /></th>
-                        <td><c:out value='${customer.code}' /></td>
-                    </tr>
+                    <c:if test='${customer.isPersonCustomer() }'>
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.Customer.code" /></th>
+                            <td><c:out value='${customer.businessIdentification}' /></td>
+                        </tr>
+                    </c:if>
+                    <c:if test='${customer.isAdhocCustomer() }'>
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.Customer.code" /></th>
+                            <td><c:out value='${customer.code}' /></td>
+                        </tr>
+                    </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.name" /></th>
                         <td><c:out value='${customer.name}' /></td>
@@ -158,8 +166,10 @@ ${portal.toolkit()}
                                 </div> &nbsp;&nbsp;<a class="btn btn-default btn-xs"
                                 href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message
                                         code="label.customer.read.showdebtaccount"></spring:message></a> <c:if test="${debtAccount.totalInDebt < 0 }">
-                                    <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
+                                    <span class="label label-primary"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                     </span>
+                                </c:if> <c:if test="${debtAccount.closed}">
+                                    <span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span>
                                 </c:if>
                             </td>
                         </tr>

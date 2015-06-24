@@ -167,7 +167,7 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntryBean bean = new DebitEntryBean();
 
-        bean.setProductDataSource(Product.findAll().collect(Collectors.toList()));
+        bean.setProductDataSource(Product.findAll().filter(x -> x.getActive()).collect(Collectors.toList()));
         bean.setDebtAccount(debtAccount);
         bean.setFinantialDocument(debitNote);
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
@@ -386,8 +386,8 @@ public class DebitEntryController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity, final TreasuryEvent treasuryEvent,
-            Model model) {
+    public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity,
+            final TreasuryEvent treasuryEvent, Model model) {
 
         // @formatter: off				
         /*

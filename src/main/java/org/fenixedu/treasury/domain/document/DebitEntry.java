@@ -75,13 +75,13 @@ public class DebitEntry extends DebitEntry_Base {
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
-    
+
     public static final Comparator<DebitEntry> COMPARE_BY_DUE_DATE = new Comparator<DebitEntry>() {
 
         @Override
         public int compare(DebitEntry o1, DebitEntry o2) {
             int c = o1.getDueDate().compareTo(o2.getDueDate());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
@@ -90,20 +90,20 @@ public class DebitEntry extends DebitEntry_Base {
 
         @Override
         public int compare(DebitEntry o1, DebitEntry o2) {
-            
-            if(!o1.isEventAnnuled() && o2.isEventAnnuled()) {
+
+            if (!o1.isEventAnnuled() && o2.isEventAnnuled()) {
                 return -1;
-            } else if(o1.isEventAnnuled() && !o2.isEventAnnuled()) {
+            } else if (o1.isEventAnnuled() && !o2.isEventAnnuled()) {
                 return 1;
             }
-            
+
             int c = o1.getEntryDateTime().compareTo(o2.getEntryDateTime());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
-        
+
     };
-    
+
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
@@ -155,7 +155,7 @@ public class DebitEntry extends DebitEntry_Base {
          * service method
          */
         setAcademicalActBlockingSuspension(false);
-        
+
         checkRules();
     }
 
@@ -342,11 +342,11 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal getRemainingAmount() {
         return getOpenAmount().subtract(getPayedAmount());
     }
-    
+
     public boolean isInDebt() {
         return Constants.isPositive(getRemainingAmount());
     }
-    
+
     public boolean isDueDateExpired(final LocalDate when) {
         return getDueDate().isBefore(when);
     }
@@ -397,12 +397,12 @@ public class DebitEntry extends DebitEntry_Base {
         this.setAmount(amount);
         this.setQuantity(quantity);
         this.setTreasuryEvent(treasuryEvent);
-        
+
         recalculateAmountValues();
 
         checkRules();
     }
-    
+
     public boolean isAcademicalActBlockingSuspension() {
         return getAcademicalActBlockingSuspension();
     }
@@ -501,7 +501,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         return true;
     }
-    
+
     @Atomic
     public void markAcademicalActBlockingSuspension() {
         setAcademicalActBlockingSuspension(true);
@@ -516,7 +516,7 @@ public class DebitEntry extends DebitEntry_Base {
     public void revertEventAnnuled() {
         setEventAnnuled(false);
     }
-    
+
     private Map<LocalDate, BigDecimal> amountInDebtMap(final LocalDate paymentDate) {
         final Map<LocalDate, BigDecimal> result = new HashMap<LocalDate, BigDecimal>();
 
@@ -613,12 +613,17 @@ public class DebitEntry extends DebitEntry_Base {
 
     /* --- Creation methods --- */
 
-    public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent, final Vat vat,
-            final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap, final Product product,
-            final String description, final BigDecimal quantity, final Tariff tariff, final DateTime entryDateTime) {
+    public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
+            final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
+            final Product product, final String description, final BigDecimal quantity, final Tariff tariff,
+            final DateTime entryDateTime) {
+
+        if (product.getActive() == false) {
+            throw new TreasuryDomainException(Constants.BUNDLE, "error.DebitEntry.invalid.product.not.active");
+        }
         DebitEntry entry =
-                new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap,
-                        product, description, quantity, tariff, entryDateTime);
+                new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
+                        quantity, tariff, entryDateTime);
         entry.recalculateAmountValues();
         return entry;
     }

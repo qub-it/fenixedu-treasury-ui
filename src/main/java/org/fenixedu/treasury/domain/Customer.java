@@ -66,6 +66,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract String getPaymentReferenceBaseCode();
 
+    public abstract String getBusinessIdentification();
+
     public boolean isDeletable() {
         return true;
     }
@@ -126,8 +128,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         searchFieldClear = searchFieldClear.replaceAll("[^\\p{ASCII}]", "");
         String nameClear = Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD);
         nameClear = nameClear.replaceAll("[^\\p{ASCII}]", "");
-        return nameClear.contains(searchFieldClear) || getIdentificationNumber().contains(searchFieldClear)
-                || getFiscalNumber().contains(searchFieldClear) || getCode().contains(searchFieldClear);
+        return nameClear.contains(searchFieldClear) || getIdentificationNumber() != null
+                && getIdentificationNumber().contains(searchFieldClear) || getFiscalNumber() != null
+                && getFiscalNumber().contains(searchFieldClear) || getCode() != null && getCode().contains(searchFieldClear)
+                || getBusinessIdentification() != null && getBusinessIdentification().contains(searchFieldClear);
     }
 //    public Set<PaymentReferenceCode> getPaymentCodesBy(FinantialInstitution institution) {
 //        Set<PaymentReferenceCode> references = new HashSet<PaymentReferenceCode>();

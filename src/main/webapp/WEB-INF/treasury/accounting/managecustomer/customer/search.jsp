@@ -199,7 +199,12 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+<c:if test='${searchResult.isPersonCustomer() }'>
+"code" : "<c:out value='${searchResult.businessIdentification}'/>",
+</c:if>
+<c:if test='${searchResult.isAdhocCustomer() }'>
 "code" : "<c:out value='${searchResult.code}'/>",
+</c:if>
 "name" : "<c:out value='${searchResult.name}'/>",
 "fiscalnumber" : "<c:out value='${searchResult.fiscalNumber}'/>",
 "identificationnumber" : "<c:out value='${searchResult.identificationNumber}'/>",

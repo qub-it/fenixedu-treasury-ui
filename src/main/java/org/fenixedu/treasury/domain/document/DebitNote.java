@@ -121,14 +121,14 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public void edit(final DebtAccount payorDebtAccount, final org.joda.time.LocalDate documentDate,
-            LocalDate documentDueDate, final java.lang.String originDocumentNumber) {
+    public void edit(final DebtAccount payorDebtAccount, final org.joda.time.LocalDate documentDate, LocalDate documentDueDate,
+            final java.lang.String originDocumentNumber) {
 
         setPayorDebtAccount(payorDebtAccount);
         setDocumentDate(documentDate.toDateTimeAtStartOfDay());
         setDocumentDueDate(documentDueDate);
         setOriginDocumentNumber(originDocumentNumber);
-        
+
         checkRules();
     }
 

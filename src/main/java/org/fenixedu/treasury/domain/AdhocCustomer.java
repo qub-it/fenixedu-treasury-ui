@@ -182,4 +182,9 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return CustomerType.findByCode("ADHOC").findFirst().orElse(null);
     }
 
+    @Override
+    public String getBusinessIdentification() {
+        return this.getIdentificationNumber();
+    }
+
 }

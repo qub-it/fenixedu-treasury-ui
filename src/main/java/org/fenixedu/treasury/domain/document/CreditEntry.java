@@ -172,6 +172,7 @@ public class CreditEntry extends CreditEntry_Base {
     public static CreditEntry createFromExemption(final TreasuryExemption treasuryExemption,
             final FinantialDocument finantialDocument, final String description, final BigDecimal amount,
             final DateTime entryDateTime, final DebitEntry debitEntry) {
+
         if (treasuryExemption == null) {
             throw new TreasuryDomainException("error.CreditEntry.createFromExemption.requires.treasuryExemption");
         }

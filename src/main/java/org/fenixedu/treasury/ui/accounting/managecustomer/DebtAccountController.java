@@ -266,11 +266,12 @@ public class DebtAccountController extends TreasuryBaseController {
         List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
         List<DebtAccount> debtAccounts =
                 DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
+                        .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
                         .collect(Collectors.toList());
 
         for (DebtAccount debt : debtAccounts) {
             bean.add(new TupleDataSourceBean(debt.getExternalId(), debt.getCustomer().getName() + " ["
-                    + debt.getFinantialInstitution().getCode() + "] (" + debt.getCustomer().getIdentificationNumber() + ")"));
+                    + debt.getFinantialInstitution().getCode() + "] (" + debt.getCustomer().getBusinessIdentification() + ")"));
         }
         return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
     }
