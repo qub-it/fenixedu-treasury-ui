@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -45,6 +46,16 @@ import pt.ist.fenixframework.Atomic;
 
 public class FinantialEntity extends FinantialEntity_Base {
 
+    public static final Comparator<FinantialEntity> COMPARE_BY_NAME = new Comparator<FinantialEntity>() {
+
+        @Override
+        public int compare(FinantialEntity o1, FinantialEntity o2) {
+            int c = o1.getName().getContent().compareTo(o2.getName().getContent());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+    
     protected FinantialEntity() {
         super();
         setBennu(Bennu.getInstance());

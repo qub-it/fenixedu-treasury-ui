@@ -51,7 +51,7 @@ import pt.ist.fenixframework.Atomic;
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 // or
 // @BennuSpringController(value=TreasuryController.class)
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer", accessGroup = "#managers")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer", accessGroup = "treasuryFrontOffice")
 @RequestMapping(CustomerController.CONTROLLER_URI)
 public class CustomerController extends TreasuryBaseController {
     public static final String CONTROLLER_URI = "/treasury/accounting/managecustomer/customer";

@@ -32,7 +32,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @RequestMapping("/treasury")
-@SpringApplication(group = "#managers", path = "treasury", title = "title.treasury", hint = "Treasury Application")
+@SpringApplication(group = "treasuryFrontOffice | treasuryBackOffice | treasuryManagers", path = "treasury", title = "title.treasury", hint = "Treasury Application")
 //@SpringFunctionality(app = TreasuryController.class, title = "title.treasury")
 public class TreasuryController {
 

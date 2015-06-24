@@ -48,7 +48,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageVatExemptionReason") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageVatExemptionReason",
-        accessGroup = "#managers")
+        accessGroup = "treasuryManagers")
 @RequestMapping(VatExemptionReasonController.CONTROLLER_URL)
 public class VatExemptionReasonController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/administration/base/managevatexemptionreason/vatexemptionreason";

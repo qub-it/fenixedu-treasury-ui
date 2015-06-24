@@ -53,7 +53,7 @@ import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCode")
 @SpringFunctionality(app = TreasuryController.class,
-        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "#managers")
+        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "treasuryFrontOffice")
 //@BennuSpringController(value=TreasuryController.class) 
 @RequestMapping(PaymentReferenceCodeController.CONTROLLER_URL)
 public class PaymentReferenceCodeController extends TreasuryBaseController {

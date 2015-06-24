@@ -49,7 +49,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.manageExemption") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageExemptionType",
-        accessGroup = "#managers")
+        accessGroup = "treasuryManagers")
 @RequestMapping(TreasuryExemptionTypeController.CONTROLLER_URL)
 public class TreasuryExemptionTypeController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/document/manageexemption/treasuryexemptiontype";

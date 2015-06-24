@@ -48,7 +48,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageCurrency") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageCurrency",
-        accessGroup = "#managers")
+        accessGroup = "treasuryManagers")
 @RequestMapping(CurrencyController.CONTROLLER_URL)
 public class CurrencyController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/administration/base/managecurrency/currency";

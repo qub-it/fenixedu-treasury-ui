@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.manageTreasurySettings", accessGroup = "#managers")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.manageTreasurySettings", accessGroup = "treasuryManagers")
 @RequestMapping(TreasurySettingsController.CONTROLLER_URL)
 public class TreasurySettingsController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/managetreasurysettings/treasurysettings";

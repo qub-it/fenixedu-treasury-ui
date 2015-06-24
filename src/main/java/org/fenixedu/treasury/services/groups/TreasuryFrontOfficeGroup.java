@@ -7,30 +7,31 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.CustomGroup;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryManagersGroup;
+import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryFrontOfficeGroup;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Objects;
 
-@GroupOperator("treasuryManagers")
-public class TreasuryManagersGroup extends CustomGroup {
-    private static final long serialVersionUID = -933441447959188208L;
+@GroupOperator("treasuryFrontOffice")
+public class TreasuryFrontOfficeGroup extends CustomGroup {
 
-    private static final TreasuryManagersGroup INSTANCE = new TreasuryManagersGroup();
+    private static final long serialVersionUID = 1L;
 
-    private TreasuryManagersGroup() {
+    private static final TreasuryFrontOfficeGroup INSTANCE = new TreasuryFrontOfficeGroup();
+
+    private TreasuryFrontOfficeGroup() {
         super();
     }
 
-    public static TreasuryManagersGroup get() {
+    public static TreasuryFrontOfficeGroup get() {
         return INSTANCE;
     }
-
+    
     @Override
     public Set<User> getMembers() {
-        return TreasuryAccessControlAPI.getTreasuryManagerMembers();
+        return TreasuryAccessControlAPI.getFrontOfficeMembers();
     }
 
     @Override
@@ -40,7 +41,7 @@ public class TreasuryManagersGroup extends CustomGroup {
 
     @Override
     public String getPresentationName() {
-        return BundleUtil.getString(Constants.BUNDLE, "label.TreasuryManagersGroup.description");
+        return BundleUtil.getString(Constants.BUNDLE, "label.TreasuryFrontOfficeGroup.description");
     }
 
     @Override
@@ -55,17 +56,17 @@ public class TreasuryManagersGroup extends CustomGroup {
 
     @Override
     public PersistentGroup toPersistentGroup() {
-        return PersistentTreasuryManagersGroup.getInstance();
+        return PersistentTreasuryFrontOfficeGroup.getInstance();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(TreasuryManagersGroup.class);
+        return Objects.hashCode(TreasuryFrontOfficeGroup.class);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof TreasuryManagersGroup;
+        return obj instanceof TreasuryFrontOfficeGroup;
     }
 
 }

@@ -61,7 +61,7 @@ import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.payments.sibs.manageSibsInputFile") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.manageSibsInputFile",
-        accessGroup = "#managers")
+        accessGroup = "treasuryBackOffice")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value=TreasuryController.class) 
