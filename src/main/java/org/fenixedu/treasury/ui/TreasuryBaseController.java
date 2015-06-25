@@ -39,7 +39,11 @@ import org.fenixedu.bennu.DomainObjectAdapter;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.LocalizedStringAdapter;
 import org.fenixedu.bennu.MunicipalityAdapter;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -125,6 +129,33 @@ public class TreasuryBaseController {
         // model.addAttribute(<attr1Key>, <attr1Value>);
         // ....
     }
+
+    protected void assertUserIsManager(Model model, RedirectAttributes redirectAttributes) {
+        if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
+            return;
+        } else {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"), model);
+            redirect("/treasury", model, redirectAttributes);
+        }
+    }
+
+//    protected void assertUserIsBackOfficeMember(Model model, RedirectAttributes redirectAttributes) {
+//        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) {
+//            return;
+//        } else {
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"), model);
+//            redirect("/treasury", model, redirectAttributes);
+//        }
+//    }
+//
+//    protected void assertUserIsFrontOfficeMember(Model model, RedirectAttributes redirectAttributes) {
+//        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser())) {
+//            return;
+//        } else {
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"), model);
+//            redirect("/treasury", model, redirectAttributes);
+//        }
+//    }
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {

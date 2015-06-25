@@ -27,12 +27,14 @@
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -165,5 +167,37 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     public DocumentNumberSeries createDocumentNumberSeries(Series series, FinantialDocumentType finantialDocumentType) {
         DocumentNumberSeries documentNumberSeries = DocumentNumberSeries.create(finantialDocumentType, series);
         return documentNumberSeries;
+    }
+
+    @RequestMapping(value = "/read/{oid}/closepreparingdocuments", method = RequestMethod.GET)
+    public String processReadToCloseAllPreparingDocuments(
+            @RequestParam(value = "oid", required = true) DocumentNumberSeries documentNumberSeries, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        assertUserIsManager(model, redirectAttributes);
+
+        setDocumentNumberSeries(documentNumberSeries, model);
+        try {
+
+            Set<FinantialDocument> preparingDocuments =
+                    documentNumberSeries.getFinantialDocumentsSet().stream().filter(x -> x.isPreparing())
+                            .collect(Collectors.toSet());
+
+            for (FinantialDocument document : preparingDocuments) {
+                try {
+                    document.closeDocument();
+                } catch (Exception ex) {
+                    addErrorMessage(
+                            "O documento " + document.getUiDocumentNumber() + " não foi encerrado : " + ex.getLocalizedMessage(),
+                            model);
+                }
+            }
+            return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
+        } catch (Exception de) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.error.close.preparing.documents") + de.getLocalizedMessage(),
+                    model);
+            return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
+        }
     }
 }

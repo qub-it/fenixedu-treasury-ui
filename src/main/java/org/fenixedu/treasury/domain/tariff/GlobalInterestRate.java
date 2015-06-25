@@ -110,10 +110,10 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
         return Bennu.getInstance().getGlobalInterestRatesSet().stream();
     }
 
-    protected static Stream<GlobalInterestRate> findByYear(final int year) {
+    public static Stream<GlobalInterestRate> findByYear(final int year) {
         return findAll().filter(i -> year == i.getYear());
     }
-    
+
     public static Optional<GlobalInterestRate> findUniqueByYear(final int year) {
         return findByYear(year).findFirst();
     }

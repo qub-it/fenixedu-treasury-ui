@@ -84,12 +84,19 @@ ${portal.toolkit()}
     <a class="" href="#" data-toggle="modal" data-target="#deleteModal">
         <spring:message code="label.event.delete" />
     </a> 
-    &nbsp; 
-    <c:if test="${ documentNumberSeries.finantialDocumentType.type == 'DEBIT_NOTE'}">		 
-        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?documentnumberseries=${documentNumberSeries.externalId}">
-            <spring:message code="label.event.createdebitnote" /></a>
-    </c:if>
+    &nbsp;|&nbsp; 
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+    &nbsp;
+    <a class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documentnumberseries/read/${documentNumberSeries.series.externalId}/closepreparingdocuments">
+        <spring:message code="label.event.administration.managefinantialinstitution.documentnumberseries.closepreparingdocuments" />
+    </a> 
+    &nbsp;|&nbsp;  
+<%--     <c:if test="${ documentNumberSeries.finantialDocumentType.type == 'DEBIT_NOTE'}">		  --%>
+<!--         |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" -->
+<%--             href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?documentnumberseries=${documentNumberSeries.externalId}"> --%>
+<%--             <spring:message code="label.event.createdebitnote" /></a> --%>
+<%--     </c:if> --%>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
