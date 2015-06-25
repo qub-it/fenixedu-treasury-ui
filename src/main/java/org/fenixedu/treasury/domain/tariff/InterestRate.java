@@ -34,6 +34,7 @@ import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
@@ -191,8 +192,7 @@ public class InterestRate extends InterestRate_Base {
             }
         }
 
-        result.setInterestAmount(getTariff().getFinantialEntity().getFinantialInstitution().getCurrency()
-                .getValueWithScale(totalInterestAmount));
+        result.setInterestAmount(getRelatedCurrency().getValueWithScale(totalInterestAmount));
         result.setNumberOfMonths(totalOfMonths);
 
         return result;
@@ -319,17 +319,24 @@ public class InterestRate extends InterestRate_Base {
             }
         }
 
-        result.setInterestAmount(getTariff().getFinantialEntity().getFinantialInstitution().getCurrency()
-                .getValueWithScale(totalInterestAmount));
+        result.setInterestAmount(getRelatedCurrency().getValueWithScale(totalInterestAmount));
         result.setNumberOfDays(totalOfDays);
 
         return result;
     }
 
+    private Currency getRelatedCurrency() {
+        if (getTariff() != null) {
+            return getTariff().getFinantialEntity().getFinantialInstitution().getCurrency();
+        } else if (getDebitEntry() != null) {
+            return getDebitEntry().getCurrency();
+        }
+        return null;
+    }
+
     private InterestRateBean calculedForFixedAmount() {
         final InterestRateBean result = new InterestRateBean(getInterestType());
-        result.setInterestAmount(getTariff().getFinantialEntity().getFinantialInstitution().getCurrency()
-                .getValueWithScale(getInterestFixedAmount()));
+        result.setInterestAmount(this.getRelatedCurrency().getValueWithScale(getInterestFixedAmount()));
 
         return result;
     }
