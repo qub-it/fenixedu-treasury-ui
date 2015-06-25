@@ -300,12 +300,12 @@ ${portal.angularToolkit()}
             <div class="panel-footer">
                 <c:if test="${ settlementNoteBean.reimbursementNote }">
                     <p align="right">
-                        <b><spring:message code="label.reimbursementTotal" /></b>: {{ getTotal() + " " + currencySymbol }}
+                        <b><spring:message code="label.SettlementNote.reimbursementTotal" /></b>: {{ getTotal() + " " + currencySymbol }}
                     </p>
                 </c:if>
                 <c:if test="${ not settlementNoteBean.reimbursementNote }">
                     <p align="right">
-                        <b><spring:message code="label.paymentTotal" /></b>: {{ getTotal() + " " + currencySymbol }}
+                        <b><spring:message code="label.SettlementNote.paymentTotal" /></b>: {{ getTotal() + " " + currencySymbol }}
                     </p>
                 </c:if>
             </div>
