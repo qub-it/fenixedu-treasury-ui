@@ -1549,7 +1549,7 @@ relation InterestRateBennu {
 
 relation InterestRateTariff {
 	tariff.Tariff playsRole tariff {
-		multiplicity 1..1;
+		multiplicity 0..1;
 	}
 	
 	tariff.InterestRate playsRole interestRate {

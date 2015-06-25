@@ -628,7 +628,14 @@ public class DebitEntry extends DebitEntry_Base {
         }
         DebitEntry entry =
                 new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
-                        quantity, interestRate, entryDateTime);
+                        quantity, null, entryDateTime);
+        if (interestRate != null) {
+            //Clone InterestRate if needed
+            if (interestRate.getTariff() != null || interestRate.getDebitEntry() != entry) {
+                InterestRate copyInterest = InterestRate.createForDebitEntry(entry, interestRate);
+                entry.changeInterestRate(copyInterest);
+            }
+        }
         entry.recalculateAmountValues();
         return entry;
     }

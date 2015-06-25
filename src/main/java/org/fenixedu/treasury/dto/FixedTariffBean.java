@@ -49,7 +49,6 @@ public class FixedTariffBean implements IBean {
     private List<TupleDataSourceBean> productDataSource;
     private VatType vatType;
     private List<TupleDataSourceBean> vatTypeDataSource;
-    private FixedTariffInterestRateBean interestRate;
     private FinantialEntity finantialEntity;
     private List<TupleDataSourceBean> finantialEntityDataSource;
     private java.math.BigDecimal amount;
@@ -60,6 +59,7 @@ public class FixedTariffBean implements IBean {
     private org.joda.time.LocalDate fixedDueDate;
     private int numberOfDaysAfterCreationForDueDate;
     private boolean applyInterests;
+    private FixedTariffInterestRateBean interestRate;
 
     public Product getProduct() {
         return product;

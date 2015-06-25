@@ -60,6 +60,8 @@ public class DebitEntryBean implements IBean {
     private java.lang.String description;
     private java.math.BigDecimal amount;
     private java.math.BigDecimal quantity;
+    private boolean applyInterests;
+    private FixedTariffInterestRateBean interestRate;
 
     public TreasuryEvent getTreasuryEvent() {
         return treasuryEvent;
@@ -240,6 +242,22 @@ public class DebitEntryBean implements IBean {
         this.setDescription(debitEntry.getDescription());
         this.setAmount(debitEntry.getAmount());
         this.setQuantity(debitEntry.getQuantity());
+    }
+
+    public boolean isApplyInterests() {
+        return applyInterests;
+    }
+
+    public void setApplyInterests(boolean applyInterests) {
+        this.applyInterests = applyInterests;
+    }
+
+    public FixedTariffInterestRateBean getInterestRate() {
+        return interestRate;
+    }
+
+    public void setInterestRate(FixedTariffInterestRateBean interestRate) {
+        this.interestRate = interestRate;
     }
 
 }

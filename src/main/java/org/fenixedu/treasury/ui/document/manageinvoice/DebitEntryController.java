@@ -45,6 +45,7 @@ import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.fenixedu.treasury.dto.DebitEntryBean;
+import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
@@ -208,6 +209,13 @@ public class DebitEntryController extends TreasuryBaseController {
                     bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
                             .getValueWithScale(((FixedTariff) tariff).getAmount()));
                     bean.setDueDate(((FixedTariff) tariff).calculateDueDate(bean.getFinantialDocument()));
+                    if (tariff.getInterestRate() != null) {
+                        bean.setApplyInterests(true);
+                        bean.setInterestRate(new FixedTariffInterestRateBean(tariff.getInterestRate()));
+                    } else {
+                        bean.setApplyInterests(false);
+                        bean.setInterestRate(null);
+                    }
                 } else {
                     bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
                             .getValueWithScale(BigDecimal.ZERO));
