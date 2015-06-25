@@ -155,8 +155,8 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.CreditNote.documentDate" />
                 </datatables:columnHead>
-<%--                <c:out value="${creditNote.documentDate}" /> --%>
-                <joda:format value="${creditNote.documentDate}" style="S-" />
+               <c:out value='${creditNote.documentDate.toString("YYYY-MM-dd")}' />
+<%--                 <joda:format value="${creditNote.documentDate}" style="S-" /> --%>
             </datatables:column>
             <datatables:column>
                 <datatables:columnHead>

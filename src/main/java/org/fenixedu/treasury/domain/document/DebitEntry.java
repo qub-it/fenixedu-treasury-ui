@@ -217,7 +217,7 @@ public class DebitEntry extends DebitEntry_Base {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.required");
         }
 
-        if (this.getFinantialDocument() != null && this.getDueDate().isBefore(this.getFinantialDocument().getDocumentDueDate())) {
+        if (this.getEntryDateTime() != null && this.getDueDate().isBefore(this.getEntryDateTime().toLocalDate())) {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.invalid");
         }
 

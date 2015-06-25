@@ -49,6 +49,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.base.Strings;
+
 //@Component("org.fenixedu.treasury.ui.administration.document.manageDocumentNumberSeries") <-- Use for duplicate controller name disambiguation
 @BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(DocumentNumberSeriesController.CONTROLLER_URL)
@@ -170,9 +172,8 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/closepreparingdocuments", method = RequestMethod.GET)
-    public String processReadToCloseAllPreparingDocuments(
-            @RequestParam(value = "oid", required = true) DocumentNumberSeries documentNumberSeries, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processReadToCloseAllPreparingDocuments(@PathVariable("oid") DocumentNumberSeries documentNumberSeries,
+            Model model, RedirectAttributes redirectAttributes) {
 
         assertUserIsManager(model, redirectAttributes);
 
@@ -180,8 +181,20 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         try {
 
             Set<FinantialDocument> preparingDocuments =
-                    documentNumberSeries.getFinantialDocumentsSet().stream().filter(x -> x.isPreparing())
-                            .collect(Collectors.toSet());
+                    documentNumberSeries
+                            .getFinantialDocumentsSet()
+                            .stream()
+                            .filter(x -> x.isPreparing())
+                            .sorted((x, y) -> {
+                                //compare by date, and in the date, by the "original document number" if exists
+                                if (x.getDocumentDate().compareTo(y.getDocumentDate()) == 0) {
+                                    if (Strings.isNullOrEmpty(x.getOriginDocumentNumber())
+                                            && Strings.isNullOrEmpty(y.getOriginDocumentNumber())) {
+                                        return x.getOriginDocumentNumber().compareToIgnoreCase(y.getOriginDocumentNumber());
+                                    }
+                                }
+                                return x.getDocumentDate().compareTo(y.getDocumentDate());
+                            }).collect(Collectors.toSet());
 
             for (FinantialDocument document : preparingDocuments) {
                 try {

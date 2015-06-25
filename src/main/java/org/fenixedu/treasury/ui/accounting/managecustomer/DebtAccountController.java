@@ -26,10 +26,12 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
+import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
@@ -179,4 +181,37 @@ public class DebtAccountController extends TreasuryBaseController {
         }
         return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
     }
+
+    private static final String _SEARCHOPENDEBTACCOUNTS_URI = "/searchopendebtaccounts";
+    public static final String SEARCHOPENDEBTACCOUNTS_URL = CONTROLLER_URL + _SEARCHOPENDEBTACCOUNTS_URI;
+
+    @RequestMapping(value = _SEARCHOPENDEBTACCOUNTS_URI)
+    public String searchOpenDebtAccounts(Model model) {
+        List<DebtAccount> searchopendebtaccountsResultsDataSet = filterSearchOpenDebtAccounts();
+
+        //add the results dataSet to the model
+        model.addAttribute("searchopendebtaccountsResultsDataSet", searchopendebtaccountsResultsDataSet);
+        return "treasury/accounting/managecustomer/debtaccount/searchopendebtaccounts";
+    }
+
+    private Stream<DebtAccount> getSearchUniverseSearchOpenDebtAccountsDataSet() {
+        return DebtAccount.findAll().filter(x -> x.getTotalInDebt().compareTo(BigDecimal.ZERO) != 0);
+    }
+
+    private List<DebtAccount> filterSearchOpenDebtAccounts() {
+
+        return getSearchUniverseSearchOpenDebtAccountsDataSet().collect(Collectors.toList());
+    }
+
+    private static final String _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI = "/searchopendebtaccounts/view/";
+    public static final String SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URL = CONTROLLER_URL
+            + _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI;
+
+    @RequestMapping(value = _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI + "{oid}")
+    public String processSearchOpenDebtAccountsToViewAction(@PathVariable("oid") DebtAccount debtAccount, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+    }
+
 }

@@ -43,7 +43,6 @@ import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -141,7 +140,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             throw new TreasuryDomainException("error.FinantialDocument.closed.but.empty.entries");
         }
 
-        if (isClosed()) {
+        if (isClosed() && getDocumentNumberSeries().getSeries().getCertificated()) {
             final Stream<? extends FinantialDocument> stream =
                     findClosedUntilDocumentNumberExclusive(getDocumentNumberSeries(), getDocumentNumber());
 
@@ -152,14 +151,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
             }
         }
-        //If document is closed, all entries must be after of DocumentDate
-        if (isClosed()) {
-            LocalDate documentDate = this.getDocumentDate().toLocalDate();
-            if (getFinantialDocumentEntriesSet().stream()
-                    .anyMatch(x -> x.getEntryDateTime().toLocalDate().isBefore(documentDate))) {
-                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.after.entries.date");
-            }
-        }
+        //If document is closed, all entries must be after of DocumentDate - RSP, this rule is invalid. I can create a debit entry today, and add it to a Document in a month
+//        if (isClosed()) {
+//            LocalDate documentDate = this.getDocumentDate().toLocalDate();
+//            if (getFinantialDocumentEntriesSet().stream()
+//                    .anyMatch(x -> x.getEntryDateTime().toLocalDate().isBefore(documentDate))) {
+//                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.after.entries.date");
+//            }
+//        }
     }
 
     protected boolean isDocumentEmpty() {

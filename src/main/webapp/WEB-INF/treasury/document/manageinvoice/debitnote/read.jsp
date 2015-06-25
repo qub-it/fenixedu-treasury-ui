@@ -359,8 +359,12 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.DebitNote.documentDate" /></th>
-                        <td><c:out
-                                value='${debitNote.documentDate.toString("YYYY-MM-dd")}' /></td>
+                        <td>
+                        <joda:format
+                                value="${debitNote.documentDate}"
+                                style="SS" />
+<%--                         <c:out value='${debitNote.documentDate.toString("YYYY-MM-dd")}' /> --%>
+                                </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
@@ -502,12 +506,9 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                 <c:out value="${debitEntry.vat.taxRate}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
-                <form method="get"
-<%--                 <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}"> --%>
                     <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}" type="submit" class="btn btn-default btn-xs">
                         <spring:message code="label.view" />
                     </a>
-<!--                 </form> -->
             </datatables:column>
         </datatables:table>
         <script>

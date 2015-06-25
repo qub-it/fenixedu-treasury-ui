@@ -88,15 +88,10 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
     &nbsp;
     <a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documentnumberseries/read/${documentNumberSeries.series.externalId}/closepreparingdocuments">
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documentnumberseries/read/${documentNumberSeries.externalId}/closepreparingdocuments">
         <spring:message code="label.event.administration.managefinantialinstitution.documentnumberseries.closepreparingdocuments" />
     </a> 
     &nbsp;|&nbsp;  
-<%--     <c:if test="${ documentNumberSeries.finantialDocumentType.type == 'DEBIT_NOTE'}">		  --%>
-<!--         |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" -->
-<%--             href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL %>?documentnumberseries=${documentNumberSeries.externalId}"> --%>
-<%--             <spring:message code="label.event.createdebitnote" /></a> --%>
-<%--     </c:if> --%>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -179,7 +174,8 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.FinantialDocument.documentDate" />
                 </datatables:columnHead>
-                <joda:format value="${document.documentDate}" style="S-" />
+                 <c:out value='${document.documentDate.toString("YYYY-MM-dd")}' />
+<%--                 <joda:format value="${document.documentDate}" style="S-" /> --%>
             </datatables:column>
             <datatables:column>
                 <datatables:columnHead>
@@ -205,26 +201,25 @@ ${portal.toolkit()}
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <c:if test="${document.isDebitNote() }">
-                    <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${document.externalId}">
+                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${document.externalId}">
                 </c:if>
                 <c:if test="${document.isCreditNote() }">
-                    <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${document.externalId}">
+                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${document.externalId}">
                 </c:if>
                 <c:if test="${document.isSettlementNote() }">
-                    <form method="get" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${document.externalId}">
+                    <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${document.externalId}">
                 </c:if>
-                <button type="submit" class="btn btn-default btn-xs">
+               
                     <spring:message code="label.view" />
-                </button>
-                </form>
+                </a>
             </datatables:column>
         </datatables:table>
         <script>
 									createDataTables(
 											'finantialDocuments',
+											true,
 											false,
-											false,
-											false,
+											true,
 											"${pageContext.request.contextPath}",
 											"${datatablesI18NUrl}");
 								</script>
