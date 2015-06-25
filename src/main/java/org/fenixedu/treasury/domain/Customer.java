@@ -44,7 +44,6 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     protected Customer() {
         super();
         setBennu(Bennu.getInstance());
-
     }
 
     public abstract String getCode();
@@ -69,7 +68,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getBusinessIdentification();
 
     public boolean isDeletable() {
-        return true;
+        return false;
     }
 
     public boolean isPersonCustomer() {
@@ -109,12 +108,6 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         }
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<? extends Customer> findAll() {
         return Bennu.getInstance().getCustomersSet().stream();
     }
@@ -143,14 +136,4 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
                 && getFiscalNumber().contains(searchFieldClear) || getCode() != null && getCode().contains(searchFieldClear)
                 || getBusinessIdentification() != null && getBusinessIdentification().contains(searchFieldClear);
     }
-//    public Set<PaymentReferenceCode> getPaymentCodesBy(FinantialInstitution institution) {
-//        Set<PaymentReferenceCode> references = new HashSet<PaymentReferenceCode>();
-//
-//        DebtAccount debt = DebtAccount.findUnique(institution, this).orElse(null);
-//        if (debt != null) {
-//            debt.getFinantialDocumentsSet().forEach(x -> references.addAll(x.getPaymentCodesSet()));
-//            debt.getInvoiceEntrySet().forEach(x -> references.addAll(x.getPaymentCodesSet()));
-//        }
-//        return references;
-//    }
 }

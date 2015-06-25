@@ -27,15 +27,12 @@
 
 package org.fenixedu.treasury.dto;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -72,10 +69,10 @@ public class DebtAccountBean implements IBean {
     public void setFinantialInstitutionDataSource(List<FinantialInstitution> value) {
         this.finantialInstitutionDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public Customer getCustomer() {
@@ -93,10 +90,10 @@ public class DebtAccountBean implements IBean {
     public void setCustomerDataSource(List<Customer> value) {
         this.customerDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public Set<FinantialDocument> getFinantialDocuments() {
@@ -114,10 +111,10 @@ public class DebtAccountBean implements IBean {
     public void setFinantialDocumentsDataSource(List<FinantialDocument> value) {
         this.finantialDocumentsDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public List<Invoice> getInvoice() {
@@ -135,10 +132,10 @@ public class DebtAccountBean implements IBean {
     public void setInvoiceDataSource(List<Invoice> value) {
         this.invoiceDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public List<InvoiceEntry> getInvoiceEntry() {
@@ -156,14 +153,13 @@ public class DebtAccountBean implements IBean {
     public void setInvoiceEntryDataSource(List<InvoiceEntry> value) {
         this.invoiceEntryDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public DebtAccountBean() {
-
     }
 
     public DebtAccountBean(DebtAccount debtAccount) {
@@ -171,5 +167,4 @@ public class DebtAccountBean implements IBean {
         this.setCustomer(debtAccount.getCustomer());
         this.setFinantialDocuments(debtAccount.getFinantialDocumentsSet());
     }
-
 }

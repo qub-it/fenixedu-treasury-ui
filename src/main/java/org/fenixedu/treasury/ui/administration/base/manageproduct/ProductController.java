@@ -86,13 +86,11 @@ public class ProductController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
-            required = false) LocalizedString name,
-            @RequestParam(value = "unitofmeasure", required = false) LocalizedString unitOfMeasure, @RequestParam(
-                    value = "active", required = false) Boolean active, Model model) {
-        List<Product> searchproductResultsDataSet = filterSearchProduct(code, name, unitOfMeasure, active);
+    public String search(@RequestParam(value = "productgroup", required = false) ProductGroup productGroup, Model model) {
+        List<Product> searchproductResultsDataSet = filterSearchProduct(productGroup);
 
         model.addAttribute("searchproductResultsDataSet", searchproductResultsDataSet);
+        model.addAttribute("Product_productGroup_options", ProductGroup.readAll());
         return "treasury/administration/base/manageproduct/product/search";
     }
 
@@ -101,9 +99,10 @@ public class ProductController extends TreasuryBaseController {
                 .collect(Collectors.toList());
     }
 
-    private List<Product> filterSearchProduct(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name,
-            org.fenixedu.commons.i18n.LocalizedString unitOfMeasure, Boolean active) {
-        return getSearchUniverseSearchProductDataSet().stream().collect(Collectors.toList());
+    private List<Product> filterSearchProduct(ProductGroup productGroup) {
+        return getSearchUniverseSearchProductDataSet().stream()
+                .filter(product -> productGroup == null || productGroup == product.getProductGroup())
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/search/view/{oid}")

@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -47,8 +48,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",accessGroup = "#managers")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 @BennuSpringController(value = CustomerController.class)
 @RequestMapping(AdhocCustomerController.CONTROLLER_URL)
 public class AdhocCustomerController extends TreasuryBaseController {
@@ -74,7 +73,6 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
     @Atomic
     public void deleteAdhocCustomer(AdhocCustomer adhocCustomer) {
-        // adhocCustomer.delete();
     }
 
     private AdhocCustomer getAdhocCustomerBean(Model model) {
@@ -128,7 +126,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
         try {
 
             AdhocCustomer adhocCustomer =
-                    createAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber());
+                    createAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
+                            bean.getIdentificationNumber());
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             setAdhocCustomer(adhocCustomer, model);
 
@@ -142,8 +141,10 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @Atomic
-    public AdhocCustomer createAdhocCustomer(String code, String name, String fiscalNumber, String identificationNumber) {
-        AdhocCustomer adhocCustomer = AdhocCustomer.create(code, fiscalNumber, name, "", "", "", "", identificationNumber);
+    public AdhocCustomer createAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
+            String identificationNumber) {
+        AdhocCustomer adhocCustomer =
+                AdhocCustomer.create(customerType, code, fiscalNumber, name, "", "", "", "", identificationNumber);
         return adhocCustomer;
     }
 
@@ -169,10 +170,10 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
         try {
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
-            updateAdhocCustomer(bean.getCode(), bean.getName(), bean.getFiscalNumber(), bean.getIdentificationNumber(), model);
+            updateAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
+                    bean.getIdentificationNumber(), model);
 
-            return redirect("/treasury/accounting/managecustomer/customer/read/" + getAdhocCustomer(model).getExternalId(),
-                    model, redirectAttributes); //ACFSILVA
+            return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
@@ -182,8 +183,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateAdhocCustomer(String code, String name, String fiscalNumber, String identificationNumber, Model model) {
-        getAdhocCustomer(model).edit(code, fiscalNumber, name, "", "", "", "", identificationNumber);
+    public void updateAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
+            String identificationNumber, Model model) {
+        getAdhocCustomer(model).edit(customerType, code, fiscalNumber, name, "", "", "", "", identificationNumber);
     }
-
 }

@@ -1,5 +1,7 @@
-<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.AdhocCustomerController"%>
-<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
+<%@page
+    import="org.fenixedu.treasury.ui.accounting.managecustomer.AdhocCustomerController"%>
+<%@page
+    import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -128,12 +130,28 @@ ${portal.toolkit()}
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
+                    <spring:message code="label.Customer.customerType" />
+                </div>
+
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select id="customer_customerType"
+                        class="js-example-basic-single"
+                        name="customertype">
+                        <option value=""></option>
+                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
                     <spring:message code="label.Customer" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="customer_name" class="form-control" type="text" name="customer"
-                        value='<c:out value='${param.customer}'/>' />
+                    <input id="customer_name" class="form-control"
+                        type="text" name="customer"
+                        value='<c:out value='${param.name}'/>' />
                 </div>
             </div>
         </div>
@@ -146,15 +164,16 @@ ${portal.toolkit()}
 
 
 <c:if test="${limit_exceeded}">
-        <div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning" role="alert">
 
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span>
-                <spring:message code="label.limitexceeded" arguments="<%= CustomerController.SEARCH_CUSTOMER_LIST_LIMIT_SIZE %>" />
-            </p>
+        <p>
+            <span class="glyphicon glyphicon-exclamation-sign"
+                aria-hidden="true">&nbsp;</span>
+            <spring:message code="label.limitexceeded"
+                arguments="<%=CustomerController.SEARCH_CUSTOMER_LIST_LIMIT_SIZE%>" />
+        </p>
 
-        </div>
+    </div>
 </c:if>
 <c:choose>
     <c:when test="${not empty searchcustomerResultsDataSet}">
@@ -216,6 +235,26 @@ ${portal.toolkit()}
     ];
 	
 	$(document).ready(function() {
+		customerType_options = [
+		                        <c:forEach items="${Customer_customerType_options}" var="element"> 
+		                            {
+		                                text :"<c:out value='${element.name.content}'/>", 
+		                                id : "<c:out value='${element.externalId}'/>"
+		                            },
+		                        </c:forEach>
+		                    ];
+		                    
+		                    $("#customer_customerType").select2(
+		                        {
+		                            data : customerType_options,
+		                        }     
+		                            );
+		                            
+		                            <%-- If it's not from parameter change param.productGroup to whatever you need (it's the externalId already) --%>
+		                            $("#customer_customerType").select2().select2('val', '<c:out value='${param.customertype}'/>');
+
+
+		
 		var table = $('#searchcustomerTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
 		},

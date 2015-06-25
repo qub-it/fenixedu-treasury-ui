@@ -27,32 +27,32 @@
 
 package org.fenixedu.treasury.dto;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 
 public class AdhocCustomerBean implements IBean {
 
-    private java.lang.String code;
-    private java.lang.String fiscalNumber;
-    private java.lang.String identificationNumber;
-    private java.lang.String name;
-    private java.lang.String address;
-    private java.lang.String districtSubdivision;
-    private java.lang.String zipCode;
-    private java.lang.String countryCode;
+    private CustomerType customerType;
+    private String code;
+    private String fiscalNumber;
+    private String identificationNumber;
+    private String name;
+    private String address;
+    private String districtSubdivision;
+    private String zipCode;
+    private String countryCode;
     private List<FinantialInstitution> finantialInstitutions;
 
     private List<TupleDataSourceBean> finantialInstitutionsDataSource;
+    private List<TupleDataSourceBean> customerTypesDataSource;
 
-    public java.lang.String getCode() {
+    public String getCode() {
         return code;
     }
 
@@ -116,12 +116,22 @@ public class AdhocCustomerBean implements IBean {
         countryCode = value;
     }
 
+    public CustomerType getCustomerType() {
+        return customerType;
+    }
+
+    public void setCustomerType(CustomerType customerType) {
+        this.customerType = customerType;
+    }
+
     public AdhocCustomerBean() {
         this.setFinantialInstitutionsDataSource(FinantialInstitution.findAll().collect(Collectors.toList()));
+        this.setCustomerTypesDataSource(CustomerType.findAll().collect(Collectors.toList()));
     }
 
     public AdhocCustomerBean(AdhocCustomer adhocCustomer) {
         this();
+        this.setCustomerType(adhocCustomer.getCustomerType());
         this.setCode(adhocCustomer.getCode());
         this.setFiscalNumber(adhocCustomer.getFiscalNumber());
         this.setIdentificationNumber(adhocCustomer.getIdentificationNumber());
@@ -155,4 +165,16 @@ public class AdhocCustomerBean implements IBean {
         }).collect(Collectors.toList());
     }
 
+    public List<TupleDataSourceBean> getCustomerTypesDataSource() {
+        return customerTypesDataSource;
+    }
+
+    public void setCustomerTypesDataSource(List<CustomerType> customerTypesDataSource) {
+        this.customerTypesDataSource = customerTypesDataSource.stream().map(customerType -> {
+            TupleDataSourceBean customerTypeDataSource = new TupleDataSourceBean();
+            customerTypeDataSource.setId(customerType.getExternalId());
+            customerTypeDataSource.setText(customerType.getName().getContent());
+            return customerTypeDataSource;
+        }).collect(Collectors.toList());
+    }
 }

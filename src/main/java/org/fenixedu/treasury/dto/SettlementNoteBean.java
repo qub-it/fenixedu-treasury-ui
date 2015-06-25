@@ -265,10 +265,6 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.reimbursementNote = reimbursementNote;
     }
 
-    ///////////////////
-    // Inner classes //
-    ///////////////////
-
     public class DebitEntryBean implements IBean, Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -515,5 +511,4 @@ public class SettlementNoteBean implements IBean, Serializable {
             this.amountWithVat = amountWithVat.subtract(partialAmountWithVat);
         }
     }
-
 }

@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.document;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -119,6 +118,11 @@ public class DebitEntry extends DebitEntry_Base {
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
+
+        getInterestDebitEntriesSet().stream().forEach(ide -> ide.checkForDeletionBlockers(blockers));
+        if (!getCreditEntriesSet().isEmpty()) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.cannot.delete.has.creditentries"));
+        }
     }
 
     @Override
@@ -130,6 +134,7 @@ public class DebitEntry extends DebitEntry_Base {
             oldRate.delete();
         }
         this.setTreasuryEvent(null);
+
         super.delete();
     }
 
@@ -186,70 +191,6 @@ public class DebitEntry extends DebitEntry_Base {
 
         return getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(), getDueDate(),
                 whenToCalculate);
-
-//        if (!getTariff().getApplyInterests()) {
-//            return new InterestRateBean();
-//        }
-//        InterestRate rate = getTariff().getInterestRate();
-//
-//        Map<DateTime, BigDecimal> payments = new HashMap<DateTime, BigDecimal>();
-//        for (SettlementEntry settlementEntry : getSettlementEntriesSet()) {
-//            payments.put(settlementEntry.getFinantialDocument().getDocumentDate(), settlementEntry.getAmount());
-//        }
-//        payments.put(whenToCalculate.toDateTimeAtStartOfDay(), BigDecimal.ZERO);
-//
-//        BigDecimal totalAmount = getAmount();
-//        LocalDate startDate = getDueDate();
-//        List<BigDecimal> interests = new ArrayList<BigDecimal>();
-//        for (DateTime date : payments.keySet().stream().sorted().collect(Collectors.toList())) {
-//            BigDecimal interestAmount = BigDecimal.ZERO;
-//            switch (rate.getInterestType()) {
-//            case DAILY:
-//                if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
-//                    int daysInPreviousYear = Days.daysBetween(startDate, new LocalDate(startDate.getYear(), 12, 31)).getDays();
-//                    //TODOJN - get global rate
-//                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInPreviousYear, rate));
-//                    int daysInNextYear = Days.daysBetween(new LocalDate(date.getYear(), 1, 1), date.toLocalDate()).getDays();
-//                    interestAmount = interestAmount.add(getRateValueUsingDiaryRate(totalAmount, daysInNextYear, rate));
-//                } else {
-//                    int days = Days.daysBetween(startDate, date.toLocalDate()).getDays();
-//                    interestAmount = getRateValueUsingDiaryRate(totalAmount, days, rate);
-//                }
-//                break;
-//            case MONTHLY:
-//                if (startDate.getYear() != date.getYear() /*&& rate.isGlobalRate()*/) {
-//                    int monthsInPreviousYear = 12 - startDate.getMonthOfYear();
-//                    //TODOJN - get global rate
-//                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInPreviousYear, rate));
-//                    int monthsInNextYear = date.getMonthOfYear() - 1;
-//                    interestAmount = interestAmount.add(getRateValueUsingMonthlyRate(totalAmount, monthsInNextYear, rate));
-//                } else {
-//                    int months = date.getMonthOfYear() - startDate.getMonthOfYear();
-//                    interestAmount = getRateValueUsingMonthlyRate(totalAmount, months, rate);
-//                }
-//                break;
-//            case FIXED_AMOUNT:
-//                interestAmount = rate.getInterestFixedAmount();
-//                break;
-//            }
-//            interests.add(interestAmount);
-//            totalAmount = totalAmount.subtract(payments.get(date));
-//            startDate = date.toLocalDate();
-//        }
-//
-//        BigDecimal totalInterestAmount = BigDecimal.ZERO;
-//        for (BigDecimal interestAmount : interests) {
-//            totalInterestAmount = totalInterestAmount.add(interestAmount);
-//        }
-//
-//        for (DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
-//            totalInterestAmount = totalInterestAmount.subtract(interestDebitEntry.getAmountWithVat());
-//        }
-//        if (getVatRate().compareTo(BigDecimal.ZERO) != 0) {
-//            totalInterestAmount = totalInterestAmount.multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100))));
-//        }
-//        totalInterestAmount = totalInterestAmount.setScale(2, RoundingMode.HALF_EVEN);
-//        return new InterestRateBean(totalInterestAmount, getInterestValueDescription());
     }
 
     public boolean isApplyInterests() {
@@ -258,26 +199,6 @@ public class DebitEntry extends DebitEntry_Base {
 
     private boolean toCalculateInterests(final LocalDate whenToCalculate) {
         return !whenToCalculate.isBefore(getDueDate().plusDays(getInterestRate().getNumberOfDaysAfterDueDate()));
-    }
-
-    // CHECK
-    private BigDecimal getRateValueUsingDiaryRate(BigDecimal amount, int days, InterestRate rate) {
-        int numberOfDays =
-                rate.getMaximumDaysToApplyPenalty() < days - rate.getNumberOfDaysAfterDueDate() ? rate
-                        .getMaximumDaysToApplyPenalty() : days - rate.getNumberOfDaysAfterDueDate();
-        return amount.multiply(BigDecimal.valueOf(numberOfDays)).divide(BigDecimal.valueOf(365), 2, RoundingMode.HALF_EVEN)
-                .multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
-    }
-
-    // CHECK
-    private BigDecimal getRateValueUsingMonthlyRate(BigDecimal amount, int months, InterestRate rate) {
-        int numberOfMonths = rate.getMaximumMonthsToApplyPenalty() < months ? rate.getMaximumMonthsToApplyPenalty() : months;
-        return amount.multiply(BigDecimal.valueOf(numberOfMonths)).multiply(rate.getRate().divide(BigDecimal.valueOf(100)));
-    }
-
-    public String getInterestValueDescription() {
-        // TODOJN 
-        return new String();
     }
 
     @Override
@@ -299,19 +220,6 @@ public class DebitEntry extends DebitEntry_Base {
         if (this.getFinantialDocument() != null && this.getDueDate().isBefore(this.getFinantialDocument().getDocumentDueDate())) {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.invalid");
         }
-
-//        if (this.getTariff() == null) {
-//            //HACK: Correct invalid, missing tariff
-//            Tariff t =
-//                    getProduct().getActiveTariffs(getDebtAccount().getFinantialInstitution(), this.getEntryDateTime())
-//                            .findFirst().orElse(null);
-//
-//            if (t != null) {
-//                this.setTariff(t);
-//            } else {
-//                throw new TreasuryDomainException("error.DebitEntry.tariff.invalid");
-//            }
-//        }
 
         // If it exempted then it must be on itself or with credit entry but not both
         if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
@@ -570,14 +478,6 @@ public class DebitEntry extends DebitEntry_Base {
         return gson.fromJson(propertiesMapJson, stringStringMapType);
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
-    /* --- Find methods --- */
-
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
     }
@@ -606,8 +506,6 @@ public class DebitEntry extends DebitEntry_Base {
         return findEventAnnuled(treasuryEvent).filter(d -> d.getProduct() == product);
     }
 
-    /* --- Math methods --- */
-
     public static BigDecimal payedAmount(final TreasuryEvent treasuryEvent) {
         return findActive(treasuryEvent).map(d -> d.getPayedAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
     }
@@ -615,8 +513,6 @@ public class DebitEntry extends DebitEntry_Base {
     public static BigDecimal remainingAmountToPay(final TreasuryEvent treasuryEvent) {
         return findActive(treasuryEvent).map(d -> d.getRemainingAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
     }
-
-    /* --- Creation methods --- */
 
     public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,

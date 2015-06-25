@@ -50,9 +50,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return true;
     }
 
-    protected AdhocCustomer(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
+    protected AdhocCustomer(final CustomerType customerType, final String code, final String fiscalNumber, final String name,
+            final String address, final String districtSubdivision, final String zipCode, final String countryCode,
+            final String identificationNumber) {
         this();
+        setCustomerType(customerType);
         setCode(code);
         setFiscalNumber(fiscalNumber);
         setName(name);
@@ -77,8 +79,10 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Atomic
-    public void edit(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
+    public void edit(final CustomerType customerType, final String code, final String fiscalNumber, final String name,
+            final String address, final String districtSubdivision, final String zipCode, final String countryCode,
+            final String identificationNumber) {
+        setCustomerType(customerType);
         setFiscalNumber(fiscalNumber);
         setName(name);
         setAddress(address);
@@ -92,7 +96,8 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     @Override
     public boolean isDeletable() {
-        return getDebtAccountsSet().isEmpty();
+        return getDebtAccountsSet().stream().allMatch(da -> da.isDeletable());
+
     }
 
     @Override
@@ -109,9 +114,10 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Atomic
-    public static AdhocCustomer create(final String code, final String fiscalNumber, final String name, final String address,
-            final String districtSubdivision, final String zipCode, final String countryCode, final String identificationNumber) {
-        return new AdhocCustomer(code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
+    public static AdhocCustomer create(final CustomerType customerType, final String code, final String fiscalNumber,
+            final String name, final String address, final String districtSubdivision, final String zipCode,
+            final String countryCode, final String identificationNumber) {
+        return new AdhocCustomer(customerType, code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
                 identificationNumber);
     }
 
@@ -120,31 +126,31 @@ public class AdhocCustomer extends AdhocCustomer_Base {
                 .map(AdhocCustomer.class::cast);
     }
 
-    public static Stream<AdhocCustomer> findByFiscalNumber(final java.lang.String fiscalNumber) {
+    public static Stream<AdhocCustomer> findByFiscalNumber(final String fiscalNumber) {
         return findAll().filter(i -> fiscalNumber.equalsIgnoreCase(i.getFiscalNumber()));
     }
 
-    public static Stream<AdhocCustomer> findByName(final java.lang.String name) {
+    public static Stream<AdhocCustomer> findByName(final String name) {
         return findAll().filter(i -> name.equalsIgnoreCase(i.getName()));
     }
 
-    public static Stream<AdhocCustomer> findByAddress(final java.lang.String address) {
+    public static Stream<AdhocCustomer> findByAddress(final String address) {
         return findAll().filter(i -> address.equalsIgnoreCase(i.getAddress()));
     }
 
-    public static Stream<AdhocCustomer> findByDistrictSubdivision(final java.lang.String districtSubdivision) {
+    public static Stream<AdhocCustomer> findByDistrictSubdivision(final String districtSubdivision) {
         return findAll().filter(i -> districtSubdivision.equalsIgnoreCase(i.getDistrictSubdivision()));
     }
 
-    public static Stream<AdhocCustomer> findByZipCode(final java.lang.String zipCode) {
+    public static Stream<AdhocCustomer> findByZipCode(final String zipCode) {
         return findAll().filter(i -> zipCode.equalsIgnoreCase(i.getZipCode()));
     }
 
-    public static Stream<AdhocCustomer> findByCountryCode(final java.lang.String countryCode) {
+    public static Stream<AdhocCustomer> findByCountryCode(final String countryCode) {
         return findAll().filter(i -> countryCode.equalsIgnoreCase(i.getCountryCode()));
     }
 
-    public static Stream<AdhocCustomer> findByCode(final java.lang.String code) {
+    public static Stream<AdhocCustomer> findByCode(final String code) {
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
@@ -179,7 +185,6 @@ public class AdhocCustomer extends AdhocCustomer_Base {
                 }
             }
         }
-
     }
 
     public static CustomerType getDefaultCustomerType() {

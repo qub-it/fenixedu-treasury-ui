@@ -83,28 +83,6 @@ public class DebtAccount extends DebtAccount_Base {
         return getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
 
-//	public boolean isDeletable() {
-//		return true;
-//	}
-//
-//	@Atomic
-//	public void delete() {
-//		if (!isDeletable()) {
-//			throw new TreasuryDomainException("error.DebtAccount.cannot.delete");
-//		}
-//
-//		setBennu(null);
-//
-//		deleteDomainObject();
-//	}
-//
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<DebtAccount> findAll() {
         return Bennu.getInstance().getDebtAccountsSet().stream();
     }
@@ -129,7 +107,6 @@ public class DebtAccount extends DebtAccount_Base {
             existing.setClosed(false);
             return existing;
         }
-        //return a new DebtAccount
         return new DebtAccount(finantialInstitution, customer);
     }
 
@@ -185,10 +162,7 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public boolean isDeletable() {
-        if (this.getFinantialDocumentsSet().size() > 0) {
-            return false;
-        }
-        return true;
+        return this.getFinantialDocumentsSet().isEmpty() && getInvoiceEntrySet().isEmpty() && getTreasuryEventsSet().isEmpty();
     }
 
     @Atomic

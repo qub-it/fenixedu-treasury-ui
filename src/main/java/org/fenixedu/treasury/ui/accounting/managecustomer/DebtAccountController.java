@@ -37,7 +37,6 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.dto.DebtAccountBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
@@ -55,9 +54,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer2", accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 @BennuSpringController(value = CustomerController.class)
 @RequestMapping(DebtAccountController.CONTROLLER_URL)
 public class DebtAccountController extends TreasuryBaseController {
@@ -73,30 +69,10 @@ public class DebtAccountController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:/treasury/accounting/managecustomer/customer/";
+        return "forward:" + CustomerController.SEARCH_FULL_URI;
     }
-
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    private DebtAccount getDebtAccountBean(Model model) {
-        return (DebtAccount) model.asMap().get("debtAccountBean");
-    }
-
-    private void setDebtAccountBean(DebtAccountBean bean, Model model) {
-        model.addAttribute("debtAccountBeanJson", getBeanJson(bean));
-        model.addAttribute("debtAccountBean", bean);
-    }
-
-    // @formatter: on
 
     private DebtAccount getDebtAccount(Model model) {
         return (DebtAccount) model.asMap().get("debtAccount");
@@ -108,13 +84,9 @@ public class DebtAccountController extends TreasuryBaseController {
 
     @Atomic
     public void deleteDebtAccount(DebtAccount debtAccount) {
-        // CHANGE_ME: Do the processing for deleting the debtAccount
-        // Do not catch any exception here
-
         // debtAccount.delete();
     }
 
-//				
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebtAccount debtAccount, Model model) {
 
@@ -141,123 +113,54 @@ public class DebtAccountController extends TreasuryBaseController {
         return "treasury/accounting/managecustomer/debtaccount/read";
     }
 
-//
-
-    //
-    // This is the EventcreatePayment Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/createreimbursement")
     public String processReadToCreateReimbursement(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event createPayment    */
-        //doSomething();
-
-        // Now choose what is the Exit Screen    
         return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + true,
                 model, redirectAttributes);
     }
 
-    //
-    // This is the EventcreatePayment Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/createpayment")
     public String processReadToCreatePayment(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event createPayment 	*/
-        //doSomething();
-
-        // Now choose what is the Exit Screen	 
         return redirect(
                 SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + false, model,
                 redirectAttributes);
     }
 
-    //
-    // This is the EventcreateDebtEntry Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/createdebtentry")
     public String processReadToCreateDebtEntry(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event createDebtEntry 	*/
-        //doSomething();
-
-        // Now choose what is the Exit Screen	 
         return redirect(DebitEntryController.CREATE_URL + getDebtAccount(model).getExternalId(), model, redirectAttributes);
     }
 
-    //
-    // This is the EventcreateDebtEntry Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/createdebitnote")
     public String processReadToCreateDebitNote(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event createDebtEntry  */
-        //doSomething();
-
-        // Now choose what is the Exit Screen    
         return redirect(DebitNoteController.CREATE_URL + "?debtaccount=" + getDebtAccount(model).getExternalId(), model,
                 redirectAttributes);
     }
 
-    //
-    // This is the EventcreateDebtEntry Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/createcreditnote")
     public String processReadToCreateCreditNote(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event createDebtEntry  */
-        //doSomething();
-
-        // Now choose what is the Exit Screen    
         return redirect(CreditNoteController.CREATE_URL + "?debtaccount=" + getDebtAccount(model).getExternalId(), model,
                 redirectAttributes);
     }
 
-    //
-    // This is the EventcreateExemption Method for Screen read
-    //
-    @RequestMapping(value = "/read/{oid}/createexemption")
-    public String processReadToCreateExemption(@PathVariable("oid") DebtAccount debtAccount, Model model,
-            RedirectAttributes redirectAttributes) {
-        setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event createExemption 	*/
-        //doSomething();
-
-        // Now choose what is the Exit Screen	 
-        return redirect("/treasury/document/manageexemption/treasuryexemption/create/" + getDebtAccount(model).getExternalId(),
-                model, redirectAttributes);
-    }
-
-    //
-    // This is the EventreadEvent Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/readevent")
     public String processReadToReadEvent(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-//
-        /* Put here the logic for processing Event readEvent  */
-        //doSomething();
-
-        // Now choose what is the Exit Screen    
         return redirect(TreasuryEventController.SEARCH_URL + "?debtaccount=" + getDebtAccount(model).getExternalId(), model,
                 redirectAttributes);
     }
 
-    //
-    // This is the EventreadEvent Method for Screen read
-    //
     @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(@RequestParam(value = "q",
             required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {

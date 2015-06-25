@@ -59,7 +59,6 @@ public abstract class Invoice extends Invoice_Base {
                 throw new TreasuryDomainException("error.Invoice.debtaccount.mismatch.invoiceentries.debtaccount");
             }
         }
-        // TODO Auto-generated method stub
         super.checkRules();
     }
 
@@ -115,14 +114,9 @@ public abstract class Invoice extends Invoice_Base {
         }
 
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
+        setPayorDebtAccount(null);
         super.delete(deleteEntries);
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<? extends Invoice> findAll() {
         return FinantialDocument.findAll().filter(x -> x instanceof Invoice).map(Invoice.class::cast);
@@ -131,10 +125,6 @@ public abstract class Invoice extends Invoice_Base {
     public static Stream<? extends Invoice> find(final DebtAccount debtAccount) {
         return Invoice.findAll().filter(x -> x.getDebtAccount() == debtAccount);
     }
-
-//    public abstract BigDecimal getDebitAmount();
-//
-//    public abstract BigDecimal getCreditAmount();
 
     public BigDecimal getTotalVatAmount() {
         BigDecimal vat = BigDecimal.ZERO;

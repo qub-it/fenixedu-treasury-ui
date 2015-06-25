@@ -53,9 +53,9 @@ public class CreditEntryBean implements IBean {
     private List<TupleDataSourceBean> currencyDataSource;
     private CreditNote finantialDocument;
     private boolean eventAnnuled;
-    private java.lang.String description;
-    private java.math.BigDecimal amount;
-    private java.math.BigDecimal quantity;
+    private String description;
+    private BigDecimal amount;
+    private BigDecimal quantity;
 
     private Tariff tariff;
 
@@ -74,10 +74,10 @@ public class CreditEntryBean implements IBean {
     public void setVatDataSource(List<Vat> value) {
         this.vatDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public Product getProduct() {
@@ -116,10 +116,10 @@ public class CreditEntryBean implements IBean {
     public void setDebtAccountDataSource(List<DebtAccount> value) {
         this.debtAccountDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public Currency getCurrency() {
@@ -137,10 +137,10 @@ public class CreditEntryBean implements IBean {
     public void setCurrencyDataSource(List<Currency> value) {
         this.currencyDataSource = value.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setId(x.getExternalId()); //CHANGE_ME
-                tuple.setText(x.toString()); //CHANGE_ME
-                return tuple;
-            }).collect(Collectors.toList());
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.toString());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 
     public CreditNote getFinantialDocument() {
@@ -159,27 +159,27 @@ public class CreditEntryBean implements IBean {
         eventAnnuled = value;
     }
 
-    public java.lang.String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(java.lang.String value) {
+    public void setDescription(String value) {
         description = value;
     }
 
-    public java.math.BigDecimal getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(java.math.BigDecimal value) {
+    public void setAmount(BigDecimal value) {
         amount = value;
     }
 
-    public java.math.BigDecimal getQuantity() {
+    public BigDecimal getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(java.math.BigDecimal value) {
+    public void setQuantity(BigDecimal value) {
         quantity = value;
     }
 
@@ -210,5 +210,4 @@ public class CreditEntryBean implements IBean {
     public void setTariff(Tariff tariff) {
         this.tariff = tariff;
     }
-
 }

@@ -47,9 +47,17 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
 
-        if (getFinantialDocument() != null && getFinantialDocument().getState() != FinantialDocumentStateType.PREPARING) {
+        if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
             blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.invoiceentry.cannot.be.deleted.document.is.not.preparing"));
         }
+        if (!getPaymentCodesSet().isEmpty()) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.invoiceentry.cannot.be.deleted.paymentcodes.is.not.empty"));
+        }
+        if (!getSettlementEntriesSet().isEmpty()) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE,
+                    "error.invoiceentry.cannot.be.deleted.settlemententries.is.not.empty"));
+        }
+
     }
 
     public boolean isDebitNoteEntry() {
@@ -144,7 +152,6 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     protected boolean checkAmountValues() {
-        //only check after the first initializations
         if (getNetAmount() != null && getVatAmount() != null && getAmountWithVat() != null) {
             BigDecimal netAmount = getCurrency().getValueWithScale(getQuantity().multiply(getAmount()));
             BigDecimal vatAmount =
@@ -181,13 +188,6 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         }
         return this.getOpenAmount().compareTo(BigDecimal.ZERO) != 0;
 
-//        BigDecimal totalAmount = this.getTotalAmount();
-//        BigDecimal totalPayed = BigDecimal.ZERO;
-//        //Only use Closed Payments
-//        this.getSettlementEntriesSet().stream()
-//                .filter(x -> x.getFinantialDocument() != null && x.getFinantialDocument().isClosed())
-//                .map(x -> totalPayed.add(x.getAmount()));
-//        return !totalAmount.equals(totalPayed);
     }
 
     @Override
@@ -196,5 +196,4 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public abstract BigDecimal getOpenAmount();
-
 }

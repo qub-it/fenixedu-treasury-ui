@@ -46,10 +46,10 @@ public class SettlementEntry extends SettlementEntry_Base {
         @Override
         public int compare(final SettlementEntry o1, final SettlementEntry o2) {
             int c = o1.getEntryDateTime().compareTo(o2.getEntryDateTime());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
-        
+
     };
 
     protected SettlementEntry() {
@@ -61,6 +61,7 @@ public class SettlementEntry extends SettlementEntry_Base {
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
         this.setInvoiceEntry(null);
+
         super.delete();
     }
 
@@ -92,16 +93,10 @@ public class SettlementEntry extends SettlementEntry_Base {
         }
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<SettlementEntry> findAll() {
         return (Stream<SettlementEntry>) FinantialDocumentEntry.findAll().filter(f -> f instanceof SettlementEntry);
     }
-    
+
     @Atomic
     public static SettlementEntry create(final InvoiceEntry invoiceEntry, final FinantialDocument finantialDocument,
             final BigDecimal amount, final String description, final DateTime entryDateTime) {
@@ -124,5 +119,4 @@ public class SettlementEntry extends SettlementEntry_Base {
     public BigDecimal getTotalAmount() {
         return this.getAmount();
     }
-
 }

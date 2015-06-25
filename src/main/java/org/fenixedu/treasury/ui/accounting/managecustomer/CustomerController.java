@@ -33,12 +33,12 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,10 +48,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-// or
-// @BennuSpringController(value=TreasuryController.class)
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer", accessGroup = "treasuryFrontOffice")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.accounting.manageCustomer",
+        accessGroup = "treasuryFrontOffice")
 @RequestMapping(CustomerController.CONTROLLER_URI)
 public class CustomerController extends TreasuryBaseController {
     public static final String CONTROLLER_URI = "/treasury/accounting/managecustomer/customer";
@@ -63,11 +61,8 @@ public class CustomerController extends TreasuryBaseController {
 
     public static final long SEARCH_CUSTOMER_LIST_LIMIT_SIZE = 100;
 
-    //
-
     @RequestMapping
     public String home(Model model) {
-        // this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URI + SEARCH_URI;
     }
 
@@ -81,35 +76,32 @@ public class CustomerController extends TreasuryBaseController {
 
     @Atomic
     public void deleteCustomer(Customer customer) {
-        // CHANGE_ME: Do the processing for deleting the customer
-        // Do not catch any exception here
-
-//         customer.delete(); 
     }
 
-    //
     @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "finantialInstitution", required = false) FinantialInstitution institution,
-            @RequestParam(value = "customer", required = false) String customer, Model model) {
-        List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution, customer);
+            @RequestParam(value = "customertype", required = false) CustomerType customerType, @RequestParam(value = "customer",
+                    required = false) String customer, Model model) {
+        List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution, customerType, customer);
         model.addAttribute("limit_exceeded", searchcustomerResultsDataSet.size() > SEARCH_CUSTOMER_LIST_LIMIT_SIZE);
         searchcustomerResultsDataSet =
                 searchcustomerResultsDataSet.stream().limit(SEARCH_CUSTOMER_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
+        model.addAttribute("Customer_customerType_options", CustomerType.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialinstitution_options", FinantialInstitution.findAll().collect(Collectors.toList()));
 
-        // add the results dataSet to the model
         model.addAttribute("searchcustomerResultsDataSet", searchcustomerResultsDataSet);
+
         return "treasury/accounting/managecustomer/customer/search";
     }
 
     private Stream<? extends Customer> getSearchUniverseSearchCustomerDataSet() {
-
         return Customer.findAll().sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName()));
     }
 
-    private List<Customer> filterSearchCustomer(FinantialInstitution institution, String customerString) {
+    private List<Customer> filterSearchCustomer(FinantialInstitution institution, CustomerType customerType, String customerString) {
         return getSearchUniverseSearchCustomerDataSet()
+                .filter(customer -> customerType == null || customerType == customer.getCustomerType())
                 .filter(customer -> customerString == null || customer.matchesMultiFilter(customerString))
                 .filter(customer -> institution == null
                         || customer.getDebtAccountsSet().stream()
@@ -122,14 +114,9 @@ public class CustomerController extends TreasuryBaseController {
     @RequestMapping(value = SEARCH_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchToViewAction(@PathVariable("oid") Customer customer, Model model,
             RedirectAttributes redirectAttributes) {
-
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use
-        // below
         return redirect(READ_URL + customer.getExternalId(), model, redirectAttributes);
     }
 
-    //
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Customer customer, Model model) {
         setCustomer(customer, model);
@@ -142,56 +129,4 @@ public class CustomerController extends TreasuryBaseController {
 
         return "treasury/accounting/managecustomer/customer/read";
     }
-
-    //
-
-    //
-    // This is the EventcreatePayment Method for Screen read
-    //
-    public static final String READ_TO_CREATEPAYEMENT_EVENT_URI = "/read/{oid}/createpayment";
-
-    @RequestMapping(value = READ_TO_CREATEPAYEMENT_EVENT_URI)
-    public String processReadToCreatePayment(@PathVariable("oid") Customer customer, Model model,
-            RedirectAttributes redirectAttributes) {
-        setCustomer(customer, model);
-        //
-        /* Put here the logic for processing Event createPayment */
-        // doSomething();
-
-        // Now choose what is the Exit Screen
-        return redirect(SettlementNoteController.CREATE_URL + getCustomer(model).getExternalId(), model, redirectAttributes);
-    }
-
-    //
-    // This is the EventcreateDebtEntry Method for Screen read
-    //
-    @RequestMapping(value = "/read/{oid}/createdebtentry")
-    public String processReadToCreateDebtEntry(@PathVariable("oid") Customer customer, Model model,
-            RedirectAttributes redirectAttributes) {
-        setCustomer(customer, model);
-        //
-        /* Put here the logic for processing Event createDebtEntry */
-        // doSomething();
-
-        // Now choose what is the Exit Screen
-        return redirect("/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_createDebt>/" + getCustomer(model).getExternalId(), model,
-                redirectAttributes);
-    }
-
-    //
-    // This is the EventcreateExemption Method for Screen read
-    //
-    @RequestMapping(value = "/read/{oid}/createexemption")
-    public String processReadToCreateExemption(@PathVariable("oid") Customer customer, Model model,
-            RedirectAttributes redirectAttributes) {
-        setCustomer(customer, model);
-        //
-        /* Put here the logic for processing Event createExemption */
-        // doSomething();
-
-        // Now choose what is the Exit Screen
-        return redirect("/treasury/document/manageexemption/treasuryexemption/create/" + getCustomer(model).getExternalId(),
-                model, redirectAttributes);
-    }
-
 }
