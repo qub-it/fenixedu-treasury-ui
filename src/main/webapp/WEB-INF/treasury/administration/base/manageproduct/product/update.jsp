@@ -121,7 +121,7 @@ ${portal.toolkit()}
 						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
 					<script>
-		$("#product_active").val('<c:out value='${not empty param.active ? param.active : product.active }'/>');
+		$("#product_active").select2().select2('val', '<c:out value='${not empty param.active ? param.active : product.active }'/>');
 	</script>
 				</div>
 			</div>
@@ -220,7 +220,7 @@ $(document).ready(function() {
 		}	  
     );
 	
-	$("#product_productGroup").select2().select2('val','${param.productGroup}');		
+	$("#product_productGroup").select2().select2('val','${param.productGroup != null ? param.productGroup : product.productGroup.externalId}');		
 	
 });
 </script>

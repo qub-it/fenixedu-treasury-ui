@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -151,8 +152,8 @@ public class FinantialEntity extends FinantialEntity_Base {
         return findAll().filter(fe -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(fe.getName(), name));
     }
 
-    public static Stream<FinantialEntity> findWithPermissionsFor(final User user) {
-        return findAll();
+    public static Stream<FinantialEntity> findWithBackOfficeAccessFor(final User user) {
+        return findAll().filter(l -> TreasuryAccessControlAPI.isBackOfficeMember(user, l));
     }
 
     @Atomic

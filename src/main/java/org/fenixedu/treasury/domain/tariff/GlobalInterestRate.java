@@ -27,6 +27,7 @@
 
 package org.fenixedu.treasury.domain.tariff;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -109,8 +110,12 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
         return Bennu.getInstance().getGlobalInterestRatesSet().stream();
     }
 
-    public static Stream<GlobalInterestRate> findByYear(final int year) {
+    protected static Stream<GlobalInterestRate> findByYear(final int year) {
         return findAll().filter(i -> year == i.getYear());
+    }
+    
+    public static Optional<GlobalInterestRate> findUniqueByYear(final int year) {
+        return findByYear(year).findFirst();
     }
 
     public static Stream<GlobalInterestRate> findByDescription(final org.fenixedu.commons.i18n.LocalizedString description) {
