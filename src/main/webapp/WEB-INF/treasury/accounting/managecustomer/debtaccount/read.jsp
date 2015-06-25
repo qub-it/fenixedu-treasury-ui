@@ -248,16 +248,16 @@ ${portal.angularToolkit()}
                 <c:when test="${not empty pendingDocumentsDataSet}">
                     <datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false"
                         cellspacing="2">
-                        <datatables:column cssStyle="width:10%;align:right">
+                        <datatables:column cssStyle="width:80px;align:right">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.InvoiceEntry.date" />
                             </datatables:columnHead>
-                            <%--                             <c:out value="${pendingEntry.entryDateTime}" /> --%>
-                            <joda:format value="${pendingEntry.entryDateTime}" style="S-" />
+                                                        <c:out value='${pendingEntry.entryDateTime.toString("YYYY-MM-dd")}' />
+<%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
 
-                        <datatables:column cssStyle="width:10%;">
+                        <datatables:column cssStyle="width:100px;">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.InvoiceEntry.finantialDocument" />
@@ -375,7 +375,7 @@ ${portal.angularToolkit()}
                             <joda:format value="${entry.entryDateTime}"
                                 style="S-" />
                         </datatables:column>
-                        <datatables:column>
+                        <datatables:column cssStyle="width:100px;">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.InvoiceEntry.finantialDocument" />
@@ -400,7 +400,7 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <c:out value="${entry.description}" />
                         </datatables:column>
-                        <datatables:column>
+                        <datatables:column cssStyle="width:110px">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.Invoice.totalAmount" />
@@ -420,7 +420,7 @@ ${portal.angularToolkit()}
                         <%-- 								<c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.creditAmount)}" /> --%>
                         <!-- 							</div> -->
                         <%-- 						</datatables:column> --%>
-                        <datatables:column>
+                        <datatables:column cssStyle="width:110px;align:right">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.InvoiceEntry.openAmount" />

@@ -360,13 +360,13 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.DebitNote.documentDate" /></th>
                         <td><c:out
-                                value='${debitNote.documentDate}' /></td>
+                                value='${debitNote.documentDate.toString("YYYY-MM-dd")}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.DebitNote.documentDueDate" /></th>
                         <td><c:out
-                                value='${debitNote.documentDueDate}' /></td>
+                                value='${debitNote.documentDueDate.toString("YYYY-MM-dd")}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
@@ -503,11 +503,11 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <form method="get"
-                    action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}">
-                    <button type="submit" class="btn btn-default btn-xs">
+<%--                 <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}"> --%>
+                    <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}" type="submit" class="btn btn-default btn-xs">
                         <spring:message code="label.view" />
-                    </button>
-                </form>
+                    </a>
+<!--                 </form> -->
             </datatables:column>
         </datatables:table>
         <script>

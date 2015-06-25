@@ -120,7 +120,7 @@ ${portal.toolkit()}
                         </td> 
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.advancePaymentProduct"/></th> 
+                        <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.advancedPaymentProduct"/></th> 
                         <td>
                             <c:out value='${treasurySettings.advancePaymentProduct.code} - ${treasurySettings.advancePaymentProduct.name.content}'/>
                         </td> 

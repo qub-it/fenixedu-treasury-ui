@@ -250,8 +250,8 @@ ${portal.toolkit()}
 <script>
 	$(document).ready(function() {
 
-	
-	
+
+		    
 	$("#debitNote_debtAccount").select2({
 		  ajax: {
 		    url: "${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/autocompletehelper",
