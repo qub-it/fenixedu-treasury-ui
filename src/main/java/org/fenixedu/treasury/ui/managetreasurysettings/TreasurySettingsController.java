@@ -41,7 +41,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.manageTreasurySettings", accessGroup = "treasuryManagers")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.manageTreasurySettings",
+        accessGroup = "treasuryManagers")
 @RequestMapping(TreasurySettingsController.CONTROLLER_URL)
 public class TreasurySettingsController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/managetreasurysettings/treasurysettings";
@@ -64,8 +65,12 @@ public class TreasurySettingsController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI, method = RequestMethod.GET)
     public String update(final Model model) {
-        model.addAttribute("TreasurySettings_defaultCurrency_options", Currency.findAll().collect(Collectors.toSet()));
-        model.addAttribute("TreasurySettings_interestProduct_options", Product.findAll().collect(Collectors.toSet()));
+        model.addAttribute("TreasurySettings_defaultCurrency_options",
+                Currency.findAll().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent()))
+                        .collect(Collectors.toSet()));
+        model.addAttribute("TreasurySettings_interestProduct_options",
+                Product.findAll().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent()))
+                        .collect(Collectors.toSet()));
         model.addAttribute("treasurySettings", TreasurySettings.getInstance());
 
         return "treasury/managetreasurysettings/treasurysettings/update";
@@ -83,7 +88,7 @@ public class TreasurySettingsController extends TreasuryBaseController {
         try {
             treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct);
 
-            return redirect(READ_URI, model, redirectAttributes);
+            return redirect(READ_URL, model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
             return update(model);

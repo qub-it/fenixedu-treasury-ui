@@ -180,7 +180,7 @@ ${portal.toolkit()}
                     <c:if test='${ not empty debitEntry.interestRate}'>
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.interestType" /></th>
-                            <td><c:out value='${debitEntry.interestRate.uiFullDescription} % ' /></td>
+                            <td><c:out value='${debitEntry.interestRate.uiFullDescription}' /></td>
                         </tr>
                     </c:if>
                     <c:if test='${empty debitEntry.interestRate}'>

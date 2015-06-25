@@ -394,8 +394,23 @@ public class InterestRate extends InterestRate_Base {
     }
 
     public String getUiFullDescription() {
-        //Todo: expand this
-        return this.getInterestType().getDescriptionI18N().getContent();
+        //HACK: This should be moved to the Presentation Layer, but here is easier
+        switch (this.getInterestType()) {
+        case DAILY:
+            return this.getInterestType().getDescriptionI18N().getContent() + "-" + this.getRate() + "% (Max. Dias="
+                    + this.getMaximumDaysToApplyPenalty() + ", Aplica 1º Dia Útil=" + this.getApplyInFirstWorkday()
+                    + ", Dias após Vencimento=" + this.getNumberOfDaysAfterDueDate() + ")";
+        case FIXED_AMOUNT:
+            return this.getInterestType().getDescriptionI18N().getContent() + "-"
+                    + getRelatedCurrency().getValueFor(this.getInterestFixedAmount());
+        case GLOBAL_RATE:
+            return this.getInterestType().getDescriptionI18N().getContent();
+        case MONTHLY:
+            return this.getInterestType().getDescriptionI18N().getContent() + "-" + this.getRate() + "% (Max. Meses="
+                    + this.getMaximumMonthsToApplyPenalty() + ")";
+        default:
+            return this.getInterestType().getDescriptionI18N().getContent();
+        }
     }
 
     @Atomic
@@ -406,5 +421,13 @@ public class InterestRate extends InterestRate_Base {
                     interestRate.getMaximumMonthsToApplyPenalty(), interestRate.getInterestFixedAmount(), interestRate.getRate());
         }
         return null;
+    }
+
+    @Atomic
+    public static InterestRate createForDebitEntry(final DebitEntry debitEntry, final InterestType interestType,
+            final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
+            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+        return new InterestRate(null, debitEntry, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
+                maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
     }
 }

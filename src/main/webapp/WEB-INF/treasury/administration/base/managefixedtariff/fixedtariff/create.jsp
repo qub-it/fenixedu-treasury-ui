@@ -253,8 +253,13 @@ ${portal.angularToolkit()}
                     <spring:message code="label.InterestRate.interestFixedAmount" />
                 </div>
                 <div class="col-sm-4">
-                    <input id="fixedTariff_interestFixedAmount" class="form-control" type="text" ng-model="object.interestRate.interestFixedAmount" name="interestFixedAmount"
-                        pattern="[0-9]+(\.[0-9]{1,3})?" />
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${fixedTariffBean.finantialInstitution.currency.symbol}" />
+                        </div>
+                        <input id="fixedTariff_interestFixedAmount" class="form-control" type="text" ng-model="object.interestRate.interestFixedAmount" name="interestFixedAmount"
+                            pattern="[0-9]+(\.[0-9]{1,3})?" />
+                    </div>
                 </div>
             </div>
 
