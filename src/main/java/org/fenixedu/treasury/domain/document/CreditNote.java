@@ -99,6 +99,7 @@ public class CreditNote extends CreditNote_Base {
         }
 
         setDebitNote(null);
+
         super.delete(deleteEntries);
     }
 
@@ -118,12 +119,6 @@ public class CreditNote extends CreditNote_Base {
         return this.getTotalAmount();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<? extends CreditNote> findAll() {
         return Invoice.findAll().filter(i -> i instanceof CreditNote).map(CreditNote.class::cast);
     }
@@ -136,12 +131,6 @@ public class CreditNote extends CreditNote_Base {
         note.checkRules();
         return note;
     }
-
-//    @Atomic
-//    public static CreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
-//            final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-//        return new CreditNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
-//    }
 
     @Atomic
     public void edit(final DebitNote debitNote, final DebtAccount payorDebtAccount,
@@ -215,5 +204,4 @@ public class CreditNote extends CreditNote_Base {
         // The Credit Note can neve free entries
         super.anullDocument(false, reason);
     }
-
 }

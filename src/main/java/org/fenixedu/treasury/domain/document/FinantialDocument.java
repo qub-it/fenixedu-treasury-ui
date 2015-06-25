@@ -218,10 +218,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public boolean isDeletable() {
-        if (this.isPreparing()) {
-            return true;
-        }
-        return false;
+        return this.isPreparing() && getPaymentCodesSet().isEmpty();
     }
 
     public boolean isAnnulled() {
@@ -298,6 +295,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         setCurrency(null);
         setDebtAccount(null);
         setFinantialDocumentType(null);
+        setInstitutionForExportation(null);
         for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
             this.removeFinantialDocumentEntries(entry);
             if (deleteEntries) {
@@ -316,18 +314,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.removeErpImportOperations(oper);
             oper.delete();
         }
-
         deleteDomainObject();
     }
 
     public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList,
             Boolean includeAnulledDocuments);
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<? extends FinantialDocument> findAll() {
         return Bennu.getInstance().getFinantialDocumentsSet().stream();

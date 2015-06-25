@@ -130,6 +130,7 @@ public class DebitEntry extends DebitEntry_Base {
             oldRate.delete();
         }
         this.setTreasuryEvent(null);
+
         super.delete();
     }
 

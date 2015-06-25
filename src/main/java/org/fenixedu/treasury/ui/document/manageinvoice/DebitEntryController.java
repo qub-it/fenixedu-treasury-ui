@@ -474,7 +474,7 @@ public class DebitEntryController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
 
-        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.create"), model);
+        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.update"), model);
         return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
     }
 }

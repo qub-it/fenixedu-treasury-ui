@@ -117,7 +117,23 @@ ${portal.angularToolkit()}
 
 				</div>
 			</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.Customer.customerType" />
+                </div>
+                <div class="col-sm-4">
+                    <ui-select id="adhocCustomer_customerType"
+                        ng-model="$parent.object.customerType"
+                        theme="bootstrap"
+                        > <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
+                    <ui-select-choices
+                        repeat="customerType.id as customerType in object.customerTypesDataSource| filter: $select.search">
+                    <span
+                        ng-bind-html="customerType.text | highlight: $select.search"></span>
+                    </ui-select-choices> </ui-select>
 
+                </div>
+            </div>
 
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">

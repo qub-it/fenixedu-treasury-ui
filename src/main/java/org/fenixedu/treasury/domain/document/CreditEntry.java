@@ -116,12 +116,6 @@ public class CreditEntry extends CreditEntry_Base {
         this.checkRules();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<CreditEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof CreditEntry).map(CreditEntry.class::cast);
     }
@@ -185,5 +179,4 @@ public class CreditEntry extends CreditEntry_Base {
 
         return cr;
     }
-
 }

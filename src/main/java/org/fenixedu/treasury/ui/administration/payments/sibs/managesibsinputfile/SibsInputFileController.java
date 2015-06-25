@@ -230,8 +230,11 @@ public class SibsInputFileController extends TreasuryBaseController {
             SibsReportFile reportFile = null;
             try {
                 ProcessResult result = importer.processSIBSPaymentFiles(sibsInputFile);
-                result.getActionMessages().forEach(x -> addInfoMessage(x, model));
-                result.getErrorMessages().forEach(x -> addErrorMessage(x, model));
+                if (result.getErrorMessages().isEmpty()) {
+                    addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.upload"), model);
+                } else {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload"), model);
+                }
                 reportFile = result.getReportFile();
                 if (result.getReportFile() == null) {
                     return redirect(READ_URL + sibsInputFile.getExternalId(), model, redirectAttributes);

@@ -110,12 +110,6 @@ public class DebitNote extends DebitNote_Base {
         return BigDecimal.ZERO;
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<DebitNote> findAll() {
         return FinantialDocument.findAll().filter(x -> x instanceof DebitNote).map(DebitNote.class::cast);
     }

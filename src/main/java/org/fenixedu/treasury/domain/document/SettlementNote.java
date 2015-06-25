@@ -79,53 +79,6 @@ public class SettlementNote extends SettlementNote_Base {
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
         }
-
-        // CHANGE_ME In order to validate UNIQUE restrictions
-        // if (findByFinantialDocumentType(getFinantialDocumentType().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.finantialDocumentType.duplicated");
-        // }
-        // if (findByDebtAccount(getDebtAccount().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.debtAccount.duplicated");
-        // }
-        // if (findByDocumentNumberSeries(getDocumentNumberSeries().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.documentNumberSeries.duplicated");
-        // }
-        // if (findByCurrency(getCurrency().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.currency.duplicated");
-        // }
-        // if (findByDocumentNumber(getDocumentNumber().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.documentNumber.duplicated");
-        // }
-        // if (findByDocumentDate(getDocumentDate().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.documentDate.duplicated");
-        // }
-        // if (findByDocumentDueDate(getDocumentDueDate().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.documentDueDate.duplicated");
-        // }
-        // if (findByOriginDocumentNumber(getOriginDocumentNumber().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.originDocumentNumber.duplicated");
-        // }
-        // if (findByState(getState().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.SettlementNote.state.duplicated");
-        // }
     }
 
     @Atomic
@@ -148,7 +101,7 @@ public class SettlementNote extends SettlementNote_Base {
     @Override
     public boolean isDeletable() {
         //We can only "delete" a settlement note if is in "Preparing"
-        return this.isPreparing();
+        return this.isPreparing() && getAdvancedPaymentCreditNote().isDeletable();
     }
 
     @Override
@@ -173,6 +126,10 @@ public class SettlementNote extends SettlementNote_Base {
             } else {
                 entry.setSettlementNote(null);
             }
+        }
+
+        if (getAdvancedPaymentCreditNote() != null) {
+            getAdvancedPaymentCreditNote().delete(true);
         }
         super.delete(deleteEntries);
     }
@@ -270,12 +227,6 @@ public class SettlementNote extends SettlementNote_Base {
 
         return settlementNote;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<SettlementNote> findAll() {
         return Bennu.getInstance().getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
@@ -432,5 +383,4 @@ public class SettlementNote extends SettlementNote_Base {
         }
         return this.getFinantialDocumentEntriesSet().isEmpty();
     }
-
 }

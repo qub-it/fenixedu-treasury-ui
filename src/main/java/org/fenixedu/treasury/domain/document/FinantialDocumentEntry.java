@@ -82,6 +82,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
+        super.checkForDeletionBlockers(blockers);
         if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
             blockers.add(BundleUtil.getString(Constants.BUNDLE,
                     "error.finantialdocumententry.cannot.be.deleted.document.is.not.preparing"));
@@ -103,12 +104,6 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * UTILS *
-     ************/
-    // @formatter: on
-
     protected boolean isNegative(final BigDecimal value) {
         return !isZero(value) && !isPositive(value);
     }
@@ -125,18 +120,13 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         return v1.compareTo(v2) > 0;
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<? extends FinantialDocumentEntry> findAll() {
         return Bennu.getInstance().getFinantialDocumentEntriesSet().stream();
     }
-    
-    public static Optional<? extends FinantialDocumentEntry> findUniqueByEntryOrder(final FinantialDocument finantialDocument, int entryOrder) {
-        return finantialDocument.getFinantialDocumentEntriesSet().stream().filter(e -> e.getEntryOrder() != null && e.getEntryOrder() == entryOrder).findFirst();
-    }
 
+    public static Optional<? extends FinantialDocumentEntry> findUniqueByEntryOrder(final FinantialDocument finantialDocument,
+            int entryOrder) {
+        return finantialDocument.getFinantialDocumentEntriesSet().stream()
+                .filter(e -> e.getEntryOrder() != null && e.getEntryOrder() == entryOrder).findFirst();
+    }
 }
