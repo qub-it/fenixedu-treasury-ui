@@ -138,4 +138,16 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
         return new DocumentNumberSeries(finantialDocumentType, series);
     }
 
+    public long getPreparingDocumentsCount() {
+        return this.getFinantialDocumentsSet().stream().filter(x -> x.isPreparing()).count();
+    }
+
+    public long getDocumentsCount() {
+        return this.getFinantialDocumentsSet().stream().count();
+    }
+
+    public long getClosedDocumentsCount() {
+        return this.getFinantialDocumentsSet().stream().filter(x -> x.isClosed()).count();
+    }
+
 }

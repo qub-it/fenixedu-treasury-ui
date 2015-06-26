@@ -1,6 +1,5 @@
 package org.fenixedu.treasury.util;
 
-import org.fenixedu.bennu.core.groups.Group;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FiscalCountryRegion;
@@ -26,10 +25,5 @@ public class TreasuryBootstrapUtil {
     }
 
     private static void checkTreasuryAuthorizations() {
-        Group managersGroup = Group.parse("#treasuryManager");
-        if (managersGroup == null) {
-
-        }
-
     }
 }

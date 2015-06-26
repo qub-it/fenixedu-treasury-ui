@@ -282,7 +282,7 @@ ${portal.toolkit()}
                                 value="${documentNumberSeries.finantialDocumentType.name.content}" />
                         </td>
                         <td><c:out
-                                value="${documentNumberSeries.sequenceNumber}" />
+                                value="${documentNumberSeries.preparingDocumentsCount}/${documentNumberSeries.closedDocumentsCount}" />
                         </td>
                         <td>
                             <!--  ACTIONS --> 

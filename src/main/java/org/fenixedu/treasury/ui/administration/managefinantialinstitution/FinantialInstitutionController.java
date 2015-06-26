@@ -268,7 +268,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         }
     }
 
-    @RequestMapping(value = "/read/{oid}/exportcustomersintegrationfile", produces = "text/xml;charset=Windows-1252")
+    @RequestMapping(value = "/read/{oid}/exportcustomersintegrationfile")
     public void processReadToExportCustomerIntegrationFile(@PathVariable("oid") FinantialInstitution finantialInstitution,
             Model model, RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {

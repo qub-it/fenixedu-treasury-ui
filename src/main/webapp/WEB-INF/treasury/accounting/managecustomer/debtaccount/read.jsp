@@ -156,7 +156,7 @@ ${portal.angularToolkit()}
 
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
-                        <td><c:out value='${debtAccount.customer.code}' /> - <c:out value='${debtAccount.customer.name}' /></td>
+                        <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
@@ -289,7 +289,7 @@ ${portal.angularToolkit()}
             <c:choose>
                 <c:when test="${not empty allDocumentsDataSet}">
                     <datatables:table id="allDocuments" row="entry" data="${allDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
-                        <datatables:column>
+                        <datatables:column cssStyle="width:80px">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.date" />
                             </datatables:columnHead>
@@ -308,7 +308,7 @@ ${portal.angularToolkit()}
 							---
 							</c:if>
                         </datatables:column>
-                        <datatables:column cssStyle="width:10%;align:right">
+                        <datatables:column >
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.description" />
                             </datatables:columnHead>

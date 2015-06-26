@@ -148,7 +148,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.counter" /></th>
-                        <td><c:out value='${documentNumberSeries.counter}' /></td>
+                        <td><c:out value='value="${documentNumberSeries.preparingDocumentsCount}/${documentNumberSeries.closedDocumentsCount}"' /></td>
                     </tr>
                 </tbody>
             </table>

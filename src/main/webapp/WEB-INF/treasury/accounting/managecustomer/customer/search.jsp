@@ -37,7 +37,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%= AdhocCustomerController.CREATE_URL %>"><spring:message
-            code="label.event.create" /></a> &nbsp; | &nbps;
+            code="label.event.create" /></a> &nbsp; | &nbsp;
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%= DebtAccountController.SEARCHOPENDEBTACCOUNTS_URL %>"><spring:message
             code="label.event.accounting.managecustomer.search.debtaccounts.with.pending.values" /></a> &nbsp;
             

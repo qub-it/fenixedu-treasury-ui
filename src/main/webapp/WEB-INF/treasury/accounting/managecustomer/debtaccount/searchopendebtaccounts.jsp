@@ -34,7 +34,7 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/<COULD_NOT_GET_THE_VIEW_FROM_PSL_FOR_SCREEN_searchCustomer>"   ><spring:message code="label.event.back"/></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/"   ><spring:message code="label.event.back"/></a>
 |&nbsp;&nbsp;</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
@@ -83,7 +83,7 @@ ${portal.toolkit()}
 <th><spring:message code="label.Customer.identificationNumber"/></th>
 <th><spring:message code="label.Customer.fiscalNumber"/></th>
 <th><spring:message code="label.Customer.name"/></th>
-<th><spring:message code="label.DebtAccount.totalInDebt"/></th>
+<th><spring:message code="label.DebtAccount.balance"/></th>
 <%-- Operations Column --%>
 					<th></th>
 				</tr>
