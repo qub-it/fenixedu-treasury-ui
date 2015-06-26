@@ -154,39 +154,6 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
-    public Set<FinantialInstitution> getFinantialInstitutions() {
-        return getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution()).collect(Collectors.toSet());
-    }
-
-    public DebtAccount getDebtAccountFor(FinantialInstitution institution) {
-        return getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
-                .orElse(null);
-    }
-
-    @Atomic
-    public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
-
-        Set<FinantialInstitution> actualInstitutions = getFinantialInstitutions();
-        for (FinantialInstitution newInst : newFinantialInstitutions) {
-            if (actualInstitutions.contains(newInst)) {
-            } else {
-                DebtAccount.create(newInst, this);
-            }
-        }
-
-        for (FinantialInstitution actualInst : actualInstitutions) {
-            if (newFinantialInstitutions.contains(actualInst)) {
-            } else {
-                DebtAccount account = getDebtAccountFor(actualInst);
-                if (account.isDeletable()) {
-                    account.delete();
-                } else {
-                    account.closeDebtAccount();
-                }
-            }
-        }
-    }
-
     public static CustomerType getDefaultCustomerType() {
         return CustomerType.findByCode("ADHOC").findFirst().orElse(null);
     }

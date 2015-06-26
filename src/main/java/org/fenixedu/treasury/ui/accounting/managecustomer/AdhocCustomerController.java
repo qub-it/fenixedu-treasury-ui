@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
@@ -63,20 +64,20 @@ public class AdhocCustomerController extends TreasuryBaseController {
     private static final String DELETE_URI = "/delete/";
     public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
 
-    private AdhocCustomer getAdhocCustomer(Model model) {
-        return (AdhocCustomer) model.asMap().get("adhocCustomer");
+    private Customer getAdhocCustomer(Model model) {
+        return (Customer) model.asMap().get("adhocCustomer");
     }
 
-    private void setAdhocCustomer(AdhocCustomer adhocCustomer, Model model) {
+    private void setAdhocCustomer(Customer adhocCustomer, Model model) {
         model.addAttribute("adhocCustomer", adhocCustomer);
     }
 
     @Atomic
-    public void deleteAdhocCustomer(AdhocCustomer adhocCustomer) {
+    public void deleteAdhocCustomer(Customer adhocCustomer) {
     }
 
-    private AdhocCustomer getAdhocCustomerBean(Model model) {
-        return (AdhocCustomer) model.asMap().get("adhocCustomerBean");
+    private Customer getAdhocCustomerBean(Model model) {
+        return (Customer) model.asMap().get("adhocCustomerBean");
     }
 
     private void setAdhocCustomerBean(AdhocCustomerBean bean, Model model) {
@@ -86,16 +87,16 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
     @RequestMapping(value = SEARCH_URI)
     public String search(Model model) {
-        List<AdhocCustomer> searchadhoccustomerResultsDataSet = filterSearchAdhocCustomer();
+        List<Customer> searchadhoccustomerResultsDataSet = filterSearchAdhocCustomer();
         model.addAttribute("searchadhoccustomerResultsDataSet", searchadhoccustomerResultsDataSet);
         return "treasury/accounting/managecustomer/adhoccustomer/search";
     }
 
-    private List<AdhocCustomer> getSearchUniverseSearchAdhocCustomerDataSet() {
-        return AdhocCustomer.findAll().collect(Collectors.toList());
+    private List<Customer> getSearchUniverseSearchAdhocCustomerDataSet() {
+        return Customer.findAll().collect(Collectors.<Customer> toList());
     }
 
-    private List<AdhocCustomer> filterSearchAdhocCustomer() {
+    private List<Customer> filterSearchAdhocCustomer() {
         return getSearchUniverseSearchAdhocCustomerDataSet().stream().collect(Collectors.toList());
     }
 
@@ -103,7 +104,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
     public static final String SEARCH_VIEW_URL = CONTROLLER_URL + SEARCH_VIEW_URI;
 
     @RequestMapping(value = SEARCH_VIEW_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model,
+    public String processSearchToViewAction(@PathVariable("oid") Customer adhocCustomer, Model model,
             RedirectAttributes redirectAttributes) {
         return redirect(READ_URL + adhocCustomer.getExternalId(), model, redirectAttributes);
     }
@@ -125,7 +126,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
 
-            AdhocCustomer adhocCustomer =
+            Customer adhocCustomer =
                     createAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
                             bean.getIdentificationNumber());
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
@@ -141,29 +142,29 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @Atomic
-    public AdhocCustomer createAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
+    public Customer createAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
             String identificationNumber) {
-        AdhocCustomer adhocCustomer =
+        Customer adhocCustomer =
                 AdhocCustomer.create(customerType, code, fiscalNumber, name, "", "", "", "", identificationNumber);
         return adhocCustomer;
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") AdhocCustomer adhocCustomer, Model model) {
+    public String update(@PathVariable("oid") Customer adhocCustomer, Model model) {
         setAdhocCustomer(adhocCustomer, model);
         setAdhocCustomerBean(new AdhocCustomerBean(adhocCustomer), model);
         return "treasury/accounting/managecustomer/adhoccustomer/update";
     }
 
     @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public @ResponseBody String updatepostback(@PathVariable("oid") AdhocCustomer adhocCustomer, @RequestParam(value = "bean",
+    public @ResponseBody String updatepostback(@PathVariable("oid") Customer adhocCustomer, @RequestParam(value = "bean",
             required = false) AdhocCustomerBean bean, Model model) {
         this.setAdhocCustomerBean(bean, model);
         return getBeanJson(bean);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") AdhocCustomer adhocCustomer,
+    public String update(@PathVariable("oid") Customer adhocCustomer,
             @RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         setAdhocCustomer(adhocCustomer, model);
@@ -185,6 +186,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
     @Atomic
     public void updateAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
             String identificationNumber, Model model) {
-        getAdhocCustomer(model).edit(customerType, code, fiscalNumber, name, "", "", "", "", identificationNumber);
+        if(getAdhocCustomer(model).isAdhocCustomer()) {
+            ((AdhocCustomer) getAdhocCustomer(model)).edit(customerType, code, fiscalNumber, name, "", "", "", "", identificationNumber);
+        }
     }
 }

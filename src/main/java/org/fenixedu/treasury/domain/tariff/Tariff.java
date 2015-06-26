@@ -87,7 +87,8 @@ public abstract class Tariff extends Tariff_Base {
             throw new TreasuryDomainException("error.Tariff.dueDateCalculationType.required");
         }
 
-        if (getDueDateCalculationType().isFixedDate() && getFixedDueDate() == null) {
+        if ((getDueDateCalculationType().isFixedDate() || getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation())
+                && getFixedDueDate() == null) {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.required");
         }
 
@@ -96,7 +97,8 @@ public abstract class Tariff extends Tariff_Base {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.must.be.after.or.equal.beginDate");
         }
 
-        if (getDueDateCalculationType().isDaysAfterCreation() && getNumberOfDaysAfterCreationForDueDate() < 0) {
+        if ((getDueDateCalculationType().isDaysAfterCreation() || getDueDateCalculationType()
+                .isBestOfFixedDateAndDaysAfterCreation()) && getNumberOfDaysAfterCreationForDueDate() < 0) {
             throw new TreasuryDomainException("error.Tariff.numberOfDaysAfterCreationForDueDate.must.be.positive");
         }
 
@@ -131,7 +133,6 @@ public abstract class Tariff extends Tariff_Base {
                     throw new TreasuryDomainException("error.Tariff.interestRate.interestfixedamount.invalid");
                 }
             }
-
         }
     }
 
@@ -210,6 +211,16 @@ public abstract class Tariff extends Tariff_Base {
 
         if (getDueDateCalculationType().isFixedDate()) {
             return getFixedDueDate();
+        }
+        
+        if(getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation()) {
+            final LocalDate daysAfterCreation = requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());
+            
+            if(daysAfterCreation.isAfter(getFixedDueDate())) {
+                return daysAfterCreation;
+            } else {
+                return getFixedDueDate();
+            }
         }
 
         return requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());

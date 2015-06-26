@@ -28,9 +28,13 @@
 package org.fenixedu.treasury.domain;
 
 import java.text.Normalizer;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -136,4 +140,38 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
                 && getFiscalNumber().contains(searchFieldClear) || getCode() != null && getCode().contains(searchFieldClear)
                 || getBusinessIdentification() != null && getBusinessIdentification().contains(searchFieldClear);
     }
+    
+    public Set<FinantialInstitution> getFinantialInstitutions() {
+        return getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution()).collect(Collectors.toSet());
+    }
+
+    public DebtAccount getDebtAccountFor(FinantialInstitution institution) {
+        return getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
+                .orElse(null);
+    }
+
+    @Atomic
+    public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
+
+        Set<FinantialInstitution> actualInstitutions = getFinantialInstitutions();
+        for (FinantialInstitution newInst : newFinantialInstitutions) {
+            if (actualInstitutions.contains(newInst)) {
+            } else {
+                DebtAccount.create(newInst, this);
+            }
+        }
+
+        for (FinantialInstitution actualInst : actualInstitutions) {
+            if (newFinantialInstitutions.contains(actualInst)) {
+            } else {
+                DebtAccount account = getDebtAccountFor(actualInst);
+                if (account.isDeletable()) {
+                    account.delete();
+                } else {
+                    account.closeDebtAccount();
+                }
+            }
+        }
+    }
+    
 }

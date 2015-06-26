@@ -165,9 +165,16 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="adhocCustomer_name" class="form-control"
-                        type="text" ng-model="object.name" name="name"
-                        value='<c:out value='${not empty param.name ? param.name : adhocCustomer.name }'/>' />
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_name" class="form-control"
+	                        type="text" ng-model="object.name" name="name"
+	                        value='<c:out value='${not empty param.name ? param.name : adhocCustomer.name }'/>' readonly="readonly" />
+					</c:if>
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <input id="adhocCustomer_name" class="form-control"
+	                        type="text" ng-model="object.name" name="name"
+	                        value='<c:out value='${not empty param.name ? param.name : adhocCustomer.name }'/>' />
+					</c:if>
                 </div>
             </div>
             <div class="form-group row">
@@ -177,11 +184,20 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="adhocCustomer_fiscalNumber"
-                        class="form-control" type="text"
-                        ng-model="object.fiscalNumber"
-                        name="fiscalnumber"
-                        value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' />
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_fiscalNumber"
+	                        class="form-control" type="text"
+	                        ng-model="object.fiscalNumber"
+	                        name="fiscalnumber"
+	                        value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' readonly="readonly" />
+					</c:if>
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <input id="adhocCustomer_fiscalNumber"
+	                        class="form-control" type="text"
+	                        ng-model="object.fiscalNumber"
+	                        name="fiscalnumber"
+	                        value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' />
+					</c:if>
                 </div>
             </div>
             <div class="form-group row">
@@ -191,11 +207,20 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="adhocCustomer_identificationNumber"
-                        class="form-control" type="text"
-                        ng-model="object.identificationNumber"
-                        name="identificationnumber"
-                        value='<c:out value='${not empty param.identificationnumber ? param.identificationnumber : adhocCustomer.identificationNumber }'/>' />
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_identificationNumber"
+	                        class="form-control" type="text"
+	                        ng-model="object.identificationNumber"
+	                        name="identificationnumber"
+	                        value='<c:out value='${not empty param.identificationnumber ? param.identificationnumber : adhocCustomer.identificationNumber }'/>' readonly="readonly" />
+					</c:if>
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <input id="adhocCustomer_identificationNumber"
+	                        class="form-control" type="text"
+	                        ng-model="object.identificationNumber"
+	                        name="identificationnumber"
+	                        value='<c:out value='${not empty param.identificationnumber ? param.identificationnumber : adhocCustomer.identificationNumber }'/>' />
+					</c:if>
                 </div>
             </div>
 

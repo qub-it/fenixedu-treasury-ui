@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 
@@ -129,7 +129,7 @@ public class AdhocCustomerBean implements IBean {
         this.setCustomerTypesDataSource(CustomerType.findAll().collect(Collectors.toList()));
     }
 
-    public AdhocCustomerBean(AdhocCustomer adhocCustomer) {
+    public AdhocCustomerBean(Customer adhocCustomer) {
         this();
         this.setCustomerType(adhocCustomer.getCustomerType());
         this.setCode(adhocCustomer.getCode());

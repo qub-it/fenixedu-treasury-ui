@@ -32,7 +32,7 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.Constants;
 
 public enum DueDateCalculationType {
-    NO_DUE_DATE, FIXED_DATE, DAYS_AFTER_CREATION;
+    NO_DUE_DATE, FIXED_DATE, DAYS_AFTER_CREATION, BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION;
 
     public boolean isFixedDate() {
         return this == FIXED_DATE;
@@ -44,6 +44,10 @@ public enum DueDateCalculationType {
 
     public boolean isDaysAfterCreation() {
         return this == DAYS_AFTER_CREATION;
+    }
+    
+    public boolean isBestOfFixedDateAndDaysAfterCreation() {
+        return this == BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION;
     }
 
     public LocalizedString getDescriptionI18N() {
