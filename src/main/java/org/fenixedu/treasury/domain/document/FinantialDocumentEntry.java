@@ -58,6 +58,14 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         setEntryDateTime(entryDateTime);
     }
 
+    @Override
+    public void setFinantialDocument(FinantialDocument finantialDocument) {
+        if (finantialDocument != null && finantialDocument.isPreparing() == false) {
+            throw new TreasuryDomainException("error.FinantialDocumentEntry.finantialDocument.is.not.preparing.");
+        }
+        super.setFinantialDocument(finantialDocument);
+    }
+
     protected void checkRules() {
         if (isFinantialDocumentRequired() && getFinantialDocument() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.finantialDocument.required");
