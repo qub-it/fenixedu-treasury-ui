@@ -433,7 +433,7 @@ public class DebitEntryController extends TreasuryBaseController {
                             interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
                             interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
                             interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
-            debitEntry.changeInterestRate(interestRate);
+            
         } else {
             InterestRate rate = debitEntry.getInterestRate();
             rate.edit(interestRateBean.getInterestType(), interestRateBean.getNumberOfDaysAfterDueDate(),

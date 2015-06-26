@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.treasury.domain.tariff.InterestType;
+import org.fenixedu.treasury.util.Constants;
+import org.joda.time.Days;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
@@ -22,12 +25,14 @@ public class InterestRateBean implements IBean, Serializable {
         private LocalDate begin;
         private LocalDate end;
         private BigDecimal amountPerUnit;
+        private BigDecimal affectedAmount;
 
         private InterestInformationDetail(final BigDecimal amount, final LocalDate begin, final LocalDate end,
-                final BigDecimal amountPerUnit) {
+                final BigDecimal amountPerUnit, final BigDecimal affectedAmount) {
             this.amount = amount;
             this.begin = begin;
             this.end = end;
+            this.affectedAmount = affectedAmount;
         }
 
         public BigDecimal getAmount() {
@@ -44,6 +49,14 @@ public class InterestRateBean implements IBean, Serializable {
 
         public BigDecimal getAmountPerUnit() {
             return amountPerUnit;
+        }
+        
+        public int getNumberOfDays() {
+            return Days.daysBetween(begin, end).getDays() + 1;
+        }
+        
+        public BigDecimal getAffectedAmount() {
+            return affectedAmount;
         }
     }
 
@@ -89,8 +102,8 @@ public class InterestRateBean implements IBean, Serializable {
     }
 
     public InterestInformationDetail addDetail(final BigDecimal amount, final LocalDate begin, final LocalDate end,
-            final BigDecimal amountPerUnit) {
-        final InterestInformationDetail detail = new InterestInformationDetail(amount, begin, end, amountPerUnit);
+            final BigDecimal amountPerUnit, final BigDecimal affectedAmount) {
+        final InterestInformationDetail detail = new InterestInformationDetail(amount, begin, end, amountPerUnit, affectedAmount);
 
         interestInformationList.add(detail);
 

@@ -38,6 +38,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -196,4 +197,6 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public abstract BigDecimal getOpenAmount();
+    
+    public abstract LocalDate getDueDate();
 }

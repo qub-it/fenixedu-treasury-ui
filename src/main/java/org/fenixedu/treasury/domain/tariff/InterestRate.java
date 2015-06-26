@@ -171,7 +171,7 @@ public class InterestRate extends InterestRate_Base {
             final BigDecimal partialInterestAmount = amountByRate.multiply(new BigDecimal(numberOfMonths));
 
             if (Constants.isPositive(partialInterestAmount)) {
-                result.addDetail(partialInterestAmount, startDate, endDate, amountByRate);
+                result.addDetail(partialInterestAmount, startDate, endDate, amountByRate, amountInDebt);
             }
 
             totalInterestAmount = totalInterestAmount.add(partialInterestAmount);
@@ -227,8 +227,8 @@ public class InterestRate extends InterestRate_Base {
             if (startDate.getYear() != endDate.getYear()) {
                 boolean reachedMaxDays = false;
 
-                int firstYearDays = Days.daysBetween(startDate, Constants.lastDayInYear(startDate.getYear())).getDays();
-                int secondYearDays = Days.daysBetween(Constants.firstDayInYear(endDate.getYear()), endDate).getDays();
+                int firstYearDays = (Days.daysBetween(startDate, Constants.lastDayInYear(startDate.getYear())).getDays() + 1);
+                int secondYearDays = (Days.daysBetween(Constants.firstDayInYear(endDate.getYear()), endDate).getDays() + 1);
 
                 {
                     if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + firstYearDays >= getMaximumDaysToApplyPenalty()) {
@@ -249,7 +249,7 @@ public class InterestRate extends InterestRate_Base {
 
                     if (Constants.isPositive(partialInterestAmount)) {
                         result.addDetail(partialInterestAmount, startDate, Constants.lastDayInYear(startDate.getYear()),
-                                amountPerDay);
+                                amountPerDay, amountInDebt);
                     }
                 }
 
@@ -257,7 +257,7 @@ public class InterestRate extends InterestRate_Base {
 
                     if (isMaximumDaysToApplyPenaltyApplied()
                             && totalOfDays + firstYearDays + secondYearDays >= getMaximumDaysToApplyPenalty()) {
-                        firstYearDays = getMaximumDaysToApplyPenalty() - totalOfDays - firstYearDays;
+                        secondYearDays = getMaximumDaysToApplyPenalty() - totalOfDays - firstYearDays;
                     }
 
                     final BigDecimal amountPerDay =
@@ -267,10 +267,10 @@ public class InterestRate extends InterestRate_Base {
 
                     final BigDecimal secondInterestAmount =
                             Constants.divide(rate, Constants.HUNDRED_PERCENT).multiply(amountPerDay)
-                                    .multiply(new BigDecimal(firstYearDays));
+                                    .multiply(new BigDecimal(secondYearDays));
 
                     if (Constants.isPositive(partialInterestAmount)) {
-                        result.addDetail(secondInterestAmount, Constants.firstDayInYear(endDate.getYear()), endDate, amountPerDay);
+                        result.addDetail(secondInterestAmount, Constants.firstDayInYear(endDate.getYear()), endDate, amountPerDay, amountInDebt);
                     }
 
                     partialInterestAmount = partialInterestAmount.add(secondInterestAmount);
@@ -279,11 +279,7 @@ public class InterestRate extends InterestRate_Base {
                 }
 
             } else {
-                numberOfDays = Days.daysBetween(startDate, endDate).getDays();
-
-                if (endDate.isEqual(paymentDate)) {
-                    numberOfDays++;
-                }
+                numberOfDays = Days.daysBetween(startDate, endDate).getDays() + 1;
 
                 if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + numberOfDays >= getMaximumDaysToApplyPenalty()) {
                     numberOfDays = getMaximumDaysToApplyPenalty() - totalOfDays;
@@ -300,7 +296,7 @@ public class InterestRate extends InterestRate_Base {
 
                 if (Constants.isPositive(partialInterestAmount)) {
                     result.addDetail(partialInterestAmount, startDate,
-                            endDate.isEqual(paymentDate) ? endDate : endDate.minusDays(1), amountPerDay);
+                            endDate.isEqual(paymentDate) ? endDate : endDate.minusDays(1), amountPerDay, amountInDebt);
                 }
             }
 

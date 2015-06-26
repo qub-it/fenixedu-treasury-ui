@@ -153,14 +153,18 @@ ${portal.angularToolkit()}
 							<td><spring:message code="label.InterestEntry.interest" />: &nbsp;<c:out value="${ interestEntryBean.debitEntry.description }" /></td>
 							<td>
 								<p><strong><spring:message code="label.InterestEntry.calculatedInterest" /> </strong></p>
+								<p>&nbsp;</p>
 								<c:forEach var="detail" items="${interestEntryBean.interest.interestInformationList}">
 									<p>
 										[<joda:format value="${detail.begin}" style="S-" /> - <joda:format value="${detail.end}" style="S-" />]:
 										${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.amount, 4)}
 									</p>
+									<p style=""><em><spring:message code="label.InterestEntry.affectedAmount.description" arguments="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.affectedAmount)},${detail.numberOfDays}" /></em></p>
+									<p>&nbsp;</p>
 								</c:forEach>
 								<p>&nbsp;</p>
 								<p><strong><spring:message code="label.InterestEntry.createdInterest" /> </strong></p>
+								<p>&nbsp;</p>
 								<c:forEach var="interestEntry" items="${interestEntryBean.interest.createdInterestEntriesList}">
 									<p>
 										[<joda:format value="${interestEntry.entryDate}" style="S-" />]:

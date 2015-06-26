@@ -376,9 +376,11 @@ public class DebitEntry extends DebitEntry_Base {
     public BigDecimal amountInDebt(final LocalDate paymentDate) {
         final Set<SettlementEntry> entries = new TreeSet<SettlementEntry>(SettlementEntry.COMPARATOR_BY_ENTRY_DATE_TIME);
 
+        entries.addAll(getSettlementEntriesSet());
+        
         BigDecimal amountToPay = getAmountWithVat();
         for (final SettlementEntry settlementEntry : entries) {
-            if (!settlementEntry.getEntryDateTime().toLocalDate().isBefore(paymentDate)) {
+            if (settlementEntry.getEntryDateTime().toLocalDate().isAfter(paymentDate)) {
                 break;
             }
 
@@ -525,25 +527,20 @@ public class DebitEntry extends DebitEntry_Base {
         DebitEntry entry =
                 new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
                         quantity, null, entryDateTime);
+        
         if (interestRate != null) {
-            //Clone InterestRate if needed
-            if (interestRate.getTariff() != null || interestRate.getDebitEntry() != entry) {
-                InterestRate copyInterest = InterestRate.createForDebitEntry(entry, interestRate);
-                entry.changeInterestRate(copyInterest);
-            }
+            InterestRate.createForDebitEntry(entry, interestRate);
         }
+        
         entry.recalculateAmountValues();
         return entry;
     }
 
-    @Atomic
-    public void changeInterestRate(InterestRate newInterestRate) {
-        if (this.getInterestRate() != null && this.getInterestRate() != newInterestRate) {
-            InterestRate oldRate = this.getInterestRate();
-            this.setInterestRate(null);
-            oldRate.delete();
+    public void changeInterestRate(InterestRate oldInterestRate) {
+        if (this.getInterestRate() != null && this.getInterestRate() != oldInterestRate) {
+            oldInterestRate.delete();
         }
-        this.setInterestRate(newInterestRate);
+
         checkRules();
     }
 }

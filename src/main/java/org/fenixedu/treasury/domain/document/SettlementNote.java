@@ -164,13 +164,18 @@ public class SettlementNote extends SettlementNote_Base {
                 DocumentNumberSeries
                         .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
                         .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
-        if (bean.getInterestEntries().size() == 0) {
+        if (bean.getInterestEntries().size() == 0 || bean.getInterestEntries().stream().filter(l -> l.isIncluded()).count() == 0) {
             return;
         }
-
+        
         DebitNote interestDebitNote =
                 DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
+
         for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
+            if(!interestEntryBean.isIncluded()) {
+                continue;
+            }
+            
             DebitEntry interestDebitEntry =
                     interestEntryBean.getDebitEntry().generateInterestRateDebitEntry(interestEntryBean.getInterest(),
                             bean.getDate().toDateTimeAtStartOfDay(), interestDebitNote);

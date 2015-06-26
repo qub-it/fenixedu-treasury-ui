@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
 
@@ -132,6 +133,11 @@ public class CreditEntry extends CreditEntry_Base {
         return amount;
     }
 
+    @Override
+    public LocalDate getDueDate() {
+        return getEntryDateTime().toLocalDate();
+    }
+
     public static Stream<? extends CreditEntry> find(final CreditNote creditNote) {
         return findAll().filter(d -> d.getFinantialDocument() == creditNote);
     }
@@ -179,4 +185,5 @@ public class CreditEntry extends CreditEntry_Base {
 
         return cr;
     }
+
 }
