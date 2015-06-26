@@ -298,7 +298,8 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam(value = "documentnumberseries") org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDate,
             @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, Model model,
+            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
+                    value = "documentobservations", required = false) java.lang.String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
         /*
          * Creation Logic
@@ -308,7 +309,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
             DebitNote debitNote =
                     createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate, documentDueDate,
-                            originDocumentNumber);
+                            originDocumentNumber, documentObservations);
 
             // Success Validation
             // Add the bean to be used in the View
@@ -338,7 +339,8 @@ public class DebitNoteController extends TreasuryBaseController {
     public DebitNote createDebitNote(org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
             org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
             org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            org.joda.time.LocalDate documentDate, org.joda.time.LocalDate documentDueDate, java.lang.String originDocumentNumber) {
+            org.joda.time.LocalDate documentDate, org.joda.time.LocalDate documentDueDate, java.lang.String originDocumentNumber,
+            String documentObservations) {
 
         // @formatter: off
 
@@ -360,6 +362,7 @@ public class DebitNoteController extends TreasuryBaseController {
         DebitNote debitNote =
                 DebitNote.create(debtAccount, payorDebtAccount, documentNumberSeries, documentDate.toDateTimeAtCurrentTime(),
                         documentDueDate, originDocumentNumber);
+        debitNote.setDocumentObservations(documentObservations);
 
         return debitNote;
     }
@@ -386,7 +389,7 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDate,
             @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.LocalDate documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
-                    value = "state", required = false) FinantialDocumentStateType state, Model model,
+                    value = "documentobservations", required = false) java.lang.String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
 
         setDebitNote(debitNote, model);
@@ -396,7 +399,7 @@ public class DebitNoteController extends TreasuryBaseController {
              * UpdateLogic here
              */
 
-            updateDebitNote(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber, state, model);
+            updateDebitNote(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber, documentObservations, model);
 
             /* Succes Update */
 
@@ -425,7 +428,7 @@ public class DebitNoteController extends TreasuryBaseController {
     @Atomic
     public void updateDebitNote(org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
             org.joda.time.LocalDate documentDate, LocalDate documentDueDate, java.lang.String originDocumentNumber,
-            FinantialDocumentStateType state, Model model) {
+            String documentObservations, Model model) {
 
         // @formatter: off
         /*
@@ -440,6 +443,7 @@ public class DebitNoteController extends TreasuryBaseController {
         // @formatter: on
         DebitNote note = getDebitNote(model);
         note.edit(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber);
+        note.setDocumentObservations(documentObservations);
     }
 
     //

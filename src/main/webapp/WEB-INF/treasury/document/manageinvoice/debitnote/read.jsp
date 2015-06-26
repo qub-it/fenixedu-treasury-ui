@@ -2,44 +2,27 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="datatables"
-    uri="http://github.com/dandelion/datatables"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
-<spring:url var="datatablesUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
-<spring:url var="datatablesBootstrapJsUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
+<spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
+<spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl"
-    value="/CSS/dataTables/dataTables.bootstrap.min.css" />
+<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css" />
 <link rel="stylesheet" href="${datatablesCssUrl}" />
-<spring:url var="datatablesI18NUrl"
-    value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
 
-<link rel="stylesheet" type="text/css"
-    href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<link
-    href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link
-    href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link
-    href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
-<script type="text/javascript"
-    src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
-<script
-    src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
@@ -48,20 +31,16 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message
-            code="label.document.manageInvoice.readDebitNote" />
+        <spring:message code="label.document.manageInvoice.readDebitNote" />
         <small></small>
     </h1>
 </div>
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/delete/${debitNote.externalId}"
-                method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/delete/${debitNote.externalId}" method="POST">
                 <div class="modal-header">
-                    <button type="button" class="close"
-                        data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title">
@@ -71,17 +50,14 @@ ${portal.toolkit()}
                 <div class="modal-body">
                     <p>
 
-                        <spring:message
-                            code="label.document.manageInvoice.readDebitNote.confirmDelete" />
+                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmDelete" />
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                        data-dismiss="modal">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
                         <spring:message code="label.close" />
                     </button>
-                    <button id="deleteButton" class="btn btn-danger"
-                        type="submit">
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
                         <spring:message code="label.delete" />
                     </button>
                 </div>
@@ -97,12 +73,9 @@ ${portal.toolkit()}
 <div class="modal fade" id="closeModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closedebitnote"
-                method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closedebitnote" method="POST">
                 <div class="modal-header">
-                    <button type="button" class="close"
-                        data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title">
@@ -111,17 +84,14 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message
-                            code="label.document.manageInvoice.readDebitNote.confirmClose" />
+                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmClose" />
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                        data-dismiss="modal">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
                         <spring:message code="label.cancel" />
                     </button>
-                    <button id="deleteButton" class="btn btn-primary"
-                        type="submit">
+                    <button id="deleteButton" class="btn btn-primary" type="submit">
                         <spring:message code="label.close" />
                     </button>
                 </div>
@@ -136,12 +106,9 @@ ${portal.toolkit()}
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/anulldebitnote"
-                method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/anulldebitnote" method="POST">
                 <div class="modal-header">
-                    <button type="button" class="close"
-                        data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title">
@@ -150,21 +117,17 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message
-                            code="label.document.manageInvoice.readDebitNote.confirmAnull" />
+                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmAnull" />
                     </p>
                     <br /> <br />
                     <div class="form">
                         <div class="form-group row">
                             <div class="col-sm-4 control-label">
-                                <spring:message
-                                    code="label.DebitNote.annulledReason" />
+                                <spring:message code="label.DebitNote.annulledReason" />
                             </div>
 
                             <div class="col-sm-8">
-                                <input id="debitNote_anullReason"
-                                    class="form-control" type="text"
-                                    name="reason" required value='' />
+                                <input id="debitNote_anullReason" class="form-control" type="text" name="reason" required value='' />
                             </div>
                         </div>
                     </div>
@@ -172,12 +135,10 @@ ${portal.toolkit()}
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default"
-                        data-dismiss="modal">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
                         <spring:message code="label.cancel" />
                     </button>
-                    <button id="deleteButton" class="btn btn-danger"
-                        type="submit">
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
                         <spring:message code="label.annull" />
                     </button>
                 </div>
@@ -232,53 +193,41 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
 
         <%-- 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a href="#" onclick="window.history.back();return false;"><spring:message code="label.event.back" /></a> --%>
         <!-- 		&nbsp;|&nbsp; -->
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-            class=""
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message
                 code="label.event.back" /></a> &nbsp;|&nbsp;
 
         <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
-            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
-                class=""
-                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message
-                    code="label.event.update" /></a>
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
 		&nbsp;
 		</c:if>
         <c:if test="${debitNote.isPreparing()}">
-            |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
-                class="" href="#" data-toggle="modal"
-                data-target="#deleteModal"><spring:message
+            |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                     code="label.event.delete" /></a>  &nbsp;|&nbsp; 
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-            <a class="" href="#" data-toggle="modal"
-                data-target="#closeModal"> <spring:message
-                    code="label.event.document.manageInvoice.closeDebitNote" />
+            <a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
             </a> &nbsp; 
 		</c:if>
         <c:if test="${debitNote.isClosed()}">
             <c:if test="${debitNote.openAmount > 0  }">
                 |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                <a class="" href="#" data-toggle="modal"
-                    data-target="#anullModal"> <spring:message
-                        code="label.event.document.manageInvoice.anullDebitNote" />
+                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
                 </a> &nbsp;|&nbsp;		
             </c:if>
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-                class=""
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message
                     code="label.event.document.manageInvoice.createCreditNote" /></a>
 		&nbsp;
             <c:if test="${debitNote.openAmount > 0  }">
-                |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-                    class=""
+                |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
                     href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}"><spring:message
                         code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" /></a>
         &nbsp;
             </c:if>
         </c:if>
         <c:if test="${not debitNote.isPreparing()}">
-            |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-                class=""
+            |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"><spring:message
                     code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
         &nbsp;
@@ -291,8 +240,7 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
     <div class="alert alert-info" role="alert">
         <c:forEach items="${infoMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon glyphicon-ok-sign"
-                    aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
     </div>
@@ -302,8 +250,7 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
 
         <c:forEach items="${warningMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
     </div>
@@ -313,8 +260,7 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
 
         <c:forEach items="${errorMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
     </div>
@@ -331,118 +277,91 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
             <table class="table">
                 <tbody>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.Series.finantialInstitution" /></th>
-                        <td><c:out
-                                value='${debitNote.documentNumberSeries.series.finantialInstitution.name}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Series.finantialInstitution" /></th>
+                        <td><c:out value='${debitNote.documentNumberSeries.series.finantialInstitution.name}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebtAccount.customer" /></th>
-                        <td><c:out
-                                value='${debitNote.debtAccount.customer.businessIdentification} - ${debitNote.debtAccount.customer.name}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+                        <td><c:out value='${debitNote.debtAccount.customer.businessIdentification} - ${debitNote.debtAccount.customer.name}' /></td>
                     </tr>
                     <c:if test='${not empty debitNote.payorDebtAccount}'>
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message
-                                    code="label.DebitNote.payorDebtAccount" /></th>
-                            <td><c:out
-                                    value='${debitNote.payorDebtAccount.customer.businessIdentification} - ${debitNote.payorDebtAccount.customer.name}' /></td>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payorDebtAccount" /></th>
+                            <td><c:out value='${debitNote.payorDebtAccount.customer.businessIdentification} - ${debitNote.payorDebtAccount.customer.name}' /></td>
                         </tr>
                     </c:if>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.documentNumber" /></th>
-                        <td><strong><c:out
-                                    value='${debitNote.uiDocumentNumber}' /></strong></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentNumber" /></th>
+                        <td><strong><c:out value='${debitNote.uiDocumentNumber}' /></strong></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.documentDate" /></th>
-                        <td>
-                        <joda:format
-                                value="${debitNote.documentDate}"
-                                style="SS" />
-<%--                         <c:out value='${debitNote.documentDate.toString("YYYY-MM-dd")}' /> --%>
-                                </td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDate" /></th>
+                        <td><joda:format value="${debitNote.documentDate}" style="SS" /> <%--                         <c:out value='${debitNote.documentDate.toString("YYYY-MM-dd")}' /> --%>
+                        </td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.documentDueDate" /></th>
-                        <td><c:out
-                                value='${debitNote.documentDueDate.toString("YYYY-MM-dd")}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDueDate" /></th>
+                        <td><c:out value='${debitNote.documentDueDate.toString("YYYY-MM-dd")}' /></td>
                     </tr>
+                    <c:if test="${not empty  debitNote.originDocumentNumber}">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.originDocumentNumber" /></th>
+                            <td><c:out value='${debitNote.originDocumentNumber}' /></td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${not empty  debitNote.documentObservations}">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentObservations" /></th>
+                            <td><c:out value='${debitNote.documentObservations}' /></td>
+                        </tr>
+                    </c:if>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.originDocumentNumber" /></th>
-                        <td><c:out
-                                value='${debitNote.originDocumentNumber}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.state" /></th>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.state" /></th>
                         <td><c:if test="${debitNote.isAnnulled()}">
                                 <span class="label label-danger">
                             </c:if> <c:if test="${debitNote.isPreparing() }">
                                 <span class="label label-warning">
                             </c:if> <c:if test="${debitNote.isClosed()}">
                                 <span class="label label-primary">
-                            </c:if> <c:out
-                                value='${debitNote.state.descriptionI18N.content}' />
-                            </span></td>
+                            </c:if> <c:out value='${debitNote.state.descriptionI18N.content}' /> </span></td>
                     </tr>
                     <c:if test="${debitNote.isAnnulled()}">
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message
-                                    code="label.DebitNote.annulledReason" /></th>
-                            <td><c:out
-                                    value='${debitNote.annulledReason}' /></td>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.annulledReason" /></th>
+                            <td><c:out value='${debitNote.annulledReason}' /></td>
                         </tr>
                     </c:if>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.totalNetAmount" /></th>
-                        <td><c:out
-                                value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalNetAmount)}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalNetAmount" /></th>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalNetAmount)}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.totalVatAmount" /></th>
-                        <td><c:out
-                                value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalVatAmount)}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalVatAmount" /></th>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalVatAmount)}' /></td>
                     </tr>
 
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.totalAmount" /></th>
-                        <td><c:out
-                                value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalAmount)}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.totalAmount" /></th>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.totalAmount)}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.DebitNote.openAmount" /></th>
-                        <td><c:out
-                                value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' />
-                            <c:if
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /> <c:if
                                 test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
                                 <ul>
-                                    <c:forEach var="paymentcode"
-                                        items="${debitNote.paymentCodesSet}">
+                                    <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
                                         <li><c:out
                                                 value="${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode} - ${paymentcode.paymentReferenceCode.formattedCode}" /></li>
                                     </c:forEach>
                                 </ul>
                             </c:if></td>
                     </tr>
-                    <c:if
-                        test="${not empty debitNote.relatedSettlementEntries }">
+                    <c:if test="${not empty debitNote.relatedSettlementEntries }">
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message
-                                    code="label.DebitNote.relatedSettlementEntries" /></th>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
                             <td>
                                 <ul>
-                                    <c:forEach var="settlementEntry"
-                                        items="${debitNote.relatedSettlementEntries}">
+                                    <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
                                         <li><c:out
                                                 value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
                                     </c:forEach>
@@ -468,19 +387,14 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
     <div class="well well-sm" style="display: inline-block">
         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message
-                code="label.event.document.manageInvoice.addEntry" /></a>
-        &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog"
-            aria-hidden="true"></span>&nbsp;<a class=""
+                code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message
                 code="label.event.document.manageInvoice.addPendingEntries" /></a>
     </div>
 </c:if>
 <c:choose>
     <c:when test="${not empty debitNote.debitEntriesSet}">
-        <datatables:table id="debitEntries" row="debitEntry"
-            data="${debitNote.debitEntriesSet}"
-            cssClass="table responsive table-bordered table-hover"
-            cdn="false" cellspacing="2">
+        <datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.InvoiceEntry.quantity" />
@@ -506,9 +420,9 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                 <c:out value="${debitEntry.vat.taxRate}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
-                    <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}" type="submit" class="btn btn-default btn-xs">
-                        <spring:message code="label.view" />
-                    </a>
+                <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}" type="submit" class="btn btn-default btn-xs">
+                    <spring:message code="label.view" />
+                </a>
             </datatables:column>
         </datatables:table>
         <script>
@@ -524,8 +438,7 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
                 <spring:message code="label.noResultsFound" />
             </p>
         </div>

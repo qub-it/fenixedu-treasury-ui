@@ -277,7 +277,8 @@ public class CreditNoteController extends TreasuryBaseController {
 //				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") CreditNote creditNote, @RequestParam(value = "origindocumentnumber",
-            required = false) java.lang.String originDocumentNumber, Model model, RedirectAttributes redirectAttributes) {
+            required = false) java.lang.String originDocumentNumber, @RequestParam(value = "documentobservations",
+            required = false) java.lang.String documentObservations, Model model, RedirectAttributes redirectAttributes) {
 
         setCreditNote(creditNote, model);
 
@@ -286,7 +287,7 @@ public class CreditNoteController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateCreditNote(originDocumentNumber, model);
+            updateCreditNote(originDocumentNumber, documentObservations, model);
 
             /*Succes Update */
 
@@ -312,7 +313,7 @@ public class CreditNoteController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateCreditNote(java.lang.String originDocumentNumber, Model model) {
+    public void updateCreditNote(java.lang.String originDocumentNumber, String documentObservations, Model model) {
 
         // @formatter: off				
         /*
@@ -327,6 +328,7 @@ public class CreditNoteController extends TreasuryBaseController {
         // @formatter: on
 
         getCreditNote(model).setOriginDocumentNumber(originDocumentNumber);
+        getCreditNote(model).setDocumentObservations(documentObservations);
 
     }
 
@@ -491,7 +493,8 @@ public class CreditNoteController extends TreasuryBaseController {
             @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
                     value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, Model model,
+            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
+                    value = "documentobservations", required = false) java.lang.String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
 
         if (debtAccount == null && debitNote == null) {
@@ -518,7 +521,8 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
 
             CreditNote creditNote =
-                    createCreditNote(debtAccount, debitNote, documentNumberSeries, documentDate, originDocumentNumber);
+                    createCreditNote(debtAccount, debitNote, documentNumberSeries, documentDate, originDocumentNumber,
+                            documentObservations);
 
             //Success Validation
             //Add the bean to be used in the View
@@ -543,7 +547,8 @@ public class CreditNoteController extends TreasuryBaseController {
 
     @Atomic
     public CreditNote createCreditNote(DebtAccount debtAccount, org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            DocumentNumberSeries documentNumberSeries, org.joda.time.DateTime documentDate, java.lang.String originDocumentNumber) {
+            DocumentNumberSeries documentNumberSeries, org.joda.time.DateTime documentDate,
+            java.lang.String originDocumentNumber, String documentObservations) {
 
         // @formatter: off
 
@@ -562,6 +567,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         CreditNote creditNote =
                 CreditNote.create(debtAccount, documentNumberSeries, documentDate, debitNote, originDocumentNumber);
+        creditNote.setDocumentObservations(documentObservations);
 
         if (debitNote != null) {
             for (DebitEntry entry : debitNote.getDebitEntriesSet()) {

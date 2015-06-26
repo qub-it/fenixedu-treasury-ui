@@ -163,6 +163,17 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : creditNote.originDocumentNumber }'/>' />
                 </div>
             </div>
+            
+             <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.documentObservations" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="creditNote_documentObservations" class="form-control" type="text" name="documentobservations"
+                        value='<c:out value='${not empty param.documentobservations ? param.documentobservations : creditNote.documentObservations}'/>' />
+                </div>
+            </div>
 
         </div>
 
