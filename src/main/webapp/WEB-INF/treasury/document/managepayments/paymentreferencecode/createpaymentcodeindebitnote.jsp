@@ -127,7 +127,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-6">
-                    <input type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.customer.code} - ${paymentReferenceCodeBean.debitNote.debtAccount.customer.name}'/>" disabled />
+                    <input type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.customer.businessIdentification} - ${paymentReferenceCodeBean.debitNote.debtAccount.customer.name}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">

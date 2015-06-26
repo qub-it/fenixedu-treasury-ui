@@ -42,7 +42,7 @@ ${portal.angularToolkit()}
 		<div class="well well-sm">
 			<p>
 				<strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>${settlementNoteBean.debtAccount.finantialInstitution.name}</p>
-            <p><strong><spring:message code="label.DebtAccount.customer" />: </strong><a href="${pageContext.request.contextPath}/<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}" >${settlementNoteBean.debtAccount.customer.code} - ${settlementNoteBean.debtAccount.customer.name}</a></p>			<p>
+            <p><strong><spring:message code="label.DebtAccount.customer" />: </strong><a href="${pageContext.request.contextPath}/<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}" >${settlementNoteBean.debtAccount.customer.businessIdentification} - ${settlementNoteBean.debtAccount.customer.name}</a></p>			<p>
 				<strong><spring:message code="label.Customer.fiscalNumber" />: </strong>${ settlementNoteBean.debtAccount.customer.fiscalNumber }</p>
 		</div>
 

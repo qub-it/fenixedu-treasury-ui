@@ -225,6 +225,7 @@ public class DebitEntryBean implements IBean {
         this.setDueDate(new LocalDate());
         this.setQuantity(BigDecimal.ONE);
         this.setAmount(BigDecimal.ZERO);
+        this.setInterestRate(new FixedTariffInterestRateBean());
     }
 
     public DebitEntryBean(DebitEntry debitEntry) {
@@ -248,6 +249,11 @@ public class DebitEntryBean implements IBean {
         this.setDescription(debitEntry.getDescription());
         this.setAmount(debitEntry.getAmount());
         this.setQuantity(debitEntry.getQuantity());
+        if (debitEntry.getInterestRate() == null) {
+            this.setInterestRate(new FixedTariffInterestRateBean());
+        } else {
+            this.setInterestRate(new FixedTariffInterestRateBean(debitEntry.getInterestRate()));
+        }
     }
 
     public boolean isApplyInterests() {

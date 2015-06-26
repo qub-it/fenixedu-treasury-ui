@@ -118,6 +118,25 @@ ${portal.toolkit()}
                         value='${not empty param.name ? param.name : series.name.json() }'  required />
                 </div>
             </div>
+            
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.Series.active" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="series_active" name="active"
+                        class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
+                    $("#series_active").val('<c:out value='${not empty param.active? param.active: series.active}'/>');
+                    </script>
+                </div>
+            </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.Series.externSeries" />
@@ -172,24 +191,7 @@ ${portal.toolkit()}
                     </script>
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.Series.active" />
-                </div>
-
-                <div class="col-sm-2">
-                    <select id="series_active" name="active"
-                        class="form-control">
-                        <option value="false"><spring:message
-                                code="label.no" /></option>
-                        <option value="true"><spring:message
-                                code="label.yes" /></option>
-                    </select>
-                    <script>
-                    $("#series_active").val('<c:out value='${not empty param.active? param.active: series.active}'/>');
-                    </script>
-                </div>
-            </div>
+            
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button"

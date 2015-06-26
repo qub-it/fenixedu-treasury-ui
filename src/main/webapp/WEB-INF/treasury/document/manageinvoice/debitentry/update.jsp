@@ -167,7 +167,7 @@ ${portal.angularToolkit()}
                 <div class="col-sm-10">
                     <div class="form-control">
                         <c:out
-                            value="${debitEntryBean.debtAccount.customer.code} - ${debitEntryBean.debtAccount.customer.name}" />
+                            value="${debitEntryBean.debtAccount.customer.businessIdentification} - ${debitEntryBean.debtAccount.customer.name}" />
                     </div>
                 </div>
             </div>
@@ -201,7 +201,7 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-10">
                     <div class="form-control">
-                        <c:out value="${debitEntry.entryDateTime}" />
+                        <c:out value='${debitEntry.entryDateTime.toString("YYYY-MM-dd HH:mm"}' />
                     </div>
                 </div>
             </div>

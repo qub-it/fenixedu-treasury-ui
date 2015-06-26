@@ -175,7 +175,7 @@ ${portal.angularToolkit()}
                 <div class="col-sm-10">
                     <div class="form-control">
                         <c:out
-                            value="${debitEntryBean.debtAccount.customer.code} - ${debitEntryBean.debtAccount.customer.name}" />
+                            value="${debitEntryBean.debtAccount.customer.businessIdentification} - ${debitEntryBean.debtAccount.customer.name}" />
                     </div>
                 </div>
             </div>
@@ -270,12 +270,12 @@ ${portal.angularToolkit()}
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebitEntry.entryDate" />
+                    <spring:message code="label.FinantialDocumentEntry.entryDateTime" />
                 </div>
 
                 <div class="col-sm-4">
                     <input id="debitEntry_entryDate" class="form-control"
-                        type="text" bennu-datetime="object.entryDate"
+                        type="text" bennu-date-time="object.entryDate"
                         name="entryDate" />
                 </div>
             </div>

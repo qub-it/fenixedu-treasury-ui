@@ -175,8 +175,10 @@ public class DebitEntryController extends TreasuryBaseController {
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
         if (debitNote != null) {
             bean.setDueDate(debitNote.getDocumentDueDate());
+            bean.setEntryDate(debitNote.getDocumentDate());
         } else {
             bean.setDueDate(new LocalDate());
+            bean.setEntryDate(new DateTime());
         }
         this.setDebitEntryBean(bean, model);
 
@@ -214,7 +216,7 @@ public class DebitEntryController extends TreasuryBaseController {
                         bean.setInterestRate(new FixedTariffInterestRateBean(tariff.getInterestRate()));
                     } else {
                         bean.setApplyInterests(false);
-                        bean.setInterestRate(null);
+                        bean.setInterestRate(new FixedTariffInterestRateBean());
                     }
                 } else {
                     bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
@@ -247,7 +249,8 @@ public class DebitEntryController extends TreasuryBaseController {
 
             DebitEntry debitEntry =
                     createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
-                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate(), bean.getTreasuryEvent());
+                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate(), bean.getEntryDate(),
+                            bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate());
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
@@ -285,7 +288,8 @@ public class DebitEntryController extends TreasuryBaseController {
     @Atomic
     public DebitEntry createDebitEntry(DebitNote debitNote, DebtAccount debtAccount, java.lang.String description,
             org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, java.math.BigDecimal quantity,
-            LocalDate dueDate, final TreasuryEvent treasuryEvent) {
+            LocalDate dueDate, DateTime entryDateTime, final TreasuryEvent treasuryEvent, boolean applyInterests,
+            final FixedTariffInterestRateBean interestRateBean) {
 
         // @formatter: off
 
@@ -309,11 +313,15 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry =
                 DebitEntry.create(debitNote, debtAccount, treasuryEvent, activeVat.orElse(null), amount, dueDate, null, product,
-                        description, quantity, null, new DateTime());
+                        description, quantity, null, entryDateTime);
 
-        InterestRate interestRate = null;
-        if (tariff.isPresent()) {
-            interestRate = InterestRate.createForDebitEntry(debitEntry, tariff.get().getInterestRate());
+        if (applyInterests) {
+            InterestRate interestRate =
+                    InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestType(),
+                            interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
+                            interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
+                            interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
+            debitEntry.changeInterestRate(interestRate);
         }
 
         return debitEntry;
@@ -371,7 +379,8 @@ public class DebitEntryController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(), model);
+            updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(),
+                    bean.isApplyInterests(), bean.getInterestRate(), model);
 
             /*Succes Update */
 
@@ -402,7 +411,7 @@ public class DebitEntryController extends TreasuryBaseController {
 
     @Atomic
     public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity,
-            final TreasuryEvent treasuryEvent, Model model) {
+            final TreasuryEvent treasuryEvent, boolean applyInterests, FixedTariffInterestRateBean interestRateBean, Model model) {
 
         // @formatter: off				
         /*
@@ -418,6 +427,20 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry = getDebitEntry(model);
         debitEntry.edit(description, amount, quantity, treasuryEvent);
+        if (debitEntry.getInterestRate() == null) {
+            InterestRate interestRate =
+                    InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestType(),
+                            interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
+                            interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
+                            interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
+            debitEntry.changeInterestRate(interestRate);
+        } else {
+            InterestRate rate = debitEntry.getInterestRate();
+            rate.edit(interestRateBean.getInterestType(), interestRateBean.getNumberOfDaysAfterDueDate(),
+                    interestRateBean.getApplyInFirstWorkday(), interestRateBean.getMaximumDaysToApplyPenalty(),
+                    interestRateBean.getMaximumMonthsToApplyPenalty(), interestRateBean.getInterestFixedAmount(),
+                    interestRateBean.getRate());
+        }
     }
 
     private static final String _SEARCHPENDINGENTRIES_URI = "/searchpendingentries/";

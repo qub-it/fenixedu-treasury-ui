@@ -208,6 +208,15 @@ ${portal.toolkit()}
                         <td><c:out value='${series.name.content}' />
                         </td>
                     </tr>
+                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.Series.active" /></th>
+                        <td><c:if test="${series.active}">
+                                <spring:message code="label.true" />
+                            </c:if> <c:if test="${not series.active}">
+                                <spring:message code="label.false" />
+                            </c:if></td>
+                    </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.Series.externSeries" /></th>

@@ -148,7 +148,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DocumentNumberSeries.counter" /></th>
-                        <td><c:out value='value="${documentNumberSeries.preparingDocumentsCount}/${documentNumberSeries.closedDocumentsCount}"' /></td>
+                        <td><c:out value='${documentNumberSeries.preparingDocumentsCount}/${documentNumberSeries.closedDocumentsCount}' /></td>
                     </tr>
                 </tbody>
             </table>
@@ -181,7 +181,7 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.DebtAccount.customer" />
                 </datatables:columnHead>
-                <c:out value="${document.debtAccount.customer.code} - ${document.debtAccount.customer.name}" />
+                <c:out value="${document.debtAccount.customer.businessIdentification} - ${document.debtAccount.customer.name}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>

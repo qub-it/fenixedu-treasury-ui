@@ -228,7 +228,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.debtAccount" /></th>
-                        <td><c:out value='${settlementNote.debtAccount.customer.code} - ${settlementNote.debtAccount.customer.name}' /></td>
+                        <td><c:out value='${settlementNote.debtAccount.customer.businessIdentification} - ${settlementNote.debtAccount.customer.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentNumber" /></th>

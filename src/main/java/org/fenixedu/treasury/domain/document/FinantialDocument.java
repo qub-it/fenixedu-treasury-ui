@@ -47,6 +47,7 @@ import org.joda.time.DateTime;
 import pt.ist.fenixframework.Atomic;
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
@@ -167,7 +168,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     public String getUiDocumentNumber() {
         return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
-                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(), this.getDocumentNumber());
+                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(),
+                Strings.padStart(this.getDocumentNumber(), 7, '0'));
     }
 
     public BigDecimal getTotalAmount() {

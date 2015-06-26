@@ -127,7 +127,7 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-10">
                     <div class="form-control">
-                        <c:out value="${creditEntryBean.debtAccount.customer.code} - ${creditEntryBean.debtAccount.customer.name}" />
+                        <c:out value="${creditEntryBean.debtAccount.customer.businessIdentification} - ${creditEntryBean.debtAccount.customer.name}" />
                     </div>
                 </div>
             </div>

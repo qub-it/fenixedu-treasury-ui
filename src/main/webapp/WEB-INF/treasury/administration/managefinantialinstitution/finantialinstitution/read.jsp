@@ -282,6 +282,8 @@ ${portal.toolkit()}
                 <tr>
                     <th><spring:message code="label.Series.code" /></th>
                     <th><spring:message code="label.Series.name" /></th>
+                    <th><spring:message code="label.Series.active" /></th>
+                    <th><spring:message code="label.Series.legacy" /></th>
                     <th><spring:message code="label.Series.externSeries" /></th>
                     <th><spring:message code="label.Series.defaultSeries" /></th>
                     <%-- Operations Column --%>
@@ -394,6 +396,18 @@ var searchseriesDataSet = [
     {
         "code" : "<c:out value='${searchResult.code}'/>",
         "name" : "<c:out value='${searchResult.name.content}'/>",
+        "active" : <c:if test="${searchResult.active}">
+                    "<spring:message code='label.true' />"
+                    </c:if>
+                    <c:if test="${not searchResult.active}">
+                    "<spring:message code='label.false' />"
+                    </c:if>,
+        "legacy" : <c:if test="${searchResult.legacy}">
+                      "<spring:message code='label.true' />"
+                    </c:if>
+                    <c:if test="${not searchResult.legacy}">
+                    "<spring:message code='label.false' />"
+                </c:if>,
         "externSeries" : <c:if test="${searchResult.externSeries}">
                               "<spring:message code='label.true' />"
                           </c:if>
@@ -441,7 +455,9 @@ $(document).ready(function() {
         "columns": [
             { data: 'code' },
             { data: 'name' },
+            { data: 'active' },
             { data: 'externSeries' },
+            { data: 'legacy' },
             { data: 'defaultSeries' },
             { data: 'actions' }                    
         ],

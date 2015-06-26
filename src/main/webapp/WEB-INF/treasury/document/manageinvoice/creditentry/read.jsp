@@ -130,7 +130,7 @@ ${portal.toolkit()}
                 <tbody>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.InvoiceEntry.debtAccount" /></th>
-                        <td><c:out value='${creditEntry.debtAccount.customer.code} - ${creditEntry.debtAccount.customer.name}' /></td>
+                        <td><c:out value='${creditEntry.debtAccount.customer.businessIdentification} - ${creditEntry.debtAccount.customer.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.finantialDocument" /></th>

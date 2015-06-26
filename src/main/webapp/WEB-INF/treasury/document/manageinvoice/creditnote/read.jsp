@@ -232,7 +232,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
-                        <td><c:out value='${creditNote.debtAccount.customer.code} - ${creditNote.debtAccount.customer.name}' /></td>
+                        <td><c:out value='${creditNote.debtAccount.customer.businessIdentification} - ${creditNote.debtAccount.customer.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.documentNumber" /></th>

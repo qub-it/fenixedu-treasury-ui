@@ -107,7 +107,7 @@ ${portal.toolkit()}
 
             <div class="col-sm-10">
                 <div class="form-control">
-                    <c:out value="${debtAccount.customer.code} - ${debtAccount.customer.name}" />
+                    <c:out value="${debtAccount.customer.businessIdentification} - ${debtAccount.customer.name}" />
                 </div>
             </div>
         </div>

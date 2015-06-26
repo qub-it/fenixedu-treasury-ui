@@ -538,7 +538,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     @Atomic
     public void changeInterestRate(InterestRate newInterestRate) {
-        if (this.getInterestRate() != null) {
+        if (this.getInterestRate() != null && this.getInterestRate() != newInterestRate) {
             InterestRate oldRate = this.getInterestRate();
             this.setInterestRate(null);
             oldRate.delete();

@@ -200,7 +200,7 @@ $(document).ready(function() {
 		payorDebtAccount_options = [
 			<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element"> 
 				{
-					text : "<c:out value='${element.customer.code} - ${element.customer.name}'/>",  
+					text : "<c:out value='${element.customer.businessIdentification} - ${element.customer.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
@@ -223,7 +223,7 @@ $(document).ready(function() {
 		debtAccount_options = [
 			<c:forEach items="${DebitNote_debtAccount_options}" var="element"> 
 				{
-					text : "<c:out value='${element.customer.code} - ${element.customer.name}'/>",  
+					text : "<c:out value='${element.customer.businessIdentification} - ${element.customer.name}'/>",  
 					id : "<c:out value='${element.externalId}'/>"
 				},
 			</c:forEach>
