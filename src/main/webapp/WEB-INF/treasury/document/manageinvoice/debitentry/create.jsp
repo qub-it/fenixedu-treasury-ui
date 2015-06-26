@@ -270,6 +270,18 @@ ${portal.angularToolkit()}
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.entryDate" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input id="debitEntry_entryDate" class="form-control"
+                        type="text" bennu-datetime="object.entryDate"
+                        name="entryDate" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
                     <spring:message code="label.DebitEntry.dueDate" />
                 </div>
 

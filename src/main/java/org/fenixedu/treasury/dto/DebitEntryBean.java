@@ -40,7 +40,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
-import org.fenixedu.treasury.domain.tariff.Tariff;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 public class DebitEntryBean implements IBean {
@@ -57,6 +57,7 @@ public class DebitEntryBean implements IBean {
     private List<TupleDataSourceBean> currencyDataSource;
     private DebitNote finantialDocument;
     private boolean eventAnnuled;
+    private DateTime entryDate;
     private LocalDate dueDate;
     private String propertiesJsonMap;
     private String description;
@@ -220,6 +221,8 @@ public class DebitEntryBean implements IBean {
     }
 
     public DebitEntryBean() {
+        this.setEntryDate(new DateTime());
+        this.setDueDate(new LocalDate());
         this.setQuantity(BigDecimal.ONE);
         this.setAmount(BigDecimal.ZERO);
     }
@@ -239,6 +242,7 @@ public class DebitEntryBean implements IBean {
         this.setAmount(debitEntry.getAmount());
         this.setQuantity(debitEntry.getQuantity());
         this.setEventAnnuled(debitEntry.getEventAnnuled());
+        this.setEntryDate(debitEntry.getEntryDateTime());
         this.setDueDate(debitEntry.getDueDate());
         this.setPropertiesJsonMap(debitEntry.getPropertiesJsonMap());
         this.setDescription(debitEntry.getDescription());
@@ -260,5 +264,13 @@ public class DebitEntryBean implements IBean {
 
     public void setInterestRate(FixedTariffInterestRateBean interestRate) {
         this.interestRate = interestRate;
+    }
+
+    public DateTime getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(DateTime entryDate) {
+        this.entryDate = entryDate;
     }
 }
