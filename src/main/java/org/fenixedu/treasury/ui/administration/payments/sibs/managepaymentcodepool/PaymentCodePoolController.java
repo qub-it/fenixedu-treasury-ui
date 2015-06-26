@@ -162,7 +162,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
                 "PaymentCodePool_documentSeriesForPayments_options",
                 DocumentNumberSeries.findAll()
                         .filter(x -> x.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
-                        .collect(Collectors.toList()));
+                        .filter(x -> x.getSeries().getActive()).collect(Collectors.toList()));
 
         model.addAttribute("PaymentCodePool_paymentMethod_options", PaymentMethod.findAll().collect(Collectors.toList()));
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/create";

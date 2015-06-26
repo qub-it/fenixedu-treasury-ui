@@ -76,6 +76,7 @@ public class Series extends Series_Base {
     protected Series(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
             final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries) {
         this();
+        setActive(true);
         setFinantialInstitution(finantialInstitution);
         setCode(code);
         setName(name);
@@ -119,8 +120,9 @@ public class Series extends Series_Base {
 
     @Atomic
     public void edit(final String code, final LocalizedString name, final boolean externSeries, final boolean certificated,
-            final boolean legacy) {
+            final boolean legacy, final boolean active) {
         setName(name);
+        setActive(active);
         if (!code.equalsIgnoreCase(getCode())) {
             if (this.isSeriesUsedForAnyDocument()) {
                 throw new TreasuryDomainException("error.Series.invalid.series.type.in.used.series");

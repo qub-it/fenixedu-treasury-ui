@@ -27,7 +27,6 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,13 +39,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import pt.ist.fenixframework.Atomic;
 
 public class DocumentNumberSeries extends DocumentNumberSeries_Base {
-
-    public static final Comparator<DocumentNumberSeries> COMPARE_BY_DEFAULT = new Comparator<DocumentNumberSeries>() {
-        @Override
-        public int compare(final DocumentNumberSeries o1, final DocumentNumberSeries o2) {
-            return Series.COMPARATOR_BY_DEFAULT.compare(o1.getSeries(), o2.getSeries());
-        }
-    };
 
     protected DocumentNumberSeries() {
         super();
@@ -80,6 +72,9 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     @Atomic
     public int getSequenceNumberAndIncrement() {
+        if (this.getSeries().getActive() == false) {
+            throw new TreasuryDomainException("error.DocumentNumberSeries.document.is.in.closed.series");
+        }
         int count = getCounter();
         count++;
         setCounter(count);

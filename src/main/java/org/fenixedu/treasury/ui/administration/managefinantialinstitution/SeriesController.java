@@ -165,14 +165,15 @@ public class SeriesController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") Series series, @RequestParam(value = "code", required = false) String code,
-            @RequestParam(value = "name", required = false) LocalizedString name, @RequestParam(value = "externseries",
-                    required = false) boolean externSeries,
+    public String update(@PathVariable("oid") Series series, @RequestParam(value = "code", required = true) String code,
+            @RequestParam(value = "name", required = true) LocalizedString name, @RequestParam(value = "externseries",
+                    required = true) boolean externSeries,
             @RequestParam(value = "certificated", required = false) boolean certificated, @RequestParam(value = "legacy",
-                    required = false) boolean legacy, Model model, RedirectAttributes redirectAttributes) {
+                    required = true) boolean legacy, @RequestParam(value = "active", required = true) boolean active,
+            Model model, RedirectAttributes redirectAttributes) {
         setSeries(series, model);
         try {
-            updateSeries(code, name, externSeries, certificated, legacy, model);
+            updateSeries(code, name, externSeries, certificated, legacy, active, model);
             return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
@@ -183,8 +184,8 @@ public class SeriesController extends TreasuryBaseController {
     }
 
     public void updateSeries(String code, LocalizedString name, boolean externSeries, boolean certificated, boolean legacy,
-            Model model) {
-        getSeries(model).edit(code, name, externSeries, certificated, legacy);
+            boolean active, Model model) {
+        getSeries(model).edit(code, name, externSeries, certificated, legacy, active);
     }
 
     public void setSeriesDefault(Model model) {

@@ -79,9 +79,10 @@ public class ERPConfigurationController extends TreasuryBaseController {
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") ERPConfiguration eRPConfiguration, Model model) {
-        model.addAttribute("ERPConfiguration_paymentsIntegrationSeries_options",
+        model.addAttribute(
+                "ERPConfiguration_paymentsIntegrationSeries_options",
                 Series.find(eRPConfiguration.getFinantialInstitution()).stream().filter(x -> x.getExternSeries() == true)
-                        .collect(Collectors.toList()));
+                        .filter(x -> x.getActive()).collect(Collectors.toList()));
         setERPConfiguration(eRPConfiguration, model);
 
         return "treasury/integration/erp/erpconfiguration/update";

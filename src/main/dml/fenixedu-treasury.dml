@@ -185,6 +185,7 @@ class document.FinantialDocumentType {
 class document.Series {
 	String code (REQUIRED);
 	LocalizedString name (REQUIRED);
+	boolean active;
 	boolean externSeries;
 	boolean certificated;
 	boolean legacy;

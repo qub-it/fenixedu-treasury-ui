@@ -68,7 +68,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageCreditNote", accessGroup = "treasuryFrontOffice")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageCreditNote",
+        accessGroup = "treasuryFrontOffice")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
 //@BennuSpringController(value = TreasuryController.class)
@@ -461,8 +462,9 @@ public class CreditNoteController extends TreasuryBaseController {
 
         } else {
             List<DocumentNumberSeries> availableSeries =
-                    org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(),
-                            debtAccount.getFinantialInstitution()).collect(Collectors.toList());
+                    org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                            .find(FinantialDocumentType.findForCreditNote(), debtAccount.getFinantialInstitution())
+                            .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
             if (availableSeries.size() > 0) {
                 model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
             } else {

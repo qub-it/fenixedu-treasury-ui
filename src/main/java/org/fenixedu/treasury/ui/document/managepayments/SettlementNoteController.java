@@ -70,7 +70,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "treasuryFrontOffice")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",
+        accessGroup = "treasuryFrontOffice")
 @RequestMapping(SettlementNoteController.CONTROLLER_URL)
 public class SettlementNoteController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/document/managepayments/settlementnote";
@@ -254,10 +255,10 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         //TODOJN
         //Surround by try/catch block
-        
+
         try {
             processSettlementNoteCreation(bean);
-        } catch(final DomainException de) {
+        } catch (final DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
         }
         ////////////
@@ -297,7 +298,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                 "SettlementNote_documentNumberSeries_options",
                 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()
                         .filter(dNS -> dNS.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
-                        .collect(Collectors.toList()));
+                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList()));
         model.addAttribute("SettlementNote_currency_options",
                 org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());

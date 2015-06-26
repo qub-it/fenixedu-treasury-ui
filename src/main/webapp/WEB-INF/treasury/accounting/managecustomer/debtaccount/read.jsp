@@ -293,8 +293,8 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.date" />
                             </datatables:columnHead>
-                            <%--                             <c:out value="${entry.entryDateTime}" /> --%>
-                            <joda:format value="${entry.entryDateTime}" style="S-" />
+                                                        <c:out value='${entry.entryDateTime.toString("YYYY-MM-dd")}' />
+<%--                             <joda:format value="${entry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column cssStyle="width:100px;">
                             <datatables:columnHead>
