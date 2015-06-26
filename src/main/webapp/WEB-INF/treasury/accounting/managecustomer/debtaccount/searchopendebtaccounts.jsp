@@ -80,7 +80,9 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-<th><spring:message code="label.DebtAccount.name"/></th>
+<th><spring:message code="label.Customer.identificationNumber"/></th>
+<th><spring:message code="label.Customer.fiscalNumber"/></th>
+<th><spring:message code="label.Customer.name"/></th>
 <th><spring:message code="label.DebtAccount.totalInDebt"/></th>
 <%-- Operations Column --%>
 					<th></th>
@@ -107,10 +109,12 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"name" : "<c:out value='${searchResult.name}'/>",
+                "identificationNumber" : "<c:out value='${searchResult.customer.identificationNumber}'/>",
+				"fiscalNumber" : "<c:out value='${searchResult.customer.fiscalNumber}'/>",
+				"name" : "<c:out value='${searchResult.customer.name}'/>",
 "openAmount" : "<c:out value='${searchResult.finantialInstitution.currency.getValueFor(searchResult.totalInDebt)}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/searchopendebtaccountssearchOpenDebtAccounts/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
 			},
             </c:forEach>
@@ -125,7 +129,9 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-			{ data: 'name' },
+{ data: 'identificationNumber' },
+{ data: 'fiscalNumber' },
+{ data: 'name' },
 			{ data: 'openAmount' },
 			{ data: 'actions' }
 			
@@ -133,7 +139,7 @@ ${portal.toolkit()}
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 2 } 
+		               { "width": "54px", "targets": 4 } 
 		             ],
 		"data" : searchopendebtaccountsDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
