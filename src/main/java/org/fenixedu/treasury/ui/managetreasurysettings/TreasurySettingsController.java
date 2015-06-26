@@ -67,10 +67,10 @@ public class TreasurySettingsController extends TreasuryBaseController {
     public String update(final Model model) {
         model.addAttribute("TreasurySettings_defaultCurrency_options",
                 Currency.findAll().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent()))
-                        .collect(Collectors.toSet()));
+                        .collect(Collectors.toList()));
         model.addAttribute("TreasurySettings_interestProduct_options",
                 Product.findAll().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent()))
-                        .collect(Collectors.toSet()));
+                        .collect(Collectors.toList()));
         model.addAttribute("treasurySettings", TreasurySettings.getInstance());
 
         return "treasury/managetreasurysettings/treasurysettings/update";
