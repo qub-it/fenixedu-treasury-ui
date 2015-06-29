@@ -59,11 +59,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final DebtAccount debtAccount, final Product product, final LocalizedString name) {
+    protected void init(final DebtAccount debtAccount, final Product product, final LocalizedString description) {
         setDebtAccount(debtAccount);
         setProduct(product);
 
-        setDescription(name);
+        setDescription(description);
     }
 
     protected void checkRules() {
