@@ -216,7 +216,7 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                 </a> &nbsp;|&nbsp;		
             </c:if>
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><spring:message
+                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}"><spring:message
                     code="label.event.document.manageInvoice.createCreditNote" /></a>
 		&nbsp;
             <c:if test="${debitNote.openAmount > 0  }">

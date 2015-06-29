@@ -44,6 +44,7 @@ import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.util.Constants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -69,6 +70,13 @@ public class TreasuryBaseController {
     protected static final String ERROR_MESSAGES = "errorMessages";
     protected static final String WARNING_MESSAGES = "warningMessages";
     protected static final String INFO_MESSAGES = "infoMessages";
+
+    // Ricardo : This AutoWired is boiunded to Per-Request via SpringMVC proxy. The Bounded HttpServletRequest is bounded
+    // to a proxy instead to the singleton
+    // http://stackoverflow.com/questions/3320674/spring-how-do-i-inject-an-httpservletrequest-into-a-request-scoped-bean
+    // http://stackoverflow.com/questions/28638962/autowiring-httpservletrequest-in-spring-controller
+    @Autowired
+    private HttpServletRequest request;
 
     // The entity in the Model
 
@@ -105,6 +113,11 @@ public class TreasuryBaseController {
         }
 
         return "redirect:" + destinationAction;
+    }
+
+    protected String redirectToReferrer(Model model, RedirectAttributes redirectAttributes) {
+        String previousURL = request.getHeader("referer");
+        return redirect(previousURL, model, redirectAttributes);
     }
 
     @ModelAttribute

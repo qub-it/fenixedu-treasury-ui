@@ -93,12 +93,6 @@ public class CustomerType extends CustomerType_Base {
         deleteDomainObject();
     }
 
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
     public static Stream<CustomerType> findAll() {
         return Bennu.getInstance().getCustomerTypesSet().stream();
     }
@@ -124,7 +118,6 @@ public class CustomerType extends CustomerType_Base {
                     .create("STUDENT",
                             new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
                                     "label.CustomerType.STUDENT")));
-
             CustomerType.create("ADHOC",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.CustomerType.ADHOC")));
         }

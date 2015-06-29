@@ -205,11 +205,6 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
                 country, district, municipality, locality, zipCode);
     }
 
-//    public List<FinantialDocument> findPendingDocumentsNotExported(DateTime fromDate, DateTime toDate) {
-//        // TODO Auto-generated method stub
-//        return null;
-//    }
-//
     public Set<FinantialDocument> getExportableDocuments(DateTime fromDate, DateTime toDate) {
         Set<FinantialDocument> result = new HashSet<FinantialDocument>();
         for (Series series : this.getSeriesSet()) {
