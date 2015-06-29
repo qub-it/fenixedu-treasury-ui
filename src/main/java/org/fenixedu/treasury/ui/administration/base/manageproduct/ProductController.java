@@ -156,11 +156,10 @@ public class ProductController extends TreasuryBaseController {
             return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
-            return create(model);
         } catch (Exception tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
-            return create(model);
         }
+        return create(model);
     }
 
     @Atomic

@@ -110,7 +110,7 @@ ${portal.toolkit()}
                     <select id="paymentCodePool_finantialInstitution"
                         class="js-example-basic-single"
                         name="finantialinstitution">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                     </select>
                 </div>
             </div>
@@ -172,7 +172,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-2">
 <select id="paymentCodePool_active" name="active" class="form-control">
-<option value=""></option> 
+<option value="">&nbsp;</option> 
 <option value="false"><spring:message code="label.no"/></option>
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
@@ -186,7 +186,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-2">
 <select id="paymentCodePool_useCheckDigit" name="usecheckdigit" class="form-control">
-<option value=""></option> 
+<option value="">&nbsp;</option> 
 <option value="false"><spring:message code="label.no"/></option>
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>
@@ -197,7 +197,7 @@ ${portal.toolkit()}
 <div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.useAmountToValidateCheckDigit"/></div> 
 <div class="col-sm-2">
 <select id="paymentCodePool_useAmountToValidateCheckDigit" name="useamounttovalidatecheckdigit" class="form-control">
-<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+<option value="">&nbsp;</option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 <option value="false"><spring:message code="label.no"/></option>
 <option value="true"><spring:message code="label.yes"/></option>				
 </select>

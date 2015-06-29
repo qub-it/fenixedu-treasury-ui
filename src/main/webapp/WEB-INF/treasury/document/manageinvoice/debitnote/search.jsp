@@ -103,7 +103,7 @@ ${portal.toolkit()}
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="debitNote_debtAccount"
                         class="select2 col-sm-10" name="debtaccount">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                     </select>
                 </div>
             </div>
@@ -153,7 +153,7 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <select id="debitNote_state" class="form-control"
                         name="state">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
                         <c:forEach items="${stateValues}" var="field">
                             <option value='<c:out value='${field}'/>'><c:out

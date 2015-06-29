@@ -111,7 +111,7 @@ ${portal.toolkit()}
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<select id="treasuryExemption_treasuryExemptionType"
 						class="js-example-basic-single" name="treasuryexemptiontype">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 					</select>
 				</div>
 			</div>
@@ -151,7 +151,7 @@ ${portal.toolkit()}
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<select id="treasuryExemption_product"
 						class="js-example-basic-single" name="product">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 				</div>

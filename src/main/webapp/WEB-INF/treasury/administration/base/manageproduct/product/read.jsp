@@ -117,6 +117,10 @@ ${portal.toolkit()}
 		<form method="post" class="form-horizontal">
 			<table class="table">
 				<tbody>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Product.productGroup" /></th>
+                        <td><c:out value='${product.productGroup.name.content}' /></td>
+                    </tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.Product.code" /></th>
 						<td><c:out value='${product.code}' /></td>

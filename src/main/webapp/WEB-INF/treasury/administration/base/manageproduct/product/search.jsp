@@ -104,7 +104,7 @@ ${portal.toolkit()}
                     <select id="product_productGroup"
                         class="js-example-basic-single"
                         name="productgroup">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>

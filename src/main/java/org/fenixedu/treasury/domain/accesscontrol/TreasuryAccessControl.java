@@ -14,7 +14,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class TreasuryAccessControl {
-    
+
     private static final String TREASURY_MANAGERS = "treasuryManagers";
 
     private static final String TREASURY_BACK_OFFICE = "treasuryBackOffice";
@@ -22,90 +22,90 @@ public class TreasuryAccessControl {
     private static final String TREASURY_FRONT_OFFICE = "treasuryFrontOffice";
 
     private static TreasuryAccessControl _instance = null;
-    
+
     private List<ITreasuryAccessControlExtension> extensions = Collections.synchronizedList(Lists.newArrayList());
-    
+
     private TreasuryAccessControl() {
     }
-    
+
     public boolean isFrontOfficeMember(final User user) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if(iTreasuryAccessControlExtension.isFrontOfficeMember(user)) {
+            if (iTreasuryAccessControlExtension.isFrontOfficeMember(user)) {
                 return true;
             }
         }
-        
+
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
     }
-    
+
     public boolean isFrontOfficeMember(final User user, final FinantialInstitution finantialInstitution) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if(iTreasuryAccessControlExtension.isFrontOfficeMember(user, finantialInstitution)) {
+            if (iTreasuryAccessControlExtension.isFrontOfficeMember(user, finantialInstitution)) {
                 return true;
             }
         }
-        
+
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
     }
-    
+
     public boolean isBackOfficeMember(final User user) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if(iTreasuryAccessControlExtension.isBackOfficeMember(user)) {
+            if (iTreasuryAccessControlExtension.isBackOfficeMember(user)) {
                 return true;
             }
         }
-        
+
         return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
     }
-    
+
     public boolean isBackOfficeMember(final User user, final FinantialInstitution finantialInstitution) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if(iTreasuryAccessControlExtension.isBackOfficeMember(user, finantialInstitution)) {
+            if (iTreasuryAccessControlExtension.isBackOfficeMember(user, finantialInstitution)) {
                 return true;
             }
         }
-        
+
         return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
     }
-    
+
     public boolean isBackOfficeMember(final User user, final FinantialEntity finantialEntity) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if(iTreasuryAccessControlExtension.isBackOfficeMember(user, finantialEntity)) {
+            if (iTreasuryAccessControlExtension.isBackOfficeMember(user, finantialEntity)) {
                 return true;
             }
         }
-        
-        return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);        
+
+        return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
     }
-    
+
     public boolean isManager(final User user) {
         return getOrCreateDynamicGroup(TREASURY_MANAGERS).isMember(user);
     }
-    
+
     public Set<User> getFrontOfficeMembers() {
         final Set<User> result = Sets.newHashSet();
-        
+
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
             result.addAll(iTreasuryAccessControlExtension.getFrontOfficeMembers());
         }
-        
+
         result.addAll(getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).getMembers());
 
         return result;
     }
-    
+
     public Set<User> getBackOfficeMembers() {
         final Set<User> result = Sets.newHashSet();
-        
+
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
             result.addAll(iTreasuryAccessControlExtension.getBackOfficeMembers());
         }
-        
+
         result.addAll(getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).getMembers());
 
         return result;
     }
-    
+
     public Set<User> getTreasuryManagerMembers() {
         final Set<User> result = Sets.newHashSet();
 
@@ -117,27 +117,32 @@ public class TreasuryAccessControl {
     public void registerExtension(final ITreasuryAccessControlExtension extension) {
         extensions.add(extension);
     }
-    
+
     public void unregisterExtension(final ITreasuryAccessControlExtension extension) {
         extensions.add(extension);
     }
-    
+
     public synchronized static TreasuryAccessControl getInstance() {
-        if(_instance == null) {
+        if (_instance == null) {
             _instance = new TreasuryAccessControl();
         }
-        
+
         return _instance;
     }
 
     private DynamicGroup getOrCreateDynamicGroup(final String dynamicGroupName) {
         final DynamicGroup dynamicGroup = DynamicGroup.get(dynamicGroupName);
-        
-        if(!dynamicGroup.isDefined()) {
-            dynamicGroup.mutator().grant(User.findByUsername("manager"));
+
+        if (!dynamicGroup.isDefined()) {
+            User manager = User.findByUsername("manager");
+            if (manager != null) {
+                dynamicGroup.mutator().grant(manager);
+            } else {
+                dynamicGroup.toPersistentGroup();
+            }
         }
-        
+
         return dynamicGroup;
     }
-    
+
 }

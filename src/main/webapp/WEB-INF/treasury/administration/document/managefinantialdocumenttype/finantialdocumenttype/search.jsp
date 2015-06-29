@@ -77,7 +77,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<select id="finantialDocumentType_type" class="form-control" name="type">
-		<option value=""></option> 
+		<option value="">&nbsp;</option> 
 		<c:forEach items="${typeValues}" var="field">
 			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
 		</c:forEach>
