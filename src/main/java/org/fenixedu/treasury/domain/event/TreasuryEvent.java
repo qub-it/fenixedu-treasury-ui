@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -41,6 +42,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
@@ -57,11 +59,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final DebtAccount debtAccount, final Product product) {
+    protected void init(final DebtAccount debtAccount, final Product product, final LocalizedString name) {
         setDebtAccount(debtAccount);
         setProduct(product);
 
-        setDescription(product.getName());
+        setDescription(name);
     }
 
     protected void checkRules() {
@@ -183,7 +185,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public boolean isDeletable() {
         return true;
     }
+    
 
+    public abstract LocalDate getTreasuryEventDate();
+    
     @Atomic
     public void delete() {
         if (!isDeletable()) {
