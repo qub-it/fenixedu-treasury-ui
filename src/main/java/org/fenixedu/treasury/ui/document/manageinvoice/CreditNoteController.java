@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
@@ -438,14 +439,14 @@ public class CreditNoteController extends TreasuryBaseController {
         if (debtAccount == null && debitNote == null) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
-            return redirect(SEARCH_URL, model, redirectAttributes);
+            return redirectToReferrer(model, redirectAttributes);
         }
 
         if (debitNote != null && debtAccount != null) {
             if (!debitNote.getDebtAccount().equals(debtAccount)) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
-                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+                return redirectToReferrer(model, redirectAttributes);
             }
             documentNumberSeries =
                     DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
@@ -457,6 +458,7 @@ public class CreditNoteController extends TreasuryBaseController {
         }
         if (debitNote != null) {
             finantialInstitution = debitNote.getDebtAccount().getFinantialInstitution();
+            debtAccount = debitNote.getDebtAccount();
         }
 
         if (documentNumberSeries != null) {
@@ -465,7 +467,7 @@ public class CreditNoteController extends TreasuryBaseController {
         } else {
             List<DocumentNumberSeries> availableSeries =
                     org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                            .find(FinantialDocumentType.findForCreditNote(), debtAccount.getFinantialInstitution())
+                            .find(FinantialDocumentType.findForCreditNote(), finantialInstitution)
                             .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
             if (availableSeries.size() > 0) {
                 model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
@@ -495,7 +497,7 @@ public class CreditNoteController extends TreasuryBaseController {
                     value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime documentDate,
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
                     value = "documentobservations", required = false) java.lang.String documentObservations, Model model,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         if (debtAccount == null && debitNote == null) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE,

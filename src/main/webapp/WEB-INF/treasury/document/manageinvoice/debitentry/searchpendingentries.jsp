@@ -179,7 +179,7 @@ ${portal.toolkit()}
             action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/searchpendingentries/addentries?debitNote=${debitNote.externalId}"
             style="display: none;" method="POST"></form>
 
-        <button type="button"
+        <button id="addEntryButton" type="button"
             onClick="javascript:submitOptions('searchpendingentriesTable', 'addentries', 'debitEntrys')">
             <spring:message
                 code='label.document.manageInvoice.searchPendingEntries.addEntries' />
@@ -220,7 +220,6 @@ ${portal.toolkit()}
 	$(document).ready(function() {
 
 	
-
 
 		var table = $('#searchpendingentriesTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
