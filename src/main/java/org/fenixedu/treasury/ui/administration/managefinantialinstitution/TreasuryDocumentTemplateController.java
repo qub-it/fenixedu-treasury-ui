@@ -135,7 +135,10 @@ public class TreasuryDocumentTemplateController extends TreasuryBaseController {
         return TreasuryDocumentTemplate.create(finantialDocumentTypes, finantialEntity);
     }
 
-    @RequestMapping(value = "/search/upload/{oid}", method = RequestMethod.POST)
+    private static final String SEARCH_UPLOAD_URI = "/search/upload/";
+    public static final String SEARCH_UPLOAD_URL = CONTROLLER_URL + SEARCH_UPLOAD_URI;
+
+    @RequestMapping(value = SEARCH_UPLOAD_URI + "{oid}", method = RequestMethod.POST)
     public String processSearchToUploadAction(@PathVariable("oid") TreasuryDocumentTemplate documentTemplate, @RequestParam(
             value = "documentTemplateFile", required = true) MultipartFile documentTemplateFile, Model model,
             RedirectAttributes redirectAttributes) {

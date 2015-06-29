@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -216,6 +217,9 @@ public class Product extends Product_Base {
     }
 
     public void updateFinantialInstitutions(List<FinantialInstitution> finantialInstitutions) {
+        if (finantialInstitutions == null) {
+            finantialInstitutions = Collections.emptyList();
+        }
         for (FinantialInstitution inst : this.getFinantialInstitutionsSet()) {
             if (!finantialInstitutions.contains(inst)) {
                 if (this.canRemoveFinantialInstitution(inst)) {

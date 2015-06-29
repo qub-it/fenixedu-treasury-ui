@@ -105,7 +105,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 	<select id="paymentReferenceCode_state" class="form-control" name="state">
-		<option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
+		<option value="">&nbsp;</option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
 		<c:forEach items="${stateValues}" var="field">
 			<option value='<c:out value='${field}'/>'><c:out value='${field}'/></option>
 		</c:forEach>

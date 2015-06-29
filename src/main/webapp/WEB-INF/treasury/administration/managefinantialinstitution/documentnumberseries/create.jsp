@@ -93,7 +93,7 @@ ${portal.toolkit()}
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<select id="documentNumberSeries_finantialDocumentType"
 						class="js-example-basic-single" name="finantialdocumenttype">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 				</div>
@@ -106,7 +106,7 @@ ${portal.toolkit()}
 				<div class="col-sm-4">					
 					<select id="documentNumberSeries_bennu"
 						class="js-example-basic-single" name="bennu">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						
 					</select>
 				</div>

@@ -116,7 +116,7 @@ ${portal.toolkit()}
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		 <select id="eRPConfiguration_paymentsIntegrationSeries" class="js-example-basic-single" name="paymentsintegrationseries">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		 <option value="">&nbsp;</option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
 		</select>
 				</div>
 </div>		

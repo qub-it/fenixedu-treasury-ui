@@ -134,7 +134,7 @@ ${portal.toolkit()}
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<select id="product_vatType" class="js-example-basic-single" name="vatType">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 				</div>
@@ -148,7 +148,7 @@ ${portal.toolkit()}
 
 				<div class="col-sm-2">
 					<select id="finantial_institutions" class="js-example-basic-single" name="finantialInstitution" multiple="multiple">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 					<script>

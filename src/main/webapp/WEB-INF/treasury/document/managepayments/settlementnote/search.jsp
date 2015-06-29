@@ -79,7 +79,7 @@ ${portal.toolkit()}
                 <div class="col-sm-10" >
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="settlementNote_debtAccount" class="select2 col-sm-10" name="debtaccount">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                     </select>
                 </div>
             </div>

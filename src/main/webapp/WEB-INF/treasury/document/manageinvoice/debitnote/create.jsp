@@ -147,7 +147,7 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="debitNote_payorDebtAccount" class="js-example-basic-single" name="payordebtaccount">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>

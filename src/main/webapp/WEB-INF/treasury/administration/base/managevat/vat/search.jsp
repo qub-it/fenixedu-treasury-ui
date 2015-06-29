@@ -79,7 +79,7 @@ ${portal.toolkit()}
 
 				<div class="col-sm-10">
 					<select id="vat_vatType" class="js-example-basic-single" name="vatType">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 					<script>
@@ -107,7 +107,7 @@ ${portal.toolkit()}
 
 				<div class="col-sm-10">
 					<select id="vat_finantialInstitution" class="js-example-basic-single" name="finantialInstitution">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 					<script>

@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.TreasuryDocumentTemplateController"%>
+<%@page import="org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -42,6 +44,37 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
+<div class="modal fade" id="uploadModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="uploadForm" action="${pageContext.request.contextPath}<%= TreasuryDocumentTemplateController.SEARCH_UPLOAD_URL %>${documentTemplate.externalId}" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.DocumentTemplateFile.upload" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <input type="file" name="documentTemplateFile" accept="<%=TreasuryDocumentTemplateFile.CONTENT_TYPE%>" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="uploadButton" class="btn btn-primary" type="submit">
+                        <spring:message code="label.upload" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -54,7 +87,7 @@ ${portal.toolkit()}
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="deleteForm"
-                action="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/delete/${documentTemplate.externalId}"
+                action="${pageContext.request.contextPath}<%= TreasuryDocumentTemplateController.DELETE_URL %>${documentTemplate.externalId}"
                 method="POST">
                 <div class="modal-header">
                     <button type="button" class="close"
@@ -96,8 +129,13 @@ ${portal.toolkit()}
             code="label.event.back" /></a> &nbsp;|&nbsp; <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> &nbsp;
+            code="label.event.delete" /></a> &nbsp;|&nbsp; <span
+        class="glyphicon glyphicon-upload" aria-hidden="true"></span>&nbsp;<a
+        class="" href="#" data-toggle="modal" data-target="#uploadModal"><spring:message
+            code="label.event.upload" /></a> &nbsp;
 </div>
+
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 

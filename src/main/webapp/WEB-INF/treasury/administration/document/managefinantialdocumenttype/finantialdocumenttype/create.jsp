@@ -87,7 +87,7 @@ ${portal.toolkit()}
 				<div class="col-sm-4">
 					<select id="finantialDocumentType_type" class="form-control"
 						name="type" required>
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
 						<c:forEach items="${typeValues}" var="field">
 							<option value='<c:out value='${field}'/>'><c:out
@@ -156,7 +156,7 @@ ${portal.toolkit()}
 
 <div class="col-sm-4">
 			 <select id="finantialDocumentType_bennu" class="js-example-basic-single" name="bennu">
-		 <option value=""></option>  
+		 <option value="">&nbsp;</option>  
 		</select>
 				</div>
 </div>	

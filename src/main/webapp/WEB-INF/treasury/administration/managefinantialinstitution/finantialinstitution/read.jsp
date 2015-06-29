@@ -1,4 +1,5 @@
 
+<%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.TreasuryDocumentTemplateController"%>
 <%@page import="org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile"%>
 <%@page import="org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum"%>
 <%@page import="org.fenixedu.treasury.domain.document.FinantialDocumentType"%>
@@ -42,7 +43,7 @@ ${portal.toolkit()}
 
 <script type="text/javascript">
       function processUpload(externalId) {
-        url = "${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/upload/" + externalId;
+        url = "${pageContext.request.contextPath}<%= TreasuryDocumentTemplateController.SEARCH_UPLOAD_URL %>" + externalId;
         $("#uploadForm").attr("action", url);
         $('#uploadModal').modal('toggle')
       }
@@ -418,7 +419,7 @@ var searchseriesDataSet = [
                 "<spring:message code='label.true' />"
                           </c:if>
                           <c:if test="${not searchResult.defaultSeries}">
-                              "<a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.makeDefaultSeries'/></a>"
+                              "(<spring:message code='label.false' />) <a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.makeDefaultSeries'/></a>"
                           </c:if>,
         "actions" :
              " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"             
@@ -481,7 +482,7 @@ $(document).ready(function() {
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [
 			{ "width": "205px", "targets": 0 }, 
-            { "width": "54px", "targets": 2 } 
+            { "width": "80px", "targets": 2 } 
         ],
         "dom": '', 
     });

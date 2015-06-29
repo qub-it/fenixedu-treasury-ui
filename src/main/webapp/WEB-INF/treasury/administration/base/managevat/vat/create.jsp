@@ -126,7 +126,7 @@ ${portal.toolkit()}
                     <select id="vat_vatExemptionReason"
                         class="js-example-basic-single"
                         name="vatExemptionReason">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                     </select>
                 </div>
             </div>            
@@ -166,6 +166,8 @@ ${portal.toolkit()}
 $(document).ready(function() {
     <%-- Block for providing administrativeOffice options --%>
     <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+    var sortFunction = function(a,b) { return a.text.localeCompare(b.text) };
+
     vatType_options = [
         <c:forEach items="${vatTypeList}" var="element"> 
             {
@@ -177,7 +179,7 @@ $(document).ready(function() {
     
     $("#vat_vatType").select2(
         {
-            data : vatType_options,
+            data : vatType_options.sort(sortFunction),
         }     
     );
     
@@ -192,24 +194,24 @@ $(document).ready(function() {
     
     $("#vat_finantialInstitution").select2(
         {
-            data : finantialInstitution_options,
+            data : finantialInstitution_options.sort(sortFunction),
         }     
     );
     
     vatExemptionReason_options = [
-                                    <c:forEach items="${vatExemptionReasonList}" var="element"> 
-                                        {
-                                            text : "<c:out value='${element.name.content}'/>",  
-                                            id : "<c:out value='${element.externalId}'/>"
-                                        },
-                                    </c:forEach>
-                                ];
-                                
-                                $("#vat_vatExemptionReason").select2(
-                                    {
-                                        data : vatExemptionReason_options,
-                                    }     
-                                );  
+        <c:forEach items="${vatExemptionReasonList}" var="element"> 
+            {
+                text : "<c:out value='${element.name.content}'/>",  
+                id : "<c:out value='${element.externalId}'/>"
+            },
+        </c:forEach>
+    ];
+
+    $("#vat_vatExemptionReason").select2(
+        {
+            data : vatExemptionReason_options.sort(sortFunction),
+        }     
+    );  
     
     });
 function checkValue(elem) {

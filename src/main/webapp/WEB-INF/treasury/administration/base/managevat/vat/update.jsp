@@ -140,7 +140,7 @@ ${portal.toolkit()}
                     <select id="vat_vatExemptionReason" 
                         class="js-example-basic-single"
                         name="vatExemptionReason">
-                        <option value=""></option>
+                        <option value="">&nbsp;</option>
                     </select>
                 </div>
             </div>            
