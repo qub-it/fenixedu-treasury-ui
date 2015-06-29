@@ -95,7 +95,7 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
             throw new TreasuryDomainException("error.FinantialInstitution.name.duplicated");
         }
 
-        IFiscalContributor.findByFiscalNumber(getFiscalNumber());
+//        IFiscalContributor.findByFiscalNumber(getFiscalNumber());
     }
 
     public String getComercialRegistrationCode() {

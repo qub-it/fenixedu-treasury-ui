@@ -35,31 +35,31 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import com.google.common.collect.Sets;
 
 public interface IFiscalContributor {
-    
+
     public String getFiscalNumber();
-    
+
     public static IFiscalContributor findByFiscalNumber(final String fiscalNumber) {
         IFiscalContributor result = null;
-        
-        for(IFiscalContributor it : findAll()) {
-            if(!it.getFiscalNumber().equalsIgnoreCase(fiscalNumber)) {
+
+        for (IFiscalContributor it : findAll()) {
+            if (!it.getFiscalNumber().equalsIgnoreCase(fiscalNumber)) {
                 continue;
             }
-            
-            if(result != null) {
+
+            if (result != null && !fiscalNumber.equals(Customer.DEFAULT_FISCAL_NUMBER)) {
                 throw new TreasuryDomainException("error.IFiscalContributor.duplicate.fiscal.number");
             }
-            
+
             result = it;
         }
-        
+
         return result;
     }
-    
+
     public static Set<IFiscalContributor> findAll() {
         final Set<IFiscalContributor> iterable = Sets.newHashSet(FinantialInstitution.findAll().collect(Collectors.toList()));
-        Customer.findAll().forEach(x->iterable.add(x));
-        
+        Customer.findAll().forEach(x -> iterable.add(x));
+
         return iterable;
     }
 }

@@ -124,7 +124,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="customer_name" class="form-control" type="text" name="customer" value='<c:out value='${param.name}'/>' />
+                    <input id="customer_name" class="form-control" type="text" name="customer" value='<c:out value='${param.customer}'/>' />
                 </div>
             </div>
         </div>
@@ -140,7 +140,7 @@ ${portal.toolkit()}
 
         <p>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-            <spring:message code="label.limitexceeded" arguments="<%=CustomerController.SEARCH_CUSTOMER_LIST_LIMIT_SIZE%>" />
+            <spring:message code="label.limitexceeded" arguments="${searchcustomerResultsDataSet.size()};${searchcustomerResultsDataSet_totalCount}" argumentSeparator=";" htmlEscape="false"/>
         </p>
 
     </div>

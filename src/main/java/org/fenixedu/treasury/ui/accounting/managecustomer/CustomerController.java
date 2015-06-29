@@ -84,6 +84,7 @@ public class CustomerController extends TreasuryBaseController {
                     required = false) String customer, Model model) {
         List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution, customerType, customer);
         model.addAttribute("limit_exceeded", searchcustomerResultsDataSet.size() > SEARCH_CUSTOMER_LIST_LIMIT_SIZE);
+        model.addAttribute("searchcustomerResultsDataSet_totalCount", searchcustomerResultsDataSet.size());
         searchcustomerResultsDataSet =
                 searchcustomerResultsDataSet.stream().limit(SEARCH_CUSTOMER_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
@@ -129,5 +130,5 @@ public class CustomerController extends TreasuryBaseController {
 
         return "treasury/accounting/managecustomer/customer/read";
     }
-    
- }
+
+}

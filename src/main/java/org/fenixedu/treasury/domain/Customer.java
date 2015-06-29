@@ -42,7 +42,7 @@ import pt.ist.fenixframework.Atomic;
 
 public abstract class Customer extends Customer_Base implements IFiscalContributor {
 
-    public static final String DEFAULT_FISCAL_NUMBER = "9999999990";
+    public static final String DEFAULT_FISCAL_NUMBER = "999999990";
     public static final int MAX_CODE_LENGHT = 20;
 
     protected Customer() {
@@ -140,7 +140,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
                 && getFiscalNumber().contains(searchFieldClear) || getCode() != null && getCode().contains(searchFieldClear)
                 || getBusinessIdentification() != null && getBusinessIdentification().contains(searchFieldClear);
     }
-    
+
     public Set<FinantialInstitution> getFinantialInstitutions() {
         return getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution()).collect(Collectors.toSet());
     }
@@ -173,5 +173,5 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             }
         }
     }
-    
+
 }

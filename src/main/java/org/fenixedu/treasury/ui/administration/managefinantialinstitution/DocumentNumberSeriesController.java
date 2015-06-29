@@ -27,7 +27,6 @@
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -180,7 +179,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         setDocumentNumberSeries(documentNumberSeries, model);
         try {
 
-            Set<FinantialDocument> preparingDocuments =
+            List<FinantialDocument> preparingDocuments =
                     documentNumberSeries
                             .getFinantialDocumentsSet()
                             .stream()
@@ -194,7 +193,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
                                     }
                                 }
                                 return x.getDocumentDate().compareTo(y.getDocumentDate());
-                            }).collect(Collectors.toSet());
+                            }).collect(Collectors.toList());
 
             for (FinantialDocument document : preparingDocuments) {
                 try {

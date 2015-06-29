@@ -104,8 +104,12 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     public static DocumentNumberSeries find(final FinantialDocumentType finantialDocumentType, final Series series) {
         final Set<DocumentNumberSeries> result =
-                finantialDocumentType.getDocumentNumberSeriesSet().stream()
-                        .filter(dns -> dns.getSeries().getCode().equals(series.getCode())).collect(Collectors.toSet());
+                finantialDocumentType
+                        .getDocumentNumberSeriesSet()
+                        .stream()
+                        .filter(dns -> dns.getSeries().getCode().equals(series.getCode())
+                                && dns.getSeries().getFinantialInstitution().equals(series.getFinantialInstitution()))
+                        .collect(Collectors.toSet());
         if (result.size() > 1) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.not.unique.in.finantialDocumentType.and.series");
         }
