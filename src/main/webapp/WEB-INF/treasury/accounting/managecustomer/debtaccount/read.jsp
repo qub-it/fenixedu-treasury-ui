@@ -617,29 +617,43 @@ ${portal.angularToolkit()}
             <!--             <h3>Isencoes</h3> -->
             <p></p>
             <c:choose>
-                <c:when test="${not empty exemptionsDataSet}">
-                    <table id="exemptionsTable"
-                        class="table responsive table-bordered table-hover">
-                        <thead>
-                            <tr>
-                                <%--!!!  Field names here --%>
-                                <th><spring:message
-                                        code="label.accounting.manageCustomer.readCustomer.debtItems" /></th>
-                                <th><spring:message
-                                        code="label.accounting.manageCustomer.readCustomer.dueDate" /></th>
-                                <%-- 								<th><spring:message code="label.accounting.manageCustomer.readCustomer.debitAmount" /></th> --%>
-                                <th><spring:message
-                                        code="label.accounting.manageCustomer.readCustomer.totalAmount" /></th>
-                                <th><spring:message
-                                        code="label.accounting.manageCustomer.readCustomer.pendingAmount" /></th>
-                                <%-- Operations Column --%>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                        </tbody>
-                    </table>
+                <c:when test="${not empty exemptionDataSet}">
+                    <datatables:table id="exemptionsDataSet" row="exemption" data="${exemptionDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
+                        <datatables:column >
+                            <datatables:columnHead>
+                                <spring:message code="label.TreasuryExemption.treasuryEvent" />
+                            </datatables:columnHead>
+                            ${exemption.treasuryEvent.description.content}
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.TreasuryExemption.product" />
+                            </datatables:columnHead>
+                            ${exemption.product.name.content}
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.TreasuryExemption.valueToExempt" />
+                            </datatables:columnHead>
+                            ${exemption.treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.TreasuryExemption.reason" />
+                            </datatables:columnHead>
+                            ${exemption.reason}
+                        </datatables:column>
+                    </datatables:table>
+                    <script>
+																					createDataTables(
+																							'exemptionsDataSet',
+																							false,
+																							false,
+																							false,
+																							"${pageContext.request.contextPath}",
+																							"${datatablesI18NUrl}");
+					</script>
+                    
                 </c:when>
                 <c:otherwise>
                     <div class="alert alert-warning" role="alert">
@@ -650,9 +664,7 @@ ${portal.angularToolkit()}
                                 aria-hidden="true">&nbsp;</span>
                             <spring:message code="label.noResultsFound" />
                         </p>
-
                     </div>
-
                 </c:otherwise>
             </c:choose>
         </div>

@@ -72,6 +72,13 @@ ${portal.toolkit()}
             code="label.event.back" /></a> &nbsp;|&nbsp;
         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"><spring:message code="label.event.update" /></a>
+
+		&nbsp;|&nbsp;
+		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+        <a class=""
+            href="${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/${customer.person.externalId}">
+            <spring:message code="label.AcademicActBlockingSuspensionController.link" /></a>
+        
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

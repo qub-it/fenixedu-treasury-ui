@@ -39,10 +39,10 @@ public class Constants {
 
     public static final BigDecimal HUNDRED_PERCENT = new BigDecimal("100.00");
 
-    public static String BUNDLE = FenixeduTreasurySpringConfiguration.BUNDLE.replace('/', '.');
+    public static final String BUNDLE = FenixeduTreasurySpringConfiguration.BUNDLE.replace('/', '.');
     
     // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
-    public static DateTime INFINITY_DATE = new DateTime().plusYears(500);
+    public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
     
     // @formatter: off
     /**************

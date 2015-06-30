@@ -236,7 +236,7 @@ public class CreditNoteController extends TreasuryBaseController {
     }
 
     private List<CreditNote> getSearchUniverseSearchCreditNoteDataSet() {
-        return CreditNote.findAll().collect(Collectors.toList());
+        return CreditNote.findAll().collect(Collectors.<CreditNote> toList());
     }
 
     private List<CreditNote> filterSearchCreditNote(DebitNote debitNote, DebtAccount payorDebtAccount,
