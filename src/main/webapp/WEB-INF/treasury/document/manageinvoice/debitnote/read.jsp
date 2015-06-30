@@ -190,47 +190,75 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
 <%-- NAVIGATION --%>
 <form>
     <div class="well well-sm" style="display: inline-block">
-
-        <%-- 		<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a href="#" onclick="window.history.back();return false;"><spring:message code="label.event.back" /></a> --%>
-        <!-- 		&nbsp;|&nbsp; -->
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><spring:message
-                code="label.event.back" /></a> &nbsp;|&nbsp;
-
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+        &nbsp;
+        <a class=""
+            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}">
+            <spring:message code="label.event.back" />
+        </a> 
+        &nbsp;
         <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
-            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><spring:message code="label.event.update" /></a>
-		&nbsp;
+            |&nbsp;
+            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+            &nbsp;
+            <a class=""
+                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}">
+                <spring:message code="label.event.update" />
+            </a>
+    		&nbsp;
 		</c:if>
         <c:if test="${debitNote.isPreparing()}">
-            |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-                    code="label.event.delete" /></a>  &nbsp;|&nbsp; 
+            |&nbsp;
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            &nbsp;
+            <a class="" href="#" data-toggle="modal" data-target="#deleteModal">
+                <spring:message code="label.event.delete" /></a>  
+            &nbsp;|&nbsp; 
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-            <a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
-            </a> &nbsp; 
+            &nbsp;
+            <a class="" href="#" data-toggle="modal" data-target="#closeModal"> 
+                <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
+            </a> 
+            &nbsp; 
 		</c:if>
         <c:if test="${debitNote.isClosed()}">
             <c:if test="${debitNote.openAmount > 0  }">
-                |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
-                </a> &nbsp;|&nbsp;		
+                |&nbsp;
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                &nbsp;
+                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> 
+                    <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
+                </a> 
+                &nbsp;		
             </c:if>
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}"><spring:message
-                    code="label.event.document.manageInvoice.createCreditNote" /></a>
-		&nbsp;
+            |&nbsp;
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            &nbsp;
+            <a class=""
+                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}">
+                <spring:message code="label.event.document.manageInvoice.createCreditNote" />
+            </a>
+		    &nbsp;
             <c:if test="${debitNote.openAmount > 0  }">
-                |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-                    href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}"><spring:message
-                        code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" /></a>
-        &nbsp;
+                |&nbsp;
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                &nbsp;
+                <a class=""
+                    href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}">
+                    <spring:message code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" />
+                </a>
+                &nbsp;
             </c:if>
         </c:if>
         <c:if test="${not debitNote.isPreparing()}">
-            |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"><spring:message
-                    code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
-        &nbsp;
+            |&nbsp;
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            &nbsp;
+            <a class=""
+                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
+                <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
+            </a>
+            &nbsp;
         </c:if>
     </div>
 </form>
@@ -296,12 +324,11 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDate" /></th>
-                        <td><joda:format value="${debitNote.documentDate}" style="SS" /> <%--                         <c:out value='${debitNote.documentDate.toString("YYYY-MM-dd")}' /> --%>
-                        </td>
+                        <td><joda:format value="${debitNote.documentDate}" style="S-" /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDueDate" /></th>
-                        <td><c:out value='${debitNote.documentDueDate.toString("YYYY-MM-dd")}' /></td>
+                        <td><joda:format value="${debitNote.documentDueDate}" style="S-" /></td>
                     </tr>
                     <c:if test="${not empty  debitNote.originDocumentNumber}">
                         <tr>

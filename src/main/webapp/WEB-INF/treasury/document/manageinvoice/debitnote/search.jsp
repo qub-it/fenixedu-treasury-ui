@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -121,15 +122,32 @@ ${portal.toolkit()}
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2 control-label">
+                <div class="col-sm-4 control-label">
                     <spring:message code="label.DebitNote.documentDate" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitNote.documentDateFrom" />
                 </div>
 
                 <div class="col-sm-4">
                     <input id="debitNote_documentDate"
                         class="form-control" type="text"
-                        name="documentdate" bennu-datetime
-                        value='<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>' />
+                        name="documentdatefrom" bennu-date
+                        value='<c:out value='${param.documentdate }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitNote.documentDateTo" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input id="debitNote_documentDate"
+                        class="form-control" type="text"
+                        name="documentdateto" bennu-date
+                        value='<c:out value='${param.documentdate }'/>' />
                 </div>
             </div>
             <div class="form-group row">
@@ -157,7 +175,7 @@ ${portal.toolkit()}
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
                         <c:forEach items="${stateValues}" var="field">
                             <option value='<c:out value='${field}'/>'><c:out
-                                    value='${field}' /></option>
+                                    value='${field.descriptionI18N.content}' /></option>
                         </c:forEach>
                     </select>
                     <script>
@@ -173,6 +191,15 @@ ${portal.toolkit()}
     </form>
 </div>
 
+<c:set var="limit"><%=DebitNoteController.SEARCH_DEBIT_NOTE_LIST_LIMIT_SIZE%></c:set>
+<c:if test="${listSize > limit}">
+    <div class="alert alert-warning" role="alert">
+        <p>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+            <spring:message code="label.limitexceeded" arguments="${limit},${listSize}" />
+        </p>
+    </div>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty searchdebitnoteResultsDataSet}">
