@@ -119,8 +119,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     public static Stream<DocumentNumberSeries> find(final FinantialDocumentType finantialDocumentType,
             final FinantialInstitution finantialInstitution) {
         return findAll().filter(x -> x.getSeries().getFinantialInstitution().getCode().equals(finantialInstitution.getCode()))
-                .filter(x -> x.getFinantialDocumentType().getType().getDescriptionI18N().getContent()
-                        .equals(finantialDocumentType.getType().getDescriptionI18N().getContent()));
+                .filter(x -> x.getFinantialDocumentType().equals(finantialDocumentType));
     }
 
     public static Optional<DocumentNumberSeries> findUniqueDefault(final FinantialDocumentType finantialDocumentType,

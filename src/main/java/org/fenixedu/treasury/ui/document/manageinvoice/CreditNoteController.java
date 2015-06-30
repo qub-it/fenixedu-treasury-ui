@@ -38,10 +38,10 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -52,6 +52,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -71,40 +72,15 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.document.manageInvoice") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.manageCreditNote",
         accessGroup = "treasuryFrontOffice")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
-//@BennuSpringController(value = TreasuryController.class)
 @RequestMapping(CreditNoteController.CONTROLLER_URL)
 public class CreditNoteController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/document/manageinvoice/creditnote";
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URL + "/";
     }
-
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    //private CreditNote getCreditNoteBean(Model model)
-    //{
-    //	return (CreditNote)model.asMap().get("creditNoteBean");
-    //}
-    //				
-    //private void setCreditNoteBean (CreditNoteBean bean, Model model)
-    //{
-    //	model.addAttribute("creditNoteBeanJson", getBeanJson(bean));
-    //	model.addAttribute("creditNoteBean", bean);
-    //}
-
-    // @formatter: on
 
     private CreditNote getCreditNote(Model model) {
         return (CreditNote) model.asMap().get("creditNote");
@@ -119,7 +95,6 @@ public class CreditNoteController extends TreasuryBaseController {
         creditNote.delete(true);
     }
 
-//				
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -129,17 +104,10 @@ public class CreditNoteController extends TreasuryBaseController {
         return "treasury/document/manageinvoice/creditnote/read";
     }
 
-//
-
-    //
-    // This is the EventcloseCreditNote Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/closecreditnote", method = RequestMethod.POST)
     public String processReadToCloseCreditNote(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
-//
-        /* Put here the logic for processing Event closeCreditNote 	*/
         try {
             creditNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
@@ -148,18 +116,13 @@ public class CreditNoteController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-        // Now choose what is the Exit Screen	 
         return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
     }
 
-    //
-    // This is the EventanullCreditNote Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/anullcreditnote", method = RequestMethod.POST)
     public String processReadToAnullCreditNote(@PathVariable("oid") CreditNote creditNote,
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
-//
         try {
             creditNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(
@@ -169,13 +132,9 @@ public class CreditNoteController extends TreasuryBaseController {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
-        // Now choose what is the Exit Screen	 
         return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
     }
 
-    //
-    // This is the Delete Method for Screen read
-    //
     @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") CreditNote creditNote, Model model, RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
@@ -185,33 +144,22 @@ public class CreditNoteController extends TreasuryBaseController {
 
             deleteCreditNote(creditNote);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
-            return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        // Now choose what is the Exit Screen    
         return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
     }
 
-    //
-    // This is the EventaddEntry Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/addentry")
     public String processReadToAddEntry(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
-//
-        /* Put here the logic for processing Event addEntry 	*/
-        //doSomething();
-
-        // Now choose what is the Exit Screen	 
-        return redirect(
-                "/treasury/document/manageinvoice/creditentry/create/?creditnote=" + getCreditNote(model).getExternalId(), model,
+        return redirect(CreditEntryController.CREATE_URL + "?creditnote=" + getCreditNote(model).getExternalId(), model,
                 redirectAttributes);
     }
 
-//				
     private static final String _UPDATE_URI = "/update/";
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
@@ -222,176 +170,73 @@ public class CreditNoteController extends TreasuryBaseController {
         return "treasury/document/manageinvoice/creditnote/update";
     }
 
-//
-
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-//						// @formatter: off
-//			
-//				private static final String _UPDATEPOSTBACK_URI ="/updatepostback/";
-//				public static final String  UPDATEPOSTBACK_URL = CONTROLLER_URL + _updatePOSTBACK_URI;
-//    			@RequestMapping(value = _UPDATEPOSTBACK_URI + "{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-//  			  	public @ResponseBody String updatepostback(@PathVariable("oid") CreditNote creditNote, @RequestParam(value = "bean", required = false) CreditNoteBean bean,
-//            		Model model) {
-//
-//        			// Do validation logic ?!?!
-//        			this.setCreditNoteBean(bean, model);
-//        			return getBeanJson(bean);
-//    			} 
-//    			
-//    			@RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-//  			  	public String update(@PathVariable("oid") CreditNote creditNote, @RequestParam(value = "bean", required = false) CreditNoteBean bean,
-//            		Model model, RedirectAttributes redirectAttributes ) {
-//					setCreditNote(creditNote,model);
-//
-//				     try
-//				     {
-//					/*
-//					*  UpdateLogic here
-//					*/
-//				    		
-//						updateCreditNote( .. get fields from bean..., model);
-//
-//					/*Succes Update */
-//
-//				    return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model, redirectAttributes);
-//					}
-//					catch (DomainException de) 
-//					{
-//				
-//						/*
-//					 	* If there is any error in validation 
-//				     	*
-//				     	* Add a error / warning message
-//				     	* 
-//				     	* addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	* addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-//				     	*/
-//										     
-//				     	addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-//				     	return update(creditNote,model);
-//					 
-//
-//					}
-//				}
-//						// @formatter: on    			
-//				
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") CreditNote creditNote, @RequestParam(value = "origindocumentnumber",
-            required = false) java.lang.String originDocumentNumber, @RequestParam(value = "documentobservations",
-            required = false) java.lang.String documentObservations, Model model, RedirectAttributes redirectAttributes) {
+            required = false) String originDocumentNumber,
+            @RequestParam(value = "documentobservations", required = false) String documentObservations, Model model,
+            RedirectAttributes redirectAttributes) {
 
         setCreditNote(creditNote, model);
 
         try {
-            /*
-            *  UpdateLogic here
-            */
-
             updateCreditNote(originDocumentNumber, documentObservations, model);
 
-            /*Succes Update */
-
-            return redirect("/treasury/document/manageinvoice/creditnote/read/" + getCreditNote(model).getExternalId(), model,
-                    redirectAttributes);
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-            * If there is any error in validation 
-            *
-            * Add a error / warning message
-            * 
-            * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.update") + de.getLocalizedMessage(),model);
-            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-            */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(creditNote, model);
-
+            return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(creditNote, model);
     }
 
     @Atomic
-    public void updateCreditNote(java.lang.String originDocumentNumber, String documentObservations, Model model) {
-
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getCreditNote(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
+    public void updateCreditNote(String originDocumentNumber, String documentObservations, Model model) {
         getCreditNote(model).setOriginDocumentNumber(originDocumentNumber);
         getCreditNote(model).setDocumentObservations(documentObservations);
 
     }
 
-//				
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
-            @RequestParam(value = "debitnote", required = false) org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            @RequestParam(value = "payordebtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-            @RequestParam(value = "finantialdocumenttype", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) org.fenixedu.treasury.domain.Currency currency,
-            @RequestParam(value = "documentnumber", required = false) java.lang.String documentNumber,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
-                    value = "state", required = false) org.fenixedu.treasury.domain.document.FinantialDocumentStateType state,
-            Model model) {
+            @RequestParam(value = "debitnote", required = false) DebitNote debitNote,
+            @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
+            @RequestParam(value = "finantialdocumenttype", required = false) FinantialDocumentType finantialDocumentType,
+            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
+            @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "currency", required = false) Currency currency,
+            @RequestParam(value = "documentnumber", required = false) String documentNumber,
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime documentDate,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
+                    value = "state", required = false) FinantialDocumentStateType state, Model model) {
         List<CreditNote> searchcreditnoteResultsDataSet =
                 filterSearchCreditNote(debitNote, payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries,
                         currency, documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
 
-        //add the results dataSet to the model
         model.addAttribute("searchcreditnoteResultsDataSet", searchcreditnoteResultsDataSet);
-        model.addAttribute("CreditNote_debitNote_options", new ArrayList<org.fenixedu.treasury.domain.document.DebitNote>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_debitNote_options", org.fenixedu.treasury.domain.document.DebitNote.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_payorDebtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_payorDebtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_finantialDocumentType_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.FinantialDocumentType>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_debtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_documentNumberSeries_options",
-                new ArrayList<org.fenixedu.treasury.domain.document.DocumentNumberSeries>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("CreditNote_currency_options", new ArrayList<org.fenixedu.treasury.domain.Currency>()); // CHANGE_ME - MUST DEFINE RELATION
-        //model.addAttribute("CreditNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll()); // CHANGE_ME - MUST DEFINE RELATION
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+        model.addAttribute("CreditNote_debitNote_options", new ArrayList<DebitNote>());
+        model.addAttribute("CreditNote_payorDebtAccount_options", new ArrayList<DebtAccount>());
+        model.addAttribute("CreditNote_finantialDocumentType_options", new ArrayList<FinantialDocumentType>());
+        model.addAttribute("CreditNote_debtAccount_options", new ArrayList<DebtAccount>());
+        model.addAttribute("CreditNote_documentNumberSeries_options", new ArrayList<DocumentNumberSeries>());
+        model.addAttribute("CreditNote_currency_options", new ArrayList<Currency>());
+        model.addAttribute("stateValues", FinantialDocumentStateType.values());
+
         return "treasury/document/manageinvoice/creditnote/search";
     }
 
     private Stream<CreditNote> getSearchUniverseSearchCreditNoteDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
-        // return CreditNote.findAll(); //CHANGE_ME
         return new ArrayList<CreditNote>().stream();
     }
 
-    private List<CreditNote> filterSearchCreditNote(org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            org.fenixedu.treasury.domain.debt.DebtAccount payorDebtAccount,
-            org.fenixedu.treasury.domain.document.FinantialDocumentType finantialDocumentType,
-            org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
-            org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
-            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    private List<CreditNote> filterSearchCreditNote(DebitNote debitNote, DebtAccount payorDebtAccount,
+            FinantialDocumentType finantialDocumentType, DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries,
+            Currency currency, String documentNumber, DateTime documentDate, DateTime documentDueDate,
+            String originDocumentNumber, FinantialDocumentStateType state) {
 
         return getSearchUniverseSearchCreditNoteDataSet()
                 .filter(creditNote -> debitNote == null || debitNote == creditNote.getDebitNote())
@@ -420,13 +265,9 @@ public class CreditNoteController extends TreasuryBaseController {
     public String processSearchToViewAction(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
 
-        // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/document/manageinvoice/creditnote/read" + "/" + creditNote.getExternalId(), model,
-                redirectAttributes);
+        return redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
     }
 
-//				
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
@@ -488,15 +329,13 @@ public class CreditNoteController extends TreasuryBaseController {
         return "treasury/document/manageinvoice/creditnote/create";
     }
 
-//				
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "debitnote", required = false) org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            @RequestParam(value = "debtaccount", required = false) org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
+    public String create(@RequestParam(value = "debitnote", required = false) DebitNote debitNote, @RequestParam(
+            value = "debtaccount", required = false) DebtAccount debtAccount,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
-                    value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime documentDate,
-            @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber, @RequestParam(
-                    value = "documentobservations", required = false) java.lang.String documentObservations, Model model,
+                    value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDate, @RequestParam(
+                    value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
+                    value = "documentobservations", required = false) String documentObservations, Model model,
             RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         if (debtAccount == null && debitNote == null) {
@@ -504,13 +343,9 @@ public class CreditNoteController extends TreasuryBaseController {
                     "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         }
-        /*
-        *  Creation Logic
-        */
         if (debtAccount == null) {
             debtAccount = debitNote.getDebtAccount();
         }
-        FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
 
         if (documentNumberSeries != null && debtAccount != null) {
             if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
@@ -526,46 +361,19 @@ public class CreditNoteController extends TreasuryBaseController {
                     createCreditNote(debtAccount, debitNote, documentNumberSeries, documentDate, originDocumentNumber,
                             documentObservations);
 
-            //Success Validation
-            //Add the bean to be used in the View
             setCreditNote(creditNote, model);
             return redirect(READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-
-            // @formatter: off
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(debtAccount, debitNote, model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(debtAccount, debitNote, model, redirectAttributes);
     }
 
     @Atomic
-    public CreditNote createCreditNote(DebtAccount debtAccount, org.fenixedu.treasury.domain.document.DebitNote debitNote,
-            DocumentNumberSeries documentNumberSeries, org.joda.time.DateTime documentDate,
-            java.lang.String originDocumentNumber, String documentObservations) {
-
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         * 
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //CreditNote creditNote = creditNote.create(fields_to_create);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
+    public CreditNote createCreditNote(DebtAccount debtAccount, DebitNote debitNote, DocumentNumberSeries documentNumberSeries,
+            DateTime documentDate, String originDocumentNumber, String documentObservations) {
 
         CreditNote creditNote =
                 CreditNote.create(debtAccount, documentNumberSeries, documentDate, debitNote, originDocumentNumber);
@@ -612,5 +420,4 @@ public class CreditNoteController extends TreasuryBaseController {
             }
         }
     }
-
 }

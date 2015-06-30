@@ -135,10 +135,9 @@ public class CreditNote extends CreditNote_Base {
     @Atomic
     public void edit(final DebitNote debitNote, final DebtAccount payorDebtAccount,
             final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
-            final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
+            final DocumentNumberSeries documentNumberSeries, final Currency currency, final String documentNumber,
             final org.joda.time.DateTime documentDate, final org.joda.time.LocalDate documentDueDate,
-            final java.lang.String originDocumentNumber,
-            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+            final String originDocumentNumber, final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         setDebitNote(debitNote);
         setPayorDebtAccount(payorDebtAccount);
         setFinantialDocumentType(finantialDocumentType);
@@ -201,7 +200,7 @@ public class CreditNote extends CreditNote_Base {
 
     @Override
     public void anullDocument(boolean freeEntries, String reason) {
-        // The Credit Note can neve free entries
+        // The Credit Note can never free entries
         super.anullDocument(false, reason);
     }
 }

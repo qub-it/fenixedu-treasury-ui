@@ -194,11 +194,10 @@ public class ProductController extends TreasuryBaseController {
             return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
-            return update(product, model);
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(product, model);
         }
+        return update(product, model);
     }
 
     @Atomic
