@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
@@ -47,6 +46,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
@@ -253,15 +253,11 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = SUMMARY_URI, method = RequestMethod.POST)
     public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
-        //TODOJN
-        //Surround by try/catch block
-
         try {
             processSettlementNoteCreation(bean);
-        } catch (final DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
+        } catch (final TreasuryDomainException tde) {
+            addErrorMessage(tde.getLocalizedMessage(), model);
         }
-        ////////////
 
         addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
         return redirect(DebtAccountController.READ_URL + bean.getDebtAccount().getExternalId(), model, redirectAttributes);
@@ -338,8 +334,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect("/treasury/document/managepayments/settlementnote/read" + "/" + settlementNote.getExternalId(), model,
-                redirectAttributes);
+        return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
@@ -348,45 +343,37 @@ public class SettlementNoteController extends TreasuryBaseController {
         return "treasury/document/managepayments/settlementnote/read";
     }
 
-////////AUTO GENERATED ////////    
-//
-    //
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") SettlementNote settlementNote, Model model, RedirectAttributes redirectAttributes) {
 
         setSettlementNote(settlementNote, model);
         try {
             DebtAccount debtAccount = settlementNote.getDebtAccount();
-            // call the Atomic delete function
             deleteSettlementNote(settlementNote);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
-        } catch (DomainException ex) {
-            // Add error messages to the list
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        // The default mapping is the same Read View
-        return "treasury/document/managepayments/settlementnote/read/" + getSettlementNote(model).getExternalId();
+        return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
 
-    //
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") SettlementNote settlementNote, Model model) {
         model.addAttribute("SettlementNote_finantialDocumentType_options",
                 org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
-        // // CHANGE_ME - MUST DEFINE RELATION
         model.addAttribute("SettlementNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-                                                                                                                                  // -
-                                                                                                                                  // MUST
-                                                                                                                                  // DEFINE
-                                                                                                                                  // RELATION
         model.addAttribute("SettlementNote_documentNumberSeries_options",
                 org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll());
         model.addAttribute("SettlementNote_currency_options", org.fenixedu.treasury.domain.Currency.findAll());
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+
         setSettlementNote(settlementNote, model);
+
         return "treasury/document/managepayments/settlementnote/update";
     }
 
@@ -398,63 +385,26 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
 
         try {
-            /*
-             * UpdateLogic here
-             */
-
             updateSettlementNote(originDocumentNumber, model);
 
-            /* Succes Update */
-
-            return redirect("/treasury/document/managepayments/settlementnote/read/" + getSettlementNote(model).getExternalId(),
-                    model, redirectAttributes);
-        } catch (DomainException de) {
-            // @formatter: off
-
-            /*
-             * If there is any error in validation
-             * 
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") +
-             * de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning updating due to " +
-             * de.getLocalizedMessage(),model);
-             */
-            // @formatter: on
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
-            return update(settlementNote, model);
-
+            return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(settlementNote, model);
     }
 
     @Atomic
     public void updateSettlementNote(java.lang.String originDocumentNumber, Model model) {
-
-        // @formatter: off
-        /*
-         * Modify the update code here if you do not want to update the object
-         * with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        // getSettlementNote(model).edit(fields_to_edit);
-
-        // Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
         getSettlementNote(model).setOriginDocumentNumber(originDocumentNumber);
     }
 
-    //
-    // This is the EventanullSettlementNote Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
     public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote,
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
-//
         try {
             settlementNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
@@ -462,8 +412,6 @@ public class SettlementNoteController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-
-        // Now choose what is the Exit Screen    
         return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
 
@@ -492,14 +440,11 @@ public class SettlementNoteController extends TreasuryBaseController {
             try {
                 response.sendRedirect(redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
     }
 
-    // This is the EventcloseDebitNote Method for Screen read
-    //
     @RequestMapping(value = "/read/{oid}/closesettlementnote", method = RequestMethod.POST)
     public String processReadToCloseDebitNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
@@ -514,8 +459,6 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
-        // Now choose what is the Exit Screen    
         return redirect(SettlementNoteController.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
-
 }
