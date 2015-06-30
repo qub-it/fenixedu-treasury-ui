@@ -45,6 +45,7 @@ import org.joda.time.LocalDate;
 
 public class DebitEntryBean implements IBean {
 
+    private DebitEntry debitEntry;
     private TreasuryEvent treasuryEvent;
     private List<TupleDataSourceBean> treasuryEventDataSource;
     private Vat vat;
@@ -65,6 +66,10 @@ public class DebitEntryBean implements IBean {
     private BigDecimal quantity;
     private boolean applyInterests;
     private FixedTariffInterestRateBean interestRate;
+
+    public Boolean isAmountValuesEditable() {
+        return this.getDebitEntry().getFinantialDocument() == null || this.getDebitEntry().getFinantialDocument().isPreparing();
+    }
 
     public TreasuryEvent getTreasuryEvent() {
         return treasuryEvent;
@@ -230,6 +235,7 @@ public class DebitEntryBean implements IBean {
 
     public DebitEntryBean(DebitEntry debitEntry) {
         this();
+        this.setDebitEntry(debitEntry);
         this.setTreasuryEvent(debitEntry.getTreasuryEvent());
         this.setVat(debitEntry.getVat());
         this.setProduct(debitEntry.getProduct());
@@ -254,6 +260,8 @@ public class DebitEntryBean implements IBean {
         } else {
             this.setInterestRate(new FixedTariffInterestRateBean(debitEntry.getInterestRate()));
         }
+        this.setTreasuryEventDataSource(debitEntry.getDebtAccount().getTreasuryEventsSet().stream()
+                .sorted((x, y) -> x.getTreasuryEventDate().compareTo(y.getTreasuryEventDate())).collect(Collectors.toList()));
     }
 
     public boolean isApplyInterests() {
@@ -278,5 +286,22 @@ public class DebitEntryBean implements IBean {
 
     public void setEntryDate(DateTime entryDate) {
         this.entryDate = entryDate;
+    }
+
+    public DebitEntry getDebitEntry() {
+        return debitEntry;
+    }
+
+    public void setDebitEntry(DebitEntry debitEntry) {
+        this.debitEntry = debitEntry;
+    }
+
+    public void setTreasuryEventDataSource(List<TreasuryEvent> treasuryEventDataSource) {
+        this.treasuryEventDataSource = treasuryEventDataSource.stream().map(x -> {
+            TupleDataSourceBean tuple = new TupleDataSourceBean();
+            tuple.setId(x.getExternalId());
+            tuple.setText(x.getTreasuryEventDate().toString("YYYY-MM-dd") + "-" + x.getDescription());
+            return tuple;
+        }).collect(Collectors.toList());
     }
 }

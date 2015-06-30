@@ -345,11 +345,11 @@ public class DebitEntryController extends TreasuryBaseController {
 //  
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
-        if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.error.document.manageinvoice.debitentry.invalid.state.update.debitentry"), model);
-            redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
-        }
+//        if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
+//            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+//                    "label.error.document.manageinvoice.debitentry.invalid.state.update.debitentry"), model);
+//            redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
+//        }
 
         if (debitEntry.getFinantialDocument() == null || debitEntry.getFinantialDocument().isPreparing()) {
             setDebitEntryBean(new DebitEntryBean(debitEntry), model);
@@ -368,20 +368,32 @@ public class DebitEntryController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setDebitEntry(debitEntry, model);
 
-        if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
+        if (!debitEntry.equals(bean.getDebitEntry())) {
             addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
             redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
+
         }
+
+//        if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
+//            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+//                    "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+//            redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
+//        }
 
         try {
             /*
             *  UpdateLogic here
             */
 
-            updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(),
-                    bean.isApplyInterests(), bean.getInterestRate(), model);
-
+            //if the document is closed, then we can only update interest and treasury event
+            if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
+                updateDebitEntry(debitEntry.getDescription(), debitEntry.getAmount(), debitEntry.getQuantity(),
+                        bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate(), model);
+            } else {
+                updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(),
+                        bean.isApplyInterests(), bean.getInterestRate(), model);
+            }
             /*Succes Update */
 
             if (debitEntry.getFinantialDocument() != null) {
@@ -433,7 +445,7 @@ public class DebitEntryController extends TreasuryBaseController {
                             interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
                             interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
                             interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
-            
+
         } else {
             InterestRate rate = debitEntry.getInterestRate();
             rate.edit(interestRateBean.getInterestType(), interestRateBean.getNumberOfDaysAfterDueDate(),

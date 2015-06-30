@@ -114,6 +114,10 @@ public class CustomerType extends CustomerType_Base {
     public static void initializeCustomerType() {
 
         if (CustomerType.findAll().count() == 0) {
+            CustomerType.create(
+                    "CANDIDATE",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            "label.CustomerType.CANDIDATE")));
             CustomerType
                     .create("STUDENT",
                             new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
