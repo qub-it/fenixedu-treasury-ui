@@ -71,14 +71,12 @@ public class TreasuryBaseController {
     protected static final String WARNING_MESSAGES = "warningMessages";
     protected static final String INFO_MESSAGES = "infoMessages";
 
-    // Ricardo : This AutoWired is boiunded to Per-Request via SpringMVC proxy. The Bounded HttpServletRequest is bounded
+    // Ricardo : This AutoWired is binded to Per-Request via SpringMVC proxy. The Binded HttpServletRequest is binded
     // to a proxy instead to the singleton
     // http://stackoverflow.com/questions/3320674/spring-how-do-i-inject-an-httpservletrequest-into-a-request-scoped-bean
     // http://stackoverflow.com/questions/28638962/autowiring-httpservletrequest-in-spring-controller
     @Autowired
     private HttpServletRequest request;
-
-    // The entity in the Model
 
     // The list of INFO messages that can be showed on View
     protected void addInfoMessage(String message, Model model) {

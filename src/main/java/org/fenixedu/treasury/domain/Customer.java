@@ -96,19 +96,19 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     protected void checkRules() {
         if (LocalizedStringUtil.isTrimmedEmpty(getCode())) {
-            throw new TreasuryDomainException("error.AdhocCustomer.code.required");
+            throw new TreasuryDomainException("error.Customer.code.required");
         }
 
         if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
-            throw new TreasuryDomainException("e");
+            throw new TreasuryDomainException("error.Customer.name.required");
         }
 
         if (findByCode(getCode()).count() > 1) {
-            throw new TreasuryDomainException("error.AdhocCustomer.code.duplicated");
+            throw new TreasuryDomainException("error.Customer.code.duplicated");
         }
 
         if (this.getCode().length() > Customer.MAX_CODE_LENGHT) {
-            throw new TreasuryDomainException("error.AdhocCustomer.code.maxlenght");
+            throw new TreasuryDomainException("error.Customer.code.maxlenght");
         }
     }
 
