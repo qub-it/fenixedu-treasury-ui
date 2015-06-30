@@ -38,11 +38,11 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <c:if test="${not empty debitNote }">
         <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp;
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}"><spring:message code="label.event.back" /></a> &nbsp;
 	</c:if>
     <c:if test="${empty debitNote }">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/"><spring:message code="label.event.back" /></a> &nbsp;|&nbsp;
+        |&nbsp;<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/"><spring:message code="label.event.back" /></a> &nbsp;
 	</c:if>
 </div>
 <c:if test="${not empty infoMessages}">

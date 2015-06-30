@@ -80,7 +80,7 @@ public class CreditEntry extends CreditEntry_Base {
         if (getFinantialDocument() != null && !(getFinantialDocument() instanceof CreditNote)) {
             throw new TreasuryDomainException("error.CreditEntry.finantialDocument.not.credit.entry.type");
         }
-        // If from exemption than ensure debit entry is not null and the product is the same
+        // If from exemption then ensure debit entry is not null and the product is the same
         if (getFromExemption() == true && getDebitEntry() == null) {
             throw new TreasuryDomainException("error.CreditEntry.from.exemption.requires.debit.entry");
         }
