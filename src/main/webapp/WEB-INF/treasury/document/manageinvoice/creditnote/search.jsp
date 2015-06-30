@@ -1,7 +1,11 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
+<%@ taglib prefix="datatables"
+    uri="http://github.com/dandelion/datatables"%>
+
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -51,13 +55,7 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
-<%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
-        class=""
-        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create"><spring:message
-            code="label.event.create" /></a> &nbsp;
-</div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
@@ -127,15 +125,32 @@ ${portal.toolkit()}
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2 control-label">
+                <div class="col-sm-4 control-label">
                     <spring:message code="label.CreditNote.documentDate" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.documentDateFrom" />
                 </div>
 
                 <div class="col-sm-4">
-                    <input id="creditNote_documentDate"
+                    <input id="debitNote_documentDate"
                         class="form-control" type="text"
-                        name="documentdate" bennu-datetime
-                        value='<c:out value='${not empty param.documentdate ? param.documentdate : creditNote.documentDate }'/>' />
+                        name="documentdatefrom" bennu-date
+                        value='<c:out value='${param.documentdatefrom }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditNote.documentDateTo" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input id="debitNote_documentDate"
+                        class="form-control" type="text"
+                        name="documentdateto" bennu-date
+                        value='<c:out value='${param.documentdateto }'/>' />
                 </div>
             </div>
             <div class="form-group row">
@@ -179,10 +194,19 @@ ${portal.toolkit()}
     </form>
 </div>
 
+<c:set var="limit"><%=CreditNoteController.SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE%></c:set>
+<c:if test="${listSize > limit}">
+    <div class="alert alert-warning" role="alert">
+        <p>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+            <spring:message code="label.limitexceeded" arguments="${limit},${listSize}" />
+        </p>
+    </div>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty searchcreditnoteResultsDataSet}">
-
+                              
         <datatables:table id="searchcreditnoteTable" row="creditNote"
             data="${searchcreditnoteResultsDataSet}"
             cssClass="table responsive table-bordered table-hover"
@@ -191,9 +215,7 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.CreditNote.documentDate" />
                 </datatables:columnHead>
-                <c:out
-                    value='${creditNote.documentDate.toString("YYYY-MM-dd")}' />
-                <%--                 <joda:format value="${creditNote.documentDate}" style="S-" /> --%>
+                <joda:format value="${creditNote.documentDate}" style="S-" />
             </datatables:column>
             <datatables:column>
                 <datatables:columnHead>

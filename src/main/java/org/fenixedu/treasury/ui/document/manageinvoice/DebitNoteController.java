@@ -182,11 +182,11 @@ public class DebitNoteController extends TreasuryBaseController {
                 .filter(debitNote -> documentNumber == null || documentNumber.length() == 0
                         || debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0
                         && debitNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
-                .filter(debitNote -> documentDateFrom == null || documentDateTo == null
+                .filter(debitNote -> documentDateFrom == null
                         || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
-                        || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
-                        || debitNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom)
-                        && debitNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
+                        || debitNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
+                .filter(debitNote -> documentDateTo == null || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
+                        || debitNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
                 .filter(debitNote -> documentDueDate == null || documentDueDate.equals(debitNote.getDocumentDueDate()))
                 .filter(debitNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
                         || debitNote.getOriginDocumentNumber() != null && debitNote.getOriginDocumentNumber().length() > 0

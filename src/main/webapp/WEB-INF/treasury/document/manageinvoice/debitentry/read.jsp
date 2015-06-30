@@ -146,7 +146,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.entryDate" /></th>
-                        <td><joda:format value="${debitEntry.entryDateTime}" style="SS" /> <%--                         <c:out value='${debitEntry.entryDateTime}' /> --%></td>
+                        <td><joda:format value="${debitEntry.entryDateTime}" style="S-" /> <%--                         <c:out value='${debitEntry.entryDateTime}' /> --%></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.dueDate" /></th>

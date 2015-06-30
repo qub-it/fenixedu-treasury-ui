@@ -135,7 +135,7 @@ ${portal.toolkit()}
                     <input id="debitNote_documentDate"
                         class="form-control" type="text"
                         name="documentdatefrom" bennu-date
-                        value='<c:out value='${param.documentdate }'/>' />
+                        value='<c:out value='${param.documentdatefrom }'/>' />
                 </div>
             </div>
             <div class="form-group row">
@@ -147,7 +147,7 @@ ${portal.toolkit()}
                     <input id="debitNote_documentDate"
                         class="form-control" type="text"
                         name="documentdateto" bennu-date
-                        value='<c:out value='${param.documentdate }'/>' />
+                        value='<c:out value='${param.documentdateto }'/>' />
                 </div>
             </div>
             <div class="form-group row">

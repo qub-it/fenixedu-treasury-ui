@@ -72,13 +72,13 @@ ${portal.toolkit()}
     <c:if test="${not empty creditEntry.finantialDocument }">
         <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditEntry.finantialDocument.externalId}"><spring:message
-                code="label.document.manageInvoice.event.backToCreditNote" /></a>&nbsp|&nbsp; 
+                code="label.document.manageInvoice.event.backToCreditNote" /></a>&nbsp; 
     </c:if>
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+    |&nbsp;<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditEntry.debtAccount.externalId}"><spring:message
-            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp;
+            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
     <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
-        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+        |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                 code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}"><spring:message code="label.event.update" /></a>
     &nbsp;
@@ -143,8 +143,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.entryDate" /></th>
-                        <td> <joda:format value="${creditEntry.entryDateTime}" style="SS" />
-<%--                         <c:out value='${creditEntry.entryDateTime}' /> --%>
+                        <td> <joda:format value="${creditEntry.entryDateTime}" style="S-" />
                         </td>
                         
                     </tr>
