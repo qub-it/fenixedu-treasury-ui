@@ -566,6 +566,16 @@ ${portal.angularToolkit()}
                                     <li><c:out
                                             value="[ ${payment.currency.getValueFor(paymentEntry.payedAmount)} ] ${paymentEntry.paymentMethod.name.content} " /></li>
                                 </c:forEach>
+                                <c:if
+                                    test="${not empty payment.reimbursementEntriesSet }">
+                                    <span class="label label-warning" ><spring:message
+                                    code="FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE" /></span>
+                                    <c:forEach var="reimbursementEntry"
+                                        items="${payment.reimbursementEntriesSet}">
+                                        <li><c:out
+                                                value="[ ${payment.currency.getValueFor(reimbursementEntry.reimbursedAmount)} ] ${reimbursementEntry.paymentMethod.name.content} " /></li>
+                                    </c:forEach>
+                                </c:if>
                             </ul>
                         </datatables:column>
                         <datatables:column>
