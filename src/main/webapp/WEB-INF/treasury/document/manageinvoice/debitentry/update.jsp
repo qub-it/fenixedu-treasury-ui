@@ -165,7 +165,7 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-10">
                     <div class="form-control">
-                        <c:out value='${debitEntry.entryDateTime.toString("YYYY-MM-dd HH:mm"}' />
+                        <c:out value='${debitEntry.entryDateTime.toString("YYYY-MM-dd HH:mm")}' />
                     </div>
                 </div>
             </div>
@@ -189,17 +189,20 @@ ${portal.angularToolkit()}
                     </div>
 
                     <div class="col-sm-10">
-                        <c:out value='${debitEntryBean.description}' />
+                        <div class="form-control">
+                            <c:out value='${debitEntryBean.description}' />
+                        </div>
                     </div>
                 </div>
                 <div class="form-group row">
                     <div class="col-sm-2 control-label">
-                        <spring:message code="label.DebitEntry.amount" />
+                            <spring:message code="label.DebitEntry.amount" />
                     </div>
 
                     <div class="col-sm-10">
-
-                        <c:out value='${debitEntryBean.debtAccount.finantialInstitution.currency.valueFor(debitEntryBean.amount)}' />
+                        <div class="form-control">
+                            <c:out value='${debitEntryBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.amount)}' />
+                        </div>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -208,7 +211,9 @@ ${portal.angularToolkit()}
                     </div>
 
                     <div class="col-sm-10">
-                        <c:out value='${debitEntryBean.quantity}' />
+                        <div class="form-control">
+                            <c:out value='${debitEntryBean.quantity}' />
+                        </div>
                     </div>
                 </div>
             </c:if>
@@ -232,7 +237,7 @@ ${portal.angularToolkit()}
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <c:if test=${debitEntryBean.isAmountValuesEditable() }>
+            <c:if test='${debitEntryBean.isAmountValuesEditable() }'>
 
                 <div class="form-group row">
                     <div class="col-sm-2 control-label">
@@ -269,8 +274,16 @@ ${portal.angularToolkit()}
                     </div>
                 </div>
             </c:if>
-            
-            
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.dueDate" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input id="debitEntry_dueDate" class="form-control" type="text" bennu-date="object.dueDate" />
+                </div>
+            </div>
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.DebitEntry.event" />

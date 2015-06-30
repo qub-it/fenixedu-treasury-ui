@@ -256,8 +256,10 @@ public class DebitEntryBean implements IBean {
         this.setAmount(debitEntry.getAmount());
         this.setQuantity(debitEntry.getQuantity());
         if (debitEntry.getInterestRate() == null) {
+            this.applyInterests = false;
             this.setInterestRate(new FixedTariffInterestRateBean());
         } else {
+            this.applyInterests = true;
             this.setInterestRate(new FixedTariffInterestRateBean(debitEntry.getInterestRate()));
         }
         this.setTreasuryEventDataSource(debitEntry.getDebtAccount().getTreasuryEventsSet().stream()

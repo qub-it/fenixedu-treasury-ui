@@ -351,7 +351,7 @@ public class DebitEntryController extends TreasuryBaseController {
 //            redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
 //        }
 
-        if (debitEntry.getFinantialDocument() == null || debitEntry.getFinantialDocument().isPreparing()) {
+        if (debitEntry.getFinantialDocument() == null || !debitEntry.getFinantialDocument().isAnnulled()) {
             setDebitEntryBean(new DebitEntryBean(debitEntry), model);
             model.addAttribute("DebitEntry_event_options",
                     TreasuryEvent.findActiveBy(debitEntry.getDebtAccount()).collect(Collectors.<TreasuryEvent> toList()));
@@ -439,19 +439,26 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntry debitEntry = getDebitEntry(model);
         debitEntry.edit(description, amount, quantity, treasuryEvent);
-        if (debitEntry.getInterestRate() == null) {
-            InterestRate interestRate =
-                    InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestType(),
-                            interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
-                            interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getMaximumMonthsToApplyPenalty(),
-                            interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
+        if (applyInterests) {
+            if (debitEntry.getInterestRate() == null) {
+                InterestRate interestRate =
+                        InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestType(),
+                                interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
+                                interestRateBean.getMaximumDaysToApplyPenalty(),
+                                interestRateBean.getMaximumMonthsToApplyPenalty(), interestRateBean.getInterestFixedAmount(),
+                                interestRateBean.getRate());
 
+            } else {
+                InterestRate rate = debitEntry.getInterestRate();
+                rate.edit(interestRateBean.getInterestType(), interestRateBean.getNumberOfDaysAfterDueDate(),
+                        interestRateBean.getApplyInFirstWorkday(), interestRateBean.getMaximumDaysToApplyPenalty(),
+                        interestRateBean.getMaximumMonthsToApplyPenalty(), interestRateBean.getInterestFixedAmount(),
+                        interestRateBean.getRate());
+            }
         } else {
-            InterestRate rate = debitEntry.getInterestRate();
-            rate.edit(interestRateBean.getInterestType(), interestRateBean.getNumberOfDaysAfterDueDate(),
-                    interestRateBean.getApplyInFirstWorkday(), interestRateBean.getMaximumDaysToApplyPenalty(),
-                    interestRateBean.getMaximumMonthsToApplyPenalty(), interestRateBean.getInterestFixedAmount(),
-                    interestRateBean.getRate());
+            if (debitEntry.getInterestRate() != null) {
+                debitEntry.getInterestRate().delete();
+            }
         }
     }
 

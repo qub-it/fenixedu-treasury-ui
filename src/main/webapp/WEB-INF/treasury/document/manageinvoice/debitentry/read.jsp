@@ -81,7 +81,7 @@ ${portal.toolkit()}
         |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                 code="label.event.delete" /></a> &nbsp; 
     </c:if>
-    <c:if test="${empty debitEntry.finantialDocument ||  debitEntry.finantialDocument.isClosed() || debitEntry.finantialDocument.isAnnulled()}">
+    <c:if test="${empty debitEntry.finantialDocument || not debitEntry.finantialDocument.isAnnulled()}">
         |&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/update/${debitEntry.externalId}"><spring:message code="label.event.update" /></a>
 	&nbsp;

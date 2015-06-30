@@ -208,7 +208,7 @@ public class InterestRate extends InterestRate_Base {
         LocalDate startDate = applyOnFirstWorkdayIfNecessary(dueDate.plusDays(getNumberOfDaysAfterDueDate()));
 
         // Iterate over amountInDebtMap and calculate amountToPay
-        BigDecimal amountInDebt = null;
+        BigDecimal amountInDebt = BigDecimal.ZERO;
         for (final Entry<LocalDate, BigDecimal> entry : sortedMap.entrySet()) {
 
             if (entry.getKey().isAfter(paymentDate)) {
@@ -227,8 +227,8 @@ public class InterestRate extends InterestRate_Base {
             if (startDate.getYear() != endDate.getYear()) {
                 boolean reachedMaxDays = false;
 
-                int firstYearDays = (Days.daysBetween(startDate, Constants.lastDayInYear(startDate.getYear())).getDays() + 1);
-                int secondYearDays = (Days.daysBetween(Constants.firstDayInYear(endDate.getYear()), endDate).getDays() + 1);
+                int firstYearDays = Days.daysBetween(startDate, Constants.lastDayInYear(startDate.getYear())).getDays() + 1;
+                int secondYearDays = Days.daysBetween(Constants.firstDayInYear(endDate.getYear()), endDate).getDays() + 1;
 
                 {
                     if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + firstYearDays >= getMaximumDaysToApplyPenalty()) {
@@ -240,7 +240,7 @@ public class InterestRate extends InterestRate_Base {
                             Constants.divide(amountInDebt, new BigDecimal(Constants.numberOfDaysInYear(startDate.getYear())));
 
                     final BigDecimal rate = interestRate(startDate.getYear());
-                    
+
                     partialInterestAmount =
                             Constants.divide(rate, Constants.HUNDRED_PERCENT).multiply(amountPerDay)
                                     .multiply(new BigDecimal(firstYearDays));
@@ -270,7 +270,8 @@ public class InterestRate extends InterestRate_Base {
                                     .multiply(new BigDecimal(secondYearDays));
 
                     if (Constants.isPositive(partialInterestAmount)) {
-                        result.addDetail(secondInterestAmount, Constants.firstDayInYear(endDate.getYear()), endDate, amountPerDay, amountInDebt);
+                        result.addDetail(secondInterestAmount, Constants.firstDayInYear(endDate.getYear()), endDate,
+                                amountPerDay, amountInDebt);
                     }
 
                     partialInterestAmount = partialInterestAmount.add(secondInterestAmount);
@@ -288,7 +289,6 @@ public class InterestRate extends InterestRate_Base {
                 final BigDecimal amountPerDay =
                         Constants.divide(amountInDebt, new BigDecimal(Constants.numberOfDaysInYear(startDate.getYear())));
 
-                
                 final BigDecimal rate = interestRate(startDate.getYear());
                 partialInterestAmount =
                         Constants.divide(rate, Constants.HUNDRED_PERCENT).multiply(amountPerDay)
@@ -335,18 +335,17 @@ public class InterestRate extends InterestRate_Base {
             return getDebitEntry().getCurrency();
         }
         return null;
-	}
+    }
 
     private BigDecimal interestRate(final int year) {
-        if(getInterestType().isGlobalRate()) {
-            if(!GlobalInterestRate.findUniqueByYear(year).isPresent()) {
+        if (getInterestType().isGlobalRate()) {
+            if (!GlobalInterestRate.findUniqueByYear(year).isPresent()) {
                 throw new TreasuryDomainException("error.InterestRate.global.interest.rate.not.found", String.valueOf(year));
             };
-            
+
             return GlobalInterestRate.findUniqueByYear(year).get().getRate();
         }
-        
-        
+
         return getRate();
     }
 
