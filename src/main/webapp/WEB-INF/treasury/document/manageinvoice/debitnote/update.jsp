@@ -95,7 +95,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-10">
                     <input id="debitNote_documentObservations" class="form-control" type="text" name="documentobservations"
-                        value='<c:out value='${not empty param.documentobservations ? param.documentobservations: debitNote.documentobservations}'/>' />
+                        value='<c:out value='${not empty param.documentobservations ? param.documentobservations: debitNote.documentObservations}'/>' />
                 </div>
             </div>
 

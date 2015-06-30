@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -115,8 +114,8 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public void edit(final DebtAccount payorDebtAccount, final org.joda.time.LocalDate documentDate, LocalDate documentDueDate,
-            final java.lang.String originDocumentNumber) {
+    public void edit(final DebtAccount payorDebtAccount, final LocalDate documentDate, LocalDate documentDueDate,
+            final String originDocumentNumber) {
 
         setPayorDebtAccount(payorDebtAccount);
         setDocumentDate(documentDate.toDateTimeAtStartOfDay());
@@ -160,17 +159,14 @@ public class DebitNote extends DebitNote_Base {
     @Override
     public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList, Boolean includeAnulledDocuments) {
         documentsBaseList.add(this);
-        FinantialInstitution institution = this.getDebtAccount().getFinantialInstitution();
 
         for (DebitEntry entry : getDebitEntriesSet()) {
-            if (entry.getCreditEntriesSet().size() > 0) {
-                for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
-                    if (creditEntry.getFinantialDocument() != null && !creditEntry.getFinantialDocument().isPreparing()) {
-                        if (includeAnulledDocuments == true || this.isAnnulled() == false) {
-                            if (documentsBaseList.contains(creditEntry.getFinantialDocument()) == false) {
-                                documentsBaseList.addAll(creditEntry.getFinantialDocument().findRelatedDocuments(
-                                        documentsBaseList, includeAnulledDocuments));
-                            }
+            for (CreditEntry creditEntry : entry.getCreditEntriesSet()) {
+                if (creditEntry.getFinantialDocument() != null && !creditEntry.getFinantialDocument().isPreparing()) {
+                    if (includeAnulledDocuments == true || this.isAnnulled() == false) {
+                        if (documentsBaseList.contains(creditEntry.getFinantialDocument()) == false) {
+                            documentsBaseList.addAll(creditEntry.getFinantialDocument().findRelatedDocuments(documentsBaseList,
+                                    includeAnulledDocuments));
                         }
                     }
                 }
@@ -178,18 +174,17 @@ public class DebitNote extends DebitNote_Base {
         }
 
         for (DebitEntry entry : getDebitEntriesSet()) {
-            if (entry.getSettlementEntriesSet().size() > 0) {
-                for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
-                    if (settlementEntry.getFinantialDocument() != null && !settlementEntry.getFinantialDocument().isPreparing()) {
-                        if (includeAnulledDocuments == true || settlementEntry.getFinantialDocument().isAnnulled() == false) {
-                            if (documentsBaseList.contains(settlementEntry.getFinantialDocument()) == false) {
-                                documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
-                                        documentsBaseList, includeAnulledDocuments));
-                            }
+            for (SettlementEntry settlementEntry : entry.getSettlementEntriesSet()) {
+                if (settlementEntry.getFinantialDocument() != null && !settlementEntry.getFinantialDocument().isPreparing()) {
+                    if (includeAnulledDocuments == true || settlementEntry.getFinantialDocument().isAnnulled() == false) {
+                        if (documentsBaseList.contains(settlementEntry.getFinantialDocument()) == false) {
+                            documentsBaseList.addAll(settlementEntry.getFinantialDocument().findRelatedDocuments(
+                                    documentsBaseList, includeAnulledDocuments));
                         }
                     }
                 }
             }
+
         }
 
         return documentsBaseList;

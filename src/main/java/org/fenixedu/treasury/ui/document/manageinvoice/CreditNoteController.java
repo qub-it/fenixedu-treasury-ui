@@ -33,7 +33,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -59,6 +58,7 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,6 +76,8 @@ import pt.ist.fenixframework.Atomic;
 public class CreditNoteController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/document/manageinvoice/creditnote";
+
+    public static final long SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE = 500;
 
     @RequestMapping
     public String home(Model model) {
@@ -209,13 +211,17 @@ public class CreditNoteController extends TreasuryBaseController {
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "currency", required = false) Currency currency,
             @RequestParam(value = "documentnumber", required = false) String documentNumber,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime documentDueDate,
+            @RequestParam(value = "documentdatefrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
+            @RequestParam(value = "documentdateto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
                     value = "state", required = false) FinantialDocumentStateType state, Model model) {
         List<CreditNote> searchcreditnoteResultsDataSet =
                 filterSearchCreditNote(debitNote, payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries,
-                        currency, documentNumber, documentDate, documentDueDate, originDocumentNumber, state);
+                        currency, documentNumber, documentDateFrom, documentDateTo, documentDueDate, originDocumentNumber, state);
+        model.addAttribute("listSize", searchcreditnoteResultsDataSet.size());
+        searchcreditnoteResultsDataSet =
+                searchcreditnoteResultsDataSet.stream().limit(SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
         model.addAttribute("searchcreditnoteResultsDataSet", searchcreditnoteResultsDataSet);
         model.addAttribute("CreditNote_debitNote_options", new ArrayList<DebitNote>());
@@ -229,16 +235,17 @@ public class CreditNoteController extends TreasuryBaseController {
         return "treasury/document/manageinvoice/creditnote/search";
     }
 
-    private Stream<CreditNote> getSearchUniverseSearchCreditNoteDataSet() {
-        return new ArrayList<CreditNote>().stream();
+    private List<CreditNote> getSearchUniverseSearchCreditNoteDataSet() {
+        return CreditNote.findAll().collect(Collectors.toList());
     }
 
     private List<CreditNote> filterSearchCreditNote(DebitNote debitNote, DebtAccount payorDebtAccount,
             FinantialDocumentType finantialDocumentType, DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries,
-            Currency currency, String documentNumber, DateTime documentDate, DateTime documentDueDate,
-            String originDocumentNumber, FinantialDocumentStateType state) {
+            Currency currency, String documentNumber, LocalDate documentDateFrom, LocalDate documentDateTo,
+            DateTime documentDueDate, String originDocumentNumber, FinantialDocumentStateType state) {
 
         return getSearchUniverseSearchCreditNoteDataSet()
+                .stream()
                 .filter(creditNote -> debitNote == null || debitNote == creditNote.getDebitNote())
                 .filter(creditNote -> payorDebtAccount == null || payorDebtAccount == creditNote.getPayorDebtAccount())
                 .filter(creditNote -> finantialDocumentType == null
@@ -250,7 +257,12 @@ public class CreditNoteController extends TreasuryBaseController {
                 .filter(creditNote -> documentNumber == null || documentNumber.length() == 0
                         || creditNote.getDocumentNumber() != null && creditNote.getDocumentNumber().length() > 0
                         && creditNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
-                .filter(creditNote -> documentDate == null || documentDate.equals(creditNote.getDocumentDate()))
+                .filter(creditNote -> documentDateFrom == null
+                        || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
+                        || creditNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
+                .filter(creditNote -> documentDateTo == null
+                        || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
+                        || creditNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
                 .filter(creditNote -> documentDueDate == null || documentDueDate.equals(creditNote.getDocumentDueDate()))
                 .filter(creditNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
                         || creditNote.getOriginDocumentNumber() != null && creditNote.getOriginDocumentNumber().length() > 0
