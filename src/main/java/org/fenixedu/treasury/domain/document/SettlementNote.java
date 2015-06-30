@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -177,8 +178,8 @@ public class SettlementNote extends SettlementNote_Base {
             }
 
             DebitEntry interestDebitEntry =
-                    interestEntryBean.getDebitEntry().generateInterestRateDebitEntry(interestEntryBean.getInterest(),
-                            bean.getDate().toDateTimeAtStartOfDay(), interestDebitNote);
+                    interestEntryBean.getDebitEntry().createInterestRateDebitEntry(interestEntryBean.getInterest(),
+                            bean.getDate().toDateTimeAtStartOfDay(), Optional.<DebitNote> of(interestDebitNote));
             if (interestEntryBean.isIncluded()) {
                 SettlementEntry.create(interestDebitEntry, this, interestEntryBean.getInterest().getInterestAmount(),
                         interestDebitEntry.getDescription(), bean.getDate().toDateTimeAtStartOfDay());

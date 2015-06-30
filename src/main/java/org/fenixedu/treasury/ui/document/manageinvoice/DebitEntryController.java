@@ -312,8 +312,8 @@ public class DebitEntryController extends TreasuryBaseController {
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
         DebitEntry debitEntry =
-                DebitEntry.create(debitNote, debtAccount, treasuryEvent, activeVat.orElse(null), amount, dueDate, null, product,
-                        description, quantity, null, entryDateTime);
+                DebitEntry.create(Optional.<DebitNote> of(debitNote), debtAccount, treasuryEvent, activeVat.orElse(null), amount,
+                        dueDate, null, product, description, quantity, null, entryDateTime);
 
         if (applyInterests) {
             InterestRate interestRate =
@@ -511,5 +511,22 @@ public class DebitEntryController extends TreasuryBaseController {
 
         addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.update"), model);
         return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+    }
+
+    private static final String _READ_TO_REMOVEFROMDOCUMENT_URI = "/{oid}/removefromdocument";
+
+    @RequestMapping(value = _READ_TO_REMOVEFROMDOCUMENT_URI)
+    public String processReadToRemoveFromDocument(@PathVariable("oid") DebitEntry debitEntry, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.debitentry.sucess.remove.debitentry"), model);
+            debitEntry.setFinantialDocument(null);
+            return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
+        }
+        addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                "label.error.document.manageinvoice.debitentry.invalid.state.remove.debitentry"), model);
+        return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
     }
 }

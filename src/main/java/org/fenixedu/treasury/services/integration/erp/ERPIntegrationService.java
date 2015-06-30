@@ -27,11 +27,8 @@
 package org.fenixedu.treasury.services.integration.erp;
 
 import java.io.File;
-import java.util.Optional;
-import java.util.Set;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -41,18 +38,16 @@ import javax.jws.WebService;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.integration.ERPConfiguration;
-import org.fenixedu.treasury.domain.integration.ERPImportOperation;
-import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import org.fenixedu.treasury.domain.integration.ERPImportOperation;
+import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
@@ -60,13 +55,12 @@ import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutpu
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueOuptut;
-import org.joda.time.DateTime;
-
-import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.io.Files;
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
@@ -250,7 +244,8 @@ public class ERPIntegrationService extends BennuWebService {
         final DebitNote interestDebitNote =
                 DebitNote.create(debitEntry.getDebtAccount(), debitNoteSeries, paymentDate.toDateTimeAtStartOfDay());
 
-        debitEntry.generateInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(), interestDebitNote);
+        debitEntry.createInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(),
+                Optional.<DebitNote> of(interestDebitNote));
         interestDebitNote.closeDocument();
     }
 

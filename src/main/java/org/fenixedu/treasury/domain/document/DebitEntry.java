@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -283,8 +284,8 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     @Atomic
-    public DebitEntry generateInterestRateDebitEntry(final InterestRateBean interest, final DateTime when,
-            final DebitNote debitNote) {
+    public DebitEntry createInterestRateDebitEntry(final InterestRateBean interest, final DateTime when,
+            final Optional<DebitNote> debitNote) {
         Product product = TreasurySettings.getInstance().getInterestProduct();
 
         if (product == null) {
@@ -377,7 +378,7 @@ public class DebitEntry extends DebitEntry_Base {
         final Set<SettlementEntry> entries = new TreeSet<SettlementEntry>(SettlementEntry.COMPARATOR_BY_ENTRY_DATE_TIME);
 
         entries.addAll(getSettlementEntriesSet());
-        
+
         BigDecimal amountToPay = getAmountWithVat();
         for (final SettlementEntry settlementEntry : entries) {
             if (settlementEntry.getEntryDateTime().toLocalDate().isAfter(paymentDate)) {
@@ -516,22 +517,22 @@ public class DebitEntry extends DebitEntry_Base {
         return findActive(treasuryEvent).map(d -> d.getRemainingAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
     }
 
-    public static DebitEntry create(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
-            final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
-            final Product product, final String description, final BigDecimal quantity, final InterestRate interestRate,
-            final DateTime entryDateTime) {
+    public static DebitEntry create(final Optional<DebitNote> debitNote, final DebtAccount debtAccount,
+            final TreasuryEvent treasuryEvent, final Vat vat, final BigDecimal amount, final LocalDate dueDate,
+            final Map<String, String> propertiesMap, final Product product, final String description, final BigDecimal quantity,
+            final InterestRate interestRate, final DateTime entryDateTime) {
 
         if (product.getActive() == false) {
             throw new TreasuryDomainException(Constants.BUNDLE, "error.DebitEntry.invalid.product.not.active");
         }
         DebitEntry entry =
-                new DebitEntry(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description,
-                        quantity, null, entryDateTime);
-        
+                new DebitEntry(debitNote.orElse(null), debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product,
+                        description, quantity, null, entryDateTime);
+
         if (interestRate != null) {
             InterestRate.createForDebitEntry(entry, interestRate);
         }
-        
+
         entry.recalculateAmountValues();
         return entry;
     }

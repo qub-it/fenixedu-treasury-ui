@@ -29,12 +29,15 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -69,6 +72,18 @@ public class SettlementEntry extends SettlementEntry_Base {
             final BigDecimal amount, final String description, final DateTime entryDateTime) {
         this();
         init(invoiceEntry, finantialDocument, amount, description, entryDateTime);
+
+        if (invoiceEntry.isDebitNoteEntry()) {
+            if (Constants.isEqual(invoiceEntry.getOpenAmount(), amount)) {
+                //Check if we need to create more interest for this debitEntry
+                DebitEntry debitEntry = (DebitEntry) invoiceEntry;
+                InterestRateBean undebitedInterestValue = debitEntry.calculateUndebitedInterestValue(entryDateTime.toLocalDate());
+                if (Constants.isPositive(undebitedInterestValue.getInterestAmount())) {
+                    debitEntry.createInterestRateDebitEntry(undebitedInterestValue, entryDateTime, Optional.<DebitNote> empty());
+                }
+
+            }
+        }
     }
 
     @Override
