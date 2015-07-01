@@ -119,7 +119,7 @@ ${portal.toolkit()}
 	&nbsp;
 	</c:if>
     <c:if test="${not empty debitEntry.finantialDocument && debitEntry.finantialDocument.isPreparing()}">
-        |&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#removeFromDocumentModal"><spring:message code="label.event.document.manageinvoice.debitentry.removefromdocument" /></a>
+        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#removeFromDocumentModal"><spring:message code="label.event.document.manageinvoice.debitentry.removefromdocument" /></a>
     &nbsp;
     </c:if>
 </div>

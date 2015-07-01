@@ -166,6 +166,20 @@ ${portal.toolkit()}
                                 <spring:message code="label.false" />
                             </c:if></td>
                     </tr>
+                      <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPConfiguration.exportOnlyRelatedDocumentsPerExport" /></th>
+                        <td><c:if
+                                test="${eRPConfiguration.exportOnlyRelatedDocumentsPerExport}">
+                                <spring:message code="label.true" />
+                            </c:if>
+                            <c:if
+                                test="${not eRPConfiguration.exportOnlyRelatedDocumentsPerExport}">
+                                <spring:message code="label.false" />
+                            </c:if></td>
+                    </tr>
+                    
+                    
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.ERPConfiguration.externalURL" /></th>

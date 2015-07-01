@@ -128,11 +128,11 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"documentnumber" : "<c:out value='${searchResult.documentNumber}'/>",
-"documentdate" : "<c:out value='${searchResult.documentDate}'/>",
+"documentnumber" : "<c:out value='${searchResult.uiDocumentNumber}'/>",
+"documentdate" : "<c:out value='${searchResult.documentDate.toString("YYYY-MM-dd")}'/>",
 "state" : "<c:out value='${searchResult.state.descriptionI18N.content}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+" <a target=\"#\" class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
 			},
             </c:forEach>

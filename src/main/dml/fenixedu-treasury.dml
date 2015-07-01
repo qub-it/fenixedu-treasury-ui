@@ -645,7 +645,7 @@ relation IntegrationOperationOperationFile
 /* ERP Integration */
 class integration.ERPConfiguration extends integration.Configuration
 {
-    //No fields for now...
+    boolean exportOnlyRelatedDocumentsPerExport;
     boolean exportAnnulledRelatedDocuments;
 }
 relation ERPConfigurationFinantialInstitution

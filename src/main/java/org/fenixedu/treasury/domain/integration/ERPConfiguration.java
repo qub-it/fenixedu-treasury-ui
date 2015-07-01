@@ -51,6 +51,8 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         setExternalURL(externalURL);
         setUsername(username);
         setPassword(password);
+        setExportAnnulledRelatedDocuments(false);
+        setExportOnlyRelatedDocumentsPerExport(false);
         checkRules();
     }
 
@@ -66,12 +68,13 @@ public class ERPConfiguration extends ERPConfiguration_Base {
 
     @Atomic
     public void edit(final Series paymentsIntegrationSeries, final String externalURL, final String username,
-            final String password, final boolean exportAnnulledRelatedDocuments) {
+            final String password, final boolean exportAnnulledRelatedDocuments, final boolean exportOnlyRelatedDocumentsPerExport) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setExternalURL(externalURL);
         setUsername(username);
         setPassword(password);
         setExportAnnulledRelatedDocuments(exportAnnulledRelatedDocuments);
+        setExportOnlyRelatedDocumentsPerExport(exportOnlyRelatedDocumentsPerExport);
         checkRules();
     }
 

@@ -92,17 +92,17 @@ public class ERPConfigurationController extends TreasuryBaseController {
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") ERPConfiguration eRPConfiguration, @RequestParam(
             value = "exportannulledrelateddocuments", required = false) boolean exportAnnulledRelatedDocuments, @RequestParam(
-            value = "externalurl", required = false) String externalURL,
-            @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password",
-                    required = false) String password,
+            value = "exportonlyrelateddocumentsperexport", required = false) boolean exportOnlyRelatedDocumentsPerExport,
+            @RequestParam(value = "externalurl", required = false) String externalURL, @RequestParam(value = "username",
+                    required = false) String username, @RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "paymentsintegrationseries", required = false) Series paymentsIntegrationSeries, Model model,
             RedirectAttributes redirectAttributes) {
 
         setERPConfiguration(eRPConfiguration, model);
 
         try {
-            updateERPConfiguration(exportAnnulledRelatedDocuments, externalURL, username, password, paymentsIntegrationSeries,
-                    model);
+            updateERPConfiguration(exportOnlyRelatedDocumentsPerExport, exportAnnulledRelatedDocuments, externalURL, username,
+                    password, paymentsIntegrationSeries, model);
 
             return redirect(READ_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -114,10 +114,10 @@ public class ERPConfigurationController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateERPConfiguration(boolean exportAnnulledRelatedDocuments, String externalURL, String username,
-            String password, Series paymentsIntegrationSeries, Model model) {
+    public void updateERPConfiguration(boolean exportOnlyRelatedDocumentsPerExport, boolean exportAnnulledRelatedDocuments,
+            String externalURL, String username, String password, Series paymentsIntegrationSeries, Model model) {
         getERPConfiguration(model).edit(paymentsIntegrationSeries, externalURL, username, password,
-                exportAnnulledRelatedDocuments);
+                exportAnnulledRelatedDocuments, exportOnlyRelatedDocumentsPerExport);
     }
 
     @RequestMapping(value = "/update/{oid}/test")
