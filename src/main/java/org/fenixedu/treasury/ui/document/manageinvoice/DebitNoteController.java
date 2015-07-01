@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -244,21 +243,12 @@ public class DebitNoteController extends TreasuryBaseController {
 
         } else {
             List<DocumentNumberSeries> availableSeries =
-                    org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                            .find(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
-                            .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
-
-            Comparator<DocumentNumberSeries> byDefault = (x, y) -> {
-                if (x.getSeries().isDefaultSeries()) {
-                    return -1;
-                }
-                return 1;
-            };
-            Comparator<DocumentNumberSeries> byName = (x, y) -> x.getSeries().getName().compareTo(y.getSeries().getName());
+                    org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
+                            debtAccount.getFinantialInstitution()).collect(Collectors.toList());
 
             if (availableSeries.size() > 0) {
                 model.addAttribute("DebitNote_documentNumberSeries_options",
-                        availableSeries.stream().sorted(byDefault.thenComparing(byName)).collect(Collectors.toList()));
+                        DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
             } else {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);

@@ -124,6 +124,10 @@ public class DebitEntry extends DebitEntry_Base {
         if (!getCreditEntriesSet().isEmpty()) {
             blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.cannot.delete.has.creditentries"));
         }
+
+        if (getDebitEntry() != null) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.cannot.delete.is.interestdebitentry"));
+        }
     }
 
     @Override

@@ -315,7 +315,7 @@ ${portal.angularToolkit()}
         </table>
         <div class="panel-footer">
             <p align="right">
-                <b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat.negate() ) }
+                <b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat.abs() ) }
             </p>
         </div>
     </div>

@@ -60,15 +60,19 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.debtAccount = debtAccount;
         this.reimbursementNote = reimbursementNote;
         for (InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet().stream()
-                .sorted((x, y) -> x.getDueDate().compareTo(y.getDueDate())).collect(Collectors.<InvoiceEntry>toList())) {
+                .sorted((x, y) -> x.getDueDate().compareTo(y.getDueDate())).collect(Collectors.<InvoiceEntry> toList())) {
             if (invoiceEntry instanceof DebitEntry) {
                 debitEntries.add(new DebitEntryBean((DebitEntry) invoiceEntry));
             } else {
                 creditEntries.add(new CreditEntryBean((CreditEntry) invoiceEntry));
             }
         }
-        this.setDocumentNumberSeries(DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
-                debtAccount.getFinantialInstitution()).collect(Collectors.toList()));
+        List<DocumentNumberSeries> availableSeries =
+                org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
+                        debtAccount.getFinantialInstitution()).collect(Collectors.toList());
+
+        this.setDocumentNumberSeries(DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(
+                Collectors.toList()));
     }
 
     public DebtAccount getDebtAccount() {
@@ -244,7 +248,7 @@ public class SettlementNoteBean implements IBean, Serializable {
     public void setDocumentNumberSeries(List<DocumentNumberSeries> documentNumberSeries) {
         this.documentNumberSeries = documentNumberSeries.stream().map(docNumSeries -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
-            tuple.setText(docNumSeries.getSeries().getName().getContent());
+            tuple.setText(docNumSeries.getSeries().getCode() + " - " + docNumSeries.getSeries().getName().getContent());
             tuple.setId(docNumSeries.getExternalId());
             return tuple;
         }).collect(Collectors.toList());

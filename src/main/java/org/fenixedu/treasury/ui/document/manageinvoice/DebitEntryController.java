@@ -134,9 +134,9 @@ public class DebitEntryController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
 
         setDebitEntry(debitEntry, model);
+        DebitNote note = (DebitNote) debitEntry.getFinantialDocument();
+        DebtAccount account = debitEntry.getDebtAccount();
         try {
-            DebitNote note = (DebitNote) debitEntry.getFinantialDocument();
-            DebtAccount account = debitEntry.getDebtAccount();
             //call the Atomic delete function
             deleteDebitEntry(debitEntry);
 
@@ -151,8 +151,11 @@ public class DebitEntryController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        //The default mapping is the same Read View
-        return "treasury/document/manageinvoice/debitentry/read/";
+        if (note != null) {
+            return redirect(DebitNoteController.READ_URL + note.getExternalId(), model, redirectAttributes);
+        } else {
+            return redirect(DebtAccountController.READ_URL + account.getExternalId(), model, redirectAttributes);
+        }
     }
 
 //				
@@ -516,7 +519,7 @@ public class DebitEntryController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
 
-        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.update"), model);
+        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.update"), model);
         return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
     }
 

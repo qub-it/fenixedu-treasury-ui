@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -39,6 +40,17 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import pt.ist.fenixframework.Atomic;
 
 public class DocumentNumberSeries extends DocumentNumberSeries_Base {
+
+    public static Comparator<DocumentNumberSeries> COMPARE_BY_DEFAULT = (x, y) -> {
+        if (x.getSeries().isDefaultSeries()) {
+            return -1;
+        }
+        return 1;
+    };
+    public static Comparator<DocumentNumberSeries> COMPARE_BY_NAME = (x, y) -> {
+        int c = x.getSeries().getName().compareTo(y.getSeries().getName());
+        return c != 0 ? c : x.getExternalId().compareTo(y.getExternalId());
+    };
 
     protected DocumentNumberSeries() {
         super();
@@ -146,6 +158,11 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     public long getClosedDocumentsCount() {
         return this.getFinantialDocumentsSet().stream().filter(x -> x.isClosed()).count();
+    }
+
+    public static Stream<DocumentNumberSeries> applyActiveAndDefaultSorting(Stream<DocumentNumberSeries> stream) {
+
+        return stream.filter(x -> x.getSeries().getActive()).sorted(COMPARE_BY_DEFAULT.thenComparing(COMPARE_BY_NAME));
     }
 
 }
