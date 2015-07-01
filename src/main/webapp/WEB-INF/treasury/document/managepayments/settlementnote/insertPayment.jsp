@@ -147,6 +147,9 @@ ${portal.angularToolkit()}
 							function($scope) {
 								$scope.object = angular
 										.fromJson('${settlementNoteBeanJson}');
+				                if($scope.object.previousStates[$scope.object.previousStates.length - 1] != 3) {
+				                    $scope.object.previousStates.push(3);
+				                }
 								$scope.getTotal = function() {
 									var total = 0;
 									for (var i = 0; i < $scope.object.paymentEntries.length; i++) {
@@ -174,7 +177,14 @@ ${portal.angularToolkit()}
 											}, id, name)
 									return name;
 								}
-								$scope.currencySymbol = "${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }";
+				                $scope.processBackSubmit = function(contextPath) {
+                                    $scope.object.previousStates.pop();
+                                    var path = contextPath + $scope.object.settlementNoteStateUrls[$scope.object.previousStates.pop()];
+				                    $("#insertPaymentForm").attr("action", path);
+                                    //Timeout necessary to make angular update the previousStates array before submit
+                                    setTimeout(function() { $("#insertPaymentForm").submit() }, 10);  
+                                }
+				                $scope.currencySymbol = "${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }";
 							} ]);
 </script>
 
@@ -472,7 +482,7 @@ ${portal.angularToolkit()}
     </div>
     <div class="panel-footer">
         <button type="button" class="btn btn-default"
-            onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CALCULATE_INTEREST_URL %>')">
+            ng-click="processBackSubmit('${pageContext.request.contextPath}')">
             <spring:message code="label.event.back" />
         </button>
         <button type="button" class="btn btn-primary"

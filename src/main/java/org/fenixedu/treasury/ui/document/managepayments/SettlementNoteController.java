@@ -203,10 +203,10 @@ public class SettlementNoteController extends TreasuryBaseController {
                 }
             }
         }
-        setSettlementNoteBean(bean, model);
         if (bean.getInterestEntries().size() == 0) {
             return calculateInterest(bean, model);
         }
+        setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/calculateInterest";
     }
 
@@ -241,11 +241,10 @@ public class SettlementNoteController extends TreasuryBaseController {
         String error =
                 bean.isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
         if (debitSum.compareTo(paymentSum) != 0) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.no.match.payment.debit"), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/insertPayment";
         }
-
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/summary";
     }
@@ -254,21 +253,22 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            processSettlementNoteCreation(bean);
+            SettlementNote settlementNote = processSettlementNoteCreation(bean);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
+            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
         }
-
-        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
-        return redirect(DebtAccountController.READ_URL + bean.getDebtAccount().getExternalId(), model, redirectAttributes);
+        return "treasury/document/managepayments/settlementnote/summary";
     }
 
     @Atomic
-    public void processSettlementNoteCreation(SettlementNoteBean bean) {
+    public SettlementNote processSettlementNoteCreation(SettlementNoteBean bean) {
         SettlementNote settlementNote =
                 SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay(),
                         bean.getOriginDocumentNumber());
         settlementNote.processSettlementNoteCreation(bean);
+        return settlementNote;
     }
 
     @RequestMapping(value = SEARCH_URI)
