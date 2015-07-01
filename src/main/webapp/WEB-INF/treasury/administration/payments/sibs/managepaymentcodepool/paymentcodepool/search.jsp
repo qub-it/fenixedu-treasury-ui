@@ -225,6 +225,8 @@ ${portal.toolkit()}
                     <th><spring:message
                             code="label.PaymentCodePool.name" /></th>
                     <th><spring:message
+                             code="label.PaymentCodePool.active" /></th> 
+                    <th><spring:message
                             code="label.PaymentCodePool.entityReferenceCode" /></th>
                     <th><spring:message
                             code="label.PaymentCodePool.minReferenceCode" /></th>
@@ -234,8 +236,6 @@ ${portal.toolkit()}
                             code="label.PaymentCodePool.validFrom" /></th>
                     <th><spring:message
                             code="label.PaymentCodePool.validTo" /></th>
-<%--                     <th><spring:message --%>
-<%--                             code="label.PaymentCodePool.active" /></th> --%>
 <%--                     <th><spring:message --%>
 <%--                             code="label.PaymentCodePool.useCheckDigit" /></th> --%>
                     <%-- Operations Column --%>
@@ -274,7 +274,7 @@ ${portal.toolkit()}
 "maxreferencecode" : "<c:out value='${searchResult.maxReferenceCode}'/>",
 "validfrom" : "<c:out value='${searchResult.validFrom}'/>",
 "validto" : "<c:out value='${searchResult.validTo}'/>",
-// "active" : "<c:if test="${searchResult.active}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.active}"><spring:message code="label.false" /></c:if>",
+ "active" : "<c:if test="${searchResult.active}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.active}"><spring:message code="label.false" /></c:if>",
 // "usecheckdigit" : "<c:if test="${searchResult.useCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.useCheckDigit}"><spring:message code="label.false" /></c:if>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
@@ -314,12 +314,12 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'finantialinstitution' },
 			{ data: 'name' },
+            { data: 'active' },
 			{ data: 'entityreferencecode' },
 			{ data: 'minreferencecode' },
 			{ data: 'maxreferencecode' },
 			{ data: 'validfrom' },
 			{ data: 'validto' },
-// 			{ data: 'active' },
 // 			{ data: 'usecheckdigit' },
 			{ data: 'actions' }
 			
@@ -327,7 +327,7 @@ ${portal.toolkit()}
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 7 } 
+		               { "width": "54px", "targets": 8 } 
 		             ],
 		"data" : searchpaymentcodepoolDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

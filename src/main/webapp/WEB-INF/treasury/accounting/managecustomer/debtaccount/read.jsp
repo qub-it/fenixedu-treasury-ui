@@ -283,7 +283,7 @@ ${portal.angularToolkit()}
                                 test="${not empty pendingEntry.finantialDocument }">
                                 <c:if
                                     test="${pendingEntry.isDebitNoteEntry() }">
-                                    <a
+                                    <a target="_blank" 
                                         href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}">
                                         <c:out
                                             value="${pendingEntry.finantialDocument.uiDocumentNumber}" />
@@ -291,7 +291,7 @@ ${portal.angularToolkit()}
                                 </c:if>
                                 <c:if
                                     test="${pendingEntry.isCreditNoteEntry() }">
-                                    <a
+                                    <a target="_blank" 
                                         href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}">
                                         <c:out
                                             value="${pendingEntry.finantialDocument.uiDocumentNumber}" />
@@ -401,7 +401,7 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <c:if
                                 test="${not empty entry.finantialDocument }">
-                                <a
+                                <a target="_blank" 
                                     href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}">
                                     <c:out
                                         value="${entry.finantialDocument.uiDocumentNumber}" />
@@ -520,7 +520,7 @@ ${portal.angularToolkit()}
                                 <spring:message
                                     code="label.SettlementEntry.finantialDocument" />
                             </datatables:columnHead>
-                            <a
+                            <a target="_blank" 
                                 href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${payment.externalId}">
                                 <c:out
                                     value="${payment.uiDocumentNumber}" />

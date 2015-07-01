@@ -86,8 +86,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="paymentCodePool_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
-                        <option value="">&nbsp;</option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
                 
@@ -179,8 +177,6 @@ ${portal.toolkit()}
 
                 <div class="col-sm-2">
                     <select id="paymentCodePool_active" name="active" class="form-control">
-                        <option value="">&nbsp;</option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         <option value="false"><spring:message code="label.no" /></option>
                         <option value="true"><spring:message code="label.yes" /></option>
                     </select>
@@ -196,8 +192,6 @@ ${portal.toolkit()}
 
                 <div class="col-sm-2">
                     <select id="paymentCodePool_useCheckDigit" name="usecheckdigit" class="form-control">
-                        <option value="">&nbsp;</option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         <option value="false"><spring:message code="label.no" /></option>
                         <option value="true"><spring:message code="label.yes" /></option>
                     </select>
@@ -213,8 +207,6 @@ ${portal.toolkit()}
 
                 <div class="col-sm-2">
                     <select id="paymentCodePool_useAmountToValidateCheckDigit" name="useamounttovalidatecheckdigit" class="form-control">
-                        <option value="">&nbsp;</option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         <option value="false"><spring:message code="label.no" /></option>
                         <option value="true"><spring:message code="label.yes" /></option>
                     </select>
@@ -233,8 +225,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="paymentCodePool_paymentMethod" class="js-example-basic-single" name="paymentmethod">
-                        <option value="">&nbsp;</option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
             </div>
@@ -247,8 +237,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentnumberseries">
-                        <option value="">&nbsp;</option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
                 </div>
             </div>

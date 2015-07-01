@@ -261,8 +261,8 @@ public class ERPExporter {
         }
         // Update Totals of Workingdocuments
         workingDocuments.setNumberOfEntries(numberOfWorkingDocuments);
-        workingDocuments.setTotalCredit(totalCreditOfWorkingDocuments);
-        workingDocuments.setTotalDebit(totalDebitOfWorkingDocuments);
+        workingDocuments.setTotalCredit(totalCreditOfWorkingDocuments.setScale(2, RoundingMode.HALF_EVEN));
+        workingDocuments.setTotalDebit(totalDebitOfWorkingDocuments.setScale(2, RoundingMode.HALF_EVEN));
 
         sourceDocuments.setWorkingDocuments(workingDocuments);
 
@@ -299,8 +299,8 @@ public class ERPExporter {
 
         // Update Totals of Payment Documents
         paymentsDocuments.setNumberOfEntries(numberOfPaymentsDocuments);
-        paymentsDocuments.setTotalCredit(totalCreditOfPaymentsDocuments);
-        paymentsDocuments.setTotalDebit(totalDebitOfPaymentsDocuments);
+        paymentsDocuments.setTotalCredit(totalCreditOfPaymentsDocuments.setScale(2, RoundingMode.HALF_EVEN));
+        paymentsDocuments.setTotalDebit(totalDebitOfPaymentsDocuments.setScale(2, RoundingMode.HALF_EVEN));
         sourceDocuments.setPayments(paymentsDocuments);
 
         // Update the Customer Table in SAFT
@@ -380,7 +380,7 @@ public class ERPExporter {
             //PaymentMethods
             for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
                 PaymentMethod method = new PaymentMethod();
-                method.setPaymentAmount(paymentEntry.getPayedAmount());
+                method.setPaymentAmount(paymentEntry.getPayedAmount().setScale(2, RoundingMode.HALF_EVEN));
                 method.setPaymentDate(payment.getTransactionDate());
                 method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
                 payment.getPaymentMethod().add(method);
@@ -1018,7 +1018,7 @@ public class ERPExporter {
         } else {
             companyAddress.setAddressDetail(".");
         }
-        if (companyAddress.getCity() != null) {
+        if (zipCodeRegion != null) {
             companyAddress.setCity(Splitter.fixedLength(49).splitToList(zipCodeRegion).get(0));
         } else {
             companyAddress.setCity(".");

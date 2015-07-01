@@ -137,4 +137,9 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         return finantialDocument.getFinantialDocumentEntriesSet().stream()
                 .filter(e -> e.getEntryOrder() != null && e.getEntryOrder() == entryOrder).findFirst();
     }
+
+    public boolean isAnnulled() {
+        return this.getFinantialDocument() != null && this.getFinantialDocument().isAnnulled();
+    }
+
 }

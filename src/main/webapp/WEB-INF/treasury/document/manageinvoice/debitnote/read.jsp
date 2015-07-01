@@ -1,5 +1,5 @@
 <%@page import="java.math.BigDecimal"%>
-<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -409,8 +409,8 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                                 <ul >
                                 
                                     <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
-                                        <li ><a href = <%=DebitNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}><c:out
-                                                value='${settlementEntry.finantialDocument.uiDocumentNumber}</a> - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                        <li ><a target="_blank" href = "${pageContext.request.contextPath}/<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
+                                                value='${settlementEntry.finantialDocument.uiDocumentNumber}'/></a> <c:out value=' - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
                                     </c:forEach>
                                 </ul>
                             </td>

@@ -125,9 +125,6 @@ public class DebitEntry extends DebitEntry_Base {
             blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.cannot.delete.has.creditentries"));
         }
 
-        if (getDebitEntry() != null) {
-            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.cannot.delete.is.interestdebitentry"));
-        }
     }
 
     @Override
@@ -138,6 +135,7 @@ public class DebitEntry extends DebitEntry_Base {
             this.setInterestRate(null);
             oldRate.delete();
         }
+        this.setDebitEntry(null);
         this.setTreasuryEvent(null);
 
         super.delete();
@@ -385,11 +383,13 @@ public class DebitEntry extends DebitEntry_Base {
 
         BigDecimal amountToPay = getAmountWithVat();
         for (final SettlementEntry settlementEntry : entries) {
-            if (settlementEntry.getEntryDateTime().toLocalDate().isAfter(paymentDate)) {
-                break;
-            }
+            if (!settlementEntry.isAnnulled()) {
+                if (settlementEntry.getEntryDateTime().toLocalDate().isAfter(paymentDate)) {
+                    break;
+                }
 
-            amountToPay = amountToPay.subtract(settlementEntry.getAmount());
+                amountToPay = amountToPay.subtract(settlementEntry.getAmount());
+            }
         }
 
         return amountToPay;
@@ -445,7 +445,9 @@ public class DebitEntry extends DebitEntry_Base {
         eventDates.add(getDueDate());
 
         for (final SettlementEntry settlementEntry : getSettlementEntriesSet()) {
-            eventDates.add(settlementEntry.getEntryDateTime().toLocalDate());
+            if (!settlementEntry.isAnnulled()) {
+                eventDates.add(settlementEntry.getEntryDateTime().toLocalDate());
+            }
         }
 
         for (LocalDate date : eventDates) {
@@ -459,7 +461,9 @@ public class DebitEntry extends DebitEntry_Base {
         final Map<LocalDate, BigDecimal> result = Maps.newHashMap();
 
         for (final DebitEntry interestDebitEntry : getInterestDebitEntriesSet()) {
-            result.put(interestDebitEntry.getEntryDateTime().toLocalDate(), interestDebitEntry.getAmountWithVat());
+            if (!interestDebitEntry.isAnnulled()) {
+                result.put(interestDebitEntry.getEntryDateTime().toLocalDate(), interestDebitEntry.getAmountWithVat());
+            }
         }
 
         return result;

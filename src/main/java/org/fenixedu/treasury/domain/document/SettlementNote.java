@@ -102,7 +102,9 @@ public class SettlementNote extends SettlementNote_Base {
     @Override
     public boolean isDeletable() {
         //We can only "delete" a settlement note if is in "Preparing"
-        return this.isPreparing() && getAdvancedPaymentCreditNote() != null && getAdvancedPaymentCreditNote().isDeletable();
+        return this.isPreparing()
+                && (getAdvancedPaymentCreditNote() == null || getAdvancedPaymentCreditNote() != null
+                        && getAdvancedPaymentCreditNote().isDeletable());
     }
 
     @Override
@@ -137,9 +139,9 @@ public class SettlementNote extends SettlementNote_Base {
 
     @Atomic
     public void processSettlementNoteCreation(SettlementNoteBean bean) {
+        processInterestEntries(bean);
         closeDebitNotes(bean);
         closeCreditNotes(bean);
-        processInterestEntries(bean);
         if (bean.isReimbursementNote()) {
             processReimbursementEntries(bean);
         } else {
