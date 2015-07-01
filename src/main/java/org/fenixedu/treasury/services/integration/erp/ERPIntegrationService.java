@@ -245,7 +245,7 @@ public class ERPIntegrationService extends BennuWebService {
                 DebitNote.create(debitEntry.getDebtAccount(), debitNoteSeries, paymentDate.toDateTimeAtStartOfDay());
 
         debitEntry.createInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(),
-                Optional.<DebitNote> of(interestDebitNote));
+                Optional.<DebitNote> ofNullable(interestDebitNote));
         interestDebitNote.closeDocument();
     }
 

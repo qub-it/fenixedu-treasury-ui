@@ -362,7 +362,7 @@ ${portal.toolkit()} ${portal.angularToolkit()}
     </div>
 
     <div class="panel-footer">
-        <input type="submit" class="btn btn-default" role="button"
+        <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" ><input type="submit" class="btn btn-default" role="button"
             value="<spring:message code="label.continue" />" />
     </div>
 </form>

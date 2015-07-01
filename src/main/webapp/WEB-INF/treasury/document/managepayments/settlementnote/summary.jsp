@@ -474,11 +474,11 @@ ${portal.angularToolkit()}
     <div class="panel-footer">
         <button type="button" class="btn btn-default"
             ng-click="processBackSubmit('${pageContext.request.contextPath}')">
-            <spring:message code="label.event.back" />
+            <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" > <spring:message code="label.event.back" />
         </button>
         <button type="button" class="btn btn-primary"
             onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.SUMMARY_URL %>')">
-            <spring:message code="label.finish" />
+            <span class="glyphicon glyphicon-ok" aria-hidden="true" ><spring:message code="label.finish" />
         </button>
     </div>
 </form>

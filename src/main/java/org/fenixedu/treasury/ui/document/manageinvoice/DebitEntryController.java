@@ -315,8 +315,8 @@ public class DebitEntryController extends TreasuryBaseController {
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
         DebitEntry debitEntry =
-                DebitEntry.create(Optional.<DebitNote> of(debitNote), debtAccount, treasuryEvent, activeVat.orElse(null), amount,
-                        dueDate, null, product, description, quantity, null, entryDateTime);
+                DebitEntry.create(Optional.<DebitNote> ofNullable(debitNote), debtAccount, treasuryEvent, activeVat.orElse(null),
+                        amount, dueDate, null, product, description, quantity, null, entryDateTime);
 
         if (applyInterests) {
             InterestRate interestRate =

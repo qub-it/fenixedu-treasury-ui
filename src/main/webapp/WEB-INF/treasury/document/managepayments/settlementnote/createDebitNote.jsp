@@ -244,11 +244,11 @@ ${portal.angularToolkit()}
         <div class="panel-footer">
             <button type="button" class="btn btn-default"
                 ng-click="processBackSubmit('${pageContext.request.contextPath}')">
-                <spring:message code="label.event.back" />
+                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" ><spring:message code="label.event.back" />
             </button>
             <button type="button" class="btn btn-primary"
                 onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CREATE_DEBIT_NOTE_URL %>')">
-                <spring:message code="label.continue" />
+                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" > <spring:message code="label.continue" />
             </button>
         </div>
     </div>
