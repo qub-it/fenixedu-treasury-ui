@@ -215,12 +215,10 @@ ${portal.toolkit()}
             </a>
             &nbsp;
         </c:if>
-        |&nbsp;
-        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
-        &nbsp;
-        <a class="" id="printLabel2" href="#" onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message code="label.print" />
-        </a>
-        &nbsp;        
+        |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#"
+            onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message
+                code="label.print" />
+        </a> &nbsp;
     </div>
 </form>
 
@@ -334,53 +332,55 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
-                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /> </td>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
                     </tr>
                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>
-                        <td>
-                                
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>
+                            <td>
+
                                 <ul>
                                     <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
-                                        <li>
-                                        <a target="#" href="${pageContext.request.contextPath}/<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}" > 
-                                            <c:out value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" /></a>
-                                            &nbsp;
-                                            <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
+                                        <li><a target="#"
+                                            href="${pageContext.request.contextPath}/<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}">
+                                                <c:out
+                                                    value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" />
+                                        </a> &nbsp; <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
                                                 <span class="label label-primary">
-                                            </c:if>
-                                            <c:if test="${paymentcode.paymentReferenceCode.state=='ANNULLED'}">
+                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='ANNULLED'}">
                                                 <span class="label label-danger">
-                                            </c:if>
-                                            <c:if test="${paymentcode.paymentReferenceCode.state=='UNUSED'}">
+                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='UNUSED'}">
                                                 <span class="label label-default">
-                                            </c:if>
-                                            <c:if test="${paymentcode.paymentReferenceCode.state=='PROCESSED'}">
+                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='PROCESSED'}">
                                                 <span class="label label-success">
-                                            </c:if>  
-                                            <c:out value="${paymentcode.paymentReferenceCode.state.descriptionI18N.content}" />
-                                            </span>                                            
-                                        </li>
-                                    </c:forEach>
-                                </ul>
-                                </td>
-                    </tr>
-                            </c:if>
-                    <c:if test="${not empty debitNote.relatedSettlementEntries }">
-                        <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
-                            <td>
-                                <ul >
-                                
-                                    <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
-                                        <li ><a target="_blank" href = "${pageContext.request.contextPath}/<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
-                                                value='${settlementEntry.finantialDocument.uiDocumentNumber}'/></a> <c:out value=' - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                            </c:if> <c:out value="${paymentcode.paymentReferenceCode.state.descriptionI18N.content}" /> </span></li>
                                     </c:forEach>
                                 </ul>
                             </td>
                         </tr>
                     </c:if>
+                    <c:if test="${not empty debitNote.relatedSettlementEntries }">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
+                            <td>
+                                <ul>
+
+                                    <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
+                                        <li><a target="_blank"
+                                            href="${pageContext.request.contextPath}/<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
+                                                    value='${settlementEntry.finantialDocument.uiDocumentNumber}' /></a> <c:out
+                                                value=' - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                    </c:forEach>
+                                </ul>
+                            </td>
+                        </tr>
+                    </c:if>
+
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
+                        <td>[<c:out value='${debitNote.getVersioningCreator()}' />] <joda:format value="${debitNote.getVersioningCreationDate()}" style="SS" /></td>
+                    </tr>
+
                 </tbody>
             </table>
         </form>

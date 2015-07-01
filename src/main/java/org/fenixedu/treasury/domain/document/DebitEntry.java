@@ -57,6 +57,7 @@ import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -192,8 +193,10 @@ public class DebitEntry extends DebitEntry_Base {
             return new InterestRateBean();
         }
 
-        return getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(), getDueDate(),
-                whenToCalculate);
+        InterestRateBean calculateInterest =
+                getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate), createdInterestEntriesMap(), getDueDate(),
+                        whenToCalculate);
+        return calculateInterest;
     }
 
     public boolean isApplyInterests() {
@@ -297,10 +300,16 @@ public class DebitEntry extends DebitEntry_Base {
         FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
         Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
 
+        //entry description for Interest Entry
+        String entryDescription = interest.getDescription();
+        if (Strings.isNullOrEmpty(entryDescription)) {
+            //default entryDescription
+            entryDescription = product.getName().getContent() + "-" + this.getDescription();
+        }
+
         DebitEntry interestEntry =
                 create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
-                        propertiesJsonToMap(getPropertiesJsonMap()), product, interest.getDescription(), BigDecimal.ONE, null,
-                        when);
+                        propertiesJsonToMap(getPropertiesJsonMap()), product, entryDescription, BigDecimal.ONE, null, when);
 
         addInterestDebitEntries(interestEntry);
 

@@ -177,6 +177,12 @@ ${portal.toolkit()}
                         <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>
                     </tr>
 
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
+                        <td>[<c:out value='${debitEntry.getVersioningCreator()}' />] <joda:format value="${debitEntry.getVersioningCreationDate()}" style="SS" /></td>
+                    </tr>
+
+
                     <c:if test='${ not empty debitEntry.interestRate}'>
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.interestType" /></th>
