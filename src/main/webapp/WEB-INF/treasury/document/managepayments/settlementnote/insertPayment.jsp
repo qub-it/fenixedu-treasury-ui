@@ -301,14 +301,14 @@ ${portal.angularToolkit()}
                         </c:if>
                         <th><spring:message code="label.PaymentMethod.value" /></th>
                         <!-- operation column -->
-                        <th></th>
+                        <th style="width: 15%"></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="paymentEntryBean in object.paymentEntries">
                         <td>{{ getPaymentName( paymentEntryBean.paymentMethod ) }}</td>
                         <td>{{ paymentEntryBean.paymentAmount + " " + currencySymbol }}</td>
-                        <td>
+                        <td >
                             <button type="button" class="btn btn-default" ng-click="object.paymentEntries.splice($index,1);">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true" ></span> &nbsp;<spring:message code="label.event.delete" />
                             </button>
@@ -374,7 +374,7 @@ ${portal.angularToolkit()}
             <span class="glyphicon glyphicon-chevron-left" aria-hidden="true" ></span> &nbsp;<spring:message code="label.event.back" />
         </button>
         <button type="button" class="btn btn-primary" onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.INSERT_PAYMENT_URL %>')">
-            <span class="glyphicon glyphicon-chevron-right" aria-hidden="true" ></span> &nbsp;<spring:message code="label.continue" />
+            <spring:message code="label.continue" />&nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" ></span> 
         </button>
     </div>
 </form>

@@ -396,12 +396,13 @@ public class SettlementNoteController extends TreasuryBaseController {
     //
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") SettlementNote settlementNote, @RequestParam(value = "origindocumentnumber",
-            required = false) java.lang.String originDocumentNumber, Model model, RedirectAttributes redirectAttributes) {
+            required = false) java.lang.String originDocumentNumber, @RequestParam(value = "documentobservations",
+            required = false) java.lang.String documentObservations, Model model, RedirectAttributes redirectAttributes) {
 
         setSettlementNote(settlementNote, model);
 
         try {
-            updateSettlementNote(originDocumentNumber, model);
+            updateSettlementNote(originDocumentNumber, documentObservations, model);
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -413,8 +414,9 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateSettlementNote(java.lang.String originDocumentNumber, Model model) {
+    public void updateSettlementNote(java.lang.String originDocumentNumber, String documentObservations, Model model) {
         getSettlementNote(model).setOriginDocumentNumber(originDocumentNumber);
+        getSettlementNote(model).setDocumentObservations(documentObservations);
     }
 
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)

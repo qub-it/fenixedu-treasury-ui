@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
+
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -135,7 +137,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-10">
                     <div class="form-control">
-                        <c:out value="${settlementNote.documentDate}" />
+                        <joda:format value="${settlementNote.documentDate}" style="S-" />
                     </div>
                 </div>
             </div>
@@ -157,6 +159,19 @@ ${portal.toolkit()}
                         class="form-control" type="text"
                         name="origindocumentnumber"
                         value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : settlementNote.originDocumentNumber }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.settlementNote.documentObservations" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="settlementNote_documentObservations"
+                        class="form-control" type="text"
+                        name="origindocumentnumber"
+                        value='<c:out value='${not empty param.documentobservations ? param.documentobservations : settlementNote.documentObservations }'/>' />
                 </div>
             </div>
 
