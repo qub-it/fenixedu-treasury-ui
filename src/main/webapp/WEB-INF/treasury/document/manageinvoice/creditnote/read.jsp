@@ -326,12 +326,13 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.CreditNote.debitNote" /></th>
                         <td><c:if
-                                test="${not creditNote.debitNote}">
+                                test="${empty creditNote.debitNote}">
                                 <span class="label label-warning">
                                     <spring:message
                                         code="label.document.manageinvoice.creditnote.without.debitnote" />
                                 </span>
-                            </c:if> <c:if
+                            </c:if>
+                            <c:if
                                 test="${not empty creditNote.debitNote}">
 
                                 <a

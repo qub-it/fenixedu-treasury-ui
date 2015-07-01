@@ -65,7 +65,6 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URL + "/";
     }
 

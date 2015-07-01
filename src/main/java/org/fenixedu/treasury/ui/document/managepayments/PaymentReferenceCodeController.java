@@ -32,11 +32,13 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
+import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 import org.springframework.ui.Model;
@@ -49,31 +51,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments", accessGroup = "#managers")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
 @BennuSpringController(value = CustomerController.class)
 @RequestMapping(PaymentReferenceCodeController.CONTROLLER_URL)
 public class PaymentReferenceCodeController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/document/managepayments/paymentreferencecode";
 
-//
-
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + CONTROLLER_URL + "/";
-    }
-
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    private PaymentReferenceCodeBean getPaymentReferenceCodeBean(Model model) {
-        return (PaymentReferenceCodeBean) model.asMap().get("paymentReferenceCodeBean");
     }
 
     private void setPaymentReferenceCodeBean(PaymentReferenceCodeBean bean, Model model) {
@@ -81,33 +67,20 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         model.addAttribute("paymentReferenceCodeBean", bean);
     }
 
-    // @formatter: on
-
-    private PaymentReferenceCode getPaymentReferenceCode(Model model) {
-        return (PaymentReferenceCode) model.asMap().get("paymentReferenceCode");
-    }
-
-    private void setPaymentReferenceCode(PaymentReferenceCode paymentReferenceCode, Model model) {
-        model.addAttribute("paymentReferenceCode", paymentReferenceCode);
-    }
-
     @Atomic
     public void deletePaymentReferenceCode(PaymentReferenceCode paymentReferenceCode) {
-        // CHANGE_ME: Do the processing for deleting the paymentReferenceCode
-        // Do not catch any exception here
-
-        // paymentReferenceCode.delete();
     }
 
-//				
     private static final String _CREATEPAYMENTCODEINDEBITNOTE_URI = "/createpaymentcodeindebitnote";
     public static final String CREATEPAYMENTCODEINDEBITNOTE_URL = CONTROLLER_URL + _CREATEPAYMENTCODEINDEBITNOTE_URI;
 
     @RequestMapping(value = _CREATEPAYMENTCODEINDEBITNOTE_URI, method = RequestMethod.GET)
-    public String createpaymentcodeindebitnote(@RequestParam(value = "debitnote") DebitNote debitNote, Model model) {
-//        model.addAttribute("stateValues", org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType.values());
-
-        //IF ANGULAR, initialize the Bean
+    public String createpaymentcodeindebitnote(@RequestParam(value = "debitnote") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        if (debitNote.getPaymentCodesSet().stream().anyMatch(pc -> pc.getPaymentReferenceCode().getState().isUsed())) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
+            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
         PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
         bean.setDebitNote(debitNote);
         List<PaymentCodePool> activePools =
@@ -122,11 +95,6 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
     }
 
-//
-//               THIS SHOULD BE USED ONLY WHEN USING ANGULAR 
-//
-    // @formatter: off
-
     private static final String _CREATEPAYMENTCODEINDEBITNOTEPOSTBACK_URI = "/createpaymentcodeindebitnotepostback";
     public static final String CREATEPAYMENTCODEINDEBITNOTEPOSTBACK_URL = CONTROLLER_URL
             + _CREATEPAYMENTCODEINDEBITNOTEPOSTBACK_URI;
@@ -135,8 +103,6 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             produces = "application/json;charset=UTF-8")
     public @ResponseBody String createpaymentcodeindebitnotepostback(
             @RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean, Model model) {
-
-        // Do validation logic ?!?!
         this.setPaymentReferenceCodeBean(bean, model);
         return getBeanJson(bean);
     }
@@ -144,15 +110,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _CREATEPAYMENTCODEINDEBITNOTE_URI, method = RequestMethod.POST)
     public String createpaymentcodeindebitnote(@RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
             Model model, RedirectAttributes redirectAttributes) {
-
-        /*
-        *  Creation Logic
-        */
-
         try {
-
-            LocalDate fromDate = new LocalDate();
-
             PaymentReferenceCode paymentReferenceCode =
                     bean.getPaymentCodePool()
                             .getReferenceCodeGenerator()
@@ -160,32 +118,17 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                                     bean.getDebitNote().getOpenAmount(), bean.getBeginDate(), bean.getEndDate(), true);
 
             paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
-            //Success Validation
-            //Add the bean to be used in the View
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.document.managepayments.success.create.reference.code.debitnote"), model);
 
-            //Success Validation
-            //Add the bean to be used in the View
             model.addAttribute("paymentReferenceCode", paymentReferenceCode);
-            return redirect("/treasury/document/manageinvoice/debitnote/read/" + bean.getDebitNote().getExternalId(), model,
-                    redirectAttributes);
-        } catch (Exception de) {
-
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            this.setPaymentReferenceCodeBean(bean, model);
-            return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
-
+            return redirect(DebitNoteController.READ_URL + bean.getDebitNote().getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        this.setPaymentReferenceCodeBean(bean, model);
+        return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
     }
-    // @formatter: on
-
 }

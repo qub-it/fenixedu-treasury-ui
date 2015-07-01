@@ -27,10 +27,12 @@
 
 package org.fenixedu.treasury.domain.tariff;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
@@ -42,41 +44,32 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected void init(final int year, final org.fenixedu.commons.i18n.LocalizedString description,
-            final java.math.BigDecimal rate, boolean applyInFirstWorkday, boolean applyPaymentMonth) {
+    protected void init(final int year, final LocalizedString description, final BigDecimal rate,
+            final boolean applyPaymentMonth, final boolean applyInFirstWorkday) {
         setYear(year);
         setDescription(description);
         setRate(rate);
-        setApplyInFirstWorkday(applyInFirstWorkday);
         setApplyPaymentMonth(applyPaymentMonth);
+        setApplyInFirstWorkday(applyInFirstWorkday);
+
         checkRules();
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
         if (findByYear(getYear()).count() > 1) {
             throw new TreasuryDomainException("error.GlobalInterestRate.year.duplicated");
         }
-        //if (findByDescription(getDescription().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.GlobalInterestRate.description.duplicated");
-        //}	
-        //if (findByRate(getRate().count()>1)
-        //{
-        //	throw new TreasuryDomainException("error.GlobalInterestRate.rate.duplicated");
-        //}	
     }
 
     @Atomic
-    public void edit(final int year, final org.fenixedu.commons.i18n.LocalizedString description,
-            final java.math.BigDecimal rate, boolean applyInFirstWorkday, boolean applyPaymentMonth) {
+    public void edit(final int year, final LocalizedString description, final BigDecimal rate, final boolean applyPaymentMonth,
+            final boolean applyInFirstWorkday) {
         setYear(year);
         setDescription(description);
         setRate(rate);
+        setApplyPaymentMonth(applyPaymentMonth);
+        setApplyInFirstWorkday(applyInFirstWorkday);
+
         checkRules();
     }
 
@@ -96,18 +89,12 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
     }
 
     @Atomic
-    public static GlobalInterestRate create(final int year, final org.fenixedu.commons.i18n.LocalizedString description,
-            final java.math.BigDecimal rate, boolean applyInFirstWorkday, boolean applyPaymentMonth) {
+    public static GlobalInterestRate create(final int year, final LocalizedString description, final BigDecimal rate,
+            boolean applyPaymentMonth, boolean applyInFirstWorkday) {
         GlobalInterestRate globalInterestRate = new GlobalInterestRate();
-        globalInterestRate.init(year, description, rate, applyInFirstWorkday, applyPaymentMonth);
+        globalInterestRate.init(year, description, rate, applyPaymentMonth, applyInFirstWorkday);
         return globalInterestRate;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
 
     public static Stream<GlobalInterestRate> findAll() {
         return Bennu.getInstance().getGlobalInterestRatesSet().stream();
@@ -121,11 +108,11 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
         return findByYear(year).findFirst();
     }
 
-    public static Stream<GlobalInterestRate> findByDescription(final org.fenixedu.commons.i18n.LocalizedString description) {
+    public static Stream<GlobalInterestRate> findByDescription(final LocalizedString description) {
         return findAll().filter(i -> description.equals(i.getDescription()));
     }
 
-    public static Stream<GlobalInterestRate> findByRate(final java.math.BigDecimal rate) {
+    public static Stream<GlobalInterestRate> findByRate(final BigDecimal rate) {
         return findAll().filter(i -> rate.equals(i.getRate()));
     }
 
