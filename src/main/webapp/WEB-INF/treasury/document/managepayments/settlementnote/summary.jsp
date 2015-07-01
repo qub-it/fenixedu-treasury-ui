@@ -148,6 +148,9 @@ ${portal.angularToolkit()}
 							function($scope) {
 								$scope.object = angular
 										.fromJson('${settlementNoteBeanJson}');
+				                if($scope.object.previousStates[$scope.object.previousStates.length - 1] != 4) {
+				                    $scope.object.previousStates.push(4);
+				                }
 								$scope.getTotal = function() {
 									var total = 0;
 									for (var i = 0; i < $scope.object.paymentEntries.length; i++) {
@@ -155,6 +158,13 @@ ${portal.angularToolkit()}
 									}
 									return total.toFixed(2);
 								}
+				                $scope.processBackSubmit = function(contextPath) {
+				                	$scope.object.previousStates.pop();
+				                    var path = contextPath + $scope.object.settlementNoteStateUrls[$scope.object.previousStates.pop()];
+				                    $("#summaryForm").attr("action", path);
+				                    //Timeout necessary to make angular update the previousStates array before submit
+				                    setTimeout(function() { $("#summaryForm").submit() }, 10);                                       
+				                }								
 								$scope.currencySymbol = "${ settlementNoteBean.debtAccount.finantialInstitution.currency.symbol }";
 							} ]);
 </script>
@@ -463,7 +473,7 @@ ${portal.angularToolkit()}
 
     <div class="panel-footer">
         <button type="button" class="btn btn-default"
-            onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CREATE_DEBIT_NOTE_URL %>')">
+            ng-click="processBackSubmit('${pageContext.request.contextPath}')">
             <spring:message code="label.event.back" />
         </button>
         <button type="button" class="btn btn-primary"

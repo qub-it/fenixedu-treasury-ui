@@ -3,9 +3,11 @@ package org.fenixedu.treasury.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
@@ -18,6 +20,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.joda.time.LocalDate;
 
 public class SettlementNoteBean implements IBean, Serializable {
@@ -46,12 +49,17 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     private List<TupleDataSourceBean> documentNumberSeries;
 
+    private List<String> settlementNoteStateUrls;
+
+    private Stack<Integer> previousStates;
+
     public SettlementNoteBean() {
         creditEntries = new ArrayList<CreditEntryBean>();
         debitEntries = new ArrayList<DebitEntryBean>();
         interestEntries = new ArrayList<InterestEntryBean>();
         paymentEntries = new ArrayList<PaymentEntryBean>();
         date = new LocalDate();
+        previousStates = new Stack<Integer>();
         this.setPaymentMethods(PaymentMethod.findAll().collect(Collectors.toList()));
     }
 
@@ -73,6 +81,11 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         this.setDocumentNumberSeries(DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(
                 Collectors.toList()));
+        settlementNoteStateUrls =
+                Arrays.asList(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/"
+                        + reimbursementNote, SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL,
+                        SettlementNoteController.CALCULATE_INTEREST_URL, SettlementNoteController.CREATE_DEBIT_NOTE_URL,
+                        SettlementNoteController.INSERT_PAYMENT_URL, SettlementNoteController.SUMMARY_URL);
     }
 
     public DebtAccount getDebtAccount() {
@@ -268,6 +281,22 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     public void setReimbursementNote(boolean reimbursementNote) {
         this.reimbursementNote = reimbursementNote;
+    }
+
+    public Stack<Integer> getPreviousStates() {
+        return previousStates;
+    }
+
+    public void setPreviousStates(Stack<Integer> previousStates) {
+        this.previousStates = previousStates;
+    }
+
+    public List<String> getSettlementNoteStateUrls() {
+        return settlementNoteStateUrls;
+    }
+
+    public void setSettlementNoteStateUrls(List<String> settlementNoteStateUrls) {
+        this.settlementNoteStateUrls = settlementNoteStateUrls;
     }
 
     public class DebitEntryBean implements IBean, Serializable {

@@ -124,6 +124,9 @@ ${portal.toolkit()} ${portal.angularToolkit()}
 			[ 'ngSanitize', 'ui.select', 'bennuToolkit' ]).controller(
 			'SettlementNoteController', [ '$scope', function($scope) {
 				$scope.object = angular.fromJson('${settlementNoteBeanJson}');
+				if($scope.object.previousStates.length == 0 || $scope.object.previousStates[$scope.object.previousStates.length - 1] != 0) {
+				    $scope.object.previousStates.push(0);
+				}
 			} ]);
 </script>
 

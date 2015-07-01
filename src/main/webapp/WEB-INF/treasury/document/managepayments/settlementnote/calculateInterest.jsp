@@ -95,12 +95,21 @@ ${portal.angularToolkit()}
 			[ 'ngSanitize', 'ui.select', 'bennuToolkit' ]).controller(
 			'SettlementNoteController', [ '$scope', function($scope) {
 				$scope.object = angular.fromJson('${settlementNoteBeanJson}');
+                if($scope.object.previousStates[$scope.object.previousStates.length - 1] != 1) {
+                    $scope.object.previousStates.push(1);
+                }
+				$scope.processBackSubmit = function(contextPath) {
+                    $scope.object.previousStates.pop();
+                    var path = contextPath + $scope.object.settlementNoteStateUrls[$scope.object.previousStates.pop()];
+                    $("#calculateInterestForm").attr("action", path);
+                    //Timeout necessary to make angular update the previousStates array before submit
+                    setTimeout(function() { $("#calculateInterestForm").submit() }, 10);                    
+                }
 			} ]);
 </script>
 
 <script type="text/javascript">
 	function processSubmit(url) {
-		console.log(url);
 		$("#calculateInterestForm").attr("action", url);
 		$("#calculateInterestForm").submit();
 	}
@@ -193,7 +202,7 @@ ${portal.angularToolkit()}
         </div>
         <div class="panel-footer">
             <button type="button" class="btn btn-default"
-                onClick="javascript:processSubmit('${pageContext.request.contextPath}<%= SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL %>${settlementNoteBean.debtAccount.externalId}/${settlementNoteBean.reimbursementNote}')">
+                ng-click="processBackSubmit('${pageContext.request.contextPath}')">
                 <spring:message code="label.event.back" />
             </button>
             <button type="button" class="btn btn-primary"
