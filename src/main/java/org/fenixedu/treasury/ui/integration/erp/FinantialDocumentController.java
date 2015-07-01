@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -169,12 +170,36 @@ public class FinantialDocumentController extends TreasuryBaseController {
         Set<FinantialDocument> pendingDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet();
 
         if (pendingDocuments.isEmpty() == false) {
-            ERPExportOperation exportFinantialDocumentToIntegration =
-                    ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, pendingDocuments);
 
-            // Now choose what is the Exit Screen	 
-            return redirect(ERPExportOperationController.READ_URL + exportFinantialDocumentToIntegration.getExternalId(), model,
-                    redirectAttributes);
+            if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
+                while (pendingDocuments.isEmpty() == false) {
+                    FinantialDocument doc = pendingDocuments.iterator().next();
+                    Set<FinantialDocument> findRelatedDocuments =
+                            doc.findRelatedDocuments(new HashSet<FinantialDocument>(), true).stream()
+                                    .filter(x -> x.isDocumentToExport() == true).collect(Collectors.toSet());
+                    for (FinantialDocument peingDoc : findRelatedDocuments) {
+                        if (doc.isDocumentToExport()) {
+                            //remove the related documents from the original Set
+                            pendingDocuments.remove(doc);
+                        }
+                    }
+
+                    //Create a ExportOperation
+                    ERPExportOperation exportFinantialDocumentToIntegration =
+                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, pendingDocuments);
+                }
+                // Now redirect to SEARCH  
+                return redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
+
+            } else {
+
+                ERPExportOperation exportFinantialDocumentToIntegration =
+                        ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, pendingDocuments);
+
+                // Now choose what is the Exit Screen	 
+                return redirect(ERPExportOperationController.READ_URL + exportFinantialDocumentToIntegration.getExternalId(),
+                        model, redirectAttributes);
+            }
         } else {
             addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"), model);
             return this.search(finantialInstitution, model, redirectAttributes);
