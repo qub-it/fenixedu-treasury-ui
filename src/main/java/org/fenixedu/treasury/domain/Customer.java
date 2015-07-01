@@ -156,6 +156,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         Set<FinantialInstitution> actualInstitutions = getFinantialInstitutions();
         for (FinantialInstitution newInst : newFinantialInstitutions) {
             if (actualInstitutions.contains(newInst)) {
+                this.getDebtAccountFor(newInst).reopenDebtAccount();
             } else {
                 DebtAccount.create(newInst, this);
             }

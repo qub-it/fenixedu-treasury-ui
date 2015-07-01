@@ -335,8 +335,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public LocalDate getDocumentDueDate() {
-            return debitEntry.getFinantialDocument() != null ? debitEntry.getFinantialDocument().getDocumentDueDate() : debitEntry
-                    .getDueDate();
+            return debitEntry.getDueDate();
         }
 
         public boolean isIncluded() {

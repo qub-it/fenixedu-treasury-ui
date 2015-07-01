@@ -1,5 +1,6 @@
 <%@page import="java.math.BigDecimal"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode.PaymentReferenceCodeController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -365,12 +366,18 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
-                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /> <c:if
-                                test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /> </td>
+                    </tr>
+                    <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>
+                        <td>
+                                
                                 <ul>
                                     <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
                                         <li>
-                                            <c:out value="${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode} - ${paymentcode.paymentReferenceCode.formattedCode}" />
+                                        <a target="#" href="${pageContext.request.contextPath}/<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}" > 
+                                            <c:out value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" /></a>
                                             &nbsp;
                                             <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
                                                 <span class="label label-primary">
@@ -389,19 +396,9 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                                         </li>
                                     </c:forEach>
                                 </ul>
-                            </c:if></td>
+                                </td>
                     </tr>
-                    <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>
-                        <td>
-                            <ul >
-                                <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
-                                    <li ><c:out
-                                            value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}]  ${paymentcode.paymentReferenceCode.formattedCode}" /></li>
-                                </c:forEach>
-                            </ul>
-                        <td>
-                    </c:if>
+                            </c:if>
                     <c:if test="${not empty debitNote.relatedSettlementEntries }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>

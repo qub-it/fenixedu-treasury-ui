@@ -111,6 +111,23 @@ ${portal.toolkit()}
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentCodePool.active" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="paymentCodePool_active" name="active" class="form-control">
+                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+                        <option value="true"><spring:message code="label.yes" /></option>
+                        <option value="false"><spring:message code="label.no" /></option>
+                    </select>
+                    <script>
+        $("#paymentCodePool_active").val('<c:out value='${not empty param.active ? param.active : paymentCodePool.active }'/>');
+    </script>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentCodePool.minReferenceCode" />
                 </div>
 
@@ -167,22 +184,6 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <input id="paymentCodePool_validTo" class="form-control" type="text" name="validto" bennu-date
                         value='<c:out value='${not empty param.validto ? param.validto : paymentCodePool.validTo }'/>' />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.active" />
-                </div>
-
-                <div class="col-sm-2">
-                    <select id="paymentCodePool_active" name="active" class="form-control">
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-                        <option value="false"><spring:message code="label.no" /></option>
-                        <option value="true"><spring:message code="label.yes" /></option>
-                    </select>
-                    <script>
-		$("#paymentCodePool_active").val('<c:out value='${not empty param.active ? param.active : paymentCodePool.active }'/>');
-	</script>
                 </div>
             </div>
             <div class="form-group row">

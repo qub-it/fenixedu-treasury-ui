@@ -77,10 +77,12 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _CREATEPAYMENTCODEINDEBITNOTE_URI, method = RequestMethod.GET)
     public String createpaymentcodeindebitnote(@RequestParam(value = "debitnote") DebitNote debitNote, Model model,
             RedirectAttributes redirectAttributes) {
+
         if (debitNote.getPaymentCodesSet().stream().anyMatch(pc -> pc.getPaymentReferenceCode().getState().isUsed())) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
             return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
+
         PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
         bean.setDebitNote(debitNote);
         List<PaymentCodePool> activePools =

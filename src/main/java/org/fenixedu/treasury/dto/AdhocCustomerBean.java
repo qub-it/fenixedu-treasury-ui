@@ -140,8 +140,8 @@ public class AdhocCustomerBean implements IBean {
         this.setDistrictSubdivision(adhocCustomer.getDistrictSubdivision());
         this.setZipCode(adhocCustomer.getZipCode());
         this.setCountryCode(adhocCustomer.getCountryCode());
-        this.setFinantialInstitutions(adhocCustomer.getDebtAccountsSet().stream().map(x -> x.getFinantialInstitution())
-                .collect(Collectors.toList()));
+        this.setFinantialInstitutions(adhocCustomer.getDebtAccountsSet().stream().filter(x -> x.getClosed() == false)
+                .map(x -> x.getFinantialInstitution()).collect(Collectors.toList()));
     }
 
     public List<FinantialInstitution> getFinantialInstitutions() {

@@ -170,6 +170,18 @@ ${portal.toolkit()}
                                 value='${paymentCodePool.entityReferenceCode}' />
                         </td>
                     </tr>
+                                        <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.PaymentCodePool.active" /></th>
+                        <td><c:if test="${paymentCodePool.active}">
+                        <span class="label label-primary">
+                                <spring:message code="label.true" /></span>
+                            </c:if> <c:if test="${not paymentCodePool.active}">
+                                                    <span class="label label-danger">
+                                <spring:message code="label.false" /></span>
+                            </c:if></td>
+                    </tr>
+                    
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.PaymentCodePool.minReferenceCode" /></th>
@@ -210,15 +222,6 @@ ${portal.toolkit()}
                                 code="label.PaymentCodePool.validTo" /></th>
                         <td><c:out
                                 value='${paymentCodePool.validTo}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.PaymentCodePool.active" /></th>
-                        <td><c:if test="${paymentCodePool.active}">
-                                <spring:message code="label.true" />
-                            </c:if> <c:if test="${not paymentCodePool.active}">
-                                <spring:message code="label.false" />
-                            </c:if></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message

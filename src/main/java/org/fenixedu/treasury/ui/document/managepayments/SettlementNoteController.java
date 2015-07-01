@@ -198,7 +198,10 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         bean.setInterestEntries(new ArrayList<InterestEntryBean>());
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
-            if (debitEntryBean.isIncluded()) {
+            if (debitEntryBean.isIncluded()
+                    && Constants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
+
+                //Calculate interest only if we are making a FullPayment
                 InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateUndebitedInterestValue(bean.getDate());
                 if (debitInterest.getInterestAmount().compareTo(BigDecimal.ZERO) != 0) {
                     bean.getInterestEntries().add(bean.new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest));

@@ -88,7 +88,7 @@ ${portal.toolkit()}
                     <select id="paymentCodePool_finantialInstitution" class="js-example-basic-single" name="finantialinstitution">
                     </select>
                 </div>
-                
+
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -100,6 +100,22 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.name ? param.name : paymentCodePool.name }'/>' />
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentCodePool.active" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="paymentCodePool_active" name="active" class="form-control">
+                        <option value="false"><spring:message code="label.no" /></option>
+                        <option value="true"><spring:message code="label.yes" /></option>
+                    </select>
+                    <script>
+        $("#paymentCodePool_active").val('<c:out value='${not empty param.active ? param.active : paymentCodePool.active }'/>');
+    </script>
+                </div>
+            </div>
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentCodePool.entityReferenceCode" />
@@ -172,21 +188,6 @@ ${portal.toolkit()}
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.active" />
-                </div>
-
-                <div class="col-sm-2">
-                    <select id="paymentCodePool_active" name="active" class="form-control">
-                        <option value="false"><spring:message code="label.no" /></option>
-                        <option value="true"><spring:message code="label.yes" /></option>
-                    </select>
-                    <script>
-		$("#paymentCodePool_active").val('<c:out value='${not empty param.active ? param.active : paymentCodePool.active }'/>');
-	</script>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentCodePool.useCheckDigit" />
                 </div>
 
@@ -215,8 +216,8 @@ ${portal.toolkit()}
 	</script>
                 </div>
             </div>
-            
-            
+
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentCodePool.paymentMethod" />
@@ -241,9 +242,9 @@ ${portal.toolkit()}
                 </div>
             </div>
 
-            
-            
-            
+
+
+
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
