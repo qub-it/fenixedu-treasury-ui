@@ -523,9 +523,9 @@ public class DebitEntryController extends TreasuryBaseController {
         return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
     }
 
-    private static final String _READ_TO_REMOVEFROMDOCUMENT_URI = "/{oid}/removefromdocument";
+    private static final String _READ_TO_REMOVEFROMDOCUMENT_URI = "/read/{oid}/removefromdocument";
 
-    @RequestMapping(value = _READ_TO_REMOVEFROMDOCUMENT_URI)
+    @RequestMapping(value = _READ_TO_REMOVEFROMDOCUMENT_URI, method = RequestMethod.POST)
     public String processReadToRemoveFromDocument(@PathVariable("oid") DebitEntry debitEntry, Model model,
             RedirectAttributes redirectAttributes) {
 

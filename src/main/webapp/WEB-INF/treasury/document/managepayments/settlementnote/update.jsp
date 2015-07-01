@@ -170,7 +170,7 @@ ${portal.toolkit()}
                 <div class="col-sm-10">
                     <input id="settlementNote_documentObservations"
                         class="form-control" type="text"
-                        name="origindocumentnumber"
+                        name="documentobservations"
                         value='<c:out value='${not empty param.documentobservations ? param.documentobservations : settlementNote.documentObservations }'/>' />
                 </div>
             </div>

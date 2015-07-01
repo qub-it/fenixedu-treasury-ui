@@ -245,8 +245,7 @@ ${portal.toolkit()}
                                 <span class="label label-warning">
                             </c:if> <c:if test="${settlementNote.isClosed()}">
                                 <span class="label label-primary">
-                            </c:if>
-                            <c:out value='${settlementNote.state.descriptionI18N.content}' /></span></td>
+                            </c:if> <c:out value='${settlementNote.state.descriptionI18N.content}' /></span></td>
                     </tr>
 
                     <c:if test="${settlementNote.isAnnulled()}">
@@ -263,6 +262,13 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.originDocumentNumber" /></th>
                         <td><c:out value='${settlementNote.originDocumentNumber}' /></td>
                     </tr>
+                    <c:if test="${not empty  settlementNote.documentObservations}">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentObservations" /></th>
+                            <td><c:out value='${settlementNote.documentObservations}' /></td>
+                        </tr>
+                    </c:if>
+
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.totalDebitAmount" /></th>
                         <td><c:out value='${settlementNote.currency.getValueFor(settlementNote.totalDebitAmount)}' /></td>

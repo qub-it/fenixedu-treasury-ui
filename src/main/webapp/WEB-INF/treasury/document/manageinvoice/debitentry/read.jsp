@@ -66,6 +66,38 @@ ${portal.toolkit()}
     </div>
     <!-- /.modal-dialog -->
 </div>
+<!-- /RemoveFromDocument modal -->
+<div class="modal fade" id="removeFromDocumentModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}/removefromdocument" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.document.manageInvoice.readDebitEntry.confirmRemoveFromDocument" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.close" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
+                        <spring:message code="label.delete" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
@@ -86,6 +118,10 @@ ${portal.toolkit()}
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/update/${debitEntry.externalId}"><spring:message code="label.event.update" /></a>
 	&nbsp;
 	</c:if>
+    <c:if test="${not empty debitEntry.finantialDocument && debitEntry.finantialDocument.isPreparing()}">
+        |&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#removeFromDocumentModal"><spring:message code="label.event.document.manageinvoice.debitentry.removefromdocument" /></a>
+    &nbsp;
+    </c:if>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
