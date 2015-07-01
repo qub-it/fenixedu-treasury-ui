@@ -45,7 +45,6 @@ public class DebitNote extends DebitNote_Base {
     protected DebitNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate) {
         super();
-
         this.init(debtAccount, documentNumberSeries, documentDate);
     }
 

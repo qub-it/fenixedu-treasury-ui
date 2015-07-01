@@ -138,6 +138,44 @@ ${portal.toolkit()}
                         required />
                 </div>
             </div>
+                        <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.GlobalInterestRate.applyPaymentMonth" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="globalInterestRate_applyPaymentMonth"
+                        name="applypaymentmonth" class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
+        $("#globalInterestRate_applyPaymentMonth").val('<c:out value='${not empty param.applypaymentmonth ? param.applypaymentmonth : globalInterestRate.applyPaymentMonth }'/>');
+    </script>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.GlobalInterestRate.applyInFirstWorkday" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="globalInterestRate_applyInFirstWorkday"
+                        name="applyinfirstworkday" class="form-control">
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                    </select>
+                    <script>
+        $("#globalInterestRate_applyInFirstWorkday").val('<c:out value='${not empty param.applyinfirstworkday ? param.applyinfirstworkday : globalInterestRate.applyInFirstWorkday }'/>');
+    </script>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button"

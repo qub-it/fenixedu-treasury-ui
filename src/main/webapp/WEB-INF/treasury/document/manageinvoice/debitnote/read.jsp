@@ -365,7 +365,31 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
-                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /> <c:if
+                                test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
+                                <ul>
+                                    <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
+                                        <li>
+                                            <c:out value="${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode} - ${paymentcode.paymentReferenceCode.formattedCode}" />
+                                            &nbsp;
+                                            <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
+                                                <span class="label label-primary">
+                                            </c:if>
+                                            <c:if test="${paymentcode.paymentReferenceCode.state=='ANNULLED'}">
+                                                <span class="label label-danger">
+                                            </c:if>
+                                            <c:if test="${paymentcode.paymentReferenceCode.state=='UNUSED'}">
+                                                <span class="label label-default">
+                                            </c:if>
+                                            <c:if test="${paymentcode.paymentReferenceCode.state=='PROCESSED'}">
+                                                <span class="label label-success">
+                                            </c:if>  
+                                            <c:out value="${paymentcode.paymentReferenceCode.state.descriptionI18N.content}" />
+                                            </span>                                            
+                                        </li>
+                                    </c:forEach>
+                                </ul>
+                            </c:if></td>
                     </tr>
                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>

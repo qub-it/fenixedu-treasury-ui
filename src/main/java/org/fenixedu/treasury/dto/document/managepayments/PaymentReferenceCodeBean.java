@@ -118,23 +118,4 @@ public class PaymentReferenceCodeBean implements IBean {
     public void setDebitNote(DebitNote debitNote) {
         this.debitNote = debitNote;
     }
-
-//    public PaymentReferenceCodeBean(PaymentReferenceCode paymentReferenceCode) {
-//        this.setTargetPayment(paymentReferenceCode.getTargetPayment());
-//        this.setPaymentCodePool(paymentReferenceCode.getPaymentCodePool());
-//        this.setReferenceCode(paymentReferenceCode.getReferenceCode());
-//        this.setBeginDate(paymentReferenceCode.getBeginDate());
-//        this.setEndDate(paymentReferenceCode.getEndDate());
-//        this.setState(paymentReferenceCode.getState());
-//        this.setMaxAmount(paymentReferenceCode.getMaxAmount());
-//        this.setMinAmount(paymentReferenceCode.getMinAmount());
-//        this.setReportedInFiles(paymentReferenceCode.getReportedInFiles());
-//        this.setReferenceCode(paymentReferenceCode.getReferenceCode());
-//        this.setBeginDate(paymentReferenceCode.getBeginDate());
-//        this.setEndDate(paymentReferenceCode.getEndDate());
-//        this.setState(paymentReferenceCode.getState());
-//        this.setMaxAmount(paymentReferenceCode.getMaxAmount());
-//        this.setMinAmount(paymentReferenceCode.getMinAmount());
-//    }
-
 }

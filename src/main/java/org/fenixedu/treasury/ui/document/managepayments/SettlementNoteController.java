@@ -96,6 +96,8 @@ public class SettlementNoteController extends TreasuryBaseController {
     private static final String SUMMARY_URI = "/summary/";
     public static final String SUMMARY_URL = CONTROLLER_URL + SUMMARY_URI;
 
+    public static final long SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE = 500;
+
     @RequestMapping
     public String home(Model model) {
         return "forward:" + SEARCH_URL;
@@ -277,16 +279,22 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "currency", required = false) Currency currency,
             @RequestParam(value = "documentnumber", required = false) String documentNumber,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDate,
+            @RequestParam(value = "documentdatefrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
+            @RequestParam(value = "documentdateto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
             @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
                     value = "state", required = false) FinantialDocumentStateType state, Model model) {
         List<SettlementNote> searchsettlementnoteResultsDataSet =
-                filterSearchSettlementNote(debtAccount, documentNumberSeries, currency, documentNumber, documentDate,
-                        documentDueDate, originDocumentNumber, state);
+                filterSearchSettlementNote(debtAccount, documentNumberSeries, currency, documentNumber, documentDateFrom,
+                        documentDateTo, documentDueDate, originDocumentNumber, state);
 
         // add the results dataSet to the model
+        model.addAttribute("listSize", searchsettlementnoteResultsDataSet.size());
         model.addAttribute("searchsettlementnoteResultsDataSet", searchsettlementnoteResultsDataSet);
+        searchsettlementnoteResultsDataSet =
+                searchsettlementnoteResultsDataSet.stream().limit(SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE)
+                        .collect(Collectors.toList());
+
         model.addAttribute("SettlementNote_finantialDocumentType_options",
                 FinantialDocumentType.findAll().collect(Collectors.toList()));
         model.addAttribute("SettlementNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
@@ -305,11 +313,9 @@ public class SettlementNoteController extends TreasuryBaseController {
         return SettlementNote.findAll().collect(Collectors.toList());
     }
 
-    private List<SettlementNote> filterSearchSettlementNote(org.fenixedu.treasury.domain.debt.DebtAccount debtAccount,
-            org.fenixedu.treasury.domain.document.DocumentNumberSeries documentNumberSeries,
-            org.fenixedu.treasury.domain.Currency currency, java.lang.String documentNumber, org.joda.time.DateTime documentDate,
-            org.joda.time.DateTime documentDueDate, java.lang.String originDocumentNumber,
-            org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    private List<SettlementNote> filterSearchSettlementNote(DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries,
+            Currency currency, String documentNumber, LocalDate documentDateFrom, LocalDate documentDateTo,
+            DateTime documentDueDate, String originDocumentNumber, FinantialDocumentStateType state) {
 
         return getSearchUniverseSearchSettlementNoteDataSet()
                 .stream()
@@ -322,7 +328,12 @@ public class SettlementNoteController extends TreasuryBaseController {
                 .filter(settlementNote -> documentNumber == null || documentNumber.length() == 0
                         || settlementNote.getDocumentNumber() != null && settlementNote.getDocumentNumber().length() > 0
                         && settlementNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
-                .filter(settlementNote -> documentDate == null || documentDate.equals(settlementNote.getDocumentDate()))
+                .filter(creditNote -> documentDateFrom == null
+                        || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
+                        || creditNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
+                .filter(creditNote -> documentDateTo == null
+                        || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
+                        || creditNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
                 .filter(settlementNote -> documentDueDate == null || documentDueDate.equals(settlementNote.getDocumentDueDate()))
                 .filter(settlementNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
                         || settlementNote.getOriginDocumentNumber() != null

@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -171,6 +171,28 @@ ${portal.toolkit()}
                         <td><c:out
                                 value='${globalInterestRate.rate}' />&#37;
                         </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.GlobalInterestRate.applyPaymentMonth" /></th>
+                        <td><c:if
+                                test="${globalInterestRate.applyPaymentMonth}">
+                                <spring:message code="label.true" />
+                            </c:if> <c:if
+                                test="${not globalInterestRate.applyPaymentMonth}">
+                                <spring:message code="label.false" />
+                            </c:if></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.GlobalInterestRate.applyInFirstWorkday" /></th>
+                        <td><c:if
+                                test="${globalInterestRate.applyInFirstWorkday}">
+                                <spring:message code="label.true" />
+                            </c:if> <c:if
+                                test="${not globalInterestRate.applyInFirstWorkday}">
+                                <spring:message code="label.false" />
+                            </c:if></td>
                     </tr>
                 </tbody>
             </table>

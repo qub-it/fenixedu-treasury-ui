@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -121,16 +122,35 @@ ${portal.toolkit()}
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-2 control-label">
+                <div class="col-sm-4 control-label">
                     <spring:message
                         code="label.SettlementNote.documentDate" />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.SettlementNote.documentDateFrom" />
                 </div>
 
                 <div class="col-sm-4">
                     <input id="settlementNote_documentDate"
                         class="form-control" type="text"
-                        name="documentdate" bennu-date
-                        value='<c:out value='${not empty param.documentdate ? param.documentdate : settlementNote.documentDate }'/>' />
+                        name="documentdatefrom" bennu-date
+                        value='<c:out value='${param.documentdatefrom }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.SettlementNote.documentDateTo" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input id="settlement_documentDate"
+                        class="form-control" type="text"
+                        name="documentdateto" bennu-date
+                        value='<c:out value='${param.documentdateto }'/>' />
                 </div>
             </div>
             <div class="form-group row">
@@ -146,6 +166,26 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.origindocumentnumber ? param.origindocumentnumber : settlementNote.originDocumentNumber }'/>' />
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.SettlementNote.state" />
+                </div>
+
+                <div class="col-sm-4">
+                    <select id="settlementNote_state" class="form-control"
+                        name="state">
+                        <option value="">&nbsp;</option>
+                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME--%>
+                        <c:forEach items="${stateValues}" var="field">
+                            <option value='<c:out value='${field}'/>'><c:out
+                                    value='${field.descriptionI18N.content}' /></option>
+                        </c:forEach>
+                    </select>
+                    <script>
+        $("#settlementNote_state").val('<c:out value='${not empty param.state ? param.state : settlementNote.state }'/>');
+    </script>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button"
@@ -154,6 +194,15 @@ ${portal.toolkit()}
     </form>
 </div>
 
+<c:set var="limit"><%=SettlementNoteController.SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE%></c:set>
+<c:if test="${listSize > limit}">
+    <div class="alert alert-warning" role="alert">
+        <p>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+            <spring:message code="label.limitexceeded" arguments="${limit},${listSize}" />
+        </p>
+    </div>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty searchsettlementnoteResultsDataSet}">
