@@ -60,7 +60,6 @@ public class DebitEntryBean implements IBean {
     private boolean eventAnnuled;
     private DateTime entryDate;
     private LocalDate dueDate;
-    private String propertiesJsonMap;
     private String description;
     private BigDecimal amount;
     private BigDecimal quantity;
@@ -193,14 +192,6 @@ public class DebitEntryBean implements IBean {
         dueDate = value;
     }
 
-    public String getPropertiesJsonMap() {
-        return propertiesJsonMap;
-    }
-
-    public void setPropertiesJsonMap(String value) {
-        propertiesJsonMap = value;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -244,14 +235,9 @@ public class DebitEntryBean implements IBean {
         this.setFinantialDocument((DebitNote) debitEntry.getFinantialDocument());
         this.setEventAnnuled(debitEntry.getEventAnnuled());
         this.setDueDate(debitEntry.getDueDate());
-        this.setPropertiesJsonMap(debitEntry.getPropertiesJsonMap());
         this.setDescription(debitEntry.getDescription());
-        this.setAmount(debitEntry.getAmount());
-        this.setQuantity(debitEntry.getQuantity());
-        this.setEventAnnuled(debitEntry.getEventAnnuled());
         this.setEntryDate(debitEntry.getEntryDateTime());
         this.setDueDate(debitEntry.getDueDate());
-        this.setPropertiesJsonMap(debitEntry.getPropertiesJsonMap());
         this.setDescription(debitEntry.getDescription());
         this.setAmount(debitEntry.getAmount());
         this.setQuantity(debitEntry.getQuantity());
@@ -302,7 +288,7 @@ public class DebitEntryBean implements IBean {
         this.treasuryEventDataSource = treasuryEventDataSource.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
             tuple.setId(x.getExternalId());
-            tuple.setText(x.getTreasuryEventDate().toString("YYYY-MM-dd") + "-" + x.getDescription());
+            tuple.setText(x.getTreasuryEventDate().toString("YYYY-MM-dd") + "-" + x.getDescription().getContent());
             return tuple;
         }).collect(Collectors.toList());
     }

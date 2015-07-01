@@ -97,14 +97,16 @@ ${portal.angularToolkit()}
                     value : true
                 } ];
 
-	            $scope.eventsDataSource = [
-	                                       <c:forEach items="${DebitEntry_event_options}" var="element"> 
-	                                           {text : "<c:out value='${element.description.content}'/>",id : "<c:out value='${element.externalId}'/>"},
-	                                       </c:forEach>
-	                                   ];
+	           
 				$scope.object = angular.fromJson('${debitEntryBeanJson}');
 				$scope.postBack = createAngularPostbackFunction($scope);
 
+				$scope.clear = function($event) {
+					   $event.stopPropagation(); 
+					   $scope.object.treasuryEvent = undefined;
+					};
+					
+					
 				//Begin here of Custom Screen business JS - code
 
 			} ]);
@@ -290,8 +292,12 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <ui-select ng-model="$parent.object.treasuryEvent" theme="bootstrap" ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
-                    <ui-select-choices repeat="event.id as event in eventsDataSource| filter: $select.search"> <span
+                    <ui-select ng-model="$parent.object.treasuryEvent" theme="bootstrap" ng-disabled="disabled"> 
+                    <ui-select-match>
+                    <a   class="btn btn-xs clear" ng-click="clear($event)">X</a>
+                    <span>{{$select.selected.text}}</span>
+                    </ui-select-match>
+                    <ui-select-choices repeat="event.id as event in object.treasuryEventDataSource| filter: $select.search"> <span
                         ng-bind-html="event.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
@@ -315,20 +321,21 @@ ${portal.angularToolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select id="debitEntry_interestType" name="vattype" ng-model="$parent.object.interestRate.interestType" theme="bootstrap" ng-disabled="disabled">
-                    <ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices
+                    <ui-select-match>{{$select.selected.text}}</ui-select-match> 
+                    <ui-select-choices
                         repeat="interestType.id as interestType in object.interestRate.interestTypeDataSource | filter: $select.search"> <span
                         ng-bind-html="interestType.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
-            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.InterestRate.numberOfDaysAfterDueDate" />
-                </div>
-                <div class="col-sm-4">
-                    <input id="debitEntry_numberOfDaysAfterDueDate" class="form-control" type="text" ng-model="object.interestRate.numberOfDaysAfterDueDate"
-                        name="numberOfDaysAfterDueDate" pattern="^\d+$" />
-                </div>
-            </div>
+<!--             <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'"> -->
+<!--                 <div class="col-sm-2 control-label"> -->
+<%--                     <spring:message code="label.InterestRate.numberOfDaysAfterDueDate" /> --%>
+<!--                 </div> -->
+<!--                 <div class="col-sm-4"> -->
+<!--                     <input id="debitEntry_numberOfDaysAfterDueDate" class="form-control" type="text" ng-model="object.interestRate.numberOfDaysAfterDueDate" -->
+<!--                         name="numberOfDaysAfterDueDate" pattern="^\d+$" /> -->
+<!--                 </div> -->
+<!--             </div> -->
 
             <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
                 <div class="col-sm-2 control-label">

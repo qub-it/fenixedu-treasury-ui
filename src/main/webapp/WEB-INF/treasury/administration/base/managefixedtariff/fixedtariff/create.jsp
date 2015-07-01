@@ -207,15 +207,15 @@ ${portal.angularToolkit()}
                         ng-bind-html="interestType.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
-            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.InterestRate.numberOfDaysAfterDueDate" />
-                </div>
-                <div class="col-sm-4">
-                    <input id="fixedTariff_numberOfDaysAfterDueDate" class="form-control" type="text" ng-model="object.interestRate.numberOfDaysAfterDueDate"
-                        name="numberOfDaysAfterDueDate" pattern="^\d+$" />
-                </div>
-            </div>
+<!--             <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'"> -->
+<!--                 <div class="col-sm-2 control-label"> -->
+<%--                     <spring:message code="label.InterestRate.numberOfDaysAfterDueDate" /> --%>
+<!--                 </div> -->
+<!--                 <div class="col-sm-4"> -->
+<!--                     <input id="fixedTariff_numberOfDaysAfterDueDate" class="form-control" type="text" ng-model="object.interestRate.numberOfDaysAfterDueDate" -->
+<!--                         name="numberOfDaysAfterDueDate" pattern="^\d+$" /> -->
+<!--                 </div> -->
+<!--             </div> -->
 
             <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
                 <div class="col-sm-2 control-label">

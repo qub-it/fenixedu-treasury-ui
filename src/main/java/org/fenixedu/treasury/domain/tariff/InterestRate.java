@@ -61,7 +61,9 @@ public class InterestRate extends InterestRate_Base {
         setTariff(tariff);
         setDebitEntry(debitEntry);
         setInterestType(interestType);
-        setNumberOfDaysAfterDueDate(numberOfDaysAfterDueDate);
+        //HACK: Override the numberOfDaysAfterDueDate
+        setNumberOfDaysAfterDueDate(1);
+//        setNumberOfDaysAfterDueDate(numberOfDaysAfterDueDate);
         setApplyInFirstWorkday(applyInFirstWorkday);
         setMaximumDaysToApplyPenalty(maximumDaysToApplyPenalty);
         setMaximumMonthsToApplyPenalty(maximumMonthsToApplyPenalty);
@@ -72,6 +74,7 @@ public class InterestRate extends InterestRate_Base {
     }
 
     private void checkRules() {
+
         if (getTariff() == null && getDebitEntry() == null) {
             throw new TreasuryDomainException("error.InterestRate.product.or.debit.entry.required");
         }
@@ -111,7 +114,8 @@ public class InterestRate extends InterestRate_Base {
             final BigDecimal rate) {
 
         setInterestType(interestType);
-        setNumberOfDaysAfterDueDate(numberOfDaysAfterDueDate);
+        //HACK: For now override the NumberOfDays - 01/07/2015
+        setNumberOfDaysAfterDueDate(1);
         setApplyInFirstWorkday(applyInFirstWorkday);
         setMaximumDaysToApplyPenalty(maximumDaysToApplyPenalty);
         setMaximumMonthsToApplyPenalty(maximumMonthsToApplyPenalty);
