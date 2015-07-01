@@ -310,7 +310,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        GlobalInterestRate globalInterestRate = GlobalInterestRate.create(year, description, rate);
+        GlobalInterestRate globalInterestRate = GlobalInterestRate.create(year, description, rate, false, false);
         return globalInterestRate;
     }
 
