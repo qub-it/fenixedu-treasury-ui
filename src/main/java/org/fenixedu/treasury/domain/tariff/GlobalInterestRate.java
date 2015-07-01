@@ -43,10 +43,12 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
     }
 
     protected void init(final int year, final org.fenixedu.commons.i18n.LocalizedString description,
-            final java.math.BigDecimal rate) {
+            final java.math.BigDecimal rate, boolean applyInFirstWorkday, boolean applyPaymentMonth) {
         setYear(year);
         setDescription(description);
         setRate(rate);
+        setApplyInFirstWorkday(applyInFirstWorkday);
+        setApplyPaymentMonth(applyPaymentMonth);
         checkRules();
     }
 
@@ -70,7 +72,8 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
     }
 
     @Atomic
-    public void edit(final int year, final org.fenixedu.commons.i18n.LocalizedString description, final java.math.BigDecimal rate) {
+    public void edit(final int year, final org.fenixedu.commons.i18n.LocalizedString description,
+            final java.math.BigDecimal rate, boolean applyInFirstWorkday, boolean applyPaymentMonth) {
         setYear(year);
         setDescription(description);
         setRate(rate);
@@ -94,9 +97,9 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
 
     @Atomic
     public static GlobalInterestRate create(final int year, final org.fenixedu.commons.i18n.LocalizedString description,
-            final java.math.BigDecimal rate) {
+            final java.math.BigDecimal rate, boolean applyInFirstWorkday, boolean applyPaymentMonth) {
         GlobalInterestRate globalInterestRate = new GlobalInterestRate();
-        globalInterestRate.init(year, description, rate);
+        globalInterestRate.init(year, description, rate, applyInFirstWorkday, applyPaymentMonth);
         return globalInterestRate;
     }
 

@@ -416,7 +416,7 @@ class tariff.GlobalInterestRate {
     int year;
     LocalizedString description;
     BigDecimalT rate;
-    Boolean applyPaymentMonth;
+    boolean applyPaymentMonth;
     boolean applyInFirstWorkday;
 }
 /* ----
