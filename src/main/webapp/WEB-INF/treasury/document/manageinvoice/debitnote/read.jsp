@@ -150,44 +150,6 @@ ${portal.toolkit()}
     <!-- /.modal-dialog -->
 </div>
 
-<%-- NAVIGATION Using MENUS FROM BOOTSTRAP 
-
-<div class="well well-sm" role="navigation" style="display: inline-block">
-        <ul class="nav nav-pills">
-            <li role="presentation"><a class=""
-                href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"><span
-                    class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp; <spring:message code="label.event.back" /></a></li>
-            <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
-                <li role="presentation"><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><span
-                        class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.update" /></a></li>
-            </c:if>
-            <c:if test="${debitNote.isPreparing()}">
-                <li role="presentation"><a class="" href="#" data-toggle="modal" data-target="#deleteModal"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<spring:message
-                            code="label.event.delete" /></a></li>
-                <li role="presentation"><a class="" href="#" data-toggle="modal" data-target="#closeModal"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                        <spring:message code="label.event.document.manageInvoice.closeDebitNote" /> </a></li>
-            </c:if>
-            <c:if test="${debitNote.isClosed()}">
-                <li role="presentation"><a class="" href="#" data-toggle="modal" data-target="#anullModal"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                        <spring:message code="label.event.document.manageInvoice.anullDebitNote" /> </a></li>
-                <li role="presentation" class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false"> Dropdown <span
-                        class="caret"></span>
-                </a>
-                    <ul class="dropdown-menu" role="menu">
-                        <li role="presentation"><a class=""
-                            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitNote=${debitNote.externalId}"><span
-                                class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.document.manageInvoice.createCreditNote" /></a></li>
-                    </ul></li>
-            </c:if>
-            <c:if test="${not debitNote.isPreparing()}">
-                <li role="presentation"><a class=""
-                    href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"><span
-                        class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.document.manageInvoice.exportIntegrationFile" /></a></li>
-            </c:if>
-        </ul>
-    </div>
-END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
-
 <%-- NAVIGATION --%>
 <form>
     <div class="well well-sm" style="display: inline-block">
@@ -252,6 +214,12 @@ END NAVIGATION USING MENUS FROM BOOTSTRAP    --%>
             </a>
             &nbsp;
         </c:if>
+        |&nbsp;
+        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+        &nbsp;
+        <a class="" id="printLabel2" href="#" onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message code="label.print" />
+        </a>
+        &nbsp;        
     </div>
 </form>
 

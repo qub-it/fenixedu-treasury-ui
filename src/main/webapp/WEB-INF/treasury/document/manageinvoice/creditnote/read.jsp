@@ -228,6 +228,12 @@ ${portal.toolkit()}
                     code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
 
         </c:if>
+        |&nbsp;
+        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+        &nbsp;
+        <a class="" id="printLabel2" href="#" onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message code="label.print" />
+        </a>
+        &nbsp;        
     </div>
 </form>
 
