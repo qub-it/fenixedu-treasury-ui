@@ -26,8 +26,6 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,7 +35,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
-import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
@@ -166,65 +164,24 @@ public class FinantialDocumentController extends TreasuryBaseController {
             @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution,
             Model model, RedirectAttributes redirectAttributes) {
 //
-        /* Put here the logic for processing Event forceIntegrationExport 	*/
-        //doSomething();
-
-        Set<FinantialDocument> pendingDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet();
-
-        Comparator<FinantialDocument> sortingComparator = new Comparator<FinantialDocument>() {
-
-            @Override
-            public int compare(FinantialDocument o1, FinantialDocument o2) {
-                if (o1.getFinantialDocumentType().equals(o2.getFinantialDocumentType())) {
-                    return o1.getUiDocumentNumber().compareTo(o2.getUiDocumentNumber());
-                } else {
-                    if (o1.isDebitNote()) {
-                        return -2;
-                    } else if (o1.isCreditNote()) {
-                        return -1;
-                    } else if (o1.isSettlementNote()) {
-                        return 1;
-                    }
-                }
-                return 0;
-            }
-        };
-        List<FinantialDocument> sortedDocuments =
-                pendingDocuments.stream().sorted(sortingComparator).collect(Collectors.toList());
-        if (pendingDocuments.isEmpty() == false) {
-
-            if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
-                while (sortedDocuments.isEmpty() == false) {
-                    FinantialDocument doc = sortedDocuments.iterator().next();
-                    Set<FinantialDocument> findRelatedDocuments =
-                            doc.findRelatedDocuments(new HashSet<FinantialDocument>(), true).stream()
-                                    .filter(x -> x.isDocumentToExport() == true).collect(Collectors.toSet());
-                    for (FinantialDocument peingDoc : findRelatedDocuments) {
-                        if (doc.isDocumentToExport()) {
-                            //remove the related documents from the original Set
-                            sortedDocuments.remove(doc);
-                        }
-                    }
-
-                    //Create a ExportOperation
-                    ERPExportOperation exportFinantialDocumentToIntegration =
-                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
-                }
-                // Now redirect to SEARCH  
-                return redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
-
+        try {
+            List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution =
+                    ERPExporterManager.exportPendingDocumentsForFinantialInstitution(finantialInstitution);
+            if (exportPendingDocumentsForFinantialInstitution.size() == 0) {
+                addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"), model);
+                return redirect(SEARCH_URL, model, redirectAttributes);
+            } else if (exportPendingDocumentsForFinantialInstitution.size() == 1) {
+                addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "info.integration.erp.success.export"), model);
+                redirect(ERPExportOperationController.READ_URL
+                        + exportPendingDocumentsForFinantialInstitution.get(0).getExternalId(), model, redirectAttributes);
             } else {
-
-                ERPExportOperation exportFinantialDocumentToIntegration =
-                        ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
-
-                // Now choose what is the Exit Screen	 
-                return redirect(ERPExportOperationController.READ_URL + exportFinantialDocumentToIntegration.getExternalId(),
-                        model, redirectAttributes);
+                addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "info.integration.erp.multiple.success.export"), model);
+                redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
             }
-        } else {
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"), model);
-            return this.search(finantialInstitution, model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getMessage(), model);
         }
+        return this.search(finantialInstitution, model, redirectAttributes);
+
     }
 }

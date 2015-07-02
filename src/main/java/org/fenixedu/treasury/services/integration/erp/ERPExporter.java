@@ -1193,7 +1193,7 @@ public class ERPExporter {
                 new ArrayList<FinantialDocument>(), true, false);
     }
 
-    @Atomic
+    @Atomic(mode = TxMode.WRITE)
     public static ERPExportOperation exportFinantialDocumentToIntegration(FinantialInstitution institution,
             List<FinantialDocument> documents) {
 
