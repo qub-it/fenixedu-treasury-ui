@@ -299,6 +299,10 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.settlementNoteStateUrls = settlementNoteStateUrls;
     }
 
+    public boolean hasEntriesWithoutDocument() {
+        return debitEntries.stream().anyMatch(deb -> deb.isIncluded() && deb.getDebitEntry().getFinantialDocument() == null);
+    }
+
     public class DebitEntryBean implements IBean, Serializable {
 
         private static final long serialVersionUID = 1L;
