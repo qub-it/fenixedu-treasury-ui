@@ -68,6 +68,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.debtAccount = debtAccount;
         this.reimbursementNote = reimbursementNote;
         for (InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet().stream()
+                .filter(ie -> ie.hasPreparingSettlementEntries() == false)
                 .sorted((x, y) -> x.getDueDate().compareTo(y.getDueDate())).collect(Collectors.<InvoiceEntry> toList())) {
             if (invoiceEntry instanceof DebitEntry) {
                 debitEntries.add(new DebitEntryBean((DebitEntry) invoiceEntry));

@@ -203,4 +203,20 @@ public class DebtAccount extends DebtAccount_Base {
                         && x.getFinantialDocument().isAnnulled() == false);
     }
 
+    public boolean hasPreparingDebitNotes() {
+        return getPendingInvoiceEntriesSet().stream().anyMatch(
+                ie -> ie.isDebitNoteEntry() && ie.getFinantialDocument() != null && ie.getFinantialDocument().isPreparing());
+    }
+
+    public boolean hasPreparingCreditNotes() {
+        return getPendingInvoiceEntriesSet().stream().anyMatch(
+                ie -> ie.isCreditNoteEntry() && ie.getFinantialDocument() != null && ie.getFinantialDocument().isPreparing());
+    }
+
+    public boolean hasPreparingSettlementNotes() {
+        return getPendingInvoiceEntriesSet().stream().anyMatch(
+                ie -> ie.getSettlementEntriesSet().stream()
+                        .anyMatch(se -> se.getFinantialDocument() != null && se.getFinantialDocument().isPreparing()));
+    }
+
 }

@@ -188,7 +188,10 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             return false;
         }
         return this.getOpenAmount().compareTo(BigDecimal.ZERO) != 0;
+    }
 
+    public boolean hasPreparingSettlementEntries() {
+        return getSettlementEntriesSet().stream().anyMatch(se -> se.getFinantialDocument().isPreparing());
     }
 
     @Override
@@ -197,6 +200,6 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     }
 
     public abstract BigDecimal getOpenAmount();
-    
+
     public abstract LocalDate getDueDate();
 }

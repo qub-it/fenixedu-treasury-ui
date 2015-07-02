@@ -211,6 +211,27 @@ ${portal.angularToolkit()}
         </form>
     </div>
 </div>
+
+<c:if test="${debtAccount.hasPreparingDebitNotes()}">
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> 
+        <spring:message code="label.have.debitNote.in.preparing"/>
+    </div>
+</c:if>
+<c:if test="${debtAccount.hasPreparingCreditNotes()}">
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> 
+        <spring:message code="label.have.creditNote.in.preparing"/>
+    </div>
+</c:if>
+<c:if test="${debtAccount.hasPreparingSettlementNotes()}">
+    <div class="alert alert-warning" role="alert">
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> 
+        <spring:message code="label.have.settlementNote.in.preparing"/>
+    </div>
+</c:if>
+
+
 <h2>Conta Corrente</h2>
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
@@ -442,8 +463,9 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.FinantialDocument.documentDate" />
                             </datatables:columnHead>
-                            <%--                             <c:out value="${payment.documentDate}" /> --%>
-                            <joda:format value="${payment.documentDate}" style="S-" />
+                            <c:out
+                                value='${payment.documentDate.toString("YYYY-MM-dd")}' />
+<%--                             <joda:format value="${payment.documentDate}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
