@@ -188,7 +188,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public BigDecimal getTotalNetAmount() {
         BigDecimal amount = BigDecimal.ZERO;
         for (FinantialDocumentEntry entry : this.getFinantialDocumentEntriesSet()) {
-            amount = amount.add(entry.getAmount());
+            amount = amount.add(entry.getNetAmount());
         }
 
         return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);

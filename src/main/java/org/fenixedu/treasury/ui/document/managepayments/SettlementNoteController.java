@@ -245,10 +245,20 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         BigDecimal debitSum = bean.isReimbursementNote() ? bean.getDebtAmountWithVat().negate() : bean.getDebtAmountWithVat();
         BigDecimal paymentSum = bean.getPaymentAmount();
-        String error =
-                bean.isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
+        boolean error = false;
+        if (bean.getPaymentEntries().stream().anyMatch(peb -> peb.getPaymentAmount().compareTo(BigDecimal.ZERO) == 0)) {
+            error = true;
+            String errorMessage =
+                    bean.isReimbursementNote() ? "error.SettlementNote.reimbursement.equal.zero" : "error.SettlementNote.payment.equal.zero";
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, errorMessage), model);
+        }
         if (debitSum.compareTo(paymentSum) != 0) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
+            error = true;
+            String errorMessage =
+                    bean.isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, errorMessage), model);
+        }
+        if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/insertPayment";
         }

@@ -96,17 +96,10 @@ public class ReimbursementEntry extends ReimbursementEntry_Base {
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
-
-        //add more logical tests for checking deletion rules
-        //if (getXPTORelation() != null)
-        //{
-        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.ReimbursementEntry.cannot.be.deleted"));
-        //}
     }
 
     public boolean isDeletable() {
-        //TODOJN
-        return false;
+        return true;
     }
 
     @Atomic
@@ -117,6 +110,8 @@ public class ReimbursementEntry extends ReimbursementEntry_Base {
             throw new TreasuryDomainException("error.ReimbursementEntry.cannot.delete");
         }
         setBennu(null);
+        setPaymentMethod(null);
+        setSettlementNote(null);
 
         deleteDomainObject();
     }

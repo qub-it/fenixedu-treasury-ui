@@ -94,7 +94,10 @@ ${portal.toolkit()} ${portal.angularToolkit()}
 			[ 'ngSanitize', 'ui.select', 'bennuToolkit' ]).controller(
 			'SettlementNoteController', [ '$scope', function($scope) {
 				$scope.object = angular.fromJson('${settlementNoteBeanJson}');
-			} ]);
+                if($scope.object.previousStates.length == 0 || $scope.object.previousStates[$scope.object.previousStates.length - 1] != 0) {
+                    $scope.object.previousStates.push(0);
+                }
+            } ]);
 </script>
 
 
@@ -205,7 +208,7 @@ ${portal.toolkit()} ${portal.angularToolkit()}
                                         <c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}" />
                                     </div>
                                     <input class="form-control" name="debtAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].debtAmount" type="text"
-                                        ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" value='0.00' />
+                                        ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/" value='0.00' />
                                 </div>
                                 <p class="alert alert-danger" ng-show="form.debtAmount${ loop.index }.$error.pattern && object.debitEntries[${ loop.index }].isIncluded">
                                     <spring:message code="error.invalid.format.input" />

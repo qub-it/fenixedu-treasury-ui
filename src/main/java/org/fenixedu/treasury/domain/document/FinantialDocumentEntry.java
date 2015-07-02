@@ -142,4 +142,5 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
         return this.getFinantialDocument() != null && this.getFinantialDocument().isAnnulled();
     }
 
+    public abstract BigDecimal getNetAmount();
 }
