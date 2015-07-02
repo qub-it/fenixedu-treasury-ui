@@ -106,7 +106,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
-                        value='<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>' />
+                        value='<c:out value='${not empty param.documentdate ? param.documentdate : now }'/>' />
                 </div>
             </div>
             <div class="form-group row">
@@ -116,7 +116,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required
-                        value='<c:out value='${not empty param.documentduedate ? param.documentduedate : debitNote.documentDueDate }'/>' />
+                        value='<c:out value='${not empty param.documentduedate ? param.documentduedate : now}'/>' />
                 </div>
             </div>
             <div class="form-group row">

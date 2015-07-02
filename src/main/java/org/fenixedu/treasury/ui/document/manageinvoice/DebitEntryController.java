@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
@@ -532,8 +533,9 @@ public class DebitEntryController extends TreasuryBaseController {
         if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.error.document.manageinvoice.debitentry.sucess.remove.debitentry"), model);
+            FinantialDocument debitNote = debitEntry.getFinantialDocument();
             removeFromDocument(debitEntry);
-            return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
+            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
         addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
                 "label.error.document.manageinvoice.debitentry.invalid.state.remove.debitentry"), model);
