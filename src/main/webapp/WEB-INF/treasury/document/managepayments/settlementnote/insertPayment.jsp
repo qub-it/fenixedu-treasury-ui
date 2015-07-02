@@ -472,11 +472,8 @@ ${portal.angularToolkit()}
                             <c:out
                                 value="${settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input id="settlementNote_paymentAmount"
-                            class="form-control" type="text"
-                            name="paymentAmount"
-                            ng-model="paymentAmount"
-                            ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" />
+                        <input id="settlementNote_paymentAmount" class="form-control" type="text" name="paymentAmount" ng-model="paymentAmount"
+                            ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/" />
                     </div>
                 </div>
             </div>
@@ -485,12 +482,8 @@ ${portal.angularToolkit()}
                 <spring:message code="error.invalid.format.input" />
             </p>
             <div class="panel-footer">
-                <button type="button" class="btn btn-default"
-                    ng-click="addPaymentMethod()"
-                    ng-disabled="form.paymentAmount.$error.pattern">
-                    <span class="glyphicon glyphicon-plus-sign"
-                        aria-hidden="true"></span> &nbsp;
-                    <spring:message code="label.event.add" />
+                <button type="button" class="btn btn-default" ng-click="addPaymentMethod()" ng-disabled="form.paymentAmount.$error.pattern || !paymentAmount.length">
+                    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true" ></span> &nbsp;<spring:message code="label.event.add" />
                 </button>
             </div>
         </div>

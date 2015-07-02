@@ -134,4 +134,10 @@ public class SettlementEntry extends SettlementEntry_Base {
     public BigDecimal getTotalAmount() {
         return this.getAmount();
     }
+
+    @Override
+    public BigDecimal getNetAmount() {
+        return this.getAmount();
+    }
+
 }

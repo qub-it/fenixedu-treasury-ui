@@ -401,15 +401,27 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <c:if
                                 test="${not empty entry.finantialDocument }">
-                                <a target="_blank" 
-                                    href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}">
-                                    <c:out
-                                        value="${entry.finantialDocument.uiDocumentNumber}" />
+                                <c:if
+                                    test="${entry.isDebitNoteEntry() }">
+                                    <a target="_blank" 
+                                        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}">
+                                        <c:out
+                                            value="${entry.finantialDocument.uiDocumentNumber}" />
+                                    </a>
+                                </c:if>
+                                <c:if
+                                    test="${entry.isCreditNoteEntry() }">
+                                    <a target="_blank" 
+                                        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${entry.finantialDocument.externalId}">
+                                        <c:out
+                                            value="${entry.finantialDocument.uiDocumentNumber}" />
+                                    </a>
+                                </c:if>
                             </c:if>
                             <c:if
                                 test="${empty entry.finantialDocument }">
-							---
-							</c:if>
+                            ---
+                            </c:if>
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>

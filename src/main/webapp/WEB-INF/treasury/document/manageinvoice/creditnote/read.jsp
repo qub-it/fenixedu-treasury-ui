@@ -398,7 +398,7 @@ ${portal.toolkit()}
                                     <c:forEach var="settlementEntry"
                                         items="${creditNote.relatedSettlementEntries}">
                                         <li><c:out
-                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>                                                
+                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
                                     </c:forEach>
                                 </ul>
                             </td>

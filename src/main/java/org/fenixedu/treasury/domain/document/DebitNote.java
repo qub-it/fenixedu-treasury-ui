@@ -189,4 +189,11 @@ public class DebitNote extends DebitNote_Base {
         return documentsBaseList;
     }
 
+    @Override
+    public void anullDocument(boolean freeEntries, String reason) {
+        if (getDebitEntries().anyMatch(de -> !de.getSettlementEntriesSet().isEmpty())) {
+            throw new TreasuryDomainException("error.DebitNote.cannot.delete.has.settlemententries");
+        }
+        super.anullDocument(freeEntries, reason);
+    }
 }

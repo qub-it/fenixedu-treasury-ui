@@ -199,7 +199,10 @@ public class CreditNote extends CreditNote_Base {
 
     @Override
     public void anullDocument(boolean freeEntries, String reason) {
-        // The Credit Note can never free entries
+        if (getCreditEntries().anyMatch(ce -> !ce.getSettlementEntriesSet().isEmpty())) {
+            throw new TreasuryDomainException("error.CreditNote.cannot.delete.has.settlemententries");
+        }
         super.anullDocument(false, reason);
     }
+
 }
