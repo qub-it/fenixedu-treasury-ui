@@ -29,6 +29,7 @@ package org.fenixedu.treasury.services.integration.erp;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -215,9 +216,9 @@ public class ERPIntegrationService extends BennuWebService {
             processInterestEntries(debitEntry, interestRateBean, interestRequest.getPaymentDate());
         }
 
-        final Set<FinantialDocument> interestFinantialDocumentsSet =
+        final List<FinantialDocument> interestFinantialDocumentsSet =
                 debitEntry.getInterestDebitEntriesSet().stream().filter(l -> l.isProcessedInClosedDebitNote())
-                        .map(l -> l.getFinantialDocument()).collect(Collectors.toSet());
+                        .map(l -> l.getFinantialDocument()).collect(Collectors.toList());
 
         final String saftResult =
                 ERPExporter.exportFinantialDocumentToXML(debitEntry.getDebtAccount().getFinantialInstitution(),

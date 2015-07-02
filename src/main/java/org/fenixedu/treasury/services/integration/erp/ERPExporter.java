@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -116,7 +117,7 @@ public class ERPExporter {
     public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.0";
 
     private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
-            Set<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers, Boolean generateAllProducts) {
+            List<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers, Boolean generateAllProducts) {
 
         // Build SAFT-AuditFile
         AuditFile auditFile = new AuditFile();
@@ -1101,7 +1102,8 @@ public class ERPExporter {
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
             ERPExporter saftExporter = new ERPExporter();
-            Set<FinantialDocument> documents = institution.getExportableDocuments(fromDate, toDate);
+            List<FinantialDocument> documents =
+                    new ArrayList<FinantialDocument>(institution.getExportableDocuments(fromDate, toDate));
             logger.info("Collecting " + documents.size() + " documents to export to institution " + institution.getCode());
             String xml = saftExporter.generateERPFile(institution, fromDate, toDate, documents, true, true);
 
@@ -1165,7 +1167,7 @@ public class ERPExporter {
         operation.setFile(binaryStream);
     }
 
-    public static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution, Set<FinantialDocument> documents) {
+    public static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution, List<FinantialDocument> documents) {
 //        documents.forEach(x -> {
 //            if (x instanceof Invoice) {
 //                ((Invoice) x).recalculateAmountValues();
@@ -1182,18 +1184,18 @@ public class ERPExporter {
     public static String exportsProductsToXML(FinantialInstitution finantialInstitution) {
         ERPExporter saftExporter = new ERPExporter();
         return saftExporter.generateERPFile(finantialInstitution, new DateTime(), new DateTime(),
-                new HashSet<FinantialDocument>(), false, true);
+                new ArrayList<FinantialDocument>(), false, true);
     }
 
     public static String exportsCustomersToXML(FinantialInstitution finantialInstitution) {
         ERPExporter saftExporter = new ERPExporter();
         return saftExporter.generateERPFile(finantialInstitution, new DateTime(), new DateTime(),
-                new HashSet<FinantialDocument>(), true, false);
+                new ArrayList<FinantialDocument>(), true, false);
     }
 
     @Atomic
     public static ERPExportOperation exportFinantialDocumentToIntegration(FinantialInstitution institution,
-            Set<FinantialDocument> documents) {
+            List<FinantialDocument> documents) {
 
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {

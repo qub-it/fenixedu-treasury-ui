@@ -26,7 +26,9 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -169,24 +171,44 @@ public class FinantialDocumentController extends TreasuryBaseController {
 
         Set<FinantialDocument> pendingDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet();
 
+        Comparator<FinantialDocument> sortingComparator = new Comparator<FinantialDocument>() {
+
+            @Override
+            public int compare(FinantialDocument o1, FinantialDocument o2) {
+                if (o1.getFinantialDocumentType().equals(o2.getFinantialDocumentType())) {
+                    return o1.getUiDocumentNumber().compareTo(o2.getUiDocumentNumber());
+                } else {
+                    if (o1.isDebitNote()) {
+                        return -2;
+                    } else if (o1.isCreditNote()) {
+                        return -1;
+                    } else if (o1.isSettlementNote()) {
+                        return 1;
+                    }
+                }
+                return 0;
+            }
+        };
+        List<FinantialDocument> sortedDocuments =
+                pendingDocuments.stream().sorted(sortingComparator).collect(Collectors.toList());
         if (pendingDocuments.isEmpty() == false) {
 
             if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
-                while (pendingDocuments.isEmpty() == false) {
-                    FinantialDocument doc = pendingDocuments.iterator().next();
+                while (sortedDocuments.isEmpty() == false) {
+                    FinantialDocument doc = sortedDocuments.iterator().next();
                     Set<FinantialDocument> findRelatedDocuments =
                             doc.findRelatedDocuments(new HashSet<FinantialDocument>(), true).stream()
                                     .filter(x -> x.isDocumentToExport() == true).collect(Collectors.toSet());
                     for (FinantialDocument peingDoc : findRelatedDocuments) {
                         if (doc.isDocumentToExport()) {
                             //remove the related documents from the original Set
-                            pendingDocuments.remove(doc);
+                            sortedDocuments.remove(doc);
                         }
                     }
 
                     //Create a ExportOperation
                     ERPExportOperation exportFinantialDocumentToIntegration =
-                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, pendingDocuments);
+                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
                 }
                 // Now redirect to SEARCH  
                 return redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
@@ -194,7 +216,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
             } else {
 
                 ERPExportOperation exportFinantialDocumentToIntegration =
-                        ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, pendingDocuments);
+                        ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
 
                 // Now choose what is the Exit Screen	 
                 return redirect(ERPExportOperationController.READ_URL + exportFinantialDocumentToIntegration.getExternalId(),
@@ -205,5 +227,4 @@ public class FinantialDocumentController extends TreasuryBaseController {
             return this.search(finantialInstitution, model, redirectAttributes);
         }
     }
-
 }

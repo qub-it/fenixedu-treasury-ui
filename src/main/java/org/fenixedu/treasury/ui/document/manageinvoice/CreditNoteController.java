@@ -410,9 +410,12 @@ public class CreditNoteController extends TreasuryBaseController {
             String output =
                     ERPExporter.exportFinantialDocumentToXML(
                             creditNote.getDebtAccount().getFinantialInstitution(),
-                            creditNote.findRelatedDocuments(new HashSet<FinantialDocument>(), creditNote.getDebtAccount()
-                                    .getFinantialInstitution().getErpIntegrationConfiguration()
-                                    .getExportAnnulledRelatedDocuments()));
+                            creditNote
+                                    .findRelatedDocuments(
+                                            new HashSet<FinantialDocument>(),
+                                            creditNote.getDebtAccount().getFinantialInstitution()
+                                                    .getErpIntegrationConfiguration().getExportAnnulledRelatedDocuments())
+                                    .stream().collect(Collectors.toList()));
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =

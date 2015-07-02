@@ -411,9 +411,11 @@ public class DebitNoteController extends TreasuryBaseController {
             String output =
                     ERPExporter.exportFinantialDocumentToXML(
                             debitNote.getDebtAccount().getFinantialInstitution(),
-                            debitNote.findRelatedDocuments(new HashSet<FinantialDocument>(), debitNote.getDebtAccount()
-                                    .getFinantialInstitution().getErpIntegrationConfiguration()
-                                    .getExportAnnulledRelatedDocuments()));
+                            debitNote
+                                    .findRelatedDocuments(
+                                            new HashSet<FinantialDocument>(),
+                                            debitNote.getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration()
+                                                    .getExportAnnulledRelatedDocuments()).stream().collect(Collectors.toList()));
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =

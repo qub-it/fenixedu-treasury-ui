@@ -450,9 +450,12 @@ public class SettlementNoteController extends TreasuryBaseController {
             String output =
                     ERPExporter.exportFinantialDocumentToXML(
                             settlementNote.getDebtAccount().getFinantialInstitution(),
-                            settlementNote.findRelatedDocuments(new HashSet<FinantialDocument>(), settlementNote.getDebtAccount()
-                                    .getFinantialInstitution().getErpIntegrationConfiguration()
-                                    .getExportAnnulledRelatedDocuments()));
+                            settlementNote
+                                    .findRelatedDocuments(
+                                            new HashSet<FinantialDocument>(),
+                                            settlementNote.getDebtAccount().getFinantialInstitution()
+                                                    .getErpIntegrationConfiguration().getExportAnnulledRelatedDocuments())
+                                    .stream().collect(Collectors.toList()));
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
             String filename =
