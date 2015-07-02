@@ -197,16 +197,16 @@ ${portal.toolkit()}
 
         <c:if
             test="${creditNote.isPreparing() || creditNote.isClosed()}">
-            |&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
-                class=""
+            |&nbsp;<span class="glyphicon glyphicon-pencil"
+                aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/update/${creditNote.externalId}"><spring:message
                     code="label.event.update" /></a>
 		&nbsp;
 		</c:if>
         <c:if test="${creditNote.isPreparing()}">
-            |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
-                class="" href="#" data-toggle="modal"
-                data-target="#deleteModal"><spring:message
+            |&nbsp;<span class="glyphicon glyphicon-trash"
+                aria-hidden="true"></span>&nbsp;<a class="" href="#"
+                data-toggle="modal" data-target="#deleteModal"><spring:message
                     code="label.event.delete" /></a>  &nbsp;|&nbsp; 
 			<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
             <a class="" href="#" data-toggle="modal"
@@ -216,24 +216,25 @@ ${portal.toolkit()}
 		</c:if>
         <c:if test="${creditNote.isClosed()}">
             <c:if test="${creditNote.openAmount > 0  }">
-                |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                |&nbsp;<span class="glyphicon glyphicon-cog"
+                    aria-hidden="true"></span>
                 <a class="" href="#" data-toggle="modal"
                     data-target="#anullModal"> <spring:message
                         code="label.event.document.manageInvoice.anullCreditNote" />
                 </a> &nbsp;
             </c:if>
-            |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-                class=""
+            |&nbsp;<span class="glyphicon glyphicon-cog"
+                aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationfile"><spring:message
                     code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
 
         </c:if>
-        |&nbsp;
-        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
-        &nbsp;
-        <a class="" id="printLabel2" href="#" onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message code="label.print" />
-        </a>
-        &nbsp;        
+        |&nbsp; <span class="glyphicon glyphicon-print"
+            aria-hidden="true"></span> &nbsp; <a class=""
+            id="printLabel2" href="#"
+            onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';">
+            <spring:message code="label.print" />
+        </a> &nbsp;
     </div>
 </form>
 
@@ -337,8 +338,7 @@ ${portal.toolkit()}
                                     <spring:message
                                         code="label.document.manageinvoice.creditnote.without.debitnote" />
                                 </span>
-                            </c:if>
-                            <c:if
+                            </c:if> <c:if
                                 test="${not empty creditNote.debitNote}">
 
                                 <a
@@ -398,7 +398,7 @@ ${portal.toolkit()}
                                     <c:forEach var="settlementEntry"
                                         items="${creditNote.relatedSettlementEntries}">
                                         <li><c:out
-                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.debtAcccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>                                                
                                     </c:forEach>
                                 </ul>
                             </td>
