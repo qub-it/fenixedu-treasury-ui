@@ -10,8 +10,10 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -42,14 +44,21 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
 
     @Override
     public String getDescription() {
-        // TODO Auto-generated method stub
-        return null;
+        StringBuilder builder = new StringBuilder();
+        for (FinantialDocumentEntry entry : this.getFinantialDocument().getFinantialDocumentEntriesSet()) {
+            builder.append(entry.getDescription()).append("\n");
+        }
+        return builder.toString();
     }
 
     @Override
     public boolean isPaymentCodeFor(final TreasuryEvent event) {
-        // TODO Auto-generated method stub
+        if (this.getFinantialDocument().isDebitNote()) {
+            DebitNote debitNote = (DebitNote) this.getFinantialDocument();
+            return debitNote.getDebitEntries().anyMatch(x -> x.getTreasuryEvent() != null && x.getTreasuryEvent().equals(event));
+        }
         return false;
+
     }
 
     protected FinantialDocumentPaymentCode() {

@@ -102,7 +102,7 @@ public class SIBSImportationLineDTO {
             return null;
         }
 
-        return getPaymentCode().getDescription();
+        return getPaymentCode().getTargetPayment().getTargetPayorDescription();
     }
 
     public String getStudentNumber() {
@@ -110,7 +110,7 @@ public class SIBSImportationLineDTO {
             return null;
         }
 
-        return getPaymentCode().getTargetPayment().getDescription();
+        return getPaymentCode().getTargetPayment().getTargetPayorDescription();
     }
 
     public String getDescription() {
@@ -118,7 +118,7 @@ public class SIBSImportationLineDTO {
             return null;
         }
 
-        return getPaymentCode().getDescription();
+        return getPaymentCode().getTargetPayment().getDescription();
     }
 
     public SIBSImportationFileDTO getSibsImportationFileDTO() {

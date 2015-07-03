@@ -43,7 +43,7 @@ ${portal.toolkit()}
 
 <script type="text/javascript">
       function processUpload(externalId) {
-        url = "${pageContext.request.contextPath}<%= TreasuryDocumentTemplateController.SEARCH_UPLOAD_URL %>" + externalId;
+        url = "${pageContext.request.contextPath}<%=TreasuryDocumentTemplateController.SEARCH_UPLOAD_URL%>" + externalId;
         $("#uploadForm").attr("action", url);
         $('#uploadModal').modal('toggle')
       }
@@ -121,19 +121,41 @@ ${portal.toolkit()}
     &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
-            code="label.event.update" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportproductsintegrationfile"><spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.exportProductERP" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog"
+            code="label.event.update" /></a> 
+
+
+
+|&nbsp; <span class="glyphicon glyphicon-cog"
         aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationfile"><spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERP" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog"
-        aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/erpconfigurationupdate"><spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog"
-        aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate"><spring:message
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate">
+        <spring:message
             code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" /></a> &nbsp;
-            
+    <div class="btn-group">
+        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.erpoptions">
+            </spring:message>
+            <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li><a class=""
+                href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportproductsintegrationfile">
+                    <span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp; <spring:message
+                        code="label.event.administration.managefinantialinstitution.finantialinstitution.exportProductERP" />
+            </a></li>
+            <li><a class=""
+                href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationfile">
+                    <span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp; <spring:message
+                        code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERP" />
+            </a></li>
+            <li>
+                <a class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/erpconfigurationupdate">
+        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message
+            code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" /></a>
+            </li>
+        </ul>
+    </div>
+
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

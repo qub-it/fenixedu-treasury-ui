@@ -32,7 +32,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
     public String getTargetPayorDescription() {
         if (getReferenceDebtAccount() != null) {
-            return getReferenceDebtAccount().getCustomer().getCode() + "-" + getReferenceDebtAccount().getCustomer().getName();
+            return getReferenceDebtAccount().getCustomer().getBusinessIdentification() + "-"
+                    + getReferenceDebtAccount().getCustomer().getName();
         }
         return "----";
     }

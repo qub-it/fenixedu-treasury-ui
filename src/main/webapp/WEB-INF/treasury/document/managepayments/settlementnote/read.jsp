@@ -165,12 +165,12 @@ ${portal.toolkit()}
         </a> &nbsp;
     </c:if>
     <c:if test="${settlementNote.isClosed()}">
-        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        |&nbsp;<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
         <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.managePayments.anullSettlementNote" />
         </a> &nbsp;      
     </c:if>
     <c:if test="${not settlementNote.isPreparing()}">
-        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+        |&nbsp;<span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile"><spring:message
                 code="label.event.document.managePayments.exportIntegrationFile" /></a>
         &nbsp;

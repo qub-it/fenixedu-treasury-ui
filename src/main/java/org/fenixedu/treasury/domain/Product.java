@@ -158,6 +158,10 @@ public class Product extends Product_Base {
         return Bennu.getInstance().getProductsSet().stream();
     }
 
+    public static Stream<Product> findAllActive() {
+        return Bennu.getInstance().getProductsSet().stream().filter(x -> x.getActive() == true);
+    }
+
     public static Stream<Product> findByCode(final String code) {
         return findAll().filter(p -> p.getCode().equalsIgnoreCase(code));
     }

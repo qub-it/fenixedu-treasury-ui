@@ -200,10 +200,12 @@ public class SibsInputFileController extends TreasuryBaseController {
             pool = PaymentCodePool.findByEntityCode(entityCode).findFirst().orElse(null);
         } catch (IOException e) {
             throw new TreasuryDomainException(
-                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile");
+                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile",
+                    e.getLocalizedMessage());
         } catch (RuntimeException ex) {
             throw new TreasuryDomainException(
-                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile");
+                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile",
+                    ex.getLocalizedMessage());
         }
 
         if (pool == null) {

@@ -173,7 +173,7 @@ public class DebitEntryController extends TreasuryBaseController {
 
         DebitEntryBean bean = new DebitEntryBean();
 
-        bean.setProductDataSource(Product.findAll().filter(x -> x.getActive()).collect(Collectors.toList()));
+        bean.setProductDataSource(Product.findAllActive().collect(Collectors.toList()));
         bean.setDebtAccount(debtAccount);
         bean.setFinantialDocument(debitNote);
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());

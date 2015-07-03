@@ -108,7 +108,7 @@ public class CreditEntryController extends TreasuryBaseController {
 
         CreditEntryBean bean = new CreditEntryBean();
 
-        bean.setProductDataSource(Product.findAll().collect(Collectors.toList()));
+        bean.setProductDataSource(Product.findAllActive().collect(Collectors.toList()));
         bean.setDebtAccount(debtAccount);
         bean.setFinantialDocument(creditNote);
         bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());

@@ -181,6 +181,7 @@ ${portal.toolkit()}
 
         <button id="addEntryButton" type="button"
             onClick="javascript:submitOptions('searchpendingentriesTable', 'addentries', 'debitEntrys')">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
             <spring:message
                 code='label.document.manageInvoice.searchPendingEntries.addEntries' />
         </button>

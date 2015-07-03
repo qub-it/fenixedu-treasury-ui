@@ -182,7 +182,7 @@ ${portal.toolkit()}
         <c:if test="${debitNote.isClosed()}">
             <c:if test="${debitNote.openAmount > 0  }">
                 |&nbsp;
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                 &nbsp;
                 <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
                 </a> 
@@ -208,7 +208,7 @@ ${portal.toolkit()}
         </c:if>
         <c:if test="${not debitNote.isPreparing()}">
             |&nbsp;
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
             &nbsp;
             <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"> <spring:message
                     code="label.event.document.manageInvoice.exportIntegrationFile" />
