@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -164,6 +165,10 @@ public class Product extends Product_Base {
 
     public static Stream<Product> findByCode(final String code) {
         return findAll().filter(p -> p.getCode().equalsIgnoreCase(code));
+    }
+    
+    public static Optional<Product> findUniqueByCode(final String code) {
+        return findByCode(code).findFirst();
     }
 
     public static Stream<Product> findByName(final String name) {
