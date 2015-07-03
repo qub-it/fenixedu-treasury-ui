@@ -70,7 +70,8 @@ ${portal.toolkit()}
 <div class="modal fade" id="removeFromDocumentModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}/removefromdocument" method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${debitEntry.externalId}/removefromdocument"
+                method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -119,7 +120,8 @@ ${portal.toolkit()}
 	&nbsp;
 	</c:if>
     <c:if test="${not empty debitEntry.finantialDocument && debitEntry.finantialDocument.isPreparing()}">
-        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#removeFromDocumentModal"><spring:message code="label.event.document.manageinvoice.debitentry.removefromdocument" /></a>
+        |&nbsp;<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#removeFromDocumentModal"><spring:message
+                code="label.event.document.manageinvoice.debitentry.removefromdocument" /></a>
     &nbsp;
     </c:if>
 </div>
@@ -208,6 +210,17 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.totalAmount" /></th>
                         <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.totalAmount)}' /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.openAmount" /></th>
+                        <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.openAmount)}' /></td>
+                    </tr>
+                    <c:if test="${debitEntry.pendingInterestAmount.unscaledValue() != 0 }">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.pendingInterestAmount" /></th>
+                            <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.pendingInterestAmount)}' /></td>
+                        </tr>
+                    </c:if>
+
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.exemptedAmount" /></th>
                         <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>

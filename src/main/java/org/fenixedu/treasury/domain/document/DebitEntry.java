@@ -260,6 +260,14 @@ public class DebitEntry extends DebitEntry_Base {
         return amount;
     }
 
+    public BigDecimal getPendingInterestAmount() {
+        return getPendingInterestAmount(new LocalDate());
+    }
+
+    public BigDecimal getPendingInterestAmount(LocalDate whenToCalculate) {
+        return calculateUndebitedInterestValue(whenToCalculate).getInterestAmount();
+    }
+
     public BigDecimal getRemainingAmount() {
         return getOpenAmount().subtract(getPayedAmount());
     }

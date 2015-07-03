@@ -334,6 +334,12 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.openAmount" /></th>
                         <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
                     </tr>
+                    <c:if test="${debitNote.pendingInterestAmount.unscaledValue() != 0 }">
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.pendingInterestAmount" /></th>
+                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.pendingInterestAmount)}' /></td>
+                    </tr>
+                    </c:if>
                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>

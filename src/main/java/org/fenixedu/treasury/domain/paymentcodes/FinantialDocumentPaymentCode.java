@@ -14,6 +14,7 @@ import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -184,6 +185,12 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     @Override
     protected DebtAccount getReferenceDebtAccount() {
         return this.getFinantialDocument().getDebtAccount();
+    }
+
+    @Override
+    protected DocumentNumberSeries getDocumentSeriesInterestDebits() {
+        return DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this.getPaymentReferenceCode()
+                .getPaymentCodePool().getDocumentSeriesForPayments().getSeries());
     }
 
 }

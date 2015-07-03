@@ -11,6 +11,7 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -148,4 +149,9 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
         return findAll(finantialInstitution).filter(i -> valid.equals(i.getValid()));
     }
 
+    @Override
+    protected DocumentNumberSeries getDocumentSeriesInterestDebits() {
+        return DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this.getPaymentReferenceCode()
+                .getPaymentCodePool().getDocumentSeriesForPayments().getSeries());
+    }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -15,6 +16,8 @@ import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -65,7 +68,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         DebitNote debitNoteForInterests = null;
         DebtAccount referenceDebtAccount = this.getReferenceDebtAccount();
         DocumentNumberSeries docNumberSeries = this.getDocumentSeriesForPayments();
-        SettlementNote settlementNote = SettlementNote.create(referenceDebtAccount, docNumberSeries, new DateTime(), comments);
+        SettlementNote settlementNote = SettlementNote.create(referenceDebtAccount, docNumberSeries, whenRegistered, comments);
 
         for (InvoiceEntry entry : invoiceEntriesToPay) {
             if (availableAmount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -82,9 +85,14 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                     }
 
                     if (debitEntry.getOpenAmount().equals(amountToPay)) {
-                        //TODO
-                        //Generate the InterestRate Entry if exists
-//                    debitEntry.generateInterestRateDebitEntry(interest, when, debitNote);
+                        InterestRateBean calculateUndebitedInterestValue =
+                                debitEntry.calculateUndebitedInterestValue(whenRegistered.toLocalDate());
+                        if (Constants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
+                            DebitEntry interestDebitEntry =
+                                    debitEntry
+                                            .createInterestRateDebitEntry(calculateUndebitedInterestValue, whenRegistered, null);
+                            interestRateEntries.add(interestDebitEntry);
+                        }
                     }
 
                     SettlementEntry newSettlementEntry =
@@ -105,8 +113,17 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
             }
         }
 
-        //if "availableAmount" still exists, then we must check if there is any InterestRate to pay
+        //if we created interestRateEntries then we must close them in a document and try to pay with availableAmount
         if (interestRateEntries.size() > 0) {
+            //Create a DebitNote for the Interests DebitEntries
+            DebitNote interestNote =
+                    DebitNote.create(referenceDebtAccount, this.getDocumentSeriesInterestDebits(), whenRegistered);
+            for (DebitEntry interestEntry : interestRateEntries) {
+                interestEntry.setFinantialDocument(interestNote);
+            }
+            interestNote.closeDocument();
+
+            //if "availableAmount" still exists, then we must check if there is any InterestRate to pay
             for (DebitEntry interestEntry : interestRateEntries) {
                 //Check if there is enough amount to Pay
                 if (availableAmount.compareTo(BigDecimal.ZERO) <= 0) {
@@ -129,8 +146,9 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
         //if "availableAmount" still exists, then we must create a "pending Payment" or "CreditNote"
         if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
-            settlementNote.createAdvancedPaymentCreditNote(availableAmount, "Adiantamento em pagamento SIBS" + comments + "-"
-                    + sibsTransactionId);
+            settlementNote.createAdvancedPaymentCreditNote(availableAmount,
+                    BundleUtil.getString(Constants.BUNDLE, "label.PaymentCodeTarget.advancedpayment") + comments + "-"
+                            + sibsTransactionId);
         }
 
         PaymentEntry paymentEntry =
@@ -142,6 +160,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         this.getPaymentReferenceCode().setState(PaymentReferenceCodeStateType.PROCESSED);
         return settlementNote;
     }
+
+    protected abstract DocumentNumberSeries getDocumentSeriesInterestDebits();
 
     protected abstract DocumentNumberSeries getDocumentSeriesForPayments();
 

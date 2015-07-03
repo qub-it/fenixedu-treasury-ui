@@ -189,6 +189,18 @@ public class DebitNote extends DebitNote_Base {
         return documentsBaseList;
     }
 
+    public BigDecimal getPendingInterestAmount() {
+        return getPendingInterestAmount(new LocalDate());
+    }
+
+    public BigDecimal getPendingInterestAmount(LocalDate whenToCalculate) {
+        BigDecimal interest = BigDecimal.ZERO;
+        for (DebitEntry entry : this.getDebitEntriesSet()) {
+            interest = interest.add(entry.calculateUndebitedInterestValue(whenToCalculate).getInterestAmount());
+        }
+        return interest;
+    }
+
     @Override
     public void anullDocument(boolean freeEntries, String reason) {
         if (getDebitEntries().anyMatch(de -> !de.getSettlementEntriesSet().isEmpty())) {
