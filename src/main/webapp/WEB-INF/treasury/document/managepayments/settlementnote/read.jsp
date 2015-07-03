@@ -152,9 +152,9 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message code="label.event.update" /></a>
     &nbsp;
     <c:if test="${settlementNote.isPreparing()}">

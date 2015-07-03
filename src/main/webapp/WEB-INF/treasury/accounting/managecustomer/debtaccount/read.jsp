@@ -239,7 +239,6 @@ ${portal.angularToolkit()}
         <li class="active"><a href="#pending" data-toggle="tab"><spring:message code="label.DebtAccount.pendingDocumentEntries" /></a></li>
         <li><a href="#details" data-toggle="tab"><spring:message code="label.DebtAccount.allDocumentEntries" /></a></li>
         <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payments" /></a></li>
-        <li><a href="#exemptions" data-toggle="tab"><spring:message code="label.DebtAccount.exemptions" /></a></li>
     </ul>
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="pending">
@@ -414,10 +413,10 @@ ${portal.angularToolkit()}
                         </datatables:column>
                         <datatables:column>
                             <c:if test="${entry.isDebitNoteEntry() }">
-                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
+                                <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${entry.externalId}">
                             </c:if>
                             <c:if test="${entry.isCreditNoteEntry() }">
-                                <form method="get" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${entry.externalId}">
+                                <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${entry.externalId}">
                             </c:if>
                             <button type="submit" class="btn btn-default btn-xs">
                                 <spring:message code="label.view" />
@@ -427,7 +426,7 @@ ${portal.angularToolkit()}
                             <!-- 						<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; -->
                             <%-- 						<spring:message code="label.event.document.manageInvoice.deleteEntry" /> --%>
                             <!-- 					</button> -->
-                            </form>
+                            </a>
                         </datatables:column>
                     </datatables:table>
                     <script>
@@ -512,11 +511,11 @@ ${portal.angularToolkit()}
                             </ul>
                         </datatables:column>
                         <datatables:column>
-                            <form method="get" action="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${payment.externalId}">
+                            <a href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${payment.externalId}">
                                 <button type="submit" class="btn btn-default btn-xs">
                                     <spring:message code="label.view" />
                                 </button>
-                            </form>
+                            </a>
                         </datatables:column>
                     </datatables:table>
                     <script>
@@ -542,59 +541,6 @@ ${portal.angularToolkit()}
                 </c:otherwise>
             </c:choose>
         </div>
-        <div class="tab-pane" id="exemptions">
-            <!--             <h3>Isencoes</h3> -->
-            <p></p>
-            <c:choose>
-                <c:when test="${not empty exemptionDataSet}">
-                    <datatables:table id="exemptionsDataSet" row="exemption" data="${exemptionDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message code="label.TreasuryExemption.treasuryEvent" />
-                            </datatables:columnHead>
-                            ${exemption.treasuryEvent.description.content}
-                        </datatables:column>
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message code="label.TreasuryExemption.product" />
-                            </datatables:columnHead>
-                            ${exemption.product.name.content}
-                        </datatables:column>
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message code="label.TreasuryExemption.valueToExempt" />
-                            </datatables:columnHead>
-                            ${exemption.treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}
-                        </datatables:column>
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message code="label.TreasuryExemption.reason" />
-                            </datatables:columnHead>
-                            ${exemption.reason}
-                        </datatables:column>
-                    </datatables:table>
-                    <script>
-																					createDataTables(
-																							'exemptionsDataSet',
-																							false,
-																							false,
-																							false,
-																							"${pageContext.request.contextPath}",
-																							"${datatablesI18NUrl}");
-																				</script>
-
-                </c:when>
-                <c:otherwise>
-                    <div class="alert alert-warning" role="alert">
-
-                        <p>
-                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-                            <spring:message code="label.noResultsFound" />
-                        </p>
-                    </div>
-                </c:otherwise>
-            </c:choose>
-        </div>
     </div>
 </div>
 
@@ -604,37 +550,7 @@ ${portal.angularToolkit()}
 		//Enable Bootstrap Tabs
 		$('#tabs').tab();
 
-		var tablePayments = $('#paymentsTable').DataTable({
-			language : {
-				url : "${datatablesI18NUrl}",
-			},
-			//CHANGE_ME adjust the actions column width if needed
-			"columnDefs" : [
-			//54
-			{
-				"width" : "54px",
-				"targets" : 4
-			} ],
-			"dom" : '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-		});
 
-		tablePayments.columns.adjust().draw();
-
-		var tableExemptions = $('#exemptionsTable').DataTable({
-			language : {
-				url : "${datatablesI18NUrl}",
-			},
-			"columnDefs" : [
-			//54
-			{
-				"width" : "54px",
-				"targets" : 4
-			} ],
-			//Documentation: https://datatables.net/reference/option/dom
-			"dom" : '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-		});
-
-		table.columns.adjust().draw();
 
 	});
 </script>

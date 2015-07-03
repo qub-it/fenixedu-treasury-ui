@@ -311,6 +311,11 @@ public class SettlementNote extends SettlementNote_Base {
         } else {
             // Settlement note can never free entries 
             super.anullDocument(false, reason);
+
+            //if we have advanced payments, we must "anull" the "advanced payments"
+            if (this.getAdvancedPaymentCreditNote() != null) {
+                this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, reason);
+            }
         }
     }
 

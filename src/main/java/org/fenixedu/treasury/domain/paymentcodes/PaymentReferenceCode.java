@@ -230,12 +230,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     @Atomic
     public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments) {
-        if (isProcessed()) {
+        if (!isNew()
+                && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(), this.getPaymentCodePool()
+                        .getEntityReferenceCode(), whenRegistered)) {
             return null;
-        }
-
-        if (isAnnulled()) {
-            throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.process.invalid.codes");
         }
 
         SettlementNote note =

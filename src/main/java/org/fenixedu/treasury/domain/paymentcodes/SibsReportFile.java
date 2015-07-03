@@ -220,6 +220,14 @@ public class SibsReportFile extends SibsReportFile_Base {
                 SibsReportFile.create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(),
                         reportDTO.getTotalCost(), displayNameFor(reportDTO), filenameFor(reportDTO), content);
 
+        for (SIBSImportationLineDTO line : reportDTO.getLines()) {
+            if (line.getPaymentCode() != null) {
+                SibsTransactionDetail.create(result, "", line.getWhenProcessedBySibs(), line.getTransactionWhenRegistered(),
+                        line.getTransactionTotalAmount(), line.getPaymentCode().getPaymentCodePool().getEntityReferenceCode(),
+                        line.getCode(), line.getSibsTransactionId());
+            }
+        }
+
         return result;
     }
 

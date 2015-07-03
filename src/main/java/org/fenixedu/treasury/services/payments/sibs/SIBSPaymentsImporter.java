@@ -35,6 +35,7 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
+import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
 import org.fenixedu.treasury.util.Constants;
@@ -188,7 +189,9 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
         }
 
-        if (codeToProcess.isProcessed()) {
+        if (!codeToProcess.isNew()
+                && SibsTransactionDetail.isReferenceProcessingDuplicate(codeToProcess.getReferenceCode(), codeToProcess
+                        .getPaymentCodePool().getEntityReferenceCode(), detailLine.getWhenOccuredTransaction())) {
             result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
         }
 

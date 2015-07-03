@@ -102,11 +102,11 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <c:if test="${not empty debitEntry.finantialDocument }">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+        <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitEntry.finantialDocument.externalId}"><spring:message
                 code="label.document.manageInvoice.event.backToDebitNote" /></a>&nbsp|&nbsp; 
 	</c:if>
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntry.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
     <c:if test="${empty debitEntry.finantialDocument ||  debitEntry.finantialDocument.isPreparing()}">

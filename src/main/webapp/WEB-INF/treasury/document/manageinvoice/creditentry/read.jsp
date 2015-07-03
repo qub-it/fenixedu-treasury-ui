@@ -70,11 +70,11 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <c:if test="${not empty creditEntry.finantialDocument }">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+        <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditEntry.finantialDocument.externalId}"><spring:message
                 code="label.document.manageInvoice.event.backToCreditNote" /></a>&nbsp; 
     </c:if>
-    |&nbsp;<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
+    |&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditEntry.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
     <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
