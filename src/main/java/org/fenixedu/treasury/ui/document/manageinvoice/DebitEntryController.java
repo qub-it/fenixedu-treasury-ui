@@ -393,10 +393,10 @@ public class DebitEntryController extends TreasuryBaseController {
             //if the document is closed, then we can only update interest and treasury event
             if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
                 updateDebitEntry(debitEntry.getDescription(), debitEntry.getAmount(), debitEntry.getQuantity(),
-                        bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate(), model);
+                        bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate(), bean.getDueDate(), model);
             } else {
                 updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(),
-                        bean.isApplyInterests(), bean.getInterestRate(), model);
+                        bean.isApplyInterests(), bean.getInterestRate(), bean.getDueDate(), model);
             }
             /*Succes Update */
 
@@ -427,7 +427,8 @@ public class DebitEntryController extends TreasuryBaseController {
 
     @Atomic
     public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity,
-            final TreasuryEvent treasuryEvent, boolean applyInterests, FixedTariffInterestRateBean interestRateBean, Model model) {
+            final TreasuryEvent treasuryEvent, boolean applyInterests, FixedTariffInterestRateBean interestRateBean,
+            LocalDate dueDate, Model model) {
 
         // @formatter: off				
         /*
@@ -442,7 +443,7 @@ public class DebitEntryController extends TreasuryBaseController {
         // @formatter: on
 
         DebitEntry debitEntry = getDebitEntry(model);
-        debitEntry.edit(description, amount, quantity, treasuryEvent);
+        debitEntry.edit(description, amount, quantity, treasuryEvent, dueDate);
         if (applyInterests) {
             if (debitEntry.getInterestRate() == null) {
                 InterestRate interestRate =

@@ -324,12 +324,14 @@ public class DebitEntry extends DebitEntry_Base {
         return interestEntry;
     }
 
-    public void edit(String description, BigDecimal amount, BigDecimal quantity, final TreasuryEvent treasuryEvent) {
+    public void edit(String description, BigDecimal amount, BigDecimal quantity, final TreasuryEvent treasuryEvent,
+            LocalDate dueDate) {
 
         this.setDescription(description);
         this.setAmount(amount);
         this.setQuantity(quantity);
         this.setTreasuryEvent(treasuryEvent);
+        this.setDueDate(dueDate);
 
         recalculateAmountValues();
 
