@@ -645,6 +645,7 @@ relation IntegrationOperationOperationFile
 /* ERP Integration */
 class integration.ERPConfiguration extends integration.Configuration
 {
+    String implementationClassName;
     boolean exportOnlyRelatedDocumentsPerExport;
     boolean exportAnnulledRelatedDocuments;
 }

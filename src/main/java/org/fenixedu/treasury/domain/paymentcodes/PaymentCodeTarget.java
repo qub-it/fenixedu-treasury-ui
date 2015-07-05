@@ -159,9 +159,6 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         settlementNote.closeDocument();
         this.getPaymentReferenceCode().setState(PaymentReferenceCodeStateType.PROCESSED);
 
-        SibsTransactionDetail.create(null, comments, whenProcessed, whenRegistered, amount, this.getPaymentReferenceCode()
-                .getPaymentCodePool().getEntityReferenceCode(), this.getPaymentReferenceCode().getReferenceCode(),
-                sibsTransactionId);
         return settlementNote;
     }
 
