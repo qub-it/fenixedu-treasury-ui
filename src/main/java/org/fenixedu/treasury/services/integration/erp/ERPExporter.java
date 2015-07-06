@@ -88,7 +88,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
-import org.fenixedu.treasury.services.integration.DocumentsInformationInput;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1126,7 +1126,7 @@ public class ERPExporter {
         IERPExternalService service = ERPConfiguration.getERPExternalServiceImplementation(erpIntegrationConfiguration);
 
         DocumentsInformationInput input = new DocumentsInformationInput();
-        putDataAsByteArray(input, operation.getFile().getContent());
+        input.setData(operation.getFile().getContent());
         service.sendInfoOnline(input);
     }
 
@@ -1209,14 +1209,6 @@ public class ERPExporter {
             writeError(operation, ex);
         }
         return operation;
-    }
-
-    private static DocumentsInformationInput putDataAsByteArray(DocumentsInformationInput input, byte[] data) {
-
-        for (byte b : data) {
-            input.getData().add(b);
-        }
-        return input;
     }
 
     @Atomic

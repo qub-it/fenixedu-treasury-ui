@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -92,7 +91,7 @@ public class ERPIntegrationService extends BennuWebService {
         //Integrate the information from XML SAFT
         DateTime now = new DateTime();
         String filename = finantialInstitution.getFiscalNumber() + "_" + now.toString() + ".xml";
-        OperationFile file = OperationFile.create(filename, ArrayUtils.toPrimitive(documentsInformation.getData()));
+        OperationFile file = OperationFile.create(filename, documentsInformation.getData());
         ERPImportOperation operation = ERPImportOperation.create(file, finantialInstitution, now, false, false, false, null);
 
         ERPImporter importer = new ERPImporter(file.getStream());

@@ -28,7 +28,7 @@ package org.fenixedu.treasury.services.integration.erp.dto;
 
 public class DocumentsInformationInput {
     private String finantialInstitution;
-    private Byte[] data;
+    private byte[] data;
     private String dataURI;
 
     public DocumentsInformationInput() {
@@ -43,11 +43,11 @@ public class DocumentsInformationInput {
         this.dataURI = dataURI;
     }
 
-    public Byte[] getData() {
+    public byte[] getData() {
         return data;
     }
 
-    public void setData(Byte[] data) {
+    public void setData(byte[] data) {
         this.data = data;
     }
 

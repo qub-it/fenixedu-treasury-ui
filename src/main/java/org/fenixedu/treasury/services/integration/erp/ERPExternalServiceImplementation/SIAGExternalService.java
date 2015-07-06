@@ -6,11 +6,11 @@ import java.util.List;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
-import org.fenixedu.treasury.services.integration.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.ERPExternalService;
 import org.fenixedu.treasury.services.integration.ERPExternalServiceService;
-import org.fenixedu.treasury.services.integration.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
+import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 
 public class SIAGExternalService implements IERPExternalService {
 
@@ -28,17 +28,20 @@ public class SIAGExternalService implements IERPExternalService {
 
     @Override
     public String sendInfoOnline(DocumentsInformationInput documentsInformation) {
-        return _internalService.sendInfoOnline(documentsInformation);
+//        return _internalService.sendInfoOnline(documentsInformation);
+        return null;
     }
 
     @Override
     public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
-        return _internalService.sendInfoOffline(documentsInformation);
+//        return _internalService.sendInfoOffline(documentsInformation);
+        return null;
     }
 
     @Override
     public List<IntegrationStatusOutput> getIntegrationStatusFor(String requestIdentification) {
-        return _internalService.getIntegrationStatusFor(requestIdentification);
+//        return _internalService.getIntegrationStatusFor(requestIdentification);
+        return null;
     }
 
 }
