@@ -34,7 +34,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -90,8 +89,6 @@ import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.fenixedu.treasury.services.integration.DocumentsInformationInput;
-import org.fenixedu.treasury.services.integration.ERPExternalService;
-import org.fenixedu.treasury.services.integration.ERPExternalServiceService;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1126,8 +1123,7 @@ public class ERPExporter {
         if (erpIntegrationConfiguration == null) {
             throw new TreasuryDomainException("error.ERPExporter.invalid.erp.configuration");
         }
-        ERPExternalService service =
-                new ERPExternalServiceService(new URL(erpIntegrationConfiguration.getExternalURL())).getERPExternalServicePort();
+        IERPExternalService service = ERPConfiguration.getERPExternalServiceImplementation(erpIntegrationConfiguration);
 
         DocumentsInformationInput input = new DocumentsInformationInput();
         putDataAsByteArray(input, operation.getFile().getContent());

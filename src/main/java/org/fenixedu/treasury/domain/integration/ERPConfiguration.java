@@ -27,12 +27,14 @@
 
 package org.fenixedu.treasury.domain.integration;
 
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -107,5 +109,19 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         ERPConfiguration eRPConfiguration = new ERPConfiguration();
         eRPConfiguration.init(paymentsIntegrationSeries, finantialInstitution, code, externalURL, username, password);
         return eRPConfiguration;
+    }
+
+    public static IERPExternalService getERPExternalServiceImplementation(ERPConfiguration erpConfiguration) {
+        String className = erpConfiguration.getImplementationClassName();
+        Class cl;
+        try {
+            cl = Class.forName(className);
+
+            Constructor con = cl.getConstructor(ERPConfiguration.class);
+            IERPExternalService implementation = (IERPExternalService) con.newInstance(erpConfiguration);
+            return implementation;
+        } catch (Exception e) {
+            throw new TreasuryDomainException("error.ERPConfiguration.invalid.external.service");
+        }
     }
 }

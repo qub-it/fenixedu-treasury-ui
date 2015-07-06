@@ -81,6 +81,9 @@ public class ERPIntegrationService extends BennuWebService {
         return false;
     }
 
+    /* (non-Javadoc)
+     * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#sendInfoOnline(org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput)
+     */
     @WebMethod
     public String sendInfoOnline(DocumentsInformationInput documentsInformation) {
         validateRequestHeader(documentsInformation.getFinantialInstitution());
@@ -107,6 +110,9 @@ public class ERPIntegrationService extends BennuWebService {
         return finantialInstitution;
     }
 
+    /* (non-Javadoc)
+     * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#sendInfoOffline(org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput)
+     */
     @WebMethod
     public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
         validateRequestHeader(documentsInformation.getFinantialInstitution());
@@ -129,6 +135,9 @@ public class ERPIntegrationService extends BennuWebService {
         return operation.getExternalId();
     }
 
+    /* (non-Javadoc)
+     * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#getIntegrationStatusFor(java.lang.String)
+     */
     @WebMethod
     public IntegrationStatusOutput getIntegrationStatusFor(String requestIdentification) {
 
