@@ -197,8 +197,16 @@ ${portal.toolkit()}
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.date" />
                     </datatables:columnHead>
-                    <joda:format value="${pendingEntry.entryDateTime}" style="S-" />
-                    <%--                     <c:out value="${pendingEntry.entryDateTime}" /> --%>
+<%--                     <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
+                                        <c:out value='${pendingEntry.entryDateTime.toString("YYYY-MM-dd")}' />
+
+                </datatables:column>
+                <datatables:column cssStyle="width:10%;align:right">
+                    <datatables:columnHead>
+                        <spring:message code="label.DebitNote.dueDate" />
+                    </datatables:columnHead>
+<%--                     <joda:format value="${pendingEntry.dueDate}" style="S-" /> --%>
+                                        <c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
 
                 </datatables:column>
                 <datatables:column cssStyle="width:10%;">
@@ -231,7 +239,7 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <c:out value="${pendingEntry.description}" />
                 </datatables:column>
-                <datatables:column cssStyle="width:15%;align:right">
+                <datatables:column cssStyle="width:10%;align:right">
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.totalAmount" />
                     </datatables:columnHead>
@@ -240,7 +248,7 @@ ${portal.toolkit()}
                         <c:out value="${pendingEntry.currency.getValueFor(pendingEntry.totalAmount)}" />
                     </div>
                 </datatables:column>
-                <datatables:column cssStyle="width:15%;align:right">
+                <datatables:column cssStyle="width:10%;align:right">
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.openAmount" />
                     </datatables:columnHead>
