@@ -305,7 +305,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                     throw new TreasuryDomainException("error.ERPIntegrationConfiguration.invalid.external.payments.series");
                 }
                 ERPConfiguration erpIntegrationConfiguration =
-                        ERPConfiguration.create(paymentsIntegrationSeries.getSeries(), finantialInstitution, "", "", "", "");
+                        ERPConfiguration.create(paymentsIntegrationSeries.getSeries(), finantialInstitution, "", "", "", "", "");
                 finantialInstitution.setErpIntegrationConfiguration(erpIntegrationConfiguration);
             }
             return redirect(ERPConfigurationController.READ_URL
