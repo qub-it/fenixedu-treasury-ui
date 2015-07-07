@@ -324,9 +324,21 @@ ${portal.angularToolkit()}
             </tbody>
         </table>
         <div class="panel-footer">
-            <p align="right">
-                <b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat.abs() ) }
-            </p>
+            <c:if test="${ settlementNoteBean.reimbursementNote }">
+                <p align="right">
+                    <b><spring:message
+                            code="label.document.managepayments.settlementnote.reimbursementTotal" /></b>:
+                    ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat.negate() ) }
+                </p>
+            </c:if>
+            <c:if
+                test="${ not settlementNoteBean.reimbursementNote }">
+                <p align="right">
+                    <b><spring:message
+                            code="label.document.managepayments.settlementnote.paymentTotal" /></b>:
+                    ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat ) }
+                </p>
+            </c:if>
         </div>
     </div>
 </div>
@@ -379,9 +391,21 @@ ${portal.angularToolkit()}
             </tbody>
         </table>
         <div class="panel-footer">
-            <p align="right">
-                <b><spring:message code="label.total" /></b>: ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.paymentAmount ) }
-            </p>
+            <c:if test="${ settlementNoteBean.reimbursementNote }">
+                <p align="right">
+                    <b><spring:message
+                            code="label.SettlementNote.reimbursementTotal" /></b>:
+                    ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.paymentAmount ) }
+                </p>
+            </c:if>
+            <c:if
+                test="${ not settlementNoteBean.reimbursementNote }">
+                <p align="right">
+                    <b><spring:message
+                            code="label.SettlementNote.paymentTotal" /></b>:
+                    ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.paymentAmount ) }
+                </p>
+            </c:if>
         </div>
     </div>
 </div>

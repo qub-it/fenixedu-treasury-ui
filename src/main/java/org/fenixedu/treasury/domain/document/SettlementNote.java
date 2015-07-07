@@ -77,7 +77,9 @@ public class SettlementNote extends SettlementNote_Base {
     protected void checkRules() {
         super.checkRules();
 
-        if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)) {
+        if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)
+                && !getDocumentNumberSeries().getFinantialDocumentType().getType()
+                        .equals(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE)) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
         }
     }

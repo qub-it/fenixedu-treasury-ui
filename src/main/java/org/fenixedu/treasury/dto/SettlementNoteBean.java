@@ -76,17 +76,27 @@ public class SettlementNoteBean implements IBean, Serializable {
                 creditEntries.add(new CreditEntryBean((CreditEntry) invoiceEntry));
             }
         }
-        List<DocumentNumberSeries> availableSeries =
-                org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
-                        debtAccount.getFinantialInstitution()).collect(Collectors.toList());
 
-        this.setDocumentNumberSeries(DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(
-                Collectors.toList()));
+        setDocumentNumberSeries(debtAccount, reimbursementNote);
+
         settlementNoteStateUrls =
                 Arrays.asList(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/"
                         + reimbursementNote, SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL,
                         SettlementNoteController.CALCULATE_INTEREST_URL, SettlementNoteController.CREATE_DEBIT_NOTE_URL,
                         SettlementNoteController.INSERT_PAYMENT_URL, SettlementNoteController.SUMMARY_URL);
+    }
+
+    private void setDocumentNumberSeries(DebtAccount debtAccount, boolean reimbursementNote) {
+        FinantialDocumentType finantialDocumentType =
+                (reimbursementNote) ? FinantialDocumentType.findForReimbursementNote() : FinantialDocumentType
+                        .findForSettlementNote();
+
+        List<DocumentNumberSeries> availableSeries =
+                DocumentNumberSeries.find(finantialDocumentType, debtAccount.getFinantialInstitution()).collect(
+                        Collectors.toList());
+
+        this.setDocumentNumberSeries(DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(
+                Collectors.toList()));
     }
 
     public DebtAccount getDebtAccount() {

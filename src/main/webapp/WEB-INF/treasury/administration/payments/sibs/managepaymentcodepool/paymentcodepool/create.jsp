@@ -306,7 +306,7 @@ $(document).ready(function() {
 	            data : documentSeriesForPayments_options,
 	        }     
 	    );
-	    $("#paymentCodePool_documentSeriesForPayments").select2().select2('val', '<c:out value='${param.documentseriesforpayments}'/>');
+	    $("#paymentCodePool_documentSeriesForPayments").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
 	    <%-- End block for providing documentSeriesForPayments options --%>
 
 	});

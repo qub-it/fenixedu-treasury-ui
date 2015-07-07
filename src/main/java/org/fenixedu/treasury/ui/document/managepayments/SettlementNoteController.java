@@ -276,6 +276,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
         }
+        setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/summary";
     }
 
