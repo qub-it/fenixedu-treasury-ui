@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" xmlns:intf="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" xmlns:tns1="http://erp.integration.services.treasury.fenixedu.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema targetNamespace="http://erp.integration.services.treasury.fenixedu.org/" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <simpleType name="statusType">
+    <restriction base="xsd:string">
+     <enumeration value="PENDING"/>
+     <enumeration value="ERROR"/>
+     <enumeration value="SUCCESS"/>
+    </restriction>
+   </simpleType>
+   <complexType name="documentStatusWS">
+    <sequence>
+     <element maxOccurs="1" minOccurs="0" name="documentNumber" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="errorDescription" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="integrationStatus" type="tns1:statusType"/>
+    </sequence>
+   </complexType>
+  </schema>
+  <schema targetNamespace="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://erp.integration.services.treasury.fenixedu.org/"/>
+   <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+   <complexType name="IntegrationStatusOutput">
+    <sequence>
+     <element maxOccurs="1" minOccurs="0" name="requestId" type="xsd:string"/>
+     <element maxOccurs="unbounded" minOccurs="0" name="_documentStatus" nillable="true" type="tns1:documentStatusWS"/>
+    </sequence>
+   </complexType>
+   <complexType name="ArrayOfIntegrationStatusOutput">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="impl:IntegrationStatusOutput"/>
+    </sequence>
+   </complexType>
+   <complexType name="DocumentsInformationInput">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="data" nillable="true" type="xsd:byte"/>
+     <element maxOccurs="1" minOccurs="0" name="dataURI" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="finantialInstitution" type="xsd:string"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <message name="sendInfoOfflineRequest">
+
+      <part name="arg0" type="impl:DocumentsInformationInput"/>
+
+   </message>
+
+   <message name="getIntegrationStatusForRequest">
+
+      <part name="arg0" type="xsd:string"/>
+
+   </message>
+
+   <message name="sendInfoOfflineResponse">
+
+      <part name="sendInfoOfflineReturn" type="xsd:string"/>
+
+   </message>
+
+   <message name="sendInfoOnlineRequest">
+
+      <part name="arg0" type="impl:DocumentsInformationInput"/>
+
+   </message>
+
+   <message name="sendInfoOnlineResponse">
+
+      <part name="sendInfoOnlineReturn" type="xsd:string"/>
+
+   </message>
+
+   <message name="getIntegrationStatusForResponse">
+
+      <part name="getIntegrationStatusForReturn" type="impl:ArrayOfIntegrationStatusOutput"/>
+
+   </message>
+
+   <portType name="GestaoAcademicaService">
+
+      <operation name="getIntegrationStatusFor" parameterOrder="arg0">
+
+         <input message="impl:getIntegrationStatusForRequest" name="getIntegrationStatusForRequest"/>
+
+         <output message="impl:getIntegrationStatusForResponse" name="getIntegrationStatusForResponse"/>
+
+      </operation>
+
+      <operation name="sendInfoOffline" parameterOrder="arg0">
+
+         <input message="impl:sendInfoOfflineRequest" name="sendInfoOfflineRequest"/>
+
+         <output message="impl:sendInfoOfflineResponse" name="sendInfoOfflineResponse"/>
+
+      </operation>
+
+      <operation name="sendInfoOnline" parameterOrder="arg0">
+
+         <input message="impl:sendInfoOnlineRequest" name="sendInfoOnlineRequest"/>
+
+         <output message="impl:sendInfoOnlineResponse" name="sendInfoOnlineResponse"/>
+
+      </operation>
+
+   </portType>
+
+   <binding name="SIAGGestaoAcademicaServiceSoapBinding" type="impl:GestaoAcademicaService">
+
+      <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <operation name="getIntegrationStatusFor">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <input name="getIntegrationStatusForRequest">
+
+            <wsdlsoap:body namespace="http://SIAGGestaoAcademicaService.ws.siag.gedi.pt" use="literal"/>
+
+         </input>
+
+         <output name="getIntegrationStatusForResponse">
+
+            <wsdlsoap:body namespace="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" use="literal"/>
+
+         </output>
+
+      </operation>
+
+      <operation name="sendInfoOffline">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <input name="sendInfoOfflineRequest">
+
+            <wsdlsoap:body namespace="http://SIAGGestaoAcademicaService.ws.siag.gedi.pt" use="literal"/>
+
+         </input>
+
+         <output name="sendInfoOfflineResponse">
+
+            <wsdlsoap:body namespace="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" use="literal"/>
+
+         </output>
+
+      </operation>
+
+      <operation name="sendInfoOnline">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <input name="sendInfoOnlineRequest">
+
+            <wsdlsoap:body namespace="http://SIAGGestaoAcademicaService.ws.siag.gedi.pt" use="literal"/>
+
+         </input>
+
+         <output name="sendInfoOnlineResponse">
+
+            <wsdlsoap:body namespace="http://centauro4.gedi.pt:8080/siag/services/SIAGGestaoAcademicaService" use="literal"/>
+
+         </output>
+
+      </operation>
+
+   </binding>
+
+   <service name="GestaoAcademicaServiceService">
+
+      <port binding="impl:SIAGGestaoAcademicaServiceSoapBinding" name="SIAGGestaoAcademicaService">
+
+         <wsdlsoap:address location="https://demo.siag.pt/siag/services/SIAGGestaoAcademicaService"/>
+
+      </port>
+
+   </service>
+
+</definitions>
