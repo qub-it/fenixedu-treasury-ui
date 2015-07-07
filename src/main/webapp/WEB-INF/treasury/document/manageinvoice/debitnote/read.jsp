@@ -154,9 +154,9 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <form>
     <div class="well well-sm" style="display: inline-block">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> &nbsp; <a class=""
+        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"> <spring:message
-                code="label.event.back" />
+                code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" />
         </a> &nbsp;
         <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
             |&nbsp;
@@ -415,6 +415,12 @@ ${portal.toolkit()}
         <datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
+                    <spring:message code="label.DebitNote.dueDate" />
+                </datatables:columnHead>
+                <c:out value='${debitEntry.dueDate.toString("YYYY-MM-dd")}' />
+            </datatables:column>
+            <datatables:column cssStyle="width:10%">
+                <datatables:columnHead>
                     <spring:message code="label.InvoiceEntry.quantity" />
                 </datatables:columnHead>
                 <c:out value="${debitEntry.quantity}" />
@@ -431,7 +437,7 @@ ${portal.toolkit()}
                 </datatables:columnHead>
                 <c:out value="${debitEntry.totalAmount}" />
             </datatables:column>
-            <datatables:column cssStyle="width:10%">
+            <datatables:column cssStyle="width:8%">
                 <datatables:columnHead>
                     <spring:message code="label.DebitEntry.vat" />
                 </datatables:columnHead>

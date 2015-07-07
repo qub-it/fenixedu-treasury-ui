@@ -228,8 +228,10 @@ public class DebitNoteController extends TreasuryBaseController {
             finantialInstitution = debtAccount.getFinantialInstitution();
         }
 
-        model.addAttribute("DebitNote_payorDebtAccount_options",
+        model.addAttribute(
+                "DebitNote_payorDebtAccount_options",
                 DebtAccount.find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
+                        .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
                         .collect(Collectors.toList()));
 
         if (debtAccount != null) {
@@ -306,7 +308,9 @@ public class DebitNoteController extends TreasuryBaseController {
         model.addAttribute(
                 "DebitNote_payorDebtAccount_options",
                 DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
-                        .filter(x -> x.getCustomer().isAdhocCustomer()).collect(Collectors.toSet())); //
+                        .filter(x -> x.getCustomer().isAdhocCustomer())
+                        .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
+                        .collect(Collectors.toSet())); //
 
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
         setDebitNote(debitNote, model);

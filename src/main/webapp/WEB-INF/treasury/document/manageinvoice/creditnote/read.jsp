@@ -190,10 +190,10 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <form>
     <div class="well well-sm" style="display: inline-block">
-        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
+        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a
             class=""
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditNote.debtAccount.externalId}"><spring:message
-                code="label.event.back" /></a> &nbsp;
+                code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 
         <c:if
             test="${creditNote.isPreparing() || creditNote.isClosed()}">
