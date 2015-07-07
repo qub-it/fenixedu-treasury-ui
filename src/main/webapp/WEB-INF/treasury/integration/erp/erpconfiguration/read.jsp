@@ -208,6 +208,13 @@ ${portal.toolkit()}
                                 value='${eRPConfiguration.paymentsIntegrationSeries.code} - ${eRPConfiguration.paymentsIntegrationSeries.name.content}' />
                         </td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPConfiguration.implementationClassName" /></th>
+                        <td><c:out
+                                value='${eRPConfiguration.implementationClassName}' />
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </form>

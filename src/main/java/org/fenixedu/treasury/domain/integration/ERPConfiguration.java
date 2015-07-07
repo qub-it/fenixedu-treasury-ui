@@ -46,7 +46,8 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     }
 
     protected void init(final Series paymentsIntegrationSeries, final FinantialInstitution finantialInstitution,
-            final String code, final String externalURL, final String username, final String password) {
+            final String code, final String externalURL, final String username, final String password,
+            final String implementationClassName) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setFinantialInstitution(finantialInstitution);
         setCode(code);
@@ -55,6 +56,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         setPassword(password);
         setExportAnnulledRelatedDocuments(false);
         setExportOnlyRelatedDocumentsPerExport(false);
+        setImplementationClassName(implementationClassName);
         checkRules();
     }
 
@@ -70,13 +72,15 @@ public class ERPConfiguration extends ERPConfiguration_Base {
 
     @Atomic
     public void edit(final Series paymentsIntegrationSeries, final String externalURL, final String username,
-            final String password, final boolean exportAnnulledRelatedDocuments, final boolean exportOnlyRelatedDocumentsPerExport) {
+            final String password, final boolean exportAnnulledRelatedDocuments,
+            final boolean exportOnlyRelatedDocumentsPerExport, final String implementationClassName) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setExternalURL(externalURL);
         setUsername(username);
         setPassword(password);
         setExportAnnulledRelatedDocuments(exportAnnulledRelatedDocuments);
         setExportOnlyRelatedDocumentsPerExport(exportOnlyRelatedDocumentsPerExport);
+        setImplementationClassName(implementationClassName);
         checkRules();
     }
 
@@ -105,9 +109,10 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     @Atomic
     public static ERPConfiguration create(final Series paymentsIntegrationSeries,
             final FinantialInstitution finantialInstitution, final String code, final String externalURL, final String username,
-            final String password) {
+            final String password, final String implementationClassName) {
         ERPConfiguration eRPConfiguration = new ERPConfiguration();
-        eRPConfiguration.init(paymentsIntegrationSeries, finantialInstitution, code, externalURL, username, password);
+        eRPConfiguration.init(paymentsIntegrationSeries, finantialInstitution, code, externalURL, username, password,
+                implementationClassName);
         return eRPConfiguration;
     }
 

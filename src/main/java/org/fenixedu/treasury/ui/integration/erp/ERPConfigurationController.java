@@ -95,14 +95,15 @@ public class ERPConfigurationController extends TreasuryBaseController {
             value = "exportonlyrelateddocumentsperexport", required = false) boolean exportOnlyRelatedDocumentsPerExport,
             @RequestParam(value = "externalurl", required = false) String externalURL, @RequestParam(value = "username",
                     required = false) String username, @RequestParam(value = "password", required = false) String password,
-            @RequestParam(value = "paymentsintegrationseries", required = false) Series paymentsIntegrationSeries, Model model,
+            @RequestParam(value = "paymentsintegrationseries", required = false) Series paymentsIntegrationSeries, @RequestParam(
+                    value = "implementationclassname", required = false) String implementationClassName, Model model,
             RedirectAttributes redirectAttributes) {
 
         setERPConfiguration(eRPConfiguration, model);
 
         try {
             updateERPConfiguration(exportOnlyRelatedDocumentsPerExport, exportAnnulledRelatedDocuments, externalURL, username,
-                    password, paymentsIntegrationSeries, model);
+                    password, paymentsIntegrationSeries, implementationClassName, model);
 
             return redirect(READ_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -115,9 +116,10 @@ public class ERPConfigurationController extends TreasuryBaseController {
 
     @Atomic
     public void updateERPConfiguration(boolean exportOnlyRelatedDocumentsPerExport, boolean exportAnnulledRelatedDocuments,
-            String externalURL, String username, String password, Series paymentsIntegrationSeries, Model model) {
+            String externalURL, String username, String password, Series paymentsIntegrationSeries,
+            String implementationClassName, Model model) {
         getERPConfiguration(model).edit(paymentsIntegrationSeries, externalURL, username, password,
-                exportAnnulledRelatedDocuments, exportOnlyRelatedDocumentsPerExport);
+                exportAnnulledRelatedDocuments, exportOnlyRelatedDocumentsPerExport, implementationClassName);
     }
 
     @RequestMapping(value = "/update/{oid}/test")

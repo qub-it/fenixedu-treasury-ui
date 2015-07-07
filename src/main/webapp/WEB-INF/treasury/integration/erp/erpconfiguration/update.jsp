@@ -95,8 +95,8 @@ ${portal.toolkit()}
 	</script>
                 </div>
             </div>
-            
-            
+
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.ERPConfiguration.exportOnlyRelatedDocumentsPerExport" />
@@ -153,6 +153,18 @@ ${portal.toolkit()}
                         <option value="">&nbsp;</option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                     </select>
+                </div>
+            </div>
+
+            
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.ERPConfiguration.implementationClassName" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="eRPConfiguration_implementationClassName" class="form-control" type="text" name="implementationClassName"
+                        value='<c:out value='${not empty param.implementationclassname ? param.implementationclassname : eRPConfiguration.implementationClassName }'/>' />
                 </div>
             </div>
         </div>
