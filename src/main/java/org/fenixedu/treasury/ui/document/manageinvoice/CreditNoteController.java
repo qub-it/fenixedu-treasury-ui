@@ -301,9 +301,6 @@ public class CreditNoteController extends TreasuryBaseController {
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
                 return redirectToReferrer(model, redirectAttributes);
             }
-            documentNumberSeries =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
-                            .getSeries());
         }
 
         if (debtAccount != null) {
@@ -312,6 +309,9 @@ public class CreditNoteController extends TreasuryBaseController {
         if (debitNote != null) {
             finantialInstitution = debitNote.getDebtAccount().getFinantialInstitution();
             debtAccount = debitNote.getDebtAccount();
+            documentNumberSeries =
+                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
+                            .getSeries());
         }
 
         if (documentNumberSeries != null) {

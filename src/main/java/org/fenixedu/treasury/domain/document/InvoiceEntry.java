@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -43,6 +44,26 @@ import org.joda.time.LocalDate;
 import pt.ist.fenixframework.Atomic;
 
 public abstract class InvoiceEntry extends InvoiceEntry_Base {
+
+    public static final Comparator<InvoiceEntry> COMPARE_BY_DUE_DATE = new Comparator<InvoiceEntry>() {
+
+        @Override
+        public int compare(final InvoiceEntry o1, final InvoiceEntry o2) {
+            int c = o1.getDueDate().compareTo(o2.getDueDate());
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+
+    public static final Comparator<InvoiceEntry> COMPARE_BY_ENTRY_DATE = new Comparator<InvoiceEntry>() {
+
+        @Override
+        public int compare(final InvoiceEntry o1, final InvoiceEntry o2) {
+            int c = o1.getEntryDateTime().compareTo(o2.getEntryDateTime());
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {

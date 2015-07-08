@@ -126,7 +126,12 @@ public class CustomerController extends TreasuryBaseController {
         for (DebtAccount debtAccount : customer.getDebtAccountsSet()) {
             pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
         }
-        model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
+        model.addAttribute(
+                "pendingDocumentsDataSet",
+                pendingInvoiceEntries
+                        .stream()
+                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
 
         return "treasury/accounting/managecustomer/customer/read";
     }

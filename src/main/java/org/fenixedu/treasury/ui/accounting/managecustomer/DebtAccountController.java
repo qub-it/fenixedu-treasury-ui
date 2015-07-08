@@ -107,9 +107,22 @@ public class DebtAccountController extends TreasuryBaseController {
 
         pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
 
-        model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
-        model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
-        model.addAttribute("paymentsDataSet", paymentEntries);
+        model.addAttribute(
+                "pendingDocumentsDataSet",
+                pendingInvoiceEntries
+                        .stream()
+                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+        model.addAttribute(
+                "allDocumentsDataSet",
+                allInvoiceEntries
+                        .stream()
+                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+        model.addAttribute(
+                "paymentsDataSet",
+                paymentEntries.stream().sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate()))
+                        .collect(Collectors.toList()));
         model.addAttribute("exemptionDataSet", exemptionEntries);
 
         return "treasury/accounting/managecustomer/debtaccount/read";

@@ -247,7 +247,7 @@ ${portal.angularToolkit()}
             <c:choose>
                 <c:when test="${not empty pendingDocumentsDataSet}">
                     <datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false"
-                        cellspacing="2">
+                        cellspacing="2"  sort="false">
                         <datatables:column cssStyle="width:80px;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.date" />

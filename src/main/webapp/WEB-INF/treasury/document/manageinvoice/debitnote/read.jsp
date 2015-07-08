@@ -413,7 +413,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty debitNote.debitEntriesSet}">
         <datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
-            <datatables:column cssStyle="width:10%">
+            <datatables:column cssStyle="width:10%" sortInit="desc">
                 <datatables:columnHead>
                     <spring:message code="label.DebitNote.dueDate" />
                 </datatables:columnHead>
