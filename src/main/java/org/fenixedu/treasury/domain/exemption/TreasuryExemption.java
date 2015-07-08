@@ -14,6 +14,8 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 
+import pt.ist.fenixframework.Atomic;
+
 import com.google.common.base.Strings;
 
 public class TreasuryExemption extends TreasuryExemption_Base {
@@ -68,8 +70,8 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         if (Strings.isNullOrEmpty(getReason())) {
             throw new TreasuryDomainException("error.TreasuryExemption.reason.empty");
         }
-        
-        if(TreasuryExemption.find(getTreasuryEvent(), getProduct()).count() > 1) {
+
+        if (TreasuryExemption.find(getTreasuryEvent(), getProduct()).count() > 1) {
             throw new TreasuryDomainException("error.TreasuryExemption.for.product.already.created");
         }
     }
@@ -100,10 +102,10 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         // calculate the amount to exempt
         BigDecimal amountToExempt = getValueToExempt().subtract(getTreasuryEvent().getExemptedAmount(getProduct()));
 
-        if(!Constants.isPositive(amountToExempt)) {
+        if (!Constants.isPositive(amountToExempt)) {
             return;
         }
-        
+
         final List<DebitEntry> activeDebitEntries =
                 DebitEntry.findActive(getTreasuryEvent(), getProduct())
                         .sorted(Collections.reverseOrder(DebitEntry.COMPARE_BY_OPEN_AMOUNT_WITH_VAT))
@@ -138,22 +140,23 @@ public class TreasuryExemption extends TreasuryExemption_Base {
 
         for (final DebitEntry debitEntry : activeDebitEntries) {
 
-            if(!debitEntry.revertExemptionIfPossible(this)) {
-                throw new TreasuryDomainException("error.TreasuryExemption.delete.impossible.due.to.processed.debit.or.credit.entry");
+            if (!debitEntry.revertExemptionIfPossible(this)) {
+                throw new TreasuryDomainException(
+                        "error.TreasuryExemption.delete.impossible.due.to.processed.debit.or.credit.entry");
             }
-        }        
+        }
     }
 
     private boolean isDeletable() {
         return true;
     }
 
-    @pt.ist.fenixframework.Atomic
+    @Atomic
     public void delete() {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.TreasuryExemption.delete.impossible");
         }
-        
+
         revertExemptionIfPossible();
 
         super.setBennu(null);
@@ -179,11 +182,11 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     public static Stream<TreasuryExemption> find(final TreasuryEvent treasuryEvent) {
         return Bennu.getInstance().getTreasuryExemptionsSet().stream().filter(t -> t.getTreasuryEvent() == treasuryEvent);
     }
-    
+
     protected static Stream<TreasuryExemption> find(final TreasuryEvent treasuryEvent, final Product product) {
         return find(treasuryEvent).filter(t -> t.getProduct() == product);
     }
-    
+
     public static java.util.Optional<TreasuryExemption> findUnique(final TreasuryEvent treasuryEvent, final Product product) {
         return find(treasuryEvent, product).findFirst();
     }

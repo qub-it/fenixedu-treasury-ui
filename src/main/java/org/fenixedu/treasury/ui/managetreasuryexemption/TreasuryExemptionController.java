@@ -92,7 +92,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
         try {
             treasuryExemption.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.deletion.success"), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
