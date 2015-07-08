@@ -187,7 +187,7 @@ ${portal.toolkit()}
                 );
                 
                 <%-- If it's not from parameter change param.productGroup to whatever you need (it's the externalId already) --%>
-                $("#product_productGroup").select2().select2('val', '<c:out value='${param.productGroup}'/>');
+                $("#product_productGroup").select2().select2('val', '<c:out value='${param.productgroup}'/>');
 
 
 		var table = $('#searchproductTable').DataTable({language : {

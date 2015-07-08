@@ -5,6 +5,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.ws.BindingProvider;
+
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
@@ -17,18 +19,16 @@ import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServic
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServiceService;
 import org.springframework.util.CollectionUtils;
 
-public class SIAGExternalService implements IERPExternalService {
+import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
+
+public class SIAGExternalService extends BennuWebServiceClient<IERPExternalService> implements IERPExternalService {
 
     GestaoAcademicaService _internalService;
+    ERPConfiguration _erpConfiguration;
 
     public SIAGExternalService(ERPConfiguration erpIntegrationConfiguration) {
-        try {
-            _internalService =
-                    new GestaoAcademicaServiceService(new URL(erpIntegrationConfiguration.getExternalURL()))
-                            .getSIAGGestaoAcademicaService();
-        } catch (MalformedURLException e) {
-            throw new TreasuryDomainException("error.SIAGExternalService.error.creating.stub");
-        }
+
+        _erpConfiguration = erpIntegrationConfiguration;
     }
 
     @Override
@@ -72,5 +72,17 @@ public class SIAGExternalService implements IERPExternalService {
         }
 
         return result;
+    }
+
+    @Override
+    protected BindingProvider getService() {
+        try {
+            _internalService =
+                    new GestaoAcademicaServiceService(new URL(_erpConfiguration.getExternalURL()))
+                            .getSIAGGestaoAcademicaService();
+            return (BindingProvider) _internalService;
+        } catch (MalformedURLException e) {
+            throw new TreasuryDomainException("error.SIAGExternalService.error.creating.stub");
+        }
     }
 }

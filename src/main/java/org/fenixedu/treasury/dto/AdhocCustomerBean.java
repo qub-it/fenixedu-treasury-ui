@@ -136,10 +136,10 @@ public class AdhocCustomerBean implements IBean {
         this.setFiscalNumber(adhocCustomer.getFiscalNumber());
         this.setIdentificationNumber(adhocCustomer.getIdentificationNumber());
         this.setName(adhocCustomer.getName());
-        this.setAddress(adhocCustomer.getAddress());
-        this.setDistrictSubdivision(adhocCustomer.getDistrictSubdivision());
-        this.setZipCode(adhocCustomer.getZipCode());
-        this.setCountryCode(adhocCustomer.getCountryCode());
+//        this.setAddress(adhocCustomer.getAddress());
+//        this.setDistrictSubdivision(adhocCustomer.getDistrictSubdivision());
+//        this.setZipCode(adhocCustomer.getZipCode());
+//        this.setCountryCode(adhocCustomer.getCountryCode());
         this.setFinantialInstitutions(adhocCustomer.getDebtAccountsSet().stream().filter(x -> x.getClosed() == false)
                 .map(x -> x.getFinantialInstitution()).collect(Collectors.toList()));
     }

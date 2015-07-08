@@ -163,7 +163,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="eRPConfiguration_implementationClassName" class="form-control" type="text" name="implementationClassName"
+                    <input id="eRPConfiguration_implementationClassName" class="form-control" type="text" name="implementationclassname"
                         value='<c:out value='${not empty param.implementationclassname ? param.implementationclassname : eRPConfiguration.implementationClassName }'/>' />
                 </div>
             </div>

@@ -38,6 +38,8 @@ import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
+
 public class ERPConfiguration extends ERPConfiguration_Base {
 
     protected ERPConfiguration() {
@@ -123,8 +125,9 @@ public class ERPConfiguration extends ERPConfiguration_Base {
             cl = Class.forName(className);
 
             Constructor con = cl.getConstructor(ERPConfiguration.class);
-            IERPExternalService implementation = (IERPExternalService) con.newInstance(erpConfiguration);
-            return implementation;
+            BennuWebServiceClient<IERPExternalService> client =
+                    (BennuWebServiceClient<IERPExternalService>) con.newInstance(erpConfiguration);
+            return client.getClient();
         } catch (Exception e) {
             throw new TreasuryDomainException("error.ERPConfiguration.invalid.external.service");
         }
