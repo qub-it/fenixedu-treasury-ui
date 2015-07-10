@@ -550,7 +550,7 @@ public class DebitEntry extends DebitEntry_Base {
             final InterestRate interestRate, final DateTime entryDateTime) {
 
         if (product.getActive() == false) {
-            throw new TreasuryDomainException(Constants.BUNDLE, "error.DebitEntry.invalid.product.not.active");
+            throw new TreasuryDomainException("error.DebitEntry.invalid.product.not.active");
         }
         DebitEntry entry =
                 new DebitEntry(debitNote.orElse(null), debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product,
