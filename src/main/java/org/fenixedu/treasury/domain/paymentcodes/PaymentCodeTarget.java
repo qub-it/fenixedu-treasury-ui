@@ -96,7 +96,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                     }
 
                     SettlementEntry newSettlementEntry =
-                            SettlementEntry.create(entry, settlementNote, amountToPay, entry.getDescription(), whenRegistered);
+                            SettlementEntry.create(entry, settlementNote, amountToPay, entry.getDescription(), whenRegistered,
+                                    true);
 
                     //Update the amount to Pay
                     availableAmount = availableAmount.subtract(amountToPay);
@@ -104,7 +105,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                 } else if (entry.isCreditNoteEntry()) {
                     SettlementEntry newSettlementEntry =
                             SettlementEntry.create(entry, settlementNote, entry.getOpenAmount(), entry.getDescription(),
-                                    whenRegistered);
+                                    whenRegistered, true);
                     //update the amount to Pay
                     availableAmount = availableAmount.add(amountToPay);
                 }
@@ -138,7 +139,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
                 SettlementEntry newSettlementEntry =
                         SettlementEntry.create(interestEntry, settlementNote, amountToPay, interestEntry.getDescription(),
-                                whenRegistered);
+                                whenRegistered, true);
                 //Update the amount to Pay
                 availableAmount = availableAmount.subtract(amountToPay);
             }

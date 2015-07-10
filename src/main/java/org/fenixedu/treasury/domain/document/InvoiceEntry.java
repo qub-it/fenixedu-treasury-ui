@@ -222,5 +222,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
     public abstract BigDecimal getOpenAmount();
 
+    public abstract BigDecimal getOpenAmountWithInterests();
+
     public abstract LocalDate getDueDate();
 }

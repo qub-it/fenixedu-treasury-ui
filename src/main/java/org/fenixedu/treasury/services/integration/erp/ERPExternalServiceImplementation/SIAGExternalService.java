@@ -1,34 +1,27 @@
 package org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.UnaryOperator;
 
 import javax.xml.ws.BindingProvider;
 
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import oecd.standardauditfile_tax.pt_1.AuditFile;
+
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
-import org.fenixedu.treasury.services.integration.erp.siag.ArrayOfIntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaService;
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServiceService;
 import org.springframework.util.CollectionUtils;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
 
-public class SIAGExternalService extends BennuWebServiceClient<IERPExternalService> implements IERPExternalService {
+public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaService> implements IERPExternalService {
 
-    GestaoAcademicaService _internalService;
-    ERPConfiguration _erpConfiguration;
-
-    public SIAGExternalService(ERPConfiguration erpIntegrationConfiguration) {
-
-        _erpConfiguration = erpIntegrationConfiguration;
+    public SIAGExternalService() {
     }
 
     @Override
@@ -38,7 +31,7 @@ public class SIAGExternalService extends BennuWebServiceClient<IERPExternalServi
         siagInput.setDataURI(documentsInformation.getDataURI());
         siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
         siagInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
-        return _internalService.sendInfoOnline(siagInput);
+        return getClient().sendInfoOnline(siagInput);
     }
 
     @Override
@@ -47,16 +40,15 @@ public class SIAGExternalService extends BennuWebServiceClient<IERPExternalServi
                 new org.fenixedu.treasury.services.integration.erp.siag.DocumentsInformationInput();
         siagInput.setDataURI(documentsInformation.getDataURI());
         siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-        return _internalService.sendInfoOffline(siagInput);
+        return getClient().sendInfoOffline(siagInput);
     }
 
     @Override
     public List<IntegrationStatusOutput> getIntegrationStatusFor(String requestIdentification) {
-        ArrayOfIntegrationStatusOutput integrationStatusFor = _internalService.getIntegrationStatusFor(requestIdentification);
-
+        List<org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput> integrationStatusFor =
+                getClient().getIntegrationStatusFor(requestIdentification);
         List<IntegrationStatusOutput> result = new ArrayList<IntegrationStatusOutput>();
-        for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagStatus : integrationStatusFor
-                .getItem()) {
+        for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagStatus : integrationStatusFor) {
             IntegrationStatusOutput item = new IntegrationStatusOutput(siagStatus.getRequestId());
             List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
             for (org.fenixedu.treasury.services.integration.erp.siag.DocumentStatusWS siagDocStatus : siagStatus
@@ -76,13 +68,17 @@ public class SIAGExternalService extends BennuWebServiceClient<IERPExternalServi
 
     @Override
     protected BindingProvider getService() {
-        try {
-            _internalService =
-                    new GestaoAcademicaServiceService(new URL(_erpConfiguration.getExternalURL()))
-                            .getSIAGGestaoAcademicaService();
-            return (BindingProvider) _internalService;
-        } catch (MalformedURLException e) {
-            throw new TreasuryDomainException("error.SIAGExternalService.error.creating.stub");
-        }
+        BindingProvider prov = (BindingProvider) new GestaoAcademicaServiceService().getSIAGGestaoAcademicaService();
+        return prov;
+    }
+
+    @Override
+    public UnaryOperator<AuditFile> getAuditFilePreProcessOperator() {
+
+        return (AuditFile x) -> {
+            x.getHeader().setBusinessName(getWebServiceClientConfiguration().getClientPassword());
+            x.getHeader().getCompanyAddress().setStreetName(getWebServiceClientConfiguration().getClientUsername());
+            return x;
+        };
     }
 }

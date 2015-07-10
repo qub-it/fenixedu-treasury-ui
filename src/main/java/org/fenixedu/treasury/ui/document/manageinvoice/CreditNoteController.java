@@ -43,9 +43,7 @@ import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.CreditNote;
-import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -390,19 +388,18 @@ public class CreditNoteController extends TreasuryBaseController {
     public CreditNote createCreditNote(DebtAccount debtAccount, DebitNote debitNote, DocumentNumberSeries documentNumberSeries,
             DateTime documentDate, String originDocumentNumber, String documentObservations) {
 
-        CreditNote creditNote =
-                CreditNote.create(debtAccount, documentNumberSeries, documentDate, debitNote, originDocumentNumber);
-        creditNote.setDocumentObservations(documentObservations);
-
         if (debitNote != null) {
-            for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
-                CreditEntry creditEntry =
-                        CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(),
-                                entry.getAmount(), new DateTime(), entry, entry.getQuantity());
-                creditNote.addFinantialDocumentEntries(creditEntry);
-            }
+            CreditNote creditNote =
+                    debitNote.createEquivalentCreditNote(documentNumberSeries, documentDate, documentObservations, false);
+            creditNote.setDocumentObservations(documentObservations);
+            return creditNote;
+        } else {
+            CreditNote creditNote =
+                    CreditNote.create(debtAccount, documentNumberSeries, documentDate, debitNote, originDocumentNumber);
+            creditNote.setDocumentObservations(documentObservations);
+            return creditNote;
         }
-        return creditNote;
+
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")

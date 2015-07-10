@@ -186,7 +186,7 @@ public class SettlementNote extends SettlementNote_Base {
                             bean.getDate().toDateTimeAtStartOfDay(), Optional.<DebitNote> ofNullable(interestDebitNote));
             if (interestEntryBean.isIncluded()) {
                 SettlementEntry.create(interestDebitEntry, this, interestEntryBean.getInterest().getInterestAmount(),
-                        interestDebitEntry.getDescription(), bean.getDate().toDateTimeAtStartOfDay());
+                        interestDebitEntry.getDescription(), bean.getDate().toDateTimeAtStartOfDay(), false);
             }
         }
         interestDebitNote.closeDocument();

@@ -43,6 +43,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.paymentcodes.SibsConfiguration;
 import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
@@ -50,6 +51,7 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsconfiguration.SibsConfigurationController;
 import org.fenixedu.treasury.ui.integration.erp.ERPConfigurationController;
+import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -291,6 +293,38 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportproductsintegrationonline")
+    public String processReadToExportProductIntegrationOnline(@PathVariable("oid") FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            ERPExportOperation output = ERPExporter.exportProductsToIntegration(finantialInstitution);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                            + ex.getLocalizedMessage(), model);
+        }
+        setFinantialInstitution(finantialInstitution, model);
+        return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportcustomersintegrationonline")
+    public String processReadToExportCustomersIntegrationOnline(@PathVariable("oid") FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            ERPExportOperation output = ERPExporter.exportCustomersToIntegration(finantialInstitution);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                            + ex.getLocalizedMessage(), model);
+        }
+        setFinantialInstitution(finantialInstitution, model);
+        return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
     }
 
     @RequestMapping(value = "/read/{oid}/erpconfigurationupdate")

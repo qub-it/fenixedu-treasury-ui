@@ -123,13 +123,33 @@ ${portal.angularToolkit()}
             </ul>
         </div>
     </c:if>
-     <c:if test='${debtAccount.getClosed() }'>
+    <c:if test='${debtAccount.getClosed() }'>
      |&nbsp;
      </c:if>
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"> <spring:message
-            code="label.event.accounting.manageCustomer.readEvent" />
-    </a>
+
+    <div class="btn-group">
+        <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            <spring:message code="label.event.accounting.manageCustomer.extraOptions" />
+            <span class="caret"></span>
+        </button>
+
+        <ul class="dropdown-menu">
+            <li><a class=""
+                href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/readevent"> 
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message
+                        code="label.event.accounting.manageCustomer.readEvent" />
+            </a></li>
+            <c:if test="${debtAccount.customer.isPersonCustomer() }">
+                <li><a class=""
+                    href="${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/${debtAccount.customer.person.externalId}">
+                        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicActBlockingSuspensionController.link" />
+                </a></li>
+            </c:if>
+        </ul>
+    </div>
+
+
 
 </div>
 <c:if test="${not empty infoMessages}">
@@ -214,20 +234,20 @@ ${portal.angularToolkit()}
 
 <c:if test="${debtAccount.hasPreparingDebitNotes()}">
     <div class="alert alert-warning" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> 
-        <spring:message code="label.have.debitNote.in.preparing"/>
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+        <spring:message code="label.have.debitNote.in.preparing" />
     </div>
 </c:if>
 <c:if test="${debtAccount.hasPreparingCreditNotes()}">
     <div class="alert alert-warning" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> 
-        <spring:message code="label.have.creditNote.in.preparing"/>
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+        <spring:message code="label.have.creditNote.in.preparing" />
     </div>
 </c:if>
 <c:if test="${debtAccount.hasPreparingSettlementNotes()}">
     <div class="alert alert-warning" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> 
-        <spring:message code="label.have.settlementNote.in.preparing"/>
+        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+        <spring:message code="label.have.settlementNote.in.preparing" />
     </div>
 </c:if>
 
@@ -247,7 +267,7 @@ ${portal.angularToolkit()}
             <c:choose>
                 <c:when test="${not empty pendingDocumentsDataSet}">
                     <datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false"
-                        cellspacing="2"  sort="false">
+                        cellspacing="2" sort="false">
                         <datatables:column cssStyle="width:80px;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.date" />
@@ -369,27 +389,21 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.finantialDocument" />
                             </datatables:columnHead>
-                            <c:if
-                                test="${not empty entry.finantialDocument }">
-                                <c:if
-                                    test="${entry.isDebitNoteEntry() }">
-                                    <a target="_blank" 
-                                        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}">
-                                        <c:out
+                            <c:if test="${not empty entry.finantialDocument }">
+                                <c:if test="${entry.isDebitNoteEntry() }">
+                                    <a target="_blank"
+                                        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${entry.finantialDocument.externalId}"> <c:out
                                             value="${entry.finantialDocument.uiDocumentNumber}" />
                                     </a>
                                 </c:if>
-                                <c:if
-                                    test="${entry.isCreditNoteEntry() }">
-                                    <a target="_blank" 
-                                        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${entry.finantialDocument.externalId}">
-                                        <c:out
+                                <c:if test="${entry.isCreditNoteEntry() }">
+                                    <a target="_blank"
+                                        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${entry.finantialDocument.externalId}"> <c:out
                                             value="${entry.finantialDocument.uiDocumentNumber}" />
                                     </a>
                                 </c:if>
                             </c:if>
-                            <c:if
-                                test="${empty entry.finantialDocument }">
+                            <c:if test="${empty entry.finantialDocument }">
                             ---
                             </c:if>
                         </datatables:column>
@@ -476,9 +490,8 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.FinantialDocument.documentDate" />
                             </datatables:columnHead>
-                            <c:out
-                                value='${payment.documentDate.toString("YYYY-MM-dd")}' />
-<%--                             <joda:format value="${payment.documentDate}" style="S-" /> --%>
+                            <c:out value='${payment.documentDate.toString("YYYY-MM-dd")}' />
+                            <%--                             <joda:format value="${payment.documentDate}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
@@ -563,8 +576,6 @@ ${portal.angularToolkit()}
 
 		//Enable Bootstrap Tabs
 		$('#tabs').tab();
-
-
 
 	});
 </script>

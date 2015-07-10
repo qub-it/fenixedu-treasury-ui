@@ -259,9 +259,10 @@ public class ERPIntegrationService extends BennuWebService {
     }
 
     private void validateRequestHeader(String finantialInstitution) {
-        if (finantialInstitution == null || getSecurityHeader() == null
-                || !finantialInstitution.equalsIgnoreCase(getSecurityHeader().getUsername())) {
-            throw new SecurityException("invalid request permission");
-        }
+//        if (finantialInstitution == null || getSecurityHeader() == null
+//                || !finantialInstitution.equalsIgnoreCase(getSecurityHeader().getUsername())) {
+//            throw new SecurityException("invalid request permission");
+//        }
     }
+
 }

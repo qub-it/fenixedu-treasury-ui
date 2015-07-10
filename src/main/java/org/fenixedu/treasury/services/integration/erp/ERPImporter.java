@@ -223,7 +223,7 @@ public class ERPImporter {
             //Create a new settlement entry for this payment
             SettlementEntry settlementEntry =
                     SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
-                            new DateTime(payment.getDocumentStatus().getPaymentStatusDate()));
+                            new DateTime(payment.getDocumentStatus().getPaymentStatusDate()), false);
         }
 
         //Continue processing the Payment Methods (New or Updating??!?!)

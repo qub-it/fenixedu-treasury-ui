@@ -119,7 +119,8 @@ ${portal.toolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmAnull" />
+                        <%--                         <spring:message code="label.document.manageInvoice.readDebitNote.confirmAnull" /> --%>
+                        <c:out value="${ anullDebitNoteMessage }" />
                     </p>
                     <br /> <br />
                     <div class="form">
@@ -180,14 +181,14 @@ ${portal.toolkit()}
             &nbsp; 
 		</c:if>
         <c:if test="${debitNote.isClosed()}">
-            <c:if test="${debitNote.openAmount > 0  }">
+            <%--             <c:if test="${debitNote.openAmount > 0  }"> --%>
                 |&nbsp;
                 <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                 &nbsp;
                 <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullDebitNote" />
-                </a> 
+            </a> 
                 &nbsp;		
-            </c:if>
+<%--             </c:if> --%>
             |&nbsp;
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
             &nbsp;
@@ -272,10 +273,12 @@ ${portal.toolkit()}
                         <td><c:out value='${debitNote.debtAccount.customer.businessIdentification} - ${debitNote.debtAccount.customer.name}' /></td>
                     </tr>
                     <c:if test='${not empty debitNote.payorDebtAccount}'>
-                        <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payorDebtAccount" /></th>
-                            <td><c:out value='${debitNote.payorDebtAccount.customer.businessIdentification} - ${debitNote.payorDebtAccount.customer.name}' /></td>
-                        </tr>
+                        <c:if test='${not debitNote.payorDebtAccount.equals(debitNote.debtAccount)}'>
+                            <tr>
+                                <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payorDebtAccount" /></th>
+                                <td><c:out value='${debitNote.payorDebtAccount.customer.businessIdentification} - ${debitNote.payorDebtAccount.customer.name}' /></td>
+                            </tr>
+                        </c:if>
                     </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentNumber" /></th>
@@ -335,10 +338,10 @@ ${portal.toolkit()}
                         <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.openAmount)}' /></td>
                     </tr>
                     <c:if test="${debitNote.pendingInterestAmount.unscaledValue() != 0 }">
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.pendingInterestAmount" /></th>
-                        <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.pendingInterestAmount)}' /></td>
-                    </tr>
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.pendingInterestAmount" /></th>
+                            <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.pendingInterestAmount)}' /></td>
+                        </tr>
                     </c:if>
                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
                         <tr>

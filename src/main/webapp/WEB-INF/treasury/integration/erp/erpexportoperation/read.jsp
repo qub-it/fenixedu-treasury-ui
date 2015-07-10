@@ -200,15 +200,21 @@ ${portal.toolkit()}
                     <!--                     </tr> -->
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPExportOperation.size" /></th>
+                        <td><pre><c:out
+                                value='${eRPExportOperation.file.size} Bytes' /></pre></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
                                 code="label.ERPExportOperation.errorLog" /></th>
-                        <td><c:out
-                                value='${eRPExportOperation.errorLog}' /></td>
+                        <td><pre><c:out
+                                value='${eRPExportOperation.errorLog}' /></pre></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.ERPExportOperation.integrationLog" /></th>
-                        <td><c:out
-                                value='${eRPExportOperation.integrationLog}' /></td>
+                        <td><pre><c:out
+                                value='${eRPExportOperation.integrationLog}' /></pre></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message

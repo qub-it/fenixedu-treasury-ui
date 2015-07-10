@@ -73,14 +73,7 @@ ${portal.toolkit()}
         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"><spring:message code="label.event.update" /></a>
 
-		&nbsp;|
-        <c:if test="${customer.isPersonCustomer() }">
-        &nbsp;
-		<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-        <a class=""
-            href="${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/${customer.person.externalId}">
-            <spring:message code="label.AcademicActBlockingSuspensionController.link" /></a>
-            </c:if>
+		&nbsp;
         
 </div>
 <c:if test="${not empty infoMessages}">
@@ -171,8 +164,9 @@ ${portal.toolkit()}
                             <td style="vertical-align: middle">
                                 <div class="col-xs-3">
                                     <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
-                                </div> &nbsp;&nbsp;<a class="btn btn-default btn-xs"
-                                href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}"><spring:message
+                                </div> &nbsp;&nbsp;<a class="btn btn-primary btn-xs"
+                                href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
+                                <span class="glyphicon glyphicon-user" >&nbsp;</span><spring:message
                                         code="label.customer.read.showdebtaccount"></spring:message></a> <c:if test="${debtAccount.totalInDebt < 0 }">
                                     <span class="label label-primary"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                     </span>
@@ -270,7 +264,9 @@ ${portal.toolkit()}
                         </c:if>
                         <c:if test="${pendingEntry.isCreditNoteEntry() }">
                             <a class="btn btn-default btn-xs"
-                                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> <spring:message
+                                href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}"> 
+                                
+                                <spring:message
                                     code="label.view" />
                             </a>
                         </c:if>

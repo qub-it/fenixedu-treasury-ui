@@ -206,6 +206,93 @@ public class DebitNote extends DebitNote_Base {
         if (getDebitEntries().anyMatch(de -> !de.getSettlementEntriesSet().isEmpty())) {
             throw new TreasuryDomainException("error.DebitNote.cannot.delete.has.settlemententries");
         }
-        super.anullDocument(freeEntries, reason);
+        if (this.getDocumentNumberSeries().getSeries().getCertificated()) {
+            this.anullDebitNoteWithCreditNote(reason);
+        } else {
+            super.anullDocument(freeEntries, reason);
+        }
+    }
+
+    @Atomic
+    public void anullDebitNoteWithCreditNote(String reason) {
+        if (this.getFinantialDocumentEntriesSet().size() > 0) {
+            if (this.isClosed() == true) {
+
+                DateTime now = new DateTime();
+
+                //1. criar nota de acerto
+                //2. percorrer os itens de divida, criar correspondente item de acerto com o valor "aberto"
+                //2.1 verificar se existiram "juros" gerados correspondentes
+                //3. fechar nota de acerto
+                //4. criar settlement note
+                //5. adicionar itens de divida com cada valor open amount
+                //5.1 adicionar itens de dívida com cada valor open amount dos juros
+                //6. adicionar itens de acerto por cada valor open amount de item de divida
+                //7. fechar settlement note
+
+                // No final podem sobrar itens de acerto com valor pendente de utilizacao, que representam os valores ja pagos nos itens de dividas correspondentes
+                DocumentNumberSeries documentNumberSeriesCreditNote =
+                        DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getDocumentNumberSeries()
+                                .getSeries());
+                DocumentNumberSeries documentNumberSeriesSettlementNote =
+                        DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), this.getDocumentNumberSeries()
+                                .getSeries());
+
+                CreditNote creditNote = this.createEquivalentCreditNote(documentNumberSeriesCreditNote, now, reason, true);
+                creditNote.closeDocument();
+
+                SettlementNote settlementNote =
+                        SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, "");
+                settlementNote.setDocumentObservations(reason);
+
+                for (CreditEntry creditEntry : creditNote.getCreditEntriesSet()) {
+                    SettlementEntry crediEntry =
+                            SettlementEntry.create(creditEntry, settlementNote, creditEntry.getDebitEntry().getOpenAmount(),
+                                    reason + "-" + creditEntry.getDescription(), now, false);
+                    SettlementEntry debitEntry =
+                            SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, creditEntry.getDebitEntry()
+                                    .getOpenAmount(), reason + "-" + creditEntry.getDebitEntry().getDescription(), now, false);
+                }
+
+                settlementNote.closeDocument();
+
+            } else {
+                throw new TreasuryDomainException("error.DebitNote.cannot.anull.is.not.closed");
+            }
+        } else {
+            throw new TreasuryDomainException("error.DebitNote.cannot.anull.is.empty");
+        }
+
+    }
+
+    @Atomic
+    public CreditNote createEquivalentCreditNote(DocumentNumberSeries documentNumberSeries, DateTime documentDate,
+            String documentObservations, boolean createForInterestRateEntries) {
+
+        CreditNote creditNote =
+                CreditNote.create(this.getDebtAccount(), documentNumberSeries, documentDate, this, this.getUiDocumentNumber());
+        creditNote.setDocumentObservations(documentObservations);
+        for (DebitEntry entry : this.getDebitEntriesSet()) {
+            CreditEntry creditEntry =
+                    CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), entry.getAmount(),
+                            documentDate, entry, entry.getQuantity());
+            creditNote.addFinantialDocumentEntries(creditEntry);
+
+            //Also generate for InterestRateDebitEntry
+            if (createForInterestRateEntries == true) {
+                if (entry.getInterestDebitEntriesSet().isEmpty() == false) {
+                    for (DebitEntry interestEntry : entry.getInterestDebitEntriesSet()) {
+                        CreditEntry interestCreditEntry =
+                                CreditEntry.create(creditNote, interestEntry.getDescription(), interestEntry.getProduct(),
+                                        interestEntry.getVat(), interestEntry.getAmount(), documentDate, interestEntry,
+                                        interestEntry.getQuantity());
+                        creditNote.addFinantialDocumentEntries(interestCreditEntry);
+
+                    }
+                }
+            }
+        }
+
+        return creditNote;
     }
 }

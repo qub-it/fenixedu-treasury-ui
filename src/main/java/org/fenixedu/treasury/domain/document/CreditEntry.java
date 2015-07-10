@@ -191,4 +191,9 @@ public class CreditEntry extends CreditEntry_Base {
         return cr;
     }
 
+    @Override
+    public BigDecimal getOpenAmountWithInterests() {
+        return getOpenAmount();
+    }
+
 }

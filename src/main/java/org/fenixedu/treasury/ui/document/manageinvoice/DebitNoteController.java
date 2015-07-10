@@ -119,6 +119,15 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
         setDebitNote(debitNote, model);
+
+        if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
+            model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
+                    "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
+        } else {
+            model.addAttribute("anullDebitNoteMessage",
+                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageInvoice.readDebitNote.confirmAnull"));
+        }
+
         return "treasury/document/manageinvoice/debitnote/read";
     }
 
@@ -158,6 +167,7 @@ public class DebitNoteController extends TreasuryBaseController {
         model.addAttribute("DebitNote_currency_options",
                 org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+
         return "treasury/document/manageinvoice/debitnote/search";
     }
 
@@ -380,7 +390,13 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam("reason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setDebitNote(debitNote, model);
         try {
-            debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
+
+            if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
+                debitNote.anullDebitNoteWithCreditNote(anullReason);
+            } else {
+                debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
+            }
+
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.anulled.sucess"),
                     model);

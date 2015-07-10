@@ -53,7 +53,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.export", accessGroup = "treasuryManagers")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.export",
+        accessGroup = "treasuryManagers")
 @RequestMapping(ERPExportOperationController.CONTROLLER_URL)
 public class ERPExportOperationController extends TreasuryBaseController {
 
@@ -85,7 +86,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
     public String search(
             @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime fromExecutionDate,
             @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
-            @RequestParam(value = "success", required = false) boolean success, Model model) {
+            @RequestParam(value = "success", required = false) Boolean success, Model model) {
         List<ERPExportOperation> searcherpexportoperationResultsDataSet =
                 filterSearchERPExportOperation(fromExecutionDate, toExecutionDate, success);
 
@@ -99,13 +100,14 @@ public class ERPExportOperationController extends TreasuryBaseController {
     }
 
     private List<ERPExportOperation> filterSearchERPExportOperation(DateTime fromExecutionDate, DateTime toExecutionDate,
-            boolean success) {
+            Boolean success) {
 
         return getSearchUniverseSearchERPExportOperationDataSet()
                 .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null
                         || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
                         && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
-                .filter(eRPExportOperation -> eRPExportOperation.getSuccess() == success).collect(Collectors.toList());
+                .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
+                .collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_DELETEMULTIPLE_URI = "/search/deletemultiple";

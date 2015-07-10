@@ -143,9 +143,19 @@ ${portal.toolkit()}
                         code="label.event.administration.managefinantialinstitution.finantialinstitution.exportProductERP" />
             </a></li>
             <li><a class=""
+                href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportproductsintegrationonline">
+                    <span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp; <spring:message
+                        code="label.event.administration.managefinantialinstitution.finantialinstitution.exportProductERPOnline" />
+            </a></li>
+            <li><a class=""
                 href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationfile">
                     <span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp; <spring:message
                         code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERP" />
+            </a></li>
+            <li><a class=""
+                href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/exportcustomersintegrationonline">
+                    <span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp; <spring:message
+                        code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERPOnline" />
             </a></li>
             <li>
                 <a class=""

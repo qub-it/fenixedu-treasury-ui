@@ -27,8 +27,10 @@
 
 package org.fenixedu.treasury.domain.integration;
 
-import java.lang.reflect.Constructor;
 import java.util.Collection;
+import java.util.function.UnaryOperator;
+
+import oecd.standardauditfile_tax.pt_1.AuditFile;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -38,7 +40,8 @@ import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 
 import pt.ist.fenixframework.Atomic;
 
-import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
+import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceClientConfiguration;
+import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceConfiguration;
 
 public class ERPConfiguration extends ERPConfiguration_Base {
 
@@ -118,16 +121,29 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         return eRPConfiguration;
     }
 
-    public static IERPExternalService getERPExternalServiceImplementation(ERPConfiguration erpConfiguration) {
-        String className = erpConfiguration.getImplementationClassName();
-        Class cl;
+    public IERPExternalService getERPExternalServiceImplementation() {
+        String className = this.getImplementationClassName();
         try {
-            cl = Class.forName(className);
 
-            Constructor con = cl.getConstructor(ERPConfiguration.class);
-            BennuWebServiceClient<IERPExternalService> client =
-                    (BennuWebServiceClient<IERPExternalService>) con.newInstance(erpConfiguration);
-            return client.getClient();
+            WebServiceClientConfiguration clientConfiguration = WebServiceConfiguration.readByImplementationClass(className);
+
+            IERPExternalService client = clientConfiguration.getClient();
+
+            return client;
+        } catch (Exception e) {
+            throw new TreasuryDomainException("error.ERPConfiguration.invalid.external.service");
+        }
+    }
+
+    public UnaryOperator<AuditFile> getAuditFilePreProcessOperator() {
+        String className = this.getImplementationClassName();
+        try {
+
+            WebServiceClientConfiguration clientConfiguration = WebServiceConfiguration.readByImplementationClass(className);
+
+            IERPExternalService client = clientConfiguration.getClient();
+
+            return client.getAuditFilePreProcessOperator();
         } catch (Exception e) {
             throw new TreasuryDomainException("error.ERPConfiguration.invalid.external.service");
         }

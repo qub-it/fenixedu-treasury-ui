@@ -53,10 +53,10 @@ ${portal.toolkit()}
 				</div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">
-						<spring:message code="label.close" />
+						<span class="glyphicon glyphicon-remove" >&nbsp;</span><spring:message code="label.cancel" />
 					</button>
-					<button id="deleteButton" class="btn btn-danger" type="submit">
-						<spring:message code="label.delete" />
+					<button id="deleteButton" class="btn btn-warning" type="submit">
+						<span class="glyphicon glyphicon-trash" >&nbsp;</span><spring:message code="label.delete" />
 					</button>
 				</div>
 			</form>

@@ -571,4 +571,9 @@ public class DebitEntry extends DebitEntry_Base {
 
         checkRules();
     }
+
+    @Override
+    public BigDecimal getOpenAmountWithInterests() {
+        return getOpenAmount().add(getPendingInterestAmount());
+    }
 }

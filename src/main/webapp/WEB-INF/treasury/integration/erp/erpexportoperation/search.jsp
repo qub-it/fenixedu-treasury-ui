@@ -154,6 +154,7 @@ ${portal.toolkit()}
                 <div class="col-sm-2">
                     <select id="eRPExportOperation_success"
                         name="success" class="form-control">
+                        <option></option>
                         <option value="false"><spring:message
                                 code="label.no" /></option>
                         <option value="true"><spring:message
