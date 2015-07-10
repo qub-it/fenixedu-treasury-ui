@@ -1178,7 +1178,7 @@ public class ERPExporter {
         }
         StringBuilder builder = new StringBuilder();
         builder.append(operation.getIntegrationLog()).append("\n");
-        builder.append(new DateTime().toString()).append(message).append("\n");
+        builder.append(new DateTime().toString()).append(message);
         operation.setIntegrationLog(builder.toString());
     }
 
@@ -1256,7 +1256,6 @@ public class ERPExporter {
 
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
-            StringBuilder builder = new StringBuilder();
             appendInfoLog(operation,
                     BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.starting.finantialdocuments.integration"));
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize =
@@ -1267,7 +1266,6 @@ public class ERPExporter {
 
             writeContentToExportOperation(xml, operation);
 
-            operation.setIntegrationLog(builder.toString());
             sendDocumentsInformationToIntegration(institution, operation);
             operation.getFinantialDocumentsSet().addAll(documents);
             operation.setSuccess(true);
