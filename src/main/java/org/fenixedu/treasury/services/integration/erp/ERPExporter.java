@@ -1173,7 +1173,7 @@ public class ERPExporter {
 
     private static void appendInfoLog(ERPExportOperation operation, String message) {
         String infoLog = operation.getIntegrationLog();
-        if (infoLog != null) {
+        if (infoLog == null) {
             operation.setIntegrationLog("");
         }
         StringBuilder builder = new StringBuilder();
