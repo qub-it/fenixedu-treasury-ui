@@ -27,18 +27,16 @@
 package org.fenixedu.treasury.ui.managetreasuryexemption;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
+import org.fenixedu.treasury.dto.TreasuryExemptionBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
@@ -46,6 +44,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.treasury.ui.manageTreasuryExemption") <-- Use for duplicate controller name disambiguation
@@ -56,64 +55,106 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     public static final String CONTROLLER_URL = "/treasury/managetreasuryexemption/treasuryexemption";
     private static final String JSP_PATH = "treasury/managetreasuryexemption/treasuryexemption";
 
+    private TreasuryExemptionBean getTreasuryExemptionBean(Model model) {
+        return (TreasuryExemptionBean) model.asMap().get("treasuryExemptionBean");
+    }
+
+    private void setTreasuryExemptionBean(TreasuryExemptionBean bean, Model model) {
+        model.addAttribute("treasuryExemptionBeanJson", getBeanJson(bean));
+        model.addAttribute("treasuryExemptionBean", bean);
+    }
+
+    private TreasuryExemption getTreasuryExemption(Model m) {
+        return (TreasuryExemption) m.asMap().get("treasuryExemption");
+    }
+
+    private void setTreasuryExemption(TreasuryExemption treasuryExemption, Model m) {
+        m.addAttribute("treasuryExemption", treasuryExemption);
+    }
+
+    private TreasuryEvent getTreasuryEvent(Model m) {
+        return (TreasuryEvent) m.asMap().get("treasuryEvent");
+    }
+
+    private void setTreasuryEvent(TreasuryEvent treasuryEvent, Model m) {
+        m.addAttribute("treasuryEvent", treasuryEvent);
+    }
+
     private static final String _SEARCH_TO_DELETE_ACTION_URI = "/search/delete/";
     public static final String SEARCH_TO_DELETE_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_DELETE_ACTION_URI;
 
     @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{oid}", method = RequestMethod.POST)
     public String processSearchToDeleteAction(@PathVariable("oid") TreasuryExemption treasuryExemption, Model model,
             RedirectAttributes redirectAttributes) {
-        
+
         final TreasuryEvent treasuryEvent = treasuryExemption.getTreasuryEvent();
 
         try {
             treasuryExemption.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.deletion.success"), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
-        return redirect(TreasuryEventController.READ_URL + treasuryEvent.getExternalId(), model,
-                redirectAttributes);
+        return redirect(TreasuryEventController.READ_URL + treasuryEvent.getExternalId(), model, redirectAttributes);
     }
 
-    private static final String _CREATE_URI = "/create";
+    private static final String _CREATE_URI = "/create/";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
-    @RequestMapping(value = _CREATE_URI + "/{tresuryEventId}", method = RequestMethod.GET)
-    public String create(@PathVariable("tresuryEventId") final TreasuryEvent treasuryEvent, final Model model) {
-
-        model.addAttribute("treasuryEvent", treasuryEvent);
-
-        model.addAttribute("TreasuryExemption_treasuryExemptionType_options",
-                TreasuryExemptionType.findAll().sorted(TreasuryExemptionType.COMPARE_BY_NAME).collect(Collectors.toList()));
-
-        model.addAttribute("TreasuryExemption_product_options",
-                treasuryEvent.getPossibleProductsToExempt().stream().sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
-
+    @RequestMapping(value = _CREATE_URI + "{treasuryEventId}", method = RequestMethod.GET)
+    public String create(@PathVariable("treasuryEventId") final TreasuryEvent treasuryEvent, final Model model) {
+        setTreasuryEvent(treasuryEvent, model);
+        setTreasuryExemptionBean(new TreasuryExemptionBean(treasuryEvent), model);
         return jspPage("create");
     }
 
-    @RequestMapping(value = _CREATE_URI + "/{tresuryEventId}", method = RequestMethod.POST)
-    public String create(@PathVariable("tresuryEventId") final TreasuryEvent treasuryEvent, @RequestParam(
-            value = "treasuryexemptiontype", required = false) final TreasuryExemptionType treasuryExemptionType, @RequestParam(
-            value = "exemptbypercentage", required = false) final boolean exemptByPercentage, @RequestParam(
-            value = "valuetoexempt", required = false) final BigDecimal valueToExempt, @RequestParam(value = "product",
-            required = false) final Product product, @RequestParam(value = "reason", required = false) final String reason,
-            final Model model, final RedirectAttributes redirectAttributes) {
-
+    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
+    public String create(@RequestParam(value = "bean", required = true) TreasuryExemptionBean bean, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        setTreasuryExemptionBean(bean, model);
         try {
 
-            TreasuryExemption.create(treasuryExemptionType, treasuryEvent, reason, valueToExempt, product, true);
+            TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
+                    bean.getValuetoexempt(), bean.getProduct(), true);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.creation.success"), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
-            return redirect(TreasuryEventController.READ_URL + treasuryEvent.getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
-
-            return create(treasuryEvent, model);
+            return redirect(TreasuryEventController.READ_URL + bean.getTreasuryEvent().getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(bean.getTreasuryEvent(), model);
+    }
+
+    private static final String _CREATEPOSTBACK_URI = "/createPostBack/";
+    public static final String CREATEPOSTBACK_URL = CONTROLLER_URL + _CREATEPOSTBACK_URI;
+
+    @RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = true) TreasuryExemptionBean bean,
+            Model model) {
+        if (bean.getProduct() != null && bean.getTreasuryExemptionType() != null) {
+            for (DebitEntry debitEntry : bean.getTreasuryEvent().getDebitEntriesSet()) {
+                if (debitEntry.getProduct().equals(bean.getProduct())) {
+                    //TODOJN : w/o vat
+                    //TODOJN : how to handle values with three decimal digits
+                    BigDecimal amount =
+                            debitEntry.getAmountWithVat().multiply(
+                                    bean.getTreasuryExemptionType().getDefaultExemptionPercentage()
+                                            .divide(BigDecimal.valueOf(100)));
+                    amount =
+                            bean.getTreasuryEvent().getDebtAccount().getFinantialInstitution().getCurrency()
+                                    .getValueWithScale(amount);
+                    bean.setValuetoexempt(amount);
+                    break;
+                }
+            }
+        }
+        setTreasuryExemptionBean(bean, model);
+        return getBeanJson(bean);
     }
 
     private String jspPage(final String page) {
