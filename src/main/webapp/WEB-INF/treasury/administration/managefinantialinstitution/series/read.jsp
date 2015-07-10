@@ -299,7 +299,7 @@ ${portal.toolkit()}
                                 href="${pageContext.request.contextPath}<%=DocumentNumberSeriesController.READ_URL%>${documentNumberSeries.externalId}">
                                 <spring:message code='label.view' />
                             </a>
-                            <a class="btn btn-default btn-xs btn-danger"
+                            <a class="btn btn-default btn-xs btn-warning"
                                 href="#" onClick="javascript:processDelete('${documentNumberSeries.externalId}')">
                                 <spring:message code='label.delete' />
                             </a>

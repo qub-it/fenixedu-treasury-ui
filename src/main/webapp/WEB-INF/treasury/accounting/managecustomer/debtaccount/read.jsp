@@ -289,7 +289,7 @@ ${portal.angularToolkit()}
 </c:if>
 
 
-<h2>Conta Corrente</h2>
+<h2><spring:message code="label.DebtAccount" /></h2>
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 

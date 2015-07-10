@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
@@ -40,11 +41,16 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.PaymentEntry;
+import org.fenixedu.treasury.domain.document.ReimbursementEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
@@ -58,6 +64,7 @@ import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -95,8 +102,11 @@ public class SettlementNoteController extends TreasuryBaseController {
     public static final String INSERT_PAYMENT_URL = CONTROLLER_URL + INSERT_PAYMENT_URI;
     private static final String SUMMARY_URI = "/summary/";
     public static final String SUMMARY_URL = CONTROLLER_URL + SUMMARY_URI;
+    private static final String TRANSACTIONS_SUMMARY_URI = "/transactions/summary/";
+    public static final String TRANSACTIONS_SUMMARY_URL = CONTROLLER_URL + TRANSACTIONS_SUMMARY_URI;
 
     public static final long SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE = 500;
+    public static final long SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD = 30;
 
     @RequestMapping
     public String home(Model model) {
@@ -336,7 +346,8 @@ public class SettlementNoteController extends TreasuryBaseController {
         return getSearchUniverseSearchSettlementNoteDataSet()
                 .stream()
                 .filter(settlementNote -> FinantialDocumentType.findForSettlementNote() == settlementNote
-                        .getFinantialDocumentType())
+                        .getFinantialDocumentType()
+                        || FinantialDocumentType.findForReimbursementNote() == settlementNote.getFinantialDocumentType())
                 .filter(settlementNote -> debtAccount == null || debtAccount == settlementNote.getDebtAccount())
                 .filter(settlementNote -> documentNumberSeries == null
                         || documentNumberSeries == settlementNote.getDocumentNumberSeries())
@@ -493,4 +504,88 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         return redirect(SettlementNoteController.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
+
+    @RequestMapping(value = TRANSACTIONS_SUMMARY_URI, method = RequestMethod.GET)
+    public String transactionsSummary(Model model) {
+        model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
+        return "treasury/document/managepayments/settlementnote/transactionsSummary";
+    }
+
+    @RequestMapping(value = TRANSACTIONS_SUMMARY_URI, method = RequestMethod.POST)
+    public String transactionsSummary(
+            @RequestParam(value = "finantialInstitution", required = true) FinantialInstitution finantialInstitution,
+            @RequestParam(value = "documentdatefrom", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
+            @RequestParam(value = "documentdateto", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
+            Model model) {
+        if (Days.daysBetween(documentDateFrom, documentDateTo).getDays() > SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.day.limit.exceeded",
+                            String.valueOf(SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD)), model);
+        } else {
+            List<SettlementNote> notes = filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo);
+            model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
+
+            populateSummaryTransactions(model, notes);
+        }
+        model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
+        return "treasury/document/managepayments/settlementnote/transactionsSummary";
+    }
+
+    private void populateSummaryTransactions(Model model, List<SettlementNote> notes) {
+        Map<PaymentMethod, BigDecimal> payments =
+                getPaymentEntriesDataSet(notes).stream().collect(
+                        Collectors.groupingBy(PaymentEntry::getPaymentMethod,
+                                Collectors.reducing(BigDecimal.ZERO, PaymentEntry::getPayedAmount, BigDecimal::add)));
+        Map<PaymentMethod, BigDecimal> reimbursements =
+                getReimbursementEntriesDataSet(notes).stream().collect(
+                        Collectors.groupingBy(ReimbursementEntry::getPaymentMethod,
+                                Collectors.reducing(BigDecimal.ZERO, ReimbursementEntry::getReimbursedAmount, BigDecimal::add)));
+        PaymentMethod.findAll().forEach(pm -> {
+            if (payments.get(pm) == null) {
+                payments.put(pm, BigDecimal.ZERO);
+            }
+            if (reimbursements.get(pm) == null) {
+                reimbursements.put(pm, BigDecimal.ZERO);
+            }
+        });
+        model.addAttribute("paymentsDataSet", payments);
+        model.addAttribute("reimbursementsDataSet", reimbursements);
+    }
+
+    private List<SettlementNote> filterSearchSettlementNote(FinantialInstitution finantialInstitution,
+            LocalDate documentDateFrom, LocalDate documentDateTo) {
+        return SettlementNote
+                .findAll()
+                .filter(note -> note.isClosed())
+                .filter(note -> note.getDebtAccount().getFinantialInstitution().equals(finantialInstitution))
+                .filter(note -> note.getDocumentDate().toLocalDate().isAfter(documentDateFrom)
+                        || note.getDocumentDate().toLocalDate().isEqual(documentDateFrom))
+                .filter(note -> note.getDocumentDate().toLocalDate().isBefore(documentDateTo)
+                        || note.getDocumentDate().toLocalDate().isEqual(documentDateTo)).collect(Collectors.toList());
+    }
+
+    private List<SettlementEntry> getSettlementEntriesDataSet(List<SettlementNote> notes) {
+        return notes.stream().map(note -> note.getSettlemetEntries().collect(Collectors.toList()))
+                .reduce(new ArrayList<SettlementEntry>(), (t, u) -> {
+                    t.addAll(u);
+                    return t;
+                });
+    }
+
+    private List<PaymentEntry> getPaymentEntriesDataSet(List<SettlementNote> notes) {
+        return notes.stream().map(note -> note.getPaymentEntriesSet().stream().collect(Collectors.toList()))
+                .reduce(new ArrayList<PaymentEntry>(), (t, u) -> {
+                    t.addAll(u);
+                    return t;
+                });
+    }
+
+    private List<ReimbursementEntry> getReimbursementEntriesDataSet(List<SettlementNote> notes) {
+        return notes.stream().map(note -> note.getReimbursementEntriesSet().stream().collect(Collectors.toList()))
+                .reduce(new ArrayList<ReimbursementEntry>(), (t, u) -> {
+                    t.addAll(u);
+                    return t;
+                });
+    }
+
 }

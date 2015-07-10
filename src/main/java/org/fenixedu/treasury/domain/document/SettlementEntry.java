@@ -109,7 +109,7 @@ public class SettlementEntry extends SettlementEntry_Base {
     }
 
     public static Stream<SettlementEntry> findAll() {
-        return (Stream<SettlementEntry>) FinantialDocumentEntry.findAll().filter(f -> f instanceof SettlementEntry);
+        return FinantialDocumentEntry.findAll().filter(f -> f instanceof SettlementEntry).map(SettlementEntry.class::cast);
     }
 
     @Atomic
