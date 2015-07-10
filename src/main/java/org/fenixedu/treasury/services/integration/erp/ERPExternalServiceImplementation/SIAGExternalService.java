@@ -17,11 +17,24 @@ import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServic
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServiceService;
 import org.springframework.util.CollectionUtils;
 
+import pt.ist.fenixframework.Atomic;
+
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
 
 public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaService> implements IERPExternalService {
 
+    static {
+        //HACK:only for "creation of webserviceclient-configuration"
+        createStaticInitializer();
+    }
+
     public SIAGExternalService() {
+    }
+
+    @Atomic
+    private static void createStaticInitializer() {
+        new SIAGExternalService();
+
     }
 
     @Override
