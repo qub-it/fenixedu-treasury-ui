@@ -33,6 +33,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.util.Constants;
@@ -96,14 +97,15 @@ public class ERPConfigurationController extends TreasuryBaseController {
             @RequestParam(value = "externalurl", required = false) String externalURL, @RequestParam(value = "username",
                     required = false) String username, @RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "paymentsintegrationseries", required = false) Series paymentsIntegrationSeries, @RequestParam(
-                    value = "implementationclassname", required = false) String implementationClassName, Model model,
+                    value = "implementationclassname", required = false) String implementationClassName, @RequestParam(
+                    value = "maxsizebytestoexportonlineModel", required = false) Long maxSizeBytesToExportOnline, Model model,
             RedirectAttributes redirectAttributes) {
 
         setERPConfiguration(eRPConfiguration, model);
 
         try {
             updateERPConfiguration(exportOnlyRelatedDocumentsPerExport, exportAnnulledRelatedDocuments, externalURL, username,
-                    password, paymentsIntegrationSeries, implementationClassName, model);
+                    password, paymentsIntegrationSeries, implementationClassName, maxSizeBytesToExportOnline, model);
 
             return redirect(READ_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -117,16 +119,23 @@ public class ERPConfigurationController extends TreasuryBaseController {
     @Atomic
     public void updateERPConfiguration(boolean exportOnlyRelatedDocumentsPerExport, boolean exportAnnulledRelatedDocuments,
             String externalURL, String username, String password, Series paymentsIntegrationSeries,
-            String implementationClassName, Model model) {
+            String implementationClassName, Long maxSizeBytesToExportOnline, Model model) {
         getERPConfiguration(model).edit(paymentsIntegrationSeries, externalURL, username, password,
-                exportAnnulledRelatedDocuments, exportOnlyRelatedDocumentsPerExport, implementationClassName);
+                exportAnnulledRelatedDocuments, exportOnlyRelatedDocumentsPerExport, implementationClassName,
+                maxSizeBytesToExportOnline);
     }
 
     @RequestMapping(value = "/update/{oid}/test")
     public String processUpdateToTest(@PathVariable("oid") ERPConfiguration eRPConfiguration, Model model,
             RedirectAttributes redirectAttributes) {
         setERPConfiguration(eRPConfiguration, model);
-        return redirect(UPDATE_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
+        try {
+            ERPExporter.testExportToIntegration(eRPConfiguration.getFinantialInstitution());
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.erpconfiguration.test"), model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+        return redirect(READ_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
     }
 
 }

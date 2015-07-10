@@ -38,9 +38,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/integration/erp/erpconfiguration/read/${eRPConfiguration.externalId}"><spring:message code="label.event.back" /></a>
-    &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/integration/erp/erpconfiguration/update/${eRPConfiguration.externalId}/test"><spring:message
-            code="label.event.integration.erp.test" /></a>
+    &nbsp;</a>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -167,6 +165,19 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.implementationclassname ? param.implementationclassname : eRPConfiguration.implementationClassName }'/>' />
                 </div>
             </div>
+            
+             <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.ERPConfiguration.maxSizeBytesToExportOnline" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="eRPConfiguration_maxSizeBytesToExportOnline" class="form-control" type="number" min="0" step="1" name="maxsizebytestoexportonline"
+                        value='<c:out value='${not empty param.maxsizebytestoexportonline ? param.maxsizebytestoexportonline : eRPConfiguration.maxSizeBytesToExportOnline }'/>' />
+                </div>
+            </div>
+            
+            
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

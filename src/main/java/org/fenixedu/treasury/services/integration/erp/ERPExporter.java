@@ -116,7 +116,6 @@ public class ERPExporter {
 
     private static Logger logger = LoggerFactory.getLogger(ERPExporter.class);
     public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.0";
-    private static final Long MAX_SIZE_TO_EXPORT_OFFLINE_BYTES = Long.valueOf(5 * 1024);
 
     private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
             List<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers, Boolean generateAllProducts,
@@ -1152,7 +1151,7 @@ public class ERPExporter {
 
         integrationLog.append(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sending.inforation")).append("\n");
         DocumentsInformationInput input = new DocumentsInformationInput();
-        if (operation.getFile().getSize() <= MAX_SIZE_TO_EXPORT_OFFLINE_BYTES) {
+        if (operation.getFile().getSize() <= erpIntegrationConfiguration.getMaxSizeBytesToExportOnline()) {
             input.setData(operation.getFile().getContent());
             String sendInfoOnlineResult = service.sendInfoOnline(input);
             integrationLog.append(
@@ -1324,5 +1323,13 @@ public class ERPExporter {
             writeError(operation, ex);
         }
         return operation;
+    }
+
+    public static void testExportToIntegration(FinantialInstitution institution) {
+        ERPConfiguration erpIntegrationConfiguration = institution.getErpIntegrationConfiguration();
+        if (erpIntegrationConfiguration == null) {
+            throw new TreasuryDomainException("error.ERPExporter.invalid.erp.configuration");
+        }
+        IERPExternalService service = erpIntegrationConfiguration.getERPExternalServiceImplementation();
     }
 }

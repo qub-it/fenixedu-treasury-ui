@@ -98,7 +98,9 @@ ${portal.toolkit()}
         class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/integration/erp/erpconfiguration/update/${eRPConfiguration.externalId}"><spring:message
-            code="label.event.update" /></a> &nbsp;
+            code="label.event.update" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/integration/erp/erpconfiguration/update/${eRPConfiguration.externalId}/test"><spring:message
+            code="label.event.integration.erp.test" />
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -213,6 +215,13 @@ ${portal.toolkit()}
                                 code="label.ERPConfiguration.implementationClassName" /></th>
                         <td><c:out
                                 value='${eRPConfiguration.implementationClassName}' />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPConfiguration.maxSizeBytesToExportOnline" /></th>
+                        <td><c:out
+                                value='${eRPConfiguration.maxSizeBytesToExportOnline}' />
                         </td>
                     </tr>
                 </tbody>

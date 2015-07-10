@@ -52,7 +52,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
 
     protected void init(final Series paymentsIntegrationSeries, final FinantialInstitution finantialInstitution,
             final String code, final String externalURL, final String username, final String password,
-            final String implementationClassName) {
+            final String implementationClassName, final Long maxSizeBytesToExportOnline) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setFinantialInstitution(finantialInstitution);
         setCode(code);
@@ -62,6 +62,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         setExportAnnulledRelatedDocuments(false);
         setExportOnlyRelatedDocumentsPerExport(false);
         setImplementationClassName(implementationClassName);
+        setMaxSizeBytesToExportOnline(maxSizeBytesToExportOnline);
         checkRules();
     }
 
@@ -78,7 +79,8 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     @Atomic
     public void edit(final Series paymentsIntegrationSeries, final String externalURL, final String username,
             final String password, final boolean exportAnnulledRelatedDocuments,
-            final boolean exportOnlyRelatedDocumentsPerExport, final String implementationClassName) {
+            final boolean exportOnlyRelatedDocumentsPerExport, final String implementationClassName,
+            Long maxSizeBytesToExportOnline) {
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setExternalURL(externalURL);
         setUsername(username);
@@ -86,6 +88,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         setExportAnnulledRelatedDocuments(exportAnnulledRelatedDocuments);
         setExportOnlyRelatedDocumentsPerExport(exportOnlyRelatedDocumentsPerExport);
         setImplementationClassName(implementationClassName);
+        setMaxSizeBytesToExportOnline(maxSizeBytesToExportOnline);
         checkRules();
     }
 
@@ -114,10 +117,10 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     @Atomic
     public static ERPConfiguration create(final Series paymentsIntegrationSeries,
             final FinantialInstitution finantialInstitution, final String code, final String externalURL, final String username,
-            final String password, final String implementationClassName) {
+            final String password, final String implementationClassName, final Long maxSizeBytesToExportOnline) {
         ERPConfiguration eRPConfiguration = new ERPConfiguration();
         eRPConfiguration.init(paymentsIntegrationSeries, finantialInstitution, code, externalURL, username, password,
-                implementationClassName);
+                implementationClassName, maxSizeBytesToExportOnline);
         return eRPConfiguration;
     }
 
@@ -125,6 +128,8 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         String className = this.getImplementationClassName();
         try {
 
+            //force the "invocation" of class name
+            Class cl = Class.forName(className);
             WebServiceClientConfiguration clientConfiguration = WebServiceConfiguration.readByImplementationClass(className);
 
             IERPExternalService client = clientConfiguration.getClient();
