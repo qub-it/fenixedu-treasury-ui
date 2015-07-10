@@ -1144,31 +1144,23 @@ public class ERPExporter {
             throw new TreasuryDomainException("error.ERPExporter.invalid.erp.configuration");
         }
         IERPExternalService service = erpIntegrationConfiguration.getERPExternalServiceImplementation();
-        StringBuilder integrationLog = new StringBuilder();
-        if (operation.getIntegrationLog() != null) {
-            integrationLog.append(operation.getIntegrationLog());
-        }
-
-        integrationLog.append(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sending.inforation")).append("\n");
+        appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sending.inforation"));
         DocumentsInformationInput input = new DocumentsInformationInput();
         if (operation.getFile().getSize() <= erpIntegrationConfiguration.getMaxSizeBytesToExportOnline()) {
             input.setData(operation.getFile().getContent());
             String sendInfoOnlineResult = service.sendInfoOnline(input);
-            integrationLog.append(
-                    BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.online",
-                            sendInfoOnlineResult)).append("\n");
-            integrationLog.append("#" + sendInfoOnlineResult);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.online",
+                    sendInfoOnlineResult));
+            appendInfoLog(operation, "#" + sendInfoOnlineResult);
         } else {
 
             input.setDataURI(operation.getFile().getFilename());
             String sendInfoOnlineResult = service.sendInfoOffline(input);
-            integrationLog.append(
-                    BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.offline",
-                            sendInfoOnlineResult)).append("\n");
-            integrationLog.append("#" + sendInfoOnlineResult);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.offline",
+                    sendInfoOnlineResult));
+            appendInfoLog(operation, "#" + sendInfoOnlineResult);
 
         }
-        operation.setIntegrationLog(integrationLog.toString());
     }
 
     private static void writeError(ERPExportOperation operation, Throwable t) {
@@ -1177,6 +1169,17 @@ public class ERPExporter {
         t.printStackTrace(writer);
         operation.setProcessed(true);
         operation.setErrorLog(out.toString());
+    }
+
+    private static void appendInfoLog(ERPExportOperation operation, String message) {
+        String infoLog = operation.getIntegrationLog();
+        if (infoLog != null) {
+            operation.setIntegrationLog("");
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append(operation.getIntegrationLog()).append("\n");
+        builder.append(new DateTime().toString()).append(message).append("\n");
+        operation.setIntegrationLog(builder.toString());
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -1253,17 +1256,24 @@ public class ERPExporter {
 
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
+            StringBuilder builder = new StringBuilder();
+            appendInfoLog(operation,
+                    BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.starting.finantialdocuments.integration"));
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize =
                     institution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
+
             String xml = exportFinantialDocumentToXML(institution, documents, preProcessFunctionBeforeSerialize);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.erp.xml.content.generated"));
+
             writeContentToExportOperation(xml, operation);
 
+            operation.setIntegrationLog(builder.toString());
             sendDocumentsInformationToIntegration(institution, operation);
             operation.getFinantialDocumentsSet().addAll(documents);
-//            for (FinantialDocument document : documents) {
-//                document.clearDocumentToExport();
-//            }
             operation.setSuccess(true);
+            appendInfoLog(operation,
+                    BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.finished.finantialdocuments.integration"));
+
         } catch (Exception ex) {
             writeError(operation, ex);
         }
@@ -1275,13 +1285,19 @@ public class ERPExporter {
 
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.starting.customers.integration"));
+
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize =
                     institution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
             String xml = exportCustomersToXML(institution, preProcessFunctionBeforeSerialize);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.erp.xml.content.generated"));
+
             writeContentToExportOperation(xml, operation);
 
             operation.setIntegrationLog("Exporting Customers to Integration\n");
             sendDocumentsInformationToIntegration(institution, operation);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.finished.customers.integration"));
+
             operation.setSuccess(true);
         } catch (Exception ex) {
             writeError(operation, ex);
@@ -1296,11 +1312,17 @@ public class ERPExporter {
         try {
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize =
                     institution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.starting.products.integration"));
+
             String xml = exportsProductsToXML(institution, preProcessFunctionBeforeSerialize);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.erp.xml.content.generated"));
+
             writeContentToExportOperation(xml, operation);
 
             operation.setIntegrationLog("Exporting Products to Integration\n");
             sendDocumentsInformationToIntegration(institution, operation);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.finished.products.integration"));
+
             operation.setSuccess(true);
         } catch (Exception ex) {
             writeError(operation, ex);
@@ -1314,10 +1336,12 @@ public class ERPExporter {
                 createSaftExportOperation(eRPExportOperation.getFile().getContent(),
                         eRPExportOperation.getFinantialInstitution(), new DateTime());
         try {
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.starting.retry.integration"));
             for (FinantialDocument document : eRPExportOperation.getFinantialDocumentsSet()) {
                 operation.addFinantialDocuments(document);
             }
             sendDocumentsInformationToIntegration(eRPExportOperation.getFinantialInstitution(), operation);
+            appendInfoLog(operation, BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.finished.retry.integration"));
             operation.setSuccess(true);
         } catch (Exception ex) {
             writeError(operation, ex);

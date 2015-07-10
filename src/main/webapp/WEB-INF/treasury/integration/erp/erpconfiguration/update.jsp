@@ -172,7 +172,7 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="eRPConfiguration_maxSizeBytesToExportOnline" class="form-control" type="number" min="0" step="1" name="maxsizebytestoexportonline"
+                    <input id="eRPConfiguration_maxSizeBytesToExportOnline" class="form-control" type="number" min="0" step="1" name="maxsizebytestoexportonlineModel"
                         value='<c:out value='${not empty param.maxsizebytestoexportonline ? param.maxsizebytestoexportonline : eRPConfiguration.maxSizeBytesToExportOnline }'/>' />
                 </div>
             </div>
