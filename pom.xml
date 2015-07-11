@@ -246,20 +246,58 @@
                 <version>2.3</version>
                 <executions>
                     <execution>
+                        <id>SIAG</id>
+                         <phase>generate-sources</phase>
                         <goals>
                             <goal>wsimport</goal>
                         </goals>
+                        <configuration>
+                            <packageName>org.fenixedu.treasury.services.integration.erp.siag</packageName>
+
+                            <!-- <wsdlDirectory> -->
+                            <!-- src/main/webapp/wsdl -->
+                            <!-- </wsdlDirectory> -->
+                            <wsdlFiles>
+                                <wsdlFile>
+                                    ${basedir}/src/main/webapp/wsdl/SIAGGestaoAcademicaService.wsdl
+                                </wsdlFile>
+                            </wsdlFiles>
+                            <wsdlLocation>
+                                /WEB-INF/wsdl/SIAGGestaoAcademicaService.wsdl
+                            </wsdlLocation>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                        </configuration>
+
+                    </execution>
+                    <execution>
+                        <id>SINGAP</id>
+                         <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>org.fenixedu.treasury.services.integration.erp.singap</packageName>
+
+                            <!-- <wsdlDirectory> -->
+                            <!-- src/main/webapp/wsdl -->
+                            <!-- </wsdlDirectory> -->
+                            <wsdlFiles>
+                                <wsdlFile>
+                                    ${basedir}/src/main/webapp/wsdl/SINGAPGestaoAcademicaService.wsdl
+                                </wsdlFile>
+                            </wsdlFiles>
+                            <wsdlLocation>
+                                /WEB-INF/wsdl/SINGAPGestaoAcademicaService.wsdl
+                            </wsdlLocation>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                        </configuration>
+
                     </execution>
                 </executions>
-                <configuration>
-                    <packageName>org.fenixedu.treasury.services.integration.erp.siag</packageName>
-                    <wsdlDirectory>
-                        src/main/wsdl
-                    </wsdlDirectory>
-                    <vmArgs>
-                        <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-                    </vmArgs>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
