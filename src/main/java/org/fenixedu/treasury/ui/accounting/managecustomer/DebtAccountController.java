@@ -34,16 +34,22 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
+import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -225,6 +231,23 @@ public class DebtAccountController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportintegrationonline")
+    public String processReadToExportIntegrationOnline(@PathVariable("oid") DebtAccount debtAccount, Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<FinantialDocument> pendingDocuments = new ArrayList(debtAccount.getFinantialDocumentsSet());
+            ERPExportOperation output =
+                    ERPExporter.exportFinantialDocumentToIntegration(debtAccount.getFinantialInstitution(), pendingDocuments);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                            + ex.getLocalizedMessage(), model);
+        }
+        return read(debtAccount, model);
     }
 
 }

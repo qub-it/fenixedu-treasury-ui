@@ -48,10 +48,12 @@ import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
+import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -455,5 +457,23 @@ public class DebitNoteController extends TreasuryBaseController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportintegrationonline")
+    public String processReadToExportIntegrationOnline(@PathVariable("oid") DebitNote debitNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<FinantialDocument> documentsToExport = Collections.singletonList(debitNote);
+            ERPExportOperation output =
+                    ERPExporter.exportFinantialDocumentToIntegration(debitNote.getInstitutionForExportation(), documentsToExport);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                            + ex.getLocalizedMessage(), model);
+        }
+        setDebitNote(debitNote, model);
+        return read(debitNote, model);
     }
 }

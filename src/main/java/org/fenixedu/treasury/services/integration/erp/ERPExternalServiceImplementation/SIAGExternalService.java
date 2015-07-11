@@ -48,7 +48,7 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
         siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
         siagInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
         String result = getClient().sendInfoOnline(siagInput);
-        if (result.startsWith(SIAG_ERROR_PREFIX)) {
+        if (result.contains(SIAG_ERROR_PREFIX)) {
             throw new TreasuryDomainException(result);
         }
         return result;
@@ -60,7 +60,11 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
                 new org.fenixedu.treasury.services.integration.erp.siag.DocumentsInformationInput();
         siagInput.setDataURI(documentsInformation.getDataURI());
         siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-        return getClient().sendInfoOffline(siagInput);
+        String result = getClient().sendInfoOffline(siagInput);
+        if (result.contains(SIAG_ERROR_PREFIX)) {
+            throw new TreasuryDomainException(result);
+        }
+        return result;
     }
 
     @Override

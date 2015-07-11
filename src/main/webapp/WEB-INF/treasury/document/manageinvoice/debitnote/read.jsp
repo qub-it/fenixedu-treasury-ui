@@ -206,6 +206,10 @@ ${portal.toolkit()}
                 </a>
                 &nbsp;
             </c:if>
+               |&nbsp;       <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a>
+    &nbsp;
+            
         </c:if>
         <c:if test="${not debitNote.isPreparing()}">
             |&nbsp;
