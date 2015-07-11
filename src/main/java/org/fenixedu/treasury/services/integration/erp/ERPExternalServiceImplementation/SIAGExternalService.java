@@ -8,6 +8,7 @@ import javax.xml.ws.BindingProvider;
 
 import oecd.standardauditfile_tax.pt_1.AuditFile;
 
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
@@ -22,6 +23,8 @@ import pt.ist.fenixframework.Atomic;
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
 
 public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaService> implements IERPExternalService {
+
+    private static final String SIAG_ERROR_PREFIX = "ERRO(S):";
 
     static {
         //HACK:only for "creation of webserviceclient-configuration"
@@ -44,7 +47,11 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
         siagInput.setDataURI(documentsInformation.getDataURI());
         siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
         siagInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
-        return getClient().sendInfoOnline(siagInput);
+        String result = getClient().sendInfoOnline(siagInput);
+        if (result.startsWith(SIAG_ERROR_PREFIX)) {
+            throw new TreasuryDomainException(result);
+        }
+        return result;
     }
 
     @Override

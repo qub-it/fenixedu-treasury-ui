@@ -5,6 +5,7 @@ import java.util.List;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 
@@ -20,6 +21,11 @@ public class ERPExportPendingDocumentsTask extends CronTask {
                     try {
                         List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution =
                                 ERPExporterManager.exportPendingDocumentsForFinantialInstitution(x);
+                        for (ERPExportOperation exportOperation : exportPendingDocumentsForFinantialInstitution) {
+                            for (FinantialDocument doc : exportOperation.getFinantialDocumentsSet()) {
+                                taskLog("Exported document: " + doc.getUiDocumentNumber());
+                            }
+                        }
                         taskLog("Finished Exporting " + exportPendingDocumentsForFinantialInstitution.size()
                                 + " Pending Documents for : " + x.getName());
                     } catch (Exception ex) {

@@ -259,11 +259,11 @@
                             <!-- </wsdlDirectory> -->
                             <wsdlFiles>
                                 <wsdlFile>
-                                    ${basedir}/src/main/webapp/wsdl/SIAGGestaoAcademicaService.wsdl
+                                    ${basedir}/src/main/resources/wsdl/SIAGGestaoAcademicaService.wsdl
                                 </wsdlFile>
                             </wsdlFiles>
                             <wsdlLocation>
-                                /WEB-INF/wsdl/SIAGGestaoAcademicaService.wsdl
+                                /wsdl/SIAGGestaoAcademicaService.wsdl
                             </wsdlLocation>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
@@ -285,11 +285,11 @@
                             <!-- </wsdlDirectory> -->
                             <wsdlFiles>
                                 <wsdlFile>
-                                    ${basedir}/src/main/webapp/wsdl/SINGAPGestaoAcademicaService.wsdl
+                                    ${basedir}/src/main/resources/wsdl/SINGAPGestaoAcademicaService.wsdl
                                 </wsdlFile>
                             </wsdlFiles>
                             <wsdlLocation>
-                                /WEB-INF/wsdl/SINGAPGestaoAcademicaService.wsdl
+                                /wsdl/SINGAPGestaoAcademicaService.wsdl
                             </wsdlLocation>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
