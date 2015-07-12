@@ -122,11 +122,11 @@ public class CustomerController extends TreasuryBaseController {
     public String read(@PathVariable("oid") Customer customer, Model model, RedirectAttributes redirectAttributes) {
         setCustomer(customer, model);
 
-        //If the customer has only one debtAccount, redirect to the Read Of DebtAccount
-        if (FinantialInstitution.findAll().count() <= 1) {
-            DebtAccount debtAccount = customer.getDebtAccountsSet().iterator().next();
-            return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
-        }
+//        //If the customer has only one debtAccount, redirect to the Read Of DebtAccount
+//        if (FinantialInstitution.findAll().count() <= 1) {
+//            DebtAccount debtAccount = customer.getDebtAccountsSet().iterator().next();
+//            return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+//        }
 
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
         for (DebtAccount debtAccount : customer.getDebtAccountsSet()) {

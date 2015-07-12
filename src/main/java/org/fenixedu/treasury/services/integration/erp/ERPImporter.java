@@ -45,6 +45,7 @@ import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -61,6 +62,7 @@ import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -115,6 +117,8 @@ public class ERPImporter {
             BigInteger totalPayments = BigInteger.ZERO;
             for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
                 DocumentStatusWS docStatus = new DocumentStatusWS();
+                eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPImporter.processing.payment",
+                        payment.getPaymentRefNo()));
                 try {
                     SettlementNote note = processErpPayment(payment, eRPImportOperation);
                     if (note != null) {
@@ -126,6 +130,9 @@ public class ERPImporter {
                         throw new TreasuryDomainException("error.ERPImporter.processing.payment", payment.getPaymentRefNo());
                     }
                 } catch (Exception ex) {
+                    eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
+                            "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                    eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription(ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
@@ -175,7 +182,7 @@ public class ERPImporter {
                         integrationConfig.getPaymentsIntegrationSeries());
 
         //if is a reimbursement, then we must find the correct document series
-        if (payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
+        if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
             seriesToIntegratePayments =
                     DocumentNumberSeries.find(FinantialDocumentType.findForReimbursementNote(),
                             integrationConfig.getPaymentsIntegrationSeries());

@@ -29,6 +29,7 @@ package org.fenixedu.treasury.services.integration.erp.dto;
 import java.math.BigDecimal;
 
 import org.joda.time.LocalDate;
+import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
 
 public class InterestRequestValueInput {
     private String finantialInstitutionFiscalNumber;
@@ -36,7 +37,7 @@ public class InterestRequestValueInput {
     private String debitNoteNumber;
     private Integer lineNumber;
     private BigDecimal amount;
-    private LocalDate paymentDate;
+    private String paymentDate;
     private Boolean generateInterestDebitNote;
 
     public Boolean getGenerateInterestDebitNote() {
@@ -87,11 +88,19 @@ public class InterestRequestValueInput {
         this.customerCode = customerCode;
     }
 
-    public LocalDate getPaymentDate() {
+    public String getPaymentDate() {
         return paymentDate;
     }
 
-    public void setPaymentDate(LocalDate paymentDate) {
-        this.paymentDate = paymentDate;
+    public void setPaymentDate(String value) {
+        paymentDate = value;
+    }
+
+    public LocalDate convertPaymentDateToLocalDate() {
+        return LocalDate.parse(paymentDate, new DateTimeFormatterFactory("YYYY-MM-dd").createDateTimeFormatter());
+    }
+
+    public void convertLocalDateToPaymentDate(LocalDate paymentDate) {
+        this.paymentDate = paymentDate.toString("YYYY-MM-dd");
     }
 }

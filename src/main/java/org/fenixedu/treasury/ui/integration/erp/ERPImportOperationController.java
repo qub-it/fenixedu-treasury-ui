@@ -61,7 +61,8 @@ import pt.ist.fenixframework.Atomic.TxMode;
 import com.google.common.base.Splitter;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import", accessGroup = "treasuryManagers")
+@SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import",
+        accessGroup = "treasuryManagers")
 @RequestMapping(ERPImportOperationController.CONTROLLER_URL)
 public class ERPImportOperationController extends TreasuryBaseController {
 
@@ -182,9 +183,9 @@ public class ERPImportOperationController extends TreasuryBaseController {
             FinantialInstitution finantialInstitution = FinantialInstitution.findUniqueByFiscalCode(fiscalNumber).orElse(null);
             if (finantialInstitution != null) {
                 OperationFile opeartionFile;
-                opeartionFile = OperationFile.create(file.getOriginalFilename(), file.getBytes());
                 ERPImportOperation eRPImportOperation =
-                        ERPImportOperation.create(opeartionFile, finantialInstitution, new DateTime(), false, false, false, "");
+                        ERPImportOperation.create(file.getOriginalFilename(), file.getBytes(), finantialInstitution,
+                                new DateTime(), false, false, false, "");
 
                 return eRPImportOperation;
             } else {

@@ -47,7 +47,6 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
-import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
@@ -92,10 +91,11 @@ public class ERPIntegrationService extends BennuWebService {
         //Integrate the information from XML SAFT
         DateTime now = new DateTime();
         String filename = finantialInstitution.getFiscalNumber() + "_" + now.toString() + ".xml";
-        OperationFile file = OperationFile.create(filename, documentsInformation.getData());
-        ERPImportOperation operation = ERPImportOperation.create(file, finantialInstitution, now, false, false, false, null);
+        ERPImportOperation operation =
+                ERPImportOperation.create(filename, documentsInformation.getData(), finantialInstitution, now, false, false,
+                        false, null);
 
-        ERPImporter importer = new ERPImporter(file.getStream());
+        ERPImporter importer = new ERPImporter(operation.getFile().getStream());
         DocumentsInformationOutput result = importer.processAuditFile(operation);
         return result;
     }
@@ -121,18 +121,21 @@ public class ERPIntegrationService extends BennuWebService {
         //Integrate the information from XML SAFT
         DateTime now = new DateTime();
         String filename = finantialInstitution.getFiscalNumber() + "_" + now.toString() + ".xml";
-        ERPImportOperation operation = ERPImportOperation.create(null, finantialInstitution, now, false, false, false, null);
+        ERPImportOperation operation = null;
         try {
             File externalFile = new File(documentsInformation.getDataURI());
             byte[] bytes = Files.toByteArray(externalFile);
-            OperationFile operationFile = OperationFile.create(filename, bytes);
-            operation.setFile(operationFile);
-            ERPImporter importer = new ERPImporter(operationFile.getStream());
+            operation = ERPImportOperation.create(filename, bytes, finantialInstitution, now, false, false, false, null);
+            ERPImporter importer = new ERPImporter(operation.getFile().getStream());
             importer.processAuditFile(operation);
+            return operation.getExternalId();
         } catch (Exception e) {
-            operation.setErrorLog(e.getLocalizedMessage());
+            if (operation != null) {
+                operation.setErrorLog(e.getLocalizedMessage());
+                return operation.getExternalId();
+            }
+            throw new RuntimeException(e);
         }
-        return operation.getExternalId();
     }
 
     /* (non-Javadoc)
@@ -204,7 +207,7 @@ public class ERPIntegrationService extends BennuWebService {
 
         final DebitEntry debitEntry = (DebitEntry) finantialDocumentEntry;
 
-        final BigDecimal amountInDebt = debitEntry.amountInDebt(interestRequest.getPaymentDate());
+        final BigDecimal amountInDebt = debitEntry.amountInDebt(interestRequest.convertPaymentDateToLocalDate());
 
         if (!Constants.isPositive(amountInDebt)) {
             throw new RuntimeException("Debit entry has no debt");
@@ -215,14 +218,15 @@ public class ERPIntegrationService extends BennuWebService {
         }
 
         //3 . calculate the amount of interest
-        final InterestRateBean interestRateBean = debitEntry.calculateUndebitedInterestValue(interestRequest.getPaymentDate());
+        final InterestRateBean interestRateBean =
+                debitEntry.calculateUndebitedInterestValue(interestRequest.convertPaymentDateToLocalDate());
 
         bean.setInterestAmount(interestRateBean.getInterestAmount());
         bean.setDescription(interestRateBean.getDescription());
 
         if (Constants.isGreaterThan(interestRateBean.getInterestAmount(), BigDecimal.ZERO)
                 && interestRequest.getGenerateInterestDebitNote()) {
-            processInterestEntries(debitEntry, interestRateBean, interestRequest.getPaymentDate());
+            processInterestEntries(debitEntry, interestRateBean, interestRequest.convertPaymentDateToLocalDate());
         }
 
         final List<FinantialDocument> interestFinantialDocumentsSet =

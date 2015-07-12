@@ -79,9 +79,10 @@ public class OperationFile extends OperationFile_Base {
     }
 
     @Atomic
-    public static OperationFile create(String fileName, byte[] bytes) {
+    public static OperationFile create(String fileName, byte[] bytes, IntegrationOperation operation) {
         OperationFile operationFile = new OperationFile();
         operationFile.init(fileName, fileName, bytes);
+        operationFile.setIntegrationOperation(operation);
         return operationFile;
     }
 
