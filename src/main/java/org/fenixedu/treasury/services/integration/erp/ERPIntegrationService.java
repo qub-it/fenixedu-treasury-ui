@@ -233,14 +233,16 @@ public class ERPIntegrationService extends BennuWebService {
                 debitEntry.getInterestDebitEntriesSet().stream().filter(l -> l.isProcessedInClosedDebitNote())
                         .map(l -> l.getFinantialDocument()).collect(Collectors.toList());
 
-        final String saftResult =
-                ERPExporter.exportFinantialDocumentToXML(debitEntry.getDebtAccount().getFinantialInstitution(),
-                        interestFinantialDocumentsSet);
+        if (interestFinantialDocumentsSet.size() > 0) {
+            final String saftResult =
+                    ERPExporter.exportFinantialDocumentToXML(debitEntry.getDebtAccount().getFinantialInstitution(),
+                            interestFinantialDocumentsSet);
 
-        try {
-            bean.setInterestDocumentsContent(saftResult.getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
+            try {
+                bean.setInterestDocumentsContent(saftResult.getBytes("UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         return bean;
