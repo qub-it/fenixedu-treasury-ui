@@ -227,6 +227,9 @@ ${portal.toolkit()}
                 aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationfile"><spring:message
                     code="label.event.document.manageInvoice.exportIntegrationFile" /></a>
+               |&nbsp;       <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationonline"><spring:message code="label.event.document.manageInvoice.exportCreditNoteIntegrationOnline" /></a>
+    &nbsp;
 
         </c:if>
         |&nbsp; <span class="glyphicon glyphicon-print"

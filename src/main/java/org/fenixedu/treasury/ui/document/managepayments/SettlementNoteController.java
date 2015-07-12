@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +54,7 @@ import org.fenixedu.treasury.domain.document.ReimbursementEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
@@ -62,6 +64,7 @@ import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
+import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -586,6 +589,24 @@ public class SettlementNoteController extends TreasuryBaseController {
                     t.addAll(u);
                     return t;
                 });
+    }
+
+    @RequestMapping(value = "/read/{oid}/exportintegrationonline")
+    public String processReadToExportIntegrationOnline(@PathVariable("oid") SettlementNote settlementNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            List<FinantialDocument> documentsToExport = Collections.singletonList(settlementNote);
+            ERPExportOperation output =
+                    ERPExporter.exportFinantialDocumentToIntegration(settlementNote.getInstitutionForExportation(),
+                            documentsToExport);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                            + ex.getLocalizedMessage(), model);
+        }
+        return read(settlementNote, model);
     }
 
 }

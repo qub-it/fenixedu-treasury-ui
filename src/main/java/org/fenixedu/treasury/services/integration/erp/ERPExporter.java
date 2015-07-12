@@ -61,6 +61,7 @@ import oecd.standardauditfile_tax.pt_1.MovementTax;
 import oecd.standardauditfile_tax.pt_1.OrderReferences;
 import oecd.standardauditfile_tax.pt_1.PaymentMethod;
 import oecd.standardauditfile_tax.pt_1.SAFTPTMovementTaxType;
+import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
 import oecd.standardauditfile_tax.pt_1.SAFTPTSourceBilling;
 import oecd.standardauditfile_tax.pt_1.SAFTPTSourcePayment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments;
@@ -384,22 +385,29 @@ public class ERPExporter {
 
             payment.setDocumentStatus(status);
 
-            //PaymentMethods
-            for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
-                PaymentMethod method = new PaymentMethod();
-                method.setPaymentAmount(paymentEntry.getPayedAmount().setScale(2, RoundingMode.HALF_EVEN));
-                method.setPaymentDate(payment.getTransactionDate());
-                method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
-                payment.getPaymentMethod().add(method);
-            }
-
-            //Reimbursments
-            for (ReimbursementEntry reimbursmentEntry : document.getReimbursementEntriesSet()) {
-                PaymentMethod method = new PaymentMethod();
-                method.setPaymentAmount(reimbursmentEntry.getReimbursedAmount().setScale(2, RoundingMode.HALF_EVEN));
-                method.setPaymentDate(payment.getTransactionDate());
-                method.setPaymentMechanism(convertToSAFTPaymentMechanism(reimbursmentEntry.getPaymentMethod()));
-                payment.getPaymentMethod().add(method);
+            //Check if is Rehimbursement/Payment
+            if (Constants.isPositive(document.getTotalPayedAmount())) {
+                //PaymentMethods
+                for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
+                    PaymentMethod method = new PaymentMethod();
+                    method.setPaymentAmount(paymentEntry.getPayedAmount().setScale(2, RoundingMode.HALF_EVEN));
+                    method.setPaymentDate(payment.getTransactionDate());
+                    method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
+                    payment.getPaymentMethod().add(method);
+                }
+                payment.setSettlementType(SAFTPTSettlementType.NL);
+            } else if (Constants.isPositive(document.getTotalReimbursementAmount())) {
+                //Reimbursments
+                for (ReimbursementEntry reimbursmentEntry : document.getReimbursementEntriesSet()) {
+                    PaymentMethod method = new PaymentMethod();
+                    method.setPaymentAmount(reimbursmentEntry.getReimbursedAmount().setScale(2, RoundingMode.HALF_EVEN));
+                    method.setPaymentDate(payment.getTransactionDate());
+                    method.setPaymentMechanism(convertToSAFTPaymentMechanism(reimbursmentEntry.getPaymentMethod()));
+                    payment.getPaymentMethod().add(method);
+                    payment.setSettlementType(SAFTPTSettlementType.NR);
+                }
+            } else {
+                payment.setSettlementType(SAFTPTSettlementType.NN);
             }
 
             payment.setSourceID(document.getVersioningCreator());

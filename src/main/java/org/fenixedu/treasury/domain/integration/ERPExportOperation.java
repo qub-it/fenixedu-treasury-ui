@@ -134,15 +134,4 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         return findByFinantialInstitution(finantialInstitution).filter(i -> errorLog.equalsIgnoreCase(i.getErrorLog()));
     }
 
-    public void appendInfoLog(String message) {
-        String infoLog = this.getIntegrationLog();
-        if (infoLog == null) {
-            this.setIntegrationLog("");
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getIntegrationLog()).append("\n");
-        builder.append(new DateTime().toString()).append(message);
-        this.setIntegrationLog(builder.toString());
-    }
-
 }

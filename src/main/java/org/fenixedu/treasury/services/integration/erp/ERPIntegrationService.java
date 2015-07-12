@@ -51,6 +51,7 @@ import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
@@ -84,7 +85,7 @@ public class ERPIntegrationService extends BennuWebService {
      * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#sendInfoOnline(org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput)
      */
     @WebMethod
-    public String sendInfoOnline(DocumentsInformationInput documentsInformation) {
+    public DocumentsInformationOutput sendInfoOnline(DocumentsInformationInput documentsInformation) {
         validateRequestHeader(documentsInformation.getFinantialInstitution());
 
         FinantialInstitution finantialInstitution = validateFinantialInstitution(documentsInformation);
@@ -95,8 +96,8 @@ public class ERPIntegrationService extends BennuWebService {
         ERPImportOperation operation = ERPImportOperation.create(file, finantialInstitution, now, false, false, false, null);
 
         ERPImporter importer = new ERPImporter(file.getStream());
-        importer.processAuditFile(operation);
-        return operation.getExternalId();
+        DocumentsInformationOutput result = importer.processAuditFile(operation);
+        return result;
     }
 
     private FinantialInstitution validateFinantialInstitution(DocumentsInformationInput documentsInformation) {

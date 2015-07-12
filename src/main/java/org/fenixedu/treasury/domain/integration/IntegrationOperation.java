@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.integration;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -99,6 +100,17 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         }
         this.setFile(null);
         deleteDomainObject();
+    }
+
+    public void appendInfoLog(String message) {
+        String infoLog = this.getIntegrationLog();
+        if (infoLog == null) {
+            this.setIntegrationLog("");
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.getIntegrationLog()).append("\n");
+        builder.append(new DateTime().toString()).append(message);
+        this.setIntegrationLog(builder.toString());
     }
 
 }
