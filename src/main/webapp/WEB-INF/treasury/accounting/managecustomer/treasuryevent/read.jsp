@@ -65,14 +65,15 @@ ${portal.toolkit()}
 
        <div class="modal-header">
          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> 
-         <h4 class="modal-title"><spring:message code="label.TreasuryEvent.annul.all.debit.entries"/></h4>
+         <h4 class="modal-title"><spring:message code="label.TreasuryEvent.annul.all.debit.entries.title"/></h4>
        </div> 
 
      <form id ="annulDebitEntriesModalForm" action="${pageContext.request.contextPath}<%= TreasuryEventController.ANNULALLDEBITENTRIES_URL %>${treasuryEvent.externalId}"  method="POST">
 
 	       <div class="modal-body"> 
        
-		        <p><spring:message code = "label.TreasuryEvent.annul.debit.entry.reason.confirm"/></p>
+		        <p><em><spring:message code = "label.TreasuryEvent.annul.debit.entry.reason.confirm"/></em></p>
+	            <p>&nbsp;</p>
 	            <div class="form-group row">
 	                <div class="col-sm-2 control-label">
 	                    <spring:message code="label.TreasuryEvent.annul.debit.entry.reason" />
@@ -376,7 +377,7 @@ ${portal.toolkit()}
                     <div class="modal-body">
                         <p>
                             <spring:message
-                                code="label.manageTreasuryExemption.searchTreasuryExemption.confirmAnnul" />
+                                code="label.TreasuryEvent.annulDebitEntry.confirmAnnul" />
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -411,7 +412,7 @@ ${portal.toolkit()}
                     <div class="modal-body">
                         <p>
                             <spring:message
-                                code="label.manageTreasuryExemption.searchTreasuryExemption.confirmRevert" />
+                                code="label.TreasuryEvent.revertDebitEntry.confirmAnnul" />
                         </p>
                     </div>
                     <div class="modal-footer">

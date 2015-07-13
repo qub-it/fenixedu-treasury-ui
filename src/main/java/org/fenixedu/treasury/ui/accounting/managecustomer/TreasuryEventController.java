@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
@@ -207,9 +208,13 @@ public class TreasuryEventController extends TreasuryBaseController {
             final Model model) {
         try {
 
+            if(Strings.isNullOrEmpty(reason)) {
+                addErrorMessage(Constants.bundle("label.TreasuryEvent.annulAllDebitEntries.reason.required"), model);
+            }
+            
             treasuryEvent.annulAllDebitEntries(reason);
             
-            addInfoMessage(Constants.bundle("label.TreasuryEvent.annulAllDebitEntries"), model);
+            addInfoMessage(Constants.bundle("label.TreasuryEvent.annulAllDebitEntries.success"), model);
 
         } catch(final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);

@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeFieldType;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
@@ -130,7 +131,12 @@ public class InterestRate extends InterestRate_Base {
 
         TreeMap<LocalDate, BigDecimal> sortedMap = new TreeMap<LocalDate, BigDecimal>();
         sortedMap.putAll(amountInDebtMap);
-        sortedMap.put(paymentDate, BigDecimal.ZERO);
+        
+        if(getInterestType().isGlobalRate() && !GlobalInterestRate.findUniqueByYear(dueDate.getYear()).get().isApplyPaymentMonth() ) {
+            sortedMap.put(paymentDate.withField(DateTimeFieldType.dayOfMonth(), 1).minusDays(1), BigDecimal.ZERO);
+        } else {
+            sortedMap.put(paymentDate, BigDecimal.ZERO);
+        }
 
         sortedMap = splitDatesWithYearsSpan(sortedMap);
         
@@ -164,7 +170,7 @@ public class InterestRate extends InterestRate_Base {
             if(startDate.getYear() == entry.getKey().getYear()) {
                 result.put(entry.getKey(), entry.getValue());
                 startDate = entry.getKey();
-                continue;                
+                continue;
             }
             
             if(startDate.getYear() == entry.getKey().getYear() - 1) {
@@ -173,8 +179,8 @@ public class InterestRate extends InterestRate_Base {
                 continue;                                
             }
             
-            for(LocalDate a = startDate, b = entry.getKey(); a.getYear() < b.getYear();) {
-                result.put(Constants.lastDayInYear(a.getYear()), sortedMap.get(startDate));
+            for(LocalDate a = startDate.plusYears(1), b = entry.getKey(); a.getYear() < b.getYear();) {
+                result.put(Constants.firstDayInYear(a.getYear()), sortedMap.get(startDate));
                 a = a.plusYears(1);
             }
             
@@ -247,7 +253,7 @@ public class InterestRate extends InterestRate_Base {
         BigDecimal totalInterestAmount = BigDecimal.ZERO;
         int totalOfDays = 0;
 
-        LocalDate startDate = applyOnFirstWorkdayIfNecessary(dueDate.plusDays(getNumberOfDaysAfterDueDate()));
+        LocalDate startDate = applyOnFirstWorkdayIfNecessary(dueDate.plusDays(numberOfDaysAfterDueDate(dueDate.getYear())));
 
         // Iterate over amountInDebtMap and calculate amountToPay
         BigDecimal amountInDebt = BigDecimal.ZERO;
@@ -337,8 +343,7 @@ public class InterestRate extends InterestRate_Base {
                                 .multiply(new BigDecimal(numberOfDays));
 
                 if (Constants.isPositive(partialInterestAmount)) {
-                    result.addDetail(partialInterestAmount, startDate,
-                            endDate.isEqual(paymentDate) ? endDate : endDate.minusDays(1), amountPerDay, amountInDebt);
+                    result.addDetail(partialInterestAmount, startDate, endDate, amountPerDay, amountInDebt);
                 }
             }
 
@@ -346,7 +351,7 @@ public class InterestRate extends InterestRate_Base {
             totalOfDays += numberOfDays;
 
             amountInDebt = entry.getValue();
-            startDate = endDate;
+            startDate = endDate.plusDays(1);
 
             if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays >= getMaximumDaysToApplyPenalty()) {
                 break;
@@ -368,6 +373,14 @@ public class InterestRate extends InterestRate_Base {
         result.setNumberOfDays(totalOfDays);
 
         return result;
+    }
+
+    private int numberOfDaysAfterDueDate(int year) {
+        if(getInterestType().isGlobalRate()) {
+            return 1;
+        }
+        
+        return getNumberOfDaysAfterDueDate();
     }
 
     private Currency getRelatedCurrency() {

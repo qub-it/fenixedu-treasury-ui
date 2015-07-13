@@ -55,6 +55,7 @@ import org.springframework.util.StringUtils;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -222,14 +223,14 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
             for (final DebitEntry debitEntry : getDebitEntriesSet()) {
                 if (debitEntry.isAnnulled()) {
                     continue;
-                } 
-                
-                if(!debitEntry.isProcessedInDebitNote()) {
+                }
+
+                if (!debitEntry.isProcessedInDebitNote()) {
                     unprocessedDebitEntries.add(debitEntry);
                     continue;
                 }
-                
-                if(!debitEntry.isProcessedInClosedDebitNote()) {
+
+                if (!debitEntry.isProcessedInClosedDebitNote()) {
                     debitEntry.getFinantialDocument().closeDocument();
                 }
 
@@ -241,29 +242,46 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                                 (DebitNote) debitEntry.getFinantialDocument(), null);
 
                 final CreditEntry creditEntry =
-                        CreditEntry.create(creditNote, BundleUtil.getString(Constants.BUNDLE,
-                                "label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason),
-                                debitEntry.getProduct(), debitEntry.getVat(), debitEntry.getAmount(), new DateTime(),
-                                debitEntry, Constants.DEFAULT_QUANTITY);
-                
+                        CreditEntry.create(creditNote,
+                                Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason),
+                                debitEntry.getProduct(), debitEntry.getVat(), debitEntry.getAmount(), new DateTime(), debitEntry,
+                                Constants.DEFAULT_QUANTITY);
+
                 creditNote.closeDocument();
-                
+
                 closeDebitEntry(debitEntry, creditEntry);
             }
+
+            {
+                final DebitNote debitNoteForUnprocessedEntries =
+                        DebitNote.create(
+                                getDebtAccount(),
+                                DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                        getDebtAccount().getFinantialInstitution()).get(), new DateTime());
+
+                debitNoteForUnprocessedEntries.addDebitNoteEntries(Lists.newArrayList(unprocessedDebitEntries));
+                debitNoteForUnprocessedEntries.closeDocument();
+                debitNoteForUnprocessedEntries.anullDebitNoteWithCreditNote(Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason));
+            }
+            
+            for (final DebitEntry debitEntry : getDebitEntriesSet()) {
+                debitEntry.annulOnEvent();
+            }            
         }
     }
 
     private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry) {
         final SettlementNote settlementNote =
-                SettlementNote.create(debitEntry.getDebtAccount(), DocumentNumberSeries.findUniqueDefault(
-                        FinantialDocumentType.findForSettlementNote(), getDebtAccount().getFinantialInstitution()).get(),
-                        new DateTime(), null);
-        
+                SettlementNote.create(
+                        debitEntry.getDebtAccount(),
+                        DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForSettlementNote(),
+                                getDebtAccount().getFinantialInstitution()).get(), new DateTime(), null);
+
         SettlementEntry.create(debitEntry, settlementNote, creditEntry.getOpenAmount(), debitEntry.getDescription(),
-                new DateTime());
+                new DateTime(), false);
         SettlementEntry.create(creditEntry, settlementNote, debitEntry.getOpenAmount(), creditEntry.getDescription(),
-                new DateTime());
-        
+                new DateTime(), false);
+
         settlementNote.closeDocument();
     }
 
