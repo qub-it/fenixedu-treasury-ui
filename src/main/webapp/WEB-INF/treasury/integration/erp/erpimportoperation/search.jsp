@@ -188,7 +188,7 @@ ${portal.toolkit()}
 
         <button type="button"
             onClick="javascript:submitOptions('searcherpimportoperationTable', 'deletemultiple', 'eRPImportOperations')">
-            <spring:message code='label.integration.erp..deleteMultiple' />
+            <spring:message code='label..deleteMultiple' />
         </button>
     </c:when>
     <c:otherwise>

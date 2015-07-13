@@ -174,21 +174,21 @@ ${portal.toolkit()}
                     <th>
                         <spring:message code="label.PaymentMethod" />
                     </th>
-                    <th>
+                    <th align="right">
                         <spring:message code="label.PaymentMethod.value" />
-                    </th>
+                    </th >
                 </tr>
                 <c:set var ="sum" value="${ 0 }"/>
                 <c:forEach var="entry" items="${paymentsDataSet}">
                     <tr>
                         <td><c:out value="${ entry.key.name.content }" /></td>
-                        <td><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td>
+                        <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td>
                     </tr>
                     <c:set var ="sum" value="${ sum + entry.value }"/>
                 </c:forEach>
                     <tr> 
                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th>
-                        <th><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
+                        <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
                     </tr>
                 </table>
             </div>
@@ -207,13 +207,13 @@ ${portal.toolkit()}
                 <c:forEach var="entry" items="${reimbursementsDataSet}">
                     <tr>
                         <td><c:out value="${ entry.key.name.content }" /></td>
-                        <td><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td>
+                        <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td>
                     </tr>
                     <c:set var ="sum" value="${ sum + entry.value }"/>
                 </c:forEach>
                     <tr>
                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th>
-                        <th><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
+                        <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
                     </tr>
                 </table>
             </div>

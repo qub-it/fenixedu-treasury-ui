@@ -199,7 +199,16 @@ ${portal.toolkit()}
 
             </tbody>
         </table>
+        <form id="deleteMultiple"
+            action="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/deletemultiple/"
+            style="display: none;" method="POST"></form>
 
+        <button id="deleteMultiple" type="button"
+            onClick="javascript:submitOptions('searcherpexportoperationTable', 'deleteMultiple', 'operations')">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
+            <spring:message
+                code='label.deleteMultiple' />
+        </button>
 
     </c:when>
     <c:otherwise>

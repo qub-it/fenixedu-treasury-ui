@@ -140,6 +140,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
     }
 
     private static final String _DELETE_URI = "/delete/";
+    private static final String _DELETE_MULTIPLE_URI = "/deletemultiple/";
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
@@ -159,6 +160,22 @@ public class ERPExportOperationController extends TreasuryBaseController {
         }
 
         return redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes);
+    }
+
+    @RequestMapping(value = _DELETE_MULTIPLE_URI, method = RequestMethod.POST)
+    public String deleteMultiple(@RequestParam("operations") List<ERPExportOperation> eRPExportOperations, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        try {
+            for (ERPExportOperation operation : eRPExportOperations) {
+                deleteERPExportOperation(operation);
+            }
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        }
+        return redirect(SEARCH_URL, model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/downloadfile")
