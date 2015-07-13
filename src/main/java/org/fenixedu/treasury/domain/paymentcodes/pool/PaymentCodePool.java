@@ -96,7 +96,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         }
 
         if (this.getFinantialInstitution().getSibsConfiguration() == null) {
-            throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.required");
+            throw new TreasuryDomainException("error.PaymentCodePool.finantialInstitution.sibsconfiguration.required");
         }
         Set<PaymentCodePool> allPools =
                 PaymentCodePool.findByActive(true, this.getFinantialInstitution()).collect(Collectors.toSet());
@@ -196,7 +196,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
             DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
 
-        if (finantialInstitution.getSibsConfiguration() != null
+        if (finantialInstitution.getSibsConfiguration() == null || finantialInstitution.getSibsConfiguration() == null
                 && !entityReferenceCode.equals(finantialInstitution.getSibsConfiguration().getEntityReferenceCode())) {
             throw new TreasuryDomainException(
                     "error.administration.payments.sibs.managepaymentcodepool.invalid.entity.reference.code.from.finantial.institution");

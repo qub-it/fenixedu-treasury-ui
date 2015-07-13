@@ -32,13 +32,13 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentcodepool.PaymentCodePoolController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -54,9 +54,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentReferenceCode")
-@SpringFunctionality(app = TreasuryController.class,
-        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "treasuryFrontOffice")
-//@BennuSpringController(value=TreasuryController.class) 
+//@SpringFunctionality(app = TreasuryController.class,
+//        title = "label.title.administration.payments.sibs.managePaymentReferenceCode", accessGroup = "treasuryFrontOffice")
+@BennuSpringController(value = PaymentCodePoolController.class)
 @RequestMapping(PaymentReferenceCodeController.CONTROLLER_URL)
 public class PaymentReferenceCodeController extends TreasuryBaseController {
 

@@ -250,7 +250,10 @@ ${portal.angularToolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /></td>
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /> <c:if
+                                test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
+                                <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
+                            </c:if></td>
                     </tr>
                 </tbody>
             </table>
@@ -354,7 +357,8 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <div align=right>
                                 <c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
-                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" />
+                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmountWithInterests)}" />
+                                <c:if test="${not (pendingEntry.getOpenAmountWithInterests().compareTo(pendingEntry.getOpenAmount()) == 0) }">(*)</c:if>
                             </div>
                         </datatables:column>
                         <datatables:column>
