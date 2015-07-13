@@ -31,12 +31,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -174,7 +176,7 @@ public class TreasuryEventController extends TreasuryBaseController {
             }
 
         } catch (final DomainException e) {
-            addInfoMessage(e.getLocalizedMessage(), model);
+            addErrorMessage(e.getLocalizedMessage(), model);
         }
 
         return read(treasuryEvent, model);
@@ -191,10 +193,28 @@ public class TreasuryEventController extends TreasuryBaseController {
             }
 
         } catch (final DomainException e) {
-            addInfoMessage(e.getLocalizedMessage(), model);
+            addErrorMessage(e.getLocalizedMessage(), model);
         }
 
         return read(treasuryEvent, model);
     }
 
+    private static final String ANNULALLDEBITENTRIES_URI = "/annulalldebitentries/";
+    public static final String ANNULALLDEBITENTRIES_URL = CONTROLLER_URL + ANNULALLDEBITENTRIES_URI;
+
+    @RequestMapping(value = ANNULALLDEBITENTRIES_URI + "{treasuryEventId}")
+    public String annulAllDebitEntries(@PathVariable("treasuryEventId") final TreasuryEvent treasuryEvent, @RequestParam(value="treasuryEventAnullDebitEntriesReason", required=false) final String reason, 
+            final Model model) {
+        try {
+
+            treasuryEvent.annulAllDebitEntries(reason);
+            
+            addInfoMessage(Constants.bundle("label.TreasuryEvent.annulAllDebitEntries"), model);
+
+        } catch(final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+        }
+        
+        return read(treasuryEvent, model);
+    }
 }

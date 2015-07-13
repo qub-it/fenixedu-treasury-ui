@@ -128,10 +128,12 @@ public class InterestRate extends InterestRate_Base {
     public InterestRateBean calculateInterest(final Map<LocalDate, BigDecimal> amountInDebtMap,
             final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate, final LocalDate paymentDate) {
 
-        final TreeMap<LocalDate, BigDecimal> sortedMap = new TreeMap<LocalDate, BigDecimal>();
+        TreeMap<LocalDate, BigDecimal> sortedMap = new TreeMap<LocalDate, BigDecimal>();
         sortedMap.putAll(amountInDebtMap);
         sortedMap.put(paymentDate, BigDecimal.ZERO);
 
+        sortedMap = splitDatesWithYearsSpan(sortedMap);
+        
         if (getInterestType().isFixedAmount()) {
             return calculedForFixedAmount();
         }
@@ -145,6 +147,42 @@ public class InterestRate extends InterestRate_Base {
         }
 
         throw new RuntimeException("unknown interest type formula");
+    }
+
+    private TreeMap<LocalDate, BigDecimal> splitDatesWithYearsSpan(final TreeMap<LocalDate, BigDecimal> sortedMap) {
+        
+        final TreeMap<LocalDate, BigDecimal> result = new TreeMap<LocalDate, BigDecimal>();
+        LocalDate startDate = null;
+        
+        for (final Entry<LocalDate, BigDecimal> entry : sortedMap.entrySet()) {
+            if(startDate == null) {
+                result.put(entry.getKey(), entry.getValue());
+                startDate = entry.getKey();
+                continue;
+            }
+            
+            if(startDate.getYear() == entry.getKey().getYear()) {
+                result.put(entry.getKey(), entry.getValue());
+                startDate = entry.getKey();
+                continue;                
+            }
+            
+            if(startDate.getYear() == entry.getKey().getYear() - 1) {
+                result.put(entry.getKey(), entry.getValue());
+                startDate = entry.getKey();
+                continue;                                
+            }
+            
+            for(LocalDate a = startDate, b = entry.getKey(); a.getYear() < b.getYear();) {
+                result.put(Constants.lastDayInYear(a.getYear()), sortedMap.get(startDate));
+                a = a.plusYears(1);
+            }
+            
+            result.put(entry.getKey(), entry.getValue());
+            startDate = entry.getKey();
+        }
+        
+        return result;
     }
 
     private InterestRateBean calculateMonthly(final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate,

@@ -34,14 +34,22 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
@@ -136,20 +144,23 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         BigDecimal result =
                 DebitEntry.findActive(this).map(l -> l.getExemptedAmount()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
 
-        result = result.add(CreditEntry.findActive(this).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat()).reduce((a, b) -> a.add(b))
-                .orElse(BigDecimal.ZERO));
-        
+        result =
+                result.add(CreditEntry.findActive(this).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat())
+                        .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO));
+
         return result;
     }
-    
+
     public BigDecimal getExemptedAmount(final Product product) {
         BigDecimal result =
-                DebitEntry.findActive(this, product).map(l -> l.getExemptedAmount()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
+                DebitEntry.findActive(this, product).map(l -> l.getExemptedAmount()).reduce((a, b) -> a.add(b))
+                        .orElse(BigDecimal.ZERO);
 
-        result = result.add(CreditEntry.findActive(this, product).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat()).reduce((a, b) -> a.add(b))
-                .orElse(BigDecimal.ZERO));
-        
-        return result;        
+        result =
+                result.add(CreditEntry.findActive(this, product).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat())
+                        .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO));
+
+        return result;
     }
 
     protected String propertiesMapToJson(final Map<String, String> propertiesMap) {
@@ -185,10 +196,9 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public boolean isDeletable() {
         return true;
     }
-    
 
     public abstract LocalDate getTreasuryEventDate();
-    
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -198,6 +208,67 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         setBennu(null);
 
         super.deleteDomainObject();
+    }
+
+    @Atomic
+    public void annulAllDebitEntries(final String reason) {
+
+        if (isAbleToDeleteAllDebitEntries()) {
+            for (final DebitEntry debitEntry : getDebitEntriesSet()) {
+                debitEntry.delete();
+            }
+        } else {
+            final Set<DebitEntry> unprocessedDebitEntries = Sets.newHashSet();
+            for (final DebitEntry debitEntry : getDebitEntriesSet()) {
+                if (debitEntry.isAnnulled()) {
+                    continue;
+                } 
+                
+                if(!debitEntry.isProcessedInDebitNote()) {
+                    unprocessedDebitEntries.add(debitEntry);
+                    continue;
+                }
+                
+                if(!debitEntry.isProcessedInClosedDebitNote()) {
+                    debitEntry.getFinantialDocument().closeDocument();
+                }
+
+                final CreditNote creditNote =
+                        CreditNote.create(
+                                getDebtAccount(),
+                                DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
+                                        getDebtAccount().getFinantialInstitution()).get(), new DateTime(),
+                                (DebitNote) debitEntry.getFinantialDocument(), null);
+
+                final CreditEntry creditEntry =
+                        CreditEntry.create(creditNote, BundleUtil.getString(Constants.BUNDLE,
+                                "label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason),
+                                debitEntry.getProduct(), debitEntry.getVat(), debitEntry.getAmount(), new DateTime(),
+                                debitEntry, Constants.DEFAULT_QUANTITY);
+                
+                creditNote.closeDocument();
+                
+                closeDebitEntry(debitEntry, creditEntry);
+            }
+        }
+    }
+
+    private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry) {
+        final SettlementNote settlementNote =
+                SettlementNote.create(debitEntry.getDebtAccount(), DocumentNumberSeries.findUniqueDefault(
+                        FinantialDocumentType.findForSettlementNote(), getDebtAccount().getFinantialInstitution()).get(),
+                        new DateTime(), null);
+        
+        SettlementEntry.create(debitEntry, settlementNote, creditEntry.getOpenAmount(), debitEntry.getDescription(),
+                new DateTime());
+        SettlementEntry.create(creditEntry, settlementNote, debitEntry.getOpenAmount(), creditEntry.getDescription(),
+                new DateTime());
+        
+        settlementNote.closeDocument();
+    }
+
+    public boolean isAbleToDeleteAllDebitEntries() {
+        return getDebitEntriesSet().stream().map(l -> l.isDeletable()).reduce((a, c) -> a && c).orElse(Boolean.TRUE);
     }
 
     // @formatter: off

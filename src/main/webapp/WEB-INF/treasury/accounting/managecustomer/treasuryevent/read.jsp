@@ -59,15 +59,59 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+<div class="modal fade" id="annulDebitEntriesModal"> 
+   <div class="modal-dialog"> 
+     <div class="modal-content">
+
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> 
+         <h4 class="modal-title"><spring:message code="label.TreasuryEvent.annul.all.debit.entries"/></h4>
+       </div> 
+
+     <form id ="annulDebitEntriesModalForm" action="${pageContext.request.contextPath}<%= TreasuryEventController.ANNULALLDEBITENTRIES_URL %>${treasuryEvent.externalId}"  method="POST">
+
+	       <div class="modal-body"> 
+       
+		        <p><spring:message code = "label.TreasuryEvent.annul.debit.entry.reason.confirm"/></p>
+	            <div class="form-group row">
+	                <div class="col-sm-2 control-label">
+	                    <spring:message code="label.TreasuryEvent.annul.debit.entry.reason" />
+	                </div>
+	
+	                <div class="col-sm-10">
+	                    <input id="" class="form-control" type="text" name="treasuryEventAnullDebitEntriesReason" />
+	                </div>
+	            </div>
+		       </div> 
+		       
+		       <div class="modal-footer"> 
+		         <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+		         <button id="anullButton" class ="btn btn-danger" type="submit"><spring:message code = "label.annul"/></button>
+		       </div> 
+       </form> 
+       
+     </div> 
+   </div> 
+ </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-    &nbsp; <a class=""
-        href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/treasuryevent/?debtaccount=${treasuryEvent.debtAccount.externalId}">
-        <spring:message code="label.event.back" />
-    </a> &nbsp;
+	&nbsp;
+	<a class=""
+		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/treasuryevent/?debtaccount=${treasuryEvent.debtAccount.externalId}">
+		<spring:message code="label.event.back" />
+	</a>
+	&nbsp;|&nbsp;
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; 
+   	<a class="" href="#" data-toggle="modal" data-target="#annulDebitEntriesModal"> 
+       	<spring:message code="label.event.anull.all.debit.entries" />
+    </a>
 </div>
+
+
+
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 

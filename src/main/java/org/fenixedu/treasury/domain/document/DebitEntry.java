@@ -58,6 +58,7 @@ import org.springframework.util.StringUtils;
 import pt.ist.fenixframework.Atomic;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
@@ -116,6 +117,14 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isDebitNoteEntry() {
         return true;
     }
+    
+    public boolean isDeletable() {
+        final Collection<String> blockers = Lists.newArrayList();
+        
+        checkForDeletionBlockers(blockers);
+        
+        return blockers.isEmpty();
+    }
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
@@ -131,6 +140,7 @@ public class DebitEntry extends DebitEntry_Base {
     @Override
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
+        
         if (this.getInterestRate() != null) {
             InterestRate oldRate = this.getInterestRate();
             this.setInterestRate(null);

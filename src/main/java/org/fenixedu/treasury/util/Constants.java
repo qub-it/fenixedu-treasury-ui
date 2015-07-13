@@ -30,6 +30,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -43,6 +45,9 @@ public class Constants {
     
     // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
+    
+    
+    public static final BigDecimal DEFAULT_QUANTITY = BigDecimal.ONE;
     
     // @formatter: off
     /**************
@@ -105,4 +110,21 @@ public class Constants {
     public static LocalDate firstDayInYear(final int year) {
         return new LocalDate(year, 1, 1);
     }
+    
+    
+    
+    // @formatter: off
+    /**********
+     * BUNDLE *
+     **********/
+    // @formatter: on
+    
+    public static String bundle(final String key, final String ... args) {
+        return BundleUtil.getString(Constants.BUNDLE, key, args);
+    }
+    
+    public static LocalizedString bundleI18N(final String key, final String ... args) {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);        
+    }
+    
 }
