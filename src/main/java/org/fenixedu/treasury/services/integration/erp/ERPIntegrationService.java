@@ -31,7 +31,6 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.jws.WebMethod;
@@ -60,7 +59,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.io.Files;
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
@@ -142,24 +140,20 @@ public class ERPIntegrationService extends BennuWebService {
      * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#getIntegrationStatusFor(java.lang.String)
      */
     @WebMethod
-    public IntegrationStatusOutput getIntegrationStatusFor(String requestIdentification) {
+    public IntegrationStatusOutput getIntegrationStatusFor(String finantialInstitution, String documentNumber) {
 
-        ERPImportOperation importOperation = FenixFramework.getDomainObject(requestIdentification);
-        validateRequestHeader(importOperation.getFinantialInstitution().getFiscalNumber());
-        IntegrationStatusOutput status = new IntegrationStatusOutput(requestIdentification);
-        ERPImporter importer = new ERPImporter(importOperation.getFile().getStream());
-        Set<String> documentNumbers = importer.getRelatedDocumentsNumber();
-        for (String docNumber : documentNumbers) {
-            DocumentStatusWS docStatus = new DocumentStatusWS();
-            FinantialDocument document =
-                    FinantialDocument.findByUiDocumentNumber(importOperation.getFinantialInstitution(), docNumber);
-            if (document == null) {
-                docStatus.setIntegrationStatus(StatusType.ERROR);
-            } else {
-                docStatus.setIntegrationStatus(StatusType.SUCCESS);
-            }
-            status.getDocumentStatus().add(docStatus);
+        validateRequestHeader(finantialInstitution);
+        IntegrationStatusOutput status = new IntegrationStatusOutput();
+        DocumentStatusWS docStatus = new DocumentStatusWS();
+        FinantialDocument document =
+                FinantialDocument.findByUiDocumentNumber(FinantialInstitution.findUniqueByFiscalCode(finantialInstitution)
+                        .orElse(null), documentNumber);
+        if (document == null) {
+            docStatus.setIntegrationStatus(StatusType.ERROR);
+        } else {
+            docStatus.setIntegrationStatus(StatusType.SUCCESS);
         }
+        status.setDocumentStatus(docStatus);
         return status;
     }
 

@@ -68,24 +68,24 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
     }
 
     @Override
-    public List<IntegrationStatusOutput> getIntegrationStatusFor(String requestIdentification) {
+    public IntegrationStatusOutput getIntegrationStatusFor(String finantialInstitution, String documentInformation) {
         List<org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput> integrationStatusFor =
-                getClient().getIntegrationStatusFor(requestIdentification);
-        List<IntegrationStatusOutput> result = new ArrayList<IntegrationStatusOutput>();
-        for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagStatus : integrationStatusFor) {
-            IntegrationStatusOutput item = new IntegrationStatusOutput(siagStatus.getRequestId());
-            List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
-            for (org.fenixedu.treasury.services.integration.erp.siag.DocumentStatusWS siagDocStatus : siagStatus
-                    .getDocumentStatus()) {
-                DocumentStatusWS docStatus = new DocumentStatusWS();
-                docStatus.setDocumentNumber(siagDocStatus.getDocumentNumber());
-                docStatus.setErrorDescription(siagDocStatus.getErrorDescription());
-                docStatus.setIntegrationStatus(StatusType.valueOf(siagDocStatus.getIntegrationStatus().toString()));
-                statusList.add(docStatus);
-            }
-            item.setDocumentStatus(statusList);
-            result.add(item);
+                getClient().getIntegrationStatusFor(documentInformation);
+        IntegrationStatusOutput result = new IntegrationStatusOutput();
+//        for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagStatus : integrationStatusFor) {
+        IntegrationStatusOutput item = new IntegrationStatusOutput();
+        List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
+        for (org.fenixedu.treasury.services.integration.erp.siag.DocumentStatusWS siagDocStatus : integrationStatusFor.get(0)
+                .getDocumentStatus()) {
+            DocumentStatusWS docStatus = new DocumentStatusWS();
+            docStatus.setDocumentNumber(siagDocStatus.getDocumentNumber());
+            docStatus.setErrorDescription(siagDocStatus.getErrorDescription());
+            docStatus.setIntegrationStatus(StatusType.valueOf(siagDocStatus.getIntegrationStatus().toString()));
+            statusList.add(docStatus);
         }
+//            item.setDocumentStatus(statusList);
+//            result.add(item);
+//        }
 
         return result;
     }

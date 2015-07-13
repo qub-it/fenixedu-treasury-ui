@@ -26,9 +26,6 @@
  */
 package org.fenixedu.treasury.services.integration.erp.dto;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.Constants;
@@ -43,27 +40,16 @@ public class IntegrationStatusOutput {
         }
     }
 
-    private List<DocumentStatusWS> _documentStatus;
-    private String requestId;
+    private DocumentStatusWS _documentStatus;
 
-    public IntegrationStatusOutput(String requestId) {
-        this.setRequestId(requestId);
-        setDocumentStatus(new ArrayList<DocumentStatusWS>());
+    public IntegrationStatusOutput() {
     }
 
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
-
-    public List<DocumentStatusWS> getDocumentStatus() {
+    public DocumentStatusWS getDocumentStatus() {
         return _documentStatus;
     }
 
-    public void setDocumentStatus(List<DocumentStatusWS> _documentStatus) {
+    public void setDocumentStatus(DocumentStatusWS _documentStatus) {
         this._documentStatus = _documentStatus;
     }
 }
