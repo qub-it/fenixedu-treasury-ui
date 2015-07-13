@@ -311,13 +311,16 @@ public class SettlementNote extends SettlementNote_Base {
         if (this.isPreparing()) {
             this.delete(true);
         } else {
+            setState(FinantialDocumentStateType.ANNULED);
+            setAnnulledReason(reason);
             // Settlement note can never free entries 
-            super.anullDocument(false, reason);
+            this.markDocumentToExport();
 
             //if we have advanced payments, we must "anull" the "advanced payments"
             if (this.getAdvancedPaymentCreditNote() != null) {
                 this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, reason);
             }
+            checkRules();
         }
     }
 
