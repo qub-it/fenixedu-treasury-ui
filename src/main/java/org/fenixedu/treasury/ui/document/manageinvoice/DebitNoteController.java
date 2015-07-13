@@ -393,7 +393,8 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
         try {
 
-            if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
+            if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()
+                    || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
                 debitNote.anullDebitNoteWithCreditNote(anullReason);
             } else {
                 debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
