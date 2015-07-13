@@ -196,7 +196,7 @@ ${portal.toolkit()}
                                             href="${pageContext.request.contextPath}/<%=DebitNoteController.READ_URL %>${paymentReferenceCode.targetPayment.finantialDocument.externalId}"><c:out
                                                     value='${paymentReferenceCode.targetPayment.finantialDocument.uiDocumentNumber}' /></a></li>
                                         <li><c:out
-                                                value='${paymentReferenceCode.targetPayment.finantialDocument.currency.getValueFor(paymentReferenceCode.targetPayment.finantialDocument.openAmount)}' />
+                                                value='${paymentReferenceCode.targetPayment.finantialDocument.currency.getValueFor(paymentReferenceCode.targetPayment.finantialDocument.openAmountWithInterests)}' />
                                         </li>
                                     </ul>
                                 </c:if> <c:if test='${paymentReferenceCode.targetPayment.isMultipleEntriesPaymentCode() }'>

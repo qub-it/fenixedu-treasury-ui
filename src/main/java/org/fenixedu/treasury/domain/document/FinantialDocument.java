@@ -355,6 +355,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         }
     }
 
+    public BigDecimal getOpenAmountWithInterests() {
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
+            return getTotalAmount();
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
     @Atomic
     public void changeState(FinantialDocumentStateType newState, String reason) {
         //Same state, do nothing...

@@ -212,12 +212,14 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.openAmount" /></th>
-                        <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.openAmount)}' /></td>
+                        <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.openAmountWithInterests)}' /></td>
                     </tr>
                     <c:if test="${debitEntry.pendingInterestAmount.unscaledValue() != 0 }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.pendingInterestAmount" /></th>
-                            <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.pendingInterestAmount)}' /></td>
+                            <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.pendingInterestAmount)}' />
+                                                            <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
+                            </td>
                         </tr>
                     </c:if>
 

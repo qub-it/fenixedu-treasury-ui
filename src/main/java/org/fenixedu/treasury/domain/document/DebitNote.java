@@ -92,6 +92,16 @@ public class DebitNote extends DebitNote_Base {
         return getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
 
+    @Override
+    public BigDecimal getOpenAmountWithInterests() {
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
+            return getDebtAccount().getFinantialInstitution().getCurrency()
+                    .getValueWithScale(getOpenAmount().add(getPendingInterestAmount()));
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
     public Stream<? extends DebitEntry> getDebitEntries() {
         return DebitEntry.find(this);
     }

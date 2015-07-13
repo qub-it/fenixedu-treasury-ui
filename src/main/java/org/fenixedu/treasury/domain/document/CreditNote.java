@@ -165,6 +165,15 @@ public class CreditNote extends CreditNote_Base {
     }
 
     @Override
+    public BigDecimal getOpenAmountWithInterests() {
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
+            return getOpenAmount();
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    @Override
     public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList, Boolean includeAnulledDocuments) {
         documentsBaseList.add(this);
 

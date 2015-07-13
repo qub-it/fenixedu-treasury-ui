@@ -207,4 +207,13 @@ public abstract class Invoice extends Invoice_Base {
         return null;
     }
 
+    @Override
+    public BigDecimal getOpenAmountWithInterests() {
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
+            return getTotalAmount();
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
 }
