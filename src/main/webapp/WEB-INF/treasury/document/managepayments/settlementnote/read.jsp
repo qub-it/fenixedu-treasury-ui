@@ -436,7 +436,7 @@ ${portal.toolkit()}
             cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
-                    <spring:message code="label.PaymentEntry.paymentMethod" />
+                    <spring:message code="label.document.managepayments.settlementnote.PaymentMethod" />
                 </datatables:columnHead>
                 <c:out value="${payemntEntry.paymentMethod.name.content}" />
             </datatables:column>
@@ -465,7 +465,7 @@ ${portal.toolkit()}
             cdn="false" cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
-                    <spring:message code="label.PaymentEntry.paymentMethod" />
+                    <spring:message code="label.document.managepayments.settlementnote.ReimbursementMethod" />
                 </datatables:columnHead>
                 <c:out value="${reimbursementEntry.paymentMethod.name.content}" />
             </datatables:column>

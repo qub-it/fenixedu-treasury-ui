@@ -45,7 +45,6 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -179,13 +178,19 @@ ${portal.toolkit()}
                         <spring:message code="label.PaymentMethod.value" />
                     </th>
                 </tr>
+                <c:set var ="sum" value="${ 0 }"/>
                 <c:forEach var="entry" items="${paymentsDataSet}">
                     <tr>
-                        <td><c:out value="${entry.key.name.content}" /></td>
-                        <td><c:out value="${entry.value}" /></td>
+                        <td><c:out value="${ entry.key.name.content }" /></td>
+                        <td><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td>
                     </tr>
+                    <c:set var ="sum" value="${ sum + entry.value }"/>
                 </c:forEach>
-            </table>
+                    <tr> 
+                        <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th>
+                        <th><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
+                    </tr>
+                </table>
             </div>
             <div class="col-sm-5">
                 <table id="reimbursementsEntries"
@@ -198,13 +203,19 @@ ${portal.toolkit()}
                         <spring:message code="label.PaymentMethod.value" />
                     </th>
                 </tr>
+                <c:set var ="sum" value="${ 0 }"/>
                 <c:forEach var="entry" items="${reimbursementsDataSet}">
                     <tr>
-                        <td><c:out value="${entry.key.name.content}" /></td>
-                        <td><c:out value="${entry.value}" /></td>
+                        <td><c:out value="${ entry.key.name.content }" /></td>
+                        <td><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td>
                     </tr>
+                    <c:set var ="sum" value="${ sum + entry.value }"/>
                 </c:forEach>
-            </table>
+                    <tr>
+                        <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th>
+                        <th><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
+                    </tr>
+                </table>
             </div>
         </div>
         <h3><spring:message code="label.details"/></h3>
@@ -241,10 +252,10 @@ ${portal.toolkit()}
                         <spring:message code="label.InvoiceEntry.totalAmount" />
                     </datatables:columnHead>
                     <div align=right>
-                        <c:if test="${ entry.finantialDocument.finantialDocumentType.type == 'REIMBURSEMENT_NOTE' }">
+                        <c:if test="${ not entry.invoiceEntry.isDebitNoteEntry() }">
                             <c:out value="${entry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount.negate())}" />                                
                         </c:if>
-                        <c:if test="${ entry.finantialDocument.finantialDocumentType.type == 'SETTLEMENT_NOTE' }">
+                        <c:if test="${ entry.invoiceEntry.isDebitNoteEntry() }">
                             <c:out value="${entry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />                                
                         </c:if>                                
                     </div>
@@ -275,6 +286,7 @@ ${portal.toolkit()}
     </div>
 
 <script>	
+
 $(document).ready(function() {
     var finantial_institutions_options = [
       <c:forEach items="${finantial_institutions_options}" var="element"> 

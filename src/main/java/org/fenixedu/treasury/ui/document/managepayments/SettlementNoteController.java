@@ -527,6 +527,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         } else {
             List<SettlementNote> notes = filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo);
             model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
+            model.addAttribute("finantialInstitution", finantialInstitution);
 
             populateSummaryTransactions(model, notes);
         }
