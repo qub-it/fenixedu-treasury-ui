@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.services.integration.erp;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -92,7 +94,9 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -1156,18 +1160,53 @@ public class ERPExporter {
         DocumentsInformationInput input = new DocumentsInformationInput();
         if (operation.getFile().getSize() <= erpIntegrationConfiguration.getMaxSizeBytesToExportOnline()) {
             input.setData(operation.getFile().getContent());
-            String sendInfoOnlineResult = service.sendInfoOnline(input);
+            DocumentsInformationOutput sendInfoOnlineResult = service.sendInfoOnline(input);
             operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.online",
-                    sendInfoOnlineResult));
+                    sendInfoOnlineResult.getRequestId()));
             operation.appendInfoLog("#" + sendInfoOnlineResult);
+
+            //if we have result in online situation, then check the information of integration STATUS
+            for (DocumentStatusWS status : sendInfoOnlineResult.getDocumentStatus()) {
+                if (status.isIntegratedWithSuccess()) {
+
+                    FinantialDocument document =
+                            institution.getFinantialDocumentsPendingForExportationSet().stream()
+                                    .filter(x -> x.getUiDocumentNumber().equals(status.getDocumentNumber())).findFirst()
+                                    .orElse(null);
+                    if (document != null) {
+                        operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
+                                "info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber()));
+                        document.clearDocumentToExport();
+                    } else {
+
+                    }
+                }
+            }
         } else {
+            try {
+                String sharedURI = "";
+                if (institution.getErpIntegrationConfiguration().getExternalURL().startsWith("file://")) {
+                    sharedURI =
+                            institution.getErpIntegrationConfiguration().getExternalURL() + "\\"
+                                    + operation.getFile().getFilename();
+                    institution.getErpIntegrationConfiguration().getExternalURL();
+                    File destFile = new File(sharedURI);
 
-            input.setDataURI(operation.getFile().getFilename());
-            String sendInfoOnlineResult = service.sendInfoOffline(input);
-            operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.offline",
-                    sendInfoOnlineResult));
-            operation.appendInfoLog("#" + sendInfoOnlineResult);
+                    com.google.common.io.Files.write(operation.getFile().getContent(), destFile);
 
+                } else //ftp or else
+                {
+                    throw new TreasuryDomainException("error.ERPExporter.noExternalURL.defined.in.erpintegrationconfiguration");
+                }
+
+                input.setDataURI(sharedURI);
+                String sendInfoOnlineResult = service.sendInfoOffline(input);
+                operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
+                        "info.ERPExporter.sucess.sending.inforation.offline", sendInfoOnlineResult));
+                operation.appendInfoLog("#" + sendInfoOnlineResult);
+            } catch (IOException e) {
+                operation.setErrorLog(e.getLocalizedMessage());
+            }
         }
     }
 

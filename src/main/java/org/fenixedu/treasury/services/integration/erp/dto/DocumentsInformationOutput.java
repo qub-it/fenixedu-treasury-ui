@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.services.integration.erp.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DocumentsInformationOutput {
@@ -33,7 +34,7 @@ public class DocumentsInformationOutput {
     private List<DocumentStatusWS> documentStatus;
 
     public DocumentsInformationOutput() {
-
+        documentStatus = new ArrayList<DocumentStatusWS>();
     }
 
     public List<DocumentStatusWS> getDocumentStatus() {

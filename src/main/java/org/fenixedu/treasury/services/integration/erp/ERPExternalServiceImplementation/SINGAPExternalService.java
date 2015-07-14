@@ -11,6 +11,7 @@ import oecd.standardauditfile_tax.pt_1.AuditFile;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.singap.GestaoAcademicaService;
@@ -33,27 +34,29 @@ public class SINGAPExternalService extends BennuWebServiceClient<GestaoAcademica
 
     @Atomic
     private static void createStaticInitializer() {
-        new SIAGExternalService();
+        new SINGAPExternalService();
 
     }
 
     @Override
-    public String sendInfoOnline(DocumentsInformationInput documentsInformation) {
-        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput siagInput =
+    public DocumentsInformationOutput sendInfoOnline(DocumentsInformationInput documentsInformation) {
+        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput singapInput =
                 new org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput();
-        siagInput.setDataURI(documentsInformation.getDataURI());
-        siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-        siagInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
-        return getClient().sendInfoOnline(siagInput);
+        singapInput.setDataURI(documentsInformation.getDataURI());
+        singapInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
+        singapInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
+        DocumentsInformationOutput output = new DocumentsInformationOutput();
+        output.setRequestId(getClient().sendInfoOnline(singapInput));
+        return output;
     }
 
     @Override
     public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
-        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput siagInput =
+        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput singaInput =
                 new org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput();
-        siagInput.setDataURI(documentsInformation.getDataURI());
-        siagInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-        return getClient().sendInfoOffline(siagInput);
+        singaInput.setDataURI(documentsInformation.getDataURI());
+        singaInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
+        return getClient().sendInfoOffline(singaInput);
     }
 
     @Override
@@ -61,15 +64,15 @@ public class SINGAPExternalService extends BennuWebServiceClient<GestaoAcademica
         List<org.fenixedu.treasury.services.integration.erp.singap.IntegrationStatusOutput> integrationStatusFor =
                 getClient().getIntegrationStatusFor(documentInformation);
         IntegrationStatusOutput result = new IntegrationStatusOutput();
-//        for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagStatus : integrationStatusFor) {
+//        for (org.fenixedu.treasury.services.integration.erp.singa.IntegrationStatusOutput singaStatus : integrationStatusFor) {
         IntegrationStatusOutput item = new IntegrationStatusOutput();
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
-        for (org.fenixedu.treasury.services.integration.erp.singap.DocumentStatusWS siagDocStatus : integrationStatusFor.get(0)
+        for (org.fenixedu.treasury.services.integration.erp.singap.DocumentStatusWS singaDocStatus : integrationStatusFor.get(0)
                 .getDocumentStatus()) {
             DocumentStatusWS docStatus = new DocumentStatusWS();
-            docStatus.setDocumentNumber(siagDocStatus.getDocumentNumber());
-            docStatus.setErrorDescription(siagDocStatus.getErrorDescription());
-            docStatus.setIntegrationStatus(StatusType.valueOf(siagDocStatus.getIntegrationStatus().toString()));
+            docStatus.setDocumentNumber(singaDocStatus.getDocumentNumber());
+            docStatus.setErrorDescription(singaDocStatus.getErrorDescription());
+            docStatus.setIntegrationStatus(StatusType.valueOf(singaDocStatus.getIntegrationStatus().toString()));
             statusList.add(docStatus);
         }
 //            item.setDocumentStatus(statusList);

@@ -15,14 +15,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getIntegrationStatusForResponse">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getIntegrationStatusForReturn" type="impl:IntegrationStatusOutput"/>
+      <element name="getIntegrationStatusForReturn" type="impl:IntegrationStatusOutput"/>
      </sequence>
     </complexType>
    </element>
    <complexType name="IntegrationStatusOutput">
     <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="documentStatus" nillable="true" type="tns1:documentStatusWS"/>
      <element maxOccurs="1" minOccurs="0" name="requestId" type="xsd:string"/>
-     <element maxOccurs="unbounded" minOccurs="0" name="_documentStatus" nillable="true" type="tns1:documentStatusWS"/>
     </sequence>
    </complexType>
    <element name="sendInfoOffline">
@@ -34,7 +34,7 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </element>
    <complexType name="DocumentsInformationInput">
     <sequence>
-     <element maxOccurs="unbounded" minOccurs="0" name="data" nillable="true" type="xsd:byte"/>
+     <element maxOccurs="1" minOccurs="0" name="data" type="xsd:base64Binary"/>
      <element maxOccurs="1" minOccurs="0" name="dataURI" type="xsd:string"/>
      <element maxOccurs="1" minOccurs="0" name="finantialInstitution" type="xsd:string"/>
     </sequence>
@@ -56,10 +56,16 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="sendInfoOnlineResponse">
     <complexType>
      <sequence>
-      <element name="sendInfoOnlineReturn" type="xsd:string"/>
+      <element name="sendInfoOnlineReturn" type="impl:DocumentsInformationOutput"/>
      </sequence>
     </complexType>
    </element>
+   <complexType name="DocumentsInformationOutput">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="documentStatus" nillable="true" type="tns1:documentStatusWS"/>
+     <element maxOccurs="1" minOccurs="0" name="requestId" type="xsd:string"/>
+    </sequence>
+   </complexType>
   </schema>
   <schema elementFormDefault="qualified" targetNamespace="http://erp.integration.services.treasury.fenixedu.org/" xmlns="http://www.w3.org/2001/XMLSchema">
    <import namespace="http://SIAGGestaoAcademicaService.ws.siag.gedi.pt"/>

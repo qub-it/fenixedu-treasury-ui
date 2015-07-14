@@ -30,4 +30,8 @@ public class DocumentStatusWS {
     public void setIntegrationStatus(StatusType integrationStatus) {
         this.integrationStatus = integrationStatus;
     }
+
+    public boolean isIntegratedWithSuccess() {
+        return this.getIntegrationStatus() != null && this.getIntegrationStatus().equals(StatusType.SUCCESS);
+    }
 }
