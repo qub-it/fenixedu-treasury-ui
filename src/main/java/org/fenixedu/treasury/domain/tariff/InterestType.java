@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain.tariff;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -59,9 +59,9 @@ public enum InterestType {
     }
 
     public static List<InterestType> findAll() {
-        List<InterestType> asList = Arrays.asList(InterestType.values());
-        asList.remove(DAILY);
-        asList.remove(MONTHLY);
+        List<InterestType> asList = new ArrayList<InterestType>();
+        asList.add(GLOBAL_RATE);
+        asList.add(FIXED_AMOUNT);
         return asList;
     }
 }
