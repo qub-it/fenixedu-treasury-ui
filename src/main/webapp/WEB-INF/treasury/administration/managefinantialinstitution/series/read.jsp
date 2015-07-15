@@ -125,7 +125,7 @@ ${portal.toolkit()}
     					.getFinantialInstitution();
     			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
     					finantialInstitution)
-    					|| TreasuryAccessControl.getInstance().isManager()) {
+    					 ) {
     %>
 
 
@@ -239,7 +239,7 @@ ${portal.toolkit()}
 <%
     if (TreasuryAccessControl.getInstance().isBackOfficeMember(
 					finantialInstitution)
-					|| TreasuryAccessControl.getInstance().isManager()) {
+					 ) {
 %>
 
 <div class="well well-sm" style="display: inline-block">

@@ -290,49 +290,49 @@ ${portal.angularToolkit()}
 <!--                 </div> -->
 <!--             </div> -->
 
-            <div class="form-group row"
-                ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.InterestRate.applyInFirstWorkday" />
-                </div>
-                <div class="col-sm-4">
-                    <select id="fixedTariff_applyInFirstWorkday"
-                        name="applyInFirstWorkday" class="form-control"
-                        ng-model="object.interestRate.applyInFirstWorkday"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
-                    </select>
-                </div>
-            </div>
+<!--             <div class="form-group row" -->
+<!--                 ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'"> -->
+<!--                 <div class="col-sm-2 control-label"> -->
+<%--                     <spring:message --%>
+<%--                         code="label.InterestRate.applyInFirstWorkday" /> --%>
+<!--                 </div> -->
+<!--                 <div class="col-sm-4"> -->
+<!--                     <select id="fixedTariff_applyInFirstWorkday" -->
+<!--                         name="applyInFirstWorkday" class="form-control" -->
+<!--                         ng-model="object.interestRate.applyInFirstWorkday" -->
+<!--                         ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues"> -->
+<!--                     </select> -->
+<!--                 </div> -->
+<!--             </div> -->
 
-            <div class="form-group row"
-                ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.InterestRate.maximumDaysToApplyPenalty" />
-                </div>
-                <div class="col-sm-4">
-                    <input id="fixedTariff_maximumDaysToApplyPenalty"
-                        class="form-control" type="text"
-                        ng-model="object.interestRate.maximumDaysToApplyPenalty"
-                        name="maximumDaysToApplyPenalty" 
-                        pattern="^\d+$"/>
-                </div>
-            </div>
+<!--             <div class="form-group row" -->
+<!--                 ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'"> -->
+<!--                 <div class="col-sm-2 control-label"> -->
+<%--                     <spring:message --%>
+<%--                         code="label.InterestRate.maximumDaysToApplyPenalty" /> --%>
+<!--                 </div> -->
+<!--                 <div class="col-sm-4"> -->
+<!--                     <input id="fixedTariff_maximumDaysToApplyPenalty" -->
+<!--                         class="form-control" type="text" -->
+<!--                         ng-model="object.interestRate.maximumDaysToApplyPenalty" -->
+<!--                         name="maximumDaysToApplyPenalty"  -->
+<!--                         pattern="^\d+$"/> -->
+<!--                 </div> -->
+<!--             </div> -->
 
-            <div class="form-group row"
-                ng-show="object.applyInterests && object.interestRate.interestType=='MONTHLY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.InterestRate.maximumMonthsToApplyPenalty" />
-                </div>
-                <div class="col-sm-4">
-                    <input id="fixedTariff_maximumMonthsToApplyPenalty"
-                        class="form-control" type="text"
-                        ng-model="object.interestRate.maximumMonthsToApplyPenalty"
-                        name="maximumMonthsToApplyPenalty" pattern="^\d+$" />
-                </div>
-            </div>
+<!--             <div class="form-group row" -->
+<!--                 ng-show="object.applyInterests && object.interestRate.interestType=='MONTHLY'"> -->
+<!--                 <div class="col-sm-2 control-label"> -->
+<%--                     <spring:message --%>
+<%--                         code="label.InterestRate.maximumMonthsToApplyPenalty" /> --%>
+<!--                 </div> -->
+<!--                 <div class="col-sm-4"> -->
+<!--                     <input id="fixedTariff_maximumMonthsToApplyPenalty" -->
+<!--                         class="form-control" type="text" -->
+<!--                         ng-model="object.interestRate.maximumMonthsToApplyPenalty" -->
+<!--                         name="maximumMonthsToApplyPenalty" pattern="^\d+$" /> -->
+<!--                 </div> -->
+<!--             </div> -->
 
             <div class="form-group row"
                 ng-show="object.applyInterests && object.interestRate.interestType=='FIXED_AMOUNT'">

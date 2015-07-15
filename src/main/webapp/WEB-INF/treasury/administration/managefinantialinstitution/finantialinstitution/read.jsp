@@ -125,8 +125,7 @@ ${portal.toolkit()}
         FinantialInstitution finantialInstitution = (FinantialInstitution) request
     					.getAttribute("finantialInstitution");
     			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-    					finantialInstitution)
-    					|| TreasuryAccessControl.getInstance().isManager()) {
+    					finantialInstitution)) {
     %>
     |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;| &nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
@@ -278,12 +277,19 @@ ${portal.toolkit()}
     <spring:message code="label.administration.manageFinantialInstitution.searchFinantialEntity" />
 </h2>
 
+<%
+    if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+					finantialInstitution)) {
+%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> &nbsp; <a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialentity/create?finantialInstitutionId=${finantialInstitution.externalId }">
         <spring:message code="label.event.create" />
     </a> &nbsp;
 </div>
+<%
+    }
+%>
 <c:choose>
     <c:when test="${not empty finantialInstitution.finantialEntitiesSet}">
         <table id="searchfinantialentityTable" class="table responsive table-bordered table-hover" width="100%">
@@ -314,8 +320,7 @@ ${portal.toolkit()}
 
 <%
     if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-					finantialInstitution)
-					|| TreasuryAccessControl.getInstance().isManager()) {
+					finantialInstitution)) {
 %>
 
 <div class="well well-sm" style="display: inline-block">
@@ -406,17 +411,24 @@ ${portal.toolkit()}
                                 <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
                                     <c:set var="documentTemplate" value="${ entity.hasDocumentTemplate(type) }" />
                                     <tr>
-                                        <td><c:if test="${ empty documentTemplate }">
+                                        <td>
+                                            <%
+                                                if (TreasuryAccessControl.getInstance()
+                                            									.isBackOfficeMember(finantialInstitution)) {
+                                            %> <c:if test="${ empty documentTemplate }">
                                                 <a class="btn btn-default btn-xs"
                                                     href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message
                                                         code='label.create' /></a>
-                                            </c:if> <c:if test="${ not empty documentTemplate }">
+                                            </c:if> <%
+     }
+ %> <c:if test="${ not empty documentTemplate }">
                                                 <a class="btn btn-default btn-xs"
                                                     href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/search/view/${documentTemplate.externalId}"><spring:message
                                                         code='label.view' /></a>
                                                 <a class="btn btn-default btn-xs" href="#" onClick="javascript:processUpload('${documentTemplate.externalId}')"><spring:message
                                                         code='label.upload' /></a>
-                                            </c:if></td>
+                                            </c:if>
+                                        </td>
                                     </tr>
                                 </c:forEach>
                             </table>
@@ -467,16 +479,23 @@ var searchseriesDataSet = [
                           <c:if test="${not searchResult.externSeries}">
                               "<spring:message code='label.false' />"
                           </c:if>,
+                          <%if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+						finantialInstitution)) {%>
         "defaultSeries" :<c:if test="${searchResult.defaultSeries}">
                 "<spring:message code='label.true' />"
                           </c:if>
-                          <%if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-						finantialInstitution)
-						|| TreasuryAccessControl.getInstance().isManager()) {%>
-                
                           <c:if test="${not searchResult.defaultSeries}">
                               "(<spring:message code='label.false' />) <a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.makeDefaultSeries'/></a>"
-                          </c:if>,
+                          </c:if>
+                          ,
+                          <%} else {%>
+                          "defaultSeries" :<c:if test="${searchResult.defaultSeries}">
+                          "<spring:message code='label.true' />"
+                                    </c:if>
+                                    <c:if test="${not searchResult.defaultSeries}">
+                                        "<spring:message code='label.false' />"
+                                    </c:if>
+                                    ,                          
                           <%}%>
         "actions" :
              " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"             

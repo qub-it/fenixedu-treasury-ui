@@ -27,6 +27,9 @@
  */
 package org.fenixedu.treasury.domain.tariff;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.Constants;
@@ -53,5 +56,12 @@ public enum InterestType {
 
     public LocalizedString getDescriptionI18N() {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
+    }
+
+    public static List<InterestType> findAll() {
+        List<InterestType> asList = Arrays.asList(InterestType.values());
+        asList.remove(DAILY);
+        asList.remove(MONTHLY);
+        return asList;
     }
 }

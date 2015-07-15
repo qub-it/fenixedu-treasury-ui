@@ -118,7 +118,7 @@ public class FixedTariffInterestRateBean implements IBean {
 
     public FixedTariffInterestRateBean() {
         this.interestTypeDataSource = new ArrayList<TupleDataSourceBean>();
-        for (InterestType type : InterestType.values()) {
+        for (InterestType type : InterestType.findAll()) {
             TupleDataSourceBean typeBean = new TupleDataSourceBean();
             typeBean.setId(type.toString());
             typeBean.setText(type.getDescriptionI18N().getContent());

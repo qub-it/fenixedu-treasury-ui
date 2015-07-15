@@ -89,6 +89,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate, @RequestParam(
             value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate, @RequestParam(
             value = "state", required = false) PaymentReferenceCodeStateType state, Model model) {
+
         List<PaymentReferenceCode> searchpaymentreferencecodeResultsDataSet =
                 filterSearchPaymentReferenceCode(referenceCode, beginDate, endDate, state);
 
@@ -142,6 +143,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         setPaymentReferenceCode(paymentReferenceCode, model);
         try {
+            assertUserIsBackOfficeMember(paymentReferenceCode.getPaymentCodePool().getFinantialInstitution(), model);
             deletePaymentReferenceCode(paymentReferenceCode);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
@@ -172,6 +174,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             value = "state", required = false) PaymentReferenceCodeStateType state, @RequestParam(value = "paymentcodepool",
             required = false) PaymentCodePool pool, Model model, RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsBackOfficeMember(pool.getFinantialInstitution(), model);
 
             PaymentReferenceCode paymentReferenceCode =
                     createPaymentReferenceCode(referenceCode, beginDate, endDate, state, pool);
@@ -217,6 +220,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         setPaymentReferenceCode(paymentReferenceCode, model);
 
         try {
+            assertUserIsBackOfficeMember(paymentReferenceCode.getPaymentCodePool().getFinantialInstitution(), model);
+
             updatePaymentReferenceCode(referenceCode, beginDate, endDate, state, model);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.update"), model);
 

@@ -113,9 +113,18 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
-    public String read(@PathVariable("oid") DocumentNumberSeries documentNumberSeries, Model model) {
-        setDocumentNumberSeries(documentNumberSeries, model);
-        return "treasury/administration/managefinantialinstitution/documentnumberseries/read";
+    public String read(@PathVariable("oid") DocumentNumberSeries documentNumberSeries, Model model,
+            RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsFrontOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
+            setDocumentNumberSeries(documentNumberSeries, model);
+            return "treasury/administration/managefinantialinstitution/documentnumberseries/read";
+
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+        return redirect(FinantialInstitutionController.READ_URL
+                + documentNumberSeries.getSeries().getFinantialInstitution().getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
@@ -123,7 +132,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setDocumentNumberSeries(documentNumberSeries, model);
         try {
-            super.assertUserIsBackOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
             String seriesExternalId = documentNumberSeries.getSeries().getExternalId();
             deleteDocumentNumberSeries(documentNumberSeries);
 
@@ -140,7 +149,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI + "/series{oid}", method = RequestMethod.GET)
     public String create(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
         try {
-            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
             model.addAttribute("series", series);
             model.addAttribute("DocumentNumberSeries_finantialDocumentType_options",
                     FinantialDocumentType.findAll().collect(Collectors.toList()));
@@ -156,7 +165,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             value = "finantialdocumenttype", required = false) FinantialDocumentType finantialDocumentType, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
 
             DocumentNumberSeries documentNumberSeries = createDocumentNumberSeries(series, finantialDocumentType);
 
@@ -184,7 +193,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
 
         setDocumentNumberSeries(documentNumberSeries, model);
         try {
-            super.assertUserIsBackOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
 
             List<FinantialDocument> preparingDocuments =
                     documentNumberSeries

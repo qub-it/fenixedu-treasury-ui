@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="java.util.Collection"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -39,12 +41,18 @@ ${portal.toolkit()}
     </h1>
 </div>
 <%-- NAVIGATION --%>
+    <%
+                if (TreasuryAccessControl.getInstance().isManager()) {
+    %>
 <div class="well well-sm" style="display: inline-block">
+
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/create"><spring:message
             code="label.event.create" /></a> &nbsp;
 </div>
+
+<%} %>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 

@@ -53,6 +53,7 @@ import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
+import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
@@ -106,7 +107,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
         DebtAccount debtAccount = debitNote.getDebtAccount();
         try {
-
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             deleteDebitNote(debitNote);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
@@ -119,18 +120,27 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
-    public String read(@PathVariable("oid") DebitNote debitNote, Model model) {
-        setDebitNote(debitNote, model);
+    public String read(@PathVariable("oid") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
 
-        if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
-            model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
-                    "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
-        } else {
-            model.addAttribute("anullDebitNoteMessage",
-                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageInvoice.readDebitNote.confirmAnull"));
+        try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
+            setDebitNote(debitNote, model);
+
+            if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
+                model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
+                        "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
+            } else {
+                model.addAttribute("anullDebitNoteMessage",
+                        BundleUtil.getString(Constants.BUNDLE, "label.document.manageInvoice.readDebitNote.confirmAnull"));
+            }
+
+            return "treasury/document/manageinvoice/debitnote/read";
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
         }
+        return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
 
-        return "treasury/document/manageinvoice/debitnote/read";
     }
 
     @RequestMapping(value = SEARCH_URI)
@@ -216,60 +226,67 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
+        try {
 
-        FinantialInstitution finantialInstitution = null;
-        if (documentNumberSeries == null && debtAccount == null) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
-            return redirect(SEARCH_URL, model, redirectAttributes);
-        }
-
-        if (documentNumberSeries != null && debtAccount != null) {
-            if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
-                    .equals(debtAccount.getFinantialInstitution().getCode())) {
+            FinantialInstitution finantialInstitution = null;
+            if (documentNumberSeries == null && debtAccount == null) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
-                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+                return redirect(SEARCH_URL, model, redirectAttributes);
             }
-        }
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
 
-        if (documentNumberSeries != null) {
-            finantialInstitution = documentNumberSeries.getSeries().getFinantialInstitution();
-        }
-        if (debtAccount != null) {
-            finantialInstitution = debtAccount.getFinantialInstitution();
-        }
+            if (documentNumberSeries != null && debtAccount != null) {
+                if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
+                        .equals(debtAccount.getFinantialInstitution().getCode())) {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                            "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+                    return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+                }
+            }
 
-        model.addAttribute(
-                "DebitNote_payorDebtAccount_options",
-                DebtAccount.find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
-                        .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
-                        .collect(Collectors.toList()));
+            if (documentNumberSeries != null) {
+                finantialInstitution = documentNumberSeries.getSeries().getFinantialInstitution();
+            }
+            if (debtAccount != null) {
+                finantialInstitution = debtAccount.getFinantialInstitution();
+            }
 
-        if (debtAccount != null) {
-            model.addAttribute("DebitNote_debtAccount_options", Collections.singleton(debtAccount));
-        } else {
-            model.addAttribute("DebitNote_debtAccount_options",
-                    DebtAccount.find(finantialInstitution).collect(Collectors.toList()));
-        }
-        if (documentNumberSeries != null) {
-            model.addAttribute("DebitNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
+            model.addAttribute(
+                    "DebitNote_payorDebtAccount_options",
+                    DebtAccount.find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
+                            .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
+                            .collect(Collectors.toList()));
 
-        } else {
-            List<DocumentNumberSeries> availableSeries =
-                    org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
-                            debtAccount.getFinantialInstitution()).collect(Collectors.toList());
-
-            if (availableSeries.size() > 0) {
-                model.addAttribute("DebitNote_documentNumberSeries_options",
-                        DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
+            if (debtAccount != null) {
+                model.addAttribute("DebitNote_debtAccount_options", Collections.singleton(debtAccount));
             } else {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
-                        "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
-                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+                model.addAttribute("DebitNote_debtAccount_options",
+                        DebtAccount.find(finantialInstitution).collect(Collectors.toList()));
             }
+            if (documentNumberSeries != null) {
+                model.addAttribute("DebitNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
+
+            } else {
+                List<DocumentNumberSeries> availableSeries =
+                        org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
+                                debtAccount.getFinantialInstitution()).collect(Collectors.toList());
+
+                if (availableSeries.size() > 0) {
+                    model.addAttribute("DebitNote_documentNumberSeries_options", DocumentNumberSeries
+                            .applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
+                } else {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                            "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+                    return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+                }
+            }
+            return "treasury/document/manageinvoice/debitnote/create";
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
         }
-        return "treasury/document/manageinvoice/debitnote/create";
+        return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
+
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
@@ -283,7 +300,7 @@ public class DebitNoteController extends TreasuryBaseController {
                     value = "documentobservations", required = false) String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-
+            assertUserIsFrontOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
             DebitNote debitNote =
                     createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate, documentDueDate,
                             originDocumentNumber, documentObservations);
@@ -315,18 +332,23 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") DebitNote debitNote, Model model) {
+    public String update(@PathVariable("oid") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            model.addAttribute(
+                    "DebitNote_payorDebtAccount_options",
+                    DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
+                            .filter(x -> x.getCustomer().isAdhocCustomer())
+                            .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
+                            .collect(Collectors.toSet())); //
 
-        model.addAttribute(
-                "DebitNote_payorDebtAccount_options",
-                DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
-                        .filter(x -> x.getCustomer().isAdhocCustomer())
-                        .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
-                        .collect(Collectors.toSet())); //
-
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
-        setDebitNote(debitNote, model);
-        return "treasury/document/manageinvoice/debitnote/update";
+            model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+            setDebitNote(debitNote, model);
+            return "treasury/document/manageinvoice/debitnote/update";
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+        return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
@@ -342,6 +364,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
 
         try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             updateDebitNote(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber, documentObservations, model);
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
@@ -350,7 +373,7 @@ public class DebitNoteController extends TreasuryBaseController {
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
         }
-        return update(debitNote, model);
+        return update(debitNote, model, redirectAttributes);
     }
 
     @Atomic
@@ -375,6 +398,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
 
         try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             debitNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.closed.sucess"),
@@ -392,7 +416,7 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam("reason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setDebitNote(debitNote, model);
         try {
-
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()
                     || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
                 debitNote.anullDebitNoteWithCreditNote(anullReason);
@@ -431,6 +455,7 @@ public class DebitNoteController extends TreasuryBaseController {
     public void processReadToExportIntegrationFile(@PathVariable("oid") DebitNote debitNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             String output =
                     ERPExporter.exportFinantialDocumentToXML(
                             debitNote.getDebtAccount().getFinantialInstitution(),
@@ -464,6 +489,7 @@ public class DebitNoteController extends TreasuryBaseController {
     public String processReadToExportIntegrationOnline(@PathVariable("oid") DebitNote debitNote, Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             List<FinantialDocument> documentsToExport = Collections.singletonList(debitNote);
             ERPExportOperation output =
                     ERPExporter.exportFinantialDocumentToIntegration(debitNote.getInstitutionForExportation(), documentsToExport);
@@ -475,6 +501,6 @@ public class DebitNoteController extends TreasuryBaseController {
                             + ex.getLocalizedMessage(), model);
         }
         setDebitNote(debitNote, model);
-        return read(debitNote, model);
+        return read(debitNote, model, redirectAttributes);
     }
 }

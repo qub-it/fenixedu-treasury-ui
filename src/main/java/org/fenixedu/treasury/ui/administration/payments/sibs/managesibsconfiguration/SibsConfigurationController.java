@@ -67,6 +67,7 @@ public class SibsConfigurationController extends TreasuryBaseController {
 
     @RequestMapping(value = _READ_URI + "{oid}")
     public String read(@PathVariable("oid") SibsConfiguration sibsConfiguration, Model model) {
+        assertUserIsBackOfficeMember(sibsConfiguration.getFinantialInstitution(), model);
         setSibsConfiguration(sibsConfiguration, model);
         return "treasury/administration/payments/sibs/managesibsconfiguration/sibsconfiguration/read";
     }
@@ -76,6 +77,7 @@ public class SibsConfigurationController extends TreasuryBaseController {
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") SibsConfiguration sibsConfiguration, Model model) {
+        assertUserIsBackOfficeMember(sibsConfiguration.getFinantialInstitution(), model);
         setSibsConfiguration(sibsConfiguration, model);
 
         return "treasury/administration/payments/sibs/managesibsconfiguration/sibsconfiguration/update";
@@ -91,6 +93,7 @@ public class SibsConfigurationController extends TreasuryBaseController {
         setSibsConfiguration(sibsConfiguration, model);
 
         try {
+            assertUserIsBackOfficeMember(sibsConfiguration.getFinantialInstitution(), model);
             updateSibsConfiguration(entityReferenceCode, sourceInstitutionId, destinationInstitutionId, model);
 
             return redirect(READ_URL + getSibsConfiguration(model).getExternalId(), model, redirectAttributes);

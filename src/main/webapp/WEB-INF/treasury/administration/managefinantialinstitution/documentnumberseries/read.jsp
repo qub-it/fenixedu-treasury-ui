@@ -1,3 +1,6 @@
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.document.DocumentNumberSeries"%>
 <%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -39,9 +42,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm"
-                action="${pageContext.request.contextPath}<%= DocumentNumberSeriesController.DELETE_URL %>${documentNumberSeries.externalId}"
-                method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}<%= DocumentNumberSeriesController.DELETE_URL %>${documentNumberSeries.externalId}" method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -72,26 +73,29 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-    &nbsp;
-    <a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${documentNumberSeries.series.externalId}">
-        <spring:message code="label.event.back" />
-    </a> 
-    &nbsp;|&nbsp; 
-    <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-    &nbsp;
-    <a class="" href="#" data-toggle="modal" data-target="#deleteModal">
-        <spring:message code="label.event.delete" />
-    </a> 
-    &nbsp;|&nbsp; 
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-    &nbsp;
-    <a class=""
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span> &nbsp; <a class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${documentNumberSeries.series.externalId}"> <spring:message
+            code="label.event.back" />
+    </a> &nbsp;
+    <%
+        DocumentNumberSeries dns = (DocumentNumberSeries) request
+    					.getAttribute("documentNumberSeries");
+    			FinantialInstitution finantialInstitution = dns.getSeries()
+    					.getFinantialInstitution();
+    			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+    					finantialInstitution)) {
+    %>
+
+    |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> &nbsp; <a class="" href="#" data-toggle="modal" data-target="#deleteModal"> <spring:message
+            code="label.event.delete" />
+    </a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> &nbsp; <a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documentnumberseries/read/${documentNumberSeries.externalId}/closepreparingdocuments">
         <spring:message code="label.event.administration.managefinantialinstitution.documentnumberseries.closepreparingdocuments" />
-    </a> 
-    &nbsp;|&nbsp;  
+    </a> &nbsp;|&nbsp;
+
+    <%
+        }
+    %>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -174,8 +178,8 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.FinantialDocument.documentDate" />
                 </datatables:columnHead>
-                 <c:out value='${document.documentDate.toString("YYYY-MM-dd")}' />
-<%--                 <joda:format value="${document.documentDate}" style="S-" /> --%>
+                <c:out value='${document.documentDate.toString("YYYY-MM-dd")}' />
+                <%--                 <joda:format value="${document.documentDate}" style="S-" /> --%>
             </datatables:column>
             <datatables:column>
                 <datatables:columnHead>
@@ -209,8 +213,8 @@ ${portal.toolkit()}
                 <c:if test="${document.isSettlementNote() }">
                     <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${document.externalId}">
                 </c:if>
-               
-                    <spring:message code="label.view" />
+
+                <spring:message code="label.view" />
                 </a>
             </datatables:column>
         </datatables:table>

@@ -87,9 +87,16 @@ public class SeriesController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
-    public String read(@PathVariable("oid") Series series, Model model) {
-        setSeries(series, model);
-        return "treasury/administration/managefinantialinstitution/series/read";
+    public String read(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsFrontOfficeMember(series.getFinantialInstitution(), model);
+            setSeries(series, model);
+            return "treasury/administration/managefinantialinstitution/series/read";
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+        return redirect(FinantialInstitutionController.READ_URL + series.getFinantialInstitution().getExternalId(), model,
+                redirectAttributes);
     }
 
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
