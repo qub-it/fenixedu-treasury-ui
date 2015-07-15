@@ -44,6 +44,7 @@ import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
@@ -96,42 +97,47 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
-    public String read(@PathVariable("oid") DebtAccount debtAccount, Model model) {
+    public String read(@PathVariable("oid") DebtAccount debtAccount, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            setDebtAccount(debtAccount, model);
 
-        setDebtAccount(debtAccount, model);
+            List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
+            List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
+            List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
+            List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
+            allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
+            paymentEntries =
+                    SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
+                            .collect(Collectors.toList());
 
-        List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
-        List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
-        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
-        List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
-        allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
-        paymentEntries =
-                SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
-                        .collect(Collectors.toList());
+            exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
 
-        exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
+            pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
 
-        pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
+            model.addAttribute(
+                    "pendingDocumentsDataSet",
+                    pendingInvoiceEntries
+                            .stream()
+                            .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                    InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+            model.addAttribute(
+                    "allDocumentsDataSet",
+                    allInvoiceEntries
+                            .stream()
+                            .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                    InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+            model.addAttribute(
+                    "paymentsDataSet",
+                    paymentEntries.stream().sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate()))
+                            .collect(Collectors.toList()));
+            model.addAttribute("exemptionDataSet", exemptionEntries);
 
-        model.addAttribute(
-                "pendingDocumentsDataSet",
-                pendingInvoiceEntries
-                        .stream()
-                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
-        model.addAttribute(
-                "allDocumentsDataSet",
-                allInvoiceEntries
-                        .stream()
-                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
-        model.addAttribute(
-                "paymentsDataSet",
-                paymentEntries.stream().sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate()))
-                        .collect(Collectors.toList()));
-        model.addAttribute("exemptionDataSet", exemptionEntries);
-
-        return "treasury/accounting/managecustomer/debtaccount/read";
+            return "treasury/accounting/managecustomer/debtaccount/read";
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+        }
+        return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/createreimbursement")
@@ -237,17 +243,21 @@ public class DebtAccountController extends TreasuryBaseController {
     public String processReadToExportIntegrationOnline(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
             List<FinantialDocument> pendingDocuments = new ArrayList(debtAccount.getFinantialDocumentsSet());
-            ERPExportOperation output =
-                    ERPExporter.exportFinantialDocumentToIntegration(debtAccount.getFinantialInstitution(), pendingDocuments);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
-            return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+            if (pendingDocuments.size() > 0) {
+                ERPExportOperation output =
+                        ERPExporter.exportFinantialDocumentToIntegration(debtAccount.getFinantialInstitution(), pendingDocuments);
+                addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+                return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
+            }
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.no.documents"), model);
         } catch (Exception ex) {
             addErrorMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
                             + ex.getLocalizedMessage(), model);
         }
-        return read(debtAccount, model);
+        return read(debtAccount, model, redirectAttributes);
     }
 
 }
