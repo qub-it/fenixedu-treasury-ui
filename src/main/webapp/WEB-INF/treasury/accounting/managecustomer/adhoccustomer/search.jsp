@@ -69,7 +69,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchadhoccustomerResultsDataSet}">
-		<table id="searchadhoccustomerTable" class="table responsive table-bordered table-hover">
+		<table id="searchadhoccustomerTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -126,7 +126,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'fiscalnumber' },
 			{ data: 'identificationnumber' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

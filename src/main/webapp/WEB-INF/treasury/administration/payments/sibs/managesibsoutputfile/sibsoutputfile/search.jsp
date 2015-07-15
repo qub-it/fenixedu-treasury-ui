@@ -77,7 +77,7 @@ ${portal.toolkit()}
 
 <c:choose>
     <c:when test="${not empty searchsibsoutputfileResultsDataSet}">
-        <table id="searchsibsoutputfileTable" class="table responsive table-bordered table-hover">
+        <table id="searchsibsoutputfileTable" class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -128,7 +128,7 @@ ${portal.toolkit()}
         "columns": [
 { data: 'whencreated' },
             { data: 'uploader' },
-            { data: 'actions' }
+            { data: 'actions',className="all" }
             
         ],
         //CHANGE_ME adjust the actions column width if needed

@@ -96,7 +96,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchfinantialdocumentResultsDataSet}">
-		<table id="searchfinantialdocumentTable" class="table responsive table-bordered table-hover">
+		<table id="searchfinantialdocumentTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -174,7 +174,7 @@ ${portal.toolkit()}
 			{ data: 'documentnumber' },
 			{ data: 'documentdate' },
 			{ data: 'state' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

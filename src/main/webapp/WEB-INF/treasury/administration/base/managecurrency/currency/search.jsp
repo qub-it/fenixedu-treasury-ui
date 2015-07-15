@@ -109,7 +109,7 @@ ${portal.toolkit()}
  --%>
 <c:choose>
 	<c:when test="${not empty searchcurrencyResultsDataSet}">
-		<table id="searchcurrencyTable" class="table responsive table-bordered table-hover">
+		<table id="searchcurrencyTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -165,7 +165,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'isocode' },
 			{ data: 'symbol' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		"columnDefs": [

@@ -146,7 +146,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchvatResultsDataSet}">
-		<table id="searchvatTable" class="table responsive table-bordered table-hover">
+		<table id="searchvatTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -210,7 +210,7 @@ ${portal.toolkit()}
 		            { data: 'taxrate' },
 			{ data: 'begindate' },
 			{ data: 'enddate' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		"columnDefs": [

@@ -119,7 +119,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty searchvatexemptionreasonResultsDataSet}">
         <table id="searchvatexemptionreasonTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -175,7 +175,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		"columnDefs": [

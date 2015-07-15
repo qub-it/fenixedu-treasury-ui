@@ -216,7 +216,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty searchpaymentcodepoolResultsDataSet}">
         <table id="searchpaymentcodepoolTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -321,7 +321,7 @@ ${portal.toolkit()}
 			{ data: 'validfrom' },
 			{ data: 'validto' },
 // 			{ data: 'usecheckdigit' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

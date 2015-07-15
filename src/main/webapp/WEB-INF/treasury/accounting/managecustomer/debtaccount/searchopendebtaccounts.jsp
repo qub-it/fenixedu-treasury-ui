@@ -76,7 +76,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchopendebtaccountsResultsDataSet}">
-		<table id="searchopendebtaccountsTable" class="table responsive table-bordered table-hover">
+		<table id="searchopendebtaccountsTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -133,7 +133,7 @@ ${portal.toolkit()}
 { data: 'fiscalNumber' },
 { data: 'name' },
 			{ data: 'openAmount' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

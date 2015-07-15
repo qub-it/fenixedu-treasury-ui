@@ -163,7 +163,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty searcherpimportoperationResultsDataSet}">
         <table id="searcherpimportoperationTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -235,7 +235,7 @@ ${portal.toolkit()}
 			{ data: 'finantialinstitution' },
 			{ data: 'success' },
 // 			{ data: 'corrected' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

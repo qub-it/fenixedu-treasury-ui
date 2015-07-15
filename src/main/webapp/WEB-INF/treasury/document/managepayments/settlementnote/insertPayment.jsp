@@ -220,7 +220,7 @@ ${portal.angularToolkit()}
         <div class="panel-body">
             <c:if test="${ settlementNoteBean.hasEntriesWithoutDocument() }">
                 <table id="debitNoteTable"
-                    class="table responsive table-bordered table-hover">
+                    class="table responsive table-bordered table-hover" width="100%">
                     <col style="width: 20%" />
                     <col style="width: 40%" />
                     <col style="width: 15%" />
@@ -285,7 +285,7 @@ ${portal.angularToolkit()}
                 </table>
             </c:if>
             <table id="debitEntriesTable"
-                class="table responsive table-bordered table-hover">
+                class="table responsive table-bordered table-hover" width="100%">
                 <col style="width: 20%" />
                 <col style="width: 40%" />
                 <col style="width: 15%" />
@@ -382,7 +382,7 @@ ${portal.angularToolkit()}
         </div>
         <div class="panel-body">
             <table id="paymentTableTable"
-                class="table responsive table-bordered table-hover">
+                class="table responsive table-bordered table-hover" width="100%">
                 <thead>
                     <tr>
                         <c:if

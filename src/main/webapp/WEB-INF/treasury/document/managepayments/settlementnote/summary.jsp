@@ -221,7 +221,7 @@ ${portal.angularToolkit()}
     </div>
     <div class="panel-body">
         <table id="debitNoteTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <th><spring:message
@@ -358,7 +358,7 @@ ${portal.angularToolkit()}
     </div>
     <div class="panel-body">
         <table id="paymentTableTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <c:if
@@ -420,7 +420,7 @@ ${portal.angularToolkit()}
 <!--         <div class="row"> -->
 <!--             <div class="col-md-6 col-lg-6"> -->
 <!--                 <table id="vatTable" -->
-<!--                     class="table responsive table-bordered table-hover"> -->
+<!--                     class="table responsive table-bordered table-hover" width="100%"> -->
 <!--                     <thead> -->
 <!--                         <tr> -->
 <%--                             <th><spring:message code="label.VatType" /></th> --%>
@@ -455,7 +455,7 @@ ${portal.angularToolkit()}
 <!--                 </p> -->
 <!--                 <br> -->
 <!--                 <table id="vatSummaryTable" -->
-<!--                     class="table responsive table-bordered table-hover"> -->
+<!--                     class="table responsive table-bordered table-hover" width="100%"> -->
 <!--                     <tbody> -->
 <!--                         <tr> -->
 <!--                             <th scope="row" class="col-xs-3"> -->

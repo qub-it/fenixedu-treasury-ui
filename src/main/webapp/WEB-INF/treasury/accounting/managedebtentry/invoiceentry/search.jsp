@@ -66,7 +66,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchinvoiceentryResultsDataSet}">
-		<table id="searchinvoiceentryTable" class="table responsive table-bordered table-hover">
+		<table id="searchinvoiceentryTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -117,7 +117,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'amount' },
 			{ data: 'description' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

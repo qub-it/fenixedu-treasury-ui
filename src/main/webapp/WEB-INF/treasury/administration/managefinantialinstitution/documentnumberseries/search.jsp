@@ -88,7 +88,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchdocumentnumberseriesResultsDataSet}">
-		<table id="searchdocumentnumberseriesTable" class="table responsive table-bordered table-hover">
+		<table id="searchdocumentnumberseriesTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -144,7 +144,7 @@ ${portal.toolkit()}
 			{ data: 'series' },
 			{ data: 'finantialDocumentType' },
 			{ data: 'counter' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

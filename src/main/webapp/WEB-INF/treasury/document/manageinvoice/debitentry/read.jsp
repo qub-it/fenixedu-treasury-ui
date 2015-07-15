@@ -255,7 +255,7 @@ ${portal.toolkit()}
 </div>
 
 <c:if test="${ not empty debitEntry.propertiesMap }">
-    <table id="treasuryEventTableMap" class="table responsive table-bordered table-hover">
+    <table id="treasuryEventTableMap" class="table responsive table-bordered table-hover" width="100%">
 
         <c:forEach var="property" items="${debitEntry.propertiesMap}">
             <tr>

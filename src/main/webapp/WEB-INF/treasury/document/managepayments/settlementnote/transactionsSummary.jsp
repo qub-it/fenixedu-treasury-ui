@@ -169,7 +169,7 @@ ${portal.toolkit()}
         <div class="row">
             <div class="col-sm-5">
                 <table id="paymentEntries"
-                   class="table responsive table-bordered table-hover">
+                   class="table responsive table-bordered table-hover" width="100%">
                 <tr>
                     <th>
                         <spring:message code="label.PaymentMethod" />
@@ -194,7 +194,7 @@ ${portal.toolkit()}
             </div>
             <div class="col-sm-5">
                 <table id="reimbursementsEntries"
-                   class="table responsive table-bordered table-hover">
+                   class="table responsive table-bordered table-hover" width="100%">
                 <tr>
                     <th>
                         <spring:message code="label.ReimbursementMethod" />

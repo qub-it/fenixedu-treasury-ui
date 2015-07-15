@@ -121,7 +121,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty searchproductResultsDataSet}">
         <table id="searchproductTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -199,7 +199,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'unitofmeasure' },
 			{ data: 'active' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		"columnDefs": [

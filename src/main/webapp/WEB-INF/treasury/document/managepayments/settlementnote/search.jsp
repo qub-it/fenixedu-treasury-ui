@@ -209,7 +209,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty searchsettlementnoteResultsDataSet}">
         <table id="searchsettlementnoteTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -304,7 +304,7 @@ $(document).ready(function() {
             { data: 'documentnumber' },
             { data: 'debtaccount' },
     		{ data: 'state' },
-    		{ data: 'actions' }		
+    		{ data: 'actions',className="all" }		
     	],
     	//CHANGE_ME adjust the actions column width if needed
     	"columnDefs": [

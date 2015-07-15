@@ -169,7 +169,7 @@ ${portal.toolkit()} ${portal.angularToolkit()}
             </p>
         </div>
         <div class="panel-body">
-            <table id="debitEntriesTable" class="table responsive table-bordered table-hover">
+            <table id="debitEntriesTable" class="table responsive table-bordered table-hover" width="100%">
                 <col style="width: 3%" />
                 <thead>
                     <tr>
@@ -235,7 +235,7 @@ ${portal.toolkit()} ${portal.angularToolkit()}
             </p>
         </div>
         <div class="panel-body">
-            <table id="creditEntriesTable" class="table responsive table-bordered table-hover">
+            <table id="creditEntriesTable" class="table responsive table-bordered table-hover" width="100%">
                 <col style="width: 3%" />
                 <thead>
                     <tr>

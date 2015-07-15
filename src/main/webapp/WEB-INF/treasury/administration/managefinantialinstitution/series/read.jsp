@@ -271,7 +271,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty series.documentNumberSeriesSet}">
         <table id="documentNumberSeriesTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>

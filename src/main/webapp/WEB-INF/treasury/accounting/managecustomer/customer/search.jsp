@@ -37,10 +37,10 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%= AdhocCustomerController.CREATE_URL %>"><spring:message
-            code="label.event.create" /></a> &nbsp; | &nbsp;
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%= DebtAccountController.SEARCHOPENDEBTACCOUNTS_URL %>"><spring:message
+            code="label.event.create" /></a> &nbsp; | &nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}<%= DebtAccountController.SEARCHOPENDEBTACCOUNTS_URL %>"><spring:message
             code="label.event.accounting.managecustomer.search.debtaccounts.with.pending.values" /></a> &nbsp;
-            
+
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -140,14 +140,15 @@ ${portal.toolkit()}
 
         <p>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-            <spring:message code="label.limitexceeded" arguments="${searchcustomerResultsDataSet.size()};${searchcustomerResultsDataSet_totalCount}" argumentSeparator=";" htmlEscape="false"/>
+            <spring:message code="label.limitexceeded" arguments="${searchcustomerResultsDataSet.size()};${searchcustomerResultsDataSet_totalCount}" argumentSeparator=";"
+                htmlEscape="false" />
         </p>
 
     </div>
 </c:if>
 <c:choose>
     <c:when test="${not empty searchcustomerResultsDataSet}">
-        <table id="searchcustomerTable" class="table responsive table-bordered table-hover">
+        <table id="searchcustomerTable" class="display table  table-bordered table-hover responsive" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -222,14 +223,16 @@ ${portal.toolkit()}
 
 		
 		var table = $('#searchcustomerTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
+			url : "${datatablesI18NUrl}",	
+			responsive: true
 		},
+		
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
 			{ data: 'fiscalnumber' },
 			{ data: 'identificationnumber' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		"order": [[ 1, "asc" ]],

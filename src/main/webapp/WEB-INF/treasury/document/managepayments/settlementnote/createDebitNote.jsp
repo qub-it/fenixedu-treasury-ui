@@ -191,7 +191,7 @@ ${portal.angularToolkit()}
                 </tbody>
             </table>
             <table id="debitNoteTable"
-                class="table responsive table-bordered table-hover">
+                class="table responsive table-bordered table-hover" width="100%">
                 <thead>
                     <tr>
                         <th><spring:message

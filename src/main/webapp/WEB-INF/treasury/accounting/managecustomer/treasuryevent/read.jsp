@@ -326,7 +326,7 @@ ${portal.toolkit()}
     </h2>
 
     <table id="treasuryEventTableMap"
-        class="table responsive table-bordered table-hover">
+        class="table responsive table-bordered table-hover" width="100%">
 
         <c:forEach var="property" items="${treasuryEvent.propertiesMap}">
             <tr>

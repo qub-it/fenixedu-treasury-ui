@@ -276,7 +276,7 @@ ${portal.toolkit()}
 </div>
 <c:choose>
     <c:when test="${not empty finantialInstitution.finantialEntitiesSet}">
-        <table id="searchfinantialentityTable" class="table responsive table-bordered table-hover">
+        <table id="searchfinantialentityTable" class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <th><spring:message code="label.FinantialEntity.name" /></th>
@@ -310,7 +310,7 @@ ${portal.toolkit()}
 </div>
 <c:choose>
     <c:when test="${not empty finantialInstitution.seriesSet}">
-        <table id="searchseriesTable" class="table responsive table-bordered table-hover">
+        <table id="searchseriesTable" class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <th><spring:message code="label.Series.code" /></th>
@@ -342,7 +342,7 @@ ${portal.toolkit()}
 </h2>
 <c:choose>
     <c:when test="${not empty finantialInstitution.finantialEntitiesSet}">
-        <table id="searchDocumentTemplateTable" class="table responsive table-bordered table-hover">
+        <table id="searchDocumentTemplateTable" class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <th><spring:message code="label.DocumentTemplate.finantialDocumentTypes" /></th>
@@ -468,7 +468,7 @@ $(document).ready(function() {
     	},
         "columns": [
             { data: 'name' },
-            { data: 'actions' }
+            { data: 'actions',className="all" }
         ],
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [
@@ -492,7 +492,7 @@ $(document).ready(function() {
             { data: 'externSeries' },
             { data: 'legacy' },
             { data: 'defaultSeries' },
-            { data: 'actions' }                    
+            { data: 'actions',className="all" }                    
         ],
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [

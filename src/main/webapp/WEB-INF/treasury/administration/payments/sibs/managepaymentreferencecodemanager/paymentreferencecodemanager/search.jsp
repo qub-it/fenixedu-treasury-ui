@@ -100,7 +100,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchpaymentreferencecodemanagerResultsDataSet}">
-		<table id="searchpaymentreferencecodemanagerTable" class="table responsive table-bordered table-hover">
+		<table id="searchpaymentreferencecodemanagerTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -151,7 +151,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'description' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed
