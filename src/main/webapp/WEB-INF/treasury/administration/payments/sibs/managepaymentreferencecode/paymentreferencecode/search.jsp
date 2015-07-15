@@ -182,7 +182,7 @@ ${portal.toolkit()}
 			{ data: 'begindate' },
 			{ data: 'enddate' },
 			{ data: 'state' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

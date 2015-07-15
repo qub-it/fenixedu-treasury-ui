@@ -199,7 +199,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'unitofmeasure' },
 			{ data: 'active' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		"columnDefs": [

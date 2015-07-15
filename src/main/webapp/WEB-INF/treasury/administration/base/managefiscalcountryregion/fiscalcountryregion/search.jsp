@@ -146,7 +146,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'fiscalCode' },
 			{ data: 'name' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		"columnDefs": [

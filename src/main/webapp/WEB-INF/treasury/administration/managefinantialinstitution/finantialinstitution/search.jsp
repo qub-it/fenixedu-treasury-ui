@@ -125,7 +125,7 @@ ${portal.toolkit()}
         	            { data: 'code' },
         	            { data: 'fiscalnumber' },
         	            { data: 'name' },
-        	            { data: 'actions',className="all" }			
+        	            { data: 'actions',className:"all" }			
         	        ],
         	        //CHANGE_ME adjust the actions column width if needed
         	        "columnDefs": [

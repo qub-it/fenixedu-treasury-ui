@@ -123,6 +123,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setDocumentNumberSeries(documentNumberSeries, model);
         try {
+            super.assertUserIsBackOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
             String seriesExternalId = documentNumberSeries.getSeries().getExternalId();
             deleteDocumentNumberSeries(documentNumberSeries);
 
@@ -131,18 +132,23 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         } catch (TreasuryDomainException ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            //TODOJN - how to handle generic exception
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = CREATE_URI + "/series{oid}", method = RequestMethod.GET)
-    public String create(@PathVariable("oid") Series series, Model model) {
-        model.addAttribute("series", series);
-        model.addAttribute("DocumentNumberSeries_finantialDocumentType_options",
-                FinantialDocumentType.findAll().collect(Collectors.toList()));
-        return "treasury/administration/managefinantialinstitution/documentnumberseries/create";
+    public String create(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
+            model.addAttribute("series", series);
+            model.addAttribute("DocumentNumberSeries_finantialDocumentType_options",
+                    FinantialDocumentType.findAll().collect(Collectors.toList()));
+            return "treasury/administration/managefinantialinstitution/documentnumberseries/create";
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+        }
+        return redirect(SeriesController.READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
@@ -150,17 +156,19 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             value = "finantialdocumenttype", required = false) FinantialDocumentType finantialDocumentType, Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
+
             DocumentNumberSeries documentNumberSeries = createDocumentNumberSeries(series, finantialDocumentType);
 
             model.addAttribute("documentNumberSeries", documentNumberSeries);
             return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
-            return create(series, model);
+            return create(series, model, redirectAttributes);
         } catch (Exception de) {
             //TODOJN - how to handle generic exception
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
-            return create(series, model);
+            return create(series, model, redirectAttributes);
         }
     }
 
@@ -174,10 +182,9 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
     public String processReadToCloseAllPreparingDocuments(@PathVariable("oid") DocumentNumberSeries documentNumberSeries,
             Model model, RedirectAttributes redirectAttributes) {
 
-        assertUserIsManager(model, redirectAttributes);
-
         setDocumentNumberSeries(documentNumberSeries, model);
         try {
+            super.assertUserIsBackOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
 
             List<FinantialDocument> preparingDocuments =
                     documentNumberSeries

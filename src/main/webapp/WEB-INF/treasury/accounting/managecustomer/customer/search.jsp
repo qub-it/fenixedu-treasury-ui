@@ -232,7 +232,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'fiscalnumber' },
 			{ data: 'identificationnumber' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		"order": [[ 1, "asc" ]],

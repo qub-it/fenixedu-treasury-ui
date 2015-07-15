@@ -117,7 +117,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'amount' },
 			{ data: 'description' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

@@ -1,4 +1,7 @@
 
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.TreasuryDocumentTemplateController"%>
 <%@page import="org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile"%>
 <%@page import="org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum"%>
@@ -117,22 +120,27 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/"><spring:message code="label.event.back" /></a>
-    &nbsp;|&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
+        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/"><spring:message code="label.event.back" /></a> &nbsp;
+    <%
+        FinantialInstitution finantialInstitution = (FinantialInstitution) request
+    					.getAttribute("finantialInstitution");
+    			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+    					finantialInstitution)
+    					|| TreasuryAccessControl.getInstance().isManager()) {
+    %>
+    |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+            code="label.event.delete" /></a> &nbsp;| &nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
-            code="label.event.update" /></a> 
-
-
-
-|&nbsp; <span class="glyphicon glyphicon-cog"
-        aria-hidden="true"></span>&nbsp;<a class=""
+            code="label.event.update" /></a> |&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate">
-        <spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" /></a> &nbsp;
+        <spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" />
+    </a> &nbsp;
+
+
     <div class="btn-group">
         <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.erpoptions">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            <spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.erpoptions">
             </spring:message>
             <span class="caret"></span>
         </button>
@@ -157,14 +165,16 @@ ${portal.toolkit()}
                     <span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp; <spring:message
                         code="label.event.administration.managefinantialinstitution.finantialinstitution.exportCustomersERPOnline" />
             </a></li>
-            <li>
-                <a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/erpconfigurationupdate">
-        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message
-            code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" /></a>
-            </li>
+            <li><a class=""
+                href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/erpconfigurationupdate">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message
+                        code="label.event.administration.managefinantialinstitution.finantialinstitution.erpConfigurationUpdate" />
+            </a></li>
         </ul>
     </div>
+    <%
+        }
+    %>
 
 </div>
 <c:if test="${not empty infoMessages}">
@@ -302,12 +312,22 @@ ${portal.toolkit()}
     <spring:message code="label.administration.manageFinantialInstitution.searchSeries" />
 </h2>
 
+<%
+    if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+					finantialInstitution)
+					|| TreasuryAccessControl.getInstance().isManager()) {
+%>
+
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> &nbsp; <a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/create?finantialInstitutionId=${finantialInstitution.externalId }"> <spring:message
             code="label.event.create" />
     </a> &nbsp;
 </div>
+
+<%
+    }
+%>
 <c:choose>
     <c:when test="${not empty finantialInstitution.seriesSet}">
         <table id="searchseriesTable" class="table responsive table-bordered table-hover" width="100%">
@@ -450,9 +470,14 @@ var searchseriesDataSet = [
         "defaultSeries" :<c:if test="${searchResult.defaultSeries}">
                 "<spring:message code='label.true' />"
                           </c:if>
+                          <%if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+						finantialInstitution)
+						|| TreasuryAccessControl.getInstance().isManager()) {%>
+                
                           <c:if test="${not searchResult.defaultSeries}">
                               "(<spring:message code='label.false' />) <a href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/editDefault/${searchResult.externalId}\"><spring:message code='label.Series.makeDefaultSeries'/></a>"
                           </c:if>,
+                          <%}%>
         "actions" :
              " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>"             
     },
@@ -468,7 +493,7 @@ $(document).ready(function() {
     	},
         "columns": [
             { data: 'name' },
-            { data: 'actions',className="all" }
+            { data: 'actions',className:"all" }
         ],
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [
@@ -492,7 +517,7 @@ $(document).ready(function() {
             { data: 'externSeries' },
             { data: 'legacy' },
             { data: 'defaultSeries' },
-            { data: 'actions',className="all" }                    
+            { data: 'actions',className:"all" }                    
         ],
         //CHANGE_ME adjust the actions column width if needed
         "columnDefs": [

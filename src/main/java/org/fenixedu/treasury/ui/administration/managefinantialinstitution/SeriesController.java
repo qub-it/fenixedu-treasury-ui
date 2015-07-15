@@ -96,6 +96,7 @@ public class SeriesController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
         setSeries(series, model);
         try {
+            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
             deleteSeries(series);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
             return redirect(FinantialInstitutionController.READ_URL + series.getExternalId(), model, redirectAttributes);
@@ -124,6 +125,7 @@ public class SeriesController extends TreasuryBaseController {
             @RequestParam(value = "certificated", required = false) boolean certificated, @RequestParam(value = "legacy",
                     required = false) boolean legacy, Model model, RedirectAttributes redirectAttributes) {
         try {
+            super.assertUserIsBackOfficeMember(finantialInstitution, model);
             Series series = createSeries(finantialInstitution, code, name, externSeries, certificated, legacy);
             model.addAttribute("series", series);
             return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
@@ -159,9 +161,15 @@ public class SeriesController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") Series series, Model model) {
+    public String update(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
         setSeries(series, model);
-        return "treasury/administration/managefinantialinstitution/series/update";
+        try {
+            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
+            return "treasury/administration/managefinantialinstitution/series/update";
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+        }
+        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
@@ -173,6 +181,7 @@ public class SeriesController extends TreasuryBaseController {
             Model model, RedirectAttributes redirectAttributes) {
         setSeries(series, model);
         try {
+            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
             updateSeries(code, name, externSeries, certificated, legacy, active, model);
             return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -180,7 +189,7 @@ public class SeriesController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
-        return update(series, model);
+        return update(series, model, redirectAttributes);
     }
 
     public void updateSeries(String code, LocalizedString name, boolean externSeries, boolean certificated, boolean legacy,

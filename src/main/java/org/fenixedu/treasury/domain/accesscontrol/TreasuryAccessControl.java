@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.groups.DynamicGroup;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.services.accesscontrol.spi.ITreasuryAccessControlExtension;
@@ -26,6 +27,26 @@ public class TreasuryAccessControl {
     private List<ITreasuryAccessControlExtension> extensions = Collections.synchronizedList(Lists.newArrayList());
 
     private TreasuryAccessControl() {
+    }
+
+    public boolean isFrontOfficeMember() {
+        return isFrontOfficeMember(Authenticate.getUser());
+    }
+
+    public boolean isBackOfficeMember() {
+        return isBackOfficeMember(Authenticate.getUser());
+    }
+
+    public boolean isFrontOfficeMember(FinantialInstitution finantialInstitution) {
+        return isFrontOfficeMember(Authenticate.getUser(), finantialInstitution);
+    }
+
+    public boolean isBackOfficeMember(FinantialInstitution finantialInstitution) {
+        return isBackOfficeMember(Authenticate.getUser(), finantialInstitution);
+    }
+
+    public boolean isManager() {
+        return isManager(Authenticate.getUser());
     }
 
     public boolean isFrontOfficeMember(final User user) {

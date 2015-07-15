@@ -190,7 +190,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'documentnumberseriesprefix' },
 // 			{ data: 'invoice' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

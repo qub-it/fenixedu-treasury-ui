@@ -155,7 +155,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		"columnDefs": [

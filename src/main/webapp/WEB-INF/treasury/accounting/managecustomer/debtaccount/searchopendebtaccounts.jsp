@@ -133,7 +133,7 @@ ${portal.toolkit()}
 { data: 'fiscalNumber' },
 { data: 'name' },
 			{ data: 'openAmount' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

@@ -165,7 +165,7 @@ ${portal.toolkit()}
 			{ data: 'name' },
 			{ data: 'isocode' },
 			{ data: 'symbol' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		"columnDefs": [

@@ -210,7 +210,7 @@ ${portal.toolkit()}
 		            { data: 'taxrate' },
 			{ data: 'begindate' },
 			{ data: 'enddate' },
-			{ data: 'actions',className="all" }
+			{ data: 'actions',className:"all" }
 			
 		],
 		"columnDefs": [
