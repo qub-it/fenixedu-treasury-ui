@@ -27,9 +27,6 @@
  */
 package org.fenixedu.treasury.domain;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -109,6 +106,10 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
         setBennu(null);
         setCustomerType(null);
+
+        for (DebtAccount deb : getDebtAccountsSet()) {
+            deb.delete();
+        }
 
         deleteDomainObject();
     }

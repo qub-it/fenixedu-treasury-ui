@@ -250,15 +250,15 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return findAll().filter(i -> i.getFinantialInstitution().equals(finantialInstitution));
     }
 
-    private static PaymentCodeGenerator _referenceCodeGenerator;
+    private PaymentCodeGenerator _referenceCodeGenerator;
 
     public PaymentCodeGenerator getReferenceCodeGenerator() {
 
         if (_referenceCodeGenerator == null) {
             if (Boolean.TRUE.equals(this.getUseCheckDigit())) {
-                _referenceCodeGenerator = new SequentialPaymentWithCheckDigitCodeGenerator(this);
+                return new SequentialPaymentWithCheckDigitCodeGenerator(this);
             } else {
-                _referenceCodeGenerator = new SequentialPaymentCodeGenerator(this);
+                return new SequentialPaymentCodeGenerator(this);
             }
         }
         return _referenceCodeGenerator;
@@ -300,8 +300,9 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     @Atomic
     public void changeReferenceCode(String entityReferenceCode, Long minReferenceCode, Long maxReferenceCode) {
         if (this.getPaymentReferenceCodesSet().size() > 0
-                && (!this.getEntityReferenceCode().equals(entityReferenceCode) || this.getMinReferenceCode() != minReferenceCode || this
-                        .getMaxReferenceCode() != maxReferenceCode)) {
+                && (!this.getEntityReferenceCode().equals(entityReferenceCode)
+                        || !this.getMinReferenceCode().equals(minReferenceCode) || !this.getMaxReferenceCode().equals(
+                        maxReferenceCode))) {
             throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
         }
         this.setEntityReferenceCode(entityReferenceCode);

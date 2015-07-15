@@ -172,6 +172,10 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
             s.delete();
         }
 
+        for (Vat vat : getVatsSet()) {
+            vat.delete();
+        }
+
         deleteDomainObject();
     }
 

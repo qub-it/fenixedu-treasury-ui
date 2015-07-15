@@ -148,7 +148,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             final FinantialDocument previousFinantialDocument =
                     stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
 
-            if (previousFinantialDocument != null && !previousFinantialDocument.getDocumentDate().isBefore(getDocumentDate())) {
+            if (previousFinantialDocument != null
+                    && !(previousFinantialDocument.getDocumentDate().toLocalDate().compareTo(getDocumentDate().toLocalDate()) <= 0)) {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
             }
         }
