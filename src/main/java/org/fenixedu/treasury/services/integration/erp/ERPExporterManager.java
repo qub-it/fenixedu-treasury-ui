@@ -139,8 +139,8 @@ public class ERPExporterManager {
 
                     //Create a ExportOperation
                     ERPExportOperation exportFinantialDocumentToIntegration =
-                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution,
-                                    Collections.singletonList(docy));
+                            ERPExporter
+                                    .exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc));
                     result.add(exportFinantialDocumentToIntegration);
                 }
 

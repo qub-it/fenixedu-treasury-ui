@@ -207,26 +207,29 @@ ${portal.toolkit()}
                 </a>
                 &nbsp;
             </c:if>
-               |&nbsp;       <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a>
-    &nbsp;
-            
         </c:if>
         <c:if test="${not debitNote.isPreparing()}">
-            |&nbsp;
-            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
-            &nbsp;
-            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"> <spring:message
-                    code="label.event.document.manageInvoice.exportIntegrationFile" />
-            </a>
-            &nbsp;
-            |&nbsp;
-            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
-            &nbsp;
-            <a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?documentnumber=${debitNote.uiDocumentNumber}"> <spring:message
-                    code="label.event.document.manageInvoice.searchExportOperations" />
-            </a>
-            &nbsp;
+
+            <div class="btn-group">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+                    <spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.erpoptions">
+                    </spring:message>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
+                            class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                        <spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a></li>
+                    <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
+                            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+                        <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
+                    </a></li>
+                    <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?documentnumber=${debitNote.uiDocumentNumber}"> <span
+                            class="glyphicon glyphicon-export" aria-hidden="true"></span>
+                        <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
+                    </a></li>
+                </ul>
         </c:if>
         |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#"
             onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message
@@ -352,11 +355,8 @@ ${portal.toolkit()}
                     <c:if test="${debitNote.pendingInterestAmount.unscaledValue() != 0 }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.pendingInterestAmount" /></th>
-                            <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.pendingInterestAmount)}' />
-                            
-                                <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
-                            
-                            </td>
+                            <td><c:out value='${debitNote.debtAccount.finantialInstitution.currency.getValueFor(debitNote.pendingInterestAmount)}' /> <span
+                                class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span></td>
                         </tr>
                     </c:if>
                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
