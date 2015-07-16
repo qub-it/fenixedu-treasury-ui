@@ -29,6 +29,7 @@ package org.fenixedu.treasury.services.integration.erp;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -140,21 +141,25 @@ public class ERPIntegrationService extends BennuWebService {
      * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#getIntegrationStatusFor(java.lang.String)
      */
     @WebMethod
-    public IntegrationStatusOutput getIntegrationStatusFor(String finantialInstitution, String documentNumber) {
+    public List<IntegrationStatusOutput> getIntegrationStatusFor(String finantialInstitution, List<String> documentNumbers) {
 
         validateRequestHeader(finantialInstitution);
-        IntegrationStatusOutput status = new IntegrationStatusOutput();
-        DocumentStatusWS docStatus = new DocumentStatusWS();
-        FinantialDocument document =
-                FinantialDocument.findByUiDocumentNumber(FinantialInstitution.findUniqueByFiscalCode(finantialInstitution)
-                        .orElse(null), documentNumber);
-        if (document == null) {
-            docStatus.setIntegrationStatus(StatusType.ERROR);
-        } else {
-            docStatus.setIntegrationStatus(StatusType.SUCCESS);
+        List<IntegrationStatusOutput> statusList = new ArrayList<IntegrationStatusOutput>();
+        for (String documentNumber : documentNumbers) {
+            IntegrationStatusOutput status = new IntegrationStatusOutput();
+            DocumentStatusWS docStatus = new DocumentStatusWS();
+            FinantialDocument document =
+                    FinantialDocument.findByUiDocumentNumber(FinantialInstitution.findUniqueByFiscalCode(finantialInstitution)
+                            .orElse(null), documentNumber);
+            if (document == null) {
+                docStatus.setIntegrationStatus(StatusType.ERROR);
+            } else {
+                docStatus.setIntegrationStatus(StatusType.SUCCESS);
+            }
+            status.setDocumentStatus(docStatus);
+            statusList.add(status);
         }
-        status.setDocumentStatus(docStatus);
-        return status;
+        return statusList;
     }
 
     @WebMethod

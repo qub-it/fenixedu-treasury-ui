@@ -26,8 +26,10 @@ public class ERPExportPendingDocumentsTask extends CronTask {
                                 taskLog("Exported document: " + doc.getUiDocumentNumber());
                             }
                         }
-                        taskLog("Finished Exporting " + exportPendingDocumentsForFinantialInstitution.size()
-                                + " Pending Documents for : " + x.getName());
+                        int documentsCount =
+                                exportPendingDocumentsForFinantialInstitution.stream()
+                                        .mapToInt(oper -> oper.getFinantialDocumentsSet().size()).sum();
+                        taskLog("Finished Exporting " + documentsCount + " Pending Documents for : " + x.getName());
                     } catch (Exception ex) {
                         taskLog("Error exporting pending documents: " + ex.getMessage());
                         for (StackTraceElement el : ex.getStackTrace()) {

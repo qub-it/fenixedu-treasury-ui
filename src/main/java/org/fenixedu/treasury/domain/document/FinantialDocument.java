@@ -36,11 +36,14 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.scheduler.TaskRunner;
+import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
+import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportPendingDocumentsTask;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
@@ -256,6 +259,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         if (getInstitutionForExportation() == null) {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
         }
+
+        SchedulerSystem.queue(new TaskRunner(new ERPExportPendingDocumentsTask()));
     }
 
     @Atomic

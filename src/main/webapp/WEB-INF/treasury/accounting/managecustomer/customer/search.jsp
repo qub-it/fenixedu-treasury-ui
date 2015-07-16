@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.AdhocCustomerController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
@@ -37,10 +38,16 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%= AdhocCustomerController.CREATE_URL %>"><spring:message
-            code="label.event.create" /></a> &nbsp; | &nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
+            code="label.event.create" /></a> &nbsp;
+    <%
+        if (TreasuryAccessControl.getInstance().isBackOfficeMember()) {
+    %>
+    | &nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}<%= DebtAccountController.SEARCHOPENDEBTACCOUNTS_URL %>"><spring:message
             code="label.event.accounting.managecustomer.search.debtaccounts.with.pending.values" /></a> &nbsp;
-
+    <%
+        }
+    %>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

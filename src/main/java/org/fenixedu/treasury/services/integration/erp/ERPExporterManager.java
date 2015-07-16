@@ -15,6 +15,93 @@ import pt.ist.fenixframework.Atomic;
 
 public class ERPExporterManager {
 
+//    private static Semaphore lockingSemaphore = new Semaphore(0);
+//    private static Thread worker;
+//    private static Boolean exporterActive = true;
+//
+//    public static Boolean getERPExporterActive() {
+//        return exporterActive;
+//    }
+//
+//    public static void setPushSyncManagerActive(Boolean value) {
+//        exporterActive = value;
+//        if (exporterActive == true) {
+//            initERPExporter();
+//        } else {
+//            stopPushSyncManager();
+//        }
+//    }
+//
+//    private static void initERPExporter() {
+//        if (worker == null || worker.isAlive() == false) {
+//            worker = new Thread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        while (true) {
+//
+//                            // Stops waiting for lock-release
+//                            lockingSemaphore.acquire();
+//
+//                            if (getERPExporterActive()) {
+//                                internalExecute();
+//                            } else {
+//                                // The exporterManager is marked as inactive, so we
+//                                // don't do anything..
+//                            }
+//
+//                            // Clear all Permits
+//                            lockingSemaphore.drainPermits();
+//
+//                        }
+//                    } catch (InterruptedException e1) {
+//                        // TODO Auto-generated catch block
+////                        Log.info(Operations.SYNC, "SYNC_PUSH exiting from task due to Interrupt");
+//                    }
+//                }
+//            });
+//            worker.setDaemon(false);
+//            worker.setName("Sync Push Notifications Manager Thread");
+//            worker.start();
+////            Log.info(Operations.SYNC, "SYNC_PUSH Notifier Manager started");
+//        } else {
+////            Log.info(Operations.SYNC, "SYNC_PUSH Notifier Manager already started");
+//        }
+//    }
+//
+//    public static void stopPushSyncManager() {
+//
+//        if (worker != null && worker.isAlive()) {
+//            worker.interrupt();
+//            worker = null;
+//        }
+////        Log.info(Operations.SYNC, "SYNC_PUSH Notifier Manager stopped");
+//    }
+//
+//    public static void signalPushSyncManager() {
+//        // Log.info(Operations.SYNC, "SYNC_PUSH Notifier Manager signaled");
+//        lockingSemaphore.release();
+//    }
+//
+//    @Atomic
+//    private static void internalExecute() {
+//
+//        try {
+//            FinantialInstitution.findAll().forEach(finInstitution -> {
+//                // Sleeps always 1 second betweens runs
+//                    try {
+//                        exportPendingDocumentsForFinantialInstitution(finInstitution);
+//                        Thread.sleep(1000);
+//                    } catch (Exception e) {
+//                        return;
+//                    }
+//                });
+//        } catch (Exception ex) {
+////            Log.error(Operations.SYNC, "SYNC_PUSH error executing task " + ex.getMessage(), ex);
+//        }
+//
+//    }
+
     @Atomic
     public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(FinantialInstitution finantialInstitution) {
 
