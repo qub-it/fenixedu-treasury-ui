@@ -141,6 +141,7 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
             final PaymentReferenceCode paymentReferenceCode, final java.lang.Boolean valid) {
         FinantialDocumentPaymentCode finantialDocumentPaymentCode = new FinantialDocumentPaymentCode();
         finantialDocumentPaymentCode.init(finantialDocument, paymentReferenceCode, valid);
+        paymentReferenceCode.setState(PaymentReferenceCodeStateType.USED);
         return finantialDocumentPaymentCode;
     }
 
