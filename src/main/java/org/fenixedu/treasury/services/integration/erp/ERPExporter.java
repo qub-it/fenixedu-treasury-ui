@@ -1138,10 +1138,10 @@ public class ERPExporter {
 
             writeContentToExportOperation(xml, operation);
 
-            sendDocumentsInformationToIntegration(institution, operation);
+            boolean success = sendDocumentsInformationToIntegration(institution, operation);
 
             operation.getFinantialDocumentsSet().addAll(documents);
-            operation.setSuccess(true);
+            operation.setSuccess(success);
 
         } catch (Throwable t) {
             writeError(operation, t);
@@ -1149,8 +1149,9 @@ public class ERPExporter {
         return operation;
     }
 
-    private static void sendDocumentsInformationToIntegration(FinantialInstitution institution, ERPExportOperation operation)
+    private static boolean sendDocumentsInformationToIntegration(FinantialInstitution institution, ERPExportOperation operation)
             throws MalformedURLException {
+        boolean success = true;
         ERPConfiguration erpIntegrationConfiguration = institution.getErpIntegrationConfiguration();
         if (erpIntegrationConfiguration == null) {
             throw new TreasuryDomainException("error.ERPExporter.invalid.erp.configuration");
@@ -1181,6 +1182,7 @@ public class ERPExporter {
 
                     }
                 } else {
+                    success = false;
                     operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
                             "info.ERPExporter.error.integrating.document", status.getDocumentNumber(),
                             status.getErrorDescription()));
@@ -1210,9 +1212,11 @@ public class ERPExporter {
                         "info.ERPExporter.sucess.sending.inforation.offline", sendInfoOnlineResult));
                 operation.appendInfoLog("#" + sendInfoOnlineResult);
             } catch (IOException e) {
+                success = false;
                 operation.appendErrorLog(e.getLocalizedMessage());
             }
         }
+        return success;
     }
 
     private static void writeError(ERPExportOperation operation, Throwable t) {
@@ -1307,9 +1311,9 @@ public class ERPExporter {
 
             writeContentToExportOperation(xml, operation);
 
-            sendDocumentsInformationToIntegration(institution, operation);
+            boolean success = sendDocumentsInformationToIntegration(institution, operation);
             operation.getFinantialDocumentsSet().addAll(documents);
-            operation.setSuccess(true);
+            operation.setSuccess(success);
             operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
                     "label.ERPExporter.finished.finantialdocuments.integration"));
 
@@ -1333,10 +1337,10 @@ public class ERPExporter {
 
             writeContentToExportOperation(xml, operation);
 
-            sendDocumentsInformationToIntegration(institution, operation);
+            boolean success = sendDocumentsInformationToIntegration(institution, operation);
             operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.finished.customers.integration"));
 
-            operation.setSuccess(true);
+            operation.setSuccess(success);
         } catch (Exception ex) {
             writeError(operation, ex);
         }
@@ -1357,10 +1361,10 @@ public class ERPExporter {
 
             writeContentToExportOperation(xml, operation);
 
-            sendDocumentsInformationToIntegration(institution, operation);
+            boolean success = sendDocumentsInformationToIntegration(institution, operation);
             operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.finished.products.integration"));
 
-            operation.setSuccess(true);
+            operation.setSuccess(success);
         } catch (Exception ex) {
             writeError(operation, ex);
         }
@@ -1378,8 +1382,8 @@ public class ERPExporter {
                 for (FinantialDocument document : eRPExportOperation.getFinantialDocumentsSet()) {
                     operation.addFinantialDocuments(document);
                 }
-                sendDocumentsInformationToIntegration(eRPExportOperation.getFinantialInstitution(), operation);
-                operation.setSuccess(true);
+                boolean success = sendDocumentsInformationToIntegration(eRPExportOperation.getFinantialInstitution(), operation);
+                operation.setSuccess(success);
             } catch (Exception ex) {
                 writeError(operation, ex);
             }

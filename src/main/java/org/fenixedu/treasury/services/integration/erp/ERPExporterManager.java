@@ -1,8 +1,8 @@
 package org.fenixedu.treasury.services.integration.erp;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -134,19 +134,13 @@ public class ERPExporterManager {
             if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
                 while (sortedDocuments.isEmpty() == false) {
                     FinantialDocument doc = sortedDocuments.iterator().next();
-                    Set<FinantialDocument> findRelatedDocuments =
-                            doc.findRelatedDocuments(new HashSet<FinantialDocument>(), true).stream()
-                                    .filter(x -> x.isDocumentToExport() == true).collect(Collectors.toSet());
-                    for (FinantialDocument peingDoc : findRelatedDocuments) {
-                        if (doc.isDocumentToExport()) {
-                            //remove the related documents from the original Set
-                            sortedDocuments.remove(doc);
-                        }
-                    }
+                    //remove the related documents from the original Set
+                    sortedDocuments.remove(doc);
 
                     //Create a ExportOperation
                     ERPExportOperation exportFinantialDocumentToIntegration =
-                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
+                            ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution,
+                                    Collections.singletonList(docy));
                     result.add(exportFinantialDocumentToIntegration);
                 }
 

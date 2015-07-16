@@ -32,6 +32,8 @@ import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.base.Strings;
+
 public abstract class IntegrationOperation extends IntegrationOperation_Base {
 
     protected IntegrationOperation() {
@@ -48,6 +50,10 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
     }
 
     private void checkRules() {
+
+        if (Strings.isNullOrEmpty(this.getErrorLog()) == false) {
+            this.setSuccess(false);
+        }
         //
         // CHANGE_ME add more busines validations
         //
@@ -102,6 +108,7 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         deleteDomainObject();
     }
 
+    @Atomic
     public void appendInfoLog(String message) {
         String infoLog = this.getIntegrationLog();
         if (infoLog == null) {
@@ -111,8 +118,10 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         builder.append(this.getIntegrationLog()).append("\n");
         builder.append(new DateTime().toString()).append(message);
         this.setIntegrationLog(builder.toString());
+        checkRules();
     }
 
+    @Atomic
     public void appendErrorLog(String message) {
         String errorLog = this.getErrorLog();
         if (errorLog == null) {
@@ -122,5 +131,6 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         builder.append(this.getErrorLog()).append("\n");
         builder.append(new DateTime().toString()).append(message);
         this.setErrorLog(builder.toString());
+        checkRules();
     }
 }
