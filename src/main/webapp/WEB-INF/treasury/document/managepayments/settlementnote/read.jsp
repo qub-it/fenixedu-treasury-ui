@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -154,9 +155,9 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message
-            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message code="label.event.update" /></a>
-    &nbsp;
+            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
+        class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message
+            code="label.event.update" /></a> &nbsp;
     <c:if test="${settlementNote.isPreparing()}">
         |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                 code="label.event.delete" /></a> &nbsp;|&nbsp; 
@@ -170,14 +171,27 @@ ${portal.toolkit()}
         </a> &nbsp;      
     </c:if>
     <c:if test="${not settlementNote.isPreparing()}">
-        |&nbsp;<span class="glyphicon glyphicon-export" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile"><spring:message
-                code="label.event.document.managePayments.exportIntegrationFile" /></a>
-        &nbsp;
-                       |&nbsp;       <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationonline"><spring:message code="label.event.document.manageInvoice.exportSettlementNoteIntegrationOnline" /></a>
-    &nbsp;
-        
+|
+            <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+                <spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.erpoptions">
+                </spring:message>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                <li><a class=""
+                    href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationonline"><span
+                        class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportCreditNoteIntegrationOnline" /></a></li>
+                <li><a class=""
+                    href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile"> <span
+                        class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
+                </a></li>
+                <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?documentnumber=${settlementNote.uiDocumentNumber}">
+                        <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
+                </a></li>
+            </ul>
+        </div>
     </c:if>
     |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#"
         onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message
@@ -249,7 +263,12 @@ ${portal.toolkit()}
                                 <span class="label label-warning">
                             </c:if> <c:if test="${settlementNote.isClosed()}">
                                 <span class="label label-primary">
-                            </c:if> <c:out value='${settlementNote.state.descriptionI18N.content}' /></span></td>
+                            </c:if> <c:out value='${settlementNote.state.descriptionI18N.content}' /></span> <c:if test="${not settlementNote.isPreparing() }">
+                                <c:if test="${settlementNote.isDocumentToExport() }">
+                                    &nbsp;<span class="label label-warning"> <spring:message code="label.FinantialDocument.document.is.pending.to.export" />
+                                    </span>
+                                </c:if>
+                            </c:if></td>
                     </tr>
 
                     <c:if test="${settlementNote.isAnnulled()}">

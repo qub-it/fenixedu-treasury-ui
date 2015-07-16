@@ -37,8 +37,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${creditEntry.externalId}"><spring:message code="label.event.back" /></a>
-    &nbsp;
+        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${creditEntry.externalId}"><spring:message code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -80,12 +79,94 @@ ${portal.toolkit()}
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.quantity" />
+                    <spring:message code="label.DebtAccount.finantialInstitution" />
                 </div>
 
                 <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditEntry.debtAccount.finantialInstitution.name}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.debtAccount" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditEntry.debtAccount.customer.businessIdentification} - ${creditEntry.debtAccount.customer.name}" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.finantialDocument" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value='${creditEntry.finantialDocument.uiDocumentNumber}' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialDocumentEntry.entryDateTime" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value='${creditEntry.entryDateTime.toString("YYYY-MM-dd HH:mm")}' />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.product" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditEntry.product.name.content}" />
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+    </div>
+    
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditEntry.quantity" />
+                </div>
+
+                <div class="col-sm-3">
                     <input id="creditEntry_quantity" class="form-control" type="text" name="quantity"
                         value='<c:out value='${not empty param.quantity ? param.quantity: creditEntry.quantity}'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.CreditEntry.amount" />
+                </div>
+
+
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${creditEntry.debtAccount.finantialInstitution.currency.symbol}" />
+                        </div>
+                        <input id="creditEntry_amount" class="form-control" type="text" name="amount"
+                            value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
+                    </div>
                 </div>
             </div>
             <div class="form-group row">
@@ -98,16 +179,7 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.description ? param.description : creditEntry.description }'/>' />
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.amount" />
-                </div>
 
-                <div class="col-sm-10">
-                    <input id="creditEntry_amount" class="form-control" type="text" name="amount"
-                        value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
-                </div>
-            </div>
 
 
         </div>

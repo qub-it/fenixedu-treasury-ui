@@ -325,7 +325,13 @@ ${portal.toolkit()}
                                 <span class="label label-warning">
                             </c:if> <c:if test="${debitNote.isClosed()}">
                                 <span class="label label-primary">
-                            </c:if> <c:out value='${debitNote.state.descriptionI18N.content}' /> </span></td>
+                            </c:if> <c:out value='${debitNote.state.descriptionI18N.content}' /> </span>                            
+                            <c:if test="${not debitNote.isPreparing() }">
+                                <c:if test="${debitNote.isDocumentToExport() }">
+                                    &nbsp;<span class="label label-warning"> <spring:message code="label.FinantialDocument.document.is.pending.to.export" />
+                                    </span>
+                                </c:if>
+                            </c:if></td>
                     </tr>
                     <c:if test="${debitNote.isAnnulled()}">
                         <tr>
