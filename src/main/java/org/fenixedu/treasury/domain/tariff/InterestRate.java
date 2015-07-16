@@ -31,6 +31,7 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -44,6 +45,8 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.joda.time.Months;
+
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -133,7 +136,15 @@ public class InterestRate extends InterestRate_Base {
         sortedMap.putAll(amountInDebtMap);
         
         if(getInterestType().isGlobalRate() && !GlobalInterestRate.findUniqueByYear(dueDate.getYear()).get().isApplyPaymentMonth() ) {
-            sortedMap.put(paymentDate.withField(DateTimeFieldType.dayOfMonth(), 1).minusDays(1), BigDecimal.ZERO);
+            final LocalDate lastDayForInterestCalculation = paymentDate.withField(DateTimeFieldType.dayOfMonth(), 1).minusDays(1);
+            
+            for (final LocalDate localDate : Sets.newTreeSet(sortedMap.keySet())) {
+                if(localDate.isAfter(lastDayForInterestCalculation)) {
+                    sortedMap.remove(localDate);
+                }
+            }
+            
+            sortedMap.put(lastDayForInterestCalculation, BigDecimal.ZERO);
         } else {
             sortedMap.put(paymentDate, BigDecimal.ZERO);
         }
