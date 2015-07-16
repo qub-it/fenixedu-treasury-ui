@@ -209,7 +209,7 @@ ${portal.toolkit()}
             </c:if>
         </c:if>
         <c:if test="${not debitNote.isPreparing()}">
-
+|
             <div class="btn-group">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
                     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -219,17 +219,15 @@ ${portal.toolkit()}
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                     <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
-                            class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-                        <spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a></li>
+                            class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a></li>
                     <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
-                            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
-                        <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
+                            <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
                     </a></li>
                     <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?documentnumber=${debitNote.uiDocumentNumber}"> <span
-                            class="glyphicon glyphicon-export" aria-hidden="true"></span>
-                        <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
+                            class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
                     </a></li>
                 </ul>
+            </div>
         </c:if>
         |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#"
             onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message

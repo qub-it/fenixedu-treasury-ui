@@ -202,7 +202,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 .filter(debitNote -> currency == null || currency == debitNote.getCurrency())
                 .filter(debitNote -> documentNumber == null || documentNumber.length() == 0
                         || debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0
-                        && debitNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
+                        && debitNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
                 .filter(debitNote -> documentDateFrom == null
                         || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
                         || debitNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))

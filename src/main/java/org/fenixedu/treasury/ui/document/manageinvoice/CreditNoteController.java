@@ -256,7 +256,7 @@ public class CreditNoteController extends TreasuryBaseController {
                 .filter(creditNote -> currency == null || currency == creditNote.getCurrency())
                 .filter(creditNote -> documentNumber == null || documentNumber.length() == 0
                         || creditNote.getDocumentNumber() != null && creditNote.getDocumentNumber().length() > 0
-                        && creditNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
+                        && creditNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
                 .filter(creditNote -> documentDateFrom == null
                         || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
                         || creditNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))

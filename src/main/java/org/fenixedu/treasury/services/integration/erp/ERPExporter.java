@@ -46,6 +46,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -97,7 +98,6 @@ import org.fenixedu.treasury.domain.integration.OperationFile;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -1167,28 +1167,45 @@ public class ERPExporter {
                     sendInfoOnlineResult.getRequestId()));
 
             if (sendInfoOnlineResult.getDocumentStatus().size() == 0) {
-                for (FinantialDocument document : operation.getFinantialDocumentsSet()) {
-//                    List<String> documentNumbers = Collections.singletonList(document.getUiDocumentNumber());
-                    IntegrationStatusOutput integrationStatusFor =
-                            service.getIntegrationStatusFor(operation.getFinantialInstitution().getFiscalNumber(),
-                                    document.getUiDocumentNumber());
-                    if (integrationStatusFor.getDocumentStatus().isIntegratedWithSuccess()) {
+                List<String> documentNumbers =
+                        operation.getFinantialDocumentsSet().stream().map(doc -> doc.getUiDocumentNumber())
+                                .collect(Collectors.toList());
+                List<DocumentStatusWS> integrationStatusFor =
+                        service.getIntegrationStatusFor(operation.getFinantialInstitution().getFiscalNumber(), documentNumbers);
+                for (DocumentStatusWS documentStatus : integrationStatusFor) {
+                    if (documentStatus.isIntegratedWithSuccess()) {
                         operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
-                                "info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber()));
-                        document.clearDocumentToExport();
+                                "info.ERPExporter.sucess.integrating.document", documentStatus.getDocumentNumber()));
+                        FinantialDocument document =
+                                operation.getFinantialDocumentsSet().stream()
+                                        .filter(x -> x.getUiDocumentNumber().equals(documentStatus.getDocumentNumber()))
+                                        .findFirst().orElse(null);
+                        if (document != null) {
+                            document.clearDocumentToExport();
+                        } else {
+                            success = false;
+                            operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
+                                    "info.ERPExporter.error.integrating.document", documentStatus.getDocumentNumber(),
+                                    documentStatus.getErrorDescription()));
+                            operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
+                                    "info.ERPExporter.error.integrating.document", documentStatus.getDocumentNumber(),
+                                    documentStatus.getErrorDescription()));
+                        }
                     } else {
                         success = false;
                         operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
-                                "info.ERPExporter.error.integrating.document", document.getUiDocumentNumber(), ".error."));
+                                "info.ERPExporter.error.integrating.document", documentStatus.getDocumentNumber(),
+                                documentStatus.getErrorDescription()));
                         operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
-                                "info.ERPExporter.error.integrating.document", document.getDocumentNumber(), ".error."));
+                                "info.ERPExporter.error.integrating.document", documentStatus.getDocumentNumber(),
+                                documentStatus.getErrorDescription()));
                     }
                 }
                 success = false;
-                operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.error.integrating.document", "",
+                operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.error.integrating", "",
                         "no.documents.response"));
-                operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.error.integrating.document",
-                        "", "no.documents.response"));
+                operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.error.integrating", "",
+                        "no.documents.response"));
             } else {
                 //if we have result in online situation, then check the information of integration STATUS
                 for (DocumentStatusWS status : sendInfoOnlineResult.getDocumentStatus()) {
@@ -1334,6 +1351,7 @@ public class ERPExporter {
             List<FinantialDocument> documents) {
 
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
+        documents.forEach(document -> operation.addFinantialDocuments(document));
         try {
             operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
                     "label.ERPExporter.starting.finantialdocuments.integration"));

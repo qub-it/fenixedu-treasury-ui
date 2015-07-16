@@ -13,7 +13,6 @@ import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaService;
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServiceService;
@@ -82,10 +81,10 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
     }
 
     @Override
-    public IntegrationStatusOutput getIntegrationStatusFor(String finantialInstitution, String documentInformation) {
+    public List<DocumentStatusWS> getIntegrationStatusFor(String finantialInstitution, List<String> documentsInformation) {
         org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput integrationStatusFor =
-                getClient().getIntegrationStatusFor(documentInformation);
-        IntegrationStatusOutput result = new IntegrationStatusOutput();
+                getClient().getIntegrationStatusFor(documentsInformation.get(0));
+//        statusList        IntegrationStatusOutput result = new IntegrationStatusOutput();
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
         for (org.fenixedu.treasury.services.integration.erp.siag.DocumentStatusWS siagDocStatus : integrationStatusFor
                 .getDocumentStatus()) {
@@ -95,8 +94,8 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
             docStatus.setIntegrationStatus(StatusType.valueOf(siagDocStatus.getIntegrationStatus().toString()));
             statusList.add(docStatus);
         }
-
-        return result;
+//        result.setDocumentStatus(statusList.get(0));
+        return statusList;
     }
 
     @Override

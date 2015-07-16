@@ -357,7 +357,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                 .filter(settlementNote -> currency == null || currency == settlementNote.getCurrency())
                 .filter(settlementNote -> documentNumber == null || documentNumber.length() == 0
                         || settlementNote.getDocumentNumber() != null && settlementNote.getDocumentNumber().length() > 0
-                        && settlementNote.getDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
+                        && settlementNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
                 .filter(creditNote -> documentDateFrom == null
                         || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
                         || creditNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))

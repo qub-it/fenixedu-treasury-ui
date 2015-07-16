@@ -60,11 +60,9 @@ public class SINGAPExternalService extends BennuWebServiceClient<GestaoAcademica
     }
 
     @Override
-    public IntegrationStatusOutput getIntegrationStatusFor(String finantialInstitution, String documentInformation) {
+    public List<DocumentStatusWS> getIntegrationStatusFor(String finantialInstitution, List<String> documentsInformation) {
         List<org.fenixedu.treasury.services.integration.erp.singap.IntegrationStatusOutput> integrationStatusFor =
-                getClient().getIntegrationStatusFor(documentInformation);
-        IntegrationStatusOutput result = new IntegrationStatusOutput();
-//        for (org.fenixedu.treasury.services.integration.erp.singa.IntegrationStatusOutput singaStatus : integrationStatusFor) {
+                getClient().getIntegrationStatusFor(documentsInformation.get(0));
         IntegrationStatusOutput item = new IntegrationStatusOutput();
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
         for (org.fenixedu.treasury.services.integration.erp.singap.DocumentStatusWS singaDocStatus : integrationStatusFor.get(0)
@@ -75,11 +73,8 @@ public class SINGAPExternalService extends BennuWebServiceClient<GestaoAcademica
             docStatus.setIntegrationStatus(StatusType.valueOf(singaDocStatus.getIntegrationStatus().toString()));
             statusList.add(docStatus);
         }
-//            item.setDocumentStatus(statusList);
-//            result.add(item);
-//        }
 
-        return result;
+        return statusList;
     }
 
     @Override
