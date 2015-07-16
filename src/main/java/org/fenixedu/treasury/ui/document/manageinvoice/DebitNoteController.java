@@ -490,6 +490,7 @@ public class DebitNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
             List<FinantialDocument> documentsToExport = Collections.singletonList(debitNote);
             ERPExportOperation output =
                     ERPExporter.exportFinantialDocumentToIntegration(debitNote.getInstitutionForExportation(), documentsToExport);

@@ -98,22 +98,26 @@ public class CreditEntryController extends TreasuryBaseController {
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(@RequestParam(value = "creditnote") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
+        try {
+            DebtAccount debtAccount = creditNote.getDebtAccount();
+            if (creditNote != null && !creditNote.isPreparing()) {
+                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
+                redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+            }
 
-        DebtAccount debtAccount = creditNote.getDebtAccount();
-        if (creditNote != null && !creditNote.isPreparing()) {
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
-            redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+
+            CreditEntryBean bean = new CreditEntryBean();
+
+            bean.setProductDataSource(Product.findAllActive().collect(Collectors.toList()));
+            bean.setDebtAccount(debtAccount);
+            bean.setFinantialDocument(creditNote);
+            bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
+            this.setCreditEntryBean(bean, model);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
         }
-
-        CreditEntryBean bean = new CreditEntryBean();
-
-        bean.setProductDataSource(Product.findAllActive().collect(Collectors.toList()));
-        bean.setDebtAccount(debtAccount);
-        bean.setFinantialDocument(creditNote);
-        bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
-        this.setCreditEntryBean(bean, model);
-
         return "treasury/document/manageinvoice/creditentry/create";
     }
 
@@ -158,6 +162,8 @@ public class CreditEntryController extends TreasuryBaseController {
                 redirect(CreditNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
             }
 
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+
             CreditEntry creditEntry =
                     createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
                             bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getFinantialDocument()
@@ -177,8 +183,8 @@ public class CreditEntryController extends TreasuryBaseController {
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             this.setCreditEntryBean(bean, model);
-            return "treasury/document/manageinvoice/creditentry/create";
         }
+        return "treasury/document/manageinvoice/creditentry/create";
     }
 
     @Atomic
@@ -214,7 +220,9 @@ public class CreditEntryController extends TreasuryBaseController {
         setCreditEntry(creditEntry, model);
         try {
             CreditNote note = (CreditNote) creditEntry.getFinantialDocument();
-            //call the Atomic delete function
+
+            assertUserIsFrontOfficeMember(creditEntry.getDebtAccount().getFinantialInstitution(), model);
+
             deleteCreditEntry(creditEntry);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
@@ -245,6 +253,8 @@ public class CreditEntryController extends TreasuryBaseController {
         setCreditEntry(creditEntry, model);
 
         try {
+            assertUserIsFrontOfficeMember(creditEntry.getDebtAccount().getFinantialInstitution(), model);
+
             updateCreditEntry(description, amount, quantity, model);
 
             return redirect(CreditNoteController.READ_URL + getCreditEntry(model).getFinantialDocument().getExternalId(), model,

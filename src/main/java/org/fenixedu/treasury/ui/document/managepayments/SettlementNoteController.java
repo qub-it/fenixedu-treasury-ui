@@ -232,19 +232,27 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = CALCULATE_INTEREST_URI, method = RequestMethod.POST)
     public String calculateInterest(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
-            if (debitEntryBean.isIncluded() && debitEntryBean.getDebitEntry().getFinantialDocument() == null) {
-                setSettlementNoteBean(bean, model);
-                return "treasury/document/managepayments/settlementnote/createDebitNote";
+        try {
+            assertUserIsFrontOfficeMember(bean.getDebtAccount().getFinantialInstitution(), model);
+
+            for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
+                if (debitEntryBean.isIncluded() && debitEntryBean.getDebitEntry().getFinantialDocument() == null) {
+                    setSettlementNoteBean(bean, model);
+                    return "treasury/document/managepayments/settlementnote/createDebitNote";
+                }
             }
-        }
-        for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
-            if (interestEntryBean.isIncluded()) {
-                setSettlementNoteBean(bean, model);
-                return "treasury/document/managepayments/settlementnote/createDebitNote";
+            for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
+                if (interestEntryBean.isIncluded()) {
+                    setSettlementNoteBean(bean, model);
+                    return "treasury/document/managepayments/settlementnote/createDebitNote";
+                }
             }
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-        //It is not necessary to create a debit note
+
         return createDebitNote(bean, model);
     }
 
@@ -390,6 +398,9 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
         try {
             DebtAccount debtAccount = settlementNote.getDebtAccount();
+
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+
             deleteSettlementNote(settlementNote);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
@@ -427,6 +438,8 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
 
         try {
+            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+
             updateSettlementNote(originDocumentNumber, documentObservations, model);
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
@@ -449,6 +462,8 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
         try {
+            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+
             settlementNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
@@ -462,6 +477,8 @@ public class SettlementNoteController extends TreasuryBaseController {
     public void processReadToExportIntegrationFile(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
+            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+
             String output =
                     ERPExporter.exportFinantialDocumentToXML(
                             settlementNote.getDebtAccount().getFinantialInstitution(),
@@ -497,6 +514,8 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
 
         try {
+            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+
             settlementNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.Settlement.document.closed.sucess"),
@@ -596,6 +615,8 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String processReadToExportIntegrationOnline(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+
             List<FinantialDocument> documentsToExport = Collections.singletonList(settlementNote);
             ERPExportOperation output =
                     ERPExporter.exportFinantialDocumentToIntegration(settlementNote.getInstitutionForExportation(),

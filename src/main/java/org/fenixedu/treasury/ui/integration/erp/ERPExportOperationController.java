@@ -176,6 +176,8 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
         setERPExportOperation(eRPExportOperation, model);
         try {
+            assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
+
             deleteERPExportOperation(eRPExportOperation);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
@@ -210,6 +212,8 @@ public class ERPExportOperationController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setERPExportOperation(eRPExportOperation, model);
         try {
+            assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
+
             response.setContentType(eRPExportOperation.getFile().getContentType());
             String filename = eRPExportOperation.getFile().getFilename();
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
@@ -229,6 +233,8 @@ public class ERPExportOperationController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setERPExportOperation(eRPExportOperation, model);
         try {
+            assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
+
             ERPExportOperation retryExportOperation = ERPExporter.retryExportToIntegration(eRPExportOperation);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 
