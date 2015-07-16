@@ -111,6 +111,7 @@ public class CreditNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
         try {
+            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             creditNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.closed.sucess"),
@@ -126,6 +127,7 @@ public class CreditNoteController extends TreasuryBaseController {
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
         try {
+            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             creditNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.anulled.sucess"),
@@ -140,9 +142,9 @@ public class CreditNoteController extends TreasuryBaseController {
     @RequestMapping(value = "/delete/{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") CreditNote creditNote, Model model, RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
-//
         DebtAccount debtAccount = creditNote.getDebtAccount();
         try {
+            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             deleteCreditNote(creditNote);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
@@ -181,6 +183,8 @@ public class CreditNoteController extends TreasuryBaseController {
         setCreditNote(creditNote, model);
 
         try {
+            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
             updateCreditNote(originDocumentNumber, documentObservations, model);
 
             return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
@@ -372,6 +376,8 @@ public class CreditNoteController extends TreasuryBaseController {
 
         try {
 
+            assertUserIsFrontOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
+
             CreditNote creditNote =
                     createCreditNote(debtAccount, debitNote, documentNumberSeries, documentDate, originDocumentNumber,
                             documentObservations);
@@ -391,6 +397,7 @@ public class CreditNoteController extends TreasuryBaseController {
             DateTime documentDate, String originDocumentNumber, String documentObservations) {
 
         if (debitNote != null) {
+
             CreditNote creditNote =
                     debitNote.createEquivalentCreditNote(documentNumberSeries, documentDate, documentObservations, false);
             creditNote.setDocumentObservations(documentObservations);
@@ -408,6 +415,8 @@ public class CreditNoteController extends TreasuryBaseController {
     public void processReadToExportIntegrationFile(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
+            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
             creditNote.recalculateAmountValues();
             String output =
                     ERPExporter.exportFinantialDocumentToXML(
@@ -442,6 +451,8 @@ public class CreditNoteController extends TreasuryBaseController {
     public String processReadToExportIntegrationOnline(@PathVariable("oid") CreditNote creditNote, Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
             List<FinantialDocument> documentsToExport = Collections.singletonList(creditNote);
             ERPExportOperation output =
                     ERPExporter

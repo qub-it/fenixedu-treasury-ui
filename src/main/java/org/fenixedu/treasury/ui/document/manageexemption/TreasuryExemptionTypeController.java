@@ -137,6 +137,7 @@ public class TreasuryExemptionTypeController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setTreasuryExemptionType(treasuryExemptionType, model);
         try {
+            assertUserIsFrontOfficeMember(model);
             deleteTreasuryExemptionType(treasuryExemptionType);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);

@@ -66,25 +66,6 @@ public class FinantialDocumentController extends TreasuryBaseController {
         return "forward:" + CONTROLLER_URL + "/";
     }
 
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    //private FinantialDocumentBean getFinantialDocumentBean(Model model)
-    //{
-    //	return (FinantialDocumentBean)model.asMap().get("finantialDocumentBean");
-    //}
-    //				
-    //private void setFinantialDocumentBean (FinantialDocumentBean bean, Model model)
-    //{
-    //	model.addAttribute("finantialDocumentBeanJson", getBeanJson(bean));
-    //	model.addAttribute("finantialDocumentBean", bean);
-    //}
-
-    // @formatter: on
-
     private FinantialDocument getFinantialDocument(Model model) {
         return (FinantialDocument) model.asMap().get("finantialDocument");
     }

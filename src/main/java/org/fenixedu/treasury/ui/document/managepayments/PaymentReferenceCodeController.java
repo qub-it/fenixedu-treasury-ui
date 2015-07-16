@@ -83,16 +83,25 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
 
-        PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
-        bean.setDebitNote(debitNote);
-        List<PaymentCodePool> activePools =
-                debitNote.getDebtAccount().getFinantialInstitution().getPaymentCodePoolsSet().stream()
-                        .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
-        bean.setPaymentCodePoolDataSource(activePools);
-        bean.setBeginDate(new LocalDate());
-        bean.setEndDate(debitNote.getDocumentDueDate());
+        try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-        this.setPaymentReferenceCodeBean(bean, model);
+            PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
+            bean.setDebitNote(debitNote);
+            List<PaymentCodePool> activePools =
+                    debitNote.getDebtAccount().getFinantialInstitution().getPaymentCodePoolsSet().stream()
+                            .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
+            bean.setPaymentCodePoolDataSource(activePools);
+            bean.setBeginDate(new LocalDate());
+            bean.setEndDate(debitNote.getDocumentDueDate());
+
+            this.setPaymentReferenceCodeBean(bean, model);
+
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        }
 
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
     }
@@ -113,6 +122,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public String createpaymentcodeindebitnote(@RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
             Model model, RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsFrontOfficeMember(bean.getDebitNote().getDocumentNumberSeries().getSeries().getFinantialInstitution(),
+                    model);
+
             PaymentReferenceCode paymentReferenceCode =
                     bean.getPaymentCodePool()
                             .getReferenceCodeGenerator()

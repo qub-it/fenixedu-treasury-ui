@@ -85,15 +85,8 @@ public class DebitEntryController extends TreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
         return "forward:" + DebitNoteController.SEARCH_URL;
     }
-
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
 
     private DebitEntryBean getDebitEntryBean(Model model) {
         return (DebitEntryBean) model.asMap().get("debitEntryBean");
@@ -103,8 +96,6 @@ public class DebitEntryController extends TreasuryBaseController {
         model.addAttribute("debitEntryBeanJson", getBeanJson(bean));
         model.addAttribute("debitEntryBean", bean);
     }
-
-    // @formatter: on
 
     private DebitEntry getDebitEntry(Model model) {
         return (DebitEntry) model.asMap().get("debitEntry");
@@ -116,9 +107,6 @@ public class DebitEntryController extends TreasuryBaseController {
 
     @Atomic
     public void deleteDebitEntry(DebitEntry debitEntry) {
-        // CHANGE_ME: Do the processing for deleting the debitEntry
-        // Do not catch any exception here
-
         debitEntry.delete();
     }
 
@@ -253,10 +241,6 @@ public class DebitEntryController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI + "{oid}", method = RequestMethod.POST)
     public String create(@RequestParam(value = "bean", required = false) DebitEntryBean bean,
             @PathVariable("oid") DebtAccount debtAccount, Model model, RedirectAttributes redirectAttributes) {
-
-        /*
-        *  Creation Logic
-        */
 
         try {
             assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
