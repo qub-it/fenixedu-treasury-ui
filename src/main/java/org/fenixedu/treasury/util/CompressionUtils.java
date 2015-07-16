@@ -6,10 +6,11 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CompressionUtils {
-    private static final Logger LOG = org.apache.log4j.Logger.getLogger(CompressionUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CompressionUtils.class);
 
     public static byte[] compress(byte[] data) throws IOException {
         Deflater deflater = new Deflater();
