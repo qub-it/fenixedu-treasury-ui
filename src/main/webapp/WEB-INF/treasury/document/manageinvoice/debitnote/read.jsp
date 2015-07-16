@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode.PaymentReferenceCodeController"%>
@@ -217,6 +218,13 @@ ${portal.toolkit()}
             &nbsp;
             <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile"> <spring:message
                     code="label.event.document.manageInvoice.exportIntegrationFile" />
+            </a>
+            &nbsp;
+            |&nbsp;
+            <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+            &nbsp;
+            <a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?documentnumber=${debitNote.uiDocumentNumber}"> <spring:message
+                    code="label.event.document.manageInvoice.searchExportOperations" />
             </a>
             &nbsp;
         </c:if>

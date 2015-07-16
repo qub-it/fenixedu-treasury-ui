@@ -406,7 +406,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
             documentType = values.get(0);
             seriesNumber = values2.get(0);
-            documentNumber = values2.get(1);
+//            documentNumber = values2.get(1);
 
             FinantialDocumentType type = FinantialDocumentType.findByCode(documentType);
             if (type != null) {
@@ -414,7 +414,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 if (series != null) {
                     DocumentNumberSeries dns = DocumentNumberSeries.find(type, series);
                     if (dns != null) {
-                        return dns.getFinantialDocumentsSet().stream().filter(x -> x.getDocumentNumber().equals(documentNumber))
+                        return dns.getFinantialDocumentsSet().stream().filter(x -> x.getUiDocumentNumber().equals(docNumber))
                                 .findFirst().orElse(null);
                     }
                 }

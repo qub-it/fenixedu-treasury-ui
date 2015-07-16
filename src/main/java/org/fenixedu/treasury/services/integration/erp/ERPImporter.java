@@ -165,7 +165,7 @@ public class ERPImporter {
                 stringBuilder.append(el.toString() + "\n");
             }
 
-            eRPImportOperation.setErrorLog(stringBuilder.toString());
+            eRPImportOperation.appendErrorLog(stringBuilder.toString());
             eRPImportOperation.setProcessed(true);
             eRPImportOperation.setCorrected(false);
             eRPImportOperation.setExecutionDate(new DateTime());

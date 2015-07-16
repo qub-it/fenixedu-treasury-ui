@@ -1163,7 +1163,7 @@ public class ERPExporter {
             DocumentsInformationOutput sendInfoOnlineResult = service.sendInfoOnline(input);
             operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.sending.inforation.online",
                     sendInfoOnlineResult.getRequestId()));
-            operation.appendInfoLog("#" + sendInfoOnlineResult);
+//            operation.appendInfoLog("#" + sendInfoOnlineResult);
 
             //if we have result in online situation, then check the information of integration STATUS
             for (DocumentStatusWS status : sendInfoOnlineResult.getDocumentStatus()) {
@@ -1180,6 +1180,11 @@ public class ERPExporter {
                     } else {
 
                     }
+                } else {
+                    operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
+                            "info.ERPExporter.error.integrating.document", status.getDocumentNumber(),
+                            status.getErrorDescription()));
+
                 }
             }
         } else {
@@ -1205,7 +1210,7 @@ public class ERPExporter {
                         "info.ERPExporter.sucess.sending.inforation.offline", sendInfoOnlineResult));
                 operation.appendInfoLog("#" + sendInfoOnlineResult);
             } catch (IOException e) {
-                operation.setErrorLog(e.getLocalizedMessage());
+                operation.appendErrorLog(e.getLocalizedMessage());
             }
         }
     }
@@ -1215,7 +1220,7 @@ public class ERPExporter {
         PrintWriter writer = new PrintWriter(out);
         t.printStackTrace(writer);
         operation.setProcessed(true);
-        operation.setErrorLog(out.toString());
+        operation.appendErrorLog(out.toString());
     }
 
     @Atomic(mode = TxMode.WRITE)

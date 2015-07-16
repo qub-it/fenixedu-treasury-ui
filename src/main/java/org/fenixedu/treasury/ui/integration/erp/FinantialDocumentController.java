@@ -172,11 +172,11 @@ public class FinantialDocumentController extends TreasuryBaseController {
                 return redirect(SEARCH_URL, model, redirectAttributes);
             } else if (exportPendingDocumentsForFinantialInstitution.size() == 1) {
                 addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "info.integration.erp.success.export"), model);
-                redirect(ERPExportOperationController.READ_URL
+                return redirect(ERPExportOperationController.READ_URL
                         + exportPendingDocumentsForFinantialInstitution.get(0).getExternalId(), model, redirectAttributes);
             } else {
                 addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "info.integration.erp.multiple.success.export"), model);
-                redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
+                return redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
             }
         } catch (Exception ex) {
             addErrorMessage(ex.getMessage(), model);

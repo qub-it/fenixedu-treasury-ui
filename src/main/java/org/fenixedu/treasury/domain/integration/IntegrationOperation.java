@@ -113,4 +113,14 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         this.setIntegrationLog(builder.toString());
     }
 
+    public void appendErrorLog(String message) {
+        String errorLog = this.getErrorLog();
+        if (errorLog == null) {
+            this.setErrorLog("");
+        }
+        StringBuilder builder = new StringBuilder();
+        builder.append(this.getErrorLog()).append("\n");
+        builder.append(new DateTime().toString()).append(message);
+        this.setErrorLog(builder.toString());
+    }
 }

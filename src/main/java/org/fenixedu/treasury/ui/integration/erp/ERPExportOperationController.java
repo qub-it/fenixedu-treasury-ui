@@ -27,6 +27,7 @@
 package org.fenixedu.treasury.ui.integration.erp;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +36,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
@@ -51,6 +54,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.base.Strings;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.export",
@@ -84,12 +89,15 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
+            @RequestParam(value = "finantialinstitution", required = false) FinantialInstitution finantialInstitution,
             @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime fromExecutionDate,
             @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
-            @RequestParam(value = "success", required = false) Boolean success, Model model) {
+            @RequestParam(value = "success", required = false) Boolean success, @RequestParam(value = "documentnumber",
+                    required = false) String documentNumber, Model model) {
         List<ERPExportOperation> searcherpexportoperationResultsDataSet =
-                filterSearchERPExportOperation(fromExecutionDate, toExecutionDate, success);
+                filterSearchERPExportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
 
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("searcherpexportoperationResultsDataSet", searcherpexportoperationResultsDataSet);
         return "treasury/integration/erp/erpexportoperation/search";
     }
@@ -99,15 +107,34 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
     }
 
-    private List<ERPExportOperation> filterSearchERPExportOperation(DateTime fromExecutionDate, DateTime toExecutionDate,
-            Boolean success) {
+    private List<ERPExportOperation> filterSearchERPExportOperation(FinantialInstitution finantialInstitution,
+            DateTime fromExecutionDate, DateTime toExecutionDate, Boolean success, String documentNumber) {
 
-        return getSearchUniverseSearchERPExportOperationDataSet()
-                .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null
-                        || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
-                        && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
-                .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
-                .collect(Collectors.toList());
+        if (Strings.isNullOrEmpty(documentNumber)) {
+
+            return getSearchUniverseSearchERPExportOperationDataSet()
+                    .filter(eRPExportOperation -> finantialInstitution == null
+                            || eRPExportOperation.getFinantialInstitution().equals(finantialInstitution))
+                    .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null
+                            || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
+                            && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
+                    .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
+                    .collect(Collectors.toList());
+        } else {
+            FinantialDocument document = FinantialDocument.findByUiDocumentNumber(finantialInstitution, documentNumber);
+            if (document != null) {
+                return document
+                        .getErpExportOperationsSet()
+                        .stream()
+                        .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null
+                                || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
+                                && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
+                        .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
+                        .collect(Collectors.toList());
+            } else {
+                return new ArrayList<ERPExportOperation>();
+            }
+        }
     }
 
     private static final String _SEARCH_TO_DELETEMULTIPLE_URI = "/search/deletemultiple";

@@ -130,7 +130,7 @@ public class ERPIntegrationService extends BennuWebService {
             return operation.getExternalId();
         } catch (Exception e) {
             if (operation != null) {
-                operation.setErrorLog(e.getLocalizedMessage());
+                operation.appendErrorLog(e.getLocalizedMessage());
                 return operation.getExternalId();
             }
             throw new RuntimeException(e);
