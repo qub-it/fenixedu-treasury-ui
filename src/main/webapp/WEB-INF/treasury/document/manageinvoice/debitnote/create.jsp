@@ -75,6 +75,8 @@ ${portal.toolkit()}
 </c:if>
 
 <form method="post" class="form-horizontal">
+
+    <input type="hidden" name="debitentry" value="${debitEntry.externalId}"/>
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="form-group row">

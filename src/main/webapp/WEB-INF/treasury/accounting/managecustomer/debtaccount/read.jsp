@@ -243,7 +243,10 @@ ${portal.angularToolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" /> <c:if test="${debtAccount.totalInDebt < 0 }">
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
+                            <c:if test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
+                                    &nbsp;&nbsp; &nbsp;   (<spring:message code="label.DebtAccount.balanceWithoutInterests" /> <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> )
+                                </c:if> <c:if test="${debtAccount.totalInDebt < 0 }">
                                 <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                 </span>
                             </c:if></td>

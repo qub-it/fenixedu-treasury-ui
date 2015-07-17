@@ -42,6 +42,7 @@ import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -224,10 +225,14 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount, Model model,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount, @RequestParam(value = "debitEntry",
+                    required = false) DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
         try {
 
+            if (debitEntry != null) {
+                debtAccount = debitEntry.getDebtAccount();
+                model.addAttribute("debitEntry", debitEntry);
+            }
             FinantialInstitution finantialInstitution = null;
             if (documentNumberSeries == null && debtAccount == null) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
@@ -293,6 +298,7 @@ public class DebitNoteController extends TreasuryBaseController {
     public String create(
             @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
             @RequestParam(value = "debtaccount") DebtAccount debtAccount,
+            @RequestParam(value = "debitentry") DebitEntry debitEntry,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDate,
             @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
@@ -305,6 +311,10 @@ public class DebitNoteController extends TreasuryBaseController {
                     createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate, documentDueDate,
                             originDocumentNumber, documentObservations);
 
+            if (debitEntry != null && debitEntry.getFinantialDocument() == null) {
+                addDebitEntryToDebitNote(debitEntry, debitNote);
+            }
+
             model.addAttribute("debitNote", debitNote);
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -312,7 +322,12 @@ public class DebitNoteController extends TreasuryBaseController {
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
         }
-        return create(documentNumberSeries, debtAccount, model, redirectAttributes);
+        return create(documentNumberSeries, debtAccount, debitEntry, model, redirectAttributes);
+    }
+
+    @Atomic
+    private void addDebitEntryToDebitNote(DebitEntry debitEntry, DebitNote debitNote) {
+        debitEntry.setFinantialDocument(debitNote);
     }
 
     @Atomic

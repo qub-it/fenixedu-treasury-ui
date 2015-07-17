@@ -2,6 +2,7 @@ package org.fenixedu.treasury.services.payments.sibs;
 
 import java.math.BigDecimal;
 
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
@@ -118,7 +119,18 @@ public class SIBSImportationLineDTO {
             return null;
         }
 
-        return getPaymentCode().getTargetPayment().getDescription();
+        StringBuilder sb = new StringBuilder();
+        if (getPaymentCode().getTargetPayment().getSettlementNotesSet() != null) {
+            SettlementNote note =
+                    getPaymentCode().getTargetPayment().getSettlementNotesSet().stream()
+                            .filter(x -> x.getDocumentDate().equals(this.getTransactionWhenRegistered())).findFirst()
+                            .orElse(null);
+            if (note != null) {
+                sb.append("Nota de Pagamento: " + note.getUiDocumentNumber() + "\n");
+            }
+        }
+        sb.append(getPaymentCode().getTargetPayment().getDescription());
+        return sb.toString();
     }
 
     public SIBSImportationFileDTO getSibsImportationFileDTO() {

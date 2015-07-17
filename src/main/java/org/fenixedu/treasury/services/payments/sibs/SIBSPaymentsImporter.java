@@ -200,7 +200,8 @@ public class SIBSPaymentsImporter {
                         detailLine.getSibsTransactionId(), sibsImportationFile);
 
         if (settlementNote != null) {
-            //HURRAY!!! Payment received....
+            //Add the new SettlementNote to the TargetPayment
+            codeToProcess.getTargetPayment().addSettlementNotes(settlementNote);
         }
     }
 

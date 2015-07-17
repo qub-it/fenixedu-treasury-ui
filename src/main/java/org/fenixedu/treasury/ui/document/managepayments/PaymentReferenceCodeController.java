@@ -93,7 +93,11 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                             .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
             bean.setPaymentCodePoolDataSource(activePools);
             bean.setBeginDate(new LocalDate());
-            bean.setEndDate(debitNote.getDocumentDueDate());
+            if (debitNote.getDocumentDueDate().isBefore(bean.getBeginDate())) {
+                bean.setEndDate(new LocalDate());
+            } else {
+                bean.setEndDate(debitNote.getDocumentDueDate());
+            }
 
             this.setPaymentReferenceCodeBean(bean, model);
 

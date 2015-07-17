@@ -215,6 +215,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         setState(PaymentReferenceCodeStateType.ANNULLED);
     }
 
+    public boolean isFixedAmount() {
+        return this.getPaymentCodePool().getUseCheckDigit();
+    }
+
     public boolean isAvailableForReuse() {
         return !isNew();
     }
@@ -288,6 +292,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 FinantialDocumentPaymentCode.create(finantialDocument, this, true);
         this.setTargetPayment(targetToFinantialDocument);
         this.setState(PaymentReferenceCodeStateType.USED);
+        this.setPayableAmount(finantialDocument.getOpenAmount());
         checkRules();
     }
 

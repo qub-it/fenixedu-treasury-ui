@@ -452,7 +452,8 @@ class paymentcodes.PaymentReferenceCode
        LocalDate endDate;
        PaymentReferenceCodeStateType state;
        BigDecimalT maxAmount;
-       BigDecimalT minAmount; 
+       BigDecimalT minAmount;
+       BigDecimalT payableAmount; 
 }
 
 
@@ -555,6 +556,15 @@ class paymentcodes.PaymentReferenceCode
         }
     }
 
+    relation PaymentReferenceCodeTargetSettlementNote {
+        paymentcodes.PaymentCodeTarget playsRole usedInTargetPayment {
+            multiplicity *;
+        }
+    
+        document.SettlementNote playsRole settlementNotes{
+            multiplicity *;
+        }
+    }
 	
 	
 	class paymentcodes.SibsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {

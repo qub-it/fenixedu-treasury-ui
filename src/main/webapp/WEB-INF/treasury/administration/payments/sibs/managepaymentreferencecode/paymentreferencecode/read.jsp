@@ -144,6 +144,10 @@ ${portal.toolkit()}
                         <td><c:out value='${paymentReferenceCode.formattedCode}' /></td>
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.payableAmount" /></th>
+                        <td><c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.currency.getValueFor(paymentReferenceCode.payableAmount)}' /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.beginDate" /></th>
                         <td><c:out value='${paymentReferenceCode.beginDate}' /></td>
                     </tr>

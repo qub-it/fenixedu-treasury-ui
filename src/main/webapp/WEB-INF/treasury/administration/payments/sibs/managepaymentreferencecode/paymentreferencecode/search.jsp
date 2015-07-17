@@ -161,7 +161,7 @@ ${portal.toolkit()}
 "referencecode" : "<c:out value='${searchResult.referenceCode}'/>",
 "begindate" : "<c:out value='${searchResult.beginDate}'/>",
 "enddate" : "<c:out value='${searchResult.endDate}'/>",
-"state" : "<c:out value='${searchResult.state}'/>",
+"state" : "<c:out value='${searchResult.state.descriptionI18N.content}' />",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 

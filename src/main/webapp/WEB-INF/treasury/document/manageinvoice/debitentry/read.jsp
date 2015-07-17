@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -179,7 +180,9 @@ ${portal.toolkit()}
                                 <c:out value='${debitEntry.finantialDocument.uiDocumentNumber}' />
                             </c:if> <c:if test="${empty debitEntry.finantialDocument}">
                                 <span class="label label-warning"> <spring:message code="label.DebitEntry.debitentry.with.no.document" />
-                                </span>
+                                </span> &nbsp;
+                                <a class="btn btn-xs btn-primary" href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL%>?debitEntry=${debitEntry.externalId}"><span
+                                    class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitEntry.create.debitNote" /></a>
                             </c:if></td>
                     </tr>
                     <tr>
@@ -217,9 +220,8 @@ ${portal.toolkit()}
                     <c:if test="${debitEntry.pendingInterestAmount.unscaledValue() != 0 }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.pendingInterestAmount" /></th>
-                            <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.pendingInterestAmount)}' />
-                                                            <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
-                            </td>
+                            <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.pendingInterestAmount)}' /> <span class="label label-info"><spring:message
+                                        code="label.DebtAccount.interestIncludedInDebtAmount" /></span></td>
                         </tr>
                     </c:if>
 
