@@ -202,20 +202,6 @@ ${portal.toolkit()}
 	</script>
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.useAmountToValidateCheckDigit" />
-                </div>
-
-                <div class="col-sm-2">
-                    <select id="paymentCodePool_useAmountToValidateCheckDigit" name="useamounttovalidatecheckdigit" class="form-control">
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-                        <option value="false"><spring:message code="label.no" /></option>
-                        <option value="true"><spring:message code="label.yes" /></option>
-                    </select>
-                    <script>
-		$("#paymentCodePool_useAmountToValidateCheckDigit").val('<c:out value='${not empty param.useamounttovalidatecheckdigit ? param.useamounttovalidatecheckdigit : paymentCodePool.useAmountToValidateCheckDigit }'/>');
-	</script>
                 </div>
             </div>
 

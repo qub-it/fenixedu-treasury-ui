@@ -179,8 +179,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom, @RequestParam(
                     value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
             @RequestParam(value = "active", required = false) Boolean active, @RequestParam(value = "usecheckdigit",
-                    required = false) Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
-                    required = false) Boolean useAmountToValidateCheckDigit,
+                    required = false) Boolean useCheckDigit,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
                     value = "paymentmethod") PaymentMethod paymentMethod, Model model, RedirectAttributes redirectAttributes) {
 
@@ -188,8 +187,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
             PaymentCodePool paymentCodePool =
                     createPaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode,
-                            minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit,
-                            documentNumberSeries, paymentMethod);
+                            minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, documentNumberSeries, paymentMethod);
 
             model.addAttribute("paymentCodePool", paymentCodePool);
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
@@ -206,12 +204,11 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public PaymentCodePool createPaymentCodePool(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
             String name, String entityReferenceCode, Long minReferenceCode, Long maxReferenceCode, BigDecimal minAmount,
             BigDecimal maxAmount, LocalDate validFrom, LocalDate validTo, Boolean active, Boolean useCheckDigit,
-            Boolean useAmountToValidateCheckDigit, DocumentNumberSeries documentNumberSeries, PaymentMethod paymentMethod) {
+            DocumentNumberSeries documentNumberSeries, PaymentMethod paymentMethod) {
 
         PaymentCodePool paymentCodePool =
                 PaymentCodePool.create(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                        validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution,
-                        documentNumberSeries, paymentMethod);
+                        validFrom, validTo, active, useCheckDigit, finantialInstitution, documentNumberSeries, paymentMethod);
 
         return paymentCodePool;
     }
@@ -249,8 +246,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom, @RequestParam(
                     value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
             @RequestParam(value = "active", required = false) Boolean active, @RequestParam(value = "usecheckdigit",
-                    required = false) Boolean useCheckDigit, @RequestParam(value = "useamounttovalidatecheckdigit",
-                    required = false) Boolean useAmountToValidateCheckDigit,
+                    required = false) Boolean useCheckDigit,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
                     value = "paymentmethod") PaymentMethod paymentMethod,
 
@@ -260,8 +256,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
 
         try {
             updatePaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount,
-                    maxAmount, validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, documentNumberSeries,
-                    paymentMethod, model);
+                    maxAmount, validFrom, validTo, active, useCheckDigit, documentNumberSeries, paymentMethod, model);
 
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
@@ -275,13 +270,13 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     @Atomic
     public void updatePaymentCodePool(FinantialInstitution finantialInstitution, String name, String entityReferenceCode,
             Long minReferenceCode, Long maxReferenceCode, BigDecimal minAmount, BigDecimal maxAmount, LocalDate validFrom,
-            LocalDate validTo, Boolean active, Boolean useCheckDigit, Boolean useAmountToValidateCheckDigit,
-            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod, Model model) {
+            LocalDate validTo, Boolean active, Boolean useCheckDigit, DocumentNumberSeries seriesToUseInPayments,
+            PaymentMethod paymentMethod, Model model) {
 
         getPaymentCodePool(model).edit(name, active, seriesToUseInPayments, paymentMethod);
         getPaymentCodePool(model).setNewValidPeriod(validFrom, validTo);
         getPaymentCodePool(model).changeFinantialInstitution(finantialInstitution);
-        getPaymentCodePool(model).changePooltype(useCheckDigit, useAmountToValidateCheckDigit);
+        getPaymentCodePool(model).changePooltype(useCheckDigit);
         getPaymentCodePool(model).changeReferenceCode(entityReferenceCode, minReferenceCode, maxReferenceCode);
         getPaymentCodePool(model).changeAmount(minAmount, maxAmount);
     }

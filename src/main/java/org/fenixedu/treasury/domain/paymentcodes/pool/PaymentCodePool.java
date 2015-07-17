@@ -61,18 +61,18 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     protected PaymentCodePool(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
-            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
-            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
+            final FinantialInstitution finantialInstitution, DocumentNumberSeries seriesToUseInPayments,
+            PaymentMethod paymentMethod) {
         this();
         init(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount, validFrom, validTo, active,
-                useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
+                useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
     }
 
     protected void init(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
-            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
-            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
+            final FinantialInstitution finantialInstitution, DocumentNumberSeries seriesToUseInPayments,
+            PaymentMethod paymentMethod) {
         setName(name);
         setEntityReferenceCode(entityReferenceCode);
         setMinReferenceCode(minReferenceCode);
@@ -83,7 +83,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         setValidTo(validTo);
         setActive(active);
         setUseCheckDigit(useCheckDigit);
-        setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
+
         setFinantialInstitution(finantialInstitution);
         setPaymentMethod(paymentMethod);
         setDocumentSeriesForPayments(seriesToUseInPayments);
@@ -193,8 +193,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     public static PaymentCodePool create(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
-            final Boolean useAmountToValidateCheckDigit, final FinantialInstitution finantialInstitution,
-            DocumentNumberSeries seriesToUseInPayments, PaymentMethod paymentMethod) {
+            final FinantialInstitution finantialInstitution, DocumentNumberSeries seriesToUseInPayments,
+            PaymentMethod paymentMethod) {
 
         if (finantialInstitution.getSibsConfiguration() == null || finantialInstitution.getSibsConfiguration() == null
                 && !entityReferenceCode.equals(finantialInstitution.getSibsConfiguration().getEntityReferenceCode())) {
@@ -202,8 +202,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                     "error.administration.payments.sibs.managepaymentcodepool.invalid.entity.reference.code.from.finantial.institution");
         }
         return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                validFrom, validTo, active, useCheckDigit, useAmountToValidateCheckDigit, finantialInstitution,
-                seriesToUseInPayments, paymentMethod);
+                validFrom, validTo, active, useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
 
     }
 
@@ -276,14 +275,12 @@ public class PaymentCodePool extends PaymentCodePool_Base {
     }
 
     @Atomic
-    public void changePooltype(Boolean useCheckDigit, Boolean useAmountToValidateCheckDigit) {
-        if (this.getPaymentReferenceCodesSet().size() > 0
-                && (this.getUseCheckDigit() != useCheckDigit || this.getUseAmountToValidateCheckDigit() != useAmountToValidateCheckDigit)) {
+    public void changePooltype(Boolean useCheckDigit) {
+        if (this.getPaymentReferenceCodesSet().size() > 0 && (this.getUseCheckDigit() != useCheckDigit)) {
             throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
         }
 
         this.setUseCheckDigit(useCheckDigit);
-        this.setUseAmountToValidateCheckDigit(useAmountToValidateCheckDigit);
         checkRules();
     }
 

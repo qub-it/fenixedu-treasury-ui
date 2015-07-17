@@ -467,7 +467,6 @@ class paymentcodes.PaymentReferenceCode
 	  LocalDate validTo;
 	  Boolean active;
 	  Boolean useCheckDigit;
-	  Boolean useAmountToValidateCheckDigit;
 	}
 	
 

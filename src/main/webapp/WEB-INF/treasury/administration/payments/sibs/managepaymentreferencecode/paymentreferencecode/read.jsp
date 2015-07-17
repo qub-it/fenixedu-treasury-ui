@@ -161,18 +161,6 @@ ${portal.toolkit()}
                             <td><c:out value='${paymentReferenceCode.maxAmount}' /></td>
                         </tr>
                     </c:if>
-                    <c:if test='${paymentReferenceCode.paymentCodePool.useCheckDigit }'>
-                        <c:if test='${paymentReferenceCode.paymentCodePool.useAmountToValidateCheckDigit }'>
-                            <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.minAmount" /></th>
-                                <td><c:out value='${paymentReferenceCode.minAmount}' /></td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.maxAmount" /></th>
-                                <td><c:out value='${paymentReferenceCode.maxAmount}' /></td>
-                            </tr>
-                        </c:if>
-                    </c:if>
 
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.state" /></th>

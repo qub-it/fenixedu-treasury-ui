@@ -100,15 +100,15 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
 
         String referenceCodeString = "";
 
-        if (Boolean.TRUE.equals(referenceCodePool.getUseAmountToValidateCheckDigit())) {
-            referenceCodeString =
-                    CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
-                            + nextReferenceCode, amount);
-        } else {
-            referenceCodeString =
-                    CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
-                            + nextReferenceCode, BigDecimal.ZERO);
-        }
+//        if (Boolean.TRUE.equals(referenceCodePool.getUseAmountToValidateCheckDigit())) {
+        referenceCodeString =
+                CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
+                        + nextReferenceCode, amount);
+//        } else {
+//            referenceCodeString =
+//                    CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
+//                            + nextReferenceCode, BigDecimal.ZERO);
+//        }
 
         BigDecimal minAmount = referenceCodePool.getMinAmount();
         BigDecimal maxAmount = referenceCodePool.getMaxAmount();
