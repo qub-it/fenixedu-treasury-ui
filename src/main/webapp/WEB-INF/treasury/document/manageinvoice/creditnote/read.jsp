@@ -190,7 +190,7 @@ ${portal.toolkit()}
                     <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/exportintegrationfile">
                             <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
                     </a></li>
-                    <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?documentnumber=${creditNote.uiDocumentNumber}">
+                    <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?finantialinstitution=${creditNote.debtAccount.finantialInstitution.externalId}&documentnumber=${creditNote.uiDocumentNumber}">
                             <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
                     </a></li>
                 </ul>
