@@ -45,6 +45,11 @@ public class PaymentReferenceCodeBean implements IBean {
     private org.joda.time.LocalDate endDate;
     private java.math.BigDecimal maxAmount;
     private java.math.BigDecimal minAmount;
+    private java.math.BigDecimal paymentAmount;
+    private java.math.BigDecimal paymentAmountWithInterst;
+    private boolean isPoolWithFixedAmount;
+    private boolean isPoolVariableTimeWindow;
+    private boolean usePaymentAmountWithInterests;
 
     public PaymentCodePool getPaymentCodePool() {
         return paymentCodePool;
@@ -118,4 +123,45 @@ public class PaymentReferenceCodeBean implements IBean {
     public void setDebitNote(DebitNote debitNote) {
         this.debitNote = debitNote;
     }
+
+    public java.math.BigDecimal getPaymentAmount() {
+        return paymentAmount;
+    }
+
+    public void setPaymentAmount(java.math.BigDecimal paymentAmount) {
+        this.paymentAmount = paymentAmount;
+    }
+
+    public boolean isUsePaymentAmountWithInterests() {
+        return usePaymentAmountWithInterests;
+    }
+
+    public void setUsePaymentAmountWithInterests(boolean usePaymentAmountWithInterests) {
+        this.usePaymentAmountWithInterests = usePaymentAmountWithInterests;
+    }
+
+    public java.math.BigDecimal getPaymentAmountWithInterst() {
+        return paymentAmountWithInterst;
+    }
+
+    public void setPaymentAmountWithInterst(java.math.BigDecimal paymentAmountWithInterst) {
+        this.paymentAmountWithInterst = paymentAmountWithInterst;
+    }
+
+    public boolean isPoolWithFixedAmount() {
+        return isPoolWithFixedAmount;
+    }
+
+    public void setPoolWithFixedAmount(boolean poolWithFixedAmount) {
+        this.isPoolWithFixedAmount = poolWithFixedAmount;
+    }
+
+    public boolean isPoolVariableTimeWindow() {
+        return isPoolVariableTimeWindow;
+    }
+
+    public void setPoolVariableTimeWindow(boolean isPoolVariableTimeWindow) {
+        this.isPoolVariableTimeWindow = isPoolVariableTimeWindow;
+    }
+
 }

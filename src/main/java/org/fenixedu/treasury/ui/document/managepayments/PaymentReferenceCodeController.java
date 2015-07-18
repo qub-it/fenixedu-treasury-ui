@@ -26,6 +26,7 @@
  */
 package org.fenixedu.treasury.ui.document.managepayments;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
             PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
             bean.setDebitNote(debitNote);
+            bean.setPaymentAmount(debitNote.getOpenAmount());
+            bean.setPaymentAmountWithInterst(debitNote.getOpenAmountWithInterests());
+            bean.setUsePaymentAmountWithInterests(false);
             List<PaymentCodePool> activePools =
                     debitNote.getDebtAccount().getFinantialInstitution().getPaymentCodePoolsSet().stream()
                             .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
@@ -119,6 +123,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public @ResponseBody String createpaymentcodeindebitnotepostback(
             @RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean, Model model) {
         this.setPaymentReferenceCodeBean(bean, model);
+        bean.setPoolWithFixedAmount(bean.getPaymentCodePool().getIsFixedAmount());
+        bean.setPoolVariableTimeWindow(bean.getPaymentCodePool().getIsVariableTimeWindow());
         return getBeanJson(bean);
     }
 
@@ -129,11 +135,17 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(bean.getDebitNote().getDocumentNumberSeries().getSeries().getFinantialInstitution(),
                     model);
 
+            BigDecimal payableAmount = bean.getPaymentAmount();
+
+            if (bean.isUsePaymentAmountWithInterests()) {
+                payableAmount = bean.getPaymentAmountWithInterst();
+            }
+
             PaymentReferenceCode paymentReferenceCode =
                     bean.getPaymentCodePool()
                             .getReferenceCodeGenerator()
-                            .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(),
-                                    bean.getDebitNote().getOpenAmount(), bean.getBeginDate(), bean.getEndDate(), true);
+                            .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(), payableAmount,
+                                    bean.getBeginDate(), bean.getEndDate(), true);
 
             paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,

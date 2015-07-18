@@ -1,7 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -41,7 +41,8 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${paymentReferenceCodeBean.debitNote.externalId}"><spring:message code="label.event.back" /></a> &nbsp;
+        href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${paymentReferenceCodeBean.debitNote.externalId}"><spring:message
+            code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -80,7 +81,7 @@ ${portal.angularToolkit()}
 <script>
 	angular
 			.module('angularAppPaymentReferenceCode',
-					[ 'ngSanitize', 'ui.select','bennuToolkit' ])
+					[ 'ngSanitize', 'ui.select', 'bennuToolkit' ])
 			.controller(
 					'PaymentReferenceCodeController',
 					[
@@ -102,6 +103,9 @@ ${portal.angularToolkit()}
 
 								//Begin here of Custom Screen business JS - code
 
+								$scope.onPoolChange = function(pool, model) {
+									$scope.postBack(model);
+								};
 							} ]);
 </script>
 
@@ -117,8 +121,8 @@ ${portal.angularToolkit()}
                     <spring:message code="label.PaymentCodePool.finantialInstitution" />
                 </div>
 
-                <div class="col-sm-6">
-                    <input type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.name}'/>" disabled />
+                <div class="col-sm-10">
+                    <input class="col-sm-6" type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.name}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">
@@ -126,35 +130,19 @@ ${portal.angularToolkit()}
                     <spring:message code="label.DebtAccount.customer" />
                 </div>
 
-                <div class="col-sm-6">
-                    <input type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.customer.businessIdentification} - ${paymentReferenceCodeBean.debitNote.debtAccount.customer.name}'/>" disabled />
+                <div class="col-sm-10">
+                    <input class="col-sm-6" type="text"
+                        value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.customer.businessIdentification} - ${paymentReferenceCodeBean.debitNote.debtAccount.customer.name}'/>"
+                        disabled />
                 </div>
             </div>
-            <div class="form-group row">
+            <div class="form-group row ">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.DebitNote.documentNumber" />
                 </div>
 
-                <div class="col-sm-8">
-                    <input type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.uiDocumentNumber}'/>" disabled />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.beginDate" />
-                </div>
-
-                <div class="col-sm-8">
-                    <input type="text" bennu-date="object.beginDate" />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.endDate" />
-                </div>
-
-                <div class="col-sm-8">
-                    <input type="text" bennu-date="object.endDate" />
+                <div class="col-sm-4">
+                    <input class="col-sm-12" type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.uiDocumentNumber}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">
@@ -164,12 +152,61 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <ui-select id="paymentReferenceCode_paymentCodePool" name="paymentcodepool" ng-model="$parent.object.paymentCodePool" theme="bootstrap" ng-disabled="disabled">
-                    <ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices
+                    <ui-select id="paymentReferenceCode_paymentCodePool" name="paymentcodepool" on-select="onPoolChange($item, $model)" ng-model="$parent.object.paymentCodePool"
+                        theme="bootstrap" ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices
                         repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search"> <span
                         ng-bind-html="paymentCodePool.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
+            <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == false ">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.payableAmount" />
+                </div>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
+                        </div>
+                        <input pattern = "\d+(\.\d{2})?" class="col-sm-4" type="text" ng-model="object.paymentAmount" disabled />&nbsp <input type="checkbox" ng-model="object.usePaymentAmountWithInterests" />
+                        <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == true ">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.payableAmount" />
+                </div>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
+                        </div>
+                        <input pattern = "\d+(\.\d{2})?" class="col-sm-4" type="text" ng-model="object.paymentAmountWithInterst" disabled />&nbsp <input type="checkbox"
+                            ng-model="object.usePaymentAmountWithInterests" />
+                        <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row" ng-hide="angular.isUndefined(object.isPoolVariableTimeWindow) || object.isPoolVariableTimeWindow == false ">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.beginDate" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input type="text" bennu-date="object.beginDate" />
+                </div>
+            </div>
+            <div class="form-group row " ng-hide="angular.isUndefined(object.isPoolVariableTimeWindow) || object.isPoolVariableTimeWindow == false ">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.endDate" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input type="text" bennu-date="object.endDate" />
+                </div>
+            </div>
+
+
 
         </div>
         <div class="panel-footer">

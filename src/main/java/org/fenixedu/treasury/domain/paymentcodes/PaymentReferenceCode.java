@@ -216,7 +216,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     public boolean isFixedAmount() {
-        return this.getPaymentCodePool().getUseCheckDigit();
+        return this.getPaymentCodePool().getIsFixedAmount();
     }
 
     public boolean isAvailableForReuse() {

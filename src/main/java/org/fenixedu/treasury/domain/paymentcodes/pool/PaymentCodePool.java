@@ -352,4 +352,15 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     }
 
+    public boolean getIsFixedAmount() {
+        //When using checkdigit, it's fixed amount 
+        //HACK: there is also an option without check digit for fixed amount
+        return this.getUseCheckDigit();
+    }
+
+    public boolean getIsVariableTimeWindow() {
+        // When using checkdigit, it's FIXED TIMEWINDOW
+        return !this.getUseCheckDigit();
+    }
+
 }

@@ -164,7 +164,7 @@ ${portal.toolkit()}
                         <div class="input-group-addon">
                             <c:out value="${creditEntry.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input id="creditEntry_amount" class="form-control" type="text" name="amount"
+                        <input pattern = "\d+(\.\d{2})?" id="creditEntry_amount" class="form-control" type="text" name="amount"
                             value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
                     </div>
                 </div>
