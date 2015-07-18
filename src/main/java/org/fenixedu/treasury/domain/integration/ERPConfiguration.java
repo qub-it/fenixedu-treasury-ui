@@ -53,6 +53,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     protected void init(final Series paymentsIntegrationSeries, final FinantialInstitution finantialInstitution,
             final String code, final String externalURL, final String username, final String password,
             final String implementationClassName, final Long maxSizeBytesToExportOnline) {
+        setActive(true);
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setFinantialInstitution(finantialInstitution);
         setCode(code);
@@ -77,10 +78,11 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     }
 
     @Atomic
-    public void edit(final Series paymentsIntegrationSeries, final String externalURL, final String username,
-            final String password, final boolean exportAnnulledRelatedDocuments,
+    public void edit(final boolean active, final Series paymentsIntegrationSeries, final String externalURL,
+            final String username, final String password, final boolean exportAnnulledRelatedDocuments,
             final boolean exportOnlyRelatedDocumentsPerExport, final String implementationClassName,
             Long maxSizeBytesToExportOnline) {
+        setActive(active);
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setExternalURL(externalURL);
         setUsername(username);

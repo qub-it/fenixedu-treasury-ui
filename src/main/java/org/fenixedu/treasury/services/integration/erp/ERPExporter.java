@@ -1157,6 +1157,11 @@ public class ERPExporter {
         if (erpIntegrationConfiguration == null) {
             throw new TreasuryDomainException("error.ERPExporter.invalid.erp.configuration");
         }
+
+        if (erpIntegrationConfiguration.getActive() == false) {
+            operation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.configuration.inactive"));
+            return false;
+        }
         IERPExternalService service = erpIntegrationConfiguration.getERPExternalServiceImplementation();
         operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sending.inforation"));
         DocumentsInformationInput input = new DocumentsInformationInput();

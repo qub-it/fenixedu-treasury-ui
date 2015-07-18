@@ -156,6 +156,20 @@ ${portal.toolkit()}
                                 value='${eRPConfiguration.finantialInstitution.name}' />
                         </td>
                     </tr>
+                                        <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPConfiguration.active" /></th>
+                        <td><c:if
+                                test="${eRPConfiguration.active}">
+                                <spring:message code="label.true" />
+                            </c:if>
+                            <c:if
+                                test="${not eRPConfiguration.active}">
+                                <spring:message code="label.false" />
+                            </c:if>
+                        </td>
+                    </tr>
+                    
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.ERPConfiguration.exportAnnulledRelatedDocuments" /></th>

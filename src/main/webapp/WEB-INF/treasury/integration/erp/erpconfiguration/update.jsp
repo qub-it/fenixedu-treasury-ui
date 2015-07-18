@@ -80,6 +80,22 @@ ${portal.toolkit()}
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
+                    <spring:message code="label.ERPConfiguration.active" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="eRPConfiguration_active" name="active" class="form-control">
+                        <option value="false"><spring:message code="label.no" /></option>
+                        <option value="true"><spring:message code="label.yes" /></option>
+                    </select>
+                    <script>
+        $("#eRPConfiguration_active").val('<c:out value='${not empty param.active ? param.active : eRPConfiguration.active }'/>');
+    </script>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
                     <spring:message code="label.ERPConfiguration.exportAnnulledRelatedDocuments" />
                 </div>
 
@@ -154,7 +170,7 @@ ${portal.toolkit()}
                 </div>
             </div>
 
-            
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.ERPConfiguration.implementationClassName" />
@@ -165,8 +181,8 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.implementationclassname ? param.implementationclassname : eRPConfiguration.implementationClassName }'/>' />
                 </div>
             </div>
-            
-             <div class="form-group row">
+
+            <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.ERPConfiguration.maxSizeBytesToExportOnline" />
                 </div>
@@ -176,8 +192,8 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.maxsizebytestoexportonline ? param.maxsizebytestoexportonline : eRPConfiguration.maxSizeBytesToExportOnline }'/>' />
                 </div>
             </div>
-            
-            
+
+
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

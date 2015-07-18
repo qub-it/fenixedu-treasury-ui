@@ -111,6 +111,7 @@ class PaymentMethod {
 
 class integration.Configuration
 {
+    boolean active;
        String code;
        String externalURL;
        String username;

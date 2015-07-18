@@ -104,6 +104,11 @@ public class ERPExporterManager {
 
     @Atomic
     public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(FinantialInstitution finantialInstitution) {
+        List<ERPExportOperation> result = new ArrayList<ERPExportOperation>();
+
+        if (finantialInstitution.getErpIntegrationConfiguration().getActive() == false) {
+            return result;
+        }
 
         Set<FinantialDocument> pendingDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet();
 
@@ -128,7 +133,6 @@ public class ERPExporterManager {
         List<FinantialDocument> sortedDocuments =
                 pendingDocuments.stream().sorted(sortingComparator).collect(Collectors.toList());
 
-        List<ERPExportOperation> result = new ArrayList<ERPExportOperation>();
         if (pendingDocuments.isEmpty() == false) {
 
             if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
