@@ -167,7 +167,7 @@ ${portal.angularToolkit()}
                         <div class="input-group-addon">
                             <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input pattern = "\d+(\.\d{2})?" class="col-sm-4" type="text" ng-model="object.paymentAmount" disabled />&nbsp <input type="checkbox" ng-model="object.usePaymentAmountWithInterests" />
+                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmount" disabled />&nbsp <input type="checkbox" ng-model="object.usePaymentAmountWithInterests" />
                         <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
                     </div>
                 </div>
@@ -181,7 +181,7 @@ ${portal.angularToolkit()}
                         <div class="input-group-addon">
                             <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input pattern = "\d+(\.\d{2})?" class="col-sm-4" type="text" ng-model="object.paymentAmountWithInterst" disabled />&nbsp <input type="checkbox"
+                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmountWithInterst" disabled />&nbsp <input type="checkbox"
                             ng-model="object.usePaymentAmountWithInterests" />
                         <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
                     </div>
