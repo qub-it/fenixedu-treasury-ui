@@ -148,9 +148,16 @@ ${portal.toolkit()}
                     <spring:message code="label.CreditNote.documentDate" />
                 </div>
 
+                
+                
                 <div class="col-sm-4">
-                    <input id="creditNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
-                        value='<c:out value='${not empty param.documentdate ? param.documentdate : creditNote.documentDate }'/>' />
+                    <c:if test='${not empty param.documentdate}'>
+                        <input id="creditNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required value="${ param.documentdate}" />
+                    </c:if>
+                    <c:if test='${empty param.documentdate}'>
+                        <input id="creditNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
+                            value="<%=new org.joda.time.LocalDate().toString("YYYY-MM-dd")%>" />
+                    </c:if>
                 </div>
             </div>
             <div class="form-group row">
