@@ -28,13 +28,16 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -246,4 +249,39 @@ public class Series extends Series_Base {
 
     }
 
+    @Atomic
+    public void createDebitNoteForPendingEntries(DebtAccount debtAccount) {
+
+        DocumentNumberSeries seriesToProcess = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this);
+        List<DebitEntry> debitEntries =
+                debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.getFinantialDocument() == null)
+                        .filter(x -> x.isDebitNoteEntry()).map(DebitEntry.class::cast)
+                        .sorted((x, y) -> x.getEntryDateTime().compareTo(y.getEntryDateTime())).collect(Collectors.toList());
+
+        DebitNote debitNote = null;
+        DebitEntry previousEntry = null;
+        if (debitEntries.size() == 0) {
+            return;
+        }
+
+        for (DebitEntry entry : debitEntries) {
+            if (debitNote == null) {
+                debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
+                debitNote.setDocumentDueDate(entry.getDueDate());
+            }
+            if (previousEntry == null) {
+                previousEntry = entry;
+            }
+
+            if (entry.getDueDate().equals(previousEntry.getDueDate())) {
+                entry.setFinantialDocument(debitNote);
+            } else {
+                debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
+                debitNote.setDocumentDueDate(entry.getDueDate());
+                entry.setFinantialDocument(debitNote);
+            }
+            previousEntry = entry;
+        }
+
+    }
 }

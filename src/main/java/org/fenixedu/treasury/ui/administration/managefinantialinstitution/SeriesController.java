@@ -30,6 +30,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -206,6 +207,27 @@ public class SeriesController extends TreasuryBaseController {
 
     public void setSeriesDefault(Model model) {
         getSeries(model).getFinantialInstitution().markSeriesAsDefault(getSeries(model));
+    }
+
+    @RequestMapping(value = "/read/{oid}/createdebitnoteforpendingdebitentries", method = RequestMethod.POST)
+    public String processReadToCreateDebitNoteForPendingDebitEntries(@PathVariable("oid") Series series, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        FinantialInstitution fin = series.getFinantialInstitution();
+
+        for (DebtAccount debtAccount : fin.getDebtAccountsSet()) {
+            try {
+                if (debtAccount.getPendingInvoiceEntriesSet().stream().anyMatch(x -> x.getFinantialDocument() == null)) {
+                    series.createDebitNoteForPendingEntries(debtAccount);
+                    break;
+                }
+            } catch (Exception ex) {
+                addErrorMessage("Error for debtAccount : " + ex.getLocalizedMessage(), model);
+            }
+        }
+
+        addInfoMessage("SUCCESS", model);
+        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
 }
