@@ -273,7 +273,9 @@ public class Series extends Series_Base {
                 previousEntry = entry;
             }
 
-            if (entry.getDueDate().equals(previousEntry.getDueDate())) {
+            //put All the entries with the same entry-datetime + entry-duedate
+            if (entry.getEntryDateTime().equals(previousEntry.getEntryDateTime())
+                    && entry.getDueDate().equals(previousEntry.getDueDate())) {
                 entry.setFinantialDocument(debitNote);
             } else {
                 debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());

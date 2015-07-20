@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
@@ -161,4 +162,96 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         this.setPaymentReferenceCodeBean(bean, model);
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
     }
+
+//Create Payment reference code for DebitNote Series
+
+    private static final String _CREATEPAYMENTCODEINSERIES_URI = "/createpaymentcodeinseries";
+    public static final String CREATEPAYMENTCODEINSERIES_URL = CONTROLLER_URL + _CREATEPAYMENTCODEINSERIES_URI;
+
+    @RequestMapping(value = _CREATEPAYMENTCODEINSERIES_URI, method = RequestMethod.GET)
+    public String createpaymentcodeInSeries(@RequestParam(value = "series") Series series, Model model,
+            RedirectAttributes redirectAttributes) {
+
+//        if (debitNote.getPaymentCodesSet().stream().anyMatch(pc -> pc.getPaymentReferenceCode().getState().isUsed())) {
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
+//            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+//        }
+//
+//        try {
+//            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+//
+//            PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
+//            bean.setDebitNote(debitNote);
+//            bean.setPaymentAmount(debitNote.getOpenAmount());
+//            bean.setPaymentAmountWithInterst(debitNote.getOpenAmountWithInterests());
+//            bean.setUsePaymentAmountWithInterests(false);
+//            List<PaymentCodePool> activePools =
+//                    debitNote.getDebtAccount().getFinantialInstitution().getPaymentCodePoolsSet().stream()
+//                            .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
+//            bean.setPaymentCodePoolDataSource(activePools);
+//            bean.setBeginDate(new LocalDate());
+//            if (debitNote.getDocumentDueDate().isBefore(bean.getBeginDate())) {
+//                bean.setEndDate(new LocalDate());
+//            } else {
+//                bean.setEndDate(debitNote.getDocumentDueDate());
+//            }
+//
+//            this.setPaymentReferenceCodeBean(bean, model);
+//
+//        } catch (TreasuryDomainException tde) {
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+//        } catch (Exception ex) {
+//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+//        }
+//
+        return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeinseries";
+    }
+
+    private static final String _CREATEPAYMENTCODEINSERIESPOSTBACK_URI = "/createpaymentcodeinseriespostback";
+    public static final String CREATEPAYMENTCODEINSERIESPOSTBACK_URL = CONTROLLER_URL + _CREATEPAYMENTCODEINSERIESPOSTBACK_URI;
+
+    @RequestMapping(value = _CREATEPAYMENTCODEINSERIESPOSTBACK_URI, method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8")
+    public @ResponseBody String createpaymentcodeinseriespostback(
+            @RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean, Model model) {
+        this.setPaymentReferenceCodeBean(bean, model);
+        bean.setPoolWithFixedAmount(bean.getPaymentCodePool().getIsFixedAmount());
+        bean.setPoolVariableTimeWindow(bean.getPaymentCodePool().getIsVariableTimeWindow());
+        return getBeanJson(bean);
+    }
+
+    @RequestMapping(value = _CREATEPAYMENTCODEINSERIES_URI, method = RequestMethod.POST)
+    public String createpaymentcodeinseries(@RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
+            Model model, RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsFrontOfficeMember(bean.getDebitNote().getDocumentNumberSeries().getSeries().getFinantialInstitution(),
+                    model);
+
+//            BigDecimal payableAmount = bean.getPaymentAmount();
+//
+//            if (bean.isUsePaymentAmountWithInterests()) {
+//                payableAmount = bean.getPaymentAmountWithInterst();
+//            }
+//
+//            PaymentReferenceCode paymentReferenceCode =
+//                    bean.getPaymentCodePool()
+//                            .getReferenceCodeGenerator()
+//                            .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(), payableAmount,
+//                                    bean.getBeginDate(), bean.getEndDate(), true);
+//
+//            paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
+//            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+//                    "label.document.managepayments.success.create.reference.code.debitnote"), model);
+//
+//            model.addAttribute("paymentReferenceCode", paymentReferenceCode);
+            return redirect(DebitNoteController.READ_URL + bean.getDebitNote().getExternalId(), model, redirectAttributes);
+        } catch (TreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+        }
+        this.setPaymentReferenceCodeBean(bean, model);
+        return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeinseries";
+    }
+
 }

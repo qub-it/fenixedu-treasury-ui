@@ -9,17 +9,21 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 public interface ITreasuryAccessControlExtension {
 
     public boolean isFrontOfficeMember(final User user);
-    
+
     public boolean isFrontOfficeMember(final User user, final FinantialInstitution finantialInstitution);
-    
+
     public boolean isBackOfficeMember(final User user);
-    
+
     public boolean isBackOfficeMember(final User user, final FinantialInstitution finantialInstitution);
-    
+
     public boolean isBackOfficeMember(final User user, final FinantialEntity finantialEntity);
 
     public Set<User> getFrontOfficeMembers();
-    
+
     public Set<User> getBackOfficeMembers();
-    
+
+    public boolean isAllowToModifySettlements(final User user, final FinantialInstitution finantialInstitution);
+
+    public boolean isAllowToModifyInvoices(final User user, final FinantialInstitution finantialInstitution);
+
 }

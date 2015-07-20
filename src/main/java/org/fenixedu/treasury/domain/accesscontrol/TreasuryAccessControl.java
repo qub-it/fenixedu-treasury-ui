@@ -166,4 +166,24 @@ public class TreasuryAccessControl {
         return dynamicGroup;
     }
 
+    public boolean isAllowToModifyInvoices(User user, final FinantialInstitution finantialInstitution) {
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            if (iTreasuryAccessControlExtension.isAllowToModifyInvoices(user, finantialInstitution) == false) {
+                return false;
+            }
+        }
+
+        return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
+    }
+
+    public boolean isAllowToModifySettlements(User user, final FinantialInstitution finantialInstitution) {
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            if (iTreasuryAccessControlExtension.isAllowToModifySettlements(user, finantialInstitution) == false) {
+                return false;
+            }
+        }
+
+        return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
+    }
+
 }
