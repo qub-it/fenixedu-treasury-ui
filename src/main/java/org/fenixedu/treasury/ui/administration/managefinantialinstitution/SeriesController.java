@@ -230,7 +230,7 @@ public class SeriesController extends TreasuryBaseController {
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/createdebitnoteforpendingdebitentries", method = RequestMethod.POST)
+    @RequestMapping(value = "/read/{oid}/createpaymentreferencecode", method = RequestMethod.POST)
     public String processReadToCreatePaymentReferenceCode(@PathVariable("oid") Series series, Model model,
             RedirectAttributes redirectAttributes) {
 
