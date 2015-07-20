@@ -219,6 +219,8 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 debitEntry.delete();
             }
         } else {
+            final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason);
+
             final Set<DebitEntry> unprocessedDebitEntries = Sets.newHashSet();
             for (final DebitEntry debitEntry : getDebitEntriesSet()) {
                 if (debitEntry.isAnnulled()) {
@@ -243,13 +245,13 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
                 final CreditEntry creditEntry =
                         CreditEntry.create(creditNote,
-                                Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason),
+                                debitEntry.getDescription(),
                                 debitEntry.getProduct(), debitEntry.getVat(), debitEntry.getAmount(), new DateTime(), debitEntry,
                                 Constants.DEFAULT_QUANTITY);
 
                 creditNote.closeDocument();
 
-                closeDebitEntry(debitEntry, creditEntry);
+                closeDebitEntry(debitEntry, creditEntry, reasonDescription);
             }
 
             {
@@ -261,7 +263,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
                 debitNoteForUnprocessedEntries.addDebitNoteEntries(Lists.newArrayList(unprocessedDebitEntries));
                 debitNoteForUnprocessedEntries.closeDocument();
-                debitNoteForUnprocessedEntries.anullDebitNoteWithCreditNote(Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason));
+                debitNoteForUnprocessedEntries.anullDebitNoteWithCreditNote(reasonDescription);
             }
             
             for (final DebitEntry debitEntry : getDebitEntriesSet()) {
@@ -270,7 +272,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         }
     }
 
-    private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry) {
+    private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry, final String reasonDescription) {
         final SettlementNote settlementNote =
                 SettlementNote.create(
                         debitEntry.getDebtAccount(),
@@ -282,6 +284,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         SettlementEntry.create(creditEntry, settlementNote, debitEntry.getOpenAmount(), creditEntry.getDescription(),
                 new DateTime(), false);
 
+        settlementNote.setDocumentObservations(reasonDescription);
         settlementNote.closeDocument();
     }
 
