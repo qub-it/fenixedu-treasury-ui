@@ -230,4 +230,25 @@ public class SeriesController extends TreasuryBaseController {
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
+    @RequestMapping(value = "/read/{oid}/createdebitnoteforpendingdebitentries", method = RequestMethod.POST)
+    public String processReadToCreatePaymentReferenceCode(@PathVariable("oid") Series series, Model model,
+            RedirectAttributes redirectAttributes) {
+
+        FinantialInstitution fin = series.getFinantialInstitution();
+
+        for (DebtAccount debtAccount : fin.getDebtAccountsSet()) {
+            try {
+                if (debtAccount.getPendingInvoiceEntriesSet().stream().anyMatch(x -> x.getFinantialDocument() == null)) {
+                    series.createDebitNoteForPendingEntries(debtAccount);
+                    break;
+                }
+            } catch (Exception ex) {
+                addErrorMessage("Error for debtAccount : " + ex.getLocalizedMessage(), model);
+            }
+        }
+
+        addInfoMessage("SUCCESS", model);
+        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
+    }
+
 }
