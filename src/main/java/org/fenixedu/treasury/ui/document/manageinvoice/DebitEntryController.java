@@ -133,7 +133,7 @@ public class DebitEntryController extends TreasuryBaseController {
         DebitNote note = (DebitNote) debitEntry.getFinantialDocument();
         DebtAccount account = debitEntry.getDebtAccount();
         try {
-            assertUserIsFrontOfficeMember(debitEntry.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
             //call the Atomic delete function
             deleteDebitEntry(debitEntry);
 
@@ -162,7 +162,7 @@ public class DebitEntryController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
             if (debitNote != null && !debitNote.isPreparing()) {
                 addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
@@ -243,7 +243,7 @@ public class DebitEntryController extends TreasuryBaseController {
             @PathVariable("oid") DebtAccount debtAccount, Model model, RedirectAttributes redirectAttributes) {
 
         try {
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
             if (bean.getFinantialDocument() != null && !bean.getFinantialDocument().isPreparing()) {
                 addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
@@ -349,7 +349,7 @@ public class DebitEntryController extends TreasuryBaseController {
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(debitEntry.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
             if (debitEntry.getFinantialDocument() == null || !debitEntry.getFinantialDocument().isAnnulled()) {
                 setDebitEntryBean(new DebitEntryBean(debitEntry), model);
                 model.addAttribute("DebitEntry_event_options",
@@ -385,7 +385,7 @@ public class DebitEntryController extends TreasuryBaseController {
 //        }
 
         try {
-            assertUserIsFrontOfficeMember(debitEntry.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
             /*
             *  UpdateLogic here
             */
@@ -516,7 +516,7 @@ public class DebitEntryController extends TreasuryBaseController {
             redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
         try {
-            assertUserIsFrontOfficeMember(debitNote.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitNote.getDebtAccount().getFinantialInstitution(), model);
             debitNote.addDebitNoteEntries(debitEntries);
         } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
@@ -532,7 +532,7 @@ public class DebitEntryController extends TreasuryBaseController {
     public String processReadToRemoveFromDocument(@PathVariable("oid") DebitEntry debitEntry, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(debitEntry.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
             if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
                 addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                         "label.error.document.manageinvoice.debitentry.sucess.remove.debitentry"), model);

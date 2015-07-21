@@ -106,7 +106,7 @@ public class CreditEntryController extends TreasuryBaseController {
                 redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
             }
 
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
 
             CreditEntryBean bean = new CreditEntryBean();
 
@@ -162,7 +162,7 @@ public class CreditEntryController extends TreasuryBaseController {
                 redirect(CreditNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
             }
 
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
 
             CreditEntry creditEntry =
                     createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
@@ -221,7 +221,7 @@ public class CreditEntryController extends TreasuryBaseController {
         try {
             CreditNote note = (CreditNote) creditEntry.getFinantialDocument();
 
-            assertUserIsFrontOfficeMember(creditEntry.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(creditEntry.getDebtAccount().getFinantialInstitution(), model);
 
             deleteCreditEntry(creditEntry);
 
@@ -253,7 +253,7 @@ public class CreditEntryController extends TreasuryBaseController {
         setCreditEntry(creditEntry, model);
 
         try {
-            assertUserIsFrontOfficeMember(creditEntry.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(creditEntry.getDebtAccount().getFinantialInstitution(), model);
 
             updateCreditEntry(description, amount, quantity, model);
 

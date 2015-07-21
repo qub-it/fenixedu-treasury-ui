@@ -239,7 +239,7 @@ public class DebitNoteController extends TreasuryBaseController {
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
                 return redirect(SEARCH_URL, model, redirectAttributes);
             }
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
 
             if (documentNumberSeries != null && debtAccount != null) {
                 if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
@@ -306,7 +306,7 @@ public class DebitNoteController extends TreasuryBaseController {
                     value = "documentobservations", required = false) String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
             DebitNote debitNote =
                     createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate, documentDueDate,
                             originDocumentNumber, documentObservations);
@@ -349,7 +349,7 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             model.addAttribute(
                     "DebitNote_payorDebtAccount_options",
                     DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
@@ -379,7 +379,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
 
         try {
-            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             updateDebitNote(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber, documentObservations, model);
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
@@ -413,7 +413,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
 
         try {
-            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             debitNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.closed.sucess"),
@@ -431,7 +431,7 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam("reason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setDebitNote(debitNote, model);
         try {
-            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()
                     || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
                 debitNote.anullDebitNoteWithCreditNote(anullReason);

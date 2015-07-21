@@ -111,7 +111,7 @@ public class CreditNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
         try {
-            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             creditNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.closed.sucess"),
@@ -127,7 +127,7 @@ public class CreditNoteController extends TreasuryBaseController {
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
         try {
-            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             creditNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.CreditNote.document.anulled.sucess"),
@@ -144,7 +144,7 @@ public class CreditNoteController extends TreasuryBaseController {
         setCreditNote(creditNote, model);
         DebtAccount debtAccount = creditNote.getDebtAccount();
         try {
-            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             deleteCreditNote(creditNote);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
@@ -183,7 +183,7 @@ public class CreditNoteController extends TreasuryBaseController {
         setCreditNote(creditNote, model);
 
         try {
-            assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             updateCreditNote(originDocumentNumber, documentObservations, model);
 
@@ -376,7 +376,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         try {
 
-            assertUserIsFrontOfficeMember(documentNumberSeries.getSeries().getFinantialInstitution(), model);
+            assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
 
             CreditNote creditNote =
                     createCreditNote(debtAccount, debitNote, documentNumberSeries, documentDate, originDocumentNumber,

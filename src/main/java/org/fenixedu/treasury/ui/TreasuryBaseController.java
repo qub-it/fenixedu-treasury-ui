@@ -73,6 +73,26 @@ public class TreasuryBaseController extends FenixEDUBaseController {
         }
     }
 
+    protected void assertUserIsAllowToModifySettlements(FinantialInstitution finantialInstitution, Model model) {
+        if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+            return;
+        } else {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.allow.to.modify.settlements"), model);
+            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE,
+                    "error.authorization.not.allow.to.modify.settlements"));
+        }
+    }
+
+    protected void assertUserIsAllowToModifyInvoices(FinantialInstitution finantialInstitution, Model model) {
+        if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+            return;
+        } else {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.allow.to.modify.invoices"), model);
+            throw new SecurityException(
+                    BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.allow.to.modify.invoices"));
+        }
+    }
+
     protected void assertUserIsFrontOfficeMember(FinantialInstitution finantialInstitution, Model model) {
         if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
             return;

@@ -138,6 +138,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount, @PathVariable(
             value = "reimbursementNote") boolean reimbursementNote,
             @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model) {
+        assertUserIsAllowToModifySettlements(debtAccount.getFinantialInstitution(), model);
         if (bean == null) {
             bean = new SettlementNoteBean(debtAccount, reimbursementNote);
         }
@@ -150,7 +151,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         BigDecimal debitSum = BigDecimal.ZERO;
         BigDecimal creditSum = BigDecimal.ZERO;
         boolean error = false;
-
+        assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
@@ -233,7 +234,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = CALCULATE_INTEREST_URI, method = RequestMethod.POST)
     public String calculateInterest(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         try {
-            assertUserIsFrontOfficeMember(bean.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
 
             for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
                 if (debitEntryBean.isIncluded() && debitEntryBean.getDebitEntry().getFinantialDocument() == null) {
@@ -264,6 +265,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
         BigDecimal debitSum = bean.isReimbursementNote() ? bean.getDebtAmountWithVat().negate() : bean.getDebtAmountWithVat();
         BigDecimal paymentSum = bean.getPaymentAmount();
         boolean error = false;
@@ -291,6 +293,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
+            assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
             SettlementNote settlementNote = processSettlementNoteCreation(bean);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
@@ -399,7 +402,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             DebtAccount debtAccount = settlementNote.getDebtAccount();
 
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            assertUserIsAllowToModifySettlements(debtAccount.getFinantialInstitution(), model);
 
             deleteSettlementNote(settlementNote);
 
@@ -438,7 +441,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
 
         try {
-            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
             updateSettlementNote(originDocumentNumber, documentObservations, model);
 
@@ -462,7 +465,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
         try {
-            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+            assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
             settlementNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
