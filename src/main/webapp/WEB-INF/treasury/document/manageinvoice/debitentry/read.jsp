@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.document.DebitEntry"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -36,6 +40,16 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+
+<%
+        DebitEntry debitEntry = (DebitEntry) request
+                        .getAttribute("debitEntry");
+FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.getDebtAccount().getFinantialInstitution();
+    %>
+    
+  <% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -101,6 +115,8 @@ ${portal.toolkit()}
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<%} %>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <c:if test="${not empty debitEntry.finantialDocument }">
@@ -111,6 +127,9 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntry.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>          
     <c:if test="${empty debitEntry.finantialDocument ||  debitEntry.finantialDocument.isPreparing()}">
         |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                 code="label.event.delete" /></a> &nbsp; 
@@ -125,6 +144,7 @@ ${portal.toolkit()}
                 code="label.event.document.manageinvoice.debitentry.removefromdocument" /></a>
     &nbsp;
     </c:if>
+<%} %>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -181,8 +201,12 @@ ${portal.toolkit()}
                             </c:if> <c:if test="${empty debitEntry.finantialDocument}">
                                 <span class="label label-warning"> <spring:message code="label.DebitEntry.debitentry.with.no.document" />
                                 </span> &nbsp;
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>
                                 <a class="btn btn-xs btn-primary" href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL%>?debitEntry=${debitEntry.externalId}"><span
                                     class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitEntry.create.debitNote" /></a>
+<%} %>                                    
                             </c:if></td>
                     </tr>
                     <tr>

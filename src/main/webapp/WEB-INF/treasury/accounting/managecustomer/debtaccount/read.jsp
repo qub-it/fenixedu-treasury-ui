@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -39,6 +43,12 @@ ${portal.angularToolkit()}
         <small></small>
     </h1>
 </div>
+
+<%
+        DebtAccount debtAccount= (DebtAccount) request
+                        .getAttribute("debtAccount");
+FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.getFinantialInstitution();
+    %>
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -78,7 +88,9 @@ ${portal.angularToolkit()}
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.externalId}"><spring:message code="label.event.back" /></a>
     &nbsp;
 
-
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+%>  
     <div class="btn-group">
         <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -94,9 +106,12 @@ ${portal.angularToolkit()}
 
         </ul>
     </div>
-
+<%} %>
 
     <c:if test='${not debtAccount.getClosed() }'>
+    <% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
         <div class="btn-group">
             <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -137,6 +152,10 @@ ${portal.angularToolkit()}
                     </ul></li>
             </ul>
         </div>
+        <%} %>
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>          
         <div class="btn-group">
             <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -148,10 +167,14 @@ ${portal.angularToolkit()}
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createCreditNote" /></a></li>
             </ul>
         </div>
+<%}%>        
     </c:if>
     <c:if test='${debtAccount.getClosed() }'>
      |&nbsp;
      </c:if>
+<% 
+                if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+%>  
 
     <div class="btn-group">
         <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -174,7 +197,7 @@ ${portal.angularToolkit()}
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" /></a> &nbsp;</li>
         </ul>
     </div>
-
+<%} %>
 
 
 </div>

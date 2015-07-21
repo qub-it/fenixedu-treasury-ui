@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.document.SettlementNote"%>
 <%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -27,7 +31,14 @@ ${portal.toolkit()}
 <script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
-
+<%
+        SettlementNote settlementNote= (SettlementNote) request
+                        .getAttribute("settlementNote");
+FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNote.getDebtAccount().getFinantialInstitution();
+    %>
+    <% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+%> 
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -108,7 +119,7 @@ ${portal.toolkit()}
 </div>
 <!-- /.modal -->
 
-
+<%} %>
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -116,6 +127,9 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+%> 
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -151,11 +165,16 @@ ${portal.toolkit()}
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+<%} %>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message
-            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
+            code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+%>             
+            |&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message
             code="label.event.update" /></a> &nbsp;
     <c:if test="${settlementNote.isPreparing()}">
@@ -170,6 +189,7 @@ ${portal.toolkit()}
         <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.managePayments.anullSettlementNote" />
         </a> &nbsp;      
     </c:if>
+    <%} %>
     <c:if test="${not settlementNote.isPreparing()}">
 |
             <div class="btn-group">

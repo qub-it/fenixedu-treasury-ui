@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.document.CreditNote"%>
 <%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -37,6 +41,16 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+
+<%
+        CreditNote creditNote = (CreditNote) request
+                        .getAttribute("creditNote");
+FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.getDebtAccount().getFinantialInstitution();
+    %>
+    
+  <% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -147,7 +161,7 @@ ${portal.toolkit()}
     </div>
     <!-- /.modal-dialog -->
 </div>
-
+<%}%>
 <%-- NAVIGATION --%>
 <%-- NAVIGATION --%>
 <form>
@@ -155,7 +169,9 @@ ${portal.toolkit()}
         <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditNote.debtAccount.externalId}"><spring:message
                 code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
-
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
         <c:if test="${creditNote.isPreparing() || creditNote.isClosed()}">
             |&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/update/${creditNote.externalId}"><spring:message code="label.event.update" /></a>
@@ -175,6 +191,7 @@ ${portal.toolkit()}
                 </a> &nbsp;
             </c:if>
         </c:if>
+<%} %>
         <c:if test="${not creditNote.isPreparing()}">
 |
             <div class="btn-group">
@@ -348,6 +365,9 @@ ${portal.toolkit()}
     <spring:message code="label.CreditNote.creditEntries" />
 </h2>
 
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
 <!-- NAVIGATION -->
 <c:if test="${creditNote.isPreparing()}">
     <div class="well well-sm" style="display: inline-block">
@@ -356,6 +376,7 @@ ${portal.toolkit()}
                 code="label.event.document.manageInvoice.addCreditEntry" /></a>
     </div>
 </c:if>
+<%} %>
 <c:choose>
     <c:when test="${not empty creditNote.creditEntriesSet}">
         <datatables:table id="creditEntries" row="creditEntry" data="${creditNote.creditEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"

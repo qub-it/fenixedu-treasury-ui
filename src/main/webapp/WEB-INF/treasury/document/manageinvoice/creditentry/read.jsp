@@ -1,3 +1,6 @@
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.document.CreditEntry"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -35,6 +38,14 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+<%
+        CreditEntry creditEntry = (CreditEntry) request
+                        .getAttribute("creditEntry");
+FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.getDebtAccount().getFinantialInstitution();
+    %>
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -67,6 +78,8 @@ ${portal.toolkit()}
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<%} %>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <c:if test="${not empty creditEntry.finantialDocument }">
@@ -77,12 +90,17 @@ ${portal.toolkit()}
     |&nbsp;<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditEntry.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
+
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
     <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
         |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                 code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}"><spring:message code="label.event.update" /></a>
     &nbsp;
     </c:if>
+   <%} %>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

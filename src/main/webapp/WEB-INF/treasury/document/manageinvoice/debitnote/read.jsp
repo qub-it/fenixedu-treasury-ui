@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
+<%@page import="org.fenixedu.treasury.domain.document.DebitNote"%>
 <%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
 <%@page import="java.math.BigDecimal"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
@@ -31,6 +35,11 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
+<%
+        DebitNote debitNote = (DebitNote) request
+                        .getAttribute("debitNote");
+FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.getDebtAccount().getFinantialInstitution();
+    %>
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -38,6 +47,9 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -152,7 +164,7 @@ ${portal.toolkit()}
     </div>
     <!-- /.modal-dialog -->
 </div>
-
+<%} %>
 <%-- NAVIGATION --%>
 <form>
     <div class="well well-sm" style="display: inline-block">
@@ -160,6 +172,9 @@ ${portal.toolkit()}
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitNote.debtAccount.externalId}"> <spring:message
                 code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" />
         </a> 
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>        
         <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
             |
             <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
@@ -207,6 +222,7 @@ ${portal.toolkit()}
                
             </c:if>
         </c:if>
+<%} %>
         <c:if test="${not debitNote.isPreparing()}">
 |
             <div class="btn-group">
@@ -421,6 +437,9 @@ ${portal.toolkit()}
     <spring:message code="label.DebitNote.debitEntries" />
 </h2>
 
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>  
 <%-- NAVIGATION --%>
 <c:if test="${debitNote.isPreparing()}">
 
@@ -432,6 +451,7 @@ ${portal.toolkit()}
                 code="label.event.document.manageInvoice.addPendingEntries" /></a>
     </div>
 </c:if>
+<%} %>
 <c:choose>
     <c:when test="${not empty debitNote.debitEntriesSet}">
         <datatables:table id="debitEntries" row="debitEntry" data="${debitNote.debitEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
