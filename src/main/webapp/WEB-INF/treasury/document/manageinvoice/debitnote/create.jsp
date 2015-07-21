@@ -123,10 +123,10 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <c:if test='${not empty param.documentduedate}'>
-                        <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentdate" bennu-date required value="${ param.documentduedate}" />
+                        <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required value="${ param.documentduedate}" />
                     </c:if>
                     <c:if test='${empty param.documentduedate}'>
-                        <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentdate" bennu-date required
+                        <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required
                             value="<%=new org.joda.time.LocalDate().toString("YYYY-MM-dd")%>" />
                     </c:if>
                 </div>
