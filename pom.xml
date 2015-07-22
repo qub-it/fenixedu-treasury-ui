@@ -285,7 +285,7 @@
                             <!-- </wsdlDirectory> -->
                             <wsdlFiles>
                                 <wsdlFile>
-                                    ${basedir}/src/main/resources/wsdl/Singap_FenixEdu_1.00a.wsdl
+                                    ${basedir}/src/main/resources/wsdl/Singap_FenixEdu_1.01.wsdl
                                 </wsdlFile>
                             </wsdlFiles>
                             <wsdlLocation>

@@ -39,19 +39,21 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
 
     @Override
     public DocumentsInformationOutput sendInfoOnline(DocumentsInformationInput documentsInformation) {
-//        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput singapInput =
-//                new org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput();
-//        singapInput.setDataURI(documentsInformation.getDataURI());
-//        singapInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-//        singapInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
         DocumentsInformationOutput output = new DocumentsInformationOutput();
-        getClient().carregarSAFT(documentsInformation.getData().toString());
+        Resposta carregarSAFTON = getClient().carregarSAFTON(documentsInformation.getData());
+        output.setRequestId(carregarSAFTON.getChavePrimaria());
+        DocumentStatusWS status = new DocumentStatusWS();
+        status.setDocumentNumber(carregarSAFTON.getChavePrimaria());
+        status.setErrorDescription(carregarSAFTON.getMensagem());
+        status.setIntegrationStatus(covertToStatusType(carregarSAFTON.getStatus()));
+        output.setDocumentStatus(new ArrayList<DocumentStatusWS>());
+        output.getDocumentStatus().add(status);
         return output;
     }
 
     @Override
     public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
-        Resposta carregarSAFT = getClient().carregarSAFT(documentsInformation.getDataURI());
+        Resposta carregarSAFT = getClient().carregarSAFTOFF(documentsInformation.getDataURI());
         return carregarSAFT.getChavePrimaria();
     }
 
@@ -72,7 +74,7 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
     }
 
     private StatusType covertToStatusType(String status) {
-        if (status.equals("")) {
+        if (status.equals("OK")) {
             return StatusType.SUCCESS;
         } else {
             return StatusType.ERROR;

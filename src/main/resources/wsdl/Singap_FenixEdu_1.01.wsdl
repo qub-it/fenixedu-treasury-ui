@@ -1,0 +1,745 @@
+<wsdl:definitions xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://tempuri.org/" xmlns:s1="urn:OECD:StandardAuditFile-Tax:PT_1.03_01" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://tempuri.org/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+      <s:import namespace="urn:OECD:StandardAuditFile-Tax:PT_1.03_01"/>
+      <s:element name="InserirClientes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customers" type="tns:ArrayOfCustomer"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfCustomer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Customer" nillable="true" type="s1:Customer"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InserirClientesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="InserirClientesResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="Resposta">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="status" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="mensagem" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="chavePrimaria" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InserirArtigos">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="products" type="tns:ArrayOfProduct"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfProduct">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Product" nillable="true" type="s1:Product"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InserirArtigosResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="InserirArtigosResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InserirReceitas">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="documents" type="tns:ArrayOfSourceDocumentsWorkingDocumentsWorkDocument"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfSourceDocumentsWorkingDocumentsWorkDocument">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SourceDocumentsWorkingDocumentsWorkDocument" nillable="true" type="s1:SourceDocumentsWorkingDocumentsWorkDocument"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InserirReceitasResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="InserirReceitasResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="InserirPagamentos">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="payments" type="tns:ArrayOfSourceDocumentsPaymentsPayment"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfSourceDocumentsPaymentsPayment">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="SourceDocumentsPaymentsPayment" nillable="true" type="s1:SourceDocumentsPaymentsPayment"/>
+        </s:sequence>
+      </s:complexType>
+      <s:element name="InserirPagamentosResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="InserirPagamentosResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CarregarSAFT_OFF">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="path" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CarregarSAFT_OFFResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CarregarSAFT_OFFResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CarregarSAFT_ON">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="buffer" type="s:base64Binary"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CarregarSAFT_ONResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="CarregarSAFT_ONResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ExportarSAFT">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="path" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ExportarSAFTResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ExportarSAFTResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConsultarDivida">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="customerID" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConsultarDividaResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ConsultarDividaResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="VerificaEstado">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="documentID" type="s:string"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="VerificaEstadoResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="VerificaEstadoResult" type="tns:Resposta"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="urn:OECD:StandardAuditFile-Tax:PT_1.03_01">
+      <s:complexType name="Customer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="AccountID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerTaxID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="CompanyName" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Contact" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="BillingAddress" type="s1:AddressStructure"/>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ShipToAddress" type="s1:AddressStructure"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Telephone" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Fax" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Email" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Website" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SelfBillingIndicator" type="s:integer"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AddressStructure">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="BuildingNumber" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="StreetName" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="AddressDetail" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="City" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="PostalCode" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Region" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Country" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Product">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="ProductType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="P"/>
+                <s:enumeration value="S"/>
+                <s:enumeration value="O"/>
+                <s:enumeration value="I"/>
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="ProductCode" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="ProductGroup" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="ProductDescription" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="ProductNumberCode" type="s:string"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SourceDocumentsWorkingDocumentsWorkDocument">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="DocumentNumber" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="DocumentStatus">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="1" maxOccurs="1" name="WorkStatus">
+                  <s:simpleType>
+                    <s:restriction base="s:string">
+                      <s:enumeration value="N"/>
+                      <s:enumeration value="A"/>
+                      <s:enumeration value="F"/>
+                    </s:restriction>
+                  </s:simpleType>
+                </s:element>
+                <s:element minOccurs="1" maxOccurs="1" name="WorkStatusDate" type="s:dateTime"/>
+                <s:element minOccurs="0" maxOccurs="1" name="Reason" type="s:string"/>
+                <s:element minOccurs="0" maxOccurs="1" name="SourceID" type="s:string"/>
+                <s:element minOccurs="1" maxOccurs="1" name="SourceBilling" type="s1:SAFTPTSourceBilling"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="Hash" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="HashControl" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Period" type="s:integer"/>
+          <s:element minOccurs="1" maxOccurs="1" name="WorkDate" type="s:dateTime"/>
+          <s:element minOccurs="1" maxOccurs="1" name="WorkType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="DC"/>
+                <s:enumeration value="FC"/>
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="SourceID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="EACCode" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="SystemEntryDate" type="s:dateTime"/>
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="PayorCustomerID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Line">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="1" name="LineNumber" type="s:nonNegativeInteger"/>
+                <s:element minOccurs="0" maxOccurs="unbounded" name="OrderReferences" type="s1:OrderReferences"/>
+                <s:element minOccurs="0" maxOccurs="1" name="ProductCode" type="s:string"/>
+                <s:element minOccurs="0" maxOccurs="1" name="ProductDescription" type="s:string"/>
+                <s:element minOccurs="1" maxOccurs="1" name="Quantity" type="s:decimal"/>
+                <s:element minOccurs="0" maxOccurs="1" name="UnitOfMeasure" type="s:string"/>
+                <s:element minOccurs="1" maxOccurs="1" name="UnitPrice" type="s:decimal"/>
+                <s:element minOccurs="1" maxOccurs="1" name="TaxPointDate" type="s:dateTime"/>
+                <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string"/>
+                <s:choice minOccurs="1" maxOccurs="1">
+                  <s:element minOccurs="1" maxOccurs="1" name="DebitAmount" type="s:decimal"/>
+                  <s:element minOccurs="1" maxOccurs="1" name="CreditAmount" type="s:decimal"/>
+                </s:choice>
+                <s:element minOccurs="0" maxOccurs="1" name="Tax" type="s1:Tax"/>
+                <s:element minOccurs="0" maxOccurs="1" name="TaxExemptionReason" type="s:string"/>
+                <s:element minOccurs="0" maxOccurs="1" name="SettlementAmount" type="s:decimal"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="DocumentTotals">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="1" maxOccurs="1" name="TaxPayable" type="s:decimal"/>
+                <s:element minOccurs="1" maxOccurs="1" name="NetTotal" type="s:decimal"/>
+                <s:element minOccurs="1" maxOccurs="1" name="GrossTotal" type="s:decimal"/>
+                <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s1:Currency"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="SAFTPTSourceBilling">
+        <s:restriction base="s:string">
+          <s:enumeration value="P"/>
+          <s:enumeration value="I"/>
+          <s:enumeration value="M"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="OrderReferences">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="LineNumber" type="s:nonNegativeInteger"/>
+          <s:element minOccurs="0" maxOccurs="1" name="OriginatingON" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="OrderDate" type="s:dateTime"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Tax">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="TaxType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="IVA"/>
+                <s:enumeration value="IS"/>
+                <s:enumeration value="NS"/>
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="TaxCountryRegion" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="TaxCode" type="s:string"/>
+          <s:choice minOccurs="1" maxOccurs="1">
+            <s:element minOccurs="1" maxOccurs="1" name="TaxPercentage" type="s:decimal"/>
+            <s:element minOccurs="1" maxOccurs="1" name="TaxAmount" type="s:decimal"/>
+          </s:choice>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="Currency">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="CurrencyCode" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="CurrencyAmount" type="s:decimal"/>
+          <s:element minOccurs="0" maxOccurs="1" name="ExchangeRate" type="s:decimal"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="SourceDocumentsPaymentsPayment">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="PaymentRefNo" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Period" type="s:integer"/>
+          <s:element minOccurs="0" maxOccurs="1" name="TransactionID" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="TransactionDate" type="s:dateTime"/>
+          <s:element minOccurs="1" maxOccurs="1" name="PaymentType" type="s1:SAFTPTPaymentType"/>
+          <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SystemID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="DocumentStatus">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="1" maxOccurs="1" name="PaymentStatus">
+                  <s:simpleType>
+                    <s:restriction base="s:string">
+                      <s:enumeration value="N"/>
+                      <s:enumeration value="A"/>
+                    </s:restriction>
+                  </s:simpleType>
+                </s:element>
+                <s:element minOccurs="1" maxOccurs="1" name="PaymentStatusDate" type="s:dateTime"/>
+                <s:element minOccurs="0" maxOccurs="1" name="Reason" type="s:string"/>
+                <s:element minOccurs="0" maxOccurs="1" name="SourceID" type="s:string"/>
+                <s:element minOccurs="1" maxOccurs="1" name="SourcePayment" type="s1:SAFTPTSourcePayment"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="PaymentMethod" type="s1:PaymentMethod"/>
+          <s:element minOccurs="0" maxOccurs="1" name="SourceID" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="SystemEntryDate" type="s:dateTime"/>
+          <s:element minOccurs="0" maxOccurs="1" name="CustomerID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="PayorCustomerID" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="Line">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="1" name="LineNumber" type="s:nonNegativeInteger"/>
+                <s:element minOccurs="0" maxOccurs="unbounded" name="SourceDocumentID">
+                  <s:complexType>
+                    <s:sequence>
+                      <s:element minOccurs="0" maxOccurs="1" name="LineNumber" type="s:nonNegativeInteger"/>
+                      <s:element minOccurs="0" maxOccurs="1" name="OriginatingON" type="s:string"/>
+                      <s:element minOccurs="1" maxOccurs="1" name="InvoiceDate" type="s:dateTime"/>
+                      <s:element minOccurs="0" maxOccurs="1" name="Description" type="s:string"/>
+                    </s:sequence>
+                  </s:complexType>
+                </s:element>
+                <s:element minOccurs="0" maxOccurs="1" name="SettlementAmount" type="s:decimal"/>
+                <s:choice minOccurs="1" maxOccurs="1">
+                  <s:element minOccurs="1" maxOccurs="1" name="CreditAmount" type="s:decimal"/>
+                  <s:element minOccurs="1" maxOccurs="1" name="DebitAmount" type="s:decimal"/>
+                </s:choice>
+                <s:element minOccurs="0" maxOccurs="1" name="Tax" type="s1:PaymentTax"/>
+                <s:element minOccurs="0" maxOccurs="1" name="TaxExemptionReason" type="s:string"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="DocumentTotals">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="1" maxOccurs="1" name="TaxPayable" type="s:decimal"/>
+                <s:element minOccurs="1" maxOccurs="1" name="NetTotal" type="s:decimal"/>
+                <s:element minOccurs="1" maxOccurs="1" name="GrossTotal" type="s:decimal"/>
+                <s:element minOccurs="0" maxOccurs="1" name="Settlement">
+                  <s:complexType>
+                    <s:sequence>
+                      <s:element minOccurs="1" maxOccurs="1" name="SettlementAmount" type="s:decimal"/>
+                    </s:sequence>
+                  </s:complexType>
+                </s:element>
+                <s:element minOccurs="0" maxOccurs="1" name="Currency" type="s1:Currency"/>
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="WithholdingTax" type="s1:WithholdingTax"/>
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="SAFTPTPaymentType">
+        <s:restriction base="s:string">
+          <s:enumeration value="RC"/>
+          <s:enumeration value="RG"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="SAFTPTSourcePayment">
+        <s:restriction base="s:string">
+          <s:enumeration value="P"/>
+          <s:enumeration value="I"/>
+          <s:enumeration value="M"/>
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="PaymentMethod">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="PaymentMechanism">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="CC"/>
+                <s:enumeration value="CD"/>
+                <s:enumeration value="CH"/>
+                <s:enumeration value="CO"/>
+                <s:enumeration value="CS"/>
+                <s:enumeration value="DE"/>
+                <s:enumeration value="LC"/>
+                <s:enumeration value="MB"/>
+                <s:enumeration value="NU"/>
+                <s:enumeration value="OU"/>
+                <s:enumeration value="PR"/>
+                <s:enumeration value="TB"/>
+                <s:enumeration value="TR"/>
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="1" maxOccurs="1" name="PaymentAmount" type="s:decimal"/>
+          <s:element minOccurs="1" maxOccurs="1" name="PaymentDate" type="s:dateTime"/>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="PaymentTax">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="TaxType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="IVA"/>
+                <s:enumeration value="IS"/>
+                <s:enumeration value="NS"/>
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="TaxCountryRegion" type="s:string"/>
+          <s:element minOccurs="0" maxOccurs="1" name="TaxCode" type="s:string"/>
+          <s:choice minOccurs="1" maxOccurs="1">
+            <s:element minOccurs="1" maxOccurs="1" name="TaxPercentage" type="s:decimal"/>
+            <s:element minOccurs="1" maxOccurs="1" name="TaxAmount" type="s:decimal"/>
+          </s:choice>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="WithholdingTax">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="WithholdingTaxType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="IRS"/>
+                <s:enumeration value="IRC"/>
+                <s:enumeration value="IS"/>
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="WithholdingTaxDescription" type="s:string"/>
+          <s:element minOccurs="1" maxOccurs="1" name="WithholdingTaxAmount" type="s:decimal"/>
+        </s:sequence>
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="InserirClientesSoapIn">
+    <wsdl:part name="parameters" element="tns:InserirClientes"/>
+  </wsdl:message>
+  <wsdl:message name="InserirClientesSoapOut">
+    <wsdl:part name="parameters" element="tns:InserirClientesResponse"/>
+  </wsdl:message>
+  <wsdl:message name="InserirArtigosSoapIn">
+    <wsdl:part name="parameters" element="tns:InserirArtigos"/>
+  </wsdl:message>
+  <wsdl:message name="InserirArtigosSoapOut">
+    <wsdl:part name="parameters" element="tns:InserirArtigosResponse"/>
+  </wsdl:message>
+  <wsdl:message name="InserirReceitasSoapIn">
+    <wsdl:part name="parameters" element="tns:InserirReceitas"/>
+  </wsdl:message>
+  <wsdl:message name="InserirReceitasSoapOut">
+    <wsdl:part name="parameters" element="tns:InserirReceitasResponse"/>
+  </wsdl:message>
+  <wsdl:message name="InserirPagamentosSoapIn">
+    <wsdl:part name="parameters" element="tns:InserirPagamentos"/>
+  </wsdl:message>
+  <wsdl:message name="InserirPagamentosSoapOut">
+    <wsdl:part name="parameters" element="tns:InserirPagamentosResponse"/>
+  </wsdl:message>
+  <wsdl:message name="CarregarSAFT_OFFSoapIn">
+    <wsdl:part name="parameters" element="tns:CarregarSAFT_OFF"/>
+  </wsdl:message>
+  <wsdl:message name="CarregarSAFT_OFFSoapOut">
+    <wsdl:part name="parameters" element="tns:CarregarSAFT_OFFResponse"/>
+  </wsdl:message>
+  <wsdl:message name="CarregarSAFT_ONSoapIn">
+    <wsdl:part name="parameters" element="tns:CarregarSAFT_ON"/>
+  </wsdl:message>
+  <wsdl:message name="CarregarSAFT_ONSoapOut">
+    <wsdl:part name="parameters" element="tns:CarregarSAFT_ONResponse"/>
+  </wsdl:message>
+  <wsdl:message name="ExportarSAFTSoapIn">
+    <wsdl:part name="parameters" element="tns:ExportarSAFT"/>
+  </wsdl:message>
+  <wsdl:message name="ExportarSAFTSoapOut">
+    <wsdl:part name="parameters" element="tns:ExportarSAFTResponse"/>
+  </wsdl:message>
+  <wsdl:message name="ConsultarDividaSoapIn">
+    <wsdl:part name="parameters" element="tns:ConsultarDivida"/>
+  </wsdl:message>
+  <wsdl:message name="ConsultarDividaSoapOut">
+    <wsdl:part name="parameters" element="tns:ConsultarDividaResponse"/>
+  </wsdl:message>
+  <wsdl:message name="VerificaEstadoSoapIn">
+    <wsdl:part name="parameters" element="tns:VerificaEstado"/>
+  </wsdl:message>
+  <wsdl:message name="VerificaEstadoSoapOut">
+    <wsdl:part name="parameters" element="tns:VerificaEstadoResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="ServiceSoap">
+    <wsdl:operation name="InserirClientes">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para inserir Clientes</wsdl:documentation>
+      <wsdl:input message="tns:InserirClientesSoapIn"/>
+      <wsdl:output message="tns:InserirClientesSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="InserirArtigos">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para inserir Artigos</wsdl:documentation>
+      <wsdl:input message="tns:InserirArtigosSoapIn"/>
+      <wsdl:output message="tns:InserirArtigosSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="InserirReceitas">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para inserir Receitas</wsdl:documentation>
+      <wsdl:input message="tns:InserirReceitasSoapIn"/>
+      <wsdl:output message="tns:InserirReceitasSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="InserirPagamentos">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para inserir Pagamentos</wsdl:documentation>
+      <wsdl:input message="tns:InserirPagamentosSoapIn"/>
+      <wsdl:output message="tns:InserirPagamentosSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="CarregarSAFT_OFF">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para carregar SAFT Offline</wsdl:documentation>
+      <wsdl:input message="tns:CarregarSAFT_OFFSoapIn"/>
+      <wsdl:output message="tns:CarregarSAFT_OFFSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="CarregarSAFT_ON">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para carregar SAFT Online</wsdl:documentation>
+      <wsdl:input message="tns:CarregarSAFT_ONSoapIn"/>
+      <wsdl:output message="tns:CarregarSAFT_ONSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="ExportarSAFT">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para exportar SAFT Offline</wsdl:documentation>
+      <wsdl:input message="tns:ExportarSAFTSoapIn"/>
+      <wsdl:output message="tns:ExportarSAFTSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultarDivida">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para consultar dívida de Cliente</wsdl:documentation>
+      <wsdl:input message="tns:ConsultarDividaSoapIn"/>
+      <wsdl:output message="tns:ConsultarDividaSoapOut"/>
+    </wsdl:operation>
+    <wsdl:operation name="VerificaEstado">
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">Método para verificar estado de Integração</wsdl:documentation>
+      <wsdl:input message="tns:VerificaEstadoSoapIn"/>
+      <wsdl:output message="tns:VerificaEstadoSoapOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ServiceSoap" type="tns:ServiceSoap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="InserirClientes">
+      <soap:operation soapAction="http://tempuri.org/InserirClientes" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InserirArtigos">
+      <soap:operation soapAction="http://tempuri.org/InserirArtigos" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InserirReceitas">
+      <soap:operation soapAction="http://tempuri.org/InserirReceitas" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InserirPagamentos">
+      <soap:operation soapAction="http://tempuri.org/InserirPagamentos" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CarregarSAFT_OFF">
+      <soap:operation soapAction="http://tempuri.org/CarregarSAFT_OFF" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CarregarSAFT_ON">
+      <soap:operation soapAction="http://tempuri.org/CarregarSAFT_ON" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExportarSAFT">
+      <soap:operation soapAction="http://tempuri.org/ExportarSAFT" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultarDivida">
+      <soap:operation soapAction="http://tempuri.org/ConsultarDivida" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerificaEstado">
+      <soap:operation soapAction="http://tempuri.org/VerificaEstado" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="ServiceSoap12" type="tns:ServiceSoap">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="InserirClientes">
+      <soap12:operation soapAction="http://tempuri.org/InserirClientes" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InserirArtigos">
+      <soap12:operation soapAction="http://tempuri.org/InserirArtigos" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InserirReceitas">
+      <soap12:operation soapAction="http://tempuri.org/InserirReceitas" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="InserirPagamentos">
+      <soap12:operation soapAction="http://tempuri.org/InserirPagamentos" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CarregarSAFT_OFF">
+      <soap12:operation soapAction="http://tempuri.org/CarregarSAFT_OFF" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="CarregarSAFT_ON">
+      <soap12:operation soapAction="http://tempuri.org/CarregarSAFT_ON" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ExportarSAFT">
+      <soap12:operation soapAction="http://tempuri.org/ExportarSAFT" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConsultarDivida">
+      <soap12:operation soapAction="http://tempuri.org/ConsultarDivida" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="VerificaEstado">
+      <soap12:operation soapAction="http://tempuri.org/VerificaEstado" style="document"/>
+      <wsdl:input>
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Service">
+    <wsdl:port name="ServiceSoap" binding="tns:ServiceSoap">
+      <soap:address location="http://10.151.0.92/Fenix/service.asmx"/>
+    </wsdl:port>
+    <wsdl:port name="ServiceSoap12" binding="tns:ServiceSoap12">
+      <soap12:address location="http://10.151.0.92/Fenix/service.asmx"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

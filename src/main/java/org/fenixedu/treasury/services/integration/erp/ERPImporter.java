@@ -162,8 +162,12 @@ public class ERPImporter {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(eRPImportOperation.getErrorLog());
             stringBuilder.append("\n\n" + ex.getLocalizedMessage() + "\n\n");
+            int count = 0;
             for (StackTraceElement el : ex.getStackTrace()) {
                 stringBuilder.append(el.toString() + "\n");
+                if (count++ >= 10) {
+                    break;
+                }
             }
 
             eRPImportOperation.appendErrorLog(stringBuilder.toString());
@@ -247,16 +251,17 @@ public class ERPImporter {
             if (!referenceInvoice.getDebtAccount().equals(customerDebtAccount)) {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.debtaccount.in.payment");
             }
-            InvoiceEntry invoiceEntry = referenceInvoice.getEntryInOrder(paymentLine.getLineNumber().intValue());
+            InvoiceEntry invoiceEntry =
+                    referenceInvoice.getEntryInOrder(paymentLine.getSourceDocumentID().get(0).getLineNumber().intValue());
             if (invoiceEntry == null) {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
             }
 
-            BigDecimal paymentAmount = paymentLine.getCreditAmount();
+            BigDecimal paymentAmount = paymentLine.getDebitAmount();
 
             //if it is a SettlementEntry for a CreditEntry, then we must get the "debit amount" of the SAFT paymentLine
             if (invoiceEntry.isCreditNoteEntry()) {
-                paymentAmount = paymentLine.getDebitAmount();
+                paymentAmount = paymentLine.getCreditAmount();
             }
 
             if (invoiceEntry.getOpenAmount().compareTo(paymentAmount) < 0) {
@@ -264,9 +269,10 @@ public class ERPImporter {
             }
 
             //Create a new settlement entry for this payment
+            DateTime paymentDate = new DateTime(payment.getDocumentStatus().getPaymentStatusDate());
             SettlementEntry settlementEntry =
                     SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
-                            new DateTime(payment.getDocumentStatus().getPaymentStatusDate()), false);
+                            paymentDate, false);
         }
 
         if (payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
