@@ -35,6 +35,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -45,8 +46,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
-
-import com.qubit.solution.fenixedu.bennu.versioning.util.VersioningConstants;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.managelog") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageTreasuryOperationLog",
@@ -83,7 +82,7 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
             @RequestParam(value = "logdateto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate logDateTo,
             Model model, RedirectAttributes redirectAttributes) {
         if (!FenixFramework.isDomainObjectValid(domainObject)) {
-            addErrorMessage(BundleUtil.getString(VersioningConstants.BUNDLE, "error.read.object.oid.not.valid"), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.read.object.oid.not.valid"), model);
         } else {
             setDomainObject(domainObject, model);
             setTreasuryOperationLogSet(
