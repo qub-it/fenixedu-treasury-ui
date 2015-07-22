@@ -254,13 +254,13 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 closeDebitEntry(debitEntry, creditEntry, reasonDescription);
             }
 
-            {
+            if(!unprocessedDebitEntries.isEmpty()) {
                 final DebitNote debitNoteForUnprocessedEntries =
                         DebitNote.create(
                                 getDebtAccount(),
                                 DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
                                         getDebtAccount().getFinantialInstitution()).get(), new DateTime());
-
+                
                 debitNoteForUnprocessedEntries.addDebitNoteEntries(Lists.newArrayList(unprocessedDebitEntries));
                 debitNoteForUnprocessedEntries.closeDocument();
                 debitNoteForUnprocessedEntries.anullDebitNoteWithCreditNote(reasonDescription);
