@@ -256,6 +256,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     @Atomic
     public void markDocumentToExport() {
+        //if the document is in the sames series of the IntegrationConfiguration.paymentSeries -> IGNORE
+        if (this.getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration() != null) {
+            if (this.getDocumentNumberSeries().getSeries() == this.getDebtAccount().getFinantialInstitution()
+                    .getErpIntegrationConfiguration().getPaymentsIntegrationSeries()) {
+                return;
+            }
+        }
+
         if (getInstitutionForExportation() == null) {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
         }

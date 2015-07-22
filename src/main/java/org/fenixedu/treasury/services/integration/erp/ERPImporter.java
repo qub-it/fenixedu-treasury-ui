@@ -37,6 +37,7 @@ import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import oecd.standardauditfile_tax.pt_1.AuditFile;
 import oecd.standardauditfile_tax.pt_1.PaymentMethod;
@@ -120,17 +121,26 @@ public class ERPImporter {
                 DocumentStatusWS docStatus = new DocumentStatusWS();
                 eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPImporter.processing.payment",
                         payment.getPaymentRefNo()));
+                SettlementNote note = null;
                 try {
-                    SettlementNote note = processErpPayment(payment, eRPImportOperation);
+                    note = processErpPayment(payment, eRPImportOperation);
                     if (note != null) {
                         docStatus.setDocumentNumber(note.getOriginDocumentNumber());
                         docStatus.setIntegrationStatus(StatusType.SUCCESS);
                         totalPayments = totalPayments.add(BigInteger.ONE);
-                        totalCredit = totalCredit.add(note.getTotalAmount());
+                        totalCredit = totalCredit.add(note.getTotalCreditAmount());
+                        totalDebit = totalDebit.add(note.getTotalDebitAmount());
+
+                        note.closeDocument();
+                        eRPImportOperation.addFinantialDocuments(note);
                     } else {
                         throw new TreasuryDomainException("error.ERPImporter.processing.payment", payment.getPaymentRefNo());
                     }
                 } catch (Exception ex) {
+                    //if note was created, then we must delete the note
+                    if (note != null) {
+                        note.delete(true);
+                    }
                     eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
                             "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
@@ -159,18 +169,18 @@ public class ERPImporter {
             eRPImportOperation.setSuccess(true);
 
         } catch (Exception ex) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(eRPImportOperation.getErrorLog());
-            stringBuilder.append("\n\n" + ex.getLocalizedMessage() + "\n\n");
-            int count = 0;
-            for (StackTraceElement el : ex.getStackTrace()) {
-                stringBuilder.append(el.toString() + "\n");
-                if (count++ >= 10) {
-                    break;
-                }
-            }
+//            StringBuilder stringBuilder = new StringBuilder();
+//            stringBuilder.append(eRPImportOperation.getErrorLog());
+//            stringBuilder.append("\n\n" + ex.getLocalizedMessage() + "\n\n");
+//            int count = 0;
+//            for (StackTraceElement el : ex.getStackTrace()) {
+//                stringBuilder.append(el.toString() + "\n");
+//                if (count++ >= 10) {
+//                    break;
+//                }
+//            }
 
-            eRPImportOperation.appendErrorLog(stringBuilder.toString());
+            eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
             eRPImportOperation.setProcessed(true);
             eRPImportOperation.setCorrected(false);
             eRPImportOperation.setExecutionDate(new DateTime());
@@ -219,9 +229,17 @@ public class ERPImporter {
                                 "label.error.integration.erpimporter.invalid.debtaccount.existing.payment");
                     }
 
-                    //HACK: DONT Accept repeting Documents
-                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
-
+                    if (payment.getDocumentStatus().getPaymentStatus().equals("A")) {
+                        //The Settlement note must be annulled
+                        settlementNote
+                                .anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
+                                        "label.info.integration.erpimporter.annulled.by.integration",
+                                        eRPImportOperation.getExternalId()));
+                        return settlementNote;
+                    } else {
+                        //HACK: DONT Accept repeting Documents for (UPDATE)
+                        throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
+                    }
                 } else {
                     DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
                     //Create a new SettlementNote
@@ -269,13 +287,14 @@ public class ERPImporter {
             }
 
             //Create a new settlement entry for this payment
-            DateTime paymentDate = new DateTime(payment.getDocumentStatus().getPaymentStatusDate());
+            XMLGregorianCalendar paymentStatusDate = payment.getDocumentStatus().getPaymentStatusDate();
+            DateTime paymentDate = new DateTime(paymentStatusDate.toGregorianCalendar());
             SettlementEntry settlementEntry =
                     SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
                             paymentDate, false);
         }
 
-        if (payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
+        if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
             //Continue processing the Reimbursment Methods (New or Updating??!?!)
             for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
                 ReimbursementEntry reimbursmentEntry =
