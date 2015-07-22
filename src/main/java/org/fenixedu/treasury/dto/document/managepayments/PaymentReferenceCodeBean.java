@@ -49,7 +49,13 @@ public class PaymentReferenceCodeBean implements IBean {
     private java.math.BigDecimal paymentAmountWithInterst;
     private boolean isPoolWithFixedAmount;
     private boolean isPoolVariableTimeWindow;
+    private boolean useCustomPaymentAmount;
     private boolean usePaymentAmountWithInterests;
+
+    public PaymentReferenceCodeBean() {
+        usePaymentAmountWithInterests = false;
+        useCustomPaymentAmount = false;
+    }
 
     public PaymentCodePool getPaymentCodePool() {
         return paymentCodePool;
@@ -112,10 +118,6 @@ public class PaymentReferenceCodeBean implements IBean {
         minAmount = value;
     }
 
-    public PaymentReferenceCodeBean() {
-
-    }
-
     public DebitNote getDebitNote() {
         return debitNote;
     }
@@ -162,6 +164,14 @@ public class PaymentReferenceCodeBean implements IBean {
 
     public void setPoolVariableTimeWindow(boolean isPoolVariableTimeWindow) {
         this.isPoolVariableTimeWindow = isPoolVariableTimeWindow;
+    }
+
+    public boolean isUseCustomPaymentAmount() {
+        return useCustomPaymentAmount;
+    }
+
+    public void setUseCustomPaymentAmount(boolean useCustomPaymentAmount) {
+        this.useCustomPaymentAmount = useCustomPaymentAmount;
     }
 
 }

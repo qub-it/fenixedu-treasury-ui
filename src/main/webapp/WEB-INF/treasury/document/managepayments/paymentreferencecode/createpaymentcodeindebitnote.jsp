@@ -158,6 +158,15 @@ ${portal.angularToolkit()}
                         ng-bind-html="paymentCodePool.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
+            <div class="form-group row" >
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.useCustomPaymentAmount" />
+                </div>
+                <div class="col-sm-4">
+                         <input type="checkbox" ng-model="object.useCustomPaymentAmount" />
+                </div>
+            </div>
+
             <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == false ">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentReferenceCode.payableAmount" />
@@ -167,11 +176,13 @@ ${portal.angularToolkit()}
                         <div class="input-group-addon">
                             <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmount" disabled />&nbsp <input type="checkbox" ng-model="object.usePaymentAmountWithInterests" />
+                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmount" ng-readonly="object.useCustomPaymentAmount == false" />&nbsp <input type="checkbox" ng-model="object.usePaymentAmountWithInterests" />
                         <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
                     </div>
                 </div>
             </div>
+
+            
             <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == true ">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.PaymentReferenceCode.payableAmount" />
@@ -181,7 +192,7 @@ ${portal.angularToolkit()}
                         <div class="input-group-addon">
                             <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmountWithInterst" disabled />&nbsp <input type="checkbox"
+                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmountWithInterst" ng-readonly="object.useCustomPaymentAmount == false" />&nbsp <input type="checkbox"
                             ng-model="object.usePaymentAmountWithInterests" />
                         <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
                     </div>

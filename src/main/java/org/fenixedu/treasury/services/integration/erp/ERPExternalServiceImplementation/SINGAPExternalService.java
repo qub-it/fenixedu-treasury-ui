@@ -12,17 +12,16 @@ import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
-import org.fenixedu.treasury.services.integration.erp.singap.GestaoAcademicaService;
-import org.fenixedu.treasury.services.integration.erp.singap.GestaoAcademicaServiceService;
-import org.springframework.util.CollectionUtils;
+import org.fenixedu.treasury.services.integration.erp.singap.Resposta;
+import org.fenixedu.treasury.services.integration.erp.singap.Service;
+import org.fenixedu.treasury.services.integration.erp.singap.ServiceSoap;
 
 import pt.ist.fenixframework.Atomic;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
 
-public class SINGAPExternalService extends BennuWebServiceClient<GestaoAcademicaService> implements IERPExternalService {
+public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> implements IERPExternalService {
 
     static {
         //HACK:only for "creation of webserviceclient-configuration"
@@ -40,46 +39,49 @@ public class SINGAPExternalService extends BennuWebServiceClient<GestaoAcademica
 
     @Override
     public DocumentsInformationOutput sendInfoOnline(DocumentsInformationInput documentsInformation) {
-        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput singapInput =
-                new org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput();
-        singapInput.setDataURI(documentsInformation.getDataURI());
-        singapInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-        singapInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
+//        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput singapInput =
+//                new org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput();
+//        singapInput.setDataURI(documentsInformation.getDataURI());
+//        singapInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
+//        singapInput.getData().addAll(CollectionUtils.arrayToList(documentsInformation.getData()));
         DocumentsInformationOutput output = new DocumentsInformationOutput();
-        output.setRequestId(getClient().sendInfoOnline(singapInput));
+        getClient().carregarSAFT(documentsInformation.getData().toString());
         return output;
     }
 
     @Override
     public String sendInfoOffline(DocumentsInformationInput documentsInformation) {
-        org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput singaInput =
-                new org.fenixedu.treasury.services.integration.erp.singap.DocumentsInformationInput();
-        singaInput.setDataURI(documentsInformation.getDataURI());
-        singaInput.setFinantialInstitution(documentsInformation.getFinantialInstitution());
-        return getClient().sendInfoOffline(singaInput);
+        Resposta carregarSAFT = getClient().carregarSAFT(documentsInformation.getDataURI());
+        return carregarSAFT.getChavePrimaria();
     }
 
     @Override
     public List<DocumentStatusWS> getIntegrationStatusFor(String finantialInstitution, List<String> documentsInformation) {
-        List<org.fenixedu.treasury.services.integration.erp.singap.IntegrationStatusOutput> integrationStatusFor =
-                getClient().getIntegrationStatusFor(documentsInformation.get(0));
-        IntegrationStatusOutput item = new IntegrationStatusOutput();
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
-        for (org.fenixedu.treasury.services.integration.erp.singap.DocumentStatusWS singaDocStatus : integrationStatusFor.get(0)
-                .getDocumentStatus()) {
+
+        for (String docId : documentsInformation) {
+            Resposta verificaEstado = getClient().verificaEstado(docId);
             DocumentStatusWS docStatus = new DocumentStatusWS();
-            docStatus.setDocumentNumber(singaDocStatus.getDocumentNumber());
-            docStatus.setErrorDescription(singaDocStatus.getErrorDescription());
-            docStatus.setIntegrationStatus(StatusType.valueOf(singaDocStatus.getIntegrationStatus().toString()));
+            docStatus.setDocumentNumber(docId);
+            docStatus.setErrorDescription(verificaEstado.getMensagem());
+            docStatus.setIntegrationStatus(covertToStatusType(verificaEstado.getStatus()));
             statusList.add(docStatus);
         }
 
         return statusList;
     }
 
+    private StatusType covertToStatusType(String status) {
+        if (status.equals("")) {
+            return StatusType.SUCCESS;
+        } else {
+            return StatusType.ERROR;
+        }
+    }
+
     @Override
     protected BindingProvider getService() {
-        BindingProvider prov = (BindingProvider) new GestaoAcademicaServiceService().getSIAGGestaoAcademicaService();
+        BindingProvider prov = (BindingProvider) new Service().getServiceSoap();
         return prov;
     }
 

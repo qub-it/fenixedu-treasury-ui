@@ -252,6 +252,11 @@ public class ERPImporter {
 
             BigDecimal paymentAmount = paymentLine.getCreditAmount();
 
+            //if it is a SettlementEntry for a CreditEntry, then we must get the "debit amount" of the SAFT paymentLine
+            if (invoiceEntry.isCreditNoteEntry()) {
+                paymentAmount = paymentLine.getDebitAmount();
+            }
+
             if (invoiceEntry.getOpenAmount().compareTo(paymentAmount) < 0) {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.amount.in.payment");
             }
