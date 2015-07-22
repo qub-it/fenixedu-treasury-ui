@@ -453,10 +453,16 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
+            //Force a check status first of the document
+            try {
+                ERPExporter.checkIntegrationDocumentStatus(creditNote);
+            } catch (Exception ex) {
+
+            }
             List<FinantialDocument> documentsToExport = Collections.singletonList(creditNote);
             ERPExportOperation output =
-                    ERPExporter
-                            .exportFinantialDocumentToIntegration(creditNote.getInstitutionForExportation(), documentsToExport);
+                    ERPExporter.exportFinantialDocumentToIntegration(creditNote.getDebtAccount().getFinantialInstitution(),
+                            documentsToExport);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {

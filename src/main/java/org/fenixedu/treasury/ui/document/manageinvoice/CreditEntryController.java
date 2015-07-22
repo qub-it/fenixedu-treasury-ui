@@ -161,6 +161,9 @@ public class CreditEntryController extends TreasuryBaseController {
                         "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
                 redirect(CreditNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
             }
+            if (debtAccount == null) {
+                debtAccount = bean.getDebtAccount();
+            }
 
             assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
 

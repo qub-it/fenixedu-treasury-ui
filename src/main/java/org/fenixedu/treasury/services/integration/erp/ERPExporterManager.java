@@ -160,4 +160,9 @@ public class ERPExporterManager {
         return result;
 
     }
+
+    public static void requestPendingDocumentStatus(FinantialInstitution finantialInstitution) {
+        ERPExporter.requestPendingDocumentStatus(finantialInstitution);
+
+    }
 }

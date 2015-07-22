@@ -620,9 +620,16 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
+            try {
+                //Force a check status first of the document 
+                ERPExporter.checkIntegrationDocumentStatus(settlementNote);
+            } catch (Exception ex) {
+
+            }
+
             List<FinantialDocument> documentsToExport = Collections.singletonList(settlementNote);
             ERPExportOperation output =
-                    ERPExporter.exportFinantialDocumentToIntegration(settlementNote.getInstitutionForExportation(),
+                    ERPExporter.exportFinantialDocumentToIntegration(settlementNote.getDebtAccount().getFinantialInstitution(),
                             documentsToExport);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);

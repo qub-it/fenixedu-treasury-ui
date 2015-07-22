@@ -506,9 +506,17 @@ public class DebitNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
+            try {
+                //Force a check status first of the document 
+                ERPExporter.checkIntegrationDocumentStatus(debitNote);
+            } catch (Exception ex) {
+
+            }
+
             List<FinantialDocument> documentsToExport = Collections.singletonList(debitNote);
             ERPExportOperation output =
-                    ERPExporter.exportFinantialDocumentToIntegration(debitNote.getInstitutionForExportation(), documentsToExport);
+                    ERPExporter.exportFinantialDocumentToIntegration(debitNote.getDebtAccount().getFinantialInstitution(),
+                            documentsToExport);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {

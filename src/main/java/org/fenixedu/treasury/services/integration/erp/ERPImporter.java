@@ -49,6 +49,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
@@ -236,12 +237,13 @@ public class ERPImporter {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
             }
             String invoiceReferenceNumber = paymentLine.getSourceDocumentID().get(0).getOriginatingON();
-            Invoice referenceInvoice =
-                    Invoice.findByUIDocumentNumber(eRPImportOperation.getFinantialInstitution(), invoiceReferenceNumber).orElse(
-                            null);
-            if (referenceInvoice == null) {
+            FinantialDocument referenceDocument =
+                    FinantialDocument
+                            .findByUiDocumentNumber(eRPImportOperation.getFinantialInstitution(), invoiceReferenceNumber);
+            if (referenceDocument == null || ((referenceDocument instanceof Invoice) == false)) {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
             }
+            Invoice referenceInvoice = (Invoice) referenceDocument;
             if (!referenceInvoice.getDebtAccount().equals(customerDebtAccount)) {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.debtaccount.in.payment");
             }

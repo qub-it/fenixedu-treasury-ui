@@ -138,7 +138,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
     // This is the EventforceIntegrationExport Method for Screen 
     //
     private static final String _SEARCH_TO_FORCEINTEGRATIONEXPORT_URI = "/search/forceintegrationexport";
-    public static final String SEARCH_TO_FORCEINTEGRATIONEXPORT_URL = CONTROLLER_URL + _SEARCH_URI;
+    public static final String SEARCH_TO_FORCEINTEGRATIONEXPORT_URL = CONTROLLER_URL + _SEARCH_TO_FORCEINTEGRATIONEXPORT_URI;
 
     @RequestMapping(value = _SEARCH_TO_FORCEINTEGRATIONEXPORT_URI)
     public String processSearchToForceIntegrationExport(
@@ -165,4 +165,27 @@ public class FinantialDocumentController extends TreasuryBaseController {
         return this.search(finantialInstitution, model, redirectAttributes);
 
     }
+
+    //
+    // This is the EventforceIntegrationExport Method for Screen 
+    //
+    private static final String _SEARCH_TO_FORCECHECK_STATUS_URI = "/search/forcecheckstatus";
+    public static final String _SEARCH_TO_FORCECHECK_STATUS_URL = CONTROLLER_URL + _SEARCH_TO_FORCECHECK_STATUS_URI;
+
+    @RequestMapping(value = _SEARCH_TO_FORCECHECK_STATUS_URI)
+    public String processSearchToForceCehckStatus(
+            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution,
+            Model model, RedirectAttributes redirectAttributes) {
+//
+        try {
+
+            ERPExporterManager.requestPendingDocumentStatus(finantialInstitution);
+
+        } catch (Exception ex) {
+            addErrorMessage(ex.getMessage(), model);
+        }
+        return this.search(finantialInstitution, model, redirectAttributes);
+
+    }
+
 }

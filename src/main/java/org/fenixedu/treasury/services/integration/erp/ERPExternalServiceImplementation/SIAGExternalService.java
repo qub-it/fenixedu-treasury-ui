@@ -16,6 +16,7 @@ import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOu
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaService;
 import org.fenixedu.treasury.services.integration.erp.siag.GestaoAcademicaServiceService;
+import org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -82,16 +83,16 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
 
     @Override
     public List<DocumentStatusWS> getIntegrationStatusFor(String finantialInstitution, List<String> documentsInformation) {
-        org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput integrationStatusFor =
-                getClient().getIntegrationStatusFor(documentsInformation.get(0));
-//        statusList        IntegrationStatusOutput result = new IntegrationStatusOutput();
+
+        List<IntegrationStatusOutput> integrationStatusFor =
+                getClient().getIntegrationStatusFor(finantialInstitution, documentsInformation);
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
-        for (org.fenixedu.treasury.services.integration.erp.siag.DocumentStatusWS siagDocStatus : integrationStatusFor
-                .getDocumentStatus()) {
+        for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagDocStatus : integrationStatusFor) {
             DocumentStatusWS docStatus = new DocumentStatusWS();
-            docStatus.setDocumentNumber(siagDocStatus.getDocumentNumber());
-            docStatus.setErrorDescription(siagDocStatus.getErrorDescription());
-            docStatus.setIntegrationStatus(StatusType.valueOf(siagDocStatus.getIntegrationStatus().toString()));
+            docStatus.setDocumentNumber(siagDocStatus.getDocumentStatus().getDocumentNumber());
+            docStatus.setErrorDescription(siagDocStatus.getDocumentStatus().getErrorDescription());
+            docStatus.setIntegrationStatus(StatusType
+                    .valueOf(siagDocStatus.getDocumentStatus().getIntegrationStatus().toString()));
             statusList.add(docStatus);
         }
 //        result.setDocumentStatus(statusList.get(0));

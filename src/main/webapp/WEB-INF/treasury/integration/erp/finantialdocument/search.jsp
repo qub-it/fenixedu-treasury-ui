@@ -36,7 +36,9 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/"  ><spring:message code="label.event.back" /></a>&nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forceintegrationexport/?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceIntegrationExport" /></a>
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forceintegrationexport?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceIntegrationExport" /></a>
+    |&nbsp;
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forcecheckstatus?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceCheckStatus" /></a>
 </div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
