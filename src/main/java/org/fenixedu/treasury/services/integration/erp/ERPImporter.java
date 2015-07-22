@@ -70,6 +70,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
 
 // ******************************************************************************************************************************
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/3B4FECDB-2380-45D7-9019-ABCA80A7E99E/0/Comunicacao_Dados_Doc_Transporte.pdf
@@ -107,7 +108,7 @@ public class ERPImporter {
         }
     }
 
-    @Atomic
+    @Atomic(mode = TxMode.WRITE)
     public DocumentsInformationOutput processAuditFile(ERPImportOperation eRPImportOperation) {
         DocumentsInformationOutput result = new DocumentsInformationOutput();
         result.setDocumentStatus(new ArrayList<DocumentStatusWS>());
@@ -141,9 +142,12 @@ public class ERPImporter {
                     if (note != null) {
                         note.delete(true);
                     }
+                    eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
+                    eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
                     eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
                             "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
-                    eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
+                    eRPImportOperation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
+                            "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription(ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
@@ -169,16 +173,15 @@ public class ERPImporter {
             eRPImportOperation.setSuccess(true);
 
         } catch (Exception ex) {
-//            StringBuilder stringBuilder = new StringBuilder();
-//            stringBuilder.append(eRPImportOperation.getErrorLog());
-//            stringBuilder.append("\n\n" + ex.getLocalizedMessage() + "\n\n");
-//            int count = 0;
-//            for (StackTraceElement el : ex.getStackTrace()) {
-//                stringBuilder.append(el.toString() + "\n");
-//                if (count++ >= 10) {
-//                    break;
-//                }
-//            }
+
+            eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
+            int count = 0;
+            for (StackTraceElement el : ex.getStackTrace()) {
+                eRPImportOperation.appendErrorLog(el.toString());
+                if (count++ >= 10) {
+                    break;
+                }
+            }
 
             eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
             eRPImportOperation.setProcessed(true);

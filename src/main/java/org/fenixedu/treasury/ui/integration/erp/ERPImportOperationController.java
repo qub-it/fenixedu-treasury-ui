@@ -27,6 +27,7 @@
 package org.fenixedu.treasury.ui.integration.erp;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +39,7 @@ import oecd.standardauditfile_tax.pt_1.AuditFile;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.domain.integration.OperationFile;
@@ -57,6 +59,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
+
+import com.google.common.base.Strings;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import",
@@ -88,11 +92,16 @@ public class ERPImportOperationController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "executiondate", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime executionDate,
-            @RequestParam(value = "success", required = false) Boolean success, Model model) {
-        List<ERPImportOperation> searcherpimportoperationResultsDataSet = filterSearchERPImportOperation(executionDate, success);
+    public String search(
+            @RequestParam(value = "finantialinstitution", required = false) FinantialInstitution finantialInstitution,
+            @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime fromExecutionDate,
+            @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
+            @RequestParam(value = "success", required = false) Boolean success, @RequestParam(value = "documentnumber",
+                    required = false) String documentNumber, Model model) {
+        List<ERPImportOperation> searcherpimportoperationResultsDataSet =
+                filterSearchERPImportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
 
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("searcherpimportoperationResultsDataSet", searcherpimportoperationResultsDataSet);
         return "treasury/integration/erp/erpimportoperation/search";
     }
@@ -101,13 +110,34 @@ public class ERPImportOperationController extends TreasuryBaseController {
         return ERPImportOperation.findAll();
     }
 
-    private List<ERPImportOperation> filterSearchERPImportOperation(DateTime executionDate, Boolean success) {
+    private List<ERPImportOperation> filterSearchERPImportOperation(FinantialInstitution finantialInstitution,
+            DateTime fromExecutionDate, DateTime toExecutionDate, Boolean success, String documentNumber) {
 
-        return getSearchUniverseSearchERPImportOperationDataSet()
-                .filter(eRPImportOperation -> executionDate == null
-                        || executionDate.equals(eRPImportOperation.getExecutionDate()))
-                .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
-                .collect(Collectors.toList());
+        if (Strings.isNullOrEmpty(documentNumber)) {
+
+            return getSearchUniverseSearchERPImportOperationDataSet()
+                    .filter(eRPImportOperation -> finantialInstitution == null
+                            || eRPImportOperation.getFinantialInstitution().equals(finantialInstitution))
+                    .filter(eRPImportOperation -> fromExecutionDate == null || toExecutionDate == null
+                            || eRPImportOperation.getExecutionDate().isAfter(fromExecutionDate)
+                            && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
+                    .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
+                    .collect(Collectors.toList());
+        } else {
+            FinantialDocument document = FinantialDocument.findByUiDocumentNumber(finantialInstitution, documentNumber);
+            if (document != null) {
+                return document
+                        .getErpImportOperationsSet()
+                        .stream()
+                        .filter(eRPImportOperation -> fromExecutionDate == null || toExecutionDate == null
+                                || eRPImportOperation.getExecutionDate().isAfter(fromExecutionDate)
+                                && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
+                        .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
+                        .collect(Collectors.toList());
+            } else {
+                return new ArrayList<ERPImportOperation>();
+            }
+        }
     }
 
     private static final String _SEARCH_TO_DELETEMULTIPLE_URI = "/search/deletemultiple";
@@ -254,14 +284,26 @@ public class ERPImportOperationController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(eRPImportOperation.getFinantialInstitution(), model);
 
-            ERPImporter erpImporter = new ERPImporter(eRPImportOperation.getFile().getStream());
-            erpImporter.processAuditFile(eRPImportOperation);
+            ERPImportOperation newERPImportOperation = cloneERPImportOperation(eRPImportOperation);
+
+            ERPImporter importer = new ERPImporter(eRPImportOperation.getFile().getStream());
+            importer.processAuditFile(newERPImportOperation);
+
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.importoperation.success"), model);
+            return redirect(READ_URL + newERPImportOperation.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + getERPImportOperation(model).getExternalId(), model, redirectAttributes);
+    }
+
+    @Atomic
+    private ERPImportOperation cloneERPImportOperation(ERPImportOperation erpImportOperation) {
+        ERPImportOperation newERPImportOperation =
+                ERPImportOperation.create(erpImportOperation.getFile().getFilename(), erpImportOperation.getFile().getContent(),
+                        erpImportOperation.getFinantialInstitution(), new DateTime(), false, false, false, "");
+        return newERPImportOperation;
     }
 }

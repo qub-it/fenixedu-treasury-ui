@@ -265,7 +265,7 @@ ${portal.toolkit()}
                 createDataTables(
                         'settlementEntries',
                         false,
-                        false,
+                        true,
                         false,
                         "${pageContext.request.contextPath}",
                         "${datatablesI18NUrl}");

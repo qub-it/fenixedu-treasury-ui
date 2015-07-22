@@ -178,7 +178,7 @@ ${portal.toolkit()}
                         <td>
                             <ul>
                                 <c:forEach items="${eRPImportOperation.finantialDocuments}" var="element">
-                                    <li><c:out value="${element}" /> <%-- CHANGE_ME --%></li>
+                                    <li><c:out value="${element.uiDocumentNumber}" /> <%-- CHANGE_ME --%></li>
                                 </c:forEach>
                                 <ul>
                         </td>
