@@ -123,7 +123,7 @@ ${portal.toolkit()}
                     <input id="creditNote_documentObservations"
                         class="form-control" type="text"
                         name="documentobservations"
-                        value='<c:out value='${not empty param.documentobservations ? param.documentobservations: creditNote.documentobservations}'/>' />
+                        value='<c:out value='${not empty param.documentobservations ? param.documentobservations: creditNote.documentObservations}'/>' />
                 </div>
             </div>
 
