@@ -118,6 +118,12 @@ class integration.Configuration
        String password;
 }
 
+class TreasuryOperationLog {
+    String log;
+    String domainOid;
+    String type;
+}
+
 /*-----------
  * Finantial 
  * ----------*/
@@ -957,6 +963,16 @@ relation PaymentMethodBennu {
 	PaymentMethod playsRole paymentMethods {
 		multiplicity *;
 	}
+}
+
+relation TreasuryOperationLogBennu {
+    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+        multiplicity 1..1;
+    }
+
+    TreasuryOperationLog playsRole treasuryOperationLogs {
+        multiplicity *;
+    }
 }
 
 /*-----------

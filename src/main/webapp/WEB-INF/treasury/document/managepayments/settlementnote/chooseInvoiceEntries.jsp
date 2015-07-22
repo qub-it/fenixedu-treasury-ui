@@ -14,7 +14,7 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-${portal.toolkit()} ${portal.angularToolkit()}
+${portal.angularToolkit()}
 
 
 <link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet" />
