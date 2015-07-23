@@ -215,15 +215,17 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public void annulAllDebitEntries(final String reason) {
 
         if (isAbleToDeleteAllDebitEntries()) {
-            for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.toSet())) {
-                debitEntry.delete();
-            }
+            DebitEntry.findActive(this).forEach(x -> x.delete());
+//            for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.toSet())) {
+//                debitEntry.delete();
+//            }
         } else {
             final String reasonDescription =
                     Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason);
 
             final Set<DebitEntry> unprocessedDebitEntries = Sets.newHashSet();
-            for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.toSet())) {
+            for (final DebitEntry debitEntry : DebitEntry.findActive(this).map(DebitEntry.class::cast)
+                    .collect(Collectors.toSet())) {
                 if (debitEntry.isAnnulled()) {
                     continue;
                 }
@@ -253,13 +255,13 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 closeDebitEntry(debitEntry, creditEntry, reasonDescription);
             }
 
-            if(!unprocessedDebitEntries.isEmpty()) {
+            if (!unprocessedDebitEntries.isEmpty()) {
                 final DebitNote debitNoteForUnprocessedEntries =
                         DebitNote.create(
                                 getDebtAccount(),
                                 DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
                                         getDebtAccount().getFinantialInstitution()).get(), new DateTime());
-                
+
                 debitNoteForUnprocessedEntries.addDebitNoteEntries(Lists.newArrayList(unprocessedDebitEntries));
                 debitNoteForUnprocessedEntries.closeDocument();
                 debitNoteForUnprocessedEntries.anullDebitNoteWithCreditNote(reasonDescription);

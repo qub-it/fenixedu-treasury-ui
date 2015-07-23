@@ -89,10 +89,10 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
         for (org.fenixedu.treasury.services.integration.erp.siag.IntegrationStatusOutput siagDocStatus : integrationStatusFor) {
             DocumentStatusWS docStatus = new DocumentStatusWS();
-            docStatus.setDocumentNumber(siagDocStatus.getDocumentStatus().getDocumentNumber());
-            docStatus.setErrorDescription(siagDocStatus.getDocumentStatus().getErrorDescription());
-            docStatus.setIntegrationStatus(StatusType
-                    .valueOf(siagDocStatus.getDocumentStatus().getIntegrationStatus().toString()));
+            docStatus.setDocumentNumber(siagDocStatus.getDocumentStatus().get(0).getDocumentNumber());
+            docStatus.setErrorDescription(siagDocStatus.getDocumentStatus().get(0).getErrorDescription());
+            docStatus.setIntegrationStatus(StatusType.valueOf(siagDocStatus.getDocumentStatus().get(0).getIntegrationStatus()
+                    .toString()));
             statusList.add(docStatus);
         }
 //        result.setDocumentStatus(statusList.get(0));

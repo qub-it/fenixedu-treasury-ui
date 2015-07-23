@@ -158,14 +158,14 @@ ${portal.angularToolkit()}
                         ng-bind-html="paymentCodePool.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
-            <div class="form-group row" >
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.useCustomPaymentAmount" />
-                </div>
-                <div class="col-sm-4">
-                         <input type="checkbox" ng-model="object.useCustomPaymentAmount" />
-                </div>
-            </div>
+<!--             <div class="form-group row" > -->
+<!--                 <div class="col-sm-2 control-label"> -->
+<%--                     <spring:message code="label.PaymentReferenceCode.useCustomPaymentAmount" /> --%>
+<!--                 </div> -->
+<!--                 <div class="col-sm-4"> -->
+<!--                          <input type="checkbox" ng-model="object.useCustomPaymentAmount" /> -->
+<!--                 </div> -->
+<!--             </div> -->
 
             <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == false ">
                 <div class="col-sm-2 control-label">

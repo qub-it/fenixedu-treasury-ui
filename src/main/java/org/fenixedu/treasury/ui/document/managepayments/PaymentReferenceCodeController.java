@@ -136,10 +136,17 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(bean.getDebitNote().getDocumentNumberSeries().getSeries().getFinantialInstitution(),
                     model);
 
-            BigDecimal payableAmount = bean.getPaymentAmount();
+            BigDecimal payableAmount = bean.getDebitNote().getOpenAmount();
 
+            if (!Constants.isEqual(bean.getPaymentAmount(), payableAmount)) {
+                throw new TreasuryDomainException("error.PaymentReferenceCode.error.in.payment.amount.not.consistent");
+            }
             if (bean.isUsePaymentAmountWithInterests()) {
-                payableAmount = bean.getPaymentAmountWithInterst();
+                payableAmount = bean.getDebitNote().getOpenAmount();
+                if (!Constants.isEqual(bean.getPaymentAmountWithInterst(), payableAmount)) {
+                    throw new TreasuryDomainException(
+                            "error.PaymentReferenceCode.error.in.payment.amount.with.interests.not.consistent");
+                }
             }
 
             PaymentReferenceCode paymentReferenceCode =

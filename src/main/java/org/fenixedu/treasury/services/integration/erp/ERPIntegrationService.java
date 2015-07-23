@@ -51,7 +51,6 @@ import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueOuptut;
@@ -141,12 +140,12 @@ public class ERPIntegrationService extends BennuWebService {
      * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#getIntegrationStatusFor(java.lang.String)
      */
     @WebMethod
-    public List<IntegrationStatusOutput> getIntegrationStatusFor(String finantialInstitution, List<String> documentNumbers) {
+    public List<DocumentStatusWS> getIntegrationStatusFor(String finantialInstitution, List<String> documentNumbers) {
 
         validateRequestHeader(finantialInstitution);
-        List<IntegrationStatusOutput> statusList = new ArrayList<IntegrationStatusOutput>();
+        List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
         for (String documentNumber : documentNumbers) {
-            IntegrationStatusOutput status = new IntegrationStatusOutput();
+//            IntegrationStatusOutput status = new IntegrationStatusOutput();
             DocumentStatusWS docStatus = new DocumentStatusWS();
             FinantialDocument document =
                     FinantialDocument.findByUiDocumentNumber(FinantialInstitution.findUniqueByFiscalCode(finantialInstitution)
@@ -156,8 +155,8 @@ public class ERPIntegrationService extends BennuWebService {
             } else {
                 docStatus.setIntegrationStatus(StatusType.SUCCESS);
             }
-            status.setDocumentStatus(docStatus);
-            statusList.add(status);
+//            status.setDocumentStatus(docStatus);
+            statusList.add(docStatus);
         }
         return statusList;
     }
