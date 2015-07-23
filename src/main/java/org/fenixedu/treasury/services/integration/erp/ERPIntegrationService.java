@@ -49,9 +49,10 @@ import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
+import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueOuptut;
 import org.fenixedu.treasury.util.Constants;
@@ -140,9 +141,10 @@ public class ERPIntegrationService extends BennuWebService {
      * @see org.fenixedu.treasury.services.integration.erp.IERPIntegrationService#getIntegrationStatusFor(java.lang.String)
      */
     @WebMethod
-    public List<DocumentStatusWS> getIntegrationStatusFor(String finantialInstitution, List<String> documentNumbers) {
+    public IntegrationStatusOutput getIntegrationStatusFor(String finantialInstitution, List<String> documentNumbers) {
 
         validateRequestHeader(finantialInstitution);
+        IntegrationStatusOutput result = new IntegrationStatusOutput();
         List<DocumentStatusWS> statusList = new ArrayList<DocumentStatusWS>();
         for (String documentNumber : documentNumbers) {
 //            IntegrationStatusOutput status = new IntegrationStatusOutput();
@@ -158,7 +160,9 @@ public class ERPIntegrationService extends BennuWebService {
 //            status.setDocumentStatus(docStatus);
             statusList.add(docStatus);
         }
-        return statusList;
+        result.setDocumentStatus(statusList);
+        result.setRequestId(finantialInstitution);
+        return result;
     }
 
     @WebMethod

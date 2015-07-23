@@ -26,30 +26,30 @@
  */
 package org.fenixedu.treasury.services.integration.erp.dto;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.util.Constants;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IntegrationStatusOutput {
-
-    public enum StatusType {
-        PENDING, ERROR, SUCCESS;
-
-        public LocalizedString getDescriptionI18N() {
-            return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
-        }
-    }
-
-    private DocumentStatusWS _documentStatus;
+    private String requestId;
+    private List<DocumentStatusWS> documentStatus;
 
     public IntegrationStatusOutput() {
+        documentStatus = new ArrayList<DocumentStatusWS>();
     }
 
-    public DocumentStatusWS getDocumentStatus() {
-        return _documentStatus;
+    public List<DocumentStatusWS> getDocumentStatus() {
+        return documentStatus;
     }
 
-    public void setDocumentStatus(DocumentStatusWS _documentStatus) {
-        this._documentStatus = _documentStatus;
+    public void setDocumentStatus(List<DocumentStatusWS> documentStatus) {
+        this.documentStatus = documentStatus;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 }

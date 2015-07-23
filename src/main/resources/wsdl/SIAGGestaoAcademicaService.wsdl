@@ -43,13 +43,15 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getIntegrationStatusForResponse">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getIntegrationStatusForReturn" type="impl:IntegrationStatusOutput"  />
+      <element maxOccurs="unbounded" name="getIntegrationStatusForReturn" type="impl:DocumentStatusWS2"/>
      </sequence>
     </complexType>
    </element>
-   <complexType name="IntegrationStatusOutput">
+   <complexType name="DocumentStatusWS2">
     <sequence>
-     <element  name="documentStatus" type="tns1:documentStatusWS"  nillable="true" minOccurs="0" maxOccurs="unbounded" />
+     <element maxOccurs="1" minOccurs="0" name="documentNumber" type="xsd:string" form="unqualified"/>
+     <element maxOccurs="1" minOccurs="0" name="errorDescription" type="xsd:string" form="unqualified"/>
+     <element maxOccurs="1" minOccurs="0" name="integrationStatus" type="tns1:statusType" form="unqualified"/>
     </sequence>
    </complexType>
    <element name="sendInfoOffline">
@@ -78,9 +80,9 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    </simpleType>
    <complexType name="documentStatusWS">
     <sequence>
-     <element maxOccurs="1" minOccurs="0" name="documentNumber" type="xsd:string" />
-     <element maxOccurs="1" minOccurs="0" name="errorDescription" type="xsd:string" />
-     <element maxOccurs="1" minOccurs="0" name="integrationStatus" type="tns1:statusType" />
+     <element maxOccurs="1" minOccurs="0" name="documentNumber" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="errorDescription" type="xsd:string"/>
+     <element maxOccurs="1" minOccurs="0" name="integrationStatus" type="tns1:statusType"/>
     </sequence>
    </complexType>
   </schema>

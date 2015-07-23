@@ -70,6 +70,7 @@ import oecd.standardauditfile_tax.pt_1.SAFTPTSourcePayment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.AdvancedPaymentCredit;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
 import oecd.standardauditfile_tax.pt_1.Tax;
@@ -443,6 +444,17 @@ public class ERPExporter {
                 payment.getLine().add(line);
                 i = i.add(BigInteger.ONE);
             }
+
+            //If there is an Advanced Payment Credit Note for this Settlement
+            if (document.getAdvancedPaymentCreditNote() != null) {
+                payment.setAdvancedPaymentCredit(new AdvancedPaymentCredit());
+                payment.getAdvancedPaymentCredit().setCreditAmount(document.getAdvancedPaymentCreditNote().getTotalAmount());
+                payment.getAdvancedPaymentCredit()
+                        .setOriginatingON(document.getAdvancedPaymentCreditNote().getUiDocumentNumber());
+                payment.getAdvancedPaymentCredit().setDescription(
+                        document.getAdvancedPaymentCreditNote().getDocumentObservations());
+            }
+
             docTotals.setGrossTotal(document.getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
             docTotals.setNetTotal(document.getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
             docTotals.setTaxPayable(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN));

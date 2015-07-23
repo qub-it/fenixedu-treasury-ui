@@ -57,7 +57,14 @@
 
 <xs:complexType name="getIntegrationStatusForResponse">
 <xs:sequence>
-<xs:element name="return" type="tns:documentStatusWS" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="return" type="tns:integrationStatusOutput" minOccurs="0"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="integrationStatusOutput">
+<xs:sequence>
+<xs:element name="documentStatus" type="tns:documentStatusWS" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+<xs:element name="requestId" type="xs:string" minOccurs="0"/>
 </xs:sequence>
 </xs:complexType>
 

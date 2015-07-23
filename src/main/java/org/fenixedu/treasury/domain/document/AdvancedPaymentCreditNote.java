@@ -87,9 +87,10 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
 
     @Atomic
     public static AdvancedPaymentCreditNote createCreditNoteForAdvancedPayment(DocumentNumberSeries documentNumberSeries,
-            DebtAccount debtAccount, BigDecimal availableAmount, DateTime documentDate, String description) {
+            DebtAccount debtAccount, BigDecimal availableAmount, DateTime documentDate, String description, String originalNumber) {
         AdvancedPaymentCreditNote note = create(debtAccount, documentNumberSeries, documentDate);
 
+        note.setOriginDocumentNumber(originalNumber);
         Product advancedPaymentProduct = TreasurySettings.getInstance().getAdvancePaymentProduct();
         if (advancedPaymentProduct == null) {
             throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.product.for.advanced.payment");

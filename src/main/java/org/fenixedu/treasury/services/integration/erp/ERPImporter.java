@@ -62,8 +62,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -312,6 +312,12 @@ public class ERPImporter {
                         PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), settlementNote,
                                 paymentMethod.getPaymentAmount());
             }
+        }
+
+        //Process possible Advance Payment Credit
+        if (payment.getAdvancedPaymentCredit() != null) {
+            settlementNote.createAdvancedPaymentCreditNote(payment.getAdvancedPaymentCredit().getCreditAmount(), payment
+                    .getAdvancedPaymentCredit().getDescription(), payment.getAdvancedPaymentCredit().getOriginatingON());
         }
 
         return settlementNote;

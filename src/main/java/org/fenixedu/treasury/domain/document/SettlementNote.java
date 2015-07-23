@@ -379,7 +379,7 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     @Atomic
-    public void createAdvancedPaymentCreditNote(BigDecimal availableAmount, String comments) {
+    public void createAdvancedPaymentCreditNote(BigDecimal availableAmount, String comments, String originalNumber) {
         if (FinantialDocumentType.findForCreditNote() == null) {
             throw new TreasuryDomainException("error.SettlementNote.non-existing.credit.note.document.type");
         }
@@ -389,7 +389,7 @@ public class SettlementNote extends SettlementNote_Base {
 
         AdvancedPaymentCreditNote creditNote =
                 AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries, this.getDebtAccount(),
-                        availableAmount, this.getDocumentDate(), comments);
+                        availableAmount, this.getDocumentDate(), comments, originalNumber);
 
         this.setAdvancedPaymentCreditNote(creditNote);
     }

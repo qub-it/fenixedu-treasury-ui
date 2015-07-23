@@ -10,9 +10,9 @@ import oecd.standardauditfile_tax.pt_1.AuditFile;
 
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
+import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput.StatusType;
 import org.fenixedu.treasury.services.integration.erp.singap.Resposta;
 import org.fenixedu.treasury.services.integration.erp.singap.Service;
 import org.fenixedu.treasury.services.integration.erp.singap.ServiceSoap;

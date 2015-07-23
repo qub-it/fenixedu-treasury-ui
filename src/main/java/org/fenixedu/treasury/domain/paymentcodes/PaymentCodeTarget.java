@@ -280,7 +280,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
             settlementNote.createAdvancedPaymentCreditNote(availableAmount,
                     BundleUtil.getString(Constants.BUNDLE, "label.PaymentCodeTarget.advancedpayment") + comments + "-"
-                            + sibsTransactionId);
+                            + sibsTransactionId, sibsTransactionId);
         }
 
         //######################################
