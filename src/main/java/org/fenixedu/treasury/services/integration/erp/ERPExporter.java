@@ -448,7 +448,8 @@ public class ERPExporter {
             //If there is an Advanced Payment Credit Note for this Settlement
             if (document.getAdvancedPaymentCreditNote() != null) {
                 payment.setAdvancedPaymentCredit(new AdvancedPaymentCredit());
-                payment.getAdvancedPaymentCredit().setCreditAmount(document.getAdvancedPaymentCreditNote().getTotalAmount());
+                payment.getAdvancedPaymentCredit().setCreditAmount(
+                        document.getAdvancedPaymentCreditNote().getTotalAmount().setScale(2, RoundingMode.HALF_EVEN));
                 payment.getAdvancedPaymentCredit()
                         .setOriginatingON(document.getAdvancedPaymentCreditNote().getUiDocumentNumber());
                 payment.getAdvancedPaymentCredit().setDescription(
