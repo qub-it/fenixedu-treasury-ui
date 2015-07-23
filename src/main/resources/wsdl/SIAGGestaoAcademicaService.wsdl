@@ -43,15 +43,14 @@ Built on Apr 22, 2006 (06:55:48 PDT)-->
    <element name="getIntegrationStatusForResponse">
     <complexType>
      <sequence>
-      <element maxOccurs="unbounded" name="getIntegrationStatusForReturn" type="impl:DocumentStatusWS2"/>
+      <element name="getIntegrationStatusForReturn" type="impl:IntegrationStatusOutput"/>
      </sequence>
     </complexType>
    </element>
-   <complexType name="DocumentStatusWS2">
+   <complexType name="IntegrationStatusOutput">
     <sequence>
-     <element maxOccurs="1" minOccurs="0" name="documentNumber" type="xsd:string" form="unqualified"/>
-     <element maxOccurs="1" minOccurs="0" name="errorDescription" type="xsd:string" form="unqualified"/>
-     <element maxOccurs="1" minOccurs="0" name="integrationStatus" type="tns1:statusType" form="unqualified"/>
+     <element maxOccurs="unbounded" minOccurs="0" name="documentStatus" nillable="true" type="tns1:documentStatusWS"/>
+     <element maxOccurs="1" minOccurs="0" name="requestId" type="xsd:string"/>
     </sequence>
    </complexType>
    <element name="sendInfoOffline">

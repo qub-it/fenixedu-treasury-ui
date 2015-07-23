@@ -1496,8 +1496,6 @@ public class ERPExporter {
         IERPExternalService service = erpIntegrationConfiguration.getERPExternalServiceImplementation();
         List<String> documentsList = new ArrayList<String>();
         documentsList.add(document.getUiDocumentNumber());
-        //documentsList.add(document.getUiDocumentNumber());
-        //documentsList.add(document.getUiDocumentNumber());
         List<DocumentStatusWS> integrationStatusFor =
                 service.getIntegrationStatusFor(document.getDebtAccount().getFinantialInstitution().getFiscalNumber(),
                         documentsList);

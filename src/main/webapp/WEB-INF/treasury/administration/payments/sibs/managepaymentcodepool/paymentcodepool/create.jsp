@@ -202,8 +202,6 @@ ${portal.toolkit()}
 	</script>
                 </div>
             </div>
-                </div>
-            </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
