@@ -289,7 +289,7 @@
                                 </wsdlFile>
                             </wsdlFiles>
                             <wsdlLocation>
-                                /wsdl/SINGAPGestaoAcademicaService.wsdl
+                                /wsdl/Singap_FenixEdu_1.01.wsdl
                             </wsdlLocation>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>

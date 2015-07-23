@@ -146,7 +146,7 @@ ${portal.toolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.ERPImportOperation.fromExecutionDate" />
+                        code="label.ERPExportOperation.fromExecutionDate" />
                 </div>
                 <div class="col-sm-3">
                     <input id="eRPImportOperation_fromExecutionDate"
@@ -158,7 +158,7 @@ ${portal.toolkit()}
             <div class="form-group row">                
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.ERPImportOperation.toExecutionDate" />
+                        code="label.ERPExportOperation.toExecutionDate" />
                 </div>
                 <div class="col-sm-3">
                     <input id="eRPImportOperation_toExecutionDate"
@@ -238,7 +238,7 @@ ${portal.toolkit()}
 
         <button type="button"
             onClick="javascript:submitOptions('searcherpimportoperationTable', 'deletemultiple', 'eRPImportOperations')">
-            <spring:message code='label..deleteMultiple' />
+            <spring:message code='label.deleteMultiple' />
         </button>
     </c:when>
     <c:otherwise>
