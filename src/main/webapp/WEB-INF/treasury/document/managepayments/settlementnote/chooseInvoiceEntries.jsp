@@ -43,7 +43,7 @@ ${portal.angularToolkit()}
                 <strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>${settlementNoteBean.debtAccount.finantialInstitution.name}</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.customer" />: </strong><a
-                    href="${pageContext.request.contextPath}/<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}">${settlementNoteBean.debtAccount.customer.businessIdentification}
+                    href="${pageContext.request.contextPath}<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}">${settlementNoteBean.debtAccount.customer.businessIdentification}
                     - ${settlementNoteBean.debtAccount.customer.name}</a>
             </p>
             <p>
@@ -55,7 +55,7 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/<%= DebtAccountController.READ_URL %>${settlementNoteBean.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
+        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>${settlementNoteBean.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
     &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">

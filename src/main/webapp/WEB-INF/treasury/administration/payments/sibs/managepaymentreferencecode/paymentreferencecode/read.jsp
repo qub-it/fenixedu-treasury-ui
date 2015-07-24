@@ -185,7 +185,7 @@ ${portal.toolkit()}
                             <td><c:if test='${paymentReferenceCode.targetPayment.isFinantialDocumentPaymentCode() }'>
                                     <ul>
                                         <li><a target="blank_"
-                                            href="${pageContext.request.contextPath}/<%=DebitNoteController.READ_URL %>${paymentReferenceCode.targetPayment.finantialDocument.externalId}"><c:out
+                                            href="${pageContext.request.contextPath}<%=DebitNoteController.READ_URL %>${paymentReferenceCode.targetPayment.finantialDocument.externalId}"><c:out
                                                     value='${paymentReferenceCode.targetPayment.finantialDocument.uiDocumentNumber}' /></a></li>
                                         <li><c:out
                                                 value='${paymentReferenceCode.targetPayment.finantialDocument.currency.getValueFor(paymentReferenceCode.targetPayment.finantialDocument.openAmountWithInterests)}' />

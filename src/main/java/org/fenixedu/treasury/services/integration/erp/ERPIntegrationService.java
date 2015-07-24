@@ -184,7 +184,7 @@ public class ERPIntegrationService extends BennuWebService {
             throw new RuntimeException("Finantial document was not debit note");
         }
 
-        if (finantialDocument.getDebtAccount().getFinantialInstitution().getFiscalNumber()
+        if (!finantialDocument.getDebtAccount().getFinantialInstitution().getFiscalNumber()
                 .equals(interestRequest.getFinantialInstitutionFiscalNumber())) {
             throw new RuntimeException("Finantial institution fiscal number invalid");
         }
@@ -253,11 +253,9 @@ public class ERPIntegrationService extends BennuWebService {
     @Atomic
     private void processInterestEntries(final DebitEntry debitEntry, final InterestRateBean interestRateBean,
             final LocalDate paymentDate) {
-
         DocumentNumberSeries debitNoteSeries =
-                DocumentNumberSeries
-                        .find(FinantialDocumentType.findForDebitNote(), debitEntry.getDebtAccount().getFinantialInstitution())
-                        .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+                DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), debitEntry.getFinantialDocument()
+                        .getDocumentNumberSeries().getSeries());
 
         final DebitNote interestDebitNote =
                 DebitNote.create(debitEntry.getDebtAccount(), debitNoteSeries, paymentDate.toDateTimeAtStartOfDay());

@@ -386,7 +386,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                                 <ul>
                                     <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
                                         <li><a target="#"
-                                            href="${pageContext.request.contextPath}/<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}">
+                                            href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}">
                                                 <c:out
                                                     value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" />
                                         </a> &nbsp; <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
@@ -411,7 +411,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 
                                     <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
                                         <li><a target="_blank"
-                                            href="${pageContext.request.contextPath}/<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
+                                            href="${pageContext.request.contextPath}<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
                                                     value='${settlementEntry.finantialDocument.uiDocumentNumber}' /></a> <c:out
                                                 value=' - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
                                     </c:forEach>

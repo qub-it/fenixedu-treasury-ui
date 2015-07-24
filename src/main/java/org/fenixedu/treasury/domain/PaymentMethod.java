@@ -103,6 +103,8 @@ public class PaymentMethod extends PaymentMethod_Base {
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")));
             PaymentMethod.create("CCR",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")));
+            PaymentMethod.create("CH",
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CH")));
         }
     }
 

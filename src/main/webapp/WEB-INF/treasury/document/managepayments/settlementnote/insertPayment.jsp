@@ -68,7 +68,7 @@ ${portal.angularToolkit()}
             <p>
                 <strong><spring:message
                         code="label.DebtAccount.customer" />: </strong><a
-                    href="${pageContext.request.contextPath}/<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}">${settlementNoteBean.debtAccount.customer.businessIdentification}
+                    href="${pageContext.request.contextPath}<%=DebtAccountController.READ_URL%>${settlementNoteBean.debtAccount.externalId}">${settlementNoteBean.debtAccount.customer.businessIdentification}
                     - ${settlementNoteBean.debtAccount.customer.name}</a>
             </p>
             <p>

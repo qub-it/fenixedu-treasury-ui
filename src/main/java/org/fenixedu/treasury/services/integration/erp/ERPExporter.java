@@ -474,10 +474,7 @@ public class ERPExporter {
             payment.setPeriod(document.getDocumentDate().getMonthOfYear());
 
             // SourceID
-            /*
-             * C?digo do utilizador que registou o movimento (SourceID).
-             */
-            payment.setSourceID(document.getVersioningCreator());
+            payment.setSourceID(document.getOriginDocumentNumber());
 
         } catch (DatatypeConfigurationException e) {
 
@@ -572,7 +569,8 @@ public class ERPExporter {
             status.setSourceID(document.getVersioningUpdatedBy());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
-            if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())) {
+            if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())
+                    || Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getLegacy())) {
                 status.setSourceBilling(SAFTPTSourceBilling.I);
             } else {
                 status.setSourceBilling(SAFTPTSourceBilling.P);
@@ -611,10 +609,7 @@ public class ERPExporter {
             workDocument.setPeriod(document.getDocumentDate().getMonthOfYear());
 
             // SourceID
-            /*
-             * C?digo do utilizador que registou o movimento (SourceID).
-             */
-            workDocument.setSourceID(document.getVersioningCreator());
+            workDocument.setSourceID(document.getOriginDocumentNumber());
 
         } catch (DatatypeConfigurationException e) {
 
