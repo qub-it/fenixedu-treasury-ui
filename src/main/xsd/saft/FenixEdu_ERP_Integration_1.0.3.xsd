@@ -199,6 +199,7 @@
 	<xs:element name="Customer">
 		<xs:complexType>
 			<xs:sequence>
+                <xs:element minOccurs="0" ref="CustomerBusinessID" />
 				<xs:element ref="CustomerID" />
 				<xs:element ref="AccountID" />
 				<xs:element ref="CustomerTaxID" />
@@ -845,6 +846,7 @@
 	<xs:element name="CreditAmount" type="SAFmonetaryType" />
 	<xs:element name="CurrencyAmount" type="SAFmonetaryType" />
 	<xs:element name="CustomerID" type="SAFPTtextTypeMandatoryMax30Car" />
+    <xs:element name="CustomerBusinessID" type="SAFPTtextTypeMandatoryMax30Car" />
 	<xs:element name="PayorCustomerID" type="SAFPTtextTypeMandatoryMax30Car" />
 	<xs:element name="CustomerTaxID" type="SAFPTtextTypeMandatoryMax20Car" />
 	<xs:element name="DateCreated" type="SAFPTDateSpan" />

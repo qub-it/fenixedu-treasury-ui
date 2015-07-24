@@ -1016,6 +1016,8 @@ public class ERPExporter {
         // CustomerID
         c.setCustomerID(customer.getCode());
 
+        c.setCustomerBusinessID(customer.getBusinessIdentification());
+
         // CustomerTaxID
         if (Strings.isNullOrEmpty(customer.getFiscalNumber())) {
             c.setCustomerTaxID(Customer.DEFAULT_FISCAL_NUMBER);
@@ -1038,9 +1040,6 @@ public class ERPExporter {
 
         // Telephone
         // c.setTelephone("");
-
-        // WebSite
-        // c.setWebsite("");
 
         return c;
     }
