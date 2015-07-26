@@ -166,7 +166,7 @@ public class Product extends Product_Base {
     public static Stream<Product> findByCode(final String code) {
         return findAll().filter(p -> p.getCode().equalsIgnoreCase(code));
     }
-    
+
     public static Optional<Product> findUniqueByCode(final String code) {
         return findByCode(code).findFirst();
     }
@@ -245,5 +245,16 @@ public class Product extends Product_Base {
     private boolean canRemoveFinantialInstitution(FinantialInstitution inst) {
         return !inst.getFinantialEntitiesSet().stream()
                 .anyMatch(x -> x.getTariffSet().stream().anyMatch(y -> y.getProduct().equals(this)));
+    }
+
+    @Atomic
+    public static void deleteOrphanProducts() {
+
+        Product.findAll().forEach(x -> {
+            if (x.getActive() == false && x.isDeletable()) {
+                x.delete();
+            }
+        });
+
     }
 }

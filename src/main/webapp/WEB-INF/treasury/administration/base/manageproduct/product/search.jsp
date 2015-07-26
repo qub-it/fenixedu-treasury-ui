@@ -49,12 +49,48 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+
+<div class="modal fade" id="deleteOrphanProductsModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/search/deleteorphanproducts" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.administration.base.manageProduct.readProduct.confirmDeleteOrphanProducts" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <span class="glyphicon glyphicon-remove" >&nbsp;</span><spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-warning" type="submit">
+                        <span class="glyphicon glyphicon-trash" >&nbsp;</span><spring:message code="label.delete" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/create"><spring:message
-            code="label.event.create" /></a> &nbsp;
+            code="label.event.create" /></a> &nbsp;|&nbsp; <span
+        class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteOrphanProductsModal"><spring:message
+            code="label.event.administration.base.manageproducts.product.deleteOrphanProducts" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

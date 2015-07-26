@@ -264,6 +264,13 @@ public class Series extends Series_Base {
             return;
         }
 
+        boolean debtAccountClosed = debtAccount.getClosed();
+
+        if (debtAccountClosed) {
+            //if debt account is closed, we must open to create a debt to it
+            debtAccount.reopenDebtAccount();
+        }
+
         for (DebitEntry entry : debitEntries) {
             if (debitNote == null) {
                 debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
@@ -285,5 +292,9 @@ public class Series extends Series_Base {
             previousEntry = entry;
         }
 
+        //if the debtaccount was closed, closed it again
+        if (debtAccountClosed) {
+            debtAccount.closeDebtAccount();
+        }
     }
 }

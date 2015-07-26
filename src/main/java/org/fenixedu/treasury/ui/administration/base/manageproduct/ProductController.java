@@ -206,6 +206,21 @@ public class ProductController extends TreasuryBaseController {
         return update(product, model);
     }
 
+    @RequestMapping(value = SEARCH_URI + "/deleteorphanproducts", method = RequestMethod.POST)
+    public String processSearchToDeleteOrphanProducts(Model model, RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsBackOfficeMember(model);
+
+            Product.deleteOrphanProducts();
+
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (Exception de) {
+            addErrorMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.error.deleteorphanproducts") + de.getLocalizedMessage(), model);
+        }
+        return redirect(SEARCH_URL, model, redirectAttributes);
+    }
+
     @Atomic
     public void updateProduct(ProductGroup productGroup, String code, LocalizedString name, LocalizedString unitOfMeasure,
             boolean active, List<FinantialInstitution> finantialInstitutions, VatType vatType, Model m) {
