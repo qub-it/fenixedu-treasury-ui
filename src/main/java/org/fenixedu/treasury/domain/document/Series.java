@@ -255,8 +255,13 @@ public class Series extends Series_Base {
         DocumentNumberSeries seriesToProcess = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this);
         List<DebitEntry> debitEntries =
                 debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.getFinantialDocument() == null)
-                        .filter(x -> x.isDebitNoteEntry()).map(DebitEntry.class::cast)
-                        .sorted((x, y) -> x.getEntryDateTime().compareTo(y.getEntryDateTime())).collect(Collectors.toList());
+                        .filter(x -> x.isDebitNoteEntry()).map(DebitEntry.class::cast).sorted((x, y) -> {
+                            if (x.getEntryDateTime().equals(y.getEntryDateTime())) {
+                                return x.getDueDate().compareTo(y.getDueDate());
+                            } else {
+                                return x.getEntryDateTime().compareTo(y.getEntryDateTime());
+                            }
+                        }).collect(Collectors.toList());
 
         DebitNote debitNote = null;
         DebitEntry previousEntry = null;

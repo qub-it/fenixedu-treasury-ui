@@ -206,13 +206,16 @@ public class ProductController extends TreasuryBaseController {
         return update(product, model);
     }
 
-    @RequestMapping(value = SEARCH_URI + "/deleteorphanproducts", method = RequestMethod.POST)
+    @RequestMapping(value = "/deleteorphanproducts", method = RequestMethod.POST)
     public String processSearchToDeleteOrphanProducts(Model model, RedirectAttributes redirectAttributes) {
         try {
             assertUserIsBackOfficeMember(model);
 
-            Product.deleteOrphanProducts();
+            int deletedCount = Product.deleteOrphanProducts();
 
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE,
+                            "label.info.administration.base.manageproduct.product.deleteorphanproducts") + deletedCount, model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (Exception de) {
             addErrorMessage(

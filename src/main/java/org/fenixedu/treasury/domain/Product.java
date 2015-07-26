@@ -248,13 +248,14 @@ public class Product extends Product_Base {
     }
 
     @Atomic
-    public static void deleteOrphanProducts() {
-
-        Product.findAll().forEach(x -> {
+    public static int deleteOrphanProducts() {
+        int count = 0;
+        for (Product x : Product.findAll().collect(Collectors.toList())) {
             if (x.getActive() == false && x.isDeletable()) {
                 x.delete();
+                count++;
             }
-        });
-
+        }
+        return count;
     }
 }
