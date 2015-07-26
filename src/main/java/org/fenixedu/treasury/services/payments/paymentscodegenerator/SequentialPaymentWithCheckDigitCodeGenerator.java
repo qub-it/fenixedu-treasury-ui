@@ -119,6 +119,7 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
         PaymentReferenceCode newPaymentReference =
                 PaymentReferenceCode.create(referenceCodeString, validFrom, validTo, PaymentReferenceCodeStateType.UNUSED,
                         referenceCodePool, minAmount, maxAmount);
+        newPaymentReference.setPayableAmount(amount);
 
         return newPaymentReference;
     }

@@ -86,6 +86,7 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
                 PaymentReferenceCode.create(referenceCodeString, validFrom, validTo, PaymentReferenceCodeStateType.UNUSED,
                         referenceCodePool, minAmount, maxAmount);
 
+        newPaymentReference.setPayableAmount(amount);
         return newPaymentReference;
     }
 

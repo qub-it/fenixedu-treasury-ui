@@ -288,7 +288,18 @@ public class DebitEntryBean implements IBean {
         this.treasuryEventDataSource = treasuryEventDataSource.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
             tuple.setId(x.getExternalId());
-            tuple.setText(x.getTreasuryEventDate().toString("YYYY-MM-dd") + "-" + x.getDescription().getContent());
+            String text = "";
+            if (x.getTreasuryEventDate() != null) {
+                text += ("[" + x.getTreasuryEventDate().toString("YYYY-MM-dd") + "] ");
+            } else {
+                text += "[YYYY-MM-dd] ";
+            }
+            if (x.getDescription() != null) {
+                text += x.getDescription().getContent();
+            } else {
+                text += "---";
+            }
+            tuple.setText(text);
             return tuple;
         }).collect(Collectors.toList());
     }

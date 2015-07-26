@@ -312,12 +312,11 @@ ${portal.toolkit()}
             </datatables:column>
 
             <datatables:column cssStyle="width:10%">
-                <form method="get"
-                    action="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${referenceCode.externalId}">
-                    <button type="submit" class="btn btn-default btn-xs">
+                <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${referenceCode.externalId}">
+<!--                     <button type="submit" class="btn btn-default btn-xs"> -->
                         <spring:message code="label.view" />
-                    </button>
-                </form>
+<!--                     </button> -->
+                </a>
             </datatables:column>
         </datatables:table>
         <script>
@@ -325,7 +324,7 @@ ${portal.toolkit()}
 											'referenceCodes',
 											false,
 											false,
-											false,
+											true,
 											"${pageContext.request.contextPath}",
 											"${datatablesI18NUrl}");
 								</script>

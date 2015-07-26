@@ -110,9 +110,10 @@ ${portal.angularToolkit()}
 </script>
 
 <form name='form' method="post" class="form-horizontal" ng-app="angularAppPaymentReferenceCode" ng-controller="PaymentReferenceCodeController"
-    action='${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote'>
+    action='${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeinseries'>
 
-    <input type="hidden" name="postback" value='${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnotepostback' /> <input
+ <input type="hidden" name="series" value='${series.externalId }'/>
+    <input type="hidden" name="postback" value='${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeinseriespostback' /> <input
         name="bean" type="hidden" value="{{ object }}" />
     <div class="panel panel-default">
         <div class="panel-body">
@@ -122,27 +123,16 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input class="col-sm-6" type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.name}'/>" disabled />
+                    <input class="col-sm-6" type="text" value="<c:out value='${series.finantialInstitution.name}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebtAccount.customer" />
+                    <spring:message code="label.DebitNote.documentNumberSeries" />
                 </div>
 
                 <div class="col-sm-10">
-                    <input class="col-sm-6" type="text"
-                        value="<c:out value='${paymentReferenceCodeBean.debitNote.debtAccount.customer.businessIdentification} - ${paymentReferenceCodeBean.debitNote.debtAccount.customer.name}'/>"
-                        disabled />
-                </div>
-            </div>
-            <div class="form-group row ">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebitNote.documentNumber" />
-                </div>
-
-                <div class="col-sm-4">
-                    <input class="col-sm-12" type="text" value="<c:out value='${paymentReferenceCodeBean.debitNote.uiDocumentNumber}'/>" disabled />
+                    <input class="col-sm-6" type="text" value="<c:out value='${series.name.content}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">
@@ -156,35 +146,6 @@ ${portal.angularToolkit()}
                         theme="bootstrap" ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices
                         repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search"> <span
                         ng-bind-html="paymentCodePool.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
-                </div>
-            </div>
-            <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == false ">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.payableAmount" />
-                </div>
-                <div class="col-sm-10">
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
-                        </div>
-                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmount" disabled />&nbsp <input type="checkbox" ng-model="object.usePaymentAmountWithInterests" />
-                        <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
-                    </div>
-                </div>
-            </div>
-            <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == true ">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.payableAmount" />
-                </div>
-                <div class="col-sm-10">
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <c:out value="${paymentReferenceCodeBean.debitNote.debtAccount.finantialInstitution.currency.symbol}" />
-                        </div>
-                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmountWithInterst" disabled />&nbsp <input type="checkbox"
-                            ng-model="object.usePaymentAmountWithInterests" />
-                        <spring:message code="label.PaymentReferenceCode.usePaymentAmountWithInterests" />
-                    </div>
                 </div>
             </div>
             <div class="form-group row" ng-hide="angular.isUndefined(object.isPoolVariableTimeWindow) || object.isPoolVariableTimeWindow == false ">
@@ -203,6 +164,20 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-4">
                     <input type="text" bennu-date="object.endDate" />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentReferenceCode.minAmount" />
+                </div>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${series.finantialInstitution.currency.symbol}" />
+                        </div>
+                        <input  class="col-sm-4" type="text" ng-model="object.minAmount" />
+                    </div>
                 </div>
             </div>
 

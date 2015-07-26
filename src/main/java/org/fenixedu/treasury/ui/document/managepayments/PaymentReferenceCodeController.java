@@ -32,14 +32,20 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
+import org.fenixedu.treasury.ui.administration.base.managelog.TreasuryOperationLogController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
@@ -178,39 +184,16 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _CREATEPAYMENTCODEINSERIES_URI, method = RequestMethod.GET)
     public String createpaymentcodeInSeries(@RequestParam(value = "series") Series series, Model model,
             RedirectAttributes redirectAttributes) {
+        PaymentReferenceCodeBean paymentReferenceCodeBean = new PaymentReferenceCodeBean();
+        paymentReferenceCodeBean.setMinAmount(BigDecimal.valueOf(5.0));
+        paymentReferenceCodeBean.setPaymentCodePoolDataSource(series.getFinantialInstitution().getPaymentCodePoolsSet().stream()
+                .filter(x -> x.getActive()).collect(Collectors.toList()));
 
-//        if (debitNote.getPaymentCodesSet().stream().anyMatch(pc -> pc.getPaymentReferenceCode().getState().isUsed())) {
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
-//            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
-//        }
-//
-//        try {
-//            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-//
-//            PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean();
-//            bean.setDebitNote(debitNote);
-//            bean.setPaymentAmount(debitNote.getOpenAmount());
-//            bean.setPaymentAmountWithInterst(debitNote.getOpenAmountWithInterests());
-//            bean.setUsePaymentAmountWithInterests(false);
-//            List<PaymentCodePool> activePools =
-//                    debitNote.getDebtAccount().getFinantialInstitution().getPaymentCodePoolsSet().stream()
-//                            .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
-//            bean.setPaymentCodePoolDataSource(activePools);
-//            bean.setBeginDate(new LocalDate());
-//            if (debitNote.getDocumentDueDate().isBefore(bean.getBeginDate())) {
-//                bean.setEndDate(new LocalDate());
-//            } else {
-//                bean.setEndDate(debitNote.getDocumentDueDate());
-//            }
-//
-//            this.setPaymentReferenceCodeBean(bean, model);
-//
-//        } catch (TreasuryDomainException tde) {
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
-//        } catch (Exception ex) {
-//            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-//        }
-//
+        paymentReferenceCodeBean.setBeginDate(new LocalDate());
+        paymentReferenceCodeBean.setEndDate(new LocalDate());
+
+        this.setPaymentReferenceCodeBean(paymentReferenceCodeBean, model);
+        model.addAttribute("series", series);
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeinseries";
     }
 
@@ -228,37 +211,60 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _CREATEPAYMENTCODEINSERIES_URI, method = RequestMethod.POST)
-    public String createpaymentcodeinseries(@RequestParam(value = "bean", required = false) PaymentReferenceCodeBean bean,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String createpaymentcodeinseries(@RequestParam(value = "series") Series series, @RequestParam(value = "bean",
+            required = false) PaymentReferenceCodeBean bean, Model model, RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(bean.getDebitNote().getDocumentNumberSeries().getSeries().getFinantialInstitution(),
-                    model);
+            assertUserIsFrontOfficeMember(series.getFinantialInstitution(), model);
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Creating references for Series =>" + series.getCode() + "-" + series.getName().getContent())
+                    .append("\n");
+            stringBuilder.append(
+                    "Using Pool =>" + "[" + bean.getPaymentCodePool().getEntityReferenceCode() + "] "
+                            + bean.getPaymentCodePool().getName()).append("\n");
+            int count = 0;
+            for (DocumentNumberSeries dns : series.getDocumentNumberSeriesSet()) {
+                if (dns.getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.DEBIT_NOTE)) {
+                    for (FinantialDocument document : dns.getFinantialDocumentsSet()) {
+                        if (document.isClosed()
+                                && (document.getPaymentCodesSet().isEmpty() || document.getPaymentCodesSet().stream()
+                                        .allMatch(x -> x.getPaymentReferenceCode().isAnnulled()))) {
+                            if (Constants.isGreaterThan(document.getOpenAmount(), bean.getMinAmount())) {
+                                PaymentReferenceCode newReferenceCode =
+                                        bean.getPaymentCodePool()
+                                                .getReferenceCodeGenerator()
+                                                .generateNewCodeFor(document.getDebtAccount().getCustomer(),
+                                                        document.getOpenAmount(), bean.getPaymentCodePool().getValidFrom(),
+                                                        bean.getPaymentCodePool().getValidTo(),
+                                                        bean.getPaymentCodePool().getIsFixedAmount());
 
-//            BigDecimal payableAmount = bean.getPaymentAmount();
-//
-//            if (bean.isUsePaymentAmountWithInterests()) {
-//                payableAmount = bean.getPaymentAmountWithInterst();
-//            }
-//
-//            PaymentReferenceCode paymentReferenceCode =
-//                    bean.getPaymentCodePool()
-//                            .getReferenceCodeGenerator()
-//                            .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(), payableAmount,
-//                                    bean.getBeginDate(), bean.getEndDate(), true);
-//
-//            paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
-//            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
-//                    "label.document.managepayments.success.create.reference.code.debitnote"), model);
-//
-//            model.addAttribute("paymentReferenceCode", paymentReferenceCode);
-            return redirect(DebitNoteController.READ_URL + bean.getDebitNote().getExternalId(), model, redirectAttributes);
+                                FinantialDocumentPaymentCode code =
+                                        FinantialDocumentPaymentCode.create(document, newReferenceCode, true);
+                                stringBuilder.append(
+                                        document.getUiDocumentNumber()
+                                                + "=>"
+                                                + newReferenceCode.getFormattedCode()
+                                                + " ( "
+                                                + series.getFinantialInstitution().getCurrency()
+                                                        .getValueFor(document.getOpenAmount()) + " )").append("\n");
+                                count++;
+                            }
+                        }
+                    }
+                }
+            }
+            stringBuilder.append("\n").append("#Refs=" + count).append("\n");
+            TreasuryOperationLog log =
+                    TreasuryOperationLog.create(stringBuilder.toString(), series.getExternalId(),
+                            PaymentReferenceCode.TREASURY_OPERATION_LOG_TYPE);
+
+            return redirect(TreasuryOperationLogController.READ_URL + series.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         this.setPaymentReferenceCodeBean(bean, model);
+        model.addAttribute("series", series);
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeinseries";
     }
-
 }

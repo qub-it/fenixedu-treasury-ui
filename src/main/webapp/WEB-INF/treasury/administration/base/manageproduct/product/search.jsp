@@ -53,7 +53,7 @@ ${portal.toolkit()}
 <div class="modal fade" id="deleteOrphanProductsModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/search/deleteorphanproducts" method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/base/manageproduct/product/deleteorphanproducts" method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>

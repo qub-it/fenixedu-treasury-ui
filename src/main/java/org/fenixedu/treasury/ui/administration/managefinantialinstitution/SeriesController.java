@@ -230,10 +230,10 @@ public class SeriesController extends TreasuryBaseController {
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/createpaymentreferencecode", method = RequestMethod.POST)
-    public String processReadToCreatePaymentReferenceCode(@PathVariable("oid") Series series, Model model,
-            RedirectAttributes redirectAttributes) {
-
+//    @RequestMapping(value = "/read/{oid}/createpaymentreferencecode", method = RequestMethod.GET)
+//    public String processReadToCreatePaymentReferenceCode(@PathVariable("oid") Series series, Model model,
+//            RedirectAttributes redirectAttributes) {
+//
 //        FinantialInstitution fin = series.getFinantialInstitution();
 //
 //        for (DebtAccount debtAccount : fin.getDebtAccountsSet()) {
@@ -248,7 +248,7 @@ public class SeriesController extends TreasuryBaseController {
 //        }
 //
 //        addInfoMessage("SUCCESS", model);
-        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
-    }
+//        return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
+//    }
 
 }

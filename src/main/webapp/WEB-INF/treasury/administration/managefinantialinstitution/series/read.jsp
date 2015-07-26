@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.Series"%>
@@ -38,37 +39,6 @@ ${portal.toolkit()}
     </h1>
 </div>
 
-<div class="modal fade" id="createpaymentreferencecodeModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/read/${series.externalId}/createpaymentreferencecode" method="POST">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">
-                        <spring:message code="label.confirmation" />
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <spring:message code="label.administration.manageFinantialInstitution.readSeries.confirm.createpaymentreferencecode" arguments='${series.name.content }' />
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <spring:message code="label.cancel" />
-                    </button>
-                    <button id="deleteButton" class="btn btn-primary" type="submit">
-                        <spring:message code="label.confirm" />
-                    </button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
 
 
 <div class="modal fade" id="createdebitnoteforpendingdebitentriesModal">
@@ -202,7 +172,7 @@ ${portal.toolkit()}
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/update/${series.externalId}"><spring:message
             code="label.event.update" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a a class="" href="#" data-toggle="modal" data-target="#createdebitnoteforpendingdebitentriesModal"><spring:message
             code="label.event.administration.managefinantialinstitution.series.createdebitnoteforpendingdebitentries" /></a> &nbsp;
-            |&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#createpaymentreferencecodeModal"><spring:message
+            |&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.CREATEPAYMENTCODEINSERIES_URL %>?series=${series.externalId}" ><spring:message
             code="label.event.administration.managefinantialinstitution.series.createpaymentreferencecode" /></a> &nbsp;
             
     <%

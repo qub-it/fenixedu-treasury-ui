@@ -51,6 +51,7 @@ import com.google.common.base.Strings;
 public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     private static final int LENGTH_REFERENCE_CODE = 9;
     private static final BigDecimal SIBS_IGNORE_MAX_AMOUNT = BigDecimal.ZERO;
+    public static final String TREASURY_OPERATION_LOG_TYPE = "TREASURY_OPERATION_LOG_TYPE";
 
     protected PaymentReferenceCode() {
         super();

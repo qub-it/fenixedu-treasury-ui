@@ -124,14 +124,13 @@ public class Product extends Product_Base {
     }
 
     public boolean isDeletable() {
-        for (FinantialInstitution finantialInstitution : getFinantialInstitutionsSet()) {
-            if (!canRemoveFinantialInstitution(finantialInstitution)) {
-                return false;
-            }
-        }
-        return getInvoiceEntriesSet().isEmpty() && getTariffSet().isEmpty() && getTreasuryExemptionSet().isEmpty()
-                && getTreasuryEventsSet().isEmpty() && getAdvancePaymentTreasurySettings() == null
-                && getTreasurySettings() == null;
+//        for (FinantialInstitution finantialInstitution : getFinantialInstitutionsSet()) {
+//            if (!canRemoveFinantialInstitution(finantialInstitution)) {
+//                return false;
+//            }
+//        }
+        return getInvoiceEntriesSet().isEmpty() && getTreasuryExemptionSet().isEmpty() && getTreasuryEventsSet().isEmpty()
+                && getAdvancePaymentTreasurySettings() == null && getTreasurySettings() == null;
     }
 
     @Atomic
@@ -143,6 +142,9 @@ public class Product extends Product_Base {
         setBennu(null);
         setVatType(null);
         for (FinantialInstitution inst : getFinantialInstitutionsSet()) {
+            for (Tariff t : this.getTariffsSet(inst)) {
+                t.delete();
+            }
             this.removeFinantialInstitutions(inst);
         }
 
@@ -243,8 +245,9 @@ public class Product extends Product_Base {
     }
 
     private boolean canRemoveFinantialInstitution(FinantialInstitution inst) {
-        return !inst.getFinantialEntitiesSet().stream()
-                .anyMatch(x -> x.getTariffSet().stream().anyMatch(y -> y.getProduct().equals(this)));
+        return true;
+//        return !inst.getFinantialEntitiesSet().stream()
+//                .anyMatch(x -> x.getTariffSet().stream().anyMatch(y -> y.getProduct().equals(this)));
     }
 
     @Atomic
