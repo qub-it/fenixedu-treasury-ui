@@ -221,6 +221,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             stringBuilder.append(
                     "Using Pool =>" + "[" + bean.getPaymentCodePool().getEntityReferenceCode() + "] "
                             + bean.getPaymentCodePool().getName()).append("\n");
+            stringBuilder.append(
+                    "Min amount =>" + series.getFinantialInstitution().getCurrency().getValueFor(bean.getMinAmount())).append(
+                    "\n");
             int count = 0;
             for (DocumentNumberSeries dns : series.getDocumentNumberSeriesSet()) {
                 if (dns.getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.DEBIT_NOTE)) {
@@ -228,7 +231,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                         if (document.isClosed()
                                 && (document.getPaymentCodesSet().isEmpty() || document.getPaymentCodesSet().stream()
                                         .allMatch(x -> x.getPaymentReferenceCode().isAnnulled()))) {
-                            if (Constants.isGreaterThan(document.getOpenAmount(), bean.getMinAmount())) {
+                            if (Constants.isGreaterThan(document.getOpenAmount(),
+                                    bean.getMinAmount().subtract(BigDecimal.valueOf(0.01)))) {
                                 PaymentReferenceCode newReferenceCode =
                                         bean.getPaymentCodePool()
                                                 .getReferenceCodeGenerator()

@@ -31,10 +31,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -48,8 +48,9 @@ import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.managelog") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageTreasuryOperationLog",
-        accessGroup = "treasuryBackOffice")
+//@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageTreasuryOperationLog",
+//        accessGroup = "treasuryBackOffice")
+@BennuSpringController(value = FinantialInstitutionController.class)
 @RequestMapping(TreasuryOperationLogController.CONTROLLER_URL)
 public class TreasuryOperationLogController extends TreasuryBaseController {
 
