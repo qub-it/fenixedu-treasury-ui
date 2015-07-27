@@ -1322,7 +1322,9 @@ public class ERPExporter {
     }
 
     public static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution, List<FinantialDocument> documents) {
-        return exportFinantialDocumentToXML(finantialInstitution, documents, null);
+        UnaryOperator<AuditFile> auditFilePreProcess =
+                finantialInstitution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
+        return exportFinantialDocumentToXML(finantialInstitution, documents, auditFilePreProcess);
     }
 
     private static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution,
@@ -1342,7 +1344,9 @@ public class ERPExporter {
     }
 
     public static String exportsProductsToXML(FinantialInstitution finantialInstitution) {
-        return exportsProductsToXML(finantialInstitution, null);
+        UnaryOperator<AuditFile> auditFilePreProcess =
+                finantialInstitution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
+        return exportsProductsToXML(finantialInstitution, auditFilePreProcess);
     }
 
     protected static String exportsProductsToXML(FinantialInstitution finantialInstitution,
@@ -1353,7 +1357,9 @@ public class ERPExporter {
     }
 
     public static String exportsCustomersToXML(FinantialInstitution finantialInstitution) {
-        return exportCustomersToXML(finantialInstitution, null);
+        UnaryOperator<AuditFile> auditFilePreProcess =
+                finantialInstitution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
+        return exportCustomersToXML(finantialInstitution, auditFilePreProcess);
     }
 
     protected static String exportCustomersToXML(FinantialInstitution finantialInstitution,
