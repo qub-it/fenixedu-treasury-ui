@@ -219,16 +219,21 @@ public class ERPIntegrationService extends BennuWebService {
             throw new RuntimeException("Amount in debt not equal");
         }
 
-        //3 . calculate the amount of interest
+        //3 . calculate the amount of interest for the DebitEntry
         final InterestRateBean interestRateBean =
                 debitEntry.calculateAllInterestValue(interestRequest.convertPaymentDateToLocalDate());
+
+        //calculate the amount of UNDEBITTED interest for the DebitEntry
+        final InterestRateBean undebittedInterestRateBean =
+                debitEntry.calculateUndebitedInterestValue(interestRequest.convertPaymentDateToLocalDate());
 
         bean.setInterestAmount(interestRateBean.getInterestAmount());
         bean.setDescription(interestRateBean.getDescription());
 
-        if (Constants.isGreaterThan(interestRateBean.getInterestAmount(), BigDecimal.ZERO)
+        //If we have undebittedInterestDebit and we want to create, genererate debitEntries
+        if (Constants.isGreaterThan(undebittedInterestRateBean.getInterestAmount(), BigDecimal.ZERO)
                 && interestRequest.getGenerateInterestDebitNote()) {
-            processInterestEntries(debitEntry, interestRateBean, interestRequest.convertPaymentDateToLocalDate());
+            processInterestEntries(debitEntry, undebittedInterestRateBean, interestRequest.convertPaymentDateToLocalDate());
         }
 
         final List<FinantialDocument> interestFinantialDocumentsSet =
