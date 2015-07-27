@@ -221,7 +221,7 @@ public class ERPIntegrationService extends BennuWebService {
 
         //3 . calculate the amount of interest
         final InterestRateBean interestRateBean =
-                debitEntry.calculateUndebitedInterestValue(interestRequest.convertPaymentDateToLocalDate());
+                debitEntry.calculateAllInterestValue(interestRequest.convertPaymentDateToLocalDate());
 
         bean.setInterestAmount(interestRateBean.getInterestAmount());
         bean.setDescription(interestRateBean.getDescription());
