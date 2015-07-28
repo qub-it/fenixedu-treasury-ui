@@ -143,6 +143,11 @@ public abstract class Invoice extends Invoice_Base {
         return result;
     }
 
+    public boolean hasValidSettlementEntries() {
+        return this.getRelatedSettlementEntries().stream()
+                .anyMatch(y -> y.getFinantialDocument().isClosed() || y.getFinantialDocument().isPreparing());
+    }
+
     public InvoiceEntry getEntryInOrder(Integer lineNumber) {
         FinantialDocumentEntry entry =
                 this.getFinantialDocumentEntriesSet().stream().filter(x -> x.getEntryOrder().equals(lineNumber)).findFirst()

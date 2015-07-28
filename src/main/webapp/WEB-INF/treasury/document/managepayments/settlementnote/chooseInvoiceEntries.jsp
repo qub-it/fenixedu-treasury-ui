@@ -90,14 +90,21 @@ ${portal.angularToolkit()}
 	angular.isUndefinedOrNull = function(val) {
 		return angular.isUndefined(val) || val === null
 	};
-	angular.module('angularAppSettlementNote',
-			[ 'ngSanitize', 'ui.select', 'bennuToolkit' ]).controller(
-			'SettlementNoteController', [ '$scope', function($scope) {
-				$scope.object = angular.fromJson('${settlementNoteBeanJson}');
-                if($scope.object.previousStates.length == 0 || $scope.object.previousStates[$scope.object.previousStates.length - 1] != 0) {
-                    $scope.object.previousStates.push(0);
-                }
-            } ]);
+	angular
+			.module('angularAppSettlementNote',
+					[ 'ngSanitize', 'ui.select', 'bennuToolkit' ])
+			.controller(
+					'SettlementNoteController',
+					[
+							'$scope',
+							function($scope) {
+								$scope.object = angular
+										.fromJson('${settlementNoteBeanJson}');
+								if ($scope.object.previousStates.length == 0
+										|| $scope.object.previousStates[$scope.object.previousStates.length - 1] != 0) {
+									$scope.object.previousStates.push(0);
+								}
+							} ]);
 </script>
 
 
@@ -208,7 +215,8 @@ ${portal.angularToolkit()}
                                         <c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}" />
                                     </div>
                                     <input class="form-control" name="debtAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].debtAmount" type="text"
-                                        ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/" value='0.00' />
+                                        ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/"
+                                        value='0.00' />
                                 </div>
                                 <p class="alert alert-danger" ng-show="form.debtAmount${ loop.index }.$error.pattern && object.debitEntries[${ loop.index }].isIncluded">
                                     <spring:message code="error.invalid.format.input" />
@@ -234,41 +242,59 @@ ${portal.angularToolkit()}
                 <spring:message code="label.CreditEntry.choose" />
             </p>
         </div>
-        <div class="panel-body">
-            <table id="creditEntriesTable" class="table responsive table-bordered table-hover" width="100%">
-                <col style="width: 3%" />
-                <thead>
-                    <tr>
-                        <%-- Check Column --%>
-                        <th></th>
-                        <th class="col-sm-2"><spring:message code="label.CreditEntry.documentNumber" /></th>
-                        <th><spring:message code="label.CreditEntry.motive" /></th>
-                        <th class="col-sm-1"><spring:message code="label.CreditEntry.date" /></th>
-                        <th class="col-sm-1"><spring:message code="label.DebitEntry.vat" /></th>
-                        <th class="col-sm-2"><spring:message code="label.CreditEntry.totalAmount" /></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
-                        <tr>
-                            <td><input class="form-control" ng-model="object.creditEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
-                            <td><c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }" /></td>
-                            <td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
-                            <td><c:out value="${ creditEntryBean.documentDueDate }" /></td>
-                            <td><c:out value="${ creditEntryBean.creditEntry.vat.taxRate }" /></td>
-                            <td>- <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmount ) }" />
-                            </td>
-                        </tr>
-                    </c:forEach>
-                </tbody>
-            </table>
-        </div>
-    </div>
+        <c:choose>
+            <c:when test="${not empty settlementNoteBean.creditEntries}">
 
+                <div class="panel-body">
+                    <table id="creditEntriesTable" class="table responsive table-bordered table-hover" width="100%">
+                        <col style="width: 3%" />
+                        <thead>
+                            <tr>
+                                <%-- Check Column --%>
+                                <th></th>
+                                <th class="col-sm-2"><spring:message code="label.CreditEntry.documentNumber" /></th>
+                                <th><spring:message code="label.CreditEntry.motive" /></th>
+                                <th class="col-sm-1"><spring:message code="label.CreditEntry.date" /></th>
+                                <th class="col-sm-1"><spring:message code="label.DebitEntry.vat" /></th>
+                                <th class="col-sm-2"><spring:message code="label.CreditEntry.totalAmount" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
+                                <tr>
+                                    <td><input class="form-control" ng-model="object.creditEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+                                    <td><c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }" /></td>
+                                    <td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
+                                    <td><c:out value="${ creditEntryBean.documentDueDate }" /></td>
+                                    <td><c:out value="${ creditEntryBean.creditEntry.vat.taxRate }" /></td>
+                                    <td>- <c:out
+                                            value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmount ) }" />
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                    </table>
+                </div>
+            </c:when>
+            <c:otherwise>
+                <div class="alert alert-warning" role="alert">
+
+                    <p>
+                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                        <spring:message code="label.noResultsFound" />
+                    </p>
+
+                </div>
+
+            </c:otherwise>
+        </c:choose>
+    </div>
     <div class="panel-footer">
         <button type="submit" class="btn btn-primary">
-        </span><spring:message code="label.continue" /> &nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true" > 
-        </button >
+            </span>
+            <spring:message code="label.continue" />
+            &nbsp;<span class="glyphicon glyphicon-chevron-right" aria-hidden="true">
+        </button>
     </div>
 </form>
 

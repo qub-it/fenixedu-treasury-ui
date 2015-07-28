@@ -44,6 +44,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -336,6 +337,14 @@ public class SettlementNote extends SettlementNote_Base {
 
     @Override
     public void closeDocument() {
+
+        //Validate the settlement entries can be used, since multiple entries to the same settlement Note
+        for (SettlementEntry settlementEntry : getSettlemetEntriesSet()) {
+            if (Constants.isGreaterThan(settlementEntry.getAmount(), settlementEntry.getInvoiceEntry().getOpenAmount())) {
+                throw new TreasuryDomainException("error.SettlementNote.invalid.settlement.entry.amount.for.invoice.entry");
+            }
+        }
+
         if (this.getAdvancedPaymentCreditNote() != null) {
             this.getAdvancedPaymentCreditNote().changeState(FinantialDocumentStateType.CLOSED, "");
         }

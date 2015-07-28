@@ -213,7 +213,7 @@ public class DebitNote extends DebitNote_Base {
 
     @Override
     public void anullDocument(boolean freeEntries, String reason) {
-        if (getDebitEntries().anyMatch(de -> !de.getSettlementEntriesSet().isEmpty())) {
+        if (this.hasValidSettlementEntries()) {
             throw new TreasuryDomainException("error.DebitNote.cannot.delete.has.settlemententries");
         }
         if (this.getDocumentNumberSeries().getSeries().getCertificated()) {
@@ -225,6 +225,10 @@ public class DebitNote extends DebitNote_Base {
 
     @Atomic
     public void anullDebitNoteWithCreditNote(String reason) {
+        if (this.hasValidSettlementEntries()) {
+            throw new TreasuryDomainException("error.DebitNote.cannot.delete.has.settlemententries");
+        }
+
         if (this.getFinantialDocumentEntriesSet().size() > 0) {
             if (this.isClosed() == true) {
 
