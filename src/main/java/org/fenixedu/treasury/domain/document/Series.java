@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -252,6 +253,10 @@ public class Series extends Series_Base {
     @Atomic
     public void createDebitNoteForPendingEntries(DebtAccount debtAccount) {
 
+        //if the series is NOT certified, then we will use the debitEntries as The Documents Dates,
+        //if the series is CERTIFIED, then the DATE/DUE_DATE must be the current date
+        boolean useEntryDateTimeAsDocumentDate = this.getCertificated() == false;
+
         DocumentNumberSeries seriesToProcess = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this);
         List<DebitEntry> debitEntries =
                 debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.getFinantialDocument() == null)
@@ -278,8 +283,12 @@ public class Series extends Series_Base {
 
         for (DebitEntry entry : debitEntries) {
             if (debitNote == null) {
-                debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
-                debitNote.setDocumentDueDate(entry.getDueDate());
+                if (useEntryDateTimeAsDocumentDate) {
+                    debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
+                    debitNote.setDocumentDueDate(entry.getDueDate());
+                } else {
+                    debitNote = DebitNote.create(debtAccount, seriesToProcess, new DateTime());
+                }
             }
             if (previousEntry == null) {
                 previousEntry = entry;
@@ -290,8 +299,12 @@ public class Series extends Series_Base {
                     && entry.getDueDate().equals(previousEntry.getDueDate())) {
                 entry.setFinantialDocument(debitNote);
             } else {
-                debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
-                debitNote.setDocumentDueDate(entry.getDueDate());
+                if (useEntryDateTimeAsDocumentDate) {
+                    debitNote = DebitNote.create(debtAccount, seriesToProcess, entry.getEntryDateTime());
+                    debitNote.setDocumentDueDate(entry.getDueDate());
+                } else {
+                    debitNote = DebitNote.create(debtAccount, seriesToProcess, new DateTime());
+                }
                 entry.setFinantialDocument(debitNote);
             }
             previousEntry = entry;
