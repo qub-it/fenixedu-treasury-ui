@@ -178,7 +178,6 @@ ${portal.toolkit()}
                         <td><c:out
                                 value='${treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(treasuryEvent.payedAmount)}' /></td>
                     </tr>
-                    --%>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
                                 code="label.TreasuryEvent.remainingAmountToPay" />
@@ -186,6 +185,7 @@ ${portal.toolkit()}
                         <td><c:out
                                 value='${treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(treasuryEvent.remainingAmountToPay)}' /></td>
                     </tr>
+                    --%>
                 </tbody>
             </table>
         </form>

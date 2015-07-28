@@ -294,12 +294,8 @@ public class DebitEntry extends DebitEntry_Base {
         return calculateUndebitedInterestValue(whenToCalculate).getInterestAmount();
     }
 
-    public BigDecimal getRemainingAmount() {
-        return getOpenAmount().subtract(getPayedAmount());
-    }
-
     public boolean isInDebt() {
-        return Constants.isPositive(getRemainingAmount());
+        return Constants.isPositive(getOpenAmount());
     }
 
     public boolean isDueDateExpired(final LocalDate when) {
@@ -567,7 +563,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static BigDecimal remainingAmountToPay(final TreasuryEvent treasuryEvent) {
-        return findActive(treasuryEvent).map(d -> d.getRemainingAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
+        return findActive(treasuryEvent).map(d -> d.getOpenAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO);
     }
 
     public static DebitEntry create(final Optional<DebitNote> debitNote, final DebtAccount debtAccount,
@@ -600,7 +596,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     public BigDecimal getTotalCreditedAmount() {
         BigDecimal totalCreditedAmount = BigDecimal.ZERO;
-        for (CreditEntry credits : this.getDebitEntry().getCreditEntriesSet()) {
+        for (CreditEntry credits : this.getCreditEntriesSet()) {
             if (credits.getFinantialDocument() == null || !credits.getFinantialDocument().isAnnulled()) {
                 totalCreditedAmount = totalCreditedAmount.add(credits.getTotalAmount());
             }
@@ -617,24 +613,22 @@ public class DebitEntry extends DebitEntry_Base {
         return getOpenAmount().add(getPendingInterestAmount());
     }
 
-    /*******************************************************************
-     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
-     * *****************************************************************
-     */
-
-    public BigDecimal getPayedAmountWithMoney() {
-        BigDecimal creditAmountAppliedInDebitEntry =
-                getCreditEntriesSet().stream()
-                        .filter(l -> l.getFinantialDocument() == null || !l.getFinantialDocument().isAnnulled())
-                        .map(CreditEntry::getAmountWithVat).reduce((c, a) -> c.add(a)).orElse(BigDecimal.ZERO);
-
-        BigDecimal amountToPay = getTotalAmount().subtract(creditAmountAppliedInDebitEntry);
-
-        BigDecimal appliedAmountOnDebitEntry =
-                getSettlementEntriesSet().stream().filter(l -> !l.isAnnulled() && ).map(SettlementEntry::getAmount)
-                        .reduce((c, a) -> a.add(a)).orElse(BigDecimal.ZERO);
-        
-        
-
-    }
+//    /*******************************************************************
+//     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
+//     * *****************************************************************
+//     */
+//
+//    public BigDecimal getPayedAmountWithMoney() {
+//        getAvailableAmountForCredit();
+//        
+//        
+//        
+//        
+//        BigDecimal appliedAmountOnDebitEntry =
+//                getSettlementEntriesSet().stream().filter(l -> !l.isAnnulled() && ).map(SettlementEntry::getAmount)
+//                        .reduce((c, a) -> a.add(a)).orElse(BigDecimal.ZERO);
+//        
+//        
+//
+//    }
 }

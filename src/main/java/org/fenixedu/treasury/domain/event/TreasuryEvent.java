@@ -102,14 +102,16 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         return DebitEntry.findActive(this).filter(d -> !d.isEventAnnuled()).count() > 0;
     }
 
+    // TODO: getTotalAmount()
     public BigDecimal getAmountToPay() {
         return getAmountToPay(null);
     }
 
+    // TODO: getTotalAmount()
     public BigDecimal getAmountToPay(final Product product) {
         final BigDecimal result =
                 (product != null ? DebitEntry.findActive(this, product) : DebitEntry.findActive(this))
-                        .map(d -> d.getAmountWithVat()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO)
+                        .map(d -> d.getTotalAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO)
                         .subtract(getCreditAmount(product));
 
         return Constants.isPositive(result) ? result : BigDecimal.ZERO;
@@ -125,7 +127,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public BigDecimal getPayedAmount() {
-        return DebitEntry.payedAmount(this);
+        return getAmountToPay().subtract(getRemainingAmountToPay());
     }
 
     public BigDecimal getRemainingAmountToPay() {
@@ -133,11 +135,12 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public BigDecimal getRemainingAmountToPay(final Product product) {
-        final BigDecimal amountToPay = product != null ? getAmountToPay(product) : getAmountToPay();
-        final BigDecimal payedAmount = getPayedAmount();
+        BigDecimal result = BigDecimal.ZERO;
 
-        final BigDecimal result = amountToPay.subtract(payedAmount);
-
+        for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.<DebitEntry>toSet())) {
+            result = result.add(debitEntry.getOpenAmount());
+        }
+        
         return Constants.isPositive(result) ? result : BigDecimal.ZERO;
     }
 
