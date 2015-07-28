@@ -138,10 +138,6 @@ public class ERPImporter {
                         throw new TreasuryDomainException("error.ERPImporter.processing.payment", payment.getPaymentRefNo());
                     }
                 } catch (Exception ex) {
-                    //if note was created, then we must delete the note
-                    if (note != null) {
-                        note.delete(true);
-                    }
                     eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
                     eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
                     eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
@@ -151,6 +147,10 @@ public class ERPImporter {
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription(ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
+                    //if note was created, then we must delete the note
+                    if (note != null && note.isDeletable()) {
+                        note.delete(true);
+                    }
                 }
                 result.getDocumentStatus().add(docStatus);
             }
