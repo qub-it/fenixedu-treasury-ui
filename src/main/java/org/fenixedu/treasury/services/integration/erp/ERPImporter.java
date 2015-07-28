@@ -247,10 +247,25 @@ public class ERPImporter {
                         throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
                     }
                 } else {
-                    DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
-                    //Create a new SettlementNote
-                    settlementNote =
-                            SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate, externalNumber);
+                    if (payment.getDocumentStatus().getPaymentStatus().equals("A")) {
+                        DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
+                        //Create a new SettlementNote
+                        settlementNote =
+                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate,
+                                        externalNumber);
+                        settlementNote.closeDocument();
+                        settlementNote
+                                .anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
+                                        "label.info.integration.erpimporter.annulled.by.integration",
+                                        eRPImportOperation.getExternalId()));
+                        return settlementNote;
+                    } else {
+                        DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
+                        //Create a new SettlementNote
+                        settlementNote =
+                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate,
+                                        externalNumber);
+                    }
                 }
             } else {
                 throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.debtaccount.to.integrate.payments");
