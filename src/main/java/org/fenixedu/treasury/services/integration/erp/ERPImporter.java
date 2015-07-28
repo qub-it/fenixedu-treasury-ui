@@ -224,7 +224,7 @@ public class ERPImporter {
                                 .filter(x -> x.getOriginDocumentNumber() != null
                                         && x.getOriginDocumentNumber().equals(externalNumber)).findFirst().orElse(null);
 
-                if (existingSettlementNote != null && existingSettlementNote.isAnnulled() == false) {
+                if (existingSettlementNote != null) {
                     //Already exists... //Update ?!??!!?
                     settlementNote = existingSettlementNote;
                     if (!settlementNote.getDebtAccount().equals(customerDebtAccount)) {
@@ -233,11 +233,14 @@ public class ERPImporter {
                     }
 
                     if (payment.getDocumentStatus().getPaymentStatus().equals("A")) {
-                        //The Settlement note must be annulled
-                        settlementNote
-                                .anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
-                                        "label.info.integration.erpimporter.annulled.by.integration",
-                                        eRPImportOperation.getExternalId()));
+                        if (settlementNote.isAnnulled()) {
+                            //Already annulled
+                        } else {
+                            //The Settlement note must be annulled
+                            settlementNote.anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
+                                    "label.info.integration.erpimporter.annulled.by.integration",
+                                    eRPImportOperation.getExternalId()));
+                        }
                         return settlementNote;
                     } else {
                         //HACK: DONT Accept repeting Documents for (UPDATE)

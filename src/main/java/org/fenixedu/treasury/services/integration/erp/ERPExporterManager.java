@@ -110,7 +110,9 @@ public class ERPExporterManager {
             return result;
         }
 
-        Set<FinantialDocument> pendingDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet();
+        Set<FinantialDocument> pendingDocuments =
+                finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream().limit(100)
+                        .collect(Collectors.toSet());
 
         for (FinantialDocument doc : pendingDocuments.stream().collect(Collectors.toList())) {
             //if the document is in the sames series of the IntegrationConfiguration.paymentSeries -> IGNORE
