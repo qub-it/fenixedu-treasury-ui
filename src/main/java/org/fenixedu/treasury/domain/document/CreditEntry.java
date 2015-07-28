@@ -116,6 +116,10 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public void edit(String description, BigDecimal amount, BigDecimal quantity) {
+        if(isFromExemption()) {
+            throw new TreasuryDomainException("error.CreditEntry.cannot.edit.due.to.exemption.origin");
+        }
+        
         this.setAmount(amount);
         this.setQuantity(quantity);
         this.setDescription(description);

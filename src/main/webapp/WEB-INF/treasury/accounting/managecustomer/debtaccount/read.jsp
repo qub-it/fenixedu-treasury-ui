@@ -149,6 +149,11 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
                                 <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message
                                     code="label.AcademicServiceRequestDebtCreationBean.create.academicservicerequest.debts" />
                         </a></li>
+                        <li><a
+                            href="${pageContext.request.contextPath}/academictreasury/academicdebtgenerationregistration/academicdebtgenerationregistration/create/${debtAccount.externalId}">
+                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message
+                                    code="label.AcademicDebtGenerationRegistration.run.rules" />
+                        </a></li>
                     </ul></li>
             </ul>
         </div>

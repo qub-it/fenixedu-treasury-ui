@@ -216,9 +216,6 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
         if (isAbleToDeleteAllDebitEntries()) {
             DebitEntry.findActive(this).forEach(x -> x.delete());
-//            for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.toSet())) {
-//                debitEntry.delete();
-//            }
         } else {
             final String reasonDescription =
                     Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason);
@@ -238,21 +235,12 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 if (!debitEntry.isProcessedInClosedDebitNote()) {
                     debitEntry.getFinantialDocument().closeDocument();
                 }
-
-                final CreditNote creditNote =
-                        CreditNote.create(
-                                getDebtAccount(),
-                                DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
-                                        getDebtAccount().getFinantialInstitution()).get(), new DateTime(),
-                                (DebitNote) debitEntry.getFinantialDocument(), null);
-
-                final CreditEntry creditEntry =
-                        CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
-                                debitEntry.getAmount(), new DateTime(), debitEntry, Constants.DEFAULT_QUANTITY);
-
-                creditNote.closeDocument();
-
-                closeDebitEntry(debitEntry, creditEntry, reasonDescription);
+                
+                ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reasonDescription);
+                
+                for (final DebitEntry otherDebitEntry : ((DebitNote) debitEntry.getFinantialDocument()).getDebitEntriesSet()) {
+                    otherDebitEntry.annulOnEvent();
+                }
             }
 
             if (!unprocessedDebitEntries.isEmpty()) {
@@ -273,21 +261,21 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         }
     }
 
-    private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry, final String reasonDescription) {
-        final SettlementNote settlementNote =
-                SettlementNote.create(
-                        debitEntry.getDebtAccount(),
-                        DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForSettlementNote(),
-                                getDebtAccount().getFinantialInstitution()).get(), new DateTime(), null);
-
-        SettlementEntry.create(debitEntry, settlementNote, creditEntry.getOpenAmount(), debitEntry.getDescription(),
-                new DateTime(), false);
-        SettlementEntry.create(creditEntry, settlementNote, debitEntry.getOpenAmount(), creditEntry.getDescription(),
-                new DateTime(), false);
-
-        settlementNote.setDocumentObservations(reasonDescription);
-        settlementNote.closeDocument();
-    }
+//    private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry, final String reasonDescription) {
+//        final SettlementNote settlementNote =
+//                SettlementNote.create(
+//                        debitEntry.getDebtAccount(),
+//                        DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForSettlementNote(),
+//                                getDebtAccount().getFinantialInstitution()).get(), new DateTime(), null);
+//
+//        SettlementEntry.create(debitEntry, settlementNote, creditEntry.getOpenAmount(), debitEntry.getDescription(),
+//                new DateTime(), false);
+//        SettlementEntry.create(creditEntry, settlementNote, debitEntry.getOpenAmount(), creditEntry.getDescription(),
+//                new DateTime(), false);
+//
+//        settlementNote.setDocumentObservations(reasonDescription);
+//        settlementNote.closeDocument();
+//    }
 
     public boolean isAbleToDeleteAllDebitEntries() {
         return getDebitEntriesSet().stream().map(l -> l.isDeletable()).reduce((a, c) -> a && c).orElse(Boolean.TRUE);

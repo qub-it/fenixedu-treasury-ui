@@ -122,7 +122,7 @@ public class TreasuryEventController extends TreasuryBaseController {
     public String read(@PathVariable("oid") TreasuryEvent treasuryEvent, Model model) {
         model.addAttribute(
                 "allActiveDebitEntriesDataSet",
-                DebitEntry.find(treasuryEvent).sorted(DebitEntry.COMPARE_BY_EVENT_ANNULED_AND_BY_DATE)
+                DebitEntry.find(treasuryEvent).sorted(DebitEntry.COMPARE_BY_EVENT_ANNULED_AND_DUE_DATE)
                         .collect(Collectors.<DebitEntry> toList()));
 
         model.addAttribute("allActiveCreditEntriesDataSet",

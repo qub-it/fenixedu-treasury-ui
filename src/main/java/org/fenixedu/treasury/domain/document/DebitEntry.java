@@ -105,6 +105,22 @@ public class DebitEntry extends DebitEntry_Base {
 
     };
 
+    public static final Comparator<DebitEntry> COMPARE_BY_EVENT_ANNULED_AND_DUE_DATE = new Comparator<DebitEntry>() {
+
+        @Override
+        public int compare(DebitEntry o1, DebitEntry o2) {
+            if (!o1.isEventAnnuled() && o2.isEventAnnuled()) {
+                return -1;
+            } else if (o1.isEventAnnuled() && !o2.isEventAnnuled()) {
+                return 1;
+            }
+
+            int c = o1.getDueDate().compareTo(o2.getDueDate()) * -1;
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final InterestRate interestRate,
@@ -599,5 +615,26 @@ public class DebitEntry extends DebitEntry_Base {
     @Override
     public BigDecimal getOpenAmountWithInterests() {
         return getOpenAmount().add(getPendingInterestAmount());
+    }
+
+    /*******************************************************************
+     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
+     * *****************************************************************
+     */
+
+    public BigDecimal getPayedAmountWithMoney() {
+        BigDecimal creditAmountAppliedInDebitEntry =
+                getCreditEntriesSet().stream()
+                        .filter(l -> l.getFinantialDocument() == null || !l.getFinantialDocument().isAnnulled())
+                        .map(CreditEntry::getAmountWithVat).reduce((c, a) -> c.add(a)).orElse(BigDecimal.ZERO);
+
+        BigDecimal amountToPay = getTotalAmount().subtract(creditAmountAppliedInDebitEntry);
+
+        BigDecimal appliedAmountOnDebitEntry =
+                getSettlementEntriesSet().stream().filter(l -> !l.isAnnulled() && ).map(SettlementEntry::getAmount)
+                        .reduce((c, a) -> a.add(a)).orElse(BigDecimal.ZERO);
+        
+        
+
     }
 }
