@@ -36,6 +36,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -97,6 +98,11 @@ public class CreditEntry extends CreditEntry_Base {
             throw new TreasuryDomainException("error.CreditEntry.from.exemption.at.most.one.per.product");
         }
 
+        if (this.getDebitEntry() != null) {
+            if (Constants.isGreaterThan(this.getDebitEntry().getTotalAmount(), this.getDebitEntry().getTotalCreditedAmount())) {
+                throw new TreasuryDomainException("error.CreditEntry.reated.debit.entry.invalid.total.credited.amount");
+            }
+        }
     }
 
     public boolean isFromExemption() {

@@ -117,12 +117,12 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isDebitNoteEntry() {
         return true;
     }
-    
+
     public boolean isDeletable() {
         final Collection<String> blockers = Lists.newArrayList();
-        
+
         checkForDeletionBlockers(blockers);
-        
+
         return blockers.isEmpty();
     }
 
@@ -140,7 +140,7 @@ public class DebitEntry extends DebitEntry_Base {
     @Override
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
-        
+
         if (this.getInterestRate() != null) {
             InterestRate oldRate = this.getInterestRate();
             this.setInterestRate(null);
@@ -580,6 +580,20 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         checkRules();
+    }
+
+    public BigDecimal getTotalCreditedAmount() {
+        BigDecimal totalCreditedAmount = BigDecimal.ZERO;
+        for (CreditEntry credits : this.getDebitEntry().getCreditEntriesSet()) {
+            if (credits.getFinantialDocument() == null || !credits.getFinantialDocument().isAnnulled()) {
+                totalCreditedAmount = totalCreditedAmount.add(credits.getTotalAmount());
+            }
+        }
+        return this.getCurrency().getValueWithScale(totalCreditedAmount);
+    }
+
+    public BigDecimal getAvailableAmountForCredit() {
+        return this.getCurrency().getValueWithScale(this.getTotalAmount().subtract(getTotalCreditedAmount()));
     }
 
     @Override

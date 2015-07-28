@@ -74,6 +74,26 @@ ${portal.toolkit()}
 				</div>	
 			</c:if>
 
+<script type="text/javascript">
+    function submitOptions(tableID, formID, attributeName) {
+    array = $("#" + tableID).DataTable().rows(".selected")[0];  
+    $("#" + formID).empty();
+    if (array.length>0) {
+        $.each(array,function(index, value) {
+            externalId = $("#" + tableID).DataTable().row(value).data()["DT_RowId"];
+            $("#" + formID).append("<input type='hidden' name='" + attributeName+ "' value='" + externalId + "'/>");
+        });
+        $("#" + formID).submit();
+    }
+    else
+    {
+        messageAlert('<spring:message code = "label.warning"/>','<spring:message code = "label.select.mustselect"/>');
+    }
+        
+    }
+</script>
+
+
 <div class="panel panel-default">
 <form method="get" class="form-horizontal">
 <div class="panel-body">
@@ -113,6 +133,19 @@ ${portal.toolkit()}
 				
 			</tbody>
 		</table>
+
+        <form id="markMultipleAsExported"
+            action="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/markmultipleexported"
+            style="display: none;" method="POST"></form>
+
+        <button id="markMultipleAsExported" type="button"
+            onClick="javascript:submitOptions('searcherpexportoperationTable', 'markMultipleAsExported', 'operations')">
+            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
+            <spring:message
+                code='label.integration.erp.finantialdocument.markMultipleAsExported' />
+        </button>
+
+
 	</c:when>
 	<c:otherwise>
 				<div class="alert alert-warning" role="alert">
