@@ -262,6 +262,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 debitEntry.annulOnEvent();
             }
         }
+        
+        while(!getTreasuryExemptionsSet().isEmpty()) {
+            getTreasuryExemptionsSet().iterator().next().delete();
+        }
     }
 
 //    private void closeDebitEntry(final DebitEntry debitEntry, final CreditEntry creditEntry, final String reasonDescription) {

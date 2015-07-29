@@ -35,6 +35,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -225,9 +226,6 @@ public class DebitNote extends DebitNote_Base {
 
     @Atomic
     public void anullDebitNoteWithCreditNote(String reason) {
-        if (this.hasValidSettlementEntries()) {
-            throw new TreasuryDomainException("error.DebitNote.cannot.delete.has.settlemententries");
-        }
 
         if (this.getFinantialDocumentEntriesSet().size() > 0) {
             if (this.isClosed() == true) {
@@ -260,12 +258,17 @@ public class DebitNote extends DebitNote_Base {
                 settlementNote.setDocumentObservations(reason);
 
                 for (CreditEntry creditEntry : creditNote.getCreditEntriesSet()) {
+                    final BigDecimal creditOpenAmount = creditEntry.getOpenAmount();
+                    final BigDecimal debitOpenAmount = creditEntry.getDebitEntry().getOpenAmount();
+                    final BigDecimal openAmountToUse =
+                            Constants.isLessThan(creditOpenAmount, debitOpenAmount) ? creditOpenAmount : debitOpenAmount;
+
                     SettlementEntry crediEntry =
-                            SettlementEntry.create(creditEntry, settlementNote, creditEntry.getDebitEntry().getOpenAmount(),
+                            SettlementEntry.create(creditEntry, settlementNote, openAmountToUse,
                                     reason + "-" + creditEntry.getDescription(), now, false);
                     SettlementEntry debitEntry =
-                            SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, creditEntry.getDebitEntry()
-                                    .getOpenAmount(), reason + "-" + creditEntry.getDebitEntry().getDescription(), now, false);
+                            SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, openAmountToUse, reason + "-"
+                                    + creditEntry.getDebitEntry().getDescription(), now, false);
                 }
 
                 settlementNote.closeDocument();
@@ -287,21 +290,33 @@ public class DebitNote extends DebitNote_Base {
                 CreditNote.create(this.getDebtAccount(), documentNumberSeries, documentDate, this, this.getUiDocumentNumber());
         creditNote.setDocumentObservations(documentObservations);
         for (DebitEntry entry : this.getDebitEntriesSet()) {
-            CreditEntry creditEntry =
-                    CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), entry.getAmount(),
-                            documentDate, entry, entry.getQuantity());
-            creditNote.addFinantialDocumentEntries(creditEntry);
+            {
+                //Get the amount for credit without tax, and considering the credit quantity FOR ONE
+                BigDecimal amountForCredit =
+                        entry.getCurrency().getValueWithScale(
+                                entry.getAvailableAmountForCredit().divide(
+                                        BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
+                final CreditEntry creditEntry =
+                        CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(),
+                                amountForCredit, documentDate, entry, BigDecimal.ONE);
+                creditNote.addFinantialDocumentEntries(creditEntry);
+            }
 
             //Also generate for InterestRateDebitEntry
             if (createForInterestRateEntries == true) {
                 if (entry.getInterestDebitEntriesSet().isEmpty() == false) {
                     for (DebitEntry interestEntry : entry.getInterestDebitEntriesSet()) {
-                        CreditEntry interestCreditEntry =
-                                CreditEntry.create(creditNote, interestEntry.getDescription(), interestEntry.getProduct(),
-                                        interestEntry.getVat(), interestEntry.getAmount(), documentDate, interestEntry,
-                                        interestEntry.getQuantity());
-                        creditNote.addFinantialDocumentEntries(interestCreditEntry);
 
+                        //Get the amount for credit without tax, and considering the credit quantity FOR ONE
+                        BigDecimal amountForCredit =
+                                interestEntry.getCurrency().getValueWithScale(
+                                        interestEntry.getAvailableAmountForCredit().divide(
+                                                BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
+                        
+                        final CreditEntry interestCreditEntry =
+                                CreditEntry.create(creditNote, interestEntry.getDescription(), interestEntry.getProduct(),
+                                        interestEntry.getVat(), amountForCredit, documentDate, interestEntry, BigDecimal.ONE);
+                        creditNote.addFinantialDocumentEntries(interestCreditEntry);
                     }
                 }
             }

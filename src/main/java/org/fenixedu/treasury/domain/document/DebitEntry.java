@@ -110,12 +110,12 @@ public class DebitEntry extends DebitEntry_Base {
         @Override
         public int compare(DebitEntry o1, DebitEntry o2) {
             if (!o1.isEventAnnuled() && o2.isEventAnnuled()) {
-                return -1;
-            } else if (o1.isEventAnnuled() && !o2.isEventAnnuled()) {
                 return 1;
+            } else if (o1.isEventAnnuled() && !o2.isEventAnnuled()) {
+                return -1;
             }
 
-            int c = o1.getDueDate().compareTo(o2.getDueDate()) * -1;
+            int c = o1.getDueDate().compareTo(o2.getDueDate());
 
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
@@ -387,18 +387,38 @@ public class DebitEntry extends DebitEntry_Base {
 
             final String description =
                     BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.credit.entry.exemption.description",
-                            treasuryExemption.getTreasuryExemptionType().getName().getContent());
+                            getDescription(), treasuryExemption.getTreasuryExemptionType().getName().getContent());
 
-            final DocumentNumberSeries defaultNumberSeries =
-                    DocumentNumberSeries.findUniqueDefault(
-                            FinantialDocumentType.findByFinantialDocumentType(FinantialDocumentTypeEnum.CREDIT_NOTE),
-                            getDebtAccount().getFinantialInstitution()).get();
+            final DocumentNumberSeries documentNumberSeriesCreditNote =
+                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getFinantialDocument().getDocumentNumberSeries()
+                            .getSeries());
+            final DocumentNumberSeries documentNumberSeriesSettlementNote =
+                    DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), this.getFinantialDocument().getDocumentNumberSeries()
+                            .getSeries());
 
             final CreditNote creditNote =
-                    CreditNote.create(getDebtAccount(), defaultNumberSeries, new DateTime(), (DebitNote) getFinantialDocument(),
+                    CreditNote.create(getDebtAccount(), documentNumberSeriesCreditNote, new DateTime(), (DebitNote) getFinantialDocument(),
                             null);
-            CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountWithoutVat, new DateTime(), this);
+            CreditEntry creditEntryFromExemption = CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountWithoutVat, new DateTime(), this);
 
+            creditNote.closeDocument();
+            
+            DateTime now = new DateTime();
+
+            final SettlementNote settlementNote =
+                    SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, "");
+            settlementNote.setDocumentObservations(description);
+            
+            final BigDecimal creditOpenAmount = creditEntryFromExemption.getOpenAmount();
+            final BigDecimal debitOpenAmount = getOpenAmount();
+            final BigDecimal openAmountToUse =
+                    Constants.isLessThan(creditOpenAmount, debitOpenAmount) ? creditOpenAmount : debitOpenAmount;
+            
+            SettlementEntry.create(creditEntryFromExemption, settlementNote, openAmountToUse, description, now, false);
+            SettlementEntry.create(creditEntryFromExemption.getDebitEntry(), settlementNote, openAmountToUse, description, now, false);
+
+            settlementNote.closeDocument();
+            
         } else {
             BigDecimal originalAmount = getAmount();
             if (Constants.isPositive(getExemptedAmount())) {

@@ -452,8 +452,11 @@ ${portal.toolkit()}
                             code="label.TreasuryEvent.allDebitEntries.dueDate" />
                     </datatables:columnHead>
                     <p align=center>
+                    <c:out value="${debitEntry.dueDate}" />
+                    	<%-- 
                         <joda:format value="${debitEntry.dueDate}"
                             style="S-" />
+                            --%>
                     </p>
                 </datatables:column>
                 <datatables:column cssStyle="width:50%">

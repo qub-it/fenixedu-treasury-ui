@@ -70,7 +70,8 @@ public class CreditEntry extends CreditEntry_Base {
                 description, quantity, entryDateTime);
         this.setDebitEntry(debitEntry);
         this.setFromExemption(fromExemption);
-
+        recalculateAmountValues();
+        
         checkRules();
     }
 
@@ -99,7 +100,7 @@ public class CreditEntry extends CreditEntry_Base {
         }
 
         if (this.getDebitEntry() != null) {
-            if (Constants.isGreaterThan(this.getDebitEntry().getTotalAmount(), this.getDebitEntry().getTotalCreditedAmount())) {
+            if (Constants.isGreaterThan(this.getDebitEntry().getTotalCreditedAmount(), this.getDebitEntry().getTotalAmount())) {
                 throw new TreasuryDomainException("error.CreditEntry.reated.debit.entry.invalid.total.credited.amount");
             }
         }
@@ -180,7 +181,6 @@ public class CreditEntry extends CreditEntry_Base {
             BigDecimal amount, final DateTime entryDateTime, final DebitEntry debitEntry, BigDecimal quantity) {
         CreditEntry cr =
                 new CreditEntry(finantialDocument, product, vat, amount, description, quantity, entryDateTime, debitEntry, false);
-        cr.recalculateAmountValues();
         return cr;
     }
 
