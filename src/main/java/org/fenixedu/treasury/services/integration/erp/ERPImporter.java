@@ -134,7 +134,9 @@ public class ERPImporter {
                         totalCredit = totalCredit.add(note.getTotalCreditAmount());
                         totalDebit = totalDebit.add(note.getTotalDebitAmount());
 
-                        note.closeDocument();
+                        if (note.isPreparing()) {
+                            note.closeDocument();
+                        }
                         eRPImportOperation.addFinantialDocuments(note);
                     } else {
                         throw new TreasuryDomainException("error.ERPImporter.processing.payment", payment.getPaymentRefNo());
@@ -156,15 +158,15 @@ public class ERPImporter {
                 }
                 result.getDocumentStatus().add(docStatus);
             }
-            if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
-            }
-            if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
-            }
-            if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
-            }
+//            if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
+//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
+//            }
+//            if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
+//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
+//            }
+//            if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
+//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
+//            }
 
             if (eRPImportOperation.getProcessed() == true) {
                 //this is a re-process. set as "corrected"
