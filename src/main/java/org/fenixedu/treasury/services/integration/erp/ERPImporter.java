@@ -229,8 +229,8 @@ public class ERPImporter {
                 //if we couldn't find from the ExternalNumber, then try to find if SOURCE_ID has value
                 if (existingSettlementNote == null && !Strings.isNullOrEmpty(payment.getSourceID())) {
                     existingSettlementNote =
-                            SettlementNote.findByDocumentNumberSeries(seriesToIntegratePayments)
-                                    .filter(x -> x.getUiDocumentNumber().equals(payment.getSourceID())).findFirst().orElse(null);
+                            SettlementNote.findAll().filter(x -> x.getUiDocumentNumber().equals(payment.getSourceID()))
+                                    .findFirst().orElse(null);
                 }
 
                 if (existingSettlementNote != null) {
@@ -257,17 +257,8 @@ public class ERPImporter {
                     }
                 } else {
                     if (payment.getDocumentStatus().getPaymentStatus().equals("A")) {
-                        DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
-                        //Create a new SettlementNote
-                        settlementNote =
-                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate,
-                                        externalNumber);
-                        settlementNote.closeDocument();
-                        settlementNote
-                                .anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
-                                        "label.info.integration.erpimporter.annulled.by.integration",
-                                        eRPImportOperation.getExternalId()));
-                        return settlementNote;
+                        //It's a Settlement note that we don't have and want's to be anulled...
+                        throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.payment.received");
                     } else {
                         DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
                         //Create a new SettlementNote
