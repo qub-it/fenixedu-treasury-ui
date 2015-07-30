@@ -132,8 +132,13 @@ public class DebitNoteController extends TreasuryBaseController {
                 model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
                         "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
             } else {
-                model.addAttribute("anullDebitNoteMessage",
-                        BundleUtil.getString(Constants.BUNDLE, "label.document.manageInvoice.readDebitNote.confirmAnull"));
+//                if (TreasuryAccessControl.getInstance().isManager()) {
+//                    model.addAttribute("anullDebitNoteMessage",
+//                            BundleUtil.getString(Constants.BUNDLE, "label.document.manageInvoice.readDebitNote.confirmAnull"));
+//                } else {
+                model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
+                        "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
+//                }
             }
 
             return "treasury/document/manageinvoice/debitnote/read";
@@ -436,7 +441,11 @@ public class DebitNoteController extends TreasuryBaseController {
                     || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
                 debitNote.anullDebitNoteWithCreditNote(anullReason);
             } else {
-                debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
+//                if (TreasuryAccessControl.getInstance().isManager()) {
+//                    debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
+//                } else {
+                debitNote.anullDebitNoteWithCreditNote(anullReason);
+//                }
             }
 
             addInfoMessage(

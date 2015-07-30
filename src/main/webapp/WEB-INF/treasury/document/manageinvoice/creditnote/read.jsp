@@ -185,11 +185,15 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
             </a> &nbsp; 
 		</c:if>
         <c:if test="${creditNote.isClosed()}">
+<% 
+                if (TreasuryAccessControl.getInstance().isManager()) {
+%>  
             <c:if test="${creditNote.openAmount > 0  }">
                 |&nbsp;<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
                 <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.manageInvoice.anullCreditNote" />
                 </a> &nbsp;
             </c:if>
+            <$}%>
         </c:if>
 <%} %>
         <c:if test="${not creditNote.isPreparing()}">

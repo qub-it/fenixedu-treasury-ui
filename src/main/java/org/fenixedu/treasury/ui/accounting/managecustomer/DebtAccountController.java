@@ -42,6 +42,7 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
@@ -51,6 +52,7 @@ import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -101,7 +103,7 @@ public class DebtAccountController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
             setDebtAccount(debtAccount, model);
-
+            checkFinantialInstitutionData(model);
             List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
             List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
             List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
@@ -213,7 +215,7 @@ public class DebtAccountController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCHOPENDEBTACCOUNTS_URI)
     public String searchOpenDebtAccounts(Model model) {
         List<DebtAccount> searchopendebtaccountsResultsDataSet = filterSearchOpenDebtAccounts();
-
+        checkFinantialInstitutionData(model);
         //add the results dataSet to the model
         model.addAttribute("searchopendebtaccountsResultsDataSet", searchopendebtaccountsResultsDataSet);
         return "treasury/accounting/managecustomer/debtaccount/searchopendebtaccounts";
@@ -237,6 +239,26 @@ public class DebtAccountController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+    }
+
+    private void checkFinantialInstitutionData(Model model) {
+        //Make some check info for ALERTING USER
+        LocalDate now = new LocalDate();
+
+        if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
+            addWarningMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
+        }
+
+        if (now.getMonthOfYear() == 12 && now.getDayOfMonth() >= 15) {
+            if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
+                addWarningMessage(
+                        BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.next.year"),
+                        model);
+
+            }
+        }
+
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationonline")

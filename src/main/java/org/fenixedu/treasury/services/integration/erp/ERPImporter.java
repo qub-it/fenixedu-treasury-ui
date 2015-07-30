@@ -342,9 +342,13 @@ public class ERPImporter {
         }
 
         //Process possible Advance Payment Credit
+        //HACK: DISABLED FOR NOW!!!! FENIXEDU ONLY ACCEPTS CREATION OF PAYMENTS. WE CANNOT INTEGRATE ADVANCE PAYMENTS DUE TO DocumentNumber 
+        //error when trying to back-reference the credit note in payments.
+        //
         if (payment.getAdvancedPaymentCredit() != null) {
-            settlementNote.createAdvancedPaymentCreditNote(payment.getAdvancedPaymentCredit().getCreditAmount(), payment
-                    .getAdvancedPaymentCredit().getDescription(), payment.getAdvancedPaymentCredit().getOriginatingON());
+            throw new TreasuryDomainException("label.error.integration.erpimporter.advanced.payment.credit.cannot.integrate");
+//            settlementNote.createAdvancedPaymentCreditNote(payment.getAdvancedPaymentCredit().getCreditAmount(), payment
+//                    .getAdvancedPaymentCredit().getDescription(), payment.getAdvancedPaymentCredit().getOriginatingON());
         }
 
         return settlementNote;

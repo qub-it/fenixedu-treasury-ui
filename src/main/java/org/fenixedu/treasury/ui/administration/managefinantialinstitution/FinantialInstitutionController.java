@@ -151,10 +151,20 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
     private void checkFinantialInstitutionData(Model model) {
         //Make some check info for ALERTING USER
+        LocalDate now = new LocalDate();
 
-        if (GlobalInterestRate.findByYear(new LocalDate().getYear()).count() == 0) {
+        if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
             addWarningMessage(
                     BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
+        }
+
+        if (now.getMonthOfYear() == 12) {
+            if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
+                addWarningMessage(
+                        BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.next.year"),
+                        model);
+
+            }
         }
 
     }
