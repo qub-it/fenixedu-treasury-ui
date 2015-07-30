@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
@@ -255,7 +256,8 @@ public class DebitNote extends DebitNote_Base {
 
                 SettlementNote settlementNote =
                         SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, "");
-                settlementNote.setDocumentObservations(reason);
+                settlementNote.setDocumentObservations(reason + "- [" + Authenticate.getUser().getUsername() + "]"
+                        + new DateTime().toString("YYYY-MM-dd HH:mm"));
 
                 for (CreditEntry creditEntry : creditNote.getCreditEntriesSet()) {
                     final BigDecimal creditOpenAmount = creditEntry.getOpenAmount();
@@ -312,7 +314,7 @@ public class DebitNote extends DebitNote_Base {
                                 interestEntry.getCurrency().getValueWithScale(
                                         interestEntry.getAvailableAmountForCredit().divide(
                                                 BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
-                        
+
                         final CreditEntry interestCreditEntry =
                                 CreditEntry.create(creditNote, interestEntry.getDescription(), interestEntry.getProduct(),
                                         interestEntry.getVat(), amountForCredit, documentDate, interestEntry, BigDecimal.ONE);

@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -289,7 +290,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");
             }
             setState(FinantialDocumentStateType.ANNULED);
-            setAnnulledReason(anulledReason);
+            setAnnulledReason(anulledReason + "- [" + Authenticate.getUser().getUsername() + "]"
+                    + new DateTime().toString("YYYY-MM-dd HH:mm"));
             //If we want to free entries and the document is in "Preparing" state, the Entries will become "free"
             if (freeEntries && this.isPreparing()) {
                 this.getFinantialDocumentEntriesSet().forEach(x -> this.removeFinantialDocumentEntries(x));
