@@ -95,6 +95,45 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
+<div class="panel panel-default">
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebtAccount.finantialInstitution" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditNote.debtAccount.finantialInstitution.name}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.debtAccount" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditNote.debtAccount.customer.businessIdentification} - ${creditNote.debtAccount.customer.name}" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.finantialDocument" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                            <c:out value='${creditNote.uiDocumentNumber}' />
+                    </div>
+                </div>
+            </div>
+</div>
+</div>
+
 <form method="post" class="form-horizontal">
 
     <div class="panel panel-default">

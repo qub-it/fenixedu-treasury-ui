@@ -413,12 +413,28 @@ ${portal.angularToolkit()}
                         </datatables:column>
                         <datatables:column>
                             <c:if test="${pendingEntry.isDebitNoteEntry() }">
+                                                        <c:if test="${empty pendingEntry.finantialDocument }">
+                            
                                 <a class="btn btn-default btn-xs"
                                     href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/read/${pendingEntry.externalId}">
+                                    
+                                    </c:if>
+                                                                <c:if test="${not empty pendingEntry.finantialDocument }">
+                                <a class="btn btn-default btn-xs"
+                                    href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${pendingEntry.finantialDocument.externalId}">
+                                    
+                                    </c:if>
                             </c:if>
                             <c:if test="${pendingEntry.isCreditNoteEntry() }">
+                             <c:if test="${empty pendingEntry.finantialDocument }">
                                 <a class="btn btn-default btn-xs"
                                     href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/read/${pendingEntry.externalId}">
+                                      </c:if>
+                                                                <c:if test="${not empty pendingEntry.finantialDocument }">
+                                                                <a class="btn btn-default btn-xs"
+                                    href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${pendingEntry.finantialDocument.externalId}">
+                                    
+                                                                </c:if>
                             </c:if>
                             <spring:message code="label.view" />
                             </a>
