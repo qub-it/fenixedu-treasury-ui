@@ -394,6 +394,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             }
         } else if (this.isClosed() && newState == FinantialDocumentStateType.ANNULED) {
             this.anullDocument(false, reason);
+        } else if (this.isAnnulled() && newState == FinantialDocumentStateType.CLOSED) {
+            //trying to close an anulled document... do nothing....
+            return;
         } else {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                     "error.FinantialDocumentState.invalid.state.change.request"));
