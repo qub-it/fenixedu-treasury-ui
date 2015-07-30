@@ -11,6 +11,7 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -83,6 +84,11 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
         if (useFixedAmount) {
             minAmount = amount;
             maxAmount = amount;
+        } else {
+            //Correct max amount if needed
+            if (Constants.isGreaterThan(amount, maxAmount)) {
+                maxAmount = amount;
+            }
         }
 
         PaymentReferenceCode newPaymentReference =
