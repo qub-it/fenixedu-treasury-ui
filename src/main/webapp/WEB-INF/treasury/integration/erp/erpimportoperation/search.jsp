@@ -261,7 +261,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd")}'/>",
+"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd  HH:mm:ss")}'/>",
 "finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 // "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
