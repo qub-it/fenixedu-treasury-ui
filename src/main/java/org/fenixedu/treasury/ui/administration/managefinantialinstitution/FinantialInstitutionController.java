@@ -45,6 +45,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.paymentcodes.SibsConfiguration;
+import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -53,6 +54,7 @@ import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsconfigura
 import org.fenixedu.treasury.ui.integration.erp.ERPConfigurationController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -113,6 +115,8 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         List<FinantialInstitution> searchfinantialinstitutionResultsDataSet =
                 getSearchUniverseSearchFinantialInstitutionDataSet();
 
+        checkFinantialInstitutionData(model);
+
         //add the results dataSet to the model
         model.addAttribute("searchfinantialinstitutionResultsDataSet", searchfinantialinstitutionResultsDataSet);
         return "treasury/administration/managefinantialinstitution/finantialinstitution/search";
@@ -136,12 +140,23 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(finantialInstitution, model);
             setFinantialInstitution(finantialInstitution, model);
+            checkFinantialInstitutionData(model);
             model.addAttribute("finantialDocumentTypeSet", FinantialDocumentType.findAll().collect(Collectors.toList()));
             return "treasury/administration/managefinantialinstitution/finantialinstitution/read";
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
         return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
+    }
+
+    private void checkFinantialInstitutionData(Model model) {
+        //Make some check info for ALERTING USER
+
+        if (GlobalInterestRate.findByYear(new LocalDate().getYear()).count() == 0) {
+            addWarningMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
+        }
+
     }
 
     @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)

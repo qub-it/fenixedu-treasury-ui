@@ -148,6 +148,9 @@ public class ERPExporterManager {
         List<FinantialDocument> sortedDocuments =
                 pendingDocuments.stream().sorted(sortingComparator).collect(Collectors.toList());
 
+        //HACK : LIMIT MAX OF 100 DOCUMENTS TO EXPORT!!!
+        sortedDocuments = sortedDocuments.stream().limit(100).collect(Collectors.toList());
+
         if (pendingDocuments.isEmpty() == false) {
 
             if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {

@@ -172,8 +172,8 @@ ${portal.toolkit()}
                 <%-- Field access / formatting  here CHANGE_ME --%>
                 {
                 "DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-                "whencreated" : "<joda:format value='${searchResult.versioningCreationDate}' style='SS'/>",                
-"whenprocessedbysibs" : "<joda:format value='${searchResult.whenProcessedBySibs}' style='SS'/>",
+                "whencreated" : "<c:out value='${searchResult.versioningCreationDate.toString("YYYY-MM-dd")}'/>",
+                "whenprocessedbysibs" : "<c:out value='${searchResult.whenprocessedbysibs.toString("YYYY-MM-dd")}'/>",
 "uploader" : "<c:out value='${searchResult.uploader.name}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +

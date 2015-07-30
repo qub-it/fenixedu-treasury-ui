@@ -238,7 +238,7 @@ ${portal.toolkit()}
 
         <button type="button"
             onClick="javascript:submitOptions('searcherpimportoperationTable', 'deletemultiple', 'eRPImportOperations')">
-            <spring:message code='label.deleteMultiple' />
+             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<spring:message code='label.deleteMultiple' />
         </button>
     </c:when>
     <c:otherwise>
@@ -261,7 +261,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"executiondate" : "<joda:format value='${searchResult.executionDate}' style='SS'/>",
+"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd")}'/>",
 "finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 // "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",

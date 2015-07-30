@@ -72,6 +72,8 @@ import org.slf4j.LoggerFactory;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
+import com.google.common.base.Strings;
+
 // ******************************************************************************************************************************
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/3B4FECDB-2380-45D7-9019-ABCA80A7E99E/0/Comunicacao_Dados_Doc_Transporte.pdf
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/15D18787-8AA9-4060-90D5-79F168A927A4/0/Portaria_11922009.pdf
@@ -223,6 +225,13 @@ public class ERPImporter {
                                 .findByDocumentNumberSeries(seriesToIntegratePayments)
                                 .filter(x -> x.getOriginDocumentNumber() != null
                                         && x.getOriginDocumentNumber().equals(externalNumber)).findFirst().orElse(null);
+
+                //if we couldn't find from the ExternalNumber, then try to find if SOURCE_ID has value
+                if (existingSettlementNote == null && !Strings.isNullOrEmpty(payment.getSourceID())) {
+                    existingSettlementNote =
+                            SettlementNote.findByDocumentNumberSeries(seriesToIntegratePayments)
+                                    .filter(x -> x.getUiDocumentNumber().equals(payment.getSourceID())).findFirst().orElse(null);
+                }
 
                 if (existingSettlementNote != null) {
                     //Already exists... //Update ?!??!!?

@@ -247,20 +247,4 @@ public class ERPExportOperationController extends TreasuryBaseController {
         return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/markmultipleexported/", method = RequestMethod.POST)
-    public String processSearchToMarkMultipleAsExported(@RequestParam("document") List<FinantialDocument> finantialDocuments,
-            Model model, RedirectAttributes redirectAttributes) {
-
-        try {
-            for (FinantialDocument document : finantialDocuments) {
-                document.clearDocumentToExport();
-            }
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
-            return redirect(SEARCH_URL, model, redirectAttributes);
-        } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
-        }
-        return redirect(SEARCH_URL, model, redirectAttributes);
-    }
-
 }

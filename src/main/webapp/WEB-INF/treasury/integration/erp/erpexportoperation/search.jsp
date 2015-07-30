@@ -243,7 +243,7 @@ ${portal.toolkit()}
 
         <button id="deleteMultiple" type="button"
             onClick="javascript:submitOptions('searcherpexportoperationTable', 'deleteMultiple', 'operations')">
-            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;
             <spring:message
                 code='label.deleteMultiple' />
         </button>
@@ -270,7 +270,7 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 				"creator" : "<c:out value='${searchResult.versioningCreator}'/>",
-				"executiondate" : "<joda:format value='${searchResult.executionDate}' style='SS'/>",
+				"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd")}'/>",
 "finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
 "success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 // "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",

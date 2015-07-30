@@ -122,7 +122,7 @@ import com.google.common.base.Strings;
 public class ERPExporter {
 
     private static Logger logger = LoggerFactory.getLogger(ERPExporter.class);
-    public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.0";
+    public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.3";
 
     private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
             List<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers, Boolean generateAllProducts,
@@ -362,6 +362,9 @@ public class ERPExporter {
             // DocumentNumber
             payment.setPaymentRefNo(document.getUiDocumentNumber());
 
+            //OriginDocumentNumber
+            payment.setSourceID(document.getOriginDocumentNumber());
+
             // CustomerID
             payment.setCustomerID(document.getDebtAccount().getCustomer().getCode());
 
@@ -377,7 +380,7 @@ public class ERPExporter {
                 status.setPaymentStatus("N");
             }
             status.setPaymentStatusDate(payment.getSystemEntryDate());
-            // status.setReason("");
+            status.setReason(document.getDocumentObservations());
             // Utilizador responsável pelo estado atual do docu-mento.
             status.setSourceID(document.getVersioningUpdatedBy());
             // Deve ser preenchido com:

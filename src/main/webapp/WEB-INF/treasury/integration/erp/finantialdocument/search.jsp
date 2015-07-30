@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.integration.erp.FinantialDocumentController"%>
+<%@page import="org.fenixedu.treasury.domain.document.FinantialDocument"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -135,12 +137,12 @@ ${portal.toolkit()}
 		</table>
 
         <form id="markMultipleAsExported"
-            action="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/markmultipleexported"
+            action="${pageContext.request.contextPath}<%=FinantialDocumentController.SEARCH_TO_MARK_MULTIPLE_EXPORTED_URL %>"
             style="display: none;" method="POST"></form>
 
         <button id="markMultipleAsExported" type="button"
-            onClick="javascript:submitOptions('searcherpexportoperationTable', 'markMultipleAsExported', 'operations')">
-            <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
+            onClick="javascript:submitOptions('searchfinantialdocumentTable', 'markMultipleAsExported', 'document')">
+            <span class="glyphicon glyphicon-ok-sign" aria-hidden="true"></span>&nbsp;
             <spring:message
                 code='label.integration.erp.finantialdocument.markMultipleAsExported' />
         </button>

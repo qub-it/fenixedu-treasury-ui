@@ -203,6 +203,10 @@ public class DebtAccount extends DebtAccount_Base {
                         && x.getFinantialDocument().isAnnulled() == false);
     }
 
+    public boolean hasPreparingDocuments() {
+        return getFinantialDocumentsSet().stream().anyMatch(ie -> ie.isPreparing());
+    }
+
     public boolean hasPreparingDebitNotes() {
         return getPendingInvoiceEntriesSet().stream().anyMatch(
                 ie -> ie.isDebitNoteEntry() && ie.getFinantialDocument() != null && ie.getFinantialDocument().isPreparing());

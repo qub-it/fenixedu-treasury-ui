@@ -23,7 +23,8 @@ public class ERPExportPendingDocumentsTask extends CronTask {
                                 ERPExporterManager.exportPendingDocumentsForFinantialInstitution(x);
                         for (ERPExportOperation exportOperation : exportPendingDocumentsForFinantialInstitution) {
                             for (FinantialDocument doc : exportOperation.getFinantialDocumentsSet()) {
-                                taskLog("Exported document: " + doc.getUiDocumentNumber());
+                                taskLog("Exported document: " + doc.getUiDocumentNumber() + "=>"
+                                        + (exportOperation.getSuccess() ? "OK" : "NOK"));
                             }
                         }
                         int documentsCount =

@@ -45,10 +45,11 @@ ${portal.angularToolkit()}
 </div>
 
 <%
-        DebtAccount debtAccount= (DebtAccount) request
-                        .getAttribute("debtAccount");
-FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.getFinantialInstitution();
-    %>
+    DebtAccount debtAccount = (DebtAccount) request
+					.getAttribute("debtAccount");
+			FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount
+					.getFinantialInstitution();
+%>
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -88,9 +89,10 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.externalId}"><spring:message code="label.event.back" /></a>
     &nbsp;
 
-<% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
-%>  
+    <%
+        if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(
+    					Authenticate.getUser(), finantialInstitution)) {
+    %>
     <div class="btn-group">
         <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -106,12 +108,16 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
 
         </ul>
     </div>
-<%} %>
+    <%
+        }
+    %>
 
     <c:if test='${not debtAccount.getClosed() }'>
-    <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
-%>  
+        <%
+            if (TreasuryAccessControl.getInstance()
+        						.isAllowToModifyInvoices(Authenticate.getUser(),
+        								finantialInstitution)) {
+        %>
         <div class="btn-group">
             <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -151,16 +157,19 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
                         </a></li>
                         <li><a
                             href="${pageContext.request.contextPath}/academictreasury/academicdebtgenerationregistration/academicdebtgenerationregistration/create/${debtAccount.externalId}">
-                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message
-                                    code="label.AcademicDebtGenerationRegistration.run.rules" />
+                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicDebtGenerationRegistration.run.rules" />
                         </a></li>
                     </ul></li>
             </ul>
         </div>
-        <%} %>
-<% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
-%>          
+        <%
+            }
+        %>
+        <%
+            if (TreasuryAccessControl.getInstance()
+        						.isAllowToModifyInvoices(Authenticate.getUser(),
+        								finantialInstitution)) {
+        %>
         <div class="btn-group">
             <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
@@ -172,14 +181,17 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createCreditNote" /></a></li>
             </ul>
         </div>
-<%}%>        
+        <%
+            }
+        %>
     </c:if>
     <c:if test='${debtAccount.getClosed() }'>
      |&nbsp;
      </c:if>
-<% 
-                if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
-%>  
+    <%
+        if (TreasuryAccessControl.getInstance().isBackOfficeMember(
+    					Authenticate.getUser(), finantialInstitution)) {
+    %>
 
     <div class="btn-group">
         <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -202,7 +214,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" /></a> &nbsp;</li>
         </ul>
     </div>
-<%} %>
+    <%
+        }
+    %>
 
 
 </div>
@@ -273,7 +287,8 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
                         <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
                             <c:if test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
-                                    &nbsp;&nbsp; &nbsp;   (<spring:message code="label.DebtAccount.balanceWithoutInterests" /> <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> )
+                                    &nbsp;&nbsp; &nbsp;   (<spring:message code="label.DebtAccount.balanceWithoutInterests" />
+                                <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> )
                                 </c:if> <c:if test="${debtAccount.totalInDebt < 0 }">
                                 <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                 </span>
@@ -292,22 +307,26 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.g
     </div>
 </div>
 
-<c:if test="${debtAccount.hasPreparingDebitNotes()}">
-    <div class="alert alert-warning" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-        <spring:message code="label.have.debitNote.in.preparing" />
-    </div>
-</c:if>
-<c:if test="${debtAccount.hasPreparingCreditNotes()}">
-    <div class="alert alert-warning" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-        <spring:message code="label.have.creditNote.in.preparing" />
-    </div>
-</c:if>
-<c:if test="${debtAccount.hasPreparingSettlementNotes()}">
-    <div class="alert alert-warning" role="alert">
-        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-        <spring:message code="label.have.settlementNote.in.preparing" />
+<c:if test="${debtAccount.hasPreparingDocuments() }">
+    <div class="alert alert-danger" role="alert">
+        <c:if test="${debtAccount.hasPreparingDebitNotes()}">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.have.debitNote.in.preparing" />
+            </p>
+        </c:if>
+        <c:if test="${debtAccount.hasPreparingCreditNotes()}">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.have.creditNote.in.preparing" />
+            </p>
+        </c:if>
+        <c:if test="${debtAccount.hasPreparingSettlementNotes()}">
+            <p>
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                <spring:message code="label.have.settlementNote.in.preparing" />
+            </p>
+        </c:if>
     </div>
 </c:if>
 

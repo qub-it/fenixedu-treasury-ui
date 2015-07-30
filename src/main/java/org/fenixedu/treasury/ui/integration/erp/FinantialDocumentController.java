@@ -44,6 +44,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -186,6 +187,25 @@ public class FinantialDocumentController extends TreasuryBaseController {
         }
         return this.search(finantialInstitution, model, redirectAttributes);
 
+    }
+
+    private static final String _SEARCH_TO_MARK_MULTIPLE_EXPORTED_URI = "/search/markmultipleexported";
+    public static final String SEARCH_TO_MARK_MULTIPLE_EXPORTED_URL = CONTROLLER_URL + _SEARCH_TO_MARK_MULTIPLE_EXPORTED_URI;
+
+    @RequestMapping(value = _SEARCH_TO_MARK_MULTIPLE_EXPORTED_URI, method = RequestMethod.POST)
+    public String processSearchToMarkMultipleAsExported(@RequestParam("document") List<FinantialDocument> finantialDocuments,
+            Model model, RedirectAttributes redirectAttributes) {
+
+        try {
+            for (FinantialDocument document : finantialDocuments) {
+                document.clearDocumentToExport();
+            }
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+        }
+        return redirect(SEARCH_URL, model, redirectAttributes);
     }
 
 }
