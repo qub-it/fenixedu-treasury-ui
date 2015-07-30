@@ -265,7 +265,9 @@ public class ERPExporter {
                     throw ex;
                 }
             } else {
-                logger.info("Ignoring document " + document.getUiDocumentNumber() + " because is not closed yet.");
+                if (!document.isSettlementNote()) {
+                    logger.info("Ignoring document " + document.getUiDocumentNumber() + " because is not closed yet.");
+                }
             }
 
         }
@@ -302,7 +304,9 @@ public class ERPExporter {
                     throw ex;
                 }
             } else {
-                logger.info("Ignoring document " + document.getUiDocumentNumber() + " because is not closed yet.");
+                if (document.isSettlementNote()) {
+                    logger.info("Ignoring document " + document.getUiDocumentNumber() + " because is not closed yet.");
+                }
             }
 
         }
@@ -1056,20 +1060,32 @@ public class ERPExporter {
             String zipCodeRegion, String street) {
         AddressStructure companyAddress;
         companyAddress = new AddressStructure();
-        companyAddress.setCountry(country);
-        if (addressDetail != null) {
+        if (Strings.isNullOrEmpty(country)) {
+            companyAddress.setCountry("PT");
+        } else {
+            companyAddress.setCountry(country);
+        }
+        if (!Strings.isNullOrEmpty(addressDetail)) {
             companyAddress.setAddressDetail(Splitter.fixedLength(60).splitToList(addressDetail).get(0));
         } else {
             companyAddress.setAddressDetail(".");
         }
-        if (zipCodeRegion != null) {
+        if (!Strings.isNullOrEmpty(zipCodeRegion)) {
             companyAddress.setCity(Splitter.fixedLength(49).splitToList(zipCodeRegion).get(0));
         } else {
             companyAddress.setCity(".");
         }
-        companyAddress.setPostalCode(zipCode);
-        companyAddress.setRegion(zipCodeRegion);
-        if (street != null) {
+        if (!Strings.isNullOrEmpty(zipCode)) {
+            companyAddress.setPostalCode(zipCode);
+        } else {
+            companyAddress.setPostalCode(".");
+        }
+        if (!Strings.isNullOrEmpty(zipCodeRegion)) {
+            companyAddress.setRegion(".");
+        } else {
+            companyAddress.setRegion(zipCodeRegion);
+        }
+        if (!Strings.isNullOrEmpty(street)) {
             companyAddress.setStreetName(Splitter.fixedLength(49).splitToList(street).get(0));
         } else {
             companyAddress.setStreetName(".");

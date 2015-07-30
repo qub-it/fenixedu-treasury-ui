@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
@@ -150,6 +149,9 @@ public class SIBSPaymentsImporter {
                                     .getFilename().replace("\\.inp", ""));
 
                     if (settlementNote != null) {
+                        processResult.addMessage(detailLine.getCode() + "["
+                                + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
+                                + settlementNote.getUiDocumentNumber());
                         sibsCodeSettlementNoteMap.put(
                                 Constants.sibsTransactionUniqueIdentifier(detailLine.getCode(),
                                         detailLine.getWhenOccuredTransaction()), settlementNote);
