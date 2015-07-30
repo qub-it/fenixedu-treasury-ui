@@ -13,6 +13,8 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.joda.time.LocalDate;
 
+import pt.ist.fenixframework.Atomic;
+
 public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
 
     public static Comparator<PaymentReferenceCode> COMPARATOR_BY_PAYMENT_SEQUENTIAL_DIGITS =
@@ -56,6 +58,7 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
     }
 
     @Override
+    @Atomic
     public PaymentReferenceCode generateNewCodeFor(Customer customer, BigDecimal amount, LocalDate validFrom, LocalDate validTo,
             boolean useFixedAmount) {
 
