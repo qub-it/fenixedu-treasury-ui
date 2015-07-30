@@ -416,6 +416,11 @@ public class ERPExporter {
                     payment.setSettlementType(SAFTPTSettlementType.NR);
                 }
             } else {
+                PaymentMethod voidMethod = new PaymentMethod();
+                voidMethod.setPaymentAmount(BigDecimal.ZERO);
+                voidMethod.setPaymentDate(payment.getTransactionDate());
+                voidMethod.setPaymentMechanism("OU");
+                payment.getPaymentMethod().add(voidMethod);
                 payment.setSettlementType(SAFTPTSettlementType.NN);
             }
 

@@ -214,7 +214,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 <%--             </c:if> --%>
             <li>
             
-            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span><spring:message
+            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message
                     code="label.event.document.manageInvoice.createCreditNote" />
             </a>
             </li>

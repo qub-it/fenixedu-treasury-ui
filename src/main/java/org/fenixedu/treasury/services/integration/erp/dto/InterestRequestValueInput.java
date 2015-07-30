@@ -29,6 +29,7 @@ package org.fenixedu.treasury.services.integration.erp.dto;
 import java.math.BigDecimal;
 
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.format.datetime.joda.DateTimeFormatterFactory;
 
 public class InterestRequestValueInput {
@@ -97,7 +98,8 @@ public class InterestRequestValueInput {
     }
 
     public LocalDate convertPaymentDateToLocalDate() {
-        return LocalDate.parse(paymentDate, new DateTimeFormatterFactory("YYYY-MM-dd").createDateTimeFormatter());
+        DateTimeFormatter createDateTimeFormatter = new DateTimeFormatterFactory("YYYY-MM-dd").createDateTimeFormatter();
+        return LocalDate.parse(paymentDate, createDateTimeFormatter);
     }
 
     public void convertLocalDateToPaymentDate(LocalDate paymentDate) {
