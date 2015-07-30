@@ -235,9 +235,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     @Atomic
     public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments) {
+        
         if (!isNew()
                 && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(), this.getPaymentCodePool()
-                        .getEntityReferenceCode(), whenRegistered)) {
+                        .getEntityReferenceCode(), whenRegistered) ) {
             return null;
         }
 

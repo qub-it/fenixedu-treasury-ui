@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain.paymentcodes;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -38,6 +39,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.spreadsheet.SheetData;
 import org.fenixedu.commons.spreadsheet.SpreadsheetBuilder;
 import org.fenixedu.commons.spreadsheet.WorkbookExportFormat;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationFileDTO;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationLineDTO;
@@ -214,14 +216,17 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     @Atomic
-    public static SibsReportFile processSIBSIncommingFile(SIBSImportationFileDTO reportDTO) {
+    public static SibsReportFile processSIBSIncommingFile(final SIBSImportationFileDTO reportDTO,
+            final Map<String, SettlementNote> sibsCodeSettlementNoteMap) {
         byte[] content = buildContentFor(reportDTO);
         SibsReportFile result =
                 SibsReportFile.create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(),
                         reportDTO.getTotalCost(), displayNameFor(reportDTO), filenameFor(reportDTO), content);
 
         for (SIBSImportationLineDTO line : reportDTO.getLines()) {
-            if (line.getPaymentCode() != null) {
+            if (line.getPaymentCode() != null
+                    && sibsCodeSettlementNoteMap.containsKey(Constants.sibsTransactionUniqueIdentifier(line.getCode(),
+                            line.getTransactionWhenRegistered()))) {
                 SibsTransactionDetail.create(result, "", line.getWhenProcessedBySibs(), line.getTransactionWhenRegistered(),
                         line.getTransactionTotalAmount(), line.getPaymentCode().getPaymentCodePool().getEntityReferenceCode(),
                         line.getCode(), line.getSibsTransactionId());

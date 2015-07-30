@@ -127,4 +127,15 @@ public class Constants {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);        
     }
     
+    
+    // @formatter: off
+    /********
+     * SIBS *
+     ********/
+    // @formatter: on
+    
+    public static final String sibsTransactionUniqueIdentifier(final String paymentCode, final DateTime whenOccured) {
+        return String.format("%s%s", paymentCode, whenOccured.toString("yyyyMMddHHmm"));
+    }
+    
 }

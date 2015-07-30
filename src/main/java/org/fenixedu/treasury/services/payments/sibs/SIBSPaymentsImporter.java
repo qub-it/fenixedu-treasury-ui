@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
@@ -41,6 +43,8 @@ import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPayme
 import org.fenixedu.treasury.util.Constants;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.collect.Maps;
 
 public class SIBSPaymentsImporter {
 
@@ -138,10 +142,19 @@ public class SIBSPaymentsImporter {
             processResult.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
             processResult.addMessage("label.manager.SIBS.startingProcess");
 
+            final Map<String, SettlementNote> sibsCodeSettlementNoteMap = Maps.newHashMap();
             for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
                 try {
-                    processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(), inputFile.getFilename()
-                            .replace("\\.inp", ""));
+                    final SettlementNote settlementNote =
+                            processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(), inputFile
+                                    .getFilename().replace("\\.inp", ""));
+
+                    if (settlementNote != null) {
+                        sibsCodeSettlementNoteMap.put(
+                                Constants.sibsTransactionUniqueIdentifier(detailLine.getCode(),
+                                        detailLine.getWhenOccuredTransaction()), settlementNote);
+                    }
+
                 } catch (Exception e) {
                     e.printStackTrace();
                     processResult.addError("error.manager.SIBS.processException", detailLine.getCode(), getMessage(e));
@@ -157,7 +170,7 @@ public class SIBSPaymentsImporter {
             try {
                 final SIBSImportationFileDTO reportDTO =
                         new SIBSImportationFileDTO(sibsFile, inputFile.getFinantialInstitution());
-                SibsReportFile reportFile = SibsReportFile.processSIBSIncommingFile(reportDTO);
+                SibsReportFile reportFile = SibsReportFile.processSIBSIncommingFile(reportDTO, sibsCodeSettlementNoteMap);
                 processResult.addMessage("label.manager.SIBS.reportCreated");
                 processResult.setReportFile(reportFile);
 
@@ -176,7 +189,7 @@ public class SIBSPaymentsImporter {
     }
 
     @Atomic
-    protected void processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
+    protected SettlementNote processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
             FinantialInstitution finantialInstitution, final String sibsImportationFile) throws Exception {
 
         final PaymentReferenceCode paymentCode = getPaymentCode(detailLine.getCode(), finantialInstitution);
@@ -206,6 +219,8 @@ public class SIBSPaymentsImporter {
             //Add the new SettlementNote to the TargetPayment
             codeToProcess.getTargetPayment().addSettlementNotes(settlementNote);
         }
+
+        return settlementNote;
     }
 
     /**
