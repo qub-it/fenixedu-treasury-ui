@@ -265,15 +265,25 @@ public class DebitNote extends DebitNote_Base {
                     final BigDecimal openAmountToUse =
                             Constants.isLessThan(creditOpenAmount, debitOpenAmount) ? creditOpenAmount : debitOpenAmount;
 
-                    SettlementEntry crediEntry =
-                            SettlementEntry.create(creditEntry, settlementNote, openAmountToUse,
-                                    reason + "-" + creditEntry.getDescription(), now, false);
-                    SettlementEntry debitEntry =
-                            SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, openAmountToUse, reason + "-"
-                                    + creditEntry.getDebitEntry().getDescription(), now, false);
+                    if (Constants.isZero(openAmountToUse)) {
+                        //If the open amount to use in the DebitEntry is zero 
+                        //do nothing...   
+                    } else {
+                        SettlementEntry crediEntry =
+                                SettlementEntry.create(creditEntry, settlementNote, openAmountToUse,
+                                        reason + "-" + creditEntry.getDescription(), now, false);
+                        SettlementEntry debitEntry =
+                                SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, openAmountToUse, reason + "-"
+                                        + creditEntry.getDebitEntry().getDescription(), now, false);
+                    }
                 }
 
-                settlementNote.closeDocument();
+                //If we didn't need to create a settlement note, then delete it
+                if (settlementNote.getSettlemetEntriesSet().isEmpty()) {
+                    settlementNote.delete(true);
+                } else {
+                    settlementNote.closeDocument();
+                }
 
             } else {
                 throw new TreasuryDomainException("error.DebitNote.cannot.anull.is.not.closed");

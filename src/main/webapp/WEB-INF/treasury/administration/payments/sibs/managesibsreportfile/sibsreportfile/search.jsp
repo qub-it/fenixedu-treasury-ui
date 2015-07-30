@@ -178,8 +178,8 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-                "whencreated" : "<c:out value='${searchResult.versioningCreationDate.toString("YYYY-MM-dd")}'/>",
-                "whenprocessedbysibs" : "<c:out value='${searchResult.whenprocessedbysibs.toString("YYYY-MM-dd")}'/>",
+                "whencreated" : "<c:out value='${searchResult.versioningCreationDate.toString("YYYY-MM-dd HH:mm:ss")}'/>",
+                "whenprocessedbysibs" : "<c:out value='${searchResult.whenProcessedBySibs.toString("YYYY-MM-dd  HH:mm:ss")}'/>",
 "transactionstotalamount" : "<c:out value='${searchResult.transactionsTotalAmount}'/>",
 "totalcost" : "<c:out value='${searchResult.totalCost}'/>",
 "error": "<c:if test='${empty searchResult.errorLog}'><span class='glyphicon glyphicon-ok-sign text-success'/></c:if><c:if test='${not empty searchResult.errorLog}'><span class='glyphicon glyphicon-remove-sign  text-danger'/></c:if>",
