@@ -32,10 +32,14 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
 
-public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base {
+import com.qubit.terra.docs.core.IDocumentTemplate;
+import com.qubit.terra.docs.core.IDocumentTemplateVersion;
+
+public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base implements IDocumentTemplate {
 
     protected TreasuryDocumentTemplate() {
         super();
@@ -141,6 +145,43 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base {
             final FinantialDocumentType finantialDocumentType, final FinantialEntity finantialEntity) {
         return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType())).filter(
                 i -> finantialEntity.equals(i.getFinantialEntity()));
+    }
+
+    @Override
+    public void activateDocument() {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public void deactivateDocument() {
+
+    }
+
+    @Override
+    public DateTime getCreationDate() {
+        return getAtiveDocumentTemplateFile().getCreationDate();
+    }
+
+    @Override
+    public IDocumentTemplateVersion getCurrentVersion() {
+        return new IDocumentTemplateVersion() {
+
+            @Override
+            public byte[] getContent() {
+                return getAtiveDocumentTemplateFile().getContent();
+            }
+        };
+    }
+
+    @Override
+    public DateTime getUpdateDate() {
+        return getAtiveDocumentTemplateFile().getVersioningUpdateDate();
+    }
+
+    @Override
+    public boolean isActive() {
+        return getAtiveDocumentTemplateFile() != null;
     }
 
 }

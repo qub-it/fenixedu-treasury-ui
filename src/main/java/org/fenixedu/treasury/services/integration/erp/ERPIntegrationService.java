@@ -152,6 +152,7 @@ public class ERPIntegrationService extends BennuWebService {
             FinantialDocument document =
                     FinantialDocument.findByUiDocumentNumber(FinantialInstitution.findUniqueByFiscalCode(finantialInstitution)
                             .orElse(null), documentNumber);
+
             if (document == null) {
                 docStatus.setIntegrationStatus(StatusType.ERROR);
             } else {
@@ -217,6 +218,11 @@ public class ERPIntegrationService extends BennuWebService {
 
         if (!Constants.isEqual(amountInDebt, interestRequest.getAmount())) {
             throw new RuntimeException("Amount in debt not equal");
+        }
+
+        if (interestRequest.getGenerateInterestDebitNote() == true
+                && interestRequest.convertPaymentDateToLocalDate().isAfter(new LocalDate())) {
+            throw new RuntimeException("Cannot generate interest in the FUTURE. Please call without genereateInterestDebitNote");
         }
 
         //3 . calculate the amount of interest for the DebitEntry

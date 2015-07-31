@@ -98,8 +98,12 @@ public class InterestRequestValueInput {
     }
 
     public LocalDate convertPaymentDateToLocalDate() {
-        DateTimeFormatter createDateTimeFormatter = new DateTimeFormatterFactory("YYYY-MM-dd").createDateTimeFormatter();
-        return LocalDate.parse(paymentDate, createDateTimeFormatter);
+        try {
+            DateTimeFormatter createDateTimeFormatter = new DateTimeFormatterFactory("YYYY-MM-dd").createDateTimeFormatter();
+            return LocalDate.parse(paymentDate, createDateTimeFormatter);
+        } catch (Exception ex) {
+            throw new RuntimeException("Invalid date format. Date Format MUST be: YYYY-MM-dd");
+        }
     }
 
     public void convertLocalDateToPaymentDate(LocalDate paymentDate) {

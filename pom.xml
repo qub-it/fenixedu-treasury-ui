@@ -145,6 +145,12 @@
             <version>1.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.qubit.terra</groupId>
+            <artifactId>qub-docs</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+
         <!-- Dependency needed because we cannot be a child of 2 parent projects 
             (versioning and webservices) -->
         <dependency>
@@ -247,7 +253,7 @@
                 <executions>
                     <execution>
                         <id>SIAG</id>
-                         <phase>generate-sources</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>wsimport</goal>
                         </goals>
@@ -273,7 +279,7 @@
                     </execution>
                     <execution>
                         <id>SINGAP</id>
-                         <phase>generate-sources</phase>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>wsimport</goal>
                         </goals>
