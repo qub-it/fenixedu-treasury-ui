@@ -13,6 +13,7 @@ import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
+import org.fenixedu.treasury.services.integration.erp.singap.ArrayOfResposta;
 import org.fenixedu.treasury.services.integration.erp.singap.Resposta;
 import org.fenixedu.treasury.services.integration.erp.singap.Service;
 import org.fenixedu.treasury.services.integration.erp.singap.ServiceSoap;
@@ -40,14 +41,16 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
     @Override
     public DocumentsInformationOutput sendInfoOnline(DocumentsInformationInput documentsInformation) {
         DocumentsInformationOutput output = new DocumentsInformationOutput();
-        Resposta carregarSAFTON = getClient().carregarSAFTON(documentsInformation.getData());
-        output.setRequestId(carregarSAFTON.getChavePrimaria());
-        DocumentStatusWS status = new DocumentStatusWS();
-        status.setDocumentNumber(carregarSAFTON.getChavePrimaria());
-        status.setErrorDescription(carregarSAFTON.getMensagem());
-        status.setIntegrationStatus(covertToStatusType(carregarSAFTON.getStatus()));
         output.setDocumentStatus(new ArrayList<DocumentStatusWS>());
-        output.getDocumentStatus().add(status);
+        ArrayOfResposta carregarSAFTON = getClient().carregarSAFTON(documentsInformation.getData());
+        for (Resposta resposta : carregarSAFTON.getResposta()) {
+            output.setRequestId(resposta.getChavePrimaria());
+            DocumentStatusWS status = new DocumentStatusWS();
+            status.setDocumentNumber(resposta.getChavePrimaria());
+            status.setErrorDescription(resposta.getMensagem());
+            status.setIntegrationStatus(covertToStatusType(resposta.getStatus()));
+            output.getDocumentStatus().add(status);
+        }
         return output;
     }
 
