@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
@@ -352,8 +353,10 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
                             <td>
                                 <ul>
                                     <c:forEach var="settlementEntry" items="${creditNote.relatedSettlementEntries}">
-                                        <li><c:out
-                                                value='${settlementEntry.finantialDocument.uiDocumentNumber} - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                        <li><c:out value='${settlementEntry.entryDateTime.toString("YYYY-MM-dd")} - '/> <a target="_blank"
+                                            href="${pageContext.request.contextPath}<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
+                                                    value='${settlementEntry.finantialDocument.uiDocumentNumber}' /></a> <c:out
+                                                value=' [${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}]' /></li>
                                     </c:forEach>
                                 </ul>
                             </td>

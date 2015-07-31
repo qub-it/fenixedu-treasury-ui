@@ -257,7 +257,7 @@ public class DebitNote extends DebitNote_Base {
 
                 SettlementNote settlementNote =
                         SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "");
-                settlementNote.setDocumentObservations(reason + "- [" + Authenticate.getUser().getUsername() + "]"
+                settlementNote.setDocumentObservations(reason + " - [" + Authenticate.getUser().getUsername() + "] "
                         + new DateTime().toString("YYYY-MM-dd HH:mm"));
 
                 for (CreditEntry creditEntry : creditNote.getCreditEntriesSet()) {
@@ -285,6 +285,7 @@ public class DebitNote extends DebitNote_Base {
                 } else {
                     settlementNote.closeDocument();
                 }
+                this.setAnnulledReason(reason);
 
             } else {
                 throw new TreasuryDomainException("error.DebitNote.cannot.anull.is.not.closed");

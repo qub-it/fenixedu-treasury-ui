@@ -421,24 +421,24 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                                 <ul>
 
                                     <c:forEach var="settlementEntry" items="${debitNote.relatedSettlementEntries}">
-                                        <li><a target="_blank"
+                                        <li><c:out value='${settlementEntry.entryDateTime.toString("YYYY-MM-dd")} - '/> <a target="_blank"
                                             href="${pageContext.request.contextPath}<%=SettlementNoteController.READ_URL %>${settlementEntry.finantialDocument.externalId}"><c:out
                                                     value='${settlementEntry.finantialDocument.uiDocumentNumber}' /></a> <c:out
-                                                value=' - ${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}' /></li>
+                                                value=' [${ settlementEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(settlementEntry.amount)}]' /></li>
                                     </c:forEach>
                                 </ul>
                             </td>
                         </tr>
                     </c:if>
 
-                    <c:if test="${not empty debitNote.relatedCreditEntries }">
+                    <c:if test="${not empty debitNote.relatedCreditEntriesSet }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedCreditEntries" /></th>
                             <td>
                                 <ul>
 
-                                    <c:forEach var="creditEntry" items="${debitNote.relatedCreditEntries}">
-                                        <li><c:out value='${creditEntry.entryDateTime.toString("YYYY-MM-dd")} => '/> <a target="_blank"
+                                    <c:forEach var="creditEntry" items="${debitNote.relatedCreditEntriesSet}">
+                                        <li><c:out value='${creditEntry.entryDateTime.toString("YYYY-MM-dd")} - '/> <a target="_blank"
                                             href="${pageContext.request.contextPath}<%=CreditNoteController.READ_URL %>${creditEntry.finantialDocument.externalId}"><c:out
                                                     value='${creditEntry.finantialDocument.uiDocumentNumber}' /></a> <c:out
                                                 value=' [${ creditEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(creditEntry.amount)}]' /></li>
