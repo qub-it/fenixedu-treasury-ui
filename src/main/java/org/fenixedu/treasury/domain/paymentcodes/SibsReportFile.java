@@ -207,7 +207,7 @@ public class SibsReportFile extends SibsReportFile_Base {
 
     protected static String filenameFor(final SIBSImportationFileDTO reportFileDTO) {
         final String date = new DateTime().toString("yyyyMMddHHmm");
-        return "Relatorio-SIBS-" + date + ".xlsx";
+        return "Relatorio-SIBS-" + date + ".xls";
     }
 
     protected static String displayNameFor(final SIBSImportationFileDTO reportFileDTO) {

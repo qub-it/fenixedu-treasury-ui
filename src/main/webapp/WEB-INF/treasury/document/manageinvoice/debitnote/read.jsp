@@ -358,7 +358,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                                 </c:if>
                             </c:if></td>
                     </tr>
-                    <c:if test="${debitNote.isAnnulled()}">
+                    <c:if test="${not empty debitNote.anulledReason}">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.annulledReason" /></th>
                             <td><c:out value='${debitNote.annulledReason}' /></td>
