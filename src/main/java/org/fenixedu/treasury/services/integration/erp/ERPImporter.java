@@ -136,6 +136,7 @@ public class ERPImporter {
 
                         if (note.isPreparing()) {
                             note.closeDocument();
+                            note.clearDocumentToExport();
                         }
                         eRPImportOperation.addFinantialDocuments(note);
                     } else {

@@ -114,19 +114,6 @@ public class ERPExporterManager {
                 finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream().limit(100)
                         .collect(Collectors.toSet());
 
-        for (FinantialDocument doc : pendingDocuments.stream().collect(Collectors.toList())) {
-            //if the document is in the sames series of the IntegrationConfiguration.paymentSeries -> IGNORE
-            if (finantialInstitution.getErpIntegrationConfiguration() != null) {
-                if (doc.getDocumentNumberSeries().getSeries() == finantialInstitution.getErpIntegrationConfiguration()
-                        .getPaymentsIntegrationSeries()) {
-                    //remove the documents from the same series of integration configuration
-                    doc.clearDocumentToExport();
-                    pendingDocuments.remove(doc);
-                }
-            }
-
-        }
-
         Comparator<FinantialDocument> sortingComparator = new Comparator<FinantialDocument>() {
 
             @Override

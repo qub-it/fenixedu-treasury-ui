@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
@@ -429,6 +430,24 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                             </td>
                         </tr>
                     </c:if>
+
+                    <c:if test="${not empty debitNote.relatedCreditEntries }">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedCreditEntries" /></th>
+                            <td>
+                                <ul>
+
+                                    <c:forEach var="creditEntry" items="${debitNote.relatedCreditEntries}">
+                                        <li><c:out value='${creditEntry.entryDateTime.toString("YYYY-MM-dd")} => '/> <a target="_blank"
+                                            href="${pageContext.request.contextPath}<%=CreditNoteController.READ_URL %>${creditEntry.finantialDocument.externalId}"><c:out
+                                                    value='${creditEntry.finantialDocument.uiDocumentNumber}' /></a> <c:out
+                                                value=' [${ creditEntry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(creditEntry.amount)}]' /></li>
+                                    </c:forEach>
+                                </ul>
+                            </td>
+                        </tr>
+                    </c:if>
+
 
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>

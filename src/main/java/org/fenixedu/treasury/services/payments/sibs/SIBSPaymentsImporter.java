@@ -149,7 +149,7 @@ public class SIBSPaymentsImporter {
                                     .getFilename().replace("\\.inp", ""));
 
                     if (settlementNote != null) {
-                        processResult.addMessage(detailLine.getCode() + "["
+                        processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
                                 + settlementNote.getUiDocumentNumber());
                         sibsCodeSettlementNoteMap.put(
@@ -210,7 +210,7 @@ public class SIBSPaymentsImporter {
         if (!codeToProcess.isNew()) {
             if (SibsTransactionDetail.isReferenceProcessingDuplicate(codeToProcess.getReferenceCode(), codeToProcess
                     .getPaymentCodePool().getEntityReferenceCode(), detailLine.getWhenOccuredTransaction())) {
-                result.addMessage("error.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+                result.addMessage("error.manager.SIBS.codeAlreadyProcessed.duplicated", codeToProcess.getReferenceCode());
                 return null;
             } else {
                 result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());

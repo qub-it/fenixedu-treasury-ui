@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -335,5 +336,13 @@ public class DebitNote extends DebitNote_Base {
         }
 
         return creditNote;
+    }
+
+    public Set<CreditEntry> getRelatedCreditEntriesSet() {
+        Set<CreditEntry> result = new HashSet<CreditEntry>();
+        for (DebitEntry debit : this.getDebitEntriesSet()) {
+            result.addAll(debit.getCreditEntriesSet());
+        }
+        return result;
     }
 }
