@@ -302,6 +302,10 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                         <td><joda:format value="${settlementNote.documentDate}" style="S-" /></td>
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.paymentDate" /></th>
+                        <td><joda:format value="${settlementNote.paymentDate}" style="S-" /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.originDocumentNumber" /></th>
                         <td><c:out value='${settlementNote.originDocumentNumber}' /></td>
                     </tr>

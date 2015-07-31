@@ -26,11 +26,16 @@
  */
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -215,17 +220,32 @@ public class SeriesController extends TreasuryBaseController {
 
         FinantialInstitution fin = series.getFinantialInstitution();
 
+        List<DebitEntry> allDebitEntries = new ArrayList<DebitEntry>();
+
+        //Collect all Pending debitEntries
         for (DebtAccount debtAccount : fin.getDebtAccountsSet()) {
-            try {
-                if (debtAccount.getPendingInvoiceEntriesSet().stream().anyMatch(x -> x.getFinantialDocument() == null)) {
-                    series.createDebitNoteForPendingEntries(debtAccount);
-//                    break;
-                }
-            } catch (Exception ex) {
-                addErrorMessage("Error for debtAccount : " + ex.getLocalizedMessage(), model);
-            }
+            allDebitEntries.addAll(debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.isDebitNoteEntry())
+                    .filter(x -> x.getFinantialDocument() == null).map(DebitEntry.class::cast).collect(Collectors.toList()));
         }
 
+        List<DebitEntry> sortedDebitEntries = allDebitEntries.stream().sorted((x, y) -> {
+            if (x.getEntryDateTime().equals(y.getEntryDateTime())) {
+                return x.getDueDate().compareTo(y.getDueDate());
+            } else {
+                return x.getEntryDateTime().compareTo(y.getEntryDateTime());
+            }
+        }).collect(Collectors.toList());
+
+        for (DebitEntry debitEntry : sortedDebitEntries) {
+            try {
+                series.createDebitNoteForPendingEntry(debitEntry);
+            } catch (Exception ex) {
+                addErrorMessage(
+                        "Error for debtAccount" + debitEntry.getDescription() + "-"
+                                + debitEntry.getDebtAccount().getCustomer().getBusinessIdentification() + " : "
+                                + ex.getLocalizedMessage(), model);
+            }
+        }
         addInfoMessage("SUCCESS", model);
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }

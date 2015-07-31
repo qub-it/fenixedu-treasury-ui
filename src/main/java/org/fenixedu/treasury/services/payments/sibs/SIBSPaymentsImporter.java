@@ -198,7 +198,7 @@ public class SIBSPaymentsImporter {
 
         if (paymentCode == null) {
             result.addMessage("error.manager.SIBS.codeNotFound", detailLine.getCode());
-            throw new Exception();
+            return null;
         }
 
         final PaymentReferenceCode codeToProcess = getPaymentCodeToProcess(paymentCode, result);
@@ -207,10 +207,15 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
         }
 
+        if (codeToProcess.isProcessed()) {
+            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+        }
+
         if (!codeToProcess.isNew()
                 && SibsTransactionDetail.isReferenceProcessingDuplicate(codeToProcess.getReferenceCode(), codeToProcess
                         .getPaymentCodePool().getEntityReferenceCode(), detailLine.getWhenOccuredTransaction())) {
-            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+            result.addMessage("error.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+            return null;
         }
 
         SettlementNote settlementNote =

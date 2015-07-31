@@ -64,13 +64,13 @@ public class SettlementNote extends SettlementNote_Base {
 
     protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
             final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
-        super.init(debtAccount, documentNumberSeries, documentDate);
         setOriginDocumentNumber(originDocumentNumber);
         if (paymentDate == null) {
             setPaymentDate(documentDate);
         } else {
             setPaymentDate(paymentDate);
         }
+        super.init(debtAccount, documentNumberSeries, documentDate);
         checkRules();
     }
 

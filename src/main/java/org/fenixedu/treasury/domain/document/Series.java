@@ -258,6 +258,7 @@ public class Series extends Series_Base {
         boolean useEntryDateTimeAsDocumentDate = this.getCertificated() == false;
 
         DocumentNumberSeries seriesToProcess = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this);
+
         List<DebitEntry> debitEntries =
                 debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.getFinantialDocument() == null)
                         .filter(x -> x.isDebitNoteEntry()).map(DebitEntry.class::cast).sorted((x, y) -> {
@@ -314,5 +315,37 @@ public class Series extends Series_Base {
         if (debtAccountClosed) {
             debtAccount.closeDebtAccount();
         }
+    }
+
+    @Atomic
+    public void createDebitNoteForPendingEntry(DebitEntry debitEntry) {
+        //if the series is NOT certified, then we will use the debitEntries as The Documents Dates,
+        //if the series is CERTIFIED, then the DATE/DUE_DATE must be the current date
+        boolean useEntryDateTimeAsDocumentDate = this.getCertificated() == false;
+
+        DocumentNumberSeries seriesToProcess = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), this);
+        DebtAccount debtAccount = debitEntry.getDebtAccount();
+        DebitNote debitNote = null;
+
+        boolean debtAccountClosed = debtAccount.getClosed();
+
+        if (debtAccountClosed) {
+            //if debt account is closed, we must open to create a debt to it
+            debtAccount.reopenDebtAccount();
+        }
+
+        if (useEntryDateTimeAsDocumentDate) {
+            debitNote = DebitNote.create(debtAccount, seriesToProcess, debitEntry.getEntryDateTime());
+            debitNote.setDocumentDueDate(debitEntry.getDueDate());
+        } else {
+            debitNote = DebitNote.create(debtAccount, seriesToProcess, new DateTime());
+        }
+
+        debitEntry.setFinantialDocument(debitNote);
+        //if the debtaccount was closed, closed it again
+        if (debtAccountClosed) {
+            debtAccount.closeDebtAccount();
+        }
+
     }
 }
