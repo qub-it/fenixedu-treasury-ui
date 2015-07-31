@@ -207,15 +207,14 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
         }
 
-        if (codeToProcess.isProcessed()) {
-            result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
-        }
-
-        if (!codeToProcess.isNew()
-                && SibsTransactionDetail.isReferenceProcessingDuplicate(codeToProcess.getReferenceCode(), codeToProcess
-                        .getPaymentCodePool().getEntityReferenceCode(), detailLine.getWhenOccuredTransaction())) {
-            result.addMessage("error.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
-            return null;
+        if (!codeToProcess.isNew()) {
+            if (SibsTransactionDetail.isReferenceProcessingDuplicate(codeToProcess.getReferenceCode(), codeToProcess
+                    .getPaymentCodePool().getEntityReferenceCode(), detailLine.getWhenOccuredTransaction())) {
+                result.addMessage("error.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+                return null;
+            } else {
+                result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+            }
         }
 
         SettlementNote settlementNote =
