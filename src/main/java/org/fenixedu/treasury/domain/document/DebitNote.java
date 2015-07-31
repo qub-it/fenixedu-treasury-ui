@@ -255,7 +255,7 @@ public class DebitNote extends DebitNote_Base {
                 creditNote.closeDocument();
 
                 SettlementNote settlementNote =
-                        SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, "");
+                        SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "");
                 settlementNote.setDocumentObservations(reason + "- [" + Authenticate.getUser().getUsername() + "]"
                         + new DateTime().toString("YYYY-MM-dd HH:mm"));
 

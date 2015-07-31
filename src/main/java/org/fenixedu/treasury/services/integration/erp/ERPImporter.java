@@ -265,8 +265,8 @@ public class ERPImporter {
                         DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
                         //Create a new SettlementNote
                         settlementNote =
-                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate,
-                                        externalNumber);
+                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, new DateTime(),
+                                        documentDate, externalNumber);
                     }
                 }
             } else {
@@ -315,6 +315,11 @@ public class ERPImporter {
             SettlementEntry settlementEntry =
                     SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
                             paymentDate, false);
+
+            //Update the PaymentDate
+            if (paymentDate.isBefore(settlementNote.getPaymentDate())) {
+                settlementNote.setPaymentDate(paymentDate);
+            }
         }
 
         if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {

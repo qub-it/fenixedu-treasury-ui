@@ -306,9 +306,13 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @Atomic
     public SettlementNote processSettlementNoteCreation(SettlementNoteBean bean) {
+        DateTime documentDate = new DateTime();
+        if (bean.getDocNumSeries().getSeries().getCertificated() == false) {
+            documentDate = bean.getDate().toDateTimeAtStartOfDay();
+        }
         SettlementNote settlementNote =
-                SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), bean.getDate().toDateTimeAtStartOfDay(),
-                        bean.getOriginDocumentNumber());
+                SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate, bean.getDate()
+                        .toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber());
         settlementNote.processSettlementNoteCreation(bean);
         return settlementNote;
     }

@@ -57,15 +57,20 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     protected SettlementNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate, final String originDocumentNumber) {
+            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
         this();
-        init(debtAccount, documentNumberSeries, documentDate, originDocumentNumber);
+        init(debtAccount, documentNumberSeries, documentDate, paymentDate, originDocumentNumber);
     }
 
     protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate, final String originDocumentNumber) {
+            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
         super.init(debtAccount, documentNumberSeries, documentDate);
         setOriginDocumentNumber(originDocumentNumber);
+        if (paymentDate == null) {
+            setPaymentDate(documentDate);
+        } else {
+            setPaymentDate(paymentDate);
+        }
         checkRules();
     }
 
@@ -78,6 +83,11 @@ public class SettlementNote extends SettlementNote_Base {
     protected void checkRules() {
         super.checkRules();
 
+        if (getPaymentDate().isAfter(getDocumentDate())) {
+            throw new TreasuryDomainException("error.SettlementNote.invalid.payment.date.after.document.date");
+
+        }
+
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)
                 && !getDocumentNumberSeries().getFinantialDocumentType().getType()
                         .equals(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE)) {
@@ -88,7 +98,7 @@ public class SettlementNote extends SettlementNote_Base {
     @Atomic
     public void edit(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
             final DocumentNumberSeries documentNumberSeries, final Currency currency, final java.lang.String documentNumber,
-            final org.joda.time.DateTime documentDate, final java.lang.String originDocumentNumber,
+            final org.joda.time.DateTime documentDate, final DateTime paymentDate, final java.lang.String originDocumentNumber,
             final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         setFinantialDocumentType(finantialDocumentType);
         setDebtAccount(debtAccount);
@@ -99,6 +109,7 @@ public class SettlementNote extends SettlementNote_Base {
         setDocumentDueDate(documentDate.toLocalDate());
         setOriginDocumentNumber(originDocumentNumber);
         setState(state);
+        setPaymentDate(paymentDate);
         checkRules();
     }
 
@@ -233,8 +244,9 @@ public class SettlementNote extends SettlementNote_Base {
 
     @Atomic
     public static SettlementNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate, final String originDocumentNumber) {
-        SettlementNote settlementNote = new SettlementNote(debtAccount, documentNumberSeries, documentDate, originDocumentNumber);
+            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
+        SettlementNote settlementNote =
+                new SettlementNote(debtAccount, documentNumberSeries, documentDate, paymentDate, originDocumentNumber);
 
         return settlementNote;
     }

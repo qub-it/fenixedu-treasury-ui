@@ -390,35 +390,38 @@ public class DebitEntry extends DebitEntry_Base {
                             getDescription(), treasuryExemption.getTreasuryExemptionType().getName().getContent());
 
             final DocumentNumberSeries documentNumberSeriesCreditNote =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getFinantialDocument().getDocumentNumberSeries()
-                            .getSeries());
+                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getFinantialDocument()
+                            .getDocumentNumberSeries().getSeries());
             final DocumentNumberSeries documentNumberSeriesSettlementNote =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), this.getFinantialDocument().getDocumentNumberSeries()
-                            .getSeries());
+                    DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), this.getFinantialDocument()
+                            .getDocumentNumberSeries().getSeries());
 
             final CreditNote creditNote =
-                    CreditNote.create(getDebtAccount(), documentNumberSeriesCreditNote, new DateTime(), (DebitNote) getFinantialDocument(),
-                            null);
-            CreditEntry creditEntryFromExemption = CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountWithoutVat, new DateTime(), this);
+                    CreditNote.create(getDebtAccount(), documentNumberSeriesCreditNote, new DateTime(),
+                            (DebitNote) getFinantialDocument(), null);
+            CreditEntry creditEntryFromExemption =
+                    CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountWithoutVat, new DateTime(),
+                            this);
 
             creditNote.closeDocument();
-            
+
             DateTime now = new DateTime();
 
             final SettlementNote settlementNote =
-                    SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, "");
+                    SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "");
             settlementNote.setDocumentObservations(description);
-            
+
             final BigDecimal creditOpenAmount = creditEntryFromExemption.getOpenAmount();
             final BigDecimal debitOpenAmount = getOpenAmount();
             final BigDecimal openAmountToUse =
                     Constants.isLessThan(creditOpenAmount, debitOpenAmount) ? creditOpenAmount : debitOpenAmount;
-            
+
             SettlementEntry.create(creditEntryFromExemption, settlementNote, openAmountToUse, description, now, false);
-            SettlementEntry.create(creditEntryFromExemption.getDebitEntry(), settlementNote, openAmountToUse, description, now, false);
+            SettlementEntry.create(creditEntryFromExemption.getDebitEntry(), settlementNote, openAmountToUse, description, now,
+                    false);
 
             settlementNote.closeDocument();
-            
+
         } else {
             BigDecimal originalAmount = getAmount();
             if (Constants.isPositive(getExemptedAmount())) {
