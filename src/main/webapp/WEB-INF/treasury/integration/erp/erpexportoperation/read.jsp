@@ -91,10 +91,12 @@ ${portal.toolkit()}
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-        class=""
-        href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp; <span
+<!--     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a -->
+<!--         class="" -->
+<%--         href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/"><spring:message --%>
+<%--             code="label.event.back" /></a> &nbsp;|&nbsp;  --%>
+            
+            <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;|&nbsp; <span
