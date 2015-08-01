@@ -213,8 +213,11 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
             </ul>
         </div>
     </c:if>
-    |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#"
-        onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message
+<!--     |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#" -->
+<%--         onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message --%>
+<%--             code="label.print" /> --%>
+    |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/printdocument">
+        <spring:message
             code="label.print" />
     </a> &nbsp;
 </div>

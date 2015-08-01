@@ -71,6 +71,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,6 +81,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.qubit.terra.docs.core.DocumentGenerator;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",
@@ -506,9 +510,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                                     .replaceAll("\\s", "_").replaceAll(" ", "_")), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
-            byte[] report = ReportExecutor.printDocumentToODT(settlementNote);
-            response.getOutputStream().write(report);
-//            response.getOutputStream().write(output.getBytes("Windows-1252"));
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
@@ -516,6 +518,19 @@ public class SettlementNoteController extends TreasuryBaseController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @RequestMapping(value = "/read/{oid}/printdocument", produces = DocumentGenerator.ODT)
+    public Object processReadToPrintDocument(@PathVariable("oid") SettlementNote settlementNote, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+            byte[] report = ReportExecutor.printDocumentToODT(settlementNote);
+            return new ResponseEntity<byte[]>(report, HttpStatus.OK);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         }
     }
 

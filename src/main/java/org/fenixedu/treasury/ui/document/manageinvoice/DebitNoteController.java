@@ -51,7 +51,6 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
-import org.fenixedu.treasury.services.reports.ReportExecutor;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
@@ -503,9 +502,7 @@ public class DebitNoteController extends TreasuryBaseController {
                                     .replaceAll(" ", "_")), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
-            byte[] report = ReportExecutor.printDocumentToODT(debitNote);
-            response.getOutputStream().write(report);
-//            response.getOutputStream().write(output.getBytes("Windows-1252"));
+            response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
