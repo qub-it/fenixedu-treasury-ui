@@ -503,7 +503,7 @@ public class DebitNoteController extends TreasuryBaseController {
                                     .replaceAll(" ", "_")), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
-            byte[] report = ReportExecutor.executTestReport(debitNote);
+            byte[] report = ReportExecutor.printDocumentToODT(debitNote);
             response.getOutputStream().write(report);
 //            response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {

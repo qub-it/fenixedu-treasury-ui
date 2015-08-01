@@ -1,8 +1,14 @@
 package org.fenixedu.treasury.services.reports;
 
+import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Invoice;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
+import org.fenixedu.treasury.services.reports.dataproviders.CustomerDataProvider;
+import org.fenixedu.treasury.services.reports.dataproviders.DebtAccountDataProvider;
+import org.fenixedu.treasury.services.reports.dataproviders.FinantialInstitutionDataProvider;
 import org.fenixedu.treasury.services.reports.dataproviders.InvoiceDataProvider;
+import org.fenixedu.treasury.services.reports.dataproviders.SettlementNoteDataProvider;
 
 import com.qubit.terra.docs.core.DocumentGenerator;
 import com.qubit.terra.docs.core.DocumentTemplateEngine;
@@ -19,32 +25,39 @@ public class ReportExecutor {
     }
 
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
-    public static byte[] executTestReport(Invoice invoice) {
+    public static byte[] printDocumentToODT(FinantialDocument document) {
 
         TreasuryDocumentTemplate templateInEntity =
                 TreasuryDocumentTemplate
-                        .findByFinantialDocumentTypeAndFinantialEntity(invoice.getFinantialDocumentType(),
-                                invoice.getDebtAccount().getFinantialInstitution().getFinantialEntitiesSet().iterator().next())
+                        .findByFinantialDocumentTypeAndFinantialEntity(document.getFinantialDocumentType(),
+                                document.getDebtAccount().getFinantialInstitution().getFinantialEntitiesSet().iterator().next())
                         .filter(x -> x.isActive()).findFirst().orElse(null);
+        DocumentGenerator generator = null;
 
         if (templateInEntity != null) {
-            DocumentGenerator generator2 = DocumentGenerator.create(templateInEntity, DocumentGenerator.ODT);
+            generator = DocumentGenerator.create(templateInEntity, DocumentGenerator.ODT);
 
-//        Invoice invoice = Invoice.findAll().findFirst().orElse(null);
-            generator2.registerDataProvider(new InvoiceDataProvider(invoice));
-            //... add more providers...
-            byte[] outputReport = generator2.generateReport();
-
-            return outputReport;
         } else {
             //HACK...
-            DocumentGenerator create =
-                    DocumentGenerator.create("C:\\Users\\Ricardo\\Downloads\\declaracaoInscricao_fl_pt.odt",
+            generator =
+                    DocumentGenerator.create(
+                            "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
                             DocumentGenerator.ODT);
-            create.registerDataProvider(new InvoiceDataProvider(invoice));
-            byte[] outputReport = create.generateReport();
-
-            return outputReport;
+//            throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
         }
+        if (document.isInvoice()) {
+            generator.registerDataProvider(new InvoiceDataProvider((Invoice) document));
+        } else if (document.isSettlementNote()) {
+            generator.registerDataProvider(new SettlementNoteDataProvider((SettlementNote) document));
+        }
+        generator.registerDataProvider(new DebtAccountDataProvider(document.getDebtAccount()));
+        generator.registerDataProvider(new CustomerDataProvider(document.getDebtAccount().getCustomer()));
+        generator.registerDataProvider(new FinantialInstitutionDataProvider(document.getDebtAccount().getFinantialInstitution()));
+
+        //... add more providers...
+
+        byte[] outputReport = generator.generateReport();
+
+        return outputReport;
     }
 }

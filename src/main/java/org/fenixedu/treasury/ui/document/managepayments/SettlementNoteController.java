@@ -61,6 +61,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.reports.ReportExecutor;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
@@ -504,7 +505,10 @@ public class SettlementNoteController extends TreasuryBaseController {
                                     + "_" + settlementNote.getUiDocumentNumber() + ".xml").replaceAll("/", "_")
                                     .replaceAll("\\s", "_").replaceAll(" ", "_")), "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
-            response.getOutputStream().write(output.getBytes("Windows-1252"));
+
+            byte[] report = ReportExecutor.printDocumentToODT(settlementNote);
+            response.getOutputStream().write(report);
+//            response.getOutputStream().write(output.getBytes("Windows-1252"));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
