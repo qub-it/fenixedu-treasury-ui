@@ -73,6 +73,9 @@ public class FinantialInstitutionBean implements IBean, Serializable {
     private String name;
     private String companyName;
     private String address;
+    private String email;
+    private String telephone;
+    private String webAddress;
     private String locality;
     private String zipCode;
 
@@ -96,6 +99,9 @@ public class FinantialInstitutionBean implements IBean, Serializable {
         this.name = finantialInstitution.getName();
         this.zipCode = finantialInstitution.getZipCode();
         this.setCurrency(finantialInstitution.getCurrency());
+        this.setEmail(finantialInstitution.getEmail());
+        this.setWebAddress(finantialInstitution.getWebAddress());
+        this.setTelephone(finantialInstitution.getTelephoneContact());
         this.setCurrenciesDataSource(Currency.findAll().collect(Collectors.toList()));
         this.setFiscalcountryregions(FiscalCountryRegion.findAll().collect(Collectors.toList()));
         this.updateModelLists();
@@ -292,6 +298,30 @@ public class FinantialInstitutionBean implements IBean, Serializable {
 
     public void setCurrency(Currency currency) {
         this.currency = currency;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getWebAddress() {
+        return webAddress;
+    }
+
+    public void setWebAddress(String webAddress) {
+        this.webAddress = webAddress;
     }
 
 }

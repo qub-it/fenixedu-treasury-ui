@@ -138,6 +138,9 @@ class FinantialInstitution {
 	Country country;
 	District district;
 	Municipality municipality;
+	String email;
+	String telephoneContact;
+	String webAddress; 
 	String locality;
 	String zipCode;
 }

@@ -9,6 +9,12 @@ import org.fenixedu.treasury.services.reports.dataproviders.DebtAccountDataProvi
 import org.fenixedu.treasury.services.reports.dataproviders.FinantialInstitutionDataProvider;
 import org.fenixedu.treasury.services.reports.dataproviders.InvoiceDataProvider;
 import org.fenixedu.treasury.services.reports.dataproviders.SettlementNoteDataProvider;
+import org.fenixedu.treasury.services.reports.helpers.DateHelper;
+import org.fenixedu.treasury.services.reports.helpers.EnumerationHelper;
+import org.fenixedu.treasury.services.reports.helpers.LanguageHelper;
+import org.fenixedu.treasury.services.reports.helpers.MoneyHelper;
+import org.fenixedu.treasury.services.reports.helpers.NumbersHelper;
+import org.fenixedu.treasury.services.reports.helpers.StringsHelper;
 
 import com.qubit.terra.docs.core.DocumentGenerator;
 import com.qubit.terra.docs.core.DocumentTemplateEngine;
@@ -22,6 +28,15 @@ public class ReportExecutor {
     public static synchronized void registerService() {
         IDocumentTemplateService service = new DocumentPrinterConfiguration();
         DocumentTemplateEngine.registerServiceImplementations(service);
+    }
+
+    private static void registerHelpers(DocumentGenerator generator) {
+        generator.registerHelper("dates", new DateHelper());
+        generator.registerHelper("lang", new LanguageHelper());
+        generator.registerHelper("numbers", new NumbersHelper());
+        generator.registerHelper("enumeration", new EnumerationHelper());
+        generator.registerHelper("strings", new StringsHelper());
+        generator.registerHelper("money", new MoneyHelper());
     }
 
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
@@ -45,6 +60,8 @@ public class ReportExecutor {
                             DocumentGenerator.ODT);
 //            throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
         }
+
+        registerHelpers(generator);
         if (document.isInvoice()) {
             generator.registerDataProvider(new InvoiceDataProvider((Invoice) document));
         } else if (document.isSettlementNote()) {

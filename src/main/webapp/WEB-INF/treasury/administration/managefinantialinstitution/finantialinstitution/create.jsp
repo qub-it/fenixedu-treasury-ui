@@ -297,6 +297,39 @@ ${portal.angularToolkit()}
                         value='<c:out value='${not empty param.zipcode ? param.zipcode : finantialInstitution.zipCode }'/>' />
                 </div>
 			</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialInstitution.telephoneContact" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_telephoneContact" class="form-control"
+                        ng-model="object.telephone" type="text"
+                        display="none"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialInstitution.email" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_email" class="form-control"
+                        ng-model="object.email" type="text"
+                        display="none"/>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.FinantialInstitution.webAddress" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="finantialInstitution_webAddress" class="form-control"
+                        ng-model="object.webAddress" type="text"
+                        display="none"/>
+                </div>
+            </div>
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"

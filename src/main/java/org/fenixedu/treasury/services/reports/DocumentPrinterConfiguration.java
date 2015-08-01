@@ -15,6 +15,7 @@ public class DocumentPrinterConfiguration implements IDocumentTemplateService {
             File fontDirectory = new File(path, "Fonts");
             return fontDirectory.getAbsolutePath();
         } else {
+            //HACK: THIS SHOULD BE VIA PROPERTY ??!?!?!?!
             return "/usr/share/fonts";
         }
     }

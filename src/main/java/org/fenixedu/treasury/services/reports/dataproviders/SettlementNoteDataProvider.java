@@ -34,7 +34,7 @@ public class SettlementNoteDataProvider extends AbstractDataProvider implements 
 
     private static Object handleDocumentTypeKey(IReportDataProvider provider) {
         SettlementNoteDataProvider invoiceProvider = (SettlementNoteDataProvider) provider;
-        return invoiceProvider.note.getFinantialDocumentType().getType().toString();
+        return invoiceProvider.note.getFinantialDocumentType().getType().getDescriptionI18N();
     }
 
     private static Object handleLines(IReportDataProvider provider) {
@@ -56,6 +56,7 @@ public class SettlementNoteDataProvider extends AbstractDataProvider implements 
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
         // TODO Auto-generated method stub
         arg0.registerCollectionAsField(LINES_KEY);
+        arg0.registerCollectionAsField(PAYMENT_LINES_KEY);
     }
 
     @Override

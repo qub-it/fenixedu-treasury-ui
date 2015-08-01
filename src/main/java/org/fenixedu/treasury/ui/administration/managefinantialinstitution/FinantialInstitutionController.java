@@ -234,6 +234,9 @@ public class FinantialInstitutionController extends TreasuryBaseController {
                 FinantialInstitution.create(bean.getFiscalcountryregion(), bean.getCurrency(), bean.getCode(),
                         bean.getFiscalNumber(), bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(),
                         bean.getCountry(), bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode());
+        finantialInstitution.setEmail(bean.getEmail());
+        finantialInstitution.setTelephoneContact(bean.getTelephone());
+        finantialInstitution.setWebAddress(bean.getWebAddress());
         return finantialInstitution;
     }
 
@@ -280,9 +283,14 @@ public class FinantialInstitutionController extends TreasuryBaseController {
 
     @Atomic
     public void updateFinantialInstitution(FinantialInstitutionBean bean, Model m) {
-        getFinantialInstitution(m).edit(bean.getFiscalcountryregion(), bean.getCurrency(), bean.getCode(),
+        FinantialInstitution finantialInstitution = getFinantialInstitution(m);
+        finantialInstitution.edit(bean.getFiscalcountryregion(), bean.getCurrency(), bean.getCode(),
                 bean.getFiscalNumber(), bean.getCompanyId(), bean.getName(), bean.getCompanyName(), bean.getAddress(),
                 bean.getCountry(), bean.getDistrict(), bean.getMunicipality(), bean.getLocality(), bean.getZipCode());
+        finantialInstitution.setEmail(bean.getEmail());
+        finantialInstitution.setTelephoneContact(bean.getTelephone());
+        finantialInstitution.setWebAddress(bean.getWebAddress());
+
     }
 
     @RequestMapping(value = "/read/{oid}/exportproductsintegrationfile", produces = "text/xml;charset=Windows-1252")

@@ -270,6 +270,18 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialInstitution.zipCode" /></th>
                         <td><c:out value='${finantialInstitution.zipCode}' /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.FinantialInstitution.telephoneContact" /></th>
+                        <td><c:out value='${finantialInstitution.telephoneContact}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.FinantialInstitution.email" /></th>
+                        <td><c:out value='${finantialInstitution.email}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.FinantialInstitution.webAddress" /></th>
+                        <td><c:out value='${finantialInstitution.webAddress}' /></td>
+                    </tr>
                 </tbody>
             </table>
         </form>
