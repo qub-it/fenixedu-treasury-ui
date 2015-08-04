@@ -4,6 +4,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.document.TreasuryDocumentTemplate;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.reports.dataproviders.CustomerDataProvider;
 import org.fenixedu.treasury.services.reports.dataproviders.DebtAccountDataProvider;
 import org.fenixedu.treasury.services.reports.dataproviders.FinantialInstitutionDataProvider;
@@ -54,11 +55,11 @@ public class ReportExecutor {
 
         } else {
             //HACK...
-            generator =
-                    DocumentGenerator.create(
-                            "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
-                            DocumentGenerator.ODT);
-//            throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
+//            generator =
+//                    DocumentGenerator.create(
+//                            "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
+//                            DocumentGenerator.ODT);
+            throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
         }
 
         registerHelpers(generator);
