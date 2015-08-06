@@ -250,7 +250,7 @@ $(document).ready(function() {
                                       data : vatExemptionReason_options.sort(sortFunction),
                                   }     
                               );  
-
+                              $("#vat_vatExemptionReason").select2().select2('val','${param.vatExemptionReason != null ? param.vatExemptionReason : product.vatExemptionReason.externalId}');
 });
 function checkValue(elem) {
     if(elem.value != 0){
