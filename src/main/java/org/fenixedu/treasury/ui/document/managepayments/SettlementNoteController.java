@@ -61,7 +61,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
-import org.fenixedu.treasury.services.reports.ReportExecutor;
+import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
@@ -526,7 +526,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
-            byte[] report = ReportExecutor.printDocumentToODT(settlementNote);
+            byte[] report = DocumentPrinter.printDocumentToODT(settlementNote);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);

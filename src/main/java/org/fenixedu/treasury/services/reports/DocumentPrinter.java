@@ -21,7 +21,7 @@ import com.qubit.terra.docs.core.DocumentGenerator;
 import com.qubit.terra.docs.core.DocumentTemplateEngine;
 import com.qubit.terra.docs.core.IDocumentTemplateService;
 
-public class ReportExecutor {
+public class DocumentPrinter {
     static {
         registerService();
     }
