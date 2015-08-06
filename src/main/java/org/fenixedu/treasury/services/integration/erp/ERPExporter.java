@@ -733,8 +733,9 @@ public class ERPExporter {
         if (line.getTax().getTaxPercentage() == BigDecimal.ZERO) {
             Vat vat = entry.getVat();
 
-            if (vat.getVatExemptionReason() != null) {
-                line.setTaxExemptionReason(vat.getVatExemptionReason().getCode() + "-" + vat.getVatExemptionReason().getName());
+            if (product.getVatExemptionReason() != null) {
+                line.setTaxExemptionReason(product.getVatExemptionReason().getCode() + "-"
+                        + product.getVatExemptionReason().getName());
             } else {
                 // HACK : DEFAULT
                 line.setTaxExemptionReason(VatExemptionReason.findByCode("M07") + "-"

@@ -94,7 +94,7 @@ public class VatExemptionReason extends VatExemptionReason_Base {
     }
 
     public boolean isDeletable() {
-        return getVatsSet().isEmpty();
+        return getProductsSet().isEmpty();
     }
 
     @Atomic

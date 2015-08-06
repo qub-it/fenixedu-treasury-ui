@@ -112,24 +112,10 @@ ${portal.toolkit()}
                         type="text"
                         pattern="^100(\.0{1,2})?|[0-9]{1,2}(\.[0-9]{1,2})?$"
                         name="taxrate"
-                        onkeyup="checkValue(this)"
                         value='<c:out value='${not empty param.taxrate ? param.taxrate : vat.taxRate }'/>'
                         required />
                 </div>
             </div>
-            <div class="form-group row" id="vatExemptionReasonId">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.Vat.vatExemptionReason" />
-                </div>
-
-                <div class="col-sm-10">
-                    <select id="vat_vatExemptionReason"
-                        class="js-example-basic-single"
-                        name="vatExemptionReason">
-                        <option value="">&nbsp;</option>
-                    </select>
-                </div>
-            </div>            
             
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -198,29 +184,6 @@ $(document).ready(function() {
         }     
     );
     
-    vatExemptionReason_options = [
-        <c:forEach items="${vatExemptionReasonList}" var="element"> 
-            {
-                text : "<c:out value='${element.name.content}'/>",  
-                id : "<c:out value='${element.externalId}'/>"
-            },
-        </c:forEach>
-    ];
-
-    $("#vat_vatExemptionReason").select2(
-        {
-            data : vatExemptionReason_options.sort(sortFunction),
-        }     
-    );  
     
     });
-function checkValue(elem) {
-    if(elem.value != 0){
-        $('#vatExemptionReasonId').hide();
-        $("#vat_vatExemptionReason").select2().select2('val','');
-    } else {
-        $('#vatExemptionReasonId').show();                      
-        $("#vat_vatExemptionReason").select2({ width: 'resolve' });
-    }
-};
 </script>

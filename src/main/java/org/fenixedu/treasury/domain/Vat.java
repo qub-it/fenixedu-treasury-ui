@@ -46,13 +46,12 @@ public class Vat extends Vat_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected Vat(final VatType vatType, final FinantialInstitution finantialInstitution,
-            final VatExemptionReason vatExemptionReason, final BigDecimal taxRate, final DateTime beginDate,
-            final DateTime endDate) {
+    protected Vat(final VatType vatType, final FinantialInstitution finantialInstitution, final BigDecimal taxRate,
+            final DateTime beginDate, final DateTime endDate) {
         this();
         setVatType(vatType);
         setFinantialInstitution(finantialInstitution);
-        setVatExemptionReason(vatExemptionReason);
+
         setTaxRate(taxRate);
         setBeginDate(beginDate);
         setEndDate(endDate);
@@ -77,10 +76,6 @@ public class Vat extends Vat_Base {
             throw new TreasuryDomainException("error.Vat.taxRate.cannot.be.negative");
         }
 
-        if (getTaxRate().compareTo(BigDecimal.ZERO) == 0 && getVatExemptionReason() == null) {
-            throw new TreasuryDomainException("error.Vat.taxRate.without.exemption.reason");
-        }
-
         if (getBeginDate() == null) {
             throw new TreasuryDomainException("error.Vat.beginDate.required");
         }
@@ -99,10 +94,9 @@ public class Vat extends Vat_Base {
     }
 
     @Atomic
-    public void edit(final BigDecimal taxRate, final VatExemptionReason vatExemptionReason, final DateTime beginDate,
-            final DateTime endDate) {
+    public void edit(final BigDecimal taxRate, final DateTime beginDate, final DateTime endDate) {
         setTaxRate(taxRate);
-        setVatExemptionReason(vatExemptionReason);
+
         setBeginDate(beginDate);
         setEndDate(endDate);
 
@@ -122,7 +116,7 @@ public class Vat extends Vat_Base {
 
         setBennu(null);
         setVatType(null);
-        setVatExemptionReason(null);
+
         setFinantialInstitution(null);
 
         deleteDomainObject();
@@ -159,10 +153,9 @@ public class Vat extends Vat_Base {
     }
 
     @Atomic
-    public static Vat create(final VatType vatType, final FinantialInstitution finantialInstitution,
-            final VatExemptionReason vatExemptionReason, final BigDecimal taxRate, final DateTime beginDate,
-            final DateTime endDate) {
-        return new Vat(vatType, finantialInstitution, vatExemptionReason, taxRate, beginDate, endDate);
+    public static Vat create(final VatType vatType, final FinantialInstitution finantialInstitution, final BigDecimal taxRate,
+            final DateTime beginDate, final DateTime endDate) {
+        return new Vat(vatType, finantialInstitution, taxRate, beginDate, endDate);
     }
 
     /* -----

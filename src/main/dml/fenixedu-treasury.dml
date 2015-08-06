@@ -895,12 +895,12 @@ relation VatExemptionReasonBennu {
 	}
 }
 
-relation VatVatExemptionReason {
+relation ProductVatExemptionReason {
 	VatExemptionReason playsRole vatExemptionReason {
 		multiplicity 0..1;
 	}
 	
-	Vat playsRole vats {
+	Product playsRole products {
 		multiplicity *;
 	}
 }

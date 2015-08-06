@@ -67,7 +67,7 @@ public class Product extends Product_Base {
 
     protected Product(final ProductGroup productGroup, final String code, final LocalizedString name,
             final LocalizedString unitOfMeasure, final boolean active, final VatType vatType,
-            final List<FinantialInstitution> finantialInstitutions) {
+            final List<FinantialInstitution> finantialInstitutions, VatExemptionReason vatExemptionReason) {
         this();
         setProductGroup(productGroup);
         setCode(code);
@@ -75,6 +75,7 @@ public class Product extends Product_Base {
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
         setVatType(vatType);
+        setVatExemptionReason(vatExemptionReason);
         updateFinantialInstitutions(finantialInstitutions);
 
         checkRules();
@@ -111,13 +112,15 @@ public class Product extends Product_Base {
 
     @Atomic
     public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active,
-            VatType vatType, final ProductGroup productGroup, final List<FinantialInstitution> finantialInstitutions) {
+            VatType vatType, final ProductGroup productGroup, final List<FinantialInstitution> finantialInstitutions,
+            VatExemptionReason vatExemptionReason) {
         setCode(code);
         setName(name);
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
         setVatType(vatType);
         setProductGroup(productGroup);
+        setVatExemptionReason(vatExemptionReason);
         updateFinantialInstitutions(finantialInstitutions);
 
         checkRules();
@@ -147,6 +150,7 @@ public class Product extends Product_Base {
             }
             this.removeFinantialInstitutions(inst);
         }
+        setVatExemptionReason(null);
 
         deleteDomainObject();
     }
@@ -184,8 +188,8 @@ public class Product extends Product_Base {
     @Atomic
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
             final LocalizedString unitOfMeasure, final boolean active, final VatType vatType,
-            final List<FinantialInstitution> finantialInstitutions) {
-        return new Product(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions);
+            final List<FinantialInstitution> finantialInstitutions, final VatExemptionReason vatExemptionReason) {
+        return new Product(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions, vatExemptionReason);
     }
 
     public Stream<Tariff> getTariffs(FinantialInstitution finantialInstitution) {
