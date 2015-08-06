@@ -53,7 +53,13 @@ public class VatExemptionReason extends VatExemptionReason_Base {
                             "M14", "M15", "M16" };
 
             for (String code : codes) {
-                VatExemptionReason.create(code, new LocalizedString(Locale.getDefault(), code));
+                if (code.equals("M07")) {
+
+                    VatExemptionReason.create(code, new LocalizedString(Locale.getDefault(),
+                            "Isento Artigo 9.º do CIVA (Ou similar)"));
+                } else {
+                    VatExemptionReason.create(code, new LocalizedString(Locale.getDefault(), code));
+                }
             }
         }
     }

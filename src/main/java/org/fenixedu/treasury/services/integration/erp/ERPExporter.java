@@ -82,6 +82,7 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
+import org.fenixedu.treasury.domain.VatExemptionReason;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -736,8 +737,8 @@ public class ERPExporter {
                 line.setTaxExemptionReason(vat.getVatExemptionReason().getCode() + "-" + vat.getVatExemptionReason().getName());
             } else {
                 // HACK : DEFAULT
-                // line.setTaxExemptionReason(VatExemptionReason.M1().getCode()
-                // + "-" + VatExemptionReason.M1().getDescription());
+                line.setTaxExemptionReason(VatExemptionReason.findByCode("M07") + "-"
+                        + VatExemptionReason.findByCode("M07").getName().getContent());
             }
         }
 
