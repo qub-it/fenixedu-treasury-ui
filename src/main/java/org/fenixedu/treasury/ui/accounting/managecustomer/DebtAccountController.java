@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
@@ -44,6 +46,7 @@ import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
@@ -63,6 +66,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.qubit.terra.docs.core.DocumentGenerator;
+import com.qubit.terra.docs.util.ReportGenerationException;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
 @BennuSpringController(value = CustomerController.class)
@@ -280,6 +286,23 @@ public class DebtAccountController extends TreasuryBaseController {
                             + ex.getLocalizedMessage(), model);
         }
         return read(debtAccount, model, redirectAttributes);
+    }
+
+    @RequestMapping(value = "/read/{oid}/printpaymentplan", produces = DocumentGenerator.ODT)
+    public Object processReadToPrintDocument(@PathVariable("oid") DebtAccount debtAccount, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        try {
+            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+            byte[] report = DocumentPrinter.printDebtAccountPaymentPlanToODT(debtAccount);
+            return new ResponseEntity<byte[]>(report, HttpStatus.OK);
+        } catch (ReportGenerationException rex) {
+            addErrorMessage(rex.getLocalizedMessage(), model);
+            addErrorMessage(rex.getCause().getLocalizedMessage(), model);
+            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+        }
     }
 
 }

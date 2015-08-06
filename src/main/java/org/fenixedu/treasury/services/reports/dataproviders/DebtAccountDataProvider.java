@@ -1,6 +1,16 @@
 package org.fenixedu.treasury.services.reports.dataproviders;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
 import com.qubit.terra.docs.util.IFieldsExporter;
@@ -9,12 +19,39 @@ import com.qubit.terra.docs.util.IReportDataProvider;
 public class DebtAccountDataProvider extends AbstractDataProvider implements IReportDataProvider {
 
     protected static final String DEBT_ACCOUNT_KEY = "debtAccount";
+    protected static final String PAYMENT_LINES_KEY = "paymentLines";
 
     private DebtAccount debtAccount;
 
     public DebtAccountDataProvider(final DebtAccount debtAccount) {
         this.debtAccount = debtAccount;
         registerKey(DEBT_ACCOUNT_KEY, DebtAccountDataProvider::handleDebtAccountKey);
+        registerKey(PAYMENT_LINES_KEY, DebtAccountDataProvider::handleTuititonsKey);
+    }
+
+    private static Object handleTuititonsKey(IReportDataProvider provider) {
+        DebtAccountDataProvider debtProvider = (DebtAccountDataProvider) provider;
+        Customer customer = debtProvider.debtAccount.getCustomer();
+        FinantialInstitution finst = debtProvider.debtAccount.getFinantialInstitution();
+
+        Set<PaymentReferenceCode> referencesCodes = new HashSet<PaymentReferenceCode>();
+
+        List<? extends InvoiceEntry> pendingDebitEntriesSet =
+                debtProvider.debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.isDebitNoteEntry())
+                        .collect(Collectors.toList());
+
+        for (InvoiceEntry debitEntry : pendingDebitEntriesSet) {
+            if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().getPaymentCodesSet().isEmpty()) {
+                referencesCodes.addAll(debitEntry.getFinantialDocument().getPaymentCodesSet().stream()
+                        .map(x -> x.getPaymentReferenceCode()).collect(Collectors.toList()));
+            }
+        }
+
+        List<PaymentReferenceCodeDataProvider> codesProviders = new ArrayList<PaymentReferenceCodeDataProvider>();
+        for (PaymentReferenceCode code : referencesCodes) {
+            codesProviders.add(new PaymentReferenceCodeDataProvider(code));
+        }
+        return codesProviders.stream().sorted((x, y) -> x.getDueDate().compareTo(y.getDueDate())).collect(Collectors.toList());
     }
 
     private static Object handleDebtAccountKey(IReportDataProvider provider) {
@@ -25,6 +62,7 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
     @Override
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
         // TODO Auto-generated method stub
+        arg0.registerCollectionAsField(PAYMENT_LINES_KEY);
 
     }
 

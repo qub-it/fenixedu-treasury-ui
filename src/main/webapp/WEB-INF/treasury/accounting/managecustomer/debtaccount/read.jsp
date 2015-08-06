@@ -218,6 +218,10 @@ ${portal.angularToolkit()}
         }
     %>
 
+ |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/printpaymentplan">
+        <spring:message
+            code="label.event.accounting.manageCustomer.printpaymentplan" />
+    </a> &nbsp;
 
 </div>
 <c:if test="${not empty infoMessages}">

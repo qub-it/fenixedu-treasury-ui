@@ -83,6 +83,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import pt.ist.fenixframework.Atomic;
 
 import com.qubit.terra.docs.core.DocumentGenerator;
+import com.qubit.terra.docs.util.ReportGenerationException;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",
@@ -528,6 +529,10 @@ public class SettlementNoteController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
             byte[] report = DocumentPrinter.printDocumentToODT(settlementNote);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
+        } catch (ReportGenerationException rex) {
+            addErrorMessage(rex.getLocalizedMessage(), model);
+            addErrorMessage(rex.getCause().getLocalizedMessage(), model);
+            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
