@@ -82,7 +82,6 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
-import org.fenixedu.treasury.domain.VatExemptionReason;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -730,7 +729,8 @@ public class ERPExporter {
          * a zero. Deve ser referido o preceito legal aplic?vel. . . . . . . . .
          * . Texto 60
          */
-        if (Constants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)) {
+        if (Constants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)
+                || Constants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO)) {
             Vat vat = entry.getVat();
 
             if (product.getVatExemptionReason() != null) {
@@ -738,13 +738,7 @@ public class ERPExporter {
                         + product.getVatExemptionReason().getName());
             } else {
                 // HACK : DEFAULT
-                if (VatExemptionReason.findByCode("M07") != null) {
-                    line.setTaxExemptionReason(VatExemptionReason.findByCode("M07") + "-"
-                            + VatExemptionReason.findByCode("M07").getName().getContent());
-
-                } else {
-                    line.setTaxExemptionReason("Vat Exemption Reason Unknown - check product");
-                }
+                line.setTaxExemptionReason("Vat Exemption Reason Unknown - check product");
             }
         }
 
