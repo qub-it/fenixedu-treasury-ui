@@ -730,7 +730,7 @@ public class ERPExporter {
          * a zero. Deve ser referido o preceito legal aplic?vel. . . . . . . . .
          * . Texto 60
          */
-        if (line.getTax().getTaxPercentage() == BigDecimal.ZERO) {
+        if (Constants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)) {
             Vat vat = entry.getVat();
 
             if (product.getVatExemptionReason() != null) {
@@ -738,8 +738,13 @@ public class ERPExporter {
                         + product.getVatExemptionReason().getName());
             } else {
                 // HACK : DEFAULT
-                line.setTaxExemptionReason(VatExemptionReason.findByCode("M07") + "-"
-                        + VatExemptionReason.findByCode("M07").getName().getContent());
+                if (VatExemptionReason.findByCode("M07") != null) {
+                    line.setTaxExemptionReason(VatExemptionReason.findByCode("M07") + "-"
+                            + VatExemptionReason.findByCode("M07").getName().getContent());
+
+                } else {
+                    line.setTaxExemptionReason("Vat Exemption Reason Unknown - check product");
+                }
             }
         }
 
