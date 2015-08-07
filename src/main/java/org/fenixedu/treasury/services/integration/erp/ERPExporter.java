@@ -731,14 +731,12 @@ public class ERPExporter {
          */
         if (Constants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)
                 || Constants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO)) {
-            Vat vat = entry.getVat();
-
             if (product.getVatExemptionReason() != null) {
                 line.setTaxExemptionReason(product.getVatExemptionReason().getCode() + "-"
                         + product.getVatExemptionReason().getName());
             } else {
                 // HACK : DEFAULT
-                line.setTaxExemptionReason("Vat Exemption Reason Unknown - check product");
+                line.setTaxExemptionReason(BundleUtil.getString(Constants.BUNDLE, "warning.ERPExporter.vat.exemption.unknown"));
             }
         }
 
