@@ -239,7 +239,7 @@ $(document).ready(function() {
     vatExemptionReason_options = [
                                   <c:forEach items="${vatExemptionReasonList}" var="element"> 
                                       {
-                                          text : "<c:out value='${element.name.content}'/>",  
+                                          text : "<c:out value='${element.code} - ${element.name.content}'/>",  
                                           id : "<c:out value='${element.externalId}'/>"
                                       },
                                   </c:forEach>

@@ -137,6 +137,10 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.Product.vatType" /></th>
 						<td><c:out value='${product.vatType.name.content}' /></td>
 					</tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Vat.vatExemptionReason" /></th>
+                        <td><c:out value='${product.vatExemptionReason.code} - ${product.vatExemptionReason.name.content}' /></td>
+                    </tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.Product.active" /></th>
 						<td><c:if test="${product.active}">
