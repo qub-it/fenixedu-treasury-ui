@@ -269,7 +269,18 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
         }
 
-        SchedulerSystem.queue(new TaskRunner(new ERPExportPendingDocumentsTask()));
+        new Thread() {
+            @Override
+            @Atomic
+            public void run() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                }
+                SchedulerSystem.queue(new TaskRunner(new ERPExportPendingDocumentsTask()));
+            };
+        }.start();
+
     }
 
     @Atomic
