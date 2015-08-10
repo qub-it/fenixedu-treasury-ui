@@ -522,12 +522,12 @@ public class SettlementNoteController extends TreasuryBaseController {
         }
     }
 
-    @RequestMapping(value = "/read/{oid}/printdocument", produces = DocumentGenerator.ODT)
+    @RequestMapping(value = "/read/{oid}/printdocument", produces = DocumentGenerator.PDF)
     public Object processReadToPrintDocument(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
-            byte[] report = DocumentPrinter.printDocumentToODT(settlementNote);
+            byte[] report = DocumentPrinter.printFinantialDocument(settlementNote, DocumentGenerator.PDF);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
         } catch (ReportGenerationException rex) {
             addErrorMessage(rex.getLocalizedMessage(), model);

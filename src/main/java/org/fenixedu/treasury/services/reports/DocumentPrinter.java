@@ -46,12 +46,12 @@ public class DocumentPrinter {
         generator.registerHelper("money", new MoneyHelper());
     }
 
-    public static byte[] printDebtAccountPaymentPlanToODT(DebtAccount debtAccount) {
+    public static byte[] printDebtAccountPaymentPlan(DebtAccount debtAccount, String outputMimeType) {
 
-        return printDebitNotesPaymentPlanToODT(debtAccount, null);
+        return printDebitNotesPaymentPlan(debtAccount, null, outputMimeType);
     }
 
-    public static byte[] printDebitNotesPaymentPlanToODT(DebtAccount debtAccount, List<DebitNote> documents) {
+    public static byte[] printDebitNotesPaymentPlan(DebtAccount debtAccount, List<DebitNote> documents, String outputMimeType) {
 
         DocumentGenerator generator = null;
 
@@ -63,7 +63,7 @@ public class DocumentPrinter {
         generator =
                 DocumentGenerator.create(
                         "F:\\O\\fenixedu\\fenixedu-academic-treasury\\src\\main\\resources\\templates\\tuitionsPaymentPlan.odt",
-                        DocumentGenerator.ODT);
+                        outputMimeType);
 //          throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
 //      }
 
@@ -83,7 +83,7 @@ public class DocumentPrinter {
     }
 
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
-    public static byte[] printDocumentToODT(FinantialDocument document) {
+    public static byte[] printFinantialDocument(FinantialDocument document, String outputMimeType) {
 
         TreasuryDocumentTemplate templateInEntity =
                 TreasuryDocumentTemplate
@@ -93,14 +93,10 @@ public class DocumentPrinter {
         DocumentGenerator generator = null;
 
         if (templateInEntity != null) {
-            generator = DocumentGenerator.create(templateInEntity, DocumentGenerator.ODT);
+            generator = DocumentGenerator.create(templateInEntity, outputMimeType);
 
         } else {
             //HACK...
-//            generator =
-//                    DocumentGenerator.create(
-//                            "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
-//                            DocumentGenerator.ODT);
             throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
         }
 

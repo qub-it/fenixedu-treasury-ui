@@ -288,12 +288,12 @@ public class DebtAccountController extends TreasuryBaseController {
         return read(debtAccount, model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/printpaymentplan", produces = DocumentGenerator.ODT)
+    @RequestMapping(value = "/read/{oid}/printpaymentplan", produces = DocumentGenerator.PDF)
     public Object processReadToPrintDocument(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
-            byte[] report = DocumentPrinter.printDebtAccountPaymentPlanToODT(debtAccount);
+            byte[] report = DocumentPrinter.printDebtAccountPaymentPlan(debtAccount, DocumentGenerator.PDF);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
         } catch (ReportGenerationException rex) {
             addErrorMessage(rex.getLocalizedMessage(), model);
