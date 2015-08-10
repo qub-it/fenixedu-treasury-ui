@@ -141,7 +141,8 @@ public class ProductController extends TreasuryBaseController {
         model.addAttribute("productGroupList", ProductGroup.readAll());
         model.addAttribute("vattype_options", VatType.findAll().collect(Collectors.toList()));
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
-        model.addAttribute("vatExemptionReasonList", VatExemptionReason.findAll().collect(Collectors.toList()));
+        model.addAttribute("vatExemptionReasonList",
+                VatExemptionReason.findAll().sorted((x, y) -> (x.getCode().compareTo(y.getCode()))).collect(Collectors.toList()));
         return "treasury/administration/base/manageproduct/product/create";
     }
 
@@ -187,7 +188,8 @@ public class ProductController extends TreasuryBaseController {
         model.addAttribute("productGroupList", ProductGroup.readAll());
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("vattype_options", VatType.findAll().collect(Collectors.toList()));
-        model.addAttribute("vatExemptionReasonList", VatExemptionReason.findAll().collect(Collectors.toList()));
+        model.addAttribute("vatExemptionReasonList",
+                VatExemptionReason.findAll().sorted((x, y) -> (x.getCode().compareTo(y.getCode()))).collect(Collectors.toList()));
         return "treasury/administration/base/manageproduct/product/update";
     }
 
