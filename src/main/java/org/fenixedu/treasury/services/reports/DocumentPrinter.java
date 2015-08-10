@@ -1,8 +1,11 @@
 package org.fenixedu.treasury.services.reports;
 
+import java.util.List;
+
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.SettlementNote;
@@ -45,6 +48,11 @@ public class DocumentPrinter {
 
     public static byte[] printDebtAccountPaymentPlanToODT(DebtAccount debtAccount) {
 
+        return printDebitNotesPaymentPlanToODT(debtAccount, null);
+    }
+
+    public static byte[] printDebitNotesPaymentPlanToODT(DebtAccount debtAccount, List<DebitNote> documents) {
+
         DocumentGenerator generator = null;
 
 //      if (templateInEntity != null) {
@@ -63,7 +71,7 @@ public class DocumentPrinter {
         FinantialInstitution finst = debtAccount.getFinantialInstitution();
 
         registerHelpers(generator);
-        generator.registerDataProvider(new DebtAccountDataProvider(debtAccount));
+        generator.registerDataProvider(new DebtAccountDataProvider(debtAccount, documents));
         generator.registerDataProvider(new CustomerDataProvider(customer));
         generator.registerDataProvider(new FinantialInstitutionDataProvider(finst));
 
