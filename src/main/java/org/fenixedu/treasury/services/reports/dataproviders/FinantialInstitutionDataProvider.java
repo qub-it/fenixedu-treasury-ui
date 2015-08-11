@@ -1,5 +1,6 @@
 package org.fenixedu.treasury.services.reports.dataproviders;
 
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
@@ -9,6 +10,7 @@ import com.qubit.terra.docs.util.IReportDataProvider;
 public class FinantialInstitutionDataProvider extends AbstractDataProvider implements IReportDataProvider {
 
     protected static final String FINANTIAL_INSTITUTION_KEY = "finantialInstitution";
+    protected static final String FINANTIAL_INSTITUTION_LOGO_KEY = "finantialInstitutionLogo";
 
     private FinantialInstitution finantialInstitution;
 
@@ -24,7 +26,7 @@ public class FinantialInstitutionDataProvider extends AbstractDataProvider imple
 
     @Override
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
-        // TODO Auto-generated method stub
+        arg0.registerImage(FINANTIAL_INSTITUTION_LOGO_KEY, Bennu.getInstance().getConfiguration().getLogo());
 
     }
 
