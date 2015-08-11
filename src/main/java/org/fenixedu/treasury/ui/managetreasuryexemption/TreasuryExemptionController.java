@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.dto.TreasuryExemptionBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
@@ -48,7 +49,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.treasury.ui.manageTreasuryExemption") <-- Use for duplicate controller name disambiguation
-@BennuSpringController(value = TreasuryEventController.class)
+@BennuSpringController(value = CustomerController.class)
 @RequestMapping(TreasuryExemptionController.CONTROLLER_URL)
 public class TreasuryExemptionController extends TreasuryBaseController {
 
