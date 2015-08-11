@@ -17,7 +17,7 @@ public class SettlementNoteDataProvider extends AbstractDataProvider implements 
     protected static final String DOCUMENT_TYPE_KEY = "settlementNoteDocumentType";
     protected static final String DOCUMENT_KEY = "settlementNote";
     protected static final String LINES_KEY = "settlementNoteLines";
-    protected static final String PAYMENT_LINES_KEY = "paymentLines";
+    protected static final String PAYMENT_LINES_KEY = "settlementNotePaymentLines";
     protected final List<String> allKeys = new ArrayList<String>();
     protected Map<String, Function<IReportDataProvider, Object>> keysDictionary =
             new HashMap<String, Function<IReportDataProvider, Object>>();

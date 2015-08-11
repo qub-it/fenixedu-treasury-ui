@@ -140,4 +140,12 @@ public class SettlementEntry extends SettlementEntry_Base {
         return this.getAmount();
     }
 
+    public String getInvoiceEntryAmountSignal() {
+        if (this.getInvoiceEntry().isDebitNoteEntry()) {
+            return "";
+        } else {
+            return "-";
+        }
+    }
+
 }
