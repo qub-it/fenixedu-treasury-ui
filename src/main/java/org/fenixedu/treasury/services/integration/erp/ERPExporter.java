@@ -733,7 +733,7 @@ public class ERPExporter {
                 || Constants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO)) {
             if (product.getVatExemptionReason() != null) {
                 line.setTaxExemptionReason(product.getVatExemptionReason().getCode() + "-"
-                        + product.getVatExemptionReason().getName());
+                        + product.getVatExemptionReason().getName().getContent());
             } else {
                 // HACK : DEFAULT
                 line.setTaxExemptionReason(BundleUtil.getString(Constants.BUNDLE, "warning.ERPExporter.vat.exemption.unknown"));

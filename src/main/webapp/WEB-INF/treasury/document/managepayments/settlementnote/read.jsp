@@ -358,7 +358,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
     <c:when test="${not empty settlementNote.finantialDocumentEntriesSet}">
         <datatables:table id="settlementEntries" row="settlementEntry" data="${settlementNote.finantialDocumentEntriesSet}" cssClass="table responsive table-bordered table-hover"
             cdn="false" cellspacing="2">
-            <datatables:column cssStyle="width:10%">
+            <datatables:column cssStyle="width:15%">
                 <datatables:columnHead>
                     <spring:message code="label.InvoiceEntry.document" />
                 </datatables:columnHead>
