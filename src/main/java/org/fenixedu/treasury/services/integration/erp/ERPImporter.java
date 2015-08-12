@@ -264,6 +264,13 @@ public class ERPImporter {
                         throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.payment.received");
                     } else {
                         DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
+                        if (payment.getPaymentMethod().size() > 0) {
+                            if (payment.getPaymentMethod().get(0).getPaymentDate() != null) {
+                                documentDate =
+                                        new org.joda.time.DateTime(payment.getPaymentMethod().get(0).getPaymentDate()
+                                                .toGregorianCalendar());
+                            }
+                        }
                         //Create a new SettlementNote
                         settlementNote =
                                 SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, new DateTime(),

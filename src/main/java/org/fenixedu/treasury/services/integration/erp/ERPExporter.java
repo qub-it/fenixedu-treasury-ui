@@ -404,7 +404,7 @@ public class ERPExporter {
                 for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
                     PaymentMethod method = new PaymentMethod();
                     method.setPaymentAmount(paymentEntry.getPayedAmount().setScale(2, RoundingMode.HALF_EVEN));
-                    method.setPaymentDate(payment.getTransactionDate());
+                    method.setPaymentDate(convertToXMLDateTime(dataTypeFactory, document.getPaymentDate()));
                     method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
                     payment.getPaymentMethod().add(method);
                 }
@@ -414,7 +414,7 @@ public class ERPExporter {
                 for (ReimbursementEntry reimbursmentEntry : document.getReimbursementEntriesSet()) {
                     PaymentMethod method = new PaymentMethod();
                     method.setPaymentAmount(reimbursmentEntry.getReimbursedAmount().setScale(2, RoundingMode.HALF_EVEN));
-                    method.setPaymentDate(payment.getTransactionDate());
+                    method.setPaymentDate(convertToXMLDateTime(dataTypeFactory, document.getPaymentDate()));
                     method.setPaymentMechanism(convertToSAFTPaymentMechanism(reimbursmentEntry.getPaymentMethod()));
                     payment.getPaymentMethod().add(method);
                     payment.setSettlementType(SAFTPTSettlementType.NR);
@@ -422,7 +422,7 @@ public class ERPExporter {
             } else {
                 PaymentMethod voidMethod = new PaymentMethod();
                 voidMethod.setPaymentAmount(BigDecimal.ZERO);
-                voidMethod.setPaymentDate(payment.getTransactionDate());
+                voidMethod.setPaymentDate(convertToXMLDateTime(dataTypeFactory, document.getPaymentDate()));
                 voidMethod.setPaymentMechanism("OU");
                 payment.getPaymentMethod().add(voidMethod);
                 payment.setSettlementType(SAFTPTSettlementType.NN);
