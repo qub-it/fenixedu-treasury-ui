@@ -1,3 +1,4 @@
+<%@page import="org.joda.time.DateTime"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.DocumentNumberSeries"%>
@@ -39,6 +40,50 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+<div class="modal fade" id="closePreparingModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documentnumberseries/read/${documentNumberSeries.externalId}/closepreparingdocuments" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.administration.document.manageDocumentNumberSeries.readDocumentNumberSeries.confirmClosePendingDocuments" />
+                    </p>
+            <div class="form-group row">
+                <div class="col-sm-4 control-label">
+                    <spring:message code="label.FixedTariff.beginDate" />
+                </div>
+
+                <div class="col-sm-6">
+                    <input id="referencedate" class="form-control"
+                        type="text" name="referencedate" bennu-date
+                        value=''
+                        required />
+                </div>
+            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-danger" type="submit">
+                        <spring:message code="label.ok" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.closePreparingModal -->
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -88,8 +133,7 @@ ${portal.toolkit()}
 
     |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> &nbsp; <a class="" href="#" data-toggle="modal" data-target="#deleteModal"> <spring:message
             code="label.event.delete" />
-    </a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> &nbsp; <a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/documentnumberseries/read/${documentNumberSeries.externalId}/closepreparingdocuments">
+    </a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> &nbsp; <a class="" href="#" data-toggle="modal" data-target="#closePreparingModal">
         <spring:message code="label.event.administration.managefinantialinstitution.documentnumberseries.closepreparingdocuments" />
     </a> &nbsp;|&nbsp;
 

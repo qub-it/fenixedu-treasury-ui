@@ -39,6 +39,8 @@ import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.LocalDate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -187,8 +189,10 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
         return documentNumberSeries;
     }
 
-    @RequestMapping(value = "/read/{oid}/closepreparingdocuments", method = RequestMethod.GET)
-    public String processReadToCloseAllPreparingDocuments(@PathVariable("oid") DocumentNumberSeries documentNumberSeries,
+    @RequestMapping(value = "/read/{oid}/closepreparingdocuments", method = RequestMethod.POST)
+    public String processReadToCloseAllPreparingDocuments(
+            @PathVariable("oid") DocumentNumberSeries documentNumberSeries,
+            @RequestParam(value = "referencedate", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate referenceDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         setDocumentNumberSeries(documentNumberSeries, model);
@@ -200,6 +204,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
                             .getFinantialDocumentsSet()
                             .stream()
                             .filter(x -> x.isPreparing())
+                            .filter(x -> referenceDate.isAfter(x.getDocumentDate().toLocalDate()) == false)
                             .sorted((x, y) -> {
                                 //compare by date, and in the date, by the "original document number" if exists
                                 if (x.getDocumentDate().compareTo(y.getDocumentDate()) == 0) {
