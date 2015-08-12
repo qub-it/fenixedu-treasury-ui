@@ -26,7 +26,6 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
-import java.math.BigDecimal;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -227,7 +226,7 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     private Stream<DebtAccount> getSearchUniverseSearchOpenDebtAccountsDataSet() {
-        return DebtAccount.findAll().filter(x -> x.getTotalInDebt().compareTo(BigDecimal.ZERO) != 0);
+        return DebtAccount.findAll().filter(x -> x.getPendingInvoiceEntriesSet().isEmpty() == false);
     }
 
     private List<DebtAccount> filterSearchOpenDebtAccounts() {
