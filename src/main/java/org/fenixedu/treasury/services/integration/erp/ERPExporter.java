@@ -216,7 +216,9 @@ public class ERPExporter {
         masterFiles.setTaxTable(taxTable);
 
         for (Vat vat : institution.getVatsSet()) {
-            taxTable.getTaxTableEntry().add(this.convertVATtoTaxTableEntry(vat, institution));
+            if (vat.isActiveNow()) {
+                taxTable.getTaxTableEntry().add(this.convertVATtoTaxTableEntry(vat, institution));
+            }
         }
 
         // Set MovementOfGoods in SourceDocuments(AuditFile)
