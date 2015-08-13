@@ -107,12 +107,19 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-4">
-                    <c:if test='${not empty param.documentdate}'>
-                        <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required value="${ param.documentdate}" />
-                    </c:if>
-                    <c:if test='${empty param.documentdate}'>
+                    <c:if test='${not empty debitEntry }'>
                         <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
-                            value="<%=new org.joda.time.LocalDate().toString("YYYY-MM-dd")%>" />
+                            value='${debitEntry.entryDateTime.toString("YYYY-MM-dd") }' />
+                    </c:if>
+                    <c:if test='${empty debitEntry }'>
+                        <c:if test='${not empty param.documentdate}'>
+                            <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required value="${ param.documentdate}" />
+                        </c:if>
+                        <c:if test='${empty param.documentdate}'>
+                            <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
+                                value="<%=new org.joda.time.LocalDate()
+							.toString("YYYY-MM-dd")%>" />
+                        </c:if>
                     </c:if>
                 </div>
             </div>
@@ -122,12 +129,19 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-4">
-                    <c:if test='${not empty param.documentduedate}'>
-                        <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required value="${ param.documentduedate}" />
-                    </c:if>
-                    <c:if test='${empty param.documentduedate}'>
+                    <c:if test='${not empty debitEntry }'>
                         <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required
-                            value="<%=new org.joda.time.LocalDate().toString("YYYY-MM-dd")%>" />
+                            value='${debitEntry.dueDate.toString("YYYY-MM-dd") }' />
+                    </c:if>
+                    <c:if test='${empty debitEntry }'>
+                        <c:if test='${not empty param.documentduedate}'>
+                            <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required value="${ param.documentduedate}" />
+                        </c:if>
+                        <c:if test='${empty param.documentduedate}'>
+                            <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required
+                                value="<%=new org.joda.time.LocalDate()
+							.toString("YYYY-MM-dd")%>" />
+                        </c:if>
                     </c:if>
                 </div>
             </div>
