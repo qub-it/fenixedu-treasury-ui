@@ -219,7 +219,61 @@ ${portal.toolkit()}
             </div>
         </div>
         
-
+<%--         <c:if test='${ not paymentsOutOfTimeWindowDataSet.isEmpty() || not reimbursementsOutOfTimeWindowDataSet.isEmpty()}'> --%>
+<%--         <h3><spring:message code="label.administration.manageCustomer.createSettlementNote.summaryOutOfTimeWindow"/></h3> --%>
+<!--         <div class="row"> -->
+<!--             <div class="col-sm-5"> -->
+<!--                 <table id="paymentEntriesOutOfTimeWindow" -->
+<!--                    class="table responsive table-bordered table-hover" width="100%"> -->
+<!--                 <tr> -->
+<!--                     <th> -->
+<%--                         <spring:message code="label.PaymentMethod" /> --%>
+<!--                     </th> -->
+<!--                     <th align="right"> -->
+<%--                         <spring:message code="label.PaymentMethod.value" /> --%>
+<!--                     </th > -->
+<!--                 </tr> -->
+<%--                 <c:set var ="sum" value="${ 0 }"/> --%>
+<%--                 <c:forEach var="entry" items="${paymentsOutOfTimeWindowDataSet}"> --%>
+<!--                     <tr> -->
+<%--                         <td><c:out value="${ entry.key.name.content }" /></td> --%>
+<%--                         <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td> --%>
+<!--                     </tr> -->
+<%--                     <c:set var ="sum" value="${ sum + entry.value }"/> --%>
+<%--                 </c:forEach> --%>
+<!--                     <tr>  -->
+<%--                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th> --%>
+<%--                         <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th> --%>
+<!--                     </tr> -->
+<!--                 </table> -->
+<!--             </div> -->
+<!--             <div class="col-sm-5"> -->
+<!--                 <table id="reimbursementsEntriesOutOfTimeWindow" -->
+<!--                    class="table responsive table-bordered table-hover" width="100%"> -->
+<!--                 <tr> -->
+<!--                     <th> -->
+<%--                         <spring:message code="label.ReimbursementMethod" /> --%>
+<!--                     </th> -->
+<!--                     <th> -->
+<%--                         <spring:message code="label.PaymentMethod.value" /> --%>
+<!--                     </th> -->
+<!--                 </tr> -->
+<%--                 <c:set var ="sum" value="${ 0 }"/> --%>
+<%--                 <c:forEach var="entry" items="${reimbursementsOutOfTimeWindowDataSet}"> --%>
+<!--                     <tr> -->
+<%--                         <td><c:out value="${ entry.key.name.content }" /></td> --%>
+<%--                         <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td> --%>
+<!--                     </tr> -->
+<%--                     <c:set var ="sum" value="${ sum + entry.value }"/> --%>
+<%--                 </c:forEach> --%>
+<!--                     <tr> -->
+<%--                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th> --%>
+<%--                         <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th> --%>
+<!--                     </tr> -->
+<!--                 </table> -->
+<!--             </div> -->
+<!--         </div> -->
+<%--         </c:if> --%>
         <h3><spring:message code="label.details"/></h3>
         <div class="row col-sm-11">
             <datatables:table id="settlementEntries" row="entry" data="${settlementEntriesDataSet}" cssClass="table table-bordered table-hover" cdn="false"
@@ -228,7 +282,7 @@ ${portal.toolkit()}
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.date" />
                     </datatables:columnHead>
-                    <c:out value='${entry.entryDateTime.toString("YYYY-MM-dd")}' />
+                    <c:out value='${entry.finantialDocument.documentDate.toString("YYYY-MM-dd")}' />
                     <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                 </datatables:column>
                 <datatables:column cssStyle="width:80px;align:right">
