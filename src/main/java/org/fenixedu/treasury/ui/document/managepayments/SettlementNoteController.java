@@ -561,13 +561,13 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = TRANSACTIONS_SUMMARY_URI, method = RequestMethod.GET)
-    public String transactionsSummary(Model model) {
+    public String processSearchToTransactionsSummary(Model model) {
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/document/managepayments/settlementnote/transactionsSummary";
     }
 
     @RequestMapping(value = TRANSACTIONS_SUMMARY_URI, method = RequestMethod.POST)
-    public String transactionsSummary(
+    public String processSearchToTransactionsSummary(
             @RequestParam(value = "finantialInstitution", required = true) FinantialInstitution finantialInstitution,
             @RequestParam(value = "documentdatefrom", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
             @RequestParam(value = "documentdateto", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
