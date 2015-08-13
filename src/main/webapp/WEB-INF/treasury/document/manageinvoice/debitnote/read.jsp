@@ -233,6 +233,24 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
         </c:if>
         </ul>
         </div>
+<%}else{ %>
+            <div class="btn-group">
+                <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                    <spring:message code="label.event.document.manageinvoice.debitnote.options">
+                    </spring:message>
+                    <span class="caret"></span>
+                </button>
+<ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+        <c:if test="${debitNote.isPreparing()}">
+            <li>
+            <a class="" href="#" data-toggle="modal" data-target="#closeModal"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.closeDebitNote" />
+            </a>
+            </li>            
+        </c:if>
+
+ </ul>
+</div>
 <%} %>
         <c:if test="${not debitNote.isPreparing()}">
 |

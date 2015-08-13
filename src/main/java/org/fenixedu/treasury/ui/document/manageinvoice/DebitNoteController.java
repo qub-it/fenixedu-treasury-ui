@@ -422,7 +422,7 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
 
         try {
-            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+//            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             debitNote.changeState(FinantialDocumentStateType.CLOSED, "");
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.closed.sucess"),
