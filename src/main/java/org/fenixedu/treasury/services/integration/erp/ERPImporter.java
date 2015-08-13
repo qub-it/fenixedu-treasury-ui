@@ -264,17 +264,22 @@ public class ERPImporter {
                         throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.payment.received");
                     } else {
                         DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
+                        DateTime paymentDate = documentDate;
                         if (payment.getPaymentMethod().size() > 0) {
                             if (payment.getPaymentMethod().get(0).getPaymentDate() != null) {
-                                documentDate =
-                                        new org.joda.time.DateTime(payment.getPaymentMethod().get(0).getPaymentDate()
-                                                .toGregorianCalendar());
+                                try {
+                                    paymentDate =
+                                            new org.joda.time.DateTime(payment.getPaymentMethod().get(0).getPaymentDate()
+                                                    .toGregorianCalendar());
+                                } catch (Exception ex) {
+                                    //ignore error on getting payment date
+                                }
                             }
                         }
                         //Create a new SettlementNote
                         settlementNote =
-                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, new DateTime(),
-                                        documentDate, externalNumber);
+                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate, paymentDate,
+                                        externalNumber);
                     }
                 }
             } else {
