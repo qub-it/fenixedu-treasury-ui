@@ -229,6 +229,12 @@ ${portal.toolkit()}
                     <c:out value='${entry.entryDateTime.toString("YYYY-MM-dd")}' />
                     <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                 </datatables:column>
+                <datatables:column cssStyle="width:80px;align:right">
+                    <datatables:columnHead>
+                        <spring:message code="label.SettlementNote.paymentDate" />
+                    </datatables:columnHead>
+                    <c:out value='${entry.finantialDocument.paymentDate.toString("YYYY-MM-dd")}' />
+                </datatables:column>
                 <datatables:column cssStyle="width:140px;">
                     <datatables:columnHead>
                         <spring:message code="label.Customer" />
