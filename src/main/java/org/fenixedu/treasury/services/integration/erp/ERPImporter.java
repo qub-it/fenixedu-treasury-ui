@@ -313,7 +313,7 @@ public class ERPImporter {
 
             BigDecimal paymentAmount = paymentLine.getDebitAmount();
 
-            //if it is a SettlementEntry for a CreditEntry, then we must get the "debit amount" of the SAFT paymentLine
+            //if it is a SettlementEntry for a CreditEntry, then we must get the "credit amount" of the SAFT paymentLine
             if (invoiceEntry.isCreditNoteEntry()) {
                 paymentAmount = paymentLine.getCreditAmount();
             }

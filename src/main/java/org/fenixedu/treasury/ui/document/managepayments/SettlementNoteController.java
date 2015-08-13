@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
@@ -475,7 +476,9 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
         try {
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
-
+            anullReason =
+                    anullReason + " - [" + Authenticate.getUser().getUsername() + "] "
+                            + new DateTime().toString("YYYY-MM-dd HH:mm");
             settlementNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
@@ -578,13 +581,13 @@ public class SettlementNoteController extends TreasuryBaseController {
             model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
             model.addAttribute("finantialInstitution", finantialInstitution);
 
-            populateSummaryTransactions(model, notes);
+            populateSummaryTransactions(model, notes, documentDateFrom, documentDateTo);
         }
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/document/managepayments/settlementnote/transactionsSummary";
     }
 
-    private void populateSummaryTransactions(Model model, List<SettlementNote> notes) {
+    private void populateSummaryTransactions(Model model, List<SettlementNote> notes, LocalDate beginDate, LocalDate endDate) {
         Map<PaymentMethod, BigDecimal> payments =
                 getPaymentEntriesDataSet(notes).stream().collect(
                         Collectors.groupingBy(PaymentEntry::getPaymentMethod,
@@ -593,6 +596,22 @@ public class SettlementNoteController extends TreasuryBaseController {
                 getReimbursementEntriesDataSet(notes).stream().collect(
                         Collectors.groupingBy(ReimbursementEntry::getPaymentMethod,
                                 Collectors.reducing(BigDecimal.ZERO, ReimbursementEntry::getReimbursedAmount, BigDecimal::add)));
+
+        Map<PaymentMethod, BigDecimal> paymentsOutOfTimeWindow =
+                getPaymentEntriesDataSet(notes)
+                        .stream()
+                        .filter(x -> x.getSettlementNote().getPaymentDate().toLocalDate().isBefore(beginDate))
+                        .collect(
+                                Collectors.groupingBy(PaymentEntry::getPaymentMethod,
+                                        Collectors.reducing(BigDecimal.ZERO, PaymentEntry::getPayedAmount, BigDecimal::add)));
+        Map<PaymentMethod, BigDecimal> reimbursementsOutOfTimeWindow =
+                getReimbursementEntriesDataSet(notes)
+                        .stream()
+                        .filter(x -> x.getSettlementNote().getPaymentDate().toLocalDate().isBefore(beginDate))
+                        .collect(
+                                Collectors.groupingBy(ReimbursementEntry::getPaymentMethod, Collectors.reducing(BigDecimal.ZERO,
+                                        ReimbursementEntry::getReimbursedAmount, BigDecimal::add)));
+
         PaymentMethod.findAll().forEach(pm -> {
             if (payments.get(pm) == null) {
                 payments.put(pm, BigDecimal.ZERO);
@@ -602,14 +621,21 @@ public class SettlementNoteController extends TreasuryBaseController {
             }
         });
         model.addAttribute("paymentsDataSet", payments);
+        model.addAttribute("paymentsOutOfTimeWindowDataSet", paymentsOutOfTimeWindow);
         model.addAttribute("reimbursementsDataSet", reimbursements);
+        model.addAttribute("reimbursementsOutOfTimeWindowDataSet", reimbursementsOutOfTimeWindow);
     }
 
     private List<SettlementNote> filterSearchSettlementNote(FinantialInstitution finantialInstitution,
             LocalDate documentDateFrom, LocalDate documentDateTo) {
+
+        //Only filter de SettlementNotes from the "internal" series and from the final institution
+        // And appy TimeWindow to the "DOCUMENT_DATE"
         return SettlementNote
                 .findAll()
                 .filter(note -> note.isClosed())
+                .filter(note -> note.getDocumentNumberSeries().getSeries().getExternSeries() == false
+                        && note.getDocumentNumberSeries().getSeries().getLegacy() == false)
                 .filter(note -> note.getDebtAccount().getFinantialInstitution().equals(finantialInstitution))
                 .filter(note -> note.getDocumentDate().toLocalDate().isAfter(documentDateFrom)
                         || note.getDocumentDate().toLocalDate().isEqual(documentDateFrom))

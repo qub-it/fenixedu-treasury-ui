@@ -216,6 +216,8 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
                                 return x.getDocumentDate().compareTo(y.getDocumentDate());
                             }).collect(Collectors.toList());
 
+            int maxClosingDocuments = 100;
+            int count = 0;
             for (FinantialDocument document : preparingDocuments) {
                 try {
                     document.closeDocument();
@@ -223,6 +225,9 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
                     addErrorMessage(
                             "O documento " + document.getUiDocumentNumber() + " não foi encerrado : " + ex.getLocalizedMessage(),
                             model);
+                }
+                if (count++ == maxClosingDocuments) {
+                    addInfoMessage("Max of " + maxClosingDocuments + " documents closed. Retry for more...", model);
                 }
             }
             return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);

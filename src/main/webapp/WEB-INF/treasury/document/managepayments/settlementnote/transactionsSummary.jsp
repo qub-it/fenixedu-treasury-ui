@@ -218,6 +218,8 @@ ${portal.toolkit()}
                 </table>
             </div>
         </div>
+        
+
         <h3><spring:message code="label.details"/></h3>
         <div class="row col-sm-11">
             <datatables:table id="settlementEntries" row="entry" data="${settlementEntriesDataSet}" cssClass="table table-bordered table-hover" cdn="false"
