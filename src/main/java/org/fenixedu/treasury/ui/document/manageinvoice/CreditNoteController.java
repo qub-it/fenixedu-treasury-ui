@@ -292,7 +292,7 @@ public class CreditNoteController extends TreasuryBaseController {
             value = "debitnote", required = false) DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
 
         FinantialInstitution finantialInstitution = null;
-        DocumentNumberSeries documentNumberSeries = null;
+//        DocumentNumberSeries documentNumberSeries = null;
         if (debtAccount == null && debitNote == null) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
@@ -313,30 +313,30 @@ public class CreditNoteController extends TreasuryBaseController {
         if (debitNote != null) {
             finantialInstitution = debitNote.getDebtAccount().getFinantialInstitution();
             debtAccount = debitNote.getDebtAccount();
-            documentNumberSeries =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
-                            .getSeries());
+//            documentNumberSeries =
+//                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
+//                            .getSeries());
         }
 
-        if (documentNumberSeries != null) {
-            model.addAttribute("CreditNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
+//        if (documentNumberSeries != null) {
+//            model.addAttribute("CreditNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
+//
+//        } else {
+        List<DocumentNumberSeries> availableSeries =
+                org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                        .find(FinantialDocumentType.findForCreditNote(), finantialInstitution)
+                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
 
+        availableSeries =
+                DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
+        if (availableSeries.size() > 0) {
+            model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
         } else {
-            List<DocumentNumberSeries> availableSeries =
-                    org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                            .find(FinantialDocumentType.findForCreditNote(), finantialInstitution)
-                            .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
-
-            availableSeries =
-                    DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
-            if (availableSeries.size() > 0) {
-                model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
-            } else {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
-                        "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
-                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
-            }
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+            return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         }
+//        }
 
         model.addAttribute("debitNote", debitNote);
         model.addAttribute("debtAccount", debtAccount);

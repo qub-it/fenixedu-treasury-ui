@@ -1,21 +1,26 @@
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
-
-
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
 <spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css" />
-
 <link rel="stylesheet" href="${datatablesCssUrl}" />
 <spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
+
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <!--  ${portal.toolkit()} -->

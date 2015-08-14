@@ -424,7 +424,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
     }
 
-    public class InterestEntryBean implements IBean, Serializable {
+    public static class InterestEntryBean implements IBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 

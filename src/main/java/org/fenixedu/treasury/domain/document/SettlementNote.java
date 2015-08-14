@@ -116,9 +116,15 @@ public class SettlementNote extends SettlementNote_Base {
     @Override
     public boolean isDeletable() {
         //We can only "delete" a settlement note if is in "Preparing"
-        return this.isPreparing()
-                && (getAdvancedPaymentCreditNote() == null || getAdvancedPaymentCreditNote() != null
-                        && getAdvancedPaymentCreditNote().isDeletable());
+        if (this.isPreparing()) {
+            //if is preparing, the AdvancedPaymentCreditNote if exists, must be deletable
+            if (getAdvancedPaymentCreditNote() != null) {
+                return getAdvancedPaymentCreditNote().isDeletable();
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

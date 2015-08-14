@@ -51,6 +51,53 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 <% 
                 if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
 %>
+<div class="modal fade" id="calculateInterestValueModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/calculateinterestvalue" method="GET">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+
+                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmCalculateInterestValue" />
+                        
+                    </p>
+                    </br>
+                    
+                    <div class="form-group row">
+                            <div class="col-sm-4 control-label">
+                                <spring:message code="label.SettlementNote.paymentDate" />
+                            </div>
+
+                            <div class="col-sm-8">
+                                <input id="debitNote_paymentDate" class="form-control" type="text" bennu-date name="paymentdate" required value='' />
+                            </div>
+                        </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-primary" type="submit">
+                        <spring:message code="label.ok" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -221,9 +268,13 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
             </li>
 		    
             <c:if test="${debitNote.openAmount > 0  }">
+                    <li>
+            
+                    <a class="" href="#" data-toggle="modal" data-target="#calculateInterestValueModal"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message
+                    code="label.event.document.manageInvoice.debitNote.calculateInterestValue" />
+                    </a>
+                </li>
                 <li>
-                
-                
                 <a class=""
                     href="${pageContext.request.contextPath}/treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote?debitnote=${debitNote.externalId}">
                 <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>    <spring:message code="label.event.document.manageInvoice.createPaymentCodeInDebitNote" />

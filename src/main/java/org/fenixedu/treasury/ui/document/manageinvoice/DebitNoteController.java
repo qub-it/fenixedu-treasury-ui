@@ -27,6 +27,7 @@
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,6 +51,8 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -57,6 +60,7 @@ import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -512,6 +516,87 @@ public class DebitNoteController extends TreasuryBaseController {
                 e.printStackTrace();
             }
         }
+    }
+
+    @RequestMapping(value = "/read/{oid}/calculateinterestvalue", method = RequestMethod.GET)
+    public String processReadToCalculateInterestValue(@PathVariable("oid") DebitNote debitNote,
+            @RequestParam("paymentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate paymentDate, Model model,
+            RedirectAttributes redirectAttributes) {
+        assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
+        List<InterestEntryBean> allInterests = new ArrayList<InterestEntryBean>();
+
+        for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
+            InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
+
+            if (Constants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
+                InterestEntryBean entryBean = new InterestEntryBean(entry, calculateUndebitedInterestValue);
+                allInterests.add(entryBean);
+            }
+        }
+
+        List<DocumentNumberSeries> availableSeries =
+                org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                        .find(FinantialDocumentType.findForDebitNote(),
+                                debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution())
+                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
+
+        availableSeries =
+                DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
+        if (availableSeries.size() > 0) {
+            model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
+        } else {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
+
+        setDebitNote(debitNote, model);
+        model.addAttribute("interestRateValues", allInterests);
+        return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
+    }
+
+    @RequestMapping(value = "/read/{oid}/calculateinterestvalue", method = RequestMethod.POST)
+    public String processReadToCalculateInterestValue(@PathVariable("oid") DebitNote debitNote,
+            @RequestParam("paymentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate paymentDate,
+            @RequestParam("documentnumberseries") DocumentNumberSeries documentNumberSeries,
+            @RequestParam("documentobservations") String documentObservations, Model model, RedirectAttributes redirectAttributes) {
+
+        try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
+            if (debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution() != documentNumberSeries.getSeries()
+                    .getFinantialInstitution()) {
+                throw new TreasuryDomainException("error.DebitNote.invalid.series.for.interest.debit.note.creation");
+            }
+            DebitNote interestDebitNote =
+                    createInterestDebitNoteForDebitNote(debitNote, paymentDate, documentNumberSeries, documentObservations);
+
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "info.document.manageinfoice.debitnote.success.calculate.interest.value"), model);
+
+            return redirect(DebitNoteController.READ_URL + interestDebitNote.getExternalId(), model, redirectAttributes);
+
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
+        }
+    }
+
+    @Atomic
+    private DebitNote createInterestDebitNoteForDebitNote(DebitNote debitNote, LocalDate paymentDate,
+            DocumentNumberSeries documentNumberSeries, String documentObservations) {
+        DebitNote interestDebitNote;
+        if (documentNumberSeries.getSeries().getCertificated()) {
+            interestDebitNote =
+                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries, new DateTime(), paymentDate);
+        } else {
+            interestDebitNote =
+                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
+                            paymentDate.toDateTimeAtStartOfDay(), paymentDate);
+        }
+        interestDebitNote.setDocumentObservations(documentObservations);
+        return debitNote;
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationonline")

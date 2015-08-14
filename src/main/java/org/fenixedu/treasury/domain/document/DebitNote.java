@@ -30,13 +30,16 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -253,6 +256,13 @@ public class DebitNote extends DebitNote_Base {
                                 .getSeries());
 
                 CreditNote creditNote = this.createEquivalentCreditNote(documentNumberSeriesCreditNote, now, reason, true);
+                //if the equivalent creditNote is Zero, then nothing is available for credit, then delete the credit note and throw an exception 
+                if (Constants.isEqual(creditNote.getTotalAmount(), BigDecimal.ZERO)) {
+                    creditNote.delete(true);
+                    throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
+                            "error.DebitNote.invalid.amount.for.annull.with.credit.note"));
+                }
+
                 creditNote.closeDocument();
 
                 SettlementNote settlementNote =
@@ -304,17 +314,17 @@ public class DebitNote extends DebitNote_Base {
                 CreditNote.create(this.getDebtAccount(), documentNumberSeries, documentDate, this, this.getUiDocumentNumber());
         creditNote.setDocumentObservations(documentObservations);
         for (DebitEntry entry : this.getDebitEntriesSet()) {
-            {
-                //Get the amount for credit without tax, and considering the credit quantity FOR ONE
-                BigDecimal amountForCredit =
-                        entry.getCurrency().getValueWithScale(
-                                entry.getAvailableAmountForCredit().divide(
-                                        BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
-                final CreditEntry creditEntry =
-                        CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(),
-                                amountForCredit, documentDate, entry, BigDecimal.ONE);
-                creditNote.addFinantialDocumentEntries(creditEntry);
-            }
+
+            //Get the amount for credit without tax, and considering the credit quantity FOR ONE
+            BigDecimal amountForCredit =
+                    entry.getCurrency().getValueWithScale(
+                            entry.getAvailableAmountForCredit().divide(
+                                    BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
+
+            final CreditEntry creditEntry =
+                    CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), amountForCredit,
+                            documentDate, entry, BigDecimal.ONE);
+            creditNote.addFinantialDocumentEntries(creditEntry);
 
             //Also generate for InterestRateDebitEntry
             if (createForInterestRateEntries == true) {
@@ -322,20 +332,26 @@ public class DebitNote extends DebitNote_Base {
                     for (DebitEntry interestEntry : entry.getInterestDebitEntriesSet()) {
 
                         //Get the amount for credit without tax, and considering the credit quantity FOR ONE
-                        BigDecimal amountForCredit =
+                        BigDecimal amountForInterestCredit =
                                 interestEntry.getCurrency().getValueWithScale(
                                         interestEntry.getAvailableAmountForCredit().divide(
                                                 BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
 
                         final CreditEntry interestCreditEntry =
                                 CreditEntry.create(creditNote, interestEntry.getDescription(), interestEntry.getProduct(),
-                                        interestEntry.getVat(), amountForCredit, documentDate, interestEntry, BigDecimal.ONE);
+                                        interestEntry.getVat(), amountForInterestCredit, documentDate, interestEntry,
+                                        BigDecimal.ONE);
                         creditNote.addFinantialDocumentEntries(interestCreditEntry);
                     }
                 }
             }
         }
-
+        //if the equivalent creditNote is Zero, then nothing is available for credit, then delete the credit note and throw an exception 
+        if (Constants.isEqual(creditNote.getTotalAmount(), BigDecimal.ZERO)) {
+            creditNote.delete(true);
+            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
+                    "error.DebitNote.invalid.amount.for.annull.with.credit.note"));
+        }
         return creditNote;
     }
 
@@ -345,5 +361,24 @@ public class DebitNote extends DebitNote_Base {
             result.addAll(debit.getCreditEntriesSet());
         }
         return result;
+    }
+
+    public static DebitNote createInterestDebitNoteForDebitNote(DebitNote debitNote, DocumentNumberSeries documentNumberSeries,
+            DateTime documentDate, LocalDate paymentDate) {
+
+        DebitNote interestDebitNote = DebitNote.create(debitNote.getDebtAccount(), documentNumberSeries, documentDate);
+        for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
+            InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
+            if (Constants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
+                entry.createInterestRateDebitEntry(calculateUndebitedInterestValue, documentDate,
+                        Optional.<DebitNote> of(interestDebitNote));
+            }
+        }
+
+        if (Constants.isEqual(interestDebitNote.getTotalAmount(), BigDecimal.ZERO)) {
+            interestDebitNote.delete(true);
+            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE, "error.DebitNote.no.interest.to.generate"));
+        }
+        return interestDebitNote;
     }
 }
