@@ -231,6 +231,11 @@ public class DebitNote extends DebitNote_Base {
 
     @Atomic
     public void anullDebitNoteWithCreditNote(String reason) {
+        anullDebitNoteWithCreditNote(reason, true);
+    }
+
+    @Atomic
+    public void anullDebitNoteWithCreditNote(String reason, boolean anullGeneratedInterests) {
 
         if (this.getFinantialDocumentEntriesSet().size() > 0) {
             if (this.isClosed() == true) {
@@ -255,7 +260,8 @@ public class DebitNote extends DebitNote_Base {
                         DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(), this.getDocumentNumberSeries()
                                 .getSeries());
 
-                CreditNote creditNote = this.createEquivalentCreditNote(documentNumberSeriesCreditNote, now, reason, true);
+                CreditNote creditNote =
+                        this.createEquivalentCreditNote(documentNumberSeriesCreditNote, now, reason, anullGeneratedInterests);
                 //if the equivalent creditNote is Zero, then nothing is available for credit, then delete the credit note and throw an exception 
                 if (Constants.isEqual(creditNote.getTotalAmount(), BigDecimal.ZERO)) {
                     creditNote.delete(true);

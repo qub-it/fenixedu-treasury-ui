@@ -447,12 +447,12 @@ public class DebitNoteController extends TreasuryBaseController {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()
                     || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
-                debitNote.anullDebitNoteWithCreditNote(anullReason);
+                debitNote.anullDebitNoteWithCreditNote(anullReason, false);
             } else {
 //                if (TreasuryAccessControl.getInstance().isManager()) {
 //                    debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
 //                } else {
-                debitNote.anullDebitNoteWithCreditNote(anullReason);
+                debitNote.anullDebitNoteWithCreditNote(anullReason, false);
 //                }
             }
 
@@ -522,38 +522,55 @@ public class DebitNoteController extends TreasuryBaseController {
     public String processReadToCalculateInterestValue(@PathVariable("oid") DebitNote debitNote,
             @RequestParam("paymentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate paymentDate, Model model,
             RedirectAttributes redirectAttributes) {
-        assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-        List<InterestEntryBean> allInterests = new ArrayList<InterestEntryBean>();
+        try {
+            assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-        for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
-            InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
-
-            if (Constants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
-                InterestEntryBean entryBean = new InterestEntryBean(entry, calculateUndebitedInterestValue);
-                allInterests.add(entryBean);
+            if (paymentDate == null) {
+                throw new TreasuryDomainException("error.label.DebitNote.create.interest.note.invalid.payment.date");
             }
-        }
 
-        List<DocumentNumberSeries> availableSeries =
-                org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                        .find(FinantialDocumentType.findForDebitNote(),
-                                debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution())
-                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
+            List<InterestEntryBean> allInterests = new ArrayList<InterestEntryBean>();
 
-        availableSeries =
-                DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
-        if (availableSeries.size() > 0) {
-            model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
-        } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+            for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
+                InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
+
+                if (Constants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
+                    InterestEntryBean entryBean = new InterestEntryBean(entry, calculateUndebitedInterestValue);
+                    allInterests.add(entryBean);
+                }
+            }
+
+            List<DocumentNumberSeries> availableSeries =
+                    org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                            .find(FinantialDocumentType.findForDebitNote(),
+                                    debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution())
+                            .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
+
+            availableSeries =
+                    DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
+            if (availableSeries.size() > 0) {
+                model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
+            } else {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                        "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+                return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            }
+
+            setDebitNote(debitNote, model);
+            model.addAttribute("interestRateValues", allInterests);
+
+            addWarningMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.warning.document.manageinvoice.calculateinterestvalue.line1"),
+                    model);
+            addWarningMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.warning.document.manageinvoice.calculateinterestvalue.line2"),
+                    model);
+            return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
             return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
-
-        setDebitNote(debitNote, model);
-        model.addAttribute("interestRateValues", allInterests);
-        return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
     }
 
     @RequestMapping(value = "/read/{oid}/calculateinterestvalue", method = RequestMethod.POST)
@@ -564,6 +581,10 @@ public class DebitNoteController extends TreasuryBaseController {
 
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
+            if (paymentDate == null) {
+                throw new TreasuryDomainException("error.label.DebitNote.create.interest.note.invalid.payment.date");
+            }
 
             if (debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution() != documentNumberSeries.getSeries()
                     .getFinantialInstitution()) {
@@ -596,7 +617,7 @@ public class DebitNoteController extends TreasuryBaseController {
                             paymentDate.toDateTimeAtStartOfDay(), paymentDate);
         }
         interestDebitNote.setDocumentObservations(documentObservations);
-        return debitNote;
+        return interestDebitNote;
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationonline")

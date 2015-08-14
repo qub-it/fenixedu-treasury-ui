@@ -122,40 +122,6 @@ ${portal.toolkit()}
     <c:when test="${not empty interestRateValues}">
     
                                 
-                                <form method="post" class="form-horizontal">
-<input type="hidden" name="paymentdate" value="${paymentDate.toString("YYYY-MM-dd")}" />
-<input type="hidden" name="debitnote" value="${debitNote.externalId}" />
-    <div class="panel panel-default">
-        <div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebitNote.documentNumberSeries" />
-                </div>
-
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="debitNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries">
-                    </select>
-                </div>
-            </div>
-             <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebitNote.documentObservations" />
-                </div>
-
-                <div class="col-sm-10">
-                    <input id="debitNote_documentObservations" class="form-control" type="text" name="documentobservations"
-                        value='' />
-                </div>
-            </div>
-
-        </div>
-
-        <div class="panel-footer">
-            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
-        </div>
-    </div>
-</form>
     
     
         <datatables:table id="interestRateValues" row="interestEntryBean" data="${interestRateValues}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
@@ -226,7 +192,51 @@ ${portal.toolkit()}
                                             "${pageContext.request.contextPath}",
                                             "${datatablesI18NUrl}");
                                 </script>
-                                
+                   </br></br>             
+                                <form method="post" class="form-horizontal">
+<input type="hidden" name="paymentdate" value="${paymentDate.toString("YYYY-MM-dd")}" />
+<input type="hidden" name="debitnote" value="${debitNote.externalId}" />
+    <div class="panel panel-primary">
+    <div class="panel-heading ">
+    <spring:message code="label.DebitNote.calculateInterestValueHeader" />
+    </div>
+        <div class="panel-body">
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitNote.documentNumberSeries" />
+                </div>
+
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select id="debitNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries">
+                    </select>
+                </div>
+            </div>
+             <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitNote.documentObservations" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="debitNote_documentObservations" class="form-control" type="text" name="documentobservations"
+                       required value='' />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel-footer">
+        
+        <a href="${pageContext.request.contextPath}<%=DebitNoteController.READ_URL%>${debitNote.externalId}" class="btn btn-default"> 
+        <span class="glyphicon glyphicon-remove" aria-hidden="true" >&nbsp;</span><spring:message code="label.cancel" /> 
+        </a>
+        
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-ok" aria-hidden="true" >&nbsp;</span><spring:message code="label.DebitNote.generateInterest" />
+        </button>
+        </div>
+    </div>
+</form>
 
 
 <script>
