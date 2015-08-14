@@ -170,6 +170,14 @@ ${portal.toolkit()}
                         <td><c:out
                                 value='${treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(treasuryEvent.amountToPay)}' /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.TreasuryEvent.treasuryEventDate" />
+                        </th>
+                        <td>
+                        	<joda:format value="${treasuryEvent.treasuryEventDate}" style="S-" />
+                        </td>
+                    </tr>
                     <%-- 
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message

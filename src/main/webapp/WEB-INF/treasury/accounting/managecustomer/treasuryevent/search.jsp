@@ -135,6 +135,8 @@ ${portal.toolkit()}
                     <%--!!!  Field names here --%>
                     <th><spring:message
                             code="label.TreasuryEvent.description" /></th>
+                    <th><spring:message
+                            code="label.TreasuryEvent.treasuryEventDate" /></th>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -165,6 +167,7 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "description" : "<c:out value='${searchResult.description.content}'/>",
+"treasuryEventDate" : "<c:out value='${searchResult.treasuryEventDate.toString()}'/>", 
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/treasuryevent/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -182,6 +185,7 @@ ${portal.toolkit()}
 		},
 		"columns": [
 			{ data: 'description' },
+			{ data: 'treasuryEventDate' },
 			{ data: 'actions',className:"all" }
 			
 		],
