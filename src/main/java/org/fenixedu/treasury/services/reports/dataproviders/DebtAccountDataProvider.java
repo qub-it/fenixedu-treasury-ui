@@ -46,7 +46,7 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
         if (debtProvider.debitNotesForPaymentLines == null) {
             List<? extends InvoiceEntry> pendingDebitEntriesSet =
                     debtProvider.debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.isDebitNoteEntry())
-                            .collect(Collectors.toList());
+                            .collect(Collectors.<InvoiceEntry> toList());
 
             for (InvoiceEntry debitEntry : pendingDebitEntriesSet) {
                 if (debitEntry.getFinantialDocument() != null

@@ -40,6 +40,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
@@ -363,7 +364,7 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isAcademicalActBlockingSuspension() {
         return getAcademicalActBlockingSuspension();
     }
-
+    
     public boolean exempt(final TreasuryExemption treasuryExemption, final BigDecimal amountWithVat) {
         if (treasuryExemption.getTreasuryEvent() != getTreasuryEvent()) {
             throw new RuntimeException("wrong call");
@@ -555,6 +556,14 @@ public class DebitEntry extends DebitEntry_Base {
 
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
+    }
+    
+    public static Stream<? extends DebitEntry> find(final Customer customer) {
+        return findAll().filter(d -> d.getDebtAccount().getCustomer() == customer);
+    }
+    
+    public static Stream<? extends DebitEntry> find(final DebtAccount debtAccount) {
+        return findAll().filter(d -> d.getDebtAccount() == debtAccount);
     }
 
     public static Stream<? extends DebitEntry> find(final DebitNote debitNote) {

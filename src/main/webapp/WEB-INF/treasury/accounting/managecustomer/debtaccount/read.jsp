@@ -206,7 +206,7 @@ ${portal.angularToolkit()}
             </a></li>
             <c:if test="${debtAccount.customer.isPersonCustomer() }">
                 <li><a class=""
-                    href="${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/${debtAccount.customer.person.externalId}">
+                    href="${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/${debtAccount.externalId}">
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicActBlockingSuspensionController.link" />
                 </a></li>
             </c:if>
