@@ -95,13 +95,13 @@ public class PaymentMethod extends PaymentMethod_Base {
     @Atomic
     public static void initializePaymentMethod() {
         if (PaymentMethod.findAll().count() == 0) {
-            PaymentMethod.create("MON",
+            PaymentMethod.create("NU",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.MON")));
-            PaymentMethod.create("WTR",
+            PaymentMethod.create("TB",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.WTR")));
-            PaymentMethod.create("ELE",
+            PaymentMethod.create("MB",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")));
-            PaymentMethod.create("CCR",
+            PaymentMethod.create("CD",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")));
             PaymentMethod.create("CH",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CH")));
