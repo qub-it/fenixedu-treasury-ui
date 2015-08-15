@@ -28,7 +28,6 @@ package org.fenixedu.treasury.ui.document.manageinvoice;
 
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -228,13 +227,13 @@ public class CreditNoteController extends TreasuryBaseController {
                 searchcreditnoteResultsDataSet.stream().limit(SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
         model.addAttribute("searchcreditnoteResultsDataSet", searchcreditnoteResultsDataSet);
-        model.addAttribute("CreditNote_debitNote_options", new ArrayList<DebitNote>());
-        model.addAttribute("CreditNote_payorDebtAccount_options", new ArrayList<DebtAccount>());
-        model.addAttribute("CreditNote_finantialDocumentType_options", new ArrayList<FinantialDocumentType>());
-        model.addAttribute("CreditNote_debtAccount_options", new ArrayList<DebtAccount>());
-        model.addAttribute("CreditNote_documentNumberSeries_options", new ArrayList<DocumentNumberSeries>());
-        model.addAttribute("CreditNote_currency_options", new ArrayList<Currency>());
-        model.addAttribute("stateValues", FinantialDocumentStateType.values());
+//        model.addAttribute("CreditNote_debitNote_options", new ArrayList<DebitNote>());
+//        model.addAttribute("CreditNote_payorDebtAccount_options", new ArrayList<DebtAccount>());
+//        model.addAttribute("CreditNote_finantialDocumentType_options", new ArrayList<FinantialDocumentType>());
+//        model.addAttribute("CreditNote_debtAccount_options", new ArrayList<DebtAccount>());
+//        model.addAttribute("CreditNote_documentNumberSeries_options", new ArrayList<DocumentNumberSeries>());
+//        model.addAttribute("CreditNote_currency_options", new ArrayList<Currency>());
+        model.addAttribute("stateValues", FinantialDocumentStateType.findAll());
 
         return "treasury/document/manageinvoice/creditnote/search";
     }

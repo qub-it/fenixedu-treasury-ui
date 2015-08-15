@@ -345,17 +345,17 @@ public class SettlementNoteController extends TreasuryBaseController {
                 searchsettlementnoteResultsDataSet.stream().limit(SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE)
                         .collect(Collectors.toList());
 
-        model.addAttribute("SettlementNote_finantialDocumentType_options",
-                FinantialDocumentType.findAll().collect(Collectors.toList()));
-        model.addAttribute("SettlementNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
-        model.addAttribute(
-                "SettlementNote_documentNumberSeries_options",
-                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()
-                        .filter(dNS -> dNS.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
-                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList()));
-        model.addAttribute("SettlementNote_currency_options",
-                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+//        model.addAttribute("SettlementNote_finantialDocumentType_options",
+//                FinantialDocumentType.findAll().collect(Collectors.toList()));
+//        model.addAttribute("SettlementNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
+//        model.addAttribute(
+//                "SettlementNote_documentNumberSeries_options",
+//                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()
+//                        .filter(dNS -> dNS.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
+//                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList()));
+//        model.addAttribute("SettlementNote_currency_options",
+//                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
+        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.findAll());
         return "treasury/document/managepayments/settlementnote/search";
     }
 

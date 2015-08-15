@@ -27,6 +27,9 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.Constants;
@@ -48,6 +51,14 @@ public enum FinantialDocumentStateType {
 
     public LocalizedString getDescriptionI18N() {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
+    }
+
+    public static List<FinantialDocumentStateType> findAll() {
+        List<FinantialDocumentStateType> result = new ArrayList<FinantialDocumentStateType>();
+        result.add(CLOSED);
+        result.add(PREPARING);
+        result.add(ANNULED);
+        return result;
     }
 
 }

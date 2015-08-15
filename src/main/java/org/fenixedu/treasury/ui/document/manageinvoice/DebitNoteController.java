@@ -179,16 +179,16 @@ public class DebitNoteController extends TreasuryBaseController {
                 "DebitNote_payorDebtAccount_options",
                 org.fenixedu.treasury.domain.debt.DebtAccount.findAll().filter(x -> x.getCustomer().isAdhocCustomer())
                         .collect(Collectors.toList()));
-        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
-                .findAll().collect(Collectors.toList()));
-        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-        model.addAttribute("DebitNote_debtAccount_options",
-                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
-        model.addAttribute("DebitNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                .findAll().collect(Collectors.toList()));
-        model.addAttribute("DebitNote_currency_options",
-                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+//        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
+//                .findAll().collect(Collectors.toList()));
+//        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
+//        model.addAttribute("DebitNote_debtAccount_options",
+//                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
+//        model.addAttribute("DebitNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries
+//                .findAll().collect(Collectors.toList()));
+//        model.addAttribute("DebitNote_currency_options",
+//                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
+        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.findAll());
 
         return "treasury/document/manageinvoice/debitnote/search";
     }
@@ -445,6 +445,17 @@ public class DebitNoteController extends TreasuryBaseController {
         setDebitNote(debitNote, model);
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
+            //Check if any possible InterestBean is in preparing state
+            for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
+                if (entry.getInterestDebitEntriesSet().isEmpty() == false) {
+                    if (entry.getInterestDebitEntriesSet().stream()
+                            .anyMatch(x -> x.getFinantialDocument() == null || x.getFinantialDocument().isPreparing())) {
+                        throw new TreasuryDomainException("error.DebitNote.creating.credit.note.with.pending.interest.entries");
+                    }
+                }
+            }
+
             if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()
                     || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
                 debitNote.anullDebitNoteWithCreditNote(anullReason, false);
