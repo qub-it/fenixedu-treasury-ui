@@ -220,9 +220,9 @@ ${portal.toolkit()}
                 <tr>
                     <%--!!!  Field names here --%>
                     <th><spring:message
-                            code="label.ERPExportOperation.finantialInstitution" /></th>
-                    <th><spring:message
                             code="label.ERPExportOperation.executionDate" /></th>
+                    <th><spring:message
+                            code="label.ERPExportOperation.finantialInstitution" /></th>
                     <th><spring:message
                             code="label.ERPExportOperation.success" /></th>
                     <%--                     <th><spring:message --%>
@@ -290,8 +290,8 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-		            { data: 'finantialinstitution' },
 			{ data: 'executiondate' },
+            { data: 'finantialinstitution' },
 			{ data: 'success' },
 // 			{ data: 'corrected' },
 //			{ data: 'creator' },
