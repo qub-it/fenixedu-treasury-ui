@@ -645,6 +645,13 @@ public class DebitEntry extends DebitEntry_Base {
         return getOpenAmount().add(getPendingInterestAmount());
     }
 
+    @Atomic
+    public void clearInterestRate() {
+        if (this.getInterestRate() != null) {
+            this.getInterestRate().delete();
+        }
+    }
+
 //    /*******************************************************************
 //     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
 //     * *****************************************************************

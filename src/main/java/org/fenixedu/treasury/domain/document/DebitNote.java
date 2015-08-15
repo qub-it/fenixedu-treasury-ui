@@ -245,6 +245,7 @@ public class DebitNote extends DebitNote_Base {
                 //1. criar nota de acerto
                 //2. percorrer os itens de divida, criar correspondente item de acerto com o valor "aberto"
                 //2.1 verificar se existiram "juros" gerados correspondentes
+                //2.2 Libertar o tipo de juro a aplicar para não continuar a "calcular juro"
                 //3. fechar nota de acerto
                 //4. criar settlement note
                 //5. adicionar itens de divida com cada valor open amount
@@ -267,6 +268,11 @@ public class DebitNote extends DebitNote_Base {
                     creditNote.delete(true);
                     throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                             "error.DebitNote.invalid.amount.for.annull.with.credit.note"));
+                }
+
+                //Clear the InterestRate for DebitEntry
+                for (DebitEntry debitEntry : this.getDebitEntriesSet()) {
+                    debitEntry.clearInterestRate();
                 }
 
                 creditNote.closeDocument();
