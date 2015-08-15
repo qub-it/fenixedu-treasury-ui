@@ -174,7 +174,9 @@ public class ERPImporter {
             }
             eRPImportOperation.setProcessed(true);
             eRPImportOperation.setExecutionDate(new DateTime());
-            eRPImportOperation.setSuccess(true);
+            if (eRPImportOperation.getErrorLog() == null || eRPImportOperation.getErrorLog().isEmpty()) {
+                eRPImportOperation.setSuccess(true);
+            }
 
         } catch (Exception ex) {
 
