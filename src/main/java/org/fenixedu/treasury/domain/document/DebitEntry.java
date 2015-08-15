@@ -364,7 +364,7 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isAcademicalActBlockingSuspension() {
         return getAcademicalActBlockingSuspension();
     }
-    
+
     public boolean exempt(final TreasuryExemption treasuryExemption, final BigDecimal amountWithVat) {
         if (treasuryExemption.getTreasuryEvent() != getTreasuryEvent()) {
             throw new RuntimeException("wrong call");
@@ -557,11 +557,11 @@ public class DebitEntry extends DebitEntry_Base {
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
     }
-    
+
     public static Stream<? extends DebitEntry> find(final Customer customer) {
         return findAll().filter(d -> d.getDebtAccount().getCustomer() == customer);
     }
-    
+
     public static Stream<? extends DebitEntry> find(final DebtAccount debtAccount) {
         return findAll().filter(d -> d.getDebtAccount() == debtAccount);
     }
@@ -642,7 +642,11 @@ public class DebitEntry extends DebitEntry_Base {
 
     @Override
     public BigDecimal getOpenAmountWithInterests() {
-        return getOpenAmount().add(getPendingInterestAmount());
+        if (Constants.isEqual(getOpenAmount(), BigDecimal.ZERO)) {
+            return getOpenAmount();
+        } else {
+            return getOpenAmount().add(getPendingInterestAmount());
+        }
     }
 
     @Atomic
