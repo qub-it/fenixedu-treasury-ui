@@ -237,6 +237,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     @Atomic
     public void closeDocument() {
+        closeDocument(true);
+    }
+
+    @Atomic
+    public void closeDocument(boolean markDocumentToExport) {
         if (this.isPreparing()) {
             this.setDocumentNumber("" + this.getDocumentNumberSeries().getSequenceNumberAndIncrement());
             setState(FinantialDocumentStateType.CLOSED);
@@ -246,7 +251,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 order = order + 1;
             }
             this.setAddress(this.getDebtAccount().getCustomer().getAddress() + this.getDebtAccount().getCustomer().getZipCode());
-            this.markDocumentToExport();
+            if (markDocumentToExport) {
+                this.markDocumentToExport();
+            }
         } else {
             throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
                     "error.FinantialDocumentState.invalid.state.change.request"));
@@ -257,13 +264,6 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     @Atomic
     public void markDocumentToExport() {
-        //if the document is in the sames series of the IntegrationConfiguration.paymentSeries -> IGNORE
-        if (this.getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration() != null) {
-            if (this.getDocumentNumberSeries().getSeries() == this.getDebtAccount().getFinantialInstitution()
-                    .getErpIntegrationConfiguration().getPaymentsIntegrationSeries()) {
-                return;
-            }
-        }
 
         if (getInstitutionForExportation() == null) {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
@@ -298,6 +298,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     @Atomic
     public void anullDocument(boolean freeEntries, String anulledReason) {
+        anullDocument(freeEntries, anulledReason, true);
+    }
+
+    @Atomic
+    public void anullDocument(boolean freeEntries, String anulledReason, boolean markDocumentToExport) {
         if (this.isPreparing() || this.isClosed()) {
             if (Boolean.TRUE.booleanValue() == this.getDocumentNumberSeries().getSeries().getCertificated()) {
                 throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");
@@ -309,7 +314,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             if (freeEntries && this.isPreparing()) {
                 this.getFinantialDocumentEntriesSet().forEach(x -> this.removeFinantialDocumentEntries(x));
             }
-            this.markDocumentToExport();
+
+            if (markDocumentToExport) {
+                this.markDocumentToExport();
+            }
         }
         checkRules();
     }

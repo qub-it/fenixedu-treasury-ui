@@ -135,8 +135,7 @@ public class ERPImporter {
                         totalDebit = totalDebit.add(note.getTotalDebitAmount());
 
                         if (note.isPreparing()) {
-                            note.closeDocument();
-                            note.clearDocumentToExport();
+                            note.closeDocument(false);
                         }
                         eRPImportOperation.addFinantialDocuments(note);
                     } else {
@@ -251,7 +250,7 @@ public class ERPImporter {
                             //The Settlement note must be annulled
                             settlementNote.anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
                                     "label.info.integration.erpimporter.annulled.by.integration",
-                                    eRPImportOperation.getExternalId() + " - [" + new DateTime() + "]"));
+                                    eRPImportOperation.getExternalId() + " - [" + new DateTime() + "]"), false);
                         }
                         return settlementNote;
                     } else {
