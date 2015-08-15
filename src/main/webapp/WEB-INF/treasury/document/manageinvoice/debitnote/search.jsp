@@ -212,7 +212,7 @@ ${portal.toolkit()}
                 <datatables:columnHead>
                     <spring:message code="label.DebitNote.documentDate" />
                 </datatables:columnHead>
-                				<c:out value='${debitNote.documentDate.toString("YYYY-MM-dd")}' />
+                				<c:out value='${debitNote.documentDate.toString("YYYY-MM-dd HH:mm")}' />
 <%--                 <joda:format value="${debitNote.documentDate}" --%>
 <%--                     style="S-" /> --%>
             </datatables:column>

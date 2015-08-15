@@ -252,7 +252,7 @@ ${portal.toolkit()}
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "debtaccount" : "<c:out value=' ${searchResult.debtAccount.customer.name}'/>",
 "documentnumber" : "<c:out value='${searchResult.uiDocumentNumber}'/>",
-"documentdate" : "<joda:format value='${searchResult.documentDate}' style='S-' />",
+"documentdate" : '<c:out value='${searchResult.documentDate.toString("YYYY-MM-dd HH:mm")}' />',
 <c:if test = "${searchResult.isAnnulled()}">
 "state" : "<span class=\"label label-danger\"><c:out value='${searchResult.state.descriptionI18N.content}' /></span>",
 </c:if>

@@ -166,7 +166,7 @@ ${portal.toolkit()}
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "documentnumber" : "<c:out value='${searchResult.uiDocumentNumber}'/>",
-"documentdate" : "<c:out value='${searchResult.documentDate.toString("YYYY-MM-dd")}'/>",
+"documentdate" : "<c:out value='${searchResult.documentDate.toString("YYYY-MM-dd HH:mm:ss")}'/>",
 "state" : "<c:out value='${searchResult.state.descriptionI18N.content}'/>",
 "actions" :
 " <a target=\"#\" class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +

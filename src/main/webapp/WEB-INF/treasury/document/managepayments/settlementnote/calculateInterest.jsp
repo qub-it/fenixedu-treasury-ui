@@ -173,9 +173,9 @@ ${portal.angularToolkit()}
                                 <p>&nbsp;</p> <c:forEach var="detail" items="${interestEntryBean.interest.interestInformationList}">
                                     <p>
                                         [
-                                        <joda:format value="${detail.begin}" style="S-" />
+                                        <c:out value="${detail.begin}" />
                                         -
-                                        <joda:format value="${detail.end}" style="S-" />
+                                        <c:out value="${detail.end}"  />
                                         ]: ${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.amount, 4)}
                                     </p>
                                     <p style="">
