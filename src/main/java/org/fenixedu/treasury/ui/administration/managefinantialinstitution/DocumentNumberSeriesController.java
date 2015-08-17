@@ -226,8 +226,9 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
                             "O documento " + document.getUiDocumentNumber() + " não foi encerrado : " + ex.getLocalizedMessage(),
                             model);
                 }
-                if (count++ == maxClosingDocuments) {
+                if (count++ >= maxClosingDocuments) {
                     addInfoMessage("Max of " + maxClosingDocuments + " documents closed. Retry for more...", model);
+                    break;
                 }
             }
             return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
