@@ -48,9 +48,44 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
         <small></small>
     </h1>
 </div>
+
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+                if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
 %>
+
+<div class="modal fade" id="closeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closedebitnote" method="POST">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmClose" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-primary" type="submit">
+                        <spring:message code="label.close" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <div class="modal fade" id="calculateInterestValueModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -98,6 +133,14 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 </div>
 <!-- /.modal -->
 
+<%
+} 
+%>
+
+<% 
+                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+%>
+
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -133,38 +176,6 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 <!-- /.modal -->
 
 
-<div class="modal fade" id="closeModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/closedebitnote" method="POST">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">
-                        <spring:message code="label.confirmation" />
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <spring:message code="label.document.manageInvoice.readDebitNote.confirmClose" />
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <spring:message code="label.cancel" />
-                    </button>
-                    <button id="deleteButton" class="btn btn-primary" type="submit">
-                        <spring:message code="label.close" />
-                    </button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
 
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">

@@ -262,7 +262,8 @@ public class ERPImporter {
                 } else {
                     if (payment.getDocumentStatus().getPaymentStatus().equals("A")) {
                         //It's a Settlement note that we don't have and want's to be anulled...
-                        throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.payment.received");
+                        throw new TreasuryDomainException(
+                                "label.error.integration.erpimporter.invalid.payment.received.document.annulled.not.exists");
                     } else {
                         DateTime documentDate = new org.joda.time.DateTime(payment.getTransactionDate().toGregorianCalendar());
                         DateTime paymentDate = documentDate;
