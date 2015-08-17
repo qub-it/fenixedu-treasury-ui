@@ -102,7 +102,7 @@ public class ERPExporterManager {
 //
 //    }
 
-    @Atomic
+    
     public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(FinantialInstitution finantialInstitution) {
         List<ERPExportOperation> result = new ArrayList<ERPExportOperation>();
 
