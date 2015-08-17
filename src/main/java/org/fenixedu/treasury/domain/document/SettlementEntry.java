@@ -121,7 +121,7 @@ public class SettlementEntry extends SettlementEntry_Base {
     @Atomic
     public static SettlementEntry create(final DebitEntryBean debitEntryBean, SettlementNote settlementNote, DateTime entryDate) {
         return new SettlementEntry(debitEntryBean.getDebitEntry(), settlementNote, debitEntryBean.getDebtAmount(), debitEntryBean
-                .getDebitEntry().getDescription(), entryDate, false);
+                .getDebitEntry().getDescription(), entryDate, true);
     }
 
     @Atomic

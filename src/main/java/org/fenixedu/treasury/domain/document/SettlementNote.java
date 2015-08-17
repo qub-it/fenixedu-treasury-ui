@@ -46,6 +46,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -187,17 +188,15 @@ public class SettlementNote extends SettlementNote_Base {
                 DocumentNumberSeries
                         .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
                         .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
-        if (bean.getInterestEntries().size() == 0 || bean.getInterestEntries().stream().filter(l -> l.isIncluded()).count() == 0) {
+        if (bean.getInterestEntries().size() == 0 ) {
             return;
         }
 
         DebitNote interestDebitNote =
-                DebitNote.create(bean.getDebtAccount(), debitNoteSeries, bean.getDate().toDateTimeAtStartOfDay());
+                DebitNote.create(bean.getDebtAccount(), debitNoteSeries, new DateTime());
 
         for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
-            if (!interestEntryBean.isIncluded()) {
-                continue;
-            }
+
 
             DebitEntry interestDebitEntry =
                     interestEntryBean.getDebitEntry().createInterestRateDebitEntry(interestEntryBean.getInterest(),
