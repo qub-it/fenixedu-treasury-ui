@@ -106,7 +106,7 @@ public class ERPConfigurationController extends TreasuryBaseController {
         setERPConfiguration(eRPConfiguration, model);
 
         try {
-            assertUserIsFrontOfficeMember(eRPConfiguration.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(eRPConfiguration.getFinantialInstitution(), model);
 
             updateERPConfiguration(active, exportOnlyRelatedDocumentsPerExport, exportAnnulledRelatedDocuments, externalURL,
                     username, password, paymentsIntegrationSeries, implementationClassName, maxSizeBytesToExportOnline, model);

@@ -149,6 +149,9 @@ public class ERPImportOperationController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         try {
+            if (eRPImportOperations.isEmpty() == false) {
+                assertUserIsBackOfficeMember(eRPImportOperations.get(0).getFinantialInstitution(), model);
+            }
             for (ERPImportOperation operation : eRPImportOperations) {
                 deleteERPImportOperation(operation);
             }
@@ -240,7 +243,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
         setERPImportOperation(eRPImportOperation, model);
         try {
-            assertUserIsFrontOfficeMember(eRPImportOperation.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(eRPImportOperation.getFinantialInstitution(), model);
 
             deleteERPImportOperation(eRPImportOperation);
 

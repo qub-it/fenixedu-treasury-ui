@@ -147,6 +147,8 @@ public class FinantialDocumentController extends TreasuryBaseController {
             Model model, RedirectAttributes redirectAttributes) {
 //
         try {
+            assertUserIsBackOfficeMember(finantialInstitution, model);
+
             List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution =
                     ERPExporterManager.exportPendingDocumentsForFinantialInstitution(finantialInstitution);
             if (exportPendingDocumentsForFinantialInstitution.size() == 0) {
@@ -179,6 +181,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
             Model model, RedirectAttributes redirectAttributes) {
 //
         try {
+            assertUserIsBackOfficeMember(finantialInstitution, model);
 
             ERPExporterManager.requestPendingDocumentStatus(finantialInstitution);
 

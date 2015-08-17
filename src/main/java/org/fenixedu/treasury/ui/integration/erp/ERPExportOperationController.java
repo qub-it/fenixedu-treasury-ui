@@ -176,7 +176,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
         setERPExportOperation(eRPExportOperation, model);
         try {
-            assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
 
             deleteERPExportOperation(eRPExportOperation);
 
@@ -196,6 +196,9 @@ public class ERPExportOperationController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         try {
+            if (eRPExportOperations.isEmpty() == false) {
+                assertUserIsBackOfficeMember(eRPExportOperations.get(0).getFinantialInstitution(), model);
+            }
             for (ERPExportOperation operation : eRPExportOperations) {
                 deleteERPExportOperation(operation);
             }
