@@ -125,7 +125,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
     public String create(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             Customer adhocCustomer =
                     createAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
@@ -171,7 +171,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
         setAdhocCustomer(adhocCustomer, model);
 
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             updateAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),

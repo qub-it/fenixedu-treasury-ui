@@ -130,7 +130,7 @@ public class ProductGroupController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") ProductGroup productGroup, Model model, RedirectAttributes redirectAttributes) {
         setProductGroup(productGroup, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteProductGroup(productGroup);
 
@@ -153,7 +153,7 @@ public class ProductGroupController extends TreasuryBaseController {
     public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
             required = false) LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             ProductGroup productGroup = createProductGroup(code, name);
             model.addAttribute("productGroup", productGroup);

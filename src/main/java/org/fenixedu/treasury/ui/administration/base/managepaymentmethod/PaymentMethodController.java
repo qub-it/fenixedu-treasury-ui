@@ -129,7 +129,7 @@ public class PaymentMethodController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") PaymentMethod paymentMethod, Model model, RedirectAttributes redirectAttributes) {
         setPaymentMethod(paymentMethod, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deletePaymentMethod(paymentMethod);
 
@@ -152,7 +152,7 @@ public class PaymentMethodController extends TreasuryBaseController {
     public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
             required = false) LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             PaymentMethod paymentMethod = createPaymentMethod(code, name);
             model.addAttribute("paymentMethod", paymentMethod);
@@ -185,7 +185,7 @@ public class PaymentMethodController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setPaymentMethod(paymentMethod, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updatePaymentMethod(code, name, model);
             return redirect(READ_URL + getPaymentMethod(model).getExternalId(), model, redirectAttributes);

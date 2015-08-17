@@ -159,7 +159,7 @@ public class VatController extends TreasuryBaseController {
 
         setVat(vat, model);
         try {
-            assertUserIsFrontOfficeMember(vat.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(vat.getFinantialInstitution(), model);
 
             deleteVat(vat);
 
@@ -199,7 +199,7 @@ public class VatController extends TreasuryBaseController {
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
-            assertUserIsFrontOfficeMember(finantialInstitution, model);
+            assertUserIsBackOfficeMember(finantialInstitution, model);
 
             Vat vat = createVat(vatType, finantialInstitution, taxRate, beginDate, endDate);
 
@@ -246,7 +246,7 @@ public class VatController extends TreasuryBaseController {
         setVat(vat, model);
 
         try {
-            assertUserIsFrontOfficeMember(vat.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(vat.getFinantialInstitution(), model);
 
             updateVat(taxRate, beginDate, endDate, model);
 

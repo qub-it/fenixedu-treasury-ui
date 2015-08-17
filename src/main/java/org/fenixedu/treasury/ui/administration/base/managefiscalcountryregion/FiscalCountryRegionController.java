@@ -138,7 +138,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
 
         setFiscalCountryRegion(fiscalCountryRegion, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteFiscalCountryRegion(fiscalCountryRegion);
 
@@ -172,7 +172,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
             value = "name", required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             FiscalCountryRegion fiscalCountryRegion = createFiscalCountryRegion(fiscalCode, name);
 
@@ -215,7 +215,7 @@ public class FiscalCountryRegionController extends TreasuryBaseController {
         setFiscalCountryRegion(fiscalCountryRegion, model);
 
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updateFiscalCountryRegion(fiscalCode, name, model);
 

@@ -122,7 +122,7 @@ public class ProductController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") Product product, Model model, RedirectAttributes redirectAttributes) {
         setProduct(product, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteProduct(product);
 
@@ -156,7 +156,7 @@ public class ProductController extends TreasuryBaseController {
                     required = false) List<FinantialInstitution> finantialInstitutions, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             Product product =
                     createProduct(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions,
@@ -205,7 +205,7 @@ public class ProductController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setProduct(product, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updateProduct(productGroup, code, name, unitOfMeasure, active, finantialInstitutions, vatType, vatExemptionReason,
                     model);

@@ -134,7 +134,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
         setFinantialDocumentType(finantialDocumentType, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteFinantialDocumentType(finantialDocumentType);
 
@@ -168,7 +168,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             @RequestParam(value = "bennu", required = false) org.fenixedu.bennu.core.domain.Bennu bennu, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             FinantialDocumentType finantialDocumentType =
                     createFinantialDocumentType(type, code, name, documentNumberSeriesPrefix, invoice, bennu);
@@ -226,7 +226,7 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
         setFinantialDocumentType(finantialDocumentType, model);
 
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updateFinantialDocumentType(code, name, model);
 

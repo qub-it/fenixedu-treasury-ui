@@ -98,7 +98,7 @@ public class FixedTariffController extends TreasuryBaseController {
         String productId = fixedTariff.getProduct().getExternalId();
         setFixedTariff(fixedTariff, model);
         try {
-            assertUserIsFrontOfficeMember(fixedTariff.getFinantialEntity().getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(fixedTariff.getFinantialEntity().getFinantialInstitution(), model);
 
             deleteFixedTariff(fixedTariff);
 
@@ -151,7 +151,7 @@ public class FixedTariffController extends TreasuryBaseController {
     public String create(@RequestParam(value = "bean", required = false) FixedTariffBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(bean.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(bean.getFinantialInstitution(), model);
 
             FixedTariff fixedTariff =
                     createFixedTariff(bean.getAmount(), bean.getApplyInterests(), bean.getBeginDate(),
@@ -220,7 +220,7 @@ public class FixedTariffController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setFixedTariff(fixedTariff, model);
         try {
-            assertUserIsFrontOfficeMember(bean.getFinantialInstitution(), model);
+            assertUserIsBackOfficeMember(bean.getFinantialInstitution(), model);
 
             updateFixedTariff(bean.getAmount(), bean.getApplyInterests(), bean.getBeginDate().toDateTimeAtStartOfDay(),
                     bean.getDueDateCalculationType(), bean.getEndDate().toDateTimeAtStartOfDay(), bean.getFinantialEntity(),

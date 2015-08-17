@@ -136,7 +136,7 @@ public class VatTypeController extends TreasuryBaseController {
 
         setVatType(vatType, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteVatType(vatType);
 
@@ -162,7 +162,7 @@ public class VatTypeController extends TreasuryBaseController {
     public String create(@RequestParam(value = "code", required = false) java.lang.String code, @RequestParam(value = "name",
             required = false) org.fenixedu.commons.i18n.LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             VatType vatType = createVatType(code, name);
 
@@ -202,7 +202,7 @@ public class VatTypeController extends TreasuryBaseController {
         setVatType(vatType, model);
 
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updateVatType(code, name, model);
 

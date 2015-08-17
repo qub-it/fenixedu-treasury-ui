@@ -149,7 +149,7 @@ public class CustomerTypeController extends TreasuryBaseController {
 
         setCustomerType(customerType, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteCustomerType(customerType);
 
@@ -188,7 +188,7 @@ public class CustomerTypeController extends TreasuryBaseController {
 
         CustomerType customerType;
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             customerType = createCustomerType(code, name);
 
@@ -241,7 +241,7 @@ public class CustomerTypeController extends TreasuryBaseController {
         setCustomerType(customerType, model);
 
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updateCustomerType(code, name, model);
 

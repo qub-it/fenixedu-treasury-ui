@@ -135,7 +135,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
 
         setGlobalInterestRate(globalInterestRate, model);
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             deleteGlobalInterestRate(globalInterestRate);
 
@@ -165,7 +165,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
                     value = "applyinfirstworkday", required = false) boolean applyInFirstWorkday, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             GlobalInterestRate globalInterestRate =
                     createGlobalInterestRate(year, description, rate, applyPaymentMonth, applyInFirstWorkday);
@@ -209,7 +209,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         setGlobalInterestRate(globalInterestRate, model);
 
         try {
-            assertUserIsFrontOfficeMember(model);
+            assertUserIsBackOfficeMember(model);
 
             updateGlobalInterestRate(year, description, rate, applyPaymentMonth, applyInFirstWorkday, model);
 
