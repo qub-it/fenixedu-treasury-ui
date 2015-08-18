@@ -506,12 +506,12 @@ public class ERPExporter {
 
     private String convertToSAFTPaymentMechanism(org.fenixedu.treasury.domain.PaymentMethod paymentMethod) {
         String code = paymentMethod.getCode();
-        if (code == "CC" || code == "CD" || code == "CH" || code == "CO" || code == "CS" || code == "DE" || code == "LC"
-                || code == "MB" || code == "NU" || code == "TB" || code == "TR") {
-            return paymentMethod.getCode();
-        } else {
-            return "OU";
-        }
+//        if (code == "CC" || code == "CD" || code == "CH" || code == "CO" || code == "CS" || code == "DE" || code == "LC"
+//                || code == "MB" || code == "NU" || code == "TB" || code == "TR") {
+        return paymentMethod.getCode();
+//        } else {
+//        return "OU";
+//        }
     }
 
     private WorkDocument convertToSAFTWorkDocument(Invoice document,

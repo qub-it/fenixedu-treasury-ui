@@ -309,10 +309,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             }
             setState(FinantialDocumentStateType.ANNULED);
             if (Authenticate.getUser() != null) {
-                setAnnulledReason(anulledReason + "- [" + Authenticate.getUser().getUsername() + "]"
-                        + new DateTime().toString("YYYY-MM-dd HH:mm"));
+                setAnnulledReason(anulledReason + " - [" + Authenticate.getUser().getUsername() + "]"
+                        + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             } else {
-                setAnnulledReason(anulledReason + "- " + new DateTime().toString("YYYY-MM-dd HH:mm"));
+                setAnnulledReason(anulledReason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             }
             //If we want to free entries and the document is in "Preparing" state, the Entries will become "free"
             if (freeEntries && this.isPreparing()) {
