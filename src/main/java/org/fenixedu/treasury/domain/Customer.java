@@ -63,6 +63,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract String getDistrictSubdivision();
 
+    public abstract String getDistrict();
+
     public abstract String getZipCode();
 
     public abstract String getCountryCode();

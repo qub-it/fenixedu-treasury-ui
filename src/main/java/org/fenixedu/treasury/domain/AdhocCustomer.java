@@ -164,4 +164,9 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return this.getIdentificationNumber();
     }
 
+    @Override
+    public String getDistrict() {
+        return getDistrictSubdivision();
+    }
+
 }

@@ -77,7 +77,7 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
     }
 
     private StatusType covertToStatusType(String status) {
-        if (status.equals("OK")) {
+        if ("OK".equals(status)) {
             return StatusType.SUCCESS;
         } else {
             return StatusType.ERROR;
