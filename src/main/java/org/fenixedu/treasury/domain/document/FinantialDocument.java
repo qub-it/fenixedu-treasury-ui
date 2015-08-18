@@ -308,8 +308,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");
             }
             setState(FinantialDocumentStateType.ANNULED);
-            setAnnulledReason(anulledReason + "- [" + Authenticate.getUser().getUsername() + "]"
-                    + new DateTime().toString("YYYY-MM-dd HH:mm"));
+            if (Authenticate.getUser() != null) {
+                setAnnulledReason(anulledReason + "- [" + Authenticate.getUser().getUsername() + "]"
+                        + new DateTime().toString("YYYY-MM-dd HH:mm"));
+            } else {
+                setAnnulledReason(anulledReason + "- " + new DateTime().toString("YYYY-MM-dd HH:mm"));
+            }
             //If we want to free entries and the document is in "Preparing" state, the Entries will become "free"
             if (freeEntries && this.isPreparing()) {
                 this.getFinantialDocumentEntriesSet().forEach(x -> this.removeFinantialDocumentEntries(x));
