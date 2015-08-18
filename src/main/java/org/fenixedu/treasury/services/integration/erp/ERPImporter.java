@@ -144,12 +144,19 @@ public class ERPImporter {
                 } catch (Exception ex) {
                     eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
                     eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
+                    int count = 0;
+                    for (StackTraceElement el : ex.getStackTrace()) {
+                        eRPImportOperation.appendErrorLog(el.toString());
+                        if (count++ >= 10) {
+                            break;
+                        }
+                    }
                     eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
                             "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     eRPImportOperation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
                             "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
-                    docStatus.setErrorDescription(ex.getLocalizedMessage());
+                    docStatus.setErrorDescription("Error: " + ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
                     //if note was created, then we must delete the note
                     if (note != null && note.isDeletable()) {
