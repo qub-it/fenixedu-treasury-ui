@@ -322,22 +322,28 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     @Override
-    @Atomic
-    public void anullDocument(boolean freeEntries, String reason) {
+    public void anullDocument(boolean freeEntries, String anulledReason, boolean markDocumentToExport) {
         if (this.isPreparing()) {
             this.delete(true);
         } else {
             setState(FinantialDocumentStateType.ANNULED);
-            setAnnulledReason(reason);
-            // Settlement note can never free entries 
-            this.markDocumentToExport();
-
+            setAnnulledReason(anulledReason);
+            if (markDocumentToExport) {
+                // Settlement note can never free entries 
+                this.markDocumentToExport();
+            }
             //if we have advanced payments, we must "anull" the "advanced payments"
             if (this.getAdvancedPaymentCreditNote() != null) {
-                this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, reason);
+                this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, anulledReason);
             }
             checkRules();
         }
+    }
+
+    @Override
+    @Atomic
+    public void anullDocument(boolean freeEntries, String reason) {
+        anullDocument(freeEntries, reason, true);
     }
 
     public BigDecimal getTotalDebitAmount() {
