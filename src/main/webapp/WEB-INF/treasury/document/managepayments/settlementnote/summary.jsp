@@ -264,7 +264,8 @@ ${portal.angularToolkit()}
                     <c:if test="${ interestEntryBean.included  }">
                         <tr>
                             <td>---</td>
-                            <td><c:out
+                            <td><spring:message code="label.InterestEntry.interest" />
+                                       &nbsp; <c:out
                                     value="${ interestEntryBean.debitEntry.description }" />
                             </td>
                             <td><c:out value='${ debitNoteDate }' />

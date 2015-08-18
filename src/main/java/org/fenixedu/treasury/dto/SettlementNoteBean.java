@@ -311,7 +311,8 @@ public class SettlementNoteBean implements IBean, Serializable {
     }
 
     public boolean hasEntriesWithoutDocument() {
-        return debitEntries.stream().anyMatch(deb -> deb.isIncluded() && deb.getDebitEntry().getFinantialDocument() == null);
+        return debitEntries.stream().anyMatch(deb -> deb.isIncluded() && deb.getDebitEntry().getFinantialDocument() == null)
+                || interestEntries.stream().anyMatch(deb -> deb.isIncluded() && deb.getDebitEntry().getFinantialDocument() == null);
     }
 
     public class DebitEntryBean implements IBean, Serializable {
