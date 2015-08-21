@@ -213,7 +213,9 @@ public class SIBSPaymentsImporter {
                 result.addMessage("error.manager.SIBS.codeAlreadyProcessed.duplicated", codeToProcess.getReferenceCode());
                 return null;
             } else {
-                result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+                if (codeToProcess.isProcessed()) {
+                    result.addMessage("warning.manager.SIBS.codeAlreadyProcessed", codeToProcess.getReferenceCode());
+                }
             }
         }
 

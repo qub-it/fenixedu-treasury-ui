@@ -86,6 +86,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
 //				
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
+    private static final long EXPORT_OPERATIONS_MAX_SIZE = 500;
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
@@ -119,6 +120,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
                             || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
                             && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
                     .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
+//                    .limit(EXPORT_OPERATIONS_MAX_SIZE)
                     .collect(Collectors.toList());
         } else {
             FinantialDocument document = FinantialDocument.findByUiDocumentNumber(finantialInstitution, documentNumber);
@@ -130,6 +132,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
                                 || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
                                 && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
                         .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
+//                        .limit(EXPORT_OPERATIONS_MAX_SIZE)
                         .collect(Collectors.toList());
             } else {
                 return new ArrayList<ERPExportOperation>();
