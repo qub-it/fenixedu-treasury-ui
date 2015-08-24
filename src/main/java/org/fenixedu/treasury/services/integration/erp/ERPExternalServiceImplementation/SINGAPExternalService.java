@@ -94,8 +94,6 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
     public UnaryOperator<AuditFile> getAuditFilePreProcessOperator() {
 
         return (AuditFile x) -> {
-            x.getHeader().setBusinessName(getWebServiceClientConfiguration().getClientPassword());
-            x.getHeader().getCompanyAddress().setStreetName(getWebServiceClientConfiguration().getClientUsername());
             return x;
         };
     }
