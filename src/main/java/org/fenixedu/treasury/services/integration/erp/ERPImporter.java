@@ -128,7 +128,12 @@ public class ERPImporter {
                 try {
                     note = processErpPayment(payment, eRPImportOperation);
                     if (note != null) {
-                        docStatus.setDocumentNumber(note.getOriginDocumentNumber());
+                        if (Strings.isNullOrEmpty(note.getOriginDocumentNumber())) {
+                            docStatus.setDocumentNumber(note.getUiDocumentNumber());
+
+                        } else {
+                            docStatus.setDocumentNumber(note.getOriginDocumentNumber());
+                        }
                         docStatus.setIntegrationStatus(StatusType.SUCCESS);
                         totalPayments = totalPayments.add(BigInteger.ONE);
                         totalCredit = totalCredit.add(note.getTotalCreditAmount());
@@ -158,10 +163,6 @@ public class ERPImporter {
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription("Error: " + ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
-                    //if note was created, then we must delete the note
-                    if (note != null && note.isDeletable()) {
-                        note.delete(true);
-                    }
                 }
                 result.getDocumentStatus().add(docStatus);
             }
@@ -207,6 +208,7 @@ public class ERPImporter {
 
     @Atomic
     private SettlementNote processErpPayment(Payment payment, ERPImportOperation eRPImportOperation) {
+        boolean newSettlementNoteCreated = false;
         ERPConfiguration integrationConfig = eRPImportOperation.getFinantialInstitution().getErpIntegrationConfiguration();
         DocumentNumberSeries seriesToIntegratePayments =
                 DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
@@ -242,6 +244,10 @@ public class ERPImporter {
                     existingSettlementNote =
                             SettlementNote.findAll().filter(x -> x.getUiDocumentNumber().equals(payment.getSourceID()))
                                     .findFirst().orElse(null);
+                    //Update the OriginDocumentNumber
+                    if (existingSettlementNote != null) {
+                        existingSettlementNote.setOriginDocumentNumber(payment.getPaymentRefNo());
+                    }
                 }
 
                 if (existingSettlementNote != null) {
@@ -290,6 +296,7 @@ public class ERPImporter {
                         settlementNote =
                                 SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate, paymentDate,
                                         externalNumber);
+                        newSettlementNoteCreated = true;
                     }
                 }
             } else {
@@ -299,79 +306,87 @@ public class ERPImporter {
             throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.customer.to.integrate.payments");
         }
 
-        //Continue processing the Payment Document entries (New or Updating??!?!)
-        for (Line paymentLine : payment.getLine()) {
-            if (paymentLine.getSourceDocumentID().size() != 1) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
-            }
-            String invoiceReferenceNumber = paymentLine.getSourceDocumentID().get(0).getOriginatingON();
-            FinantialDocument referenceDocument =
-                    FinantialDocument
-                            .findByUiDocumentNumber(eRPImportOperation.getFinantialInstitution(), invoiceReferenceNumber);
-            if (referenceDocument == null || ((referenceDocument instanceof Invoice) == false)) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
-            }
-            Invoice referenceInvoice = (Invoice) referenceDocument;
-            if (!referenceInvoice.getDebtAccount().equals(customerDebtAccount)) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.debtaccount.in.payment");
-            }
-            InvoiceEntry invoiceEntry =
-                    referenceInvoice.getEntryInOrder(paymentLine.getSourceDocumentID().get(0).getLineNumber().intValue());
-            if (invoiceEntry == null) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+        try {
+            //Continue processing the Payment Document entries (New or Updating??!?!)
+            for (Line paymentLine : payment.getLine()) {
+                if (paymentLine.getSourceDocumentID().size() != 1) {
+                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+                }
+                String invoiceReferenceNumber = paymentLine.getSourceDocumentID().get(0).getOriginatingON();
+                FinantialDocument referenceDocument =
+                        FinantialDocument.findByUiDocumentNumber(eRPImportOperation.getFinantialInstitution(),
+                                invoiceReferenceNumber);
+                if (referenceDocument == null || ((referenceDocument instanceof Invoice) == false)) {
+                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+                }
+                Invoice referenceInvoice = (Invoice) referenceDocument;
+                if (!referenceInvoice.getDebtAccount().equals(customerDebtAccount)) {
+                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.debtaccount.in.payment");
+                }
+                InvoiceEntry invoiceEntry =
+                        referenceInvoice.getEntryInOrder(paymentLine.getSourceDocumentID().get(0).getLineNumber().intValue());
+                if (invoiceEntry == null) {
+                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
+                }
+
+                BigDecimal paymentAmount = paymentLine.getDebitAmount();
+
+                //if it is a SettlementEntry for a CreditEntry, then we must get the "credit amount" of the SAFT paymentLine
+                if (invoiceEntry.isCreditNoteEntry()) {
+                    paymentAmount = paymentLine.getCreditAmount();
+                }
+
+                if (invoiceEntry.getOpenAmount().compareTo(paymentAmount) < 0) {
+                    throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.amount.in.payment");
+                }
+
+                //Create a new settlement entry for this payment
+                XMLGregorianCalendar paymentStatusDate = payment.getDocumentStatus().getPaymentStatusDate();
+                DateTime paymentDate = new DateTime(paymentStatusDate.toGregorianCalendar());
+                SettlementEntry settlementEntry =
+                        SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
+                                paymentDate, false);
+
+                //Update the PaymentDate
+                if (paymentDate.isBefore(settlementNote.getPaymentDate())) {
+                    settlementNote.setPaymentDate(paymentDate);
+                }
             }
 
-            BigDecimal paymentAmount = paymentLine.getDebitAmount();
-
-            //if it is a SettlementEntry for a CreditEntry, then we must get the "credit amount" of the SAFT paymentLine
-            if (invoiceEntry.isCreditNoteEntry()) {
-                paymentAmount = paymentLine.getCreditAmount();
+            if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
+                //Continue processing the Reimbursment Methods (New or Updating??!?!)
+                for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
+                    ReimbursementEntry reimbursmentEntry =
+                            ReimbursementEntry.create(settlementNote,
+                                    convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()),
+                                    paymentMethod.getPaymentAmount());
+                }
+            } else {
+                //Continue processing the Payment Methods (New or Updating??!?!)
+                for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
+                    PaymentEntry paymentEntry =
+                            PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()),
+                                    settlementNote, paymentMethod.getPaymentAmount());
+                }
             }
 
-            if (invoiceEntry.getOpenAmount().compareTo(paymentAmount) < 0) {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.amount.in.payment");
-            }
-
-            //Create a new settlement entry for this payment
-            XMLGregorianCalendar paymentStatusDate = payment.getDocumentStatus().getPaymentStatusDate();
-            DateTime paymentDate = new DateTime(paymentStatusDate.toGregorianCalendar());
-            SettlementEntry settlementEntry =
-                    SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
-                            paymentDate, false);
-
-            //Update the PaymentDate
-            if (paymentDate.isBefore(settlementNote.getPaymentDate())) {
-                settlementNote.setPaymentDate(paymentDate);
-            }
-        }
-
-        if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
-            //Continue processing the Reimbursment Methods (New or Updating??!?!)
-            for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
-                ReimbursementEntry reimbursmentEntry =
-                        ReimbursementEntry.create(settlementNote,
-                                convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()),
-                                paymentMethod.getPaymentAmount());
-            }
-        } else {
-            //Continue processing the Payment Methods (New or Updating??!?!)
-            for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
-                PaymentEntry paymentEntry =
-                        PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), settlementNote,
-                                paymentMethod.getPaymentAmount());
-            }
-        }
-
-        //Process possible Advance Payment Credit
-        //HACK: DISABLED FOR NOW!!!! FENIXEDU ONLY ACCEPTS CREATION OF PAYMENTS. WE CANNOT INTEGRATE ADVANCE PAYMENTS DUE TO DocumentNumber 
-        //error when trying to back-reference the credit note in payments.
-        //
-        if (payment.getAdvancedPaymentCredit() != null) {
-            throw new TreasuryDomainException("label.error.integration.erpimporter.advanced.payment.credit.cannot.integrate");
+            //Process possible Advance Payment Credit
+            //HACK: DISABLED FOR NOW!!!! FENIXEDU ONLY ACCEPTS CREATION OF PAYMENTS. WE CANNOT INTEGRATE ADVANCE PAYMENTS DUE TO DocumentNumber 
+            //error when trying to back-reference the credit note in payments.
+            //
+            if (payment.getAdvancedPaymentCredit() != null) {
+                throw new TreasuryDomainException("label.error.integration.erpimporter.advanced.payment.credit.cannot.integrate");
 //            settlementNote.createAdvancedPaymentCreditNote(payment.getAdvancedPaymentCredit().getCreditAmount(), payment
 //                    .getAdvancedPaymentCredit().getDescription(), payment.getAdvancedPaymentCredit().getOriginatingON());
+            }
+        } catch (Exception ex) {
+            //Catch and rethrow exception 
+            //if a new SettlementNote created, then delete 
+            if (newSettlementNoteCreated && settlementNote != null && settlementNote.isDeletable()) {
+                settlementNote.delete(true);
+            }
+            throw ex;
         }
-
         return settlementNote;
     }
 
