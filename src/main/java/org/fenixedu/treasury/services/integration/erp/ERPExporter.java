@@ -385,7 +385,7 @@ public class ERPExporter {
             } else {
                 status.setPaymentStatus("N");
             }
-            status.setPaymentStatusDate(payment.getSystemEntryDate());
+            status.setPaymentStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
             status.setReason(document.getDocumentObservations());
             // Utilizador responsável pelo estado atual do docu-mento.
             status.setSourceID(document.getVersioningUpdatedBy());
@@ -577,7 +577,7 @@ public class ERPExporter {
                 status.setWorkStatus("N");
             }
 
-            status.setWorkStatusDate(workDocument.getSystemEntryDate());
+            status.setWorkStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
             // status.setReason("");
             // Utilizador responsável pelo estado atual do docu-mento.
             status.setSourceID(document.getVersioningUpdatedBy());
