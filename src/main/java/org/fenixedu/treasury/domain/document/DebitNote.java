@@ -101,8 +101,12 @@ public class DebitNote extends DebitNote_Base {
     @Override
     public BigDecimal getOpenAmountWithInterests() {
         if (this.getState().isPreparing() || this.getState().isClosed()) {
-            return getDebtAccount().getFinantialInstitution().getCurrency()
-                    .getValueWithScale(getOpenAmount().add(getPendingInterestAmount()));
+            if (Constants.isEqual(getOpenAmount(), BigDecimal.ZERO)) {
+                return BigDecimal.ZERO;
+            } else {
+                return getDebtAccount().getFinantialInstitution().getCurrency()
+                        .getValueWithScale(getOpenAmount().add(getPendingInterestAmount()));
+            }
         } else {
             return BigDecimal.ZERO;
         }
