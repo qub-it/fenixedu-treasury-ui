@@ -154,7 +154,7 @@ ${portal.angularToolkit()}
                 <thead>
                     <tr>
                         <%-- Check Column --%>
-                        <th></th>
+                        <th style="min-width: 35px"></th>
                         <th><spring:message code="label.InterestEntry.description" /></th>
                         <th><spring:message code="label.InterestEntry.interestDescription" /></th>
                         <th><spring:message code="label.InterestEntry.date" /></th>

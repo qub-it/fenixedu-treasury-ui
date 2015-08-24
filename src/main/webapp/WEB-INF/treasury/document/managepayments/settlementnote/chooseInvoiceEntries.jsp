@@ -181,7 +181,7 @@ ${portal.angularToolkit()}
                 <thead>
                     <tr>
                         <%-- Check Column --%>
-                        <th></th>
+                        <th style="min-width: 35px;"></th>
                         <th class="col-sm-2"><spring:message code="label.DebitEntry.documentNumber" /></th>
                         <th><spring:message code="label.DebitEntry.description" /></th>
                         <th class="col-sm-1"><spring:message code="label.DebitEntry.date" /></th>
@@ -251,7 +251,7 @@ ${portal.angularToolkit()}
                         <thead>
                             <tr>
                                 <%-- Check Column --%>
-                                <th></th>
+                                <th style="min-width: 35px;"></th>
                                 <th class="col-sm-2"><spring:message code="label.CreditEntry.documentNumber" /></th>
                                 <th><spring:message code="label.CreditEntry.motive" /></th>
                                 <th class="col-sm-1"><spring:message code="label.CreditEntry.date" /></th>
