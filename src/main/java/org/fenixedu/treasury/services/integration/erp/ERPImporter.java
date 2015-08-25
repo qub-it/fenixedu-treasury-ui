@@ -263,10 +263,12 @@ public class ERPImporter {
                             //Already annulled
                         } else {
                             //The Settlement note must be annulled
-                            settlementNote.anullDocument(true, BundleUtil.getString(Constants.BUNDLE,
-                                    "label.info.integration.erpimporter.annulled.by.integration",
-                                    eRPImportOperation.getExternalId() + " - [" + new DateTime().toString("YYYY-MM-dd HH:mm:ss")
-                                            + "]"), false);
+                            settlementNote.anullDocument(
+                                    true,
+                                    BundleUtil.getString(Constants.BUNDLE,
+                                            "label.info.integration.erpimporter.annulled.by.integration")
+                                            + " - ["
+                                            + new DateTime().toString("YYYY-MM-dd HH:mm:ss") + "]", false);
                         }
                         return settlementNote;
                     } else {
