@@ -385,7 +385,11 @@ public class ERPExporter {
             } else {
                 status.setPaymentStatus("N");
             }
-            status.setPaymentStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
+            if (document.getVersioningUpdateDate() != null) {
+                status.setPaymentStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
+            } else {
+                status.setPaymentStatusDate(payment.getSystemEntryDate());
+            }
             status.setReason(document.getDocumentObservations());
             // Utilizador responsável pelo estado atual do docu-mento.
             status.setSourceID(document.getVersioningUpdatedBy());
@@ -577,7 +581,11 @@ public class ERPExporter {
                 status.setWorkStatus("N");
             }
 
-            status.setWorkStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
+            if (document.getVersioningUpdateDate() != null) {
+                status.setWorkStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
+            } else {
+                status.setWorkStatusDate(workDocument.getSystemEntryDate());
+            }
             // status.setReason("");
             // Utilizador responsável pelo estado atual do docu-mento.
             status.setSourceID(document.getVersioningUpdatedBy());
