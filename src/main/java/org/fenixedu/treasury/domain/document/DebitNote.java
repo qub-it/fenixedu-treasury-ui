@@ -334,8 +334,8 @@ public class DebitNote extends DebitNote_Base {
             //Get the amount for credit without tax, and considering the credit quantity FOR ONE
             BigDecimal amountForCredit =
                     entry.getCurrency().getValueWithScale(
-                            entry.getAvailableAmountForCredit().divide(
-                                    BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
+                            Constants.divide(entry.getAvailableAmountForCredit(),
+                                    BigDecimal.ONE.add(Constants.divide(entry.getVatRate(), BigDecimal.valueOf(100)))));
 
             final CreditEntry creditEntry =
                     CreditEntry.create(creditNote, entry.getDescription(), entry.getProduct(), entry.getVat(), amountForCredit,
@@ -349,9 +349,12 @@ public class DebitNote extends DebitNote_Base {
 
                         //Get the amount for credit without tax, and considering the credit quantity FOR ONE
                         BigDecimal amountForInterestCredit =
-                                interestEntry.getCurrency().getValueWithScale(
-                                        interestEntry.getAvailableAmountForCredit().divide(
-                                                BigDecimal.ONE.add(entry.getVatRate().divide(BigDecimal.valueOf(100)))));
+                                interestEntry.getCurrency()
+                                        .getValueWithScale(
+                                                Constants.divide(
+                                                        interestEntry.getAvailableAmountForCredit(),
+                                                        BigDecimal.ONE.add(Constants.divide(entry.getVatRate(),
+                                                                BigDecimal.valueOf(100)))));
 
                         final CreditEntry interestCreditEntry =
                                 CreditEntry.create(creditNote, interestEntry.getDescription(), interestEntry.getProduct(),
