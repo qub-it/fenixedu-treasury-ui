@@ -656,6 +656,15 @@ public class DebitEntry extends DebitEntry_Base {
         }
     }
 
+    public String getERPIntegrationMetadata() {
+        if (getTreasuryEvent() != null) {
+            return getTreasuryEvent().getERPIntegrationMetadata();
+        } else {
+            //HACK: WHAT TO DO HERE : RSP
+            return ".";
+        }
+    }
+
 //    /*******************************************************************
 //     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
 //     * *****************************************************************

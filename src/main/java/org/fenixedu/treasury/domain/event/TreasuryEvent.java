@@ -39,13 +39,10 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
-import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.domain.document.SettlementEntry;
-import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.util.Constants;
@@ -62,6 +59,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
+
+    public abstract String getERPIntegrationMetadata();
 
     protected TreasuryEvent() {
         super();
@@ -137,10 +136,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public BigDecimal getRemainingAmountToPay(final Product product) {
         BigDecimal result = BigDecimal.ZERO;
 
-        for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.<DebitEntry>toSet())) {
+        for (final DebitEntry debitEntry : DebitEntry.findActive(this).collect(Collectors.<DebitEntry> toSet())) {
             result = result.add(debitEntry.getOpenAmount());
         }
-        
+
         return Constants.isPositive(result) ? result : BigDecimal.ZERO;
     }
 
@@ -238,9 +237,9 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 if (!debitEntry.isProcessedInClosedDebitNote()) {
                     debitEntry.getFinantialDocument().closeDocument();
                 }
-                
+
                 ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reasonDescription);
-                
+
                 for (final DebitEntry otherDebitEntry : ((DebitNote) debitEntry.getFinantialDocument()).getDebitEntriesSet()) {
                     otherDebitEntry.annulOnEvent();
                 }
@@ -262,8 +261,8 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                 debitEntry.annulOnEvent();
             }
         }
-        
-        while(!getTreasuryExemptionsSet().isEmpty()) {
+
+        while (!getTreasuryExemptionsSet().isEmpty()) {
             getTreasuryExemptionsSet().iterator().next().delete();
         }
     }

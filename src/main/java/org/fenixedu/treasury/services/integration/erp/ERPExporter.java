@@ -73,6 +73,7 @@ import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.AdvancedPaymentCredit;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line.Metadata;
 import oecd.standardauditfile_tax.pt_1.Tax;
 import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
 
@@ -84,6 +85,7 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.document.Invoice;
@@ -698,6 +700,11 @@ public class ERPExporter {
         if (entry.isCreditNoteEntry()) {
             CreditEntry creditEntry = (CreditEntry) entry;
             if (creditEntry.getDebitEntry() != null) {
+                //Metadata
+                Metadata metadata = new Metadata();
+                metadata.setDescription(creditEntry.getDebitEntry().getERPIntegrationMetadata());
+                line.setMetadata(metadata);
+
                 OrderReferences reference = new OrderReferences();
                 reference.setOriginatingON(creditEntry.getDebitEntry().getFinantialDocument().getUiDocumentNumber());
                 reference.setOrderDate(documentDateCalendar);
@@ -705,7 +712,12 @@ public class ERPExporter {
             }
 
         } else if (entry.isDebitNoteEntry()) {
-//            DebitEntry debitEntry = (DebitEntry) entry;
+            DebitEntry debitEntry = (DebitEntry) entry;
+            //Metadata
+            Metadata metadata = new Metadata();
+            metadata.setDescription(debitEntry.getERPIntegrationMetadata());
+            line.setMetadata(metadata);
+
 //            for (CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
 //                OrderReferences reference = new OrderReferences();
 //                reference.setOriginatingON(creditEntry.getFinantialDocument().getUiDocumentNumber());
