@@ -46,6 +46,7 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.event.TreasuryEvent.TreasuryEventKeys;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
@@ -657,14 +658,27 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public String getERPIntegrationMetadata() {
-        if (getTreasuryEvent() != null) {
-            return getTreasuryEvent().getERPIntegrationMetadata();
+        Map<String, String> propertiesMap = null;
+        String degreeCode = "";
+        String executionYear = "";
+        if (this.getPropertiesMap() != null && this.getPropertiesMap().isEmpty() == false) {
+            propertiesMap = this.getPropertiesMap();
         } else {
-            //HACK: WHAT TO DO HERE : RSP
-            return ".";
+            //Return the TreasuryEvent Metadata
+            return this.getTreasuryEvent().getERPIntegrationMetadata();
         }
-    }
 
+        if (propertiesMap.containsKey(TreasuryEventKeys.DEGREE_CODE)) {
+            degreeCode = propertiesMap.get(TreasuryEventKeys.DEGREE_CODE);
+        }
+        if (propertiesMap.containsKey(TreasuryEventKeys.EXECUTION_YEAR)) {
+            executionYear = propertiesMap.get(TreasuryEventKeys.EXECUTION_YEAR);
+        }
+        //HACK: This should be done using GJSON
+        return "{\"" + TreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\"" + TreasuryEventKeys.EXECUTION_YEAR
+                + "\":\"" + executionYear + "\"}";
+        //WHY ISN't 
+    }
 //    /*******************************************************************
 //     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
 //     * *****************************************************************

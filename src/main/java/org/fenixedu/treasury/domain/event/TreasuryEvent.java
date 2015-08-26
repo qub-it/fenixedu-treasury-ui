@@ -35,6 +35,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -59,6 +60,15 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
+    // @formatter:off
+    public static enum TreasuryEventKeys {
+        EXECUTION_YEAR, EXECUTION_SEMESTER, DEGREE_CODE;
+
+        public LocalizedString getDescriptionI18N() {
+            return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + TreasuryEvent.class.getSimpleName() + "." + name());
+        }
+
+    }
 
     public abstract String getERPIntegrationMetadata();
 
