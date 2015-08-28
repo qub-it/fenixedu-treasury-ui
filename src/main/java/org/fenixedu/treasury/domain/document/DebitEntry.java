@@ -658,12 +658,14 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public String getERPIntegrationMetadata() {
-        Map<String, String> propertiesMap = null;
+        Map<String, String> propertiesMap = Maps.newHashMap();
+        
         String degreeCode = "";
         String executionYear = "";
+        
         if (this.getPropertiesMap() != null && this.getPropertiesMap().isEmpty() == false) {
             propertiesMap = this.getPropertiesMap();
-        } else {
+        } else if(this.getTreasuryEvent() != null) {
             //Return the TreasuryEvent Metadata
             return this.getTreasuryEvent().getERPIntegrationMetadata();
         }
@@ -671,14 +673,18 @@ public class DebitEntry extends DebitEntry_Base {
         if (propertiesMap.containsKey(TreasuryEventKeys.DEGREE_CODE)) {
             degreeCode = propertiesMap.get(TreasuryEventKeys.DEGREE_CODE);
         }
+        
         if (propertiesMap.containsKey(TreasuryEventKeys.EXECUTION_YEAR)) {
             executionYear = propertiesMap.get(TreasuryEventKeys.EXECUTION_YEAR);
         }
+        
         //HACK: This should be done using GJSON
         return "{\"" + TreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\"" + TreasuryEventKeys.EXECUTION_YEAR
                 + "\":\"" + executionYear + "\"}";
         //WHY ISN't 
     }
+    
+    
 //    /*******************************************************************
 //     * ALGORITHM TO CALCULATE PAYED AMOUNT WITH MONEY (OR OTHER CREDITS)
 //     * *****************************************************************
