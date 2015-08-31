@@ -32,6 +32,9 @@ import java.util.List;
 public class DocumentsInformationOutput {
     private String requestId;
     private List<DocumentStatusWS> documentStatus;
+    
+    private String soapOutboundMessage;
+    private String soapInboundMessage;
 
     public DocumentsInformationOutput() {
         documentStatus = new ArrayList<DocumentStatusWS>();
@@ -51,6 +54,22 @@ public class DocumentsInformationOutput {
 
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+    
+    public String getSoapInboundMessage() {
+        return soapInboundMessage;
+    }
+    
+    public void setSoapInboundMessage(String soapInboundMessage) {
+        this.soapInboundMessage = soapInboundMessage;
+    }
+    
+    public String getSoapOutboundMessage() {
+        return soapOutboundMessage;
+    }
+    
+    public void setSoapOutboundMessage(String soapOutboundMessage) {
+        this.soapOutboundMessage = soapOutboundMessage;
     }
 
 }

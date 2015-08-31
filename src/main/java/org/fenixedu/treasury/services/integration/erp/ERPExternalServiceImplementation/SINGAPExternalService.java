@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 
 import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.Handler;
 
 import oecd.standardauditfile_tax.pt_1.AuditFile;
 
@@ -37,20 +38,36 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
         new SINGAPExternalService();
 
     }
+    
+    @Override
+    public ServiceSoap getClient() {
+        final ServiceSoap client = super.getClient();
+        
+        return client;
+    }
 
     @Override
     public DocumentsInformationOutput sendInfoOnline(DocumentsInformationInput documentsInformation) {
         DocumentsInformationOutput output = new DocumentsInformationOutput();
         output.setDocumentStatus(new ArrayList<DocumentStatusWS>());
-        ArrayOfResposta carregarSAFTON = getClient().carregarSAFTON(documentsInformation.getData());
+        final ServiceSoap client = getClient();
+        
+        final SOAPLoggingHandler loggingHandler = SOAPLoggingHandler.createLoggingHandler((BindingProvider) client);
+        
+        ArrayOfResposta carregarSAFTON = client.carregarSAFTON(documentsInformation.getData());
+        
+        output.setSoapInboundMessage(loggingHandler.getInboundMessage());
+        output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
+        
         for (Resposta resposta : carregarSAFTON.getResposta()) {
             output.setRequestId(resposta.getChavePrimaria());
             DocumentStatusWS status = new DocumentStatusWS();
             status.setDocumentNumber(resposta.getChavePrimaria());
-            status.setErrorDescription(resposta.getMensagem());
+            status.setErrorDescription(String.format("[STATUS: %s] - %s", resposta.getStatus(), resposta.getMensagem()));
             status.setIntegrationStatus(covertToStatusType(resposta.getStatus()));
             output.getDocumentStatus().add(status);
         }
+        
         return output;
     }
 

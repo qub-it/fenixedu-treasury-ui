@@ -635,6 +635,8 @@ class integration.IntegrationOperation
        boolean corrected;
        String errorLog;
        String integrationLog;
+       String soapInboundMessage;
+       String soapOutboundMessage;
 }
 /* --- IntegrationOperation --- */
 

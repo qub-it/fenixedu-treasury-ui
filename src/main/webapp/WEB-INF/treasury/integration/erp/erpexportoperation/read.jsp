@@ -220,6 +220,20 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPExportOperation.soapOutboundMessage" /></th>
+                        <td><a href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/soapoutboundmessage/${eRPExportOperation.externalId}">
+                        	<spring:message code="label.event.integration.erp.downloadFile" />
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.ERPExportOperation.soapInboundMessage" /></th>
+                        <td><a href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/soapinboundmessage/${eRPExportOperation.externalId}">
+                        	<spring:message code="label.event.integration.erp.downloadFile" />
+                        </a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
                                 code="label.ERPExportOperation.finantialDocuments" /></th>
                         <td>
                             <ul>

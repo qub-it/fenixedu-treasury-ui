@@ -133,4 +133,16 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         this.setErrorLog(builder.toString());
         checkRules();
     }
+    
+    @Atomic
+    public void defineSoapInboundMessage(final String soapInboundMessage) {
+        super.setSoapInboundMessage(soapInboundMessage != null ? soapInboundMessage : "");
+        
+    }
+    
+    @Atomic
+    public void defineSoapOutboutMessage(final String soapOutboundMessage) {
+        super.setSoapOutboundMessage(soapOutboundMessage != null ? soapOutboundMessage : "");
+    }
+    
 }

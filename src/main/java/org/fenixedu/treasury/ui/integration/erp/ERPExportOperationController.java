@@ -252,5 +252,45 @@ public class ERPExportOperationController extends TreasuryBaseController {
         }
         return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }
+    
+    @RequestMapping(value="/soapoutboundmessage/{oid}")
+    public void soapOutboundMessage(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setERPExportOperation(eRPExportOperation, model);
+        try {
+            assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
 
+            response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
+            response.setHeader("Content-disposition", String.format("attachment; filename=SOAP_Outbound_Message_%s.xml", eRPExportOperation.getExternalId()));
+            response.getWriter().write(eRPExportOperation.getSoapOutboundMessage() != null ? eRPExportOperation.getSoapOutboundMessage() : "");
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }     
+    }
+    
+    @RequestMapping(value="/soapinboundmessage/{oid}")
+    public void soapInboundMessage(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
+            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setERPExportOperation(eRPExportOperation, model);
+        try {
+            assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
+
+            response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
+            response.setHeader("Content-disposition", String.format("attachment; filename=SOAP_Inbound_Message_%s.xml", eRPExportOperation.getExternalId()));
+            response.getWriter().write(eRPExportOperation.getSoapInboundMessage() != null ? eRPExportOperation.getSoapInboundMessage() : "");
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }     
+    }
+    
 }

@@ -21,7 +21,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     }
 
     protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final DateTime executionDate,
-            final boolean processed, final boolean success, final boolean corrected, final String errorLog) {
+            final boolean processed, final boolean success, final boolean corrected, final String errorLog, 
+            final String soapInboundMessage, final String soapOutboundMessage) {
         setFile(file);
         setFinantialInstitution(finantialInstitution);
         setExecutionDate(executionDate);
@@ -29,6 +30,9 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         setSuccess(success);
         setCorrected(corrected);
         setErrorLog(errorLog);
+        setSoapInboundMessage(soapInboundMessage != null ? soapInboundMessage : "");
+        setSoapOutboundMessage(soapOutboundMessage != null ? soapOutboundMessage : "");
+        
         checkRules();
     }
 
@@ -80,7 +84,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     @Atomic
     public static ERPExportOperation create(final byte[] data, final String filename,
             final FinantialInstitution finantialInstitution, final DateTime executionDate, final boolean processed,
-            final boolean success, final boolean corrected, final String errorLog) {
+            final boolean success, final boolean corrected, final String errorLog, 
+            final String soapInboundMessage, final String soapOutboundMessage) {
         ERPExportOperation eRPExportOperation = new ERPExportOperation();
         OperationFile file;
         if (data == null) {
@@ -88,7 +93,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         } else {
             file = OperationFile.create(filename, data, eRPExportOperation);
         }
-        eRPExportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected, errorLog);
+        eRPExportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected, errorLog, soapInboundMessage, soapOutboundMessage);
+
         return eRPExportOperation;
     }
 
