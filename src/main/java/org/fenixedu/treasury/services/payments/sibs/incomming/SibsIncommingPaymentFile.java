@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.YearMonthDay;
 
 public class SibsIncommingPaymentFile {
@@ -61,7 +62,7 @@ public class SibsIncommingPaymentFile {
             totalEntriesAmount = totalEntriesAmount.add(detailLine.getAmount());
         }
 
-        if (!totalEntriesAmount.equals(footer.getTransactionsTotalAmount())) {
+        if (!Constants.isEqual(totalEntriesAmount, footer.getTransactionsTotalAmount())) {
             throw new RuntimeException("Footer total amount does not match detail lines total amount");
         }
 
