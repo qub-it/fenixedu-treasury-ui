@@ -279,7 +279,7 @@ public class ERPIntegrationService extends BennuWebService {
         documentObservations =
                 documentObservations + " - "
                         + BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
-                        + paymentDate.toDateTimeAtStartOfDay().toString("YYYY-MM-dd");
+                        + paymentDate.toString("YYYY-MM-dd");
         interestDebitNote.setDocumentObservations(documentObservations);
         interestDebitNote.closeDocument();
     }
