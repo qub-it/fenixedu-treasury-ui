@@ -200,6 +200,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
+            assertUserIsManager(model);
             for (FinantialDocument document : finantialDocuments) {
                 document.clearDocumentToExport();
             }
