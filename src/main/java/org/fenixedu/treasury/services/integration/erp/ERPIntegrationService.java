@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -273,6 +274,13 @@ public class ERPIntegrationService extends BennuWebService {
 
         debitEntry.createInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(),
                 Optional.<DebitNote> ofNullable(interestDebitNote));
+        String documentObservations =
+                BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
+        documentObservations =
+                documentObservations + " - "
+                        + BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
+                        + paymentDate.toDateTimeAtStartOfDay().toString("YYYY-MM-dd");
+        interestDebitNote.setDocumentObservations(documentObservations);
         interestDebitNote.closeDocument();
     }
 
