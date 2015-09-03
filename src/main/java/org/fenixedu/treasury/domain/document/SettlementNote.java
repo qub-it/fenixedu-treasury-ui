@@ -334,6 +334,8 @@ public class SettlementNote extends SettlementNote_Base {
             }
             //if we have advanced payments, we must "anull" the "advanced payments"
             if (this.getAdvancedPaymentCreditNote() != null) {
+                //only "disconnect" the advanced payment credit note
+                this.setAdvancedPaymentCreditNote(null);
                // this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, anulledReason);
             }
             checkRules();
