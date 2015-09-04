@@ -55,9 +55,10 @@ public class CheckISO7064Mod97_10 {
      * @see com.modp.checkdigit.CheckDigit#computeCheck(java.lang.String)
      */
     public int computeCheck(String digits) {
-        return BigDecimal.valueOf(98)
-                .subtract(new BigDecimal(digits).multiply(BigDecimal.valueOf(100)).remainder(BigDecimal.valueOf(97)))
-                .remainder(BigDecimal.valueOf(97)).intValue();
+        BigDecimal remainder97 = new BigDecimal(digits).multiply(BigDecimal.valueOf(100)).remainder(BigDecimal.valueOf(97));
+        BigDecimal sub98 = BigDecimal.valueOf(98)
+                .subtract(remainder97);
+        return sub98.remainder(BigDecimal.valueOf(97)).intValue();
     }
 
     /* (non-Javadoc)
