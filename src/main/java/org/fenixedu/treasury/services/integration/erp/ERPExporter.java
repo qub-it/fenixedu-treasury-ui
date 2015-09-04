@@ -1303,10 +1303,10 @@ public class ERPExporter {
                 }
 //                }
             }
-            
+
             operation.defineSoapInboundMessage(sendInfoOnlineResult.getSoapInboundMessage());
             operation.defineSoapOutboutMessage(sendInfoOnlineResult.getSoapOutboundMessage());
-            
+
         } else {
             try {
                 String sharedURI = "";
@@ -1348,7 +1348,8 @@ public class ERPExporter {
     @Atomic(mode = TxMode.WRITE)
     private static ERPExportOperation createSaftExportOperation(byte[] data, FinantialInstitution institution, DateTime when) {
         String filename = institution.getFiscalNumber() + "_" + when.toString() + ".xml";
-        ERPExportOperation operation = ERPExportOperation.create(data, filename, institution, when, false, false, false, null, "", "");
+        ERPExportOperation operation =
+                ERPExportOperation.create(data, filename, institution, when, false, false, false, null, "", "");
         return operation;
     }
 
@@ -1422,6 +1423,9 @@ public class ERPExporter {
     @Atomic(mode = TxMode.WRITE)
     public static ERPExportOperation exportFinantialDocumentToIntegration(FinantialInstitution institution,
             List<FinantialDocument> documents) {
+
+        //Filter only anulled or closed documents
+        documents = documents.stream().filter(x -> x.isAnnulled() || x.isClosed()).collect(Collectors.toList());
 
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         documents.forEach(document -> operation.addFinantialDocuments(document));

@@ -11,8 +11,6 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 
-import pt.ist.fenixframework.Atomic;
-
 public class ERPExporterManager {
 
 //    private static Semaphore lockingSemaphore = new Semaphore(0);
@@ -102,7 +100,6 @@ public class ERPExporterManager {
 //
 //    }
 
-    
     public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(FinantialInstitution finantialInstitution) {
         List<ERPExportOperation> result = new ArrayList<ERPExportOperation>();
 
@@ -111,8 +108,8 @@ public class ERPExporterManager {
         }
 
         Set<FinantialDocument> pendingDocuments =
-                finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream().limit(100)
-                        .collect(Collectors.toSet());
+                finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream()
+                        .filter(x -> x.isAnnulled() || x.isClosed()).limit(100).collect(Collectors.toSet());
 
         Comparator<FinantialDocument> sortingComparator = new Comparator<FinantialDocument>() {
 
