@@ -651,7 +651,7 @@ public class ERPExporter {
                     convertToSAFTWorkDocumentLine(orderNoteLine, baseProducts);
 
             // LineNumber
-            line.setLineNumber(i);
+            line.setLineNumber(BigInteger.valueOf(orderNoteLine.getEntryOrder().intValue()));
 
             // Add to productLines
             i = i.add(BigInteger.ONE);
