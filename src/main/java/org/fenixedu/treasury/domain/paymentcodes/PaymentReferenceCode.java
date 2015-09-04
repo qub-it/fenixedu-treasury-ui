@@ -179,11 +179,16 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     @Override
     public void setReferenceCode(String code) {
-        if (getReferenceCode() == null) {
-            super.setReferenceCode(code);
-        } else if (code != getReferenceCode()) {
-            throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.modify.code");
-        }
+//        if (getReferenceCode() == null) {
+        super.setReferenceCode(code);
+//        } else if (code != getReferenceCode()) {
+//            throw new TreasuryDomainException("error.accounting.PaymentCode.cannot.modify.code");
+//        }
+    }
+
+    @Atomic
+    public void bruteForceSetReferenceCode(String code) {
+        super.setReferenceCode(code);
     }
 
     @Override
@@ -235,10 +240,10 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     @Atomic
     public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments) {
-        
+
         if (!isNew()
                 && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(), this.getPaymentCodePool()
-                        .getEntityReferenceCode(), whenRegistered) ) {
+                        .getEntityReferenceCode(), whenRegistered)) {
             return null;
         }
 
