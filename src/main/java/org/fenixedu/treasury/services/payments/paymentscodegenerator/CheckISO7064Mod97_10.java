@@ -58,7 +58,19 @@ public class CheckISO7064Mod97_10 {
         BigDecimal remainder97 = new BigDecimal(digits).multiply(BigDecimal.valueOf(100)).remainder(BigDecimal.valueOf(97));
         BigDecimal sub98 = BigDecimal.valueOf(98)
                 .subtract(remainder97);
-        return sub98.remainder(BigDecimal.valueOf(97)).intValue();
+        int value = sub98.remainder(BigDecimal.valueOf(97)).intValue();
+        
+        //Hack : For SIBS Multibanco Reference Generator there are this exceptions
+        
+        if (value == 0){  
+            return 97;
+        }
+        else if (value == 1){
+            return 98;
+        }
+        else {
+            return value;
+        }
     }
 
     /* (non-Javadoc)
