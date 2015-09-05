@@ -234,8 +234,8 @@ ${portal.angularToolkit()}
                         <input id="creditEntry_amount"
                             class="form-control currency" type="number"
                             ng-model="object.amount"
-                            data-number-to-fixed="2"
-                            data-number-stepfactor="100" name="amount" />
+                            pattern="[0-9]+(\.[0-9][0-9]?)?" min="0" step="0.01"
+                            min="0" step="1" name="amount" />
                     </div>
                 </div>
             </div>
