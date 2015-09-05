@@ -393,6 +393,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
     <c:when test="${not empty creditNote.creditEntriesSet}">
         <datatables:table id="creditEntries" row="creditEntry" data="${creditNote.creditEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
             cellspacing="2">
+<%--             <datatables:column cssStyle="width:5%" sortInit="asc"> --%>
+<%--                 <c:out value='${creditEntry.entryOrder}' /> --%>
+<%--             </datatables:column> --%>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.InvoiceEntry.quantity" />
