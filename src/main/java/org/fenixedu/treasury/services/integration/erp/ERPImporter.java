@@ -273,7 +273,9 @@ public class ERPImporter {
                         return settlementNote;
                     } else {
                         //HACK: DONT Accept repeting Documents for (UPDATE)
-                        throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
+                        eRPImportOperation.appendInfoLog("label.error.integration.erpimporter.invalid.already.existing.payment.ignored");
+                        return settlementNote;
+                        //throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
                     }
                 } else {
                     if (payment.getDocumentStatus().getPaymentStatus().equals("A")) {
