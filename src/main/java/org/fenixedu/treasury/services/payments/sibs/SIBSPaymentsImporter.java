@@ -93,7 +93,7 @@ public class SIBSPaymentsImporter {
     }
 
     public ProcessResult processSIBSPaymentFiles(SibsInputFile inputFile) throws IOException {
-        // HACK: Avoid concurrent and duplicated processing file
+        // HACK:    Avoid concurrent and duplicated processing file
         synchronized(SIBSPaymentsImporter.class) {
             ProcessResult result = new ProcessResult();
 
