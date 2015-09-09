@@ -291,6 +291,21 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <c:out value='${entry.finantialDocument.paymentDate.toString("YYYY-MM-dd")}' />
                 </datatables:column>
+
+                <datatables:column cssStyle="width:140px;">
+                    <datatables:columnHead>
+                        <spring:message code="label.Customer.studentNumber" />
+                    </datatables:columnHead>
+                    <c:out value="${ entry.finantialDocument.debtAccount.customer.businessIdentification }" />
+                </datatables:column>
+
+                <datatables:column cssStyle="width:140px;">
+                    <datatables:columnHead>
+                        <spring:message code="label.Customer.identificationNumber.short" />
+                    </datatables:columnHead>
+                    <c:out value="${ entry.finantialDocument.debtAccount.customer.identificationNumber }" />
+                </datatables:column>
+
                 <datatables:column cssStyle="width:140px;">
                     <datatables:columnHead>
                         <spring:message code="label.Customer" />
@@ -309,6 +324,17 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <c:out value="${ entry.description}" />
                 </datatables:column>
+                
+                <datatables:column>
+                    <datatables:columnHead>
+                        <spring:message code="label.PaymentEntry.paymentMethod" />
+                    </datatables:columnHead>
+                    <c:out value="" />
+                   	<c:forEach var="pm" items="${entry.finantialDocument.paymentEntriesSet}">
+                    	<p><c:out value="${pm.paymentMethod.name.content}" /></p>
+                   	</c:forEach>
+                </datatables:column>
+                
                 <datatables:column cssStyle="width:10%;align:right">
                     <datatables:columnHead>
                         <spring:message code="label.InvoiceEntry.totalAmount" />
@@ -326,7 +352,7 @@ ${portal.toolkit()}
             <script>
                 createDataTables(
                         'settlementEntries',
-                        false,
+                        true,
                         true,
                         false,
                         "${pageContext.request.contextPath}",
