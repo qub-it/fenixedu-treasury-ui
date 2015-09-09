@@ -469,7 +469,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                                 class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span></td>
                         </tr>
                     </c:if>
-                    <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }">
+<%--                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }"> --%>
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>
                             <td>
@@ -493,7 +493,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                                 </ul>
                             </td>
                         </tr>
-                    </c:if>
+<%--                     </c:if> --%>
                     <c:if test="${not empty debitNote.relatedSettlementEntries }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
