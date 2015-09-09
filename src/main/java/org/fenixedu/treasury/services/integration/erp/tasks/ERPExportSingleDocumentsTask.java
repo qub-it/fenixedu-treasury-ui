@@ -35,6 +35,8 @@ public class ERPExportSingleDocumentsTask extends CronTask {
         } else {
             try {
                 FinantialDocument document = FenixFramework.getDomainObject(externalId);
+                if (document != null)
+                {
                 FinantialInstitution finantialInstitution =
                         document.getDocumentNumberSeries().getSeries().getFinantialInstitution();
                 ERPExportOperation exportOperation =
@@ -60,6 +62,10 @@ public class ERPExportSingleDocumentsTask extends CronTask {
                             SchedulerSystem.queue(new TaskRunner(new ERPExportPendingDocumentsTask()));
                         };
                     }.start();
+                }
+                }
+                else{
+                    taskLog("Exported document not found oid: " + externalId);
                 }
             } catch (Exception ex) {
                 taskLog("Error exporting document: " + ex.getMessage());
