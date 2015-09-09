@@ -93,24 +93,27 @@ public class SIBSPaymentsImporter {
     }
 
     public ProcessResult processSIBSPaymentFiles(SibsInputFile inputFile) throws IOException {
-        ProcessResult result = new ProcessResult();
+        // HACK: Avoid concurrent and duplicated processing file
+        synchronized(SIBSPaymentsImporter.class) {
+            ProcessResult result = new ProcessResult();
 
-        if (StringUtils.endsWithIgnoreCase(inputFile.getFilename(), PAYMENT_FILE_EXTENSION)) {
-            result.addMessage("label.manager.SIBS.processingFile", inputFile.getFilename());
-            try {
-                processFile(inputFile, result);
-            } catch (FileNotFoundException e) {
-                throw new TreasuryDomainException("error.manager.SIBS.zipException", getMessage(e));
-            } catch (IOException e) {
-                throw new TreasuryDomainException("error.manager.SIBS.IOException", getMessage(e));
-            } catch (Exception e) {
-                throw new TreasuryDomainException("error.manager.SIBS.fileException", getMessage(e));
-            } finally {
+            if (StringUtils.endsWithIgnoreCase(inputFile.getFilename(), PAYMENT_FILE_EXTENSION)) {
+                result.addMessage("label.manager.SIBS.processingFile", inputFile.getFilename());
+                try {
+                    processFile(inputFile, result);
+                } catch (FileNotFoundException e) {
+                    throw new TreasuryDomainException("error.manager.SIBS.zipException", getMessage(e));
+                } catch (IOException e) {
+                    throw new TreasuryDomainException("error.manager.SIBS.IOException", getMessage(e));
+                } catch (Exception e) {
+                    throw new TreasuryDomainException("error.manager.SIBS.fileException", getMessage(e));
+                } finally {
+                }
+            } else {
+                throw new TreasuryDomainException("error.manager.SIBS.notSupportedExtension", inputFile.getFilename());
             }
-        } else {
-            throw new TreasuryDomainException("error.manager.SIBS.notSupportedExtension", inputFile.getFilename());
+            return result;
         }
-        return result;
     }
 
 //    private PaymentReferenceCode getPaymentReferenceCode(final FinantialInstitution finantialInstitution, final String code,
