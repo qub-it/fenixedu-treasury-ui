@@ -35,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -577,7 +578,9 @@ public class SettlementNoteController extends TreasuryBaseController {
                     BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.day.limit.exceeded",
                             String.valueOf(SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD)), model);
         } else {
-            List<SettlementNote> notes = filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo);
+            //TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
+            List<SettlementNote> notes =
+                    filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo, false);
             model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
             model.addAttribute("finantialInstitution", finantialInstitution);
 
@@ -627,20 +630,28 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     private List<SettlementNote> filterSearchSettlementNote(FinantialInstitution finantialInstitution,
-            LocalDate documentDateFrom, LocalDate documentDateTo) {
+            LocalDate documentDateFrom, LocalDate documentDateTo, boolean filterInternalSeriesOnly) {
 
         //Only filter de SettlementNotes from the "internal" series and from the final institution
         // And appy TimeWindow to the "DOCUMENT_DATE"
-        return SettlementNote
-                .findAll()
-                .filter(note -> note.isClosed())
-                .filter(note -> note.getDocumentNumberSeries().getSeries().getExternSeries() == false
-                        && note.getDocumentNumberSeries().getSeries().getLegacy() == false)
-                .filter(note -> note.getDebtAccount().getFinantialInstitution().equals(finantialInstitution))
-                .filter(note -> note.getDocumentDate().toLocalDate().isAfter(documentDateFrom)
-                        || note.getDocumentDate().toLocalDate().isEqual(documentDateFrom))
-                .filter(note -> note.getDocumentDate().toLocalDate().isBefore(documentDateTo)
-                        || note.getDocumentDate().toLocalDate().isEqual(documentDateTo)).collect(Collectors.toList());
+        Stream<SettlementNote> streamFilter =
+                SettlementNote
+                        .findAll()
+                        .filter(note -> note.isClosed())
+                        .filter(note -> note.getDebtAccount().getFinantialInstitution().equals(finantialInstitution))
+                        .filter(note -> note.getDocumentDate().toLocalDate().isAfter(documentDateFrom)
+                                || note.getDocumentDate().toLocalDate().isEqual(documentDateFrom))
+                        .filter(note -> note.getDocumentDate().toLocalDate().isBefore(documentDateTo)
+                                || note.getDocumentDate().toLocalDate().isEqual(documentDateTo));
+
+        if (filterInternalSeriesOnly == true) {
+            streamFilter =
+                    streamFilter.filter(note -> note.getDocumentNumberSeries().getSeries().getExternSeries() == false
+                            && note.getDocumentNumberSeries().getSeries().getLegacy() == false);
+
+        }
+
+        return streamFilter.collect(Collectors.toList());
     }
 
     private List<SettlementEntry> getSettlementEntriesDataSet(List<SettlementNote> notes) {
