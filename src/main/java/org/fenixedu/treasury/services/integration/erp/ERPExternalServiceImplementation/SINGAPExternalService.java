@@ -2,10 +2,10 @@ package org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImpleme
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.function.UnaryOperator;
 
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.handler.Handler;
 
 import oecd.standardauditfile_tax.pt_1.AuditFile;
 
@@ -22,6 +22,7 @@ import org.fenixedu.treasury.services.integration.erp.singap.ServiceSoap;
 import pt.ist.fenixframework.Atomic;
 
 import com.qubit.solution.fenixedu.bennu.webservices.services.client.BennuWebServiceClient;
+import com.sun.xml.ws.client.BindingProviderProperties;
 
 public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> implements IERPExternalService {
 
@@ -38,11 +39,11 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
         new SINGAPExternalService();
 
     }
-    
+
     @Override
     public ServiceSoap getClient() {
         final ServiceSoap client = super.getClient();
-        
+
         return client;
     }
 
@@ -51,14 +52,19 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
         DocumentsInformationOutput output = new DocumentsInformationOutput();
         output.setDocumentStatus(new ArrayList<DocumentStatusWS>());
         final ServiceSoap client = getClient();
-        
+
         final SOAPLoggingHandler loggingHandler = SOAPLoggingHandler.createLoggingHandler((BindingProvider) client);
-        
+
+        //Set Timeout for the client
+        Map<String, Object> requestContext = ((BindingProvider) client).getRequestContext();
+        requestContext.put(BindingProviderProperties.REQUEST_TIMEOUT, 15000); // Timeout in millis
+        requestContext.put(BindingProviderProperties.CONNECT_TIMEOUT, 2000); // Timeout in millis
+
         ArrayOfResposta carregarSAFTON = client.carregarSAFTON(documentsInformation.getData());
-        
+
         output.setSoapInboundMessage(loggingHandler.getInboundMessage());
         output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
-        
+
         for (Resposta resposta : carregarSAFTON.getResposta()) {
             output.setRequestId(resposta.getChavePrimaria());
             DocumentStatusWS status = new DocumentStatusWS();
@@ -67,7 +73,7 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
             status.setIntegrationStatus(covertToStatusType(resposta.getStatus()));
             output.getDocumentStatus().add(status);
         }
-        
+
         return output;
     }
 

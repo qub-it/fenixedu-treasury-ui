@@ -60,7 +60,9 @@ public class SIAGExternalService extends BennuWebServiceClient<GestaoAcademicaSe
 
             DocumentStatusWS docStatus = new DocumentStatusWS();
             docStatus.setDocumentNumber(siagStatus.getDocumentNumber());
-            docStatus.setErrorDescription(siagStatus.getErrorDescription());
+//            docStatus.setErrorDescription(siagStatus.getErrorDescription());
+            docStatus.setErrorDescription(String.format("[STATUS: %s] - %s", siagStatus.getIntegrationStatus(),
+                    siagStatus.getErrorDescription()));
             docStatus.setIntegrationStatus(StatusType.valueOf(siagStatus.getIntegrationStatus().toString()));
             output.getDocumentStatus().add(docStatus);
 
