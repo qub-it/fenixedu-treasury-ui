@@ -388,13 +388,13 @@ public class ERPExporter {
                 status.setPaymentStatus("N");
             }
             if (document.getVersioningUpdateDate() != null) {
-                status.setPaymentStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
+                status.setPaymentStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate().getDate()));
             } else {
                 status.setPaymentStatusDate(payment.getSystemEntryDate());
             }
             status.setReason(document.getDocumentObservations());
             // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(document.getVersioningUpdatedBy());
+            status.setSourceID(document.getVersioningUpdatedBy().getUsername());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
             if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())
@@ -584,13 +584,13 @@ public class ERPExporter {
             }
 
             if (document.getVersioningUpdateDate() != null) {
-                status.setWorkStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate()));
+                status.setWorkStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate().getDate()));
             } else {
                 status.setWorkStatusDate(workDocument.getSystemEntryDate());
             }
             // status.setReason("");
             // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(document.getVersioningUpdatedBy());
+            status.setSourceID(document.getVersioningUpdatedBy().getUsername());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
             if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())

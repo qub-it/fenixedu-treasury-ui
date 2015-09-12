@@ -176,7 +176,7 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base impl
 
     @Override
     public DateTime getUpdateDate() {
-        return getAtiveDocumentTemplateFile().getVersioningUpdateDate();
+        return getAtiveDocumentTemplateFile().getVersioningUpdateDate().getDate();
     }
 
     @Override
