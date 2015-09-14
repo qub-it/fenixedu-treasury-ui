@@ -79,6 +79,19 @@ public class SettlementNote extends SettlementNote_Base {
         return true;
     }
 
+    protected BigDecimal checkDiferenceInAmount() {
+        BigDecimal result = this.getTotalDebitAmount().subtract(this.getTotalCreditAmount());
+
+        if (this.getAdvancedPaymentCreditNote() != null) {
+            result = result.add(this.getAdvancedPaymentCreditNote().getTotalAmount());
+        }
+        if (Constants.isZero(this.getTotalReimbursementAmount())) {
+            return this.getTotalPayedAmount().subtract(result);
+        } else {
+            return this.getTotalReimbursementAmount().subtract(result);
+        }
+    }
+
     @Override
     protected void checkRules() {
         super.checkRules();
@@ -336,7 +349,7 @@ public class SettlementNote extends SettlementNote_Base {
             if (this.getAdvancedPaymentCreditNote() != null) {
                 //only "disconnect" the advanced payment credit note
                 this.setAdvancedPaymentCreditNote(null);
-               // this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, anulledReason);
+                // this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, anulledReason);
             }
             checkRules();
         }
@@ -366,6 +379,10 @@ public class SettlementNote extends SettlementNote_Base {
             if (Constants.isGreaterThan(settlementEntry.getAmount(), settlementEntry.getInvoiceEntry().getOpenAmount())) {
                 throw new TreasuryDomainException("error.SettlementNote.invalid.settlement.entry.amount.for.invoice.entry");
             }
+        }
+
+        if (Constants.isZero(checkDiferenceInAmount()) == false) {
+            throw new TreasuryDomainException("error.SettlementNote.invalid.amounts.in.settlement.note");
         }
 
         if (this.getAdvancedPaymentCreditNote() != null) {
