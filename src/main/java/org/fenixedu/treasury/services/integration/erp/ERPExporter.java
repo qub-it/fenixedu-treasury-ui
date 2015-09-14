@@ -389,12 +389,14 @@ public class ERPExporter {
             }
             if (document.getVersioningUpdateDate() != null) {
                 status.setPaymentStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate().getDate()));
+                // Utilizador responsável pelo estado atual do docu-mento.
+                status.setSourceID(document.getVersioningUpdatedBy().getUsername());
             } else {
                 status.setPaymentStatusDate(payment.getSystemEntryDate());
+                // Utilizador responsável pelo estado atual do docu-mento.
+                status.setSourceID("");
             }
             status.setReason(document.getDocumentObservations());
-            // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(document.getVersioningUpdatedBy().getUsername());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
             if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())
@@ -585,12 +587,14 @@ public class ERPExporter {
 
             if (document.getVersioningUpdateDate() != null) {
                 status.setWorkStatusDate(convertToXMLDateTime(dataTypeFactory, document.getVersioningUpdateDate().getDate()));
+                // Utilizador responsável pelo estado atual do docu-mento.
+                status.setSourceID(document.getVersioningUpdatedBy().getUsername());
             } else {
                 status.setWorkStatusDate(workDocument.getSystemEntryDate());
+                // Utilizador responsável pelo estado atual do docu-mento.
+                status.setSourceID("");
             }
             // status.setReason("");
-            // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(document.getVersioningUpdatedBy().getUsername());
             // Deve ser preenchido com:
             // 'P' - Documento produzido na aplicacao;
             if (Boolean.TRUE.equals(document.getDocumentNumberSeries().getSeries().getExternSeries())
