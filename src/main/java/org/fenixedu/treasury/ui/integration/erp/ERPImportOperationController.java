@@ -70,6 +70,8 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/integration/erp/erpimportoperation";
 
+    public static final long SEARCH_OPERATION_LIST_LIMIT_SIZE = 3000;
+
     @RequestMapping
     public String home(Model model) {
         return "forward:" + CONTROLLER_URL + "/";
@@ -100,6 +102,11 @@ public class ERPImportOperationController extends TreasuryBaseController {
                     required = false) String documentNumber, Model model) {
         List<ERPImportOperation> searcherpimportoperationResultsDataSet =
                 filterSearchERPImportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
+        model.addAttribute("limit_exceeded", searcherpimportoperationResultsDataSet.size() > SEARCH_OPERATION_LIST_LIMIT_SIZE);
+        model.addAttribute("searchoperationResultsDataSet_totalCount", searcherpimportoperationResultsDataSet.size());
+        searcherpimportoperationResultsDataSet =
+                searcherpimportoperationResultsDataSet.stream().limit(SEARCH_OPERATION_LIST_LIMIT_SIZE)
+                        .collect(Collectors.toList());
 
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("searcherpimportoperationResultsDataSet", searcherpimportoperationResultsDataSet);

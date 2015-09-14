@@ -209,7 +209,17 @@ ${portal.toolkit()}
     </form>
 </div>
 
+<c:if test="${limit_exceeded}">
+    <div class="alert alert-warning" role="alert">
 
+        <p>
+            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+            <spring:message code="label.limitexceeded" arguments="${searcherpimportoperationResultsDataSet.size()};${searchoperationResultsDataSet_totalCount}" argumentSeparator=";"
+                htmlEscape="false" />
+        </p>
+
+    </div>
+</c:if>
 <c:choose>
     <c:when test="${not empty searcherpimportoperationResultsDataSet}">
         <table id="searcherpimportoperationTable"
