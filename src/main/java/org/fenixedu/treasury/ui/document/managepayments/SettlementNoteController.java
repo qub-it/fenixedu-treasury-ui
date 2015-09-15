@@ -681,7 +681,12 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     private List<SettlementEntry> getSettlementEntriesDataSet(List<SettlementNote> notes) {
-        return notes.stream().map(note -> note.getSettlemetEntries().collect(Collectors.toList()))
+        return notes
+                .stream()
+                //Filter only settlement Entries where there was payments / rehimbursments
+                .filter(x -> Constants.isPositive(x.getTotalPayedAmount())
+                        || Constants.isPositive(x.getTotalReimbursementAmount()))
+                .map(note -> note.getSettlemetEntries().collect(Collectors.toList()))
                 .reduce(new ArrayList<SettlementEntry>(), (t, u) -> {
                     t.addAll(u);
                     return t;

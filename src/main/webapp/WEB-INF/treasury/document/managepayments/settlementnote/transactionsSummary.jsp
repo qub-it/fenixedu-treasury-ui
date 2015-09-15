@@ -158,7 +158,7 @@ ${portal.toolkit()}
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button"
-                value="<spring:message code="label.search" />" />
+                value="<spring:message code="label.process" />" />
         </div>
     </form>
 </div>
@@ -330,7 +330,7 @@ ${portal.toolkit()}
                             <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
 
-                        <datatables:column cssStyle="width:140px;">
+                        <datatables:column cssStyle="width:100px;">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.Customer.studentNumber" />
@@ -339,7 +339,7 @@ ${portal.toolkit()}
                                 value="${ entry.debtAccount.customer.businessIdentification }" />
                         </datatables:column>
 
-                        <datatables:column cssStyle="width:140px;">
+                        <datatables:column cssStyle="width:100px;">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.Customer.identificationNumber.short" />
@@ -362,7 +362,13 @@ ${portal.toolkit()}
                             </datatables:columnHead>
                             <c:out value="${ entry.uiDocumentNumber }" />
                         </datatables:column>
-
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.FinantialDocument.PaymentNote" />
+                            </datatables:columnHead>
+                            <c:out value="${ entry.advancedPaymentSettlementNote.uiDocumentNumber }" />
+                        </datatables:column>
                         <datatables:column
                             cssStyle="width:10%;align:right">
                             <datatables:columnHead>
@@ -378,8 +384,8 @@ ${portal.toolkit()}
                     <script>
                 createDataTables(
                         'advancedPaymentEntries',
-                        false,
-                        false,
+                        true,
+                        true,
                         true,
                         "${pageContext.request.contextPath}",
                         "${datatablesI18NUrl}");
@@ -388,7 +394,7 @@ ${portal.toolkit()}
             </div>
 
             <h3>
-                <spring:message code="label.details" />
+                <spring:message code="label.document.managepayments.settlementnote.settlementDetails" />
             </h3>
             <div class="row">
                 <div class="col-sm-10">
@@ -397,7 +403,7 @@ ${portal.toolkit()}
                         cssClass="table table-bordered table-hover"
                         cdn="false" cellspacing="2" sort="false">
                         <datatables:column
-                            cssStyle="width:80px;align:right">
+                            cssStyle="width:90px;align:right">
                             <datatables:columnHead>
                                 <spring:message
                                     code="label.InvoiceEntry.date" />
@@ -456,13 +462,7 @@ ${portal.toolkit()}
                             </datatables:columnHead>
                             <c:out value="${ entry.description}" />
                         </datatables:column>
-                        <datatables:column>
-                            <datatables:columnHead>
-                                <spring:message
-                                    code="label.FinantialDocument.PaymentNote" />
-                            </datatables:columnHead>
-                            <c:out value="${ entry.finantialDocument.advancedPaymentCreditNote.uiDocumentNumber }" />
-                        </datatables:column>
+                       
 
                         <datatables:column>
                             <datatables:columnHead>
@@ -502,8 +502,8 @@ ${portal.toolkit()}
                     <script>
                 createDataTables(
                         'settlementEntries',
-                        false,
-                        false,
+                        true,
+                        true,
                         true,
                         "${pageContext.request.contextPath}",
                         "${datatablesI18NUrl}");
