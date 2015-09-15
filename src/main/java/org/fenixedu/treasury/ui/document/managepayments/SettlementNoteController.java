@@ -47,6 +47,7 @@ import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
@@ -585,12 +586,34 @@ public class SettlementNoteController extends TreasuryBaseController {
             List<SettlementNote> notes =
                     filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo, false);
             model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
+            model.addAttribute("advancedPaymentEntriesDataSet", getAdvancedPaymentEntriesDataSet(notes));
+            model.addAttribute("advancedPaymentTotal", getAdvancedPaymentTotal(notes));
             model.addAttribute("finantialInstitution", finantialInstitution);
 
             populateSummaryTransactions(model, notes, documentDateFrom, documentDateTo);
         }
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/document/managepayments/settlementnote/transactionsSummary";
+    }
+
+    private BigDecimal getAdvancedPaymentTotal(List<SettlementNote> notes) {
+        BigDecimal val = BigDecimal.ZERO;
+        for (SettlementNote note : notes) {
+            if (note.getAdvancedPaymentCreditNote() != null) {
+                val = val.add(note.getAdvancedPaymentCreditNote().getTotalAmount());
+            }
+        }
+        return val;
+    }
+
+    private List<CreditNote> getAdvancedPaymentEntriesDataSet(List<SettlementNote> notes) {
+        List<CreditNote> val = new ArrayList<CreditNote>();
+        for (SettlementNote note : notes) {
+            if (note.getAdvancedPaymentCreditNote() != null) {
+                val.add(note.getAdvancedPaymentCreditNote());
+            }
+        }
+        return val.stream().sorted((x, y) -> x.getDocumentDate().compareTo(y.getDocumentDate())).collect(Collectors.toList());
     }
 
     private void populateSummaryTransactions(Model model, List<SettlementNote> notes, LocalDate beginDate, LocalDate endDate) {

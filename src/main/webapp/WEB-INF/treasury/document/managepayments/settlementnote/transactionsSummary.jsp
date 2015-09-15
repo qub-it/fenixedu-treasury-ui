@@ -274,6 +274,89 @@ ${portal.toolkit()}
 <!--             </div> -->
 <!--         </div> -->
 <%--         </c:if> --%>
+
+    <h3><spring:message code="label.document.managepayments.settlementnote.advancedPaymentsDetails"/></h3>
+     <div class="row"> -->
+             <div class="col-sm-5"> 
+             <spring:message code="label.document.managepayments.settlementnote.advancedPaymentsTotal"/>
+             </div>
+             <div>
+              <c:out value="${finantialInstitution.currency.getValueFor(advancedPaymentTotal)}" />   
+             </div>
+</div>
+        <div class="row col-sm-11">
+        
+            <datatables:table id="advancedPaymentEntries" row="entry" data="${advancedPaymentEntriesDataSet}" cssClass="table table-bordered table-hover" cdn="false"
+                cellspacing="2"  sort="false">
+                <datatables:column cssStyle="width:80px;align:right">
+                    <datatables:columnHead>
+                        <spring:message code="label.InvoiceEntry.date" />
+                    </datatables:columnHead>
+                    <c:out value='${entry.documentDate.toString("YYYY-MM-dd")}' />
+                    <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
+                </datatables:column>
+
+                <datatables:column cssStyle="width:140px;">
+                    <datatables:columnHead>
+                        <spring:message code="label.Customer.studentNumber" />
+                    </datatables:columnHead>
+                    <c:out value="${ entry.debtAccount.customer.businessIdentification }" />
+                </datatables:column>
+
+                <datatables:column cssStyle="width:140px;">
+                    <datatables:columnHead>
+                        <spring:message code="label.Customer.identificationNumber.short" />
+                    </datatables:columnHead>
+                    <c:out value="${ entry.debtAccount.customer.identificationNumber }" />
+                </datatables:column>
+
+                <datatables:column cssStyle="width:140px;">
+                    <datatables:columnHead>
+                        <spring:message code="label.Customer" />
+                    </datatables:columnHead>
+                    <c:out value="${ entry.debtAccount.customer.name }" />
+                </datatables:column>
+                <datatables:column cssStyle="width:140px;">
+                    <datatables:columnHead>
+                        <spring:message code="label.InvoiceEntry.finantialDocument" />
+                    </datatables:columnHead>
+                    <c:out value="${ entry.uiDocumentNumber }" />
+                </datatables:column>
+                                
+                <datatables:column cssStyle="width:10%;align:right">
+                    <datatables:columnHead>
+                        <spring:message code="label.InvoiceEntry.totalAmount" />
+                    </datatables:columnHead>
+                    <div align=right>
+                            <c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />                                
+                    </div>
+                </datatables:column>
+            </datatables:table>
+            <script>
+                createDataTables(
+                        'advancedPaymentEntries',
+                        true,
+                        true,
+                        true,
+                        "${pageContext.request.contextPath}",
+                        "${datatablesI18NUrl}");
+            </script>
+        </div>
+        </c:when>
+        <c:otherwise>
+            <div class="alert alert-warning" role="alert">
+    
+                <p>
+                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                    <spring:message code="label.noResultsFound" />
+                </p>
+    
+            </div>
+        </c:otherwise>
+    </c:choose>        
+    </div>
+
+
         <h3><spring:message code="label.details"/></h3>
         <div class="row col-sm-11">
             <datatables:table id="settlementEntries" row="entry" data="${settlementEntriesDataSet}" cssClass="table table-bordered table-hover" cdn="false"
@@ -354,7 +437,7 @@ ${portal.toolkit()}
                         'settlementEntries',
                         true,
                         true,
-                        false,
+                        true,
                         "${pageContext.request.contextPath}",
                         "${datatablesI18NUrl}");
             </script>
