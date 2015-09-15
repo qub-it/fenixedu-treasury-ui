@@ -65,6 +65,8 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/integration/erp/erpexportoperation";
 
+    public static final long SEARCH_OPERATION_LIST_LIMIT_SIZE = 3000;
+
     @RequestMapping
     public String home(Model model) {
         return "forward:" + CONTROLLER_URL + "/";
@@ -86,7 +88,6 @@ public class ERPExportOperationController extends TreasuryBaseController {
 //				
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
-    private static final long EXPORT_OPERATIONS_MAX_SIZE = 500;
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
@@ -97,6 +98,11 @@ public class ERPExportOperationController extends TreasuryBaseController {
                     required = false) String documentNumber, Model model) {
         List<ERPExportOperation> searcherpexportoperationResultsDataSet =
                 filterSearchERPExportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
+        model.addAttribute("limit_exceeded", searcherpexportoperationResultsDataSet.size() > SEARCH_OPERATION_LIST_LIMIT_SIZE);
+        model.addAttribute("searchoperationResultsDataSet_totalCount", searcherpexportoperationResultsDataSet.size());
+        searcherpexportoperationResultsDataSet =
+                searcherpexportoperationResultsDataSet.stream().limit(SEARCH_OPERATION_LIST_LIMIT_SIZE)
+                        .collect(Collectors.toList());
 
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("searcherpexportoperationResultsDataSet", searcherpexportoperationResultsDataSet);
@@ -252,8 +258,8 @@ public class ERPExportOperationController extends TreasuryBaseController {
         }
         return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }
-    
-    @RequestMapping(value="/soapoutboundmessage/{oid}")
+
+    @RequestMapping(value = "/soapoutboundmessage/{oid}")
     public void soapOutboundMessage(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setERPExportOperation(eRPExportOperation, model);
@@ -261,8 +267,10 @@ public class ERPExportOperationController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
 
             response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
-            response.setHeader("Content-disposition", String.format("attachment; filename=SOAP_Outbound_Message_%s.xml", eRPExportOperation.getExternalId()));
-            response.getWriter().write(eRPExportOperation.getSoapOutboundMessage() != null ? eRPExportOperation.getSoapOutboundMessage() : "");
+            response.setHeader("Content-disposition",
+                    String.format("attachment; filename=SOAP_Outbound_Message_%s.xml", eRPExportOperation.getExternalId()));
+            response.getWriter().write(
+                    eRPExportOperation.getSoapOutboundMessage() != null ? eRPExportOperation.getSoapOutboundMessage() : "");
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
@@ -270,10 +278,10 @@ public class ERPExportOperationController extends TreasuryBaseController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }     
+        }
     }
-    
-    @RequestMapping(value="/soapinboundmessage/{oid}")
+
+    @RequestMapping(value = "/soapinboundmessage/{oid}")
     public void soapInboundMessage(@PathVariable("oid") ERPExportOperation eRPExportOperation, Model model,
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setERPExportOperation(eRPExportOperation, model);
@@ -281,8 +289,10 @@ public class ERPExportOperationController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
 
             response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
-            response.setHeader("Content-disposition", String.format("attachment; filename=SOAP_Inbound_Message_%s.xml", eRPExportOperation.getExternalId()));
-            response.getWriter().write(eRPExportOperation.getSoapInboundMessage() != null ? eRPExportOperation.getSoapInboundMessage() : "");
+            response.setHeader("Content-disposition",
+                    String.format("attachment; filename=SOAP_Inbound_Message_%s.xml", eRPExportOperation.getExternalId()));
+            response.getWriter().write(
+                    eRPExportOperation.getSoapInboundMessage() != null ? eRPExportOperation.getSoapInboundMessage() : "");
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
@@ -290,7 +300,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }     
+        }
     }
-    
+
 }

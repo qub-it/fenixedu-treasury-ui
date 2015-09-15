@@ -265,6 +265,9 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = CREATE_DEBIT_NOTE_URI, method = RequestMethod.POST)
     public String createDebitNote(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        if (bean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
+            return insertPayment(bean, model);
+        }
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/insertPayment";
     }
