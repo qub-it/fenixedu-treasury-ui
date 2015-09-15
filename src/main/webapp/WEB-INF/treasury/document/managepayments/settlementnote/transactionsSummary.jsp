@@ -1,8 +1,9 @@
-<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
+<%@page
+    import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
 <%@ taglib prefix="datatables"
     uri="http://github.com/dandelion/datatables"%>
 
@@ -56,17 +57,15 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-    &nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= SettlementNoteController.SEARCH_URL %>">
+    &nbsp; <a class=""
+        href="${pageContext.request.contextPath}<%= SettlementNoteController.SEARCH_URL %>">
         <spring:message code="label.back" />
-    </a>
-    &nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
-    &nbsp;
-    <a class="" id="printLabel2" href="#" onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';" >
+    </a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-print"
+        aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2"
+        href="#"
+        onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';">
         <spring:message code="label.print" />
-    </a>
-    &nbsp;
+    </a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -113,8 +112,9 @@ ${portal.toolkit()}
 
                 <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="finantial_institutions" 
-                        class="select2 col-sm-10" name="finantialInstitution" required>
+                    <select id="finantial_institutions"
+                        class="select2 col-sm-10"
+                        name="finantialInstitution" required>
                     </select>
                 </div>
             </div>
@@ -130,7 +130,10 @@ ${portal.toolkit()}
                         code="label.SettlementNote.documentDateFrom" />
                 </div>
 
-                <% pageContext.setAttribute("now", new org.joda.time.DateTime().toString("yyyy-MM-dd")); %>
+                <%
+                    pageContext.setAttribute("now",
+                					new org.joda.time.DateTime().toString("yyyy-MM-dd"));
+                %>
 
                 <div class="col-sm-4">
                     <input id="settlementNote_documentDate"
@@ -160,301 +163,367 @@ ${portal.toolkit()}
     </form>
 </div>
 
-<h2><spring:message code="label.DebtAccount" /></h2>
+<h2>
+    <spring:message code="label.DebtAccount" />
+</h2>
 <div id="content">
 
     <c:choose>
         <c:when test="${not empty settlementEntriesDataSet}">
-        <h3><spring:message code="label.administration.manageCustomer.createSettlementNote.summary"/></h3>
-        <div class="row">
-            <div class="col-sm-5">
-                <table id="paymentEntries"
-                   class="table responsive table-bordered table-hover" width="100%">
-                <tr>
-                    <th>
-                        <spring:message code="label.PaymentMethod" />
-                    </th>
-                    <th align="right">
-                        <spring:message code="label.PaymentMethod.value" />
-                    </th >
-                </tr>
-                <c:set var ="sum" value="${ 0 }"/>
-                <c:forEach var="entry" items="${paymentsDataSet}">
-                    <tr>
-                        <td><c:out value="${ entry.key.name.content }" /></td>
-                        <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td>
-                    </tr>
-                    <c:set var ="sum" value="${ sum + entry.value }"/>
-                </c:forEach>
-                    <tr> 
-                        <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th>
-                        <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
-                    </tr>
-                </table>
+            <h3>
+                <spring:message
+                    code="label.administration.manageCustomer.createSettlementNote.summary" />
+            </h3>
+            <div class="row">
+                <div class="col-sm-5">
+                    <table id="paymentEntries"
+                        class="table responsive table-bordered table-hover"
+                        width="100%">
+                        <tr>
+                            <th><spring:message
+                                    code="label.PaymentMethod" /></th>
+                            <th align="right"><spring:message
+                                    code="label.PaymentMethod.value" />
+                            </th>
+                        </tr>
+                        <c:set var="sum" value="${ 0 }" />
+                        <c:forEach var="entry"
+                            items="${paymentsDataSet}">
+                            <tr>
+                                <td><c:out
+                                        value="${ entry.key.name.content }" /></td>
+                                <td align="right"><c:out
+                                        value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td>
+                            </tr>
+                            <c:set var="sum"
+                                value="${ sum + entry.value }" />
+                        </c:forEach>
+                        <tr>
+                            <th><spring:message
+                                    code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th>
+                            <th align="right"><c:out
+                                    value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-sm-5">
+                    <table id="reimbursementsEntries"
+                        class="table responsive table-bordered table-hover"
+                        width="100%">
+                        <tr>
+                            <th><spring:message
+                                    code="label.ReimbursementMethod" />
+                            </th>
+                            <th><spring:message
+                                    code="label.PaymentMethod.value" />
+                            </th>
+                        </tr>
+                        <c:set var="sum" value="${ 0 }" />
+                        <c:forEach var="entry"
+                            items="${reimbursementsDataSet}">
+                            <tr>
+                                <td><c:out
+                                        value="${ entry.key.name.content }" /></td>
+                                <td align="right"><c:out
+                                        value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td>
+                            </tr>
+                            <c:set var="sum"
+                                value="${ sum + entry.value }" />
+                        </c:forEach>
+                        <tr>
+                            <th><spring:message
+                                    code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th>
+                            <th align="right"><c:out
+                                    value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
+                        </tr>
+                    </table>
+                </div>
             </div>
-            <div class="col-sm-5">
-                <table id="reimbursementsEntries"
-                   class="table responsive table-bordered table-hover" width="100%">
-                <tr>
-                    <th>
-                        <spring:message code="label.ReimbursementMethod" />
-                    </th>
-                    <th>
-                        <spring:message code="label.PaymentMethod.value" />
-                    </th>
-                </tr>
-                <c:set var ="sum" value="${ 0 }"/>
-                <c:forEach var="entry" items="${reimbursementsDataSet}">
-                    <tr>
-                        <td><c:out value="${ entry.key.name.content }" /></td>
-                        <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td>
-                    </tr>
-                    <c:set var ="sum" value="${ sum + entry.value }"/>
-                </c:forEach>
-                    <tr>
-                        <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th>
-                        <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th>
-                    </tr>
-                </table>
+
+            <%--         <c:if test='${ not paymentsOutOfTimeWindowDataSet.isEmpty() || not reimbursementsOutOfTimeWindowDataSet.isEmpty()}'> --%>
+            <%--         <h3><spring:message code="label.administration.manageCustomer.createSettlementNote.summaryOutOfTimeWindow"/></h3> --%>
+            <!--         <div class="row"> -->
+            <!--             <div class="col-sm-5"> -->
+            <!--                 <table id="paymentEntriesOutOfTimeWindow" -->
+            <!--                    class="table responsive table-bordered table-hover" width="100%"> -->
+            <!--                 <tr> -->
+            <!--                     <th> -->
+            <%--                         <spring:message code="label.PaymentMethod" /> --%>
+            <!--                     </th> -->
+            <!--                     <th align="right"> -->
+            <%--                         <spring:message code="label.PaymentMethod.value" /> --%>
+            <!--                     </th > -->
+            <!--                 </tr> -->
+            <%--                 <c:set var ="sum" value="${ 0 }"/> --%>
+            <%--                 <c:forEach var="entry" items="${paymentsOutOfTimeWindowDataSet}"> --%>
+            <!--                     <tr> -->
+            <%--                         <td><c:out value="${ entry.key.name.content }" /></td> --%>
+            <%--                         <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td> --%>
+            <!--                     </tr> -->
+            <%--                     <c:set var ="sum" value="${ sum + entry.value }"/> --%>
+            <%--                 </c:forEach> --%>
+            <!--                     <tr>  -->
+            <%--                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th> --%>
+            <%--                         <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th> --%>
+            <!--                     </tr> -->
+            <!--                 </table> -->
+            <!--             </div> -->
+            <!--             <div class="col-sm-5"> -->
+            <!--                 <table id="reimbursementsEntriesOutOfTimeWindow" -->
+            <!--                    class="table responsive table-bordered table-hover" width="100%"> -->
+            <!--                 <tr> -->
+            <!--                     <th> -->
+            <%--                         <spring:message code="label.ReimbursementMethod" /> --%>
+            <!--                     </th> -->
+            <!--                     <th> -->
+            <%--                         <spring:message code="label.PaymentMethod.value" /> --%>
+            <!--                     </th> -->
+            <!--                 </tr> -->
+            <%--                 <c:set var ="sum" value="${ 0 }"/> --%>
+            <%--                 <c:forEach var="entry" items="${reimbursementsOutOfTimeWindowDataSet}"> --%>
+            <!--                     <tr> -->
+            <%--                         <td><c:out value="${ entry.key.name.content }" /></td> --%>
+            <%--                         <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td> --%>
+            <!--                     </tr> -->
+            <%--                     <c:set var ="sum" value="${ sum + entry.value }"/> --%>
+            <%--                 </c:forEach> --%>
+            <!--                     <tr> -->
+            <%--                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th> --%>
+            <%--                         <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th> --%>
+            <!--                     </tr> -->
+            <!--                 </table> -->
+            <!--             </div> -->
+            <!--         </div> -->
+            <%--         </c:if> --%>
+
+            <h3>
+                <spring:message
+                    code="label.document.managepayments.settlementnote.advancedPaymentsDetails" />
+            </h3>
+            <div class="row">
+                <div class="col-sm-5">
+                    <table id="reimbursementsEntries"
+                            class="table responsive table-bordered table-hover"
+                            width="100%">
+                        <tr>
+                            <th><spring:message code="label.document.managepayments.settlementnote.advancedPaymentsTotal" /></th>
+                            <th><c:out value="${finantialInstitution.currency.getValueFor(advancedPaymentTotal)}" /></th>
+                        </tr>
+                    </table>
+                </div>
             </div>
-        </div>
-        
-<%--         <c:if test='${ not paymentsOutOfTimeWindowDataSet.isEmpty() || not reimbursementsOutOfTimeWindowDataSet.isEmpty()}'> --%>
-<%--         <h3><spring:message code="label.administration.manageCustomer.createSettlementNote.summaryOutOfTimeWindow"/></h3> --%>
-<!--         <div class="row"> -->
-<!--             <div class="col-sm-5"> -->
-<!--                 <table id="paymentEntriesOutOfTimeWindow" -->
-<!--                    class="table responsive table-bordered table-hover" width="100%"> -->
-<!--                 <tr> -->
-<!--                     <th> -->
-<%--                         <spring:message code="label.PaymentMethod" /> --%>
-<!--                     </th> -->
-<!--                     <th align="right"> -->
-<%--                         <spring:message code="label.PaymentMethod.value" /> --%>
-<!--                     </th > -->
-<!--                 </tr> -->
-<%--                 <c:set var ="sum" value="${ 0 }"/> --%>
-<%--                 <c:forEach var="entry" items="${paymentsOutOfTimeWindowDataSet}"> --%>
-<!--                     <tr> -->
-<%--                         <td><c:out value="${ entry.key.name.content }" /></td> --%>
-<%--                         <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor(entry.value) }" /></td> --%>
-<!--                     </tr> -->
-<%--                     <c:set var ="sum" value="${ sum + entry.value }"/> --%>
-<%--                 </c:forEach> --%>
-<!--                     <tr>  -->
-<%--                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.paymentTotal" /></th> --%>
-<%--                         <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th> --%>
-<!--                     </tr> -->
-<!--                 </table> -->
-<!--             </div> -->
-<!--             <div class="col-sm-5"> -->
-<!--                 <table id="reimbursementsEntriesOutOfTimeWindow" -->
-<!--                    class="table responsive table-bordered table-hover" width="100%"> -->
-<!--                 <tr> -->
-<!--                     <th> -->
-<%--                         <spring:message code="label.ReimbursementMethod" /> --%>
-<!--                     </th> -->
-<!--                     <th> -->
-<%--                         <spring:message code="label.PaymentMethod.value" /> --%>
-<!--                     </th> -->
-<!--                 </tr> -->
-<%--                 <c:set var ="sum" value="${ 0 }"/> --%>
-<%--                 <c:forEach var="entry" items="${reimbursementsOutOfTimeWindowDataSet}"> --%>
-<!--                     <tr> -->
-<%--                         <td><c:out value="${ entry.key.name.content }" /></td> --%>
-<%--                         <td align="right"><c:out value="${ finantialInstitution.currency.getValueFor( entry.value ) }" /></td> --%>
-<!--                     </tr> -->
-<%--                     <c:set var ="sum" value="${ sum + entry.value }"/> --%>
-<%--                 </c:forEach> --%>
-<!--                     <tr> -->
-<%--                         <th><spring:message code="label.document.managepayments.settlementnote.transactionsSummary.reimbursementTotal" /></th> --%>
-<%--                         <th align="right"><c:out value="${ finantialInstitution.currency.getValueFor(sum) }" /></th> --%>
-<!--                     </tr> -->
-<!--                 </table> -->
-<!--             </div> -->
-<!--         </div> -->
-<%--         </c:if> --%>
+            <div class="row">
+                <div class="col-sm-10">
+                    <datatables:table id="advancedPaymentEntries"
+                        row="entry"
+                        data="${advancedPaymentEntriesDataSet}"
+                        cssClass="table table-bordered table-hover"
+                        cdn="false" cellspacing="2" sort="false">
+                        <datatables:column
+                            cssStyle="width:80px;align:right">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.date" />
+                            </datatables:columnHead>
+                            <c:out
+                                value='${entry.documentDate.toString("YYYY-MM-dd")}' />
+                            <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
+                        </datatables:column>
 
-    <h3><spring:message code="label.document.managepayments.settlementnote.advancedPaymentsDetails"/></h3>
-     <div class="row"> -->
-             <div class="col-sm-5"> 
-             <spring:message code="label.document.managepayments.settlementnote.advancedPaymentsTotal"/>
-             </div>
-             <div>
-              <c:out value="${finantialInstitution.currency.getValueFor(advancedPaymentTotal)}" />   
-             </div>
-</div>
-        <div class="row col-sm-11">
-        
-            <datatables:table id="advancedPaymentEntries" row="entry" data="${advancedPaymentEntriesDataSet}" cssClass="table table-bordered table-hover" cdn="false"
-                cellspacing="2"  sort="false">
-                <datatables:column cssStyle="width:80px;align:right">
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.date" />
-                    </datatables:columnHead>
-                    <c:out value='${entry.documentDate.toString("YYYY-MM-dd")}' />
-                    <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
-                </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.Customer.studentNumber" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.debtAccount.customer.businessIdentification }" />
+                        </datatables:column>
 
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.Customer.studentNumber" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.debtAccount.customer.businessIdentification }" />
-                </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.Customer.identificationNumber.short" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.debtAccount.customer.identificationNumber }" />
+                        </datatables:column>
 
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.Customer.identificationNumber.short" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.debtAccount.customer.identificationNumber }" />
-                </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message code="label.Customer" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.debtAccount.customer.name }" />
+                        </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.finantialDocument" />
+                            </datatables:columnHead>
+                            <c:out value="${ entry.uiDocumentNumber }" />
+                        </datatables:column>
 
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.Customer" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.debtAccount.customer.name }" />
-                </datatables:column>
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.finantialDocument" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.uiDocumentNumber }" />
-                </datatables:column>
-                                
-                <datatables:column cssStyle="width:10%;align:right">
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.totalAmount" />
-                    </datatables:columnHead>
-                    <div align=right>
-                            <c:out value="${entry.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />                                
-                    </div>
-                </datatables:column>
-            </datatables:table>
-            <script>
+                        <datatables:column
+                            cssStyle="width:10%;align:right">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.totalAmount" />
+                            </datatables:columnHead>
+                            <div align=right>
+                                <c:out
+                                    value="${entry.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />
+                            </div>
+                        </datatables:column>
+                    </datatables:table>
+                    <script>
                 createDataTables(
                         'advancedPaymentEntries',
-                        true,
-                        true,
+                        false,
+                        false,
                         true,
                         "${pageContext.request.contextPath}",
                         "${datatablesI18NUrl}");
-            </script>
-        </div>
-        </c:when>
-        <c:otherwise>
-            <div class="alert alert-warning" role="alert">
-    
-                <p>
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-                    <spring:message code="label.noResultsFound" />
-                </p>
-    
+                   </script>
+                </div>
             </div>
-        </c:otherwise>
-    </c:choose>        
-    </div>
 
+            <h3>
+                <spring:message code="label.details" />
+            </h3>
+            <div class="row">
+                <div class="col-sm-10">
+                    <datatables:table id="settlementEntries" row="entry"
+                        data="${settlementEntriesDataSet}"
+                        cssClass="table table-bordered table-hover"
+                        cdn="false" cellspacing="2" sort="false">
+                        <datatables:column
+                            cssStyle="width:80px;align:right">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.date" />
+                            </datatables:columnHead>
+                            <c:out
+                                value='${entry.finantialDocument.documentDate.toString("YYYY-MM-dd")}' />
+                            <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
+                        </datatables:column>
+                        <datatables:column
+                            cssStyle="width:80px;align:right">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.SettlementNote.paymentDate" />
+                            </datatables:columnHead>
+                            <c:out
+                                value='${entry.finantialDocument.paymentDate.toString("YYYY-MM-dd")}' />
+                        </datatables:column>
 
-        <h3><spring:message code="label.details"/></h3>
-        <div class="row col-sm-11">
-            <datatables:table id="settlementEntries" row="entry" data="${settlementEntriesDataSet}" cssClass="table table-bordered table-hover" cdn="false"
-                cellspacing="2"  sort="false">
-                <datatables:column cssStyle="width:80px;align:right">
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.date" />
-                    </datatables:columnHead>
-                    <c:out value='${entry.finantialDocument.documentDate.toString("YYYY-MM-dd")}' />
-                    <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
-                </datatables:column>
-                <datatables:column cssStyle="width:80px;align:right">
-                    <datatables:columnHead>
-                        <spring:message code="label.SettlementNote.paymentDate" />
-                    </datatables:columnHead>
-                    <c:out value='${entry.finantialDocument.paymentDate.toString("YYYY-MM-dd")}' />
-                </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.Customer.studentNumber" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.finantialDocument.debtAccount.customer.businessIdentification }" />
+                        </datatables:column>
 
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.Customer.studentNumber" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.finantialDocument.debtAccount.customer.businessIdentification }" />
-                </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.Customer.identificationNumber.short" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.finantialDocument.debtAccount.customer.identificationNumber }" />
+                        </datatables:column>
 
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.Customer.identificationNumber.short" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.finantialDocument.debtAccount.customer.identificationNumber }" />
-                </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message code="label.Customer" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.finantialDocument.debtAccount.customer.name }" />
+                        </datatables:column>
+                        <datatables:column cssStyle="width:140px;">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.finantialDocument" />
+                            </datatables:columnHead>
+                            <c:out
+                                value="${ entry.finantialDocument.uiDocumentNumber }" />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.description" />
+                            </datatables:columnHead>
+                            <c:out value="${ entry.description}" />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.FinantialDocument.PaymentNote" />
+                            </datatables:columnHead>
+                            <c:out value="${ entry.finantialDocument.advancedPaymentCreditNote.uiDocumentNumber }" />
+                        </datatables:column>
 
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.Customer" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.finantialDocument.debtAccount.customer.name }" />
-                </datatables:column>
-                <datatables:column cssStyle="width:140px;">
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.finantialDocument" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.finantialDocument.uiDocumentNumber }" />
-                </datatables:column>
-                <datatables:column>
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.description" />
-                    </datatables:columnHead>
-                    <c:out value="${ entry.description}" />
-                </datatables:column>
-                
-                <datatables:column>
-                    <datatables:columnHead>
-                        <spring:message code="label.PaymentEntry.paymentMethod" />
-                    </datatables:columnHead>
-                    <c:out value="" />
-                   	<c:forEach var="pm" items="${entry.finantialDocument.paymentEntriesSet}">
-                    	<p><c:out value="${pm.paymentMethod.name.content}" /></p>
-                   	</c:forEach>
-                </datatables:column>
-                
-                <datatables:column cssStyle="width:10%;align:right">
-                    <datatables:columnHead>
-                        <spring:message code="label.InvoiceEntry.totalAmount" />
-                    </datatables:columnHead>
-                    <div align=right>
-                        <c:if test="${ not entry.invoiceEntry.isDebitNoteEntry() }">
-                            <c:out value="${entry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount.negate())}" />                                
-                        </c:if>
-                        <c:if test="${ entry.invoiceEntry.isDebitNoteEntry() }">
-                            <c:out value="${entry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />                                
-                        </c:if>                                
-                    </div>
-                </datatables:column>
-            </datatables:table>
-            <script>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.PaymentEntry.paymentMethod" />
+                            </datatables:columnHead>
+                            <c:out value="" />
+                            <c:forEach var="pm"
+                                items="${entry.finantialDocument.paymentEntriesSet}">
+                                <p>
+                                    <c:out
+                                        value="${pm.paymentMethod.name.content}" />
+                                </p>
+                            </c:forEach>
+                        </datatables:column>
+
+                        <datatables:column
+                            cssStyle="width:10%;align:right">
+                            <datatables:columnHead>
+                                <spring:message
+                                    code="label.InvoiceEntry.totalAmount" />
+                            </datatables:columnHead>
+                            <div align=right>
+                                <c:if
+                                    test="${ not entry.invoiceEntry.isDebitNoteEntry() }">
+                                    <c:out
+                                        value="${entry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount.negate())}" />
+                                </c:if>
+                                <c:if
+                                    test="${ entry.invoiceEntry.isDebitNoteEntry() }">
+                                    <c:out
+                                        value="${entry.finantialDocument.debtAccount.finantialInstitution.currency.getValueFor(entry.totalAmount)}" />
+                                </c:if>
+                            </div>
+                        </datatables:column>
+                    </datatables:table>
+                    <script>
                 createDataTables(
                         'settlementEntries',
-                        true,
-                        true,
+                        false,
+                        false,
                         true,
                         "${pageContext.request.contextPath}",
                         "${datatablesI18NUrl}");
             </script>
-        </div>
+                </div>
+            </div>
         </c:when>
         <c:otherwise>
             <div class="alert alert-warning" role="alert">
-    
+
                 <p>
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                    <span class="glyphicon glyphicon-exclamation-sign"
+                        aria-hidden="true">&nbsp;</span>
                     <spring:message code="label.noResultsFound" />
                 </p>
-    
+
             </div>
         </c:otherwise>
-    </c:choose>        
-    </div>
+    </c:choose>
+</div>
 
 <script>	
 
