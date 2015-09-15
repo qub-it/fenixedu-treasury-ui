@@ -165,7 +165,8 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
 
     public static Stream<FinantialDocumentPaymentCode> findByFinantialDocument(final FinantialInstitution finantialInstitution,
             final FinantialDocument finantialDocument) {
-        return findAll(finantialInstitution).filter(i -> finantialDocument.equals(i.getFinantialDocument()));
+        return finantialDocument.getPaymentCodesSet().stream().filter(i -> finantialDocument.equals(i.getFinantialDocument()));
+//        return findAll(finantialInstitution).filter(i -> finantialDocument.equals(i.getFinantialDocument()));
     }
 
     public static Stream<FinantialDocumentPaymentCode> findNewByFinantialDocument(final FinantialDocument finantialDocument) {
