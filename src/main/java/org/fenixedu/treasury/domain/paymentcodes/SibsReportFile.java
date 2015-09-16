@@ -55,6 +55,7 @@ import pt.ist.fenixframework.Atomic;
 
 public class SibsReportFile extends SibsReportFile_Base {
 
+    private static final String NEWLINE_SEP = " | ";
     public static final String CONTENT_TYPE = "text/plain";
     public static final String FILE_EXTENSION = ".idm";
 
@@ -177,10 +178,10 @@ public class SibsReportFile extends SibsReportFile_Base {
                 addCell(transactionWhenRegisteredLabel, line.getTransactionWhenRegistered().toString("yyyy-MM-dd HH:mm"));
                 addCell(studentNumberLabel, line.getStudentNumber());
                 addCell(personNameLabel, line.getPersonName());
-                addCell(descriptionLabel, line.getDescription());
+                addCell(descriptionLabel, line.getDescription() != null ? line.getDescription().replaceAll("\n", NEWLINE_SEP) : line.getDescription());
 
                 for (int i = 0; i < line.getNumberOfTransactions(); i++) {
-                    addCell(transactionDescriptionLabel, line.getTransactionDescription(i));
+                    addCell(transactionDescriptionLabel, line.getTransactionDescription(i) != null ? line.getTransactionDescription(i).replaceAll("\n", NEWLINE_SEP) : line.getTransactionDescription(i));
                     addCell(transactionAmountLabel, line.getTransactionAmount(i));
                 }
             }
@@ -192,7 +193,7 @@ public class SibsReportFile extends SibsReportFile_Base {
         ByteArrayOutputStream outputStream = null;
         try {
             outputStream = new ByteArrayOutputStream();
-            new SpreadsheetBuilder().addSheet(sheetName, sheetData).build(WorkbookExportFormat.EXCEL, outputStream);
+            new SpreadsheetBuilder().addSheet(sheetName, sheetData).build(WorkbookExportFormat.CSV, outputStream);
             return outputStream.toByteArray();
         } catch (IOException e) {
             throw new TreasuryDomainException("error.SibsReportFile.spreadsheet.generation.failed");
@@ -207,7 +208,7 @@ public class SibsReportFile extends SibsReportFile_Base {
 
     protected static String filenameFor(final SIBSImportationFileDTO reportFileDTO) {
         final String date = new DateTime().toString("yyyyMMddHHmm");
-        return "Relatorio-SIBS-" + date + ".xls";
+        return "Relatorio-SIBS-" + date + ".csv";
     }
 
     protected static String displayNameFor(final SIBSImportationFileDTO reportFileDTO) {
