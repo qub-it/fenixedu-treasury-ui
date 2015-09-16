@@ -71,7 +71,8 @@ public class SINGAPWCFExternalService extends BennuWebServiceClient<IWCFServiceW
             output.setRequestId(resposta.getChavePrimaria().getValue());
             DocumentStatusWS status = new DocumentStatusWS();
             status.setDocumentNumber(resposta.getChavePrimaria().getValue());
-            status.setErrorDescription(String.format("[STATUS: %s] - %s", resposta.getStatus(), resposta.getMensagem()));
+            status.setErrorDescription(String.format("[STATUS: %s] - %s", resposta.getStatus().getValue(), resposta.getMensagem()
+                    .getValue()));
             status.setIntegrationStatus(covertToStatusType(resposta.getStatus().getValue()));
             output.getDocumentStatus().add(status);
         }
