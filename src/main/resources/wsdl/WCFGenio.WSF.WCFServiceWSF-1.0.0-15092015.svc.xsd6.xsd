@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/CSGenio.persistencia" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/CSGenio.persistencia">
+<xs:complexType name="SuportePersistente">
+<xs:sequence/>
+</xs:complexType>
+<xs:element name="SuportePersistente" nillable="true" type="tns:SuportePersistente"/>
+</xs:schema>

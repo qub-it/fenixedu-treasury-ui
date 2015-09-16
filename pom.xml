@@ -295,7 +295,7 @@
                                 </wsdlFile>
                             </wsdlFiles>
                             <wsdlLocation>
-                                /wsdl/Singap_FenixEdu_1.01.wsdl
+                                /wsdl/Singap_FenixEdu_2.0.wsdl
                             </wsdlLocation>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
@@ -303,6 +303,33 @@
                         </configuration>
 
                     </execution>
+                                        <execution>
+                        <id>SINGAP_WCF</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <packageName>org.fenixedu.treasury.services.integration.erp.singapWCF</packageName>
+
+                            <!-- <wsdlDirectory> -->
+                            <!-- src/main/webapp/wsdl -->
+                            <!-- </wsdlDirectory> -->
+                            <wsdlFiles>
+                                <wsdlFile>
+                                    ${basedir}/src/main/resources/wsdl/WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.wsdl
+                                </wsdlFile>
+                            </wsdlFiles>
+                            <wsdlLocation>
+                                /wsdl/WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.wsdl
+                            </wsdlLocation>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                        </configuration>
+
+                    </execution>
+                    
                 </executions>
             </plugin>
             <plugin>
