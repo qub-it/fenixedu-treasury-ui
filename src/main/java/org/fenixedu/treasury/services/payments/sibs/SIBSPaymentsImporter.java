@@ -155,10 +155,10 @@ public class SIBSPaymentsImporter {
                         processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
                                 + settlementNote.getUiDocumentNumber());
-                        if (settlementNote.getAdvancedPaymentCreditNote() != null) {
-                            processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
-                                    settlementNote.getUiDocumentNumber());
-                        }
+//                        if (settlementNote.getAdvancedPaymentCreditNote() != null) {
+//                            processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
+//                                    settlementNote.getUiDocumentNumber());
+//                        }
                         sibsCodeSettlementNoteMap.put(
                                 Constants.sibsTransactionUniqueIdentifier(detailLine.getCode(),
                                         detailLine.getWhenOccuredTransaction()), settlementNote);
