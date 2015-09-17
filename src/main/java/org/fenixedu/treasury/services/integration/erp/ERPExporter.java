@@ -73,6 +73,7 @@ import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.AdvancedPaymentCredit;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.AdvancedPayment;
 import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line.Metadata;
 import oecd.standardauditfile_tax.pt_1.Tax;
 import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
@@ -84,6 +85,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -536,6 +538,14 @@ public class ERPExporter {
             // If not found, create a new one and add it to baseCustomers
             customer = convertCustomerToSAFTCustomer(document.getDebtAccount().getCustomer());
             baseCustomers.put(customer.getCustomerID(), customer);
+        }
+
+        if (document instanceof AdvancedPaymentCreditNote) {
+            AdvancedPayment advancedPayment = new AdvancedPayment();
+            advancedPayment.setDescription("");
+            advancedPayment.setOriginatingON(((AdvancedPaymentCreditNote) document).getAdvancedPaymentSettlementNote()
+                    .getUiDocumentNumber());
+            workDocument.setAdvancedPayment(advancedPayment);
         }
 
         //check the PayorDebtAccount

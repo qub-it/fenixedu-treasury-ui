@@ -542,6 +542,16 @@
 										<xs:element minOccurs="0" ref="EACCode" />
 										<xs:element ref="SystemEntryDate" />
 										<xs:element ref="CustomerID" />
+<!--                                    QUB-IT This is used for registering indicate AdvancedPayment for Credit on this credit -->
+                                        <xs:element maxOccurs="1" minOccurs="0" name="AdvancedPayment">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                            <!--  the SettlementNote that created this CreditNote -->
+                                                                <xs:element ref="OriginatingON" />
+                                                                <xs:element minOccurs="0" ref="Description" />
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                        </xs:element>
 										<xs:element minOccurs="0" ref="PayorCustomerID" />
 										<xs:element maxOccurs="unbounded" name="Line">
 											<xs:complexType>
