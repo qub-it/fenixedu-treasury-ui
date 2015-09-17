@@ -217,22 +217,11 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     @Atomic
-    public static SibsReportFile processSIBSIncommingFile(final SIBSImportationFileDTO reportDTO,
-            final Map<String, SettlementNote> sibsCodeSettlementNoteMap) {
+    public static SibsReportFile processSIBSIncommingFile(final SIBSImportationFileDTO reportDTO) {
         byte[] content = buildContentFor(reportDTO);
         SibsReportFile result =
                 SibsReportFile.create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(),
                         reportDTO.getTotalCost(), displayNameFor(reportDTO), filenameFor(reportDTO), content);
-
-        for (SIBSImportationLineDTO line : reportDTO.getLines()) {
-            if (line.getPaymentCode() != null
-                    && sibsCodeSettlementNoteMap.containsKey(Constants.sibsTransactionUniqueIdentifier(line.getCode(),
-                            line.getTransactionWhenRegistered()))) {
-                SibsTransactionDetail.create(result, "", line.getWhenProcessedBySibs(), line.getTransactionWhenRegistered(),
-                        line.getTransactionTotalAmount(), line.getPaymentCode().getPaymentCodePool().getEntityReferenceCode(),
-                        line.getCode(), line.getSibsTransactionId());
-            }
-        }
 
         return result;
     }

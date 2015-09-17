@@ -239,7 +239,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     @Atomic
     public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
-            String sibsTransactionId, String comments) {
+            String sibsTransactionId, String comments, final DateTime whenProcessedBySibs, final SibsReportFile sibsReportFile) {
 
         if (!isNew()
                 && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(), this.getPaymentCodePool()
@@ -250,6 +250,9 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         SettlementNote note =
                 this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
 
+        SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay, 
+                getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId);
+        
         return note;
 
     }

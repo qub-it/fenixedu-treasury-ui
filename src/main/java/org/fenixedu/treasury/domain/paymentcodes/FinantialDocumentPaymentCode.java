@@ -27,7 +27,8 @@ import pt.ist.fenixframework.Atomic;
 public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_Base {
 
     @Override
-    @Atomic
+    // Check: The only invocation is PaymentReferenceCode::processPayment which is already Atomic
+    // @Atomic
     public SettlementNote processPayment(User person, BigDecimal amountToPay, DateTime whenRegistered, String sibsTransactionId,
             String comments) {
 

@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
 import org.fenixedu.treasury.util.Constants;
+import org.joda.time.YearMonthDay;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -144,12 +145,33 @@ public class SIBSPaymentsImporter {
             processResult.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
             processResult.addMessage("label.manager.SIBS.startingProcess");
 
-            final Map<String, SettlementNote> sibsCodeSettlementNoteMap = Maps.newHashMap();
+            
+            processResult.addMessage("label.manager.SIBS.creatingReport");
+
+            SibsReportFile reportFile = null;
+            try {
+                final SIBSImportationFileDTO reportDTO =
+                        new SIBSImportationFileDTO(sibsFile, inputFile.getFinantialInstitution());
+                reportFile = SibsReportFile.processSIBSIncommingFile(reportDTO);
+                processResult.addMessage("label.manager.SIBS.reportCreated");
+                processResult.setReportFile(reportFile);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                processResult.addError("error.manager.SIBS.reportException", getMessage(ex));
+            }
+            
+            if(reportFile == null) {
+                processResult.addError("error.manager.SIBS.report.not.created");
+                return;
+            }
+            
             for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
+                
                 try {
                     final SettlementNote settlementNote =
                             processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(), inputFile
-                                    .getFilename().replace("\\.inp", ""));
+                                    .getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                     if (settlementNote != null) {
                         processResult.addMessage(detailLine.getCode() + " ["
@@ -159,9 +181,6 @@ public class SIBSPaymentsImporter {
 //                            processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
 //                                    settlementNote.getUiDocumentNumber());
 //                        }
-                        sibsCodeSettlementNoteMap.put(
-                                Constants.sibsTransactionUniqueIdentifier(detailLine.getCode(),
-                                        detailLine.getWhenOccuredTransaction()), settlementNote);
                     }
 
                 } catch (Exception e) {
@@ -170,23 +189,10 @@ public class SIBSPaymentsImporter {
                 }
             }
 
-            processResult.addMessage("label.manager.SIBS.creatingReport");
-
             if (processResult.hasFailed()) {
                 processResult.addError("error.manager.SIBS.nonProcessedCodes");
             }
 
-            try {
-                final SIBSImportationFileDTO reportDTO =
-                        new SIBSImportationFileDTO(sibsFile, inputFile.getFinantialInstitution());
-                SibsReportFile reportFile = SibsReportFile.processSIBSIncommingFile(reportDTO, sibsCodeSettlementNoteMap);
-                processResult.addMessage("label.manager.SIBS.reportCreated");
-                processResult.setReportFile(reportFile);
-
-            } catch (Exception ex) {
-                ex.printStackTrace();
-                processResult.addError("error.manager.SIBS.reportException", getMessage(ex));
-            }
 
             processResult.addMessage("label.manager.SIBS.done");
 
@@ -199,7 +205,7 @@ public class SIBSPaymentsImporter {
 
     @Atomic
     protected SettlementNote processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
-            FinantialInstitution finantialInstitution, final String sibsImportationFile) throws Exception {
+            FinantialInstitution finantialInstitution, final String sibsImportationFile, YearMonthDay whenProcessedBySibs, final SibsReportFile reportFile) throws Exception {
 
         final PaymentReferenceCode paymentCode = getPaymentCode(detailLine.getCode(), finantialInstitution);
 
@@ -228,7 +234,8 @@ public class SIBSPaymentsImporter {
 
         SettlementNote settlementNote =
                 codeToProcess.processPayment(person, detailLine.getAmount(), detailLine.getWhenOccuredTransaction(),
-                        detailLine.getSibsTransactionId(), sibsImportationFile);
+                        detailLine.getSibsTransactionId(), sibsImportationFile, 
+                        whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
 
         if (settlementNote != null) {
             //Add the new SettlementNote to the TargetPayment
