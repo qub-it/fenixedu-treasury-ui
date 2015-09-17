@@ -295,7 +295,7 @@
                                 </wsdlFile>
                             </wsdlFiles>
                             <wsdlLocation>
-                                /wsdl/Singap_FenixEdu_2.0.wsdl
+                                /wsdl/Fenix_Singap_v2.0.wsdl
                             </wsdlLocation>
                             <vmArgs>
                                 <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
