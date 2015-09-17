@@ -94,7 +94,7 @@ public class SIBSPaymentsImporter {
 
     public ProcessResult processSIBSPaymentFiles(SibsInputFile inputFile) throws IOException {
         // HACK:    Avoid concurrent and duplicated processing file
-        synchronized(SIBSPaymentsImporter.class) {
+        synchronized (SIBSPaymentsImporter.class) {
             ProcessResult result = new ProcessResult();
 
             if (StringUtils.endsWithIgnoreCase(inputFile.getFilename(), PAYMENT_FILE_EXTENSION)) {
@@ -155,6 +155,10 @@ public class SIBSPaymentsImporter {
                         processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
                                 + settlementNote.getUiDocumentNumber());
+                        if (settlementNote.getAdvancedPaymentCreditNote() != null) {
+                            processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
+                                    settlementNote.getUiDocumentNumber());
+                        }
                         sibsCodeSettlementNoteMap.put(
                                 Constants.sibsTransactionUniqueIdentifier(detailLine.getCode(),
                                         detailLine.getWhenOccuredTransaction()), settlementNote);

@@ -323,8 +323,10 @@
                             <wsdlLocation>
                                 /wsdl/WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.wsdl
                             </wsdlLocation>
+                            <extension>true</extension>
+                            <protocol>Xsoap1.2</protocol>
                             <vmArgs>
-                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all </vmArg>
                             </vmArgs>
                         </configuration>
 
