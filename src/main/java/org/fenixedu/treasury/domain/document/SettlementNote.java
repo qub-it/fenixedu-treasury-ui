@@ -88,7 +88,7 @@ public class SettlementNote extends SettlementNote_Base {
         if (Constants.isZero(this.getTotalReimbursementAmount())) {
             return this.getTotalPayedAmount().subtract(result);
         } else {
-            return this.getTotalReimbursementAmount().subtract(result);
+            return this.getTotalReimbursementAmount().add(result);
         }
     }
 
