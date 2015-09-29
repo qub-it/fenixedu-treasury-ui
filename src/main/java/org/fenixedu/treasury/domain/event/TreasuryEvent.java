@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.event;
 
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -188,7 +189,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
     public Map<String, String> getPropertiesMap() {
         if (StringUtils.isEmpty(getPropertiesJsonMap())) {
-            return null;
+            return new HashMap<String, String>();
         }
 
         final GsonBuilder builder = new GsonBuilder();
