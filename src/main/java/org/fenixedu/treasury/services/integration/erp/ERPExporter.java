@@ -753,7 +753,7 @@ public class ERPExporter {
         line.setSettlementAmount(BigDecimal.ZERO);
 
         // Tax
-        line.setTax(getSAFTWorkingDocumentsTax(product, entry.getVat()));
+        line.setTax(getSAFTWorkingDocumentsTax(product, entry));
 
         line.setTaxPointDate(documentDateCalendar);
 
@@ -766,7 +766,7 @@ public class ERPExporter {
          * . Texto 60
          */
         if (Constants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)
-                || Constants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO)) {
+                || (line.getTax().getTaxAmount() != null && Constants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO))) {
             if (product.getVatExemptionReason() != null) {
                 line.setTaxExemptionReason(product.getVatExemptionReason().getCode() + "-"
                         + product.getVatExemptionReason().getName().getContent());
@@ -784,7 +784,9 @@ public class ERPExporter {
         return line;
     }
 
-    private Tax getSAFTWorkingDocumentsTax(Product product, Vat vat) {
+    private Tax getSAFTWorkingDocumentsTax(Product product, final InvoiceEntry entry) {
+        Vat vat = entry.getVat();
+        
         Tax tax = new Tax();
 
         // VatType vat = product.getVatType();
@@ -798,6 +800,9 @@ public class ERPExporter {
 
         // Tax-TaxType
         tax.setTaxType("IVA");
+        
+        // TODO: Fill with vat amount
+        //tax.setTaxAmount(entry.getVatAmount());
 
         return tax;
     }
