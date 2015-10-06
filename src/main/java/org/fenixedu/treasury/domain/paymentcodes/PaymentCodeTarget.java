@@ -290,7 +290,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
         PaymentEntry paymentEntry =
                 PaymentEntry.create(this.getPaymentReferenceCode().getPaymentCodePool().getPaymentMethod(), settlementNote,
-                        amount);
+                        amount, null);
         settlementNote.closeDocument();
 
         //######################################

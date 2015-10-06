@@ -150,11 +150,11 @@ public class PaymentMethodController extends TreasuryBaseController {
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) String code, @RequestParam(value = "name",
-            required = false) LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
+            required = false) LocalizedString name, @RequestParam(value = "availableForPaymentInApplication") boolean availableForPaymentInApplication, Model model, RedirectAttributes redirectAttributes) {
         try {
             assertUserIsBackOfficeMember(model);
 
-            PaymentMethod paymentMethod = createPaymentMethod(code, name);
+            PaymentMethod paymentMethod = createPaymentMethod(code, name, availableForPaymentInApplication);
             model.addAttribute("paymentMethod", paymentMethod);
 
             return redirect(READ_URL + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
@@ -167,8 +167,8 @@ public class PaymentMethodController extends TreasuryBaseController {
     }
 
     @Atomic
-    public PaymentMethod createPaymentMethod(String code, LocalizedString name) {
-        PaymentMethod paymentMethod = PaymentMethod.create(code, name);
+    public PaymentMethod createPaymentMethod(String code, LocalizedString name, boolean availableForPaymentInApplication) {
+        PaymentMethod paymentMethod = PaymentMethod.create(code, name, availableForPaymentInApplication);
         return paymentMethod;
     }
 
@@ -181,13 +181,14 @@ public class PaymentMethodController extends TreasuryBaseController {
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") PaymentMethod paymentMethod,
             @RequestParam(value = "code", required = false) String code,
-            @RequestParam(value = "name", required = false) LocalizedString name, Model model,
+            @RequestParam(value = "name", required = false) LocalizedString name, 
+            @RequestParam(value = "availableForPaymentInApplication") boolean availableForPaymentInApplication, Model model,
             RedirectAttributes redirectAttributes) {
         setPaymentMethod(paymentMethod, model);
         try {
             assertUserIsBackOfficeMember(model);
 
-            updatePaymentMethod(code, name, model);
+            updatePaymentMethod(code, name, availableForPaymentInApplication, model);
             return redirect(READ_URL + getPaymentMethod(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
@@ -198,8 +199,8 @@ public class PaymentMethodController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updatePaymentMethod(String code, LocalizedString name, Model m) {
-        getPaymentMethod(m).edit(code, name);
+    public void updatePaymentMethod(final String code, final LocalizedString name, final boolean availableForPaymentInApplication, Model m) {
+        getPaymentMethod(m).edit(code, name, availableForPaymentInApplication);
     }
 
 }

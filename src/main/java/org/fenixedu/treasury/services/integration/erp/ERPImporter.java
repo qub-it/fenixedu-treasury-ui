@@ -370,7 +370,7 @@ public class ERPImporter {
                 for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
                     PaymentEntry paymentEntry =
                             PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()),
-                                    settlementNote, paymentMethod.getPaymentAmount());
+                                    settlementNote, paymentMethod.getPaymentAmount(), null);
                 }
             }
 

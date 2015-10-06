@@ -106,8 +106,8 @@ class Currency {
 class PaymentMethod {
 	String code;
 	LocalizedString name;
+	boolean availableForPaymentInApplication;
 }
-
 
 class integration.Configuration
 {
@@ -277,6 +277,7 @@ class document.FinantialDocumentEntry {
 
 class document.PaymentEntry {
 	BigDecimalT payedAmount;
+	String paymentMethodId;
 }
 
 class document.ReimbursementEntry {

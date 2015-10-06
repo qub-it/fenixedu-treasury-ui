@@ -190,7 +190,7 @@ public class SettlementNote extends SettlementNote_Base {
 
     private void processPaymentEntries(SettlementNoteBean bean) {
         for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
-            PaymentEntry.create(paymentEntryBean.getPaymentMethod(), this, paymentEntryBean.getPaymentAmount());
+            PaymentEntry.create(paymentEntryBean.getPaymentMethod(), this, paymentEntryBean.getPaymentAmount(), paymentEntryBean.getPaymentMethodId());
         }
     }
 

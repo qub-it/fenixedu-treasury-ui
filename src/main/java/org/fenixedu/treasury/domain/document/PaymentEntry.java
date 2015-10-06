@@ -43,15 +43,17 @@ public class PaymentEntry extends PaymentEntry_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected PaymentEntry(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount) {
+    protected PaymentEntry(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount, final String paymentMethodId) {
         this();
-        init(paymentMethod, settlementNote, payedAmount);
+        init(paymentMethod, settlementNote, payedAmount, paymentMethodId);
     }
 
-    protected void init(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount) {
+    protected void init(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount, final String paymentMethodId) {
         setPaymentMethod(paymentMethod);
         setSettlementNote(settlementNote);
         setPayedAmount(payedAmount);
+        setPaymentMethodId(paymentMethodId);
+        
         checkRules();
     }
 
@@ -84,10 +86,11 @@ public class PaymentEntry extends PaymentEntry_Base {
 
     @Atomic
     public void edit(final PaymentMethod paymentMethod, final SettlementNote settlementNote,
-            final java.math.BigDecimal payedAmount) {
+            final java.math.BigDecimal payedAmount, final String paymentMethodId) {
         setPaymentMethod(paymentMethod);
         setSettlementNote(settlementNote);
         setPayedAmount(payedAmount);
+        setPaymentMethodId(paymentMethodId);
         checkRules();
     }
 
@@ -109,8 +112,8 @@ public class PaymentEntry extends PaymentEntry_Base {
 
     @Atomic
     public static PaymentEntry create(final PaymentMethod paymentMethod, final SettlementNote settlementNote,
-            final BigDecimal payedAmount) {
-        return new PaymentEntry(paymentMethod, settlementNote, payedAmount);
+            final BigDecimal payedAmount, final String paymentMethodId) {
+        return new PaymentEntry(paymentMethod, settlementNote, payedAmount, paymentMethodId);
     }
 
     // @formatter: off

@@ -47,10 +47,11 @@ public class PaymentMethod extends PaymentMethod_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected PaymentMethod(final String code, final LocalizedString name) {
+    protected PaymentMethod(final String code, final LocalizedString name, final boolean availableForPaymentInApplication) {
         this();
         setCode(code);
         setName(name);
+        setAvailableForPaymentInApplication(availableForPaymentInApplication);
 
         checkRules();
     }
@@ -67,11 +68,16 @@ public class PaymentMethod extends PaymentMethod_Base {
         findByCode(getCode());
         getName().getLocales().stream().forEach(l -> findByName(getName().getContent(l)));
     }
+    
+    public boolean isAvailableForPaymentInApplication() {
+        return getAvailableForPaymentInApplication();
+    }
 
     @Atomic
-    public void edit(final String code, final LocalizedString name) {
+    public void edit(final String code, final LocalizedString name, final boolean availableForPaymentInApplication) {
         setCode(code);
         setName(name);
+        setAvailableForPaymentInApplication(availableForPaymentInApplication);
 
         checkRules();
     }
@@ -96,20 +102,24 @@ public class PaymentMethod extends PaymentMethod_Base {
     public static void initializePaymentMethod() {
         if (PaymentMethod.findAll().count() == 0) {
             PaymentMethod.create("NU",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.MON")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.MON")), true);
             PaymentMethod.create("TB",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.WTR")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.WTR")), true);
             PaymentMethod.create("MB",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")), true);
             PaymentMethod.create("CD",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")), true);
             PaymentMethod.create("CH",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CH")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CH")), true);
         }
     }
 
     public static Stream<PaymentMethod> findAll() {
         return Bennu.getInstance().getPaymentMethodsSet().stream();
+    }
+    
+    public static Stream<PaymentMethod> findAvailableForPaymentInApplication() {
+        return findAll().filter(l -> l.isAvailableForPaymentInApplication());
     }
 
     public static PaymentMethod findByCode(final String code) {
@@ -150,8 +160,8 @@ public class PaymentMethod extends PaymentMethod_Base {
     }
 
     @Atomic
-    public static PaymentMethod create(final String code, final LocalizedString name) {
-        return new PaymentMethod(code, name);
+    public static PaymentMethod create(final String code, final LocalizedString name, boolean availableForPaymentInApplication) {
+        return new PaymentMethod(code, name, availableForPaymentInApplication);
     }
 
 }

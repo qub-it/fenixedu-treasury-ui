@@ -111,6 +111,7 @@ ${portal.toolkit()}
 					<%--!!!  Field names here --%>
 					<th><spring:message code="label.PaymentMethod.code" /></th>
 					<th><spring:message code="label.PaymentMethod.name" /></th>
+					<th><spring:message code="label.PaymentMethod.availableForPaymentInApplication" /></th>
 					<%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -136,6 +137,7 @@ ${portal.toolkit()}
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 "code" : "<c:out value='${searchResult.code}'/>",
 "name" : "<c:out value='${searchResult.name.content}'/>",
+"availableForPaymentInApplication" : "<c:if test='${searchResult.availableForPaymentInApplication}'><spring:message code='label.true' /></c:if><c:if test='${!searchResult.availableForPaymentInApplication}'><spring:message code='label.false' /></c:if>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/base/managepaymentmethod/paymentmethod/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" },
@@ -153,6 +155,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
+			{ data: 'availableForPaymentInApplication' },			
 			{ data: 'actions',className:"all" }
 			
 		],

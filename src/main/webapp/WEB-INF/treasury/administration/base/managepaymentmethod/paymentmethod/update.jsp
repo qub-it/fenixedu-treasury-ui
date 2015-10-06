@@ -83,8 +83,27 @@ ${portal.toolkit()}
 <div class="col-sm-10">
 <input id="paymentMethod_name" class="form-control" type="text" name="name"  bennu-localized-string value='${not empty param.name ? param.name : paymentMethod.name.json() } '/> 
 </div>
-</div>		
-  </div>
+</div>
+
+<div class="form-group row">
+	<div class="col-sm-2 control-label">
+		<spring:message
+			code="label.PaymentMethod.availableForPaymentInApplication" />
+	</div>
+
+	<div class="col-sm-2">
+		<select id="paymentMethod_availableForPaymentInApplication"
+			name="availableForPaymentInApplication" class="form-control">
+			<option value="false"><spring:message code="label.no" /></option>
+			<option value="true"><spring:message code="label.yes" /></option>
+		</select>
+		<script>
+			$("#paymentMethod_availableForPaymentInApplication").select2().select2('val', '<c:out value='${not empty param.availableForPaymentInApplication ? param.availableForPaymentInApplication : paymentMethod.availableForPaymentInApplication }'/>');
+		</script>
+	</div>
+</div>
+
+</div>
   <div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
 	</div>

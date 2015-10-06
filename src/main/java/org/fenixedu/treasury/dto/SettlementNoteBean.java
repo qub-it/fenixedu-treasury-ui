@@ -60,7 +60,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         paymentEntries = new ArrayList<PaymentEntryBean>();
         date = new LocalDate();
         previousStates = new Stack<Integer>();
-        this.setPaymentMethods(PaymentMethod.findAll().collect(Collectors.toList()));
+        this.setPaymentMethods(PaymentMethod.findAvailableForPaymentInApplication().collect(Collectors.toList()));
     }
 
     public SettlementNoteBean(DebtAccount debtAccount, boolean reimbursementNote) {
@@ -483,6 +483,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         private BigDecimal paymentAmount;
 
         private PaymentMethod paymentMethod;
+        
+        private String paymentMethodId;
 
         public PaymentEntryBean() {
             this.paymentAmount = BigDecimal.ZERO;
@@ -507,6 +509,14 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         public void setPaymentMethod(PaymentMethod paymentMethod) {
             this.paymentMethod = paymentMethod;
+        }
+        
+        public String getPaymentMethodId() {
+            return paymentMethodId;
+        }
+        
+        public void setPaymentMethodId(String paymentMethodId) {
+            this.paymentMethodId = paymentMethodId;
         }
     }
 
