@@ -1179,7 +1179,7 @@
 				para Referencias de pagamento para Multibanco, NU para Numerario, OU
 				para Outros meios aqui nao assinalados, PR para Permuta de bens, TB
 				para Transferencia bancaria ou debito direto autorizado, TR para
-				Ticket restaurante
+				Ticket restaurante, TE para Ticket Ensino
 			</xs:documentation>
 		</xs:annotation>
 		<xs:simpleType>
@@ -1197,6 +1197,7 @@
 				<xs:enumeration value="PR" />
 				<xs:enumeration value="TB" />
 				<xs:enumeration value="TR" />
+				<xs:enumeration value="TE" />
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
