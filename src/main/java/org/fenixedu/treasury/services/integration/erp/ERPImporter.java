@@ -399,7 +399,9 @@ public class ERPImporter {
         org.fenixedu.treasury.domain.PaymentMethod paymentMethod =
                 org.fenixedu.treasury.domain.PaymentMethod.findByCode(paymentMechanism);
         if (paymentMethod == null) {
-            return org.fenixedu.treasury.domain.PaymentMethod.findAll().findFirst().orElse(null);
+            // TODO: Ask why returns some payment method
+            // return org.fenixedu.treasury.domain.PaymentMethod.findAll().findFirst().orElse(null);
+            throw new TreasuryDomainException("error.ERPImporter.unkown.payment.method", paymentMechanism);
         }
         return paymentMethod;
     }
