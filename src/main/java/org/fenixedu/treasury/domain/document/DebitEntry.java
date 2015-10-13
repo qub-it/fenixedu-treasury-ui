@@ -572,8 +572,11 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static Stream<? extends DebitEntry> find(final TreasuryEvent treasuryEvent) {
-//        return findAll().filter(d -> d.getTreasuryEvent() == treasuryEvent);
         return treasuryEvent.getDebitEntriesSet().stream().filter(d -> d.getTreasuryEvent() == treasuryEvent);
+    }
+
+    public static Stream<? extends DebitEntry> findActive(final DebtAccount debtAccount, final Product product) {
+        return find(debtAccount).filter(d -> d.getProduct() == product && !d.isEventAnnuled());
     }
 
     public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent) {

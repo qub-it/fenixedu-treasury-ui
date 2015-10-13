@@ -234,8 +234,13 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                     Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason);
 
             final Set<DebitEntry> unprocessedDebitEntries = Sets.newHashSet();
-            for (final DebitEntry debitEntry : DebitEntry.findActive(this).map(DebitEntry.class::cast)
-                    .collect(Collectors.toSet())) {
+            while(DebitEntry.findActive(this).map(DebitEntry.class::cast).count() > 0) {
+                final DebitEntry debitEntry = DebitEntry.findActive(this).map(DebitEntry.class::cast).findFirst().get();
+
+                if(Constants.isEqual(debitEntry.getAvailableAmountForCredit(), BigDecimal.ZERO)) {
+                    throw new TreasuryDomainException("error.TreasuryEvent.annulAllDebitEntries.debitEntry.nothing.to.credit", debitEntry.getDescription());
+                }
+                
                 if (debitEntry.isAnnulled()) {
                     continue;
                 }
@@ -249,9 +254,30 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                     debitEntry.getFinantialDocument().closeDocument();
                 }
 
+                // ensure interest debit entries are closed in document entry
+                for (final DebitEntry otherDebitEntry : ((DebitNote) debitEntry.getFinantialDocument()).getDebitEntriesSet()) {
+                    for (final DebitEntry interestDebitEntry : otherDebitEntry.getInterestDebitEntriesSet()) {
+                        if (!interestDebitEntry.isProcessedInDebitNote()) {
+                            final DebitNote debitNoteForUnprocessedEntries = DebitNote.create(
+                                    getDebtAccount(),
+                                    DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                            getDebtAccount().getFinantialInstitution()).get(), new DateTime());
+                            interestDebitEntry.setFinantialDocument(debitNoteForUnprocessedEntries);
+                        }
+
+                        if (!interestDebitEntry.isProcessedInClosedDebitNote()) {
+                            interestDebitEntry.getFinantialDocument().closeDocument();
+                        }
+                    }
+                }
+                
                 ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reasonDescription);
 
                 for (final DebitEntry otherDebitEntry : ((DebitNote) debitEntry.getFinantialDocument()).getDebitEntriesSet()) {
+                    for (final DebitEntry interestDebitEntry : otherDebitEntry.getInterestDebitEntriesSet()) {
+                        interestDebitEntry.annulOnEvent();
+                    }
+                    
                     otherDebitEntry.annulOnEvent();
                 }
             }
@@ -269,6 +295,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
             }
 
             for (final DebitEntry debitEntry : getDebitEntriesSet()) {
+                for (final DebitEntry interestDebitEntry : debitEntry.getInterestDebitEntriesSet()) {
+                    interestDebitEntry.annulOnEvent();
+                }
+                
                 debitEntry.annulOnEvent();
             }
         }
