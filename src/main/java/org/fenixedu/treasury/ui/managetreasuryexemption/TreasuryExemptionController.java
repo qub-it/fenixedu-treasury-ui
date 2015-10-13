@@ -27,6 +27,7 @@
 package org.fenixedu.treasury.ui.managetreasuryexemption;
 
 import java.math.BigDecimal;
+import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -141,7 +142,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     public @ResponseBody String createpostback(@RequestParam(value = "bean", required = true) TreasuryExemptionBean bean,
             Model model) {
         if (bean.getProduct() != null && bean.getTreasuryExemptionType() != null) {
-            for (DebitEntry debitEntry : bean.getTreasuryEvent().getDebitEntriesSet()) {
+            for (DebitEntry debitEntry : DebitEntry.findActive(bean.getTreasuryEvent()).collect(Collectors.<DebitEntry> toSet())) {
                 if (debitEntry.getProduct().equals(bean.getProduct())) {
                     //TODOJN : w/o vat
                     //TODOJN : how to handle values with three decimal digits
