@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -250,9 +251,20 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         SettlementNote note =
                 this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
 
-        SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay, 
-                getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId);
+        final DebtAccount referenceDebtAccount = this.getTargetPayment().getReferenceDebtAccount();
         
+        final String debtAccountId = referenceDebtAccount.getExternalId();
+        final String customerId = referenceDebtAccount.getCustomer().getExternalId();
+        final String businessIdentification = referenceDebtAccount.getCustomer().getBusinessIdentification();
+        final String fiscalNumber = referenceDebtAccount.getCustomer().getFiscalNumber();
+        final String customerName = referenceDebtAccount.getCustomer().getName();
+        final String settlementDocumentNumber = note.getUiDocumentNumber();
+            
+        SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
+                getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, 
+                debtAccountId, customerId, businessIdentification,
+                fiscalNumber, customerName, settlementDocumentNumber);
+
         return note;
 
     }

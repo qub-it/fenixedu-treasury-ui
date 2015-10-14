@@ -598,10 +598,16 @@ class paymentcodes.PaymentReferenceCode
         DateTime whenRegistered;
         BigDecimalT amountPayed;
         String sibsEntityReferenceCode;
-            String sibsPaymentReferenceCode;
-            String sibsTransactionId;
-        }
-        
+        String sibsPaymentReferenceCode;
+        String sibsTransactionId;
+        String debtAccountId;
+        String customerId;
+		String businessIdentification;
+		String fiscalNumber;
+		String customerName; 
+		String settlementDocumentNumber;
+    }
+
         relation SibsTransactionDetailSibsReportFile 
         {
             paymentcodes.SibsReportFile playsRole sibsReport{

@@ -310,6 +310,36 @@ ${portal.toolkit()}
                 <c:out value="${referenceCode.state.descriptionI18N.content}" />
                 </span>
             </datatables:column>
+			
+			<datatables:column>
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentReferenceCode.client.name" />
+                </datatables:columnHead>
+                				
+ 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.referenceDebtAccount != null}">
+					<c:out value="${referenceCode.targetPayment.referenceDebtAccount.customer.name}" />
+ 				</c:if>
+			</datatables:column>
+
+			<datatables:column>
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentReferenceCode.client.vatNumber" />
+                </datatables:columnHead>
+				
+ 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.referenceDebtAccount != null}">
+					<c:out value="${referenceCode.targetPayment.referenceDebtAccount.customer.fiscalNumber}" />
+				</c:if>
+			</datatables:column>
+
+			<datatables:column>
+                <datatables:columnHead>
+                    <spring:message code="label.PaymentReferenceCode.client.businessNumber" />
+                </datatables:columnHead>
+		
+ 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.referenceDebtAccount != null}">
+					<c:out value="${referenceCode.targetPayment.referenceDebtAccount.customer.businessIdentification}" />
+				</c:if>
+			</datatables:column>
 
             <datatables:column cssStyle="width:10%">
                 <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${referenceCode.externalId}">
@@ -327,7 +357,7 @@ ${portal.toolkit()}
 											true,
 											"${pageContext.request.contextPath}",
 											"${datatablesI18NUrl}");
-								</script>
+		</script>
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">

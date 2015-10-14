@@ -2,6 +2,8 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
+
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -196,11 +198,98 @@ ${portal.toolkit()}
                                 </c:if></td>
                         </tr>
                     </c:if>
+
                 </tbody>
             </table>
         </form>
-    </div>
+        
+	</div>
 </div>
+
+		<c:if test='${not empty sibsTransactionDetails}'>
+		    <div class="panel-heading">
+		        <h3 class="panel-title">
+		            <spring:message code="label.SibsTransactionDetail" />
+		        </h3>
+		    </div>
+
+			<datatables:table id="sibsTransactionDetails" row="detail"
+				data="${sibsTransactionDetails}"
+				cssClass="table responsive table-bordered table-hover" cdn="false"
+				cellspacing="2">
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.whenProcessed" />
+					</datatables:columnHead>
+					<c:out value='${detail.whenProcessed.toString("YYYY-MM-dd")}' />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.whenRegistered" />
+					</datatables:columnHead>
+					<c:out value='${detail.whenRegistered.toString("YYYY-MM-dd")}' />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.amountPayed" />
+					</datatables:columnHead>
+					<c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.currency.getValueFor(detail.amountPayed)}' />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message
+							code="label.SibsTransactionDetail.businessIdentification" />
+					</datatables:columnHead>
+					<c:out value="${detail.businessIdentification}" />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.fiscalNumber" />
+					</datatables:columnHead>
+					<c:out value="${detail.fiscalNumber}" />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.customerName" />
+					</datatables:columnHead>
+					<c:out value="${detail.customerName}" />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message
+							code="label.SibsTransactionDetail.settlementDocumentNumber" />
+					</datatables:columnHead>
+					<c:out value="${detail.settlementDocumentNumber}" />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:30%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.comments" />
+					</datatables:columnHead>
+					<c:out value="${detail.comments}" />
+				</datatables:column>
+
+			</datatables:table>
+
+	        <script>
+										createDataTables(
+												'sibsTransactionDetails',
+												false,
+												false,
+												true,
+												"${pageContext.request.contextPath}",
+												"${datatablesI18NUrl}");
+			</script>
+
+		</c:if>
+
 
 <script>
 	$(document).ready(function() {

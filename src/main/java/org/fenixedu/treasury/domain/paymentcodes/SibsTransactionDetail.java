@@ -17,10 +17,12 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
         super();
     }
 
-    protected void init(final SibsReportFile sibsReport, final java.lang.String comments,
-            final org.joda.time.DateTime whenProcessed, final org.joda.time.DateTime whenRegistered,
-            final java.math.BigDecimal amountPayed, final java.lang.String sibsEntityReferenceCode,
-            final java.lang.String sibsPaymentReferenceCode, final java.lang.String sibsTransactionId) {
+    protected void init(final SibsReportFile sibsReport, final String comments,
+            final DateTime whenProcessed, final DateTime whenRegistered,
+            final java.math.BigDecimal amountPayed, final String sibsEntityReferenceCode,
+            final String sibsPaymentReferenceCode, final String sibsTransactionId, final String debtAccountId, 
+            final String customerId, final String businessIdentification,
+            final String fiscalNumber, final String customerName, final String settlementDocumentNumber) {
         setSibsReport(sibsReport);
         setComments(comments);
         setWhenProcessed(whenProcessed);
@@ -29,6 +31,14 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
         setSibsEntityReferenceCode(sibsEntityReferenceCode);
         setSibsPaymentReferenceCode(sibsPaymentReferenceCode);
         setSibsTransactionId(sibsTransactionId);
+        setDebtAccountId(debtAccountId);
+        setCustomerId(customerId);
+        setBusinessIdentification(businessIdentification);
+        setFiscalNumber(fiscalNumber);
+        setCustomerName(customerName);
+        setSettlementDocumentNumber(settlementDocumentNumber);
+        
+        
         checkRules();
     }
 
@@ -76,10 +86,11 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
     }
 
     @Atomic
-    public void edit(final SibsReportFile sibsReport, final java.lang.String comments,
-            final org.joda.time.DateTime whenProcessed, final org.joda.time.DateTime whenRegistered,
-            final java.math.BigDecimal amountPayed, final java.lang.String sibsEntityReferenceCode,
-            final java.lang.String sibsPaymentReferenceCode, final java.lang.String sibsTransactionId) {
+    public void edit(final SibsReportFile sibsReport, final String comments,
+            final DateTime whenProcessed, final DateTime whenRegistered,
+            final java.math.BigDecimal amountPayed, final String sibsEntityReferenceCode,
+            final String sibsPaymentReferenceCode, final String sibsTransactionId, final String debtAccountId, final String customerId, final String businessIdentification,
+            final String fiscalNumber, final String customerName, final String settlementDocumentNumber) {
         setSibsReport(sibsReport);
         setComments(comments);
         setWhenProcessed(whenProcessed);
@@ -88,6 +99,13 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
         setSibsEntityReferenceCode(sibsEntityReferenceCode);
         setSibsPaymentReferenceCode(sibsPaymentReferenceCode);
         setSibsTransactionId(sibsTransactionId);
+        setDebtAccountId(debtAccountId);
+        setCustomerId(customerId);
+        setBusinessIdentification(businessIdentification);
+        setFiscalNumber(fiscalNumber);
+        setCustomerName(customerName);
+        setSettlementDocumentNumber(settlementDocumentNumber);
+        
         checkRules();
     }
 
@@ -110,13 +128,16 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
     }
 
     @Atomic
-    public static SibsTransactionDetail create(final SibsReportFile sibsReport, final java.lang.String comments,
-            final org.joda.time.DateTime whenProcessed, final org.joda.time.DateTime whenRegistered,
-            final java.math.BigDecimal amountPayed, final java.lang.String sibsEntityReferenceCode,
-            final java.lang.String sibsPaymentReferenceCode, final java.lang.String sibsTransactionId) {
+    public static SibsTransactionDetail create(final SibsReportFile sibsReport, final String comments,
+            final DateTime whenProcessed, final DateTime whenRegistered,
+            final java.math.BigDecimal amountPayed, final String sibsEntityReferenceCode,
+            final String sibsPaymentReferenceCode, final String sibsTransactionId, final String debtAccountId, final String customerId, final String businessIdentification,
+            final String fiscalNumber, final String customerName, final String settlementDocumentNumber) {
         SibsTransactionDetail sibsTransactionDetail = new SibsTransactionDetail();
+        
         sibsTransactionDetail.init(sibsReport, comments, whenProcessed, whenRegistered, amountPayed, sibsEntityReferenceCode,
-                sibsPaymentReferenceCode, sibsTransactionId);
+                sibsPaymentReferenceCode, sibsTransactionId, debtAccountId, customerId, businessIdentification, 
+                fiscalNumber, customerName, settlementDocumentNumber);
         return sibsTransactionDetail;
     }
 
@@ -140,15 +161,15 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
         return findAll().filter(i -> sibsReport.equals(i.getSibsReport()));
     }
 
-    public static Stream<SibsTransactionDetail> findByComments(final java.lang.String comments) {
+    public static Stream<SibsTransactionDetail> findByComments(final String comments) {
         return findAll().filter(i -> comments.equalsIgnoreCase(i.getComments()));
     }
 
-    public static Stream<SibsTransactionDetail> findByWhenProcessed(final org.joda.time.DateTime whenProcessed) {
+    public static Stream<SibsTransactionDetail> findByWhenProcessed(final DateTime whenProcessed) {
         return findAll().filter(i -> whenProcessed.equals(i.getWhenProcessed()));
     }
 
-    public static Stream<SibsTransactionDetail> findByWhenRegistered(final org.joda.time.DateTime whenRegistered) {
+    public static Stream<SibsTransactionDetail> findByWhenRegistered(final DateTime whenRegistered) {
         return findAll().filter(i -> whenRegistered.equals(i.getWhenRegistered()));
     }
 
@@ -156,16 +177,20 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
         return findAll().filter(i -> amountPayed.equals(i.getAmountPayed()));
     }
 
-    public static Stream<SibsTransactionDetail> findBySibsEntityReferenceCode(final java.lang.String sibsEntityReferenceCode) {
+    public static Stream<SibsTransactionDetail> findBySibsEntityReferenceCode(final String sibsEntityReferenceCode) {
         return findAll().filter(i -> sibsEntityReferenceCode.equalsIgnoreCase(i.getSibsEntityReferenceCode()));
     }
 
-    public static Stream<SibsTransactionDetail> findBySibsPaymentReferenceCode(final java.lang.String sibsPaymentReferenceCode) {
+    public static Stream<SibsTransactionDetail> findBySibsPaymentReferenceCode(final String sibsPaymentReferenceCode) {
         return findAll().filter(i -> sibsPaymentReferenceCode.equalsIgnoreCase(i.getSibsPaymentReferenceCode()));
     }
 
-    public static Stream<SibsTransactionDetail> findBySibsTransactionId(final java.lang.String sibsTransactionId) {
+    public static Stream<SibsTransactionDetail> findBySibsTransactionId(final String sibsTransactionId) {
         return findAll().filter(i -> sibsTransactionId.equalsIgnoreCase(i.getSibsTransactionId()));
+    }
+    
+    public static Stream<SibsTransactionDetail> findBySibsEntityAndReferenceCode(final String sibsEntityReferenceCode, final String sibsPaymentReferenceCode) {
+        return findBySibsEntityReferenceCode(sibsEntityReferenceCode).filter(i -> sibsPaymentReferenceCode.equalsIgnoreCase(i.getSibsPaymentReferenceCode()));
     }
 
     public static boolean isReferenceProcessingDuplicate(String referenceCode, String entityReferenceCode, DateTime whenRegistered) {

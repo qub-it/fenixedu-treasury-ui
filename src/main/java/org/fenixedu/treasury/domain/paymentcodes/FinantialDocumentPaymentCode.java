@@ -191,7 +191,7 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     }
 
     @Override
-    protected DebtAccount getReferenceDebtAccount() {
+    public DebtAccount getReferenceDebtAccount() {
         return this.getFinantialDocument().getDebtAccount();
     }
 

@@ -38,7 +38,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     }
 
     @Override
-    protected DebtAccount getReferenceDebtAccount() {
+    public DebtAccount getReferenceDebtAccount() {
         //check the DebtAccount for the first "FinantialDocument" or from the "InvoiceEntry"
 
         if (this.getInvoiceEntriesSet().size() > 0) {

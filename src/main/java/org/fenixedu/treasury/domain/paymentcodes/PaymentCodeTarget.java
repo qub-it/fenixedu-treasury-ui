@@ -305,6 +305,6 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
     protected abstract DocumentNumberSeries getDocumentSeriesForPayments();
 
-    protected abstract DebtAccount getReferenceDebtAccount();
+    public abstract DebtAccount getReferenceDebtAccount();
 
 }

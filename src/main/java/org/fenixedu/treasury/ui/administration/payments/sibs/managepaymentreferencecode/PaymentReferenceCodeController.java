@@ -36,6 +36,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
+import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentcodepool.PaymentCodePoolController;
@@ -129,8 +130,12 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
     @RequestMapping(value = _READ_URI + "{oid}")
-    public String read(@PathVariable("oid") PaymentReferenceCode paymentReferenceCode, Model model) {
+    public String read(@PathVariable("oid") final PaymentReferenceCode paymentReferenceCode, Model model) {
         setPaymentReferenceCode(paymentReferenceCode, model);
+
+        model.addAttribute("sibsTransactionDetails", SibsTransactionDetail.findBySibsEntityAndReferenceCode(
+                paymentReferenceCode.getPaymentCodePool().getEntityReferenceCode(), paymentReferenceCode.getReferenceCode()).collect(Collectors.toSet()));
+
         return "treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read";
     }
 
