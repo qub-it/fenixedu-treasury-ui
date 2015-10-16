@@ -220,6 +220,20 @@ ${portal.toolkit()}
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.creationDate" />
+					</datatables:columnHead>
+					<c:out value='${detail.versioningCreationDate.toString("YYYY-MM-dd HH:mm:ss")}' />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
+						<spring:message code="label.SibsTransactionDetail.creator" />
+					</datatables:columnHead>
+					<c:out value='${detail.versioningCreator}' />
+				</datatables:column>
+
+				<datatables:column cssStyle="width:10%">
+					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.whenProcessed" />
 					</datatables:columnHead>
 					<c:out value='${detail.whenProcessed.toString("YYYY-MM-dd")}' />
@@ -229,7 +243,7 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.whenRegistered" />
 					</datatables:columnHead>
-					<c:out value='${detail.whenRegistered.toString("YYYY-MM-dd")}' />
+					<c:out value='${detail.whenRegistered.toString("YYYY-MM-dd HH:mm:ss")}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
