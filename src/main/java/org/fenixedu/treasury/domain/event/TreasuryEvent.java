@@ -247,6 +247,8 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
                 if (!debitEntry.isProcessedInDebitNote()) {
                     unprocessedDebitEntries.add(debitEntry);
+                    // Remove from active debit entries
+                    debitEntry.annulOnEvent();
                     continue;
                 }
 
@@ -325,7 +327,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 //    }
 
     public boolean isAbleToDeleteAllDebitEntries() {
-        return getDebitEntriesSet().stream().map(l -> l.isDeletable()).reduce((a, c) -> a && c).orElse(Boolean.TRUE);
+        return DebitEntry.findActive(this).map(l -> l.isDeletable()).reduce((a, c) -> a && c).orElse(Boolean.TRUE);
     }
 
     // @formatter: off

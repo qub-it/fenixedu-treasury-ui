@@ -387,7 +387,7 @@ ${portal.toolkit()}
                     <div class="modal-body">
                         <p>
                             <spring:message
-                                code="label.TreasuryEvent.annulDebitEntry.confirmAnnul" />
+                                code="label.TreasuryEvent.annulDebitEntry.confirmRemove" />
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -397,7 +397,7 @@ ${portal.toolkit()}
                         </button>
                         <button id="deleteButton" class="btn btn-danger"
                             type="submit">
-                            <spring:message code="label.annul" />
+                            <spring:message code="label.TreasuryExemption.removeFromEvent" />
                         </button>
                     </div>
                 </form>
@@ -478,7 +478,7 @@ ${portal.toolkit()}
 
                     <c:if test="${debitEntry.eventAnnuled}">
                         <p class="label label-danger">
-                            <spring:message code="label.annuled" />
+                            <spring:message code="label.TreasuryExemption.removedFromEvent" />
                         </p>
                     </c:if>
                 </datatables:column>
@@ -512,7 +512,7 @@ ${portal.toolkit()}
                     data-target="#annulModal"
                     onClick="javascript:processAnnul('${treasuryEvent.externalId}/${debitEntry.externalId}')"
                                 href="${pageContext.request.contextPath}<%= TreasuryEventController.ANNULDEBITENTRY_URL %>${treasuryEvent.externalId}/${debitEntry.externalId}">
-                                <spring:message code="label.annul" />
+                                <spring:message code="label.TreasuryExemption.removeFromEvent" />
                             </a>
                             </div>
                         </c:if>
