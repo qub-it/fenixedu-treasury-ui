@@ -540,7 +540,7 @@ public class ERPExporter {
             baseCustomers.put(customer.getCustomerID(), customer);
         }
 
-        if (document instanceof AdvancedPaymentCreditNote) {
+        if (document instanceof AdvancedPaymentCreditNote && ((AdvancedPaymentCreditNote) document).getAdvancedPaymentSettlementNote() != null) {
             AdvancedPayment advancedPayment = new AdvancedPayment();
             advancedPayment.setDescription("");
             advancedPayment.setOriginatingON(((AdvancedPaymentCreditNote) document).getAdvancedPaymentSettlementNote()
