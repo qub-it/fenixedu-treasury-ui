@@ -367,7 +367,8 @@ public class ERPExporter {
             // SystemEntryDate
             payment.setSystemEntryDate(convertToXMLDateTime(dataTypeFactory, documentDate));
 
-            payment.setTransactionDate(convertToXMLDateTime(dataTypeFactory, documentDate));
+            /* ANIL: 2015/10/20 converted from dateTime to Date */
+            payment.setTransactionDate(convertToXMLDate(dataTypeFactory, documentDate));
 
             // DocumentNumber
             payment.setPaymentRefNo(document.getUiDocumentNumber());
@@ -416,7 +417,10 @@ public class ERPExporter {
                 for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
                     PaymentMethod method = new PaymentMethod();
                     method.setPaymentAmount(paymentEntry.getPayedAmount().setScale(2, RoundingMode.HALF_EVEN));
-                    method.setPaymentDate(convertToXMLDateTime(dataTypeFactory, document.getPaymentDate()));
+                    
+                    /* ANIL: 2015/10/20 converted from dateTime to Date */
+                    method.setPaymentDate(convertToXMLDate(dataTypeFactory, document.getPaymentDate()));
+                    
                     method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
                     payment.getPaymentMethod().add(method);
                 }
@@ -426,7 +430,11 @@ public class ERPExporter {
                 for (ReimbursementEntry reimbursmentEntry : document.getReimbursementEntriesSet()) {
                     PaymentMethod method = new PaymentMethod();
                     method.setPaymentAmount(reimbursmentEntry.getReimbursedAmount().setScale(2, RoundingMode.HALF_EVEN));
-                    method.setPaymentDate(convertToXMLDateTime(dataTypeFactory, document.getPaymentDate()));
+
+                    
+                    /* ANIL: 2015/10/20 converted from dateTime to Date */
+                    method.setPaymentDate(convertToXMLDate(dataTypeFactory, document.getPaymentDate()));
+
                     method.setPaymentMechanism(convertToSAFTPaymentMechanism(reimbursmentEntry.getPaymentMethod()));
                     payment.getPaymentMethod().add(method);
                     payment.setSettlementType(SAFTPTSettlementType.NR);
@@ -434,7 +442,10 @@ public class ERPExporter {
             } else {
                 PaymentMethod voidMethod = new PaymentMethod();
                 voidMethod.setPaymentAmount(BigDecimal.ZERO);
-                voidMethod.setPaymentDate(convertToXMLDateTime(dataTypeFactory, document.getPaymentDate()));
+
+                /* ANIL: 2015/10/20 converted from dateTime to Date */
+                voidMethod.setPaymentDate(convertToXMLDate(dataTypeFactory, document.getPaymentDate()));
+
                 voidMethod.setPaymentMechanism("OU");
                 payment.getPaymentMethod().add(voidMethod);
                 payment.setSettlementType(SAFTPTSettlementType.NN);
@@ -454,8 +465,11 @@ public class ERPExporter {
                 SourceDocumentID sourceDocument = new SourceDocumentID();
                 sourceDocument.setLineNumber(BigInteger.valueOf(settlementEntry.getInvoiceEntry().getEntryOrder()));
                 sourceDocument.setOriginatingON(settlementEntry.getInvoiceEntry().getFinantialDocument().getUiDocumentNumber());
-                sourceDocument.setInvoiceDate(convertToXMLDateTime(dataTypeFactory, settlementEntry.getInvoiceEntry()
+
+                /* ANIL: 2015/10/20 converted from dateTime to Date */
+                sourceDocument.setInvoiceDate(convertToXMLDate(dataTypeFactory, settlementEntry.getInvoiceEntry()
                         .getFinantialDocument().getDocumentDate()));
+
                 sourceDocument.setDescription(settlementEntry.getDescription());
                 line.getSourceDocumentID().add(sourceDocument);
                 //SettlementAmount
@@ -513,6 +527,11 @@ public class ERPExporter {
                 documentDate.getDayOfMonth(), documentDate.getHourOfDay(), documentDate.getMinuteOfHour(),
                 documentDate.getSecondOfMinute(), 0, DatatypeConstants.FIELD_UNDEFINED);
     }
+    
+    private XMLGregorianCalendar convertToXMLDate(DatatypeFactory dataTypeFactory, DateTime date) {
+        return dataTypeFactory.newXMLGregorianCalendarDate(date.getYear(), date.getMonthOfYear(),
+                date.getDayOfMonth(), DatatypeConstants.FIELD_UNDEFINED);
+    }
 
     private String convertToSAFTPaymentMechanism(org.fenixedu.treasury.domain.PaymentMethod paymentMethod) {
         String code = paymentMethod.getCode();
@@ -569,7 +588,8 @@ public class ERPExporter {
             // SystemEntryDate
             workDocument.setSystemEntryDate(convertToXMLDateTime(dataTypeFactory, documentDate));
 
-            workDocument.setWorkDate(convertToXMLDateTime(dataTypeFactory, documentDate));
+            /* ANIL: 2015/10/20 converted from dateTime to Date */
+            workDocument.setWorkDate(convertToXMLDate(dataTypeFactory, documentDate));
 
             // DocumentNumber
             workDocument.setDocumentNumber(document.getUiDocumentNumber());
@@ -691,7 +711,10 @@ public class ERPExporter {
         try {
             DatatypeFactory dataTypeFactory = DatatypeFactory.newInstance();
             DateTime documentDate = entry.getFinantialDocument().getDocumentDate();
-            documentDateCalendar = convertToXMLDateTime(dataTypeFactory, documentDate);
+
+            /* ANIL: 2015/10/20 converted from dateTime to Date */
+            documentDateCalendar = convertToXMLDate(dataTypeFactory, documentDate);
+
         } catch (DatatypeConfigurationException e) {
 
             e.printStackTrace();
@@ -871,13 +894,17 @@ public class ERPExporter {
 
             // DateCreated
             DateTime now = new DateTime();
-            header.setDateCreated(convertToXMLDateTime(dataTypeFactory, now));
+
+            /* ANIL: 2015/10/20 converted from dateTime to Date */
+            header.setDateCreated(convertToXMLDate(dataTypeFactory, now));
 
             // Email
             // header.setEmail(StringUtils.EMPTY);
 
             // EndDate
-            header.setEndDate(convertToXMLDateTime(dataTypeFactory, endDate));
+
+            /* ANIL: 2015/10/20 converted from dateTime to Date */
+            header.setEndDate(convertToXMLDate(dataTypeFactory, endDate));
 
             // Fax
             // header.setFax(StringUtils.EMPTY);
