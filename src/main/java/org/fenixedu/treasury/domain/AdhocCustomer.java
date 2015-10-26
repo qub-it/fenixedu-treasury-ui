@@ -168,5 +168,15 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     public String getDistrict() {
         return getDistrictSubdivision();
     }
+    
+    @Override
+    public String getNationalityCountryCode() {
+        return null;
+    }
+    
+    @Override
+    public String getFiscalCountry() {
+        return null;
+    }
 
 }

@@ -68,6 +68,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getZipCode();
 
     public abstract String getCountryCode();
+    
+    public abstract String getNationalityCountryCode();
+    
+    public abstract String getFiscalCountry();
 
     public abstract String getPaymentReferenceBaseCode();
 
