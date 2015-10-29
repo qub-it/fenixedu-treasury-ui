@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -21,6 +22,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -29,8 +31,8 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     @Override
     // Check: The only invocation is PaymentReferenceCode::processPayment which is already Atomic
     // @Atomic
-    public SettlementNote processPayment(User person, BigDecimal amountToPay, DateTime whenRegistered, String sibsTransactionId,
-            String comments) {
+    public SettlementNote processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
+            final String sibsTransactionId, final String comments) {
 
         Set<InvoiceEntry> invoiceEntriesToPay =
                 this.getFinantialDocument().getFinantialDocumentEntriesSet().stream().filter(x -> x instanceof InvoiceEntry)
@@ -46,7 +48,7 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
 
     @Override
     public String getDescription() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (FinantialDocumentEntry entry : this.getFinantialDocument().getFinantialDocumentEntriesSet()) {
             builder.append(entry.getDescription()).append("\n");
         }
@@ -85,6 +87,29 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
 
         if (getPaymentReferenceCode() == null) {
             throw new TreasuryDomainException("error.FinantialDocumentPaymentCode.paymentReferenceCode.required");
+        }
+
+        // Ensure that there is only one active reference code
+        final long activePaymentCodesOnFinantialDocumentCount =
+                FinantialDocumentPaymentCode.findNewByFinantialDocument(this.getFinantialDocument()).count()
+                        + FinantialDocumentPaymentCode.findUsedByFinantialDocument(this.getFinantialDocument()).count();
+
+        if (activePaymentCodesOnFinantialDocumentCount > 1) {
+            throw new TreasuryDomainException("error.FinantialDocumentPaymentCode.finantial.with.active.payment.code");
+        }
+
+        for (final FinantialDocumentEntry finantialDocumentEntry : getFinantialDocument().getFinantialDocumentEntriesSet()) {
+            if (!(finantialDocumentEntry instanceof DebitEntry)) {
+                continue;
+            }
+
+            final DebitEntry debitEntry = (DebitEntry) finantialDocumentEntry;
+
+            if (MultipleEntriesPaymentCode.findNewByDebitEntry(debitEntry).count() > 0
+                    || MultipleEntriesPaymentCode.findUsedByDebitEntry(debitEntry).count() > 0) {
+                throw new TreasuryDomainException("error.FinantialDocumentPaymentCode.debit.entry.with.active.payment.code",
+                        debitEntry.getDescription());
+            }
         }
 
         //CHANGE_ME In order to validate UNIQUE restrictions
@@ -201,4 +226,9 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
                 .getPaymentCodePool().getDocumentSeriesForPayments().getSeries());
     }
 
+    @Override
+    public LocalDate getDueDate() {
+        return getFinantialDocument().getDocumentDueDate();
+    }
+    
 }

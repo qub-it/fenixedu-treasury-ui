@@ -37,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -315,6 +316,19 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         this.setTargetPayment(targetToFinantialDocument);
         this.setState(PaymentReferenceCodeStateType.USED);
         this.setPayableAmount(finantialDocument.getOpenAmount());
+        checkRules();
+    }
+    
+    @Atomic
+    public void createPaymentTargetTo(final Set<DebitEntry> debitNoteEntries, final BigDecimal payableAmount) {
+        if (this.getTargetPayment() != null && Boolean.TRUE.equals(this.getTargetPayment().getValid())) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.payment.target.already.exists");
+        }
+        
+        MultipleEntriesPaymentCode target = MultipleEntriesPaymentCode.create(debitNoteEntries, this, true);
+        this.setTargetPayment(target);
+        this.setState(PaymentReferenceCodeStateType.USED);
+        this.setPayableAmount(payableAmount);
         checkRules();
     }
 

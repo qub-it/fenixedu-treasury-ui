@@ -29,6 +29,7 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,11 +39,15 @@ import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
+import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
@@ -66,6 +71,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
@@ -139,6 +145,20 @@ public class DebtAccountController extends TreasuryBaseController {
                             .collect(Collectors.toList()));
             model.addAttribute("exemptionDataSet", exemptionEntries);
 
+            
+            final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
+            for(final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
+                if(!invoiceEntry.isDebitNoteEntry()) {
+                    continue;
+                }
+                
+                usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
+                usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget>toSet()));
+            }
+            
+            model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
+            
+            
             return "treasury/accounting/managecustomer/debtaccount/read";
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);

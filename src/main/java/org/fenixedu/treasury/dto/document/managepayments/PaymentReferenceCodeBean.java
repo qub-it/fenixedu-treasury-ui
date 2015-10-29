@@ -27,13 +27,19 @@
 
 package org.fenixedu.treasury.dto.document.managepayments;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.util.Constants;
 
 public class PaymentReferenceCodeBean implements IBean {
 
@@ -52,11 +58,36 @@ public class PaymentReferenceCodeBean implements IBean {
     private boolean useCustomPaymentAmount;
     private boolean usePaymentAmountWithInterests;
 
+    // Several debit entries
+    private DebtAccount debtAccount;
+    private List<DebitEntry> selectedDebitEntries;
+
     public PaymentReferenceCodeBean() {
         usePaymentAmountWithInterests = false;
         useCustomPaymentAmount = false;
     }
 
+    public PaymentReferenceCodeBean(final DebtAccount debtAccount) {
+        this.debtAccount = debtAccount;
+        
+        List<PaymentCodePool> activePools =
+                debtAccount.getFinantialInstitution().getPaymentCodePoolsSet().stream()
+                        .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
+        setPaymentCodePoolDataSource(activePools);
+        
+    }
+
+    public void updateAmountOnSelectedDebitEntries() {
+        this.paymentAmount = this.selectedDebitEntries.stream().map(e -> e.getOpenAmount()).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+    }
+
+    public List<DebitEntry> getOpenDebitEntries() {
+        return DebitEntry
+                .find(debtAccount)
+                .filter(x -> x.getFinantialDocument() != null && x.getFinantialDocument().isClosed()
+                        && Constants.isPositive(x.getOpenAmount())).sorted(MultipleEntriesPaymentCode.COMPARE_BY_EXTERNAL_ID).collect(Collectors.<DebitEntry> toList());
+    }
+    
     public PaymentCodePool getPaymentCodePool() {
         return paymentCodePool;
     }
@@ -173,5 +204,13 @@ public class PaymentReferenceCodeBean implements IBean {
     public void setUseCustomPaymentAmount(boolean useCustomPaymentAmount) {
         this.useCustomPaymentAmount = useCustomPaymentAmount;
     }
-
+    
+    public List<DebitEntry> getSelectedDebitEntries() {
+        return selectedDebitEntries;
+    }
+    
+    public void setSelectedDebitEntries(List<DebitEntry> selectedDebitEntries) {
+        this.selectedDebitEntries = selectedDebitEntries;
+    }
+    
 }

@@ -4,6 +4,7 @@
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.DebitEntry"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode.PaymentReferenceCodeController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -290,6 +291,30 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
                             </td>
                         </tr>
                     </c:if>
+                    
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.paymentCodes" /></th>
+                            <td>
+
+                                <ul>
+                                    <c:forEach var="paymentcode" items="${debitEntry.paymentCodesSet}">
+                                        <li><a target="#"
+                                            href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}">
+                                                <c:out
+                                                    value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" />
+                                        </a> &nbsp; <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
+                                                <span class="label label-primary">
+                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='ANNULLED'}">
+                                                <span class="label label-danger">
+                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='UNUSED'}">
+                                                <span class="label label-default">
+                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='PROCESSED'}">
+                                                <span class="label label-success">
+                                            </c:if> <c:out value="${paymentcode.paymentReferenceCode.state.descriptionI18N.content}" /> </span></li>
+                                    </c:forEach>
+                                </ul>
+                            </td>
+                        </tr>
                     
                 </tbody>
             </table>

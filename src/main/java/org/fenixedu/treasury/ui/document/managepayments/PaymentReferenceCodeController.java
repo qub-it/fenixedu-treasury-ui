@@ -155,13 +155,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                 }
             }
 
-            PaymentReferenceCode paymentReferenceCode =
-                    bean.getPaymentCodePool()
-                            .getReferenceCodeGenerator()
-                            .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(), payableAmount,
-                                    bean.getBeginDate(), bean.getEndDate(), bean.getPaymentCodePool().getIsFixedAmount());
-
-            paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
+            final PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(bean, payableAmount);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
                     "label.document.managepayments.success.create.reference.code.debitnote"), model);
 
@@ -176,7 +170,20 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
     }
 
-//Create Payment reference code for DebitNote Series
+    @Atomic
+    private PaymentReferenceCode createPaymentReferenceCode(PaymentReferenceCodeBean bean, BigDecimal payableAmount) {
+        PaymentReferenceCode paymentReferenceCode =
+                bean.getPaymentCodePool()
+                        .getReferenceCodeGenerator()
+                        .generateNewCodeFor(bean.getDebitNote().getDebtAccount().getCustomer(), payableAmount,
+                                bean.getBeginDate(), bean.getEndDate(), bean.getPaymentCodePool().getIsFixedAmount());
+
+        paymentReferenceCode.createPaymentTargetTo(bean.getDebitNote());
+
+        return paymentReferenceCode;
+    }
+
+    //Create Payment reference code for DebitNote Series
 
     private static final String _CREATEPAYMENTCODEINSERIES_URI = "/createpaymentcodeinseries";
     public static final String CREATEPAYMENTCODEINSERIES_URL = CONTROLLER_URL + _CREATEPAYMENTCODEINSERIES_URI;

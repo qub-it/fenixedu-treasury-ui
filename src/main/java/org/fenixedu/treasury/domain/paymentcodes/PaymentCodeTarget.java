@@ -20,6 +20,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -306,5 +307,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
     protected abstract DocumentNumberSeries getDocumentSeriesForPayments();
 
     public abstract DebtAccount getReferenceDebtAccount();
+    
+    public abstract LocalDate getDueDate();
 
 }

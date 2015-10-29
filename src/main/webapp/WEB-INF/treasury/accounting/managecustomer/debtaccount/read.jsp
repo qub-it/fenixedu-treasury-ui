@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
@@ -105,7 +106,8 @@ ${portal.angularToolkit()}
 
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createreimbursement"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createReimbursement" /></a></li>
-
+			<li><a class="" href="${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}"><span
+                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createPaymentCodeReference.several.debit.entries" /></a></li>
         </ul>
     </div>
     <%
@@ -350,6 +352,7 @@ ${portal.angularToolkit()}
         <li class="active"><a href="#pending" data-toggle="tab"><spring:message code="label.DebtAccount.pendingDocumentEntries" /></a></li>
         <li><a href="#details" data-toggle="tab"><spring:message code="label.DebtAccount.allDocumentEntries" /></a></li>
         <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payments" /></a></li>
+        <li><a href="#paymentReferenceCodes" data-toggle="tab"><spring:message code="label.DebtAccount.paymentReferenceCodes" /></a></li>
     </ul>
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="pending">
@@ -676,6 +679,85 @@ ${portal.angularToolkit()}
                 </c:otherwise>
             </c:choose>
         </div>
+        
+        <div class="tab-pane" id="paymentReferenceCodes">
+            <c:choose>
+                <c:when test="${not empty usedPaymentCodeTargets}">
+                    <datatables:table id="usedPaymentCodeTargets" row="target" data="${usedPaymentCodeTargets}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
+                        <datatables:column cssStyle="width:5%">
+	                        <datatables:columnHead>
+	                            <spring:message code="label.DebitNote.dueDate" />
+	                    	</datatables:columnHead>
+	
+                        	<c:out value='${target.dueDate.toString("YYYY-MM-dd")}' />
+                        </datatables:column>
+                        	
+                        <datatables:column cssStyle="width:65%">
+	                        <datatables:columnHead>
+	                            <spring:message code="label.InvoiceEntry.description" />
+	                    	</datatables:columnHead>
+	
+                        	<c:if test="${target.finantialDocumentPaymentCode}">
+								<ul>
+									<c:forEach items="${target.finantialDocument.finantialDocumentEntriesSet}" var="entry">
+										<li><c:out value="${entry.description}" /></li>
+									</c:forEach>
+								</ul>
+                        	</c:if>
+                        	
+                        	<c:if test="${target.multipleEntriesPaymentCode}">
+								<ul>
+									<c:forEach items="${target.orderedInvoiceEntries}" var="invoiceEntry">
+									<li><c:out value="${invoiceEntry.description}" /></li>
+									</c:forEach>
+								</ul>
+                        	</c:if>
+                        	
+                        </datatables:column>
+
+                        <datatables:column cssStyle="width:30%">
+                            <datatables:columnHead>
+                                <spring:message code="label.PaymentReferenceCode" />
+                        	</datatables:columnHead>
+                        	
+                             <div>
+                                 <strong><spring:message code="label.customer.PaymentReferenceCode.entity" />: </strong>
+                                 <c:out value="[${target.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
+                                 </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
+                                 <c:out value="${target.paymentReferenceCode.formattedCode}" />
+                                 </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
+                                 <c:if test="${target.paymentReferenceCode.isFixedAmount() }">
+                                     <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.paymentReferenceCode.payableAmount)}" />
+                                 </c:if>
+
+                             </div>
+
+						</datatables:column>
+						
+					</datatables:table>                
+                    <script>
+						createDataTables(
+								'usedPaymentCodeTargets',
+								false,
+								false,
+								false,
+								"${pageContext.request.contextPath}",
+								"${datatablesI18NUrl}");
+					</script>
+                </c:when>
+                <c:otherwise>
+                    <div class="alert alert-warning" role="alert">
+
+                        <p>
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                            <spring:message code="label.noResultsFound" />
+                        </p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        
+		</div>
+        
     </div>
 </div>
 
