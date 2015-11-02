@@ -348,21 +348,17 @@ public class DebitEntryController extends TreasuryBaseController {
 //  
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
-            if (debitEntry.getFinantialDocument() == null || !debitEntry.getFinantialDocument().isAnnulled()) {
-                setDebitEntryBean(new DebitEntryBean(debitEntry), model);
-                model.addAttribute("DebitEntry_event_options",
-                        TreasuryEvent.findActiveBy(debitEntry.getDebtAccount()).collect(Collectors.<TreasuryEvent> toList()));
-                setDebitEntry(debitEntry, model);
-                return "treasury/document/manageinvoice/debitentry/update";
-            } else {
-                return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
-            }
-        } catch (Exception ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
+        assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
+
+        if (debitEntry.getFinantialDocument() == null || !debitEntry.getFinantialDocument().isAnnulled()) {
+            setDebitEntryBean(new DebitEntryBean(debitEntry), model);
+            model.addAttribute("DebitEntry_event_options",
+                    TreasuryEvent.findActiveBy(debitEntry.getDebtAccount()).collect(Collectors.<TreasuryEvent> toList()));
+            setDebitEntry(debitEntry, model);
+            return "treasury/document/manageinvoice/debitentry/update";
+        } else {
+            return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
         }
-        return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)

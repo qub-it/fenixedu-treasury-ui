@@ -248,8 +248,13 @@ public class DebitEntryBean implements IBean {
             this.applyInterests = true;
             this.setInterestRate(new FixedTariffInterestRateBean(debitEntry.getInterestRate()));
         }
-        this.setTreasuryEventDataSource(debitEntry.getDebtAccount().getTreasuryEventsSet().stream()
-                .sorted((x, y) -> x.getTreasuryEventDate().compareTo(y.getTreasuryEventDate())).collect(Collectors.toList()));
+        this.setTreasuryEventDataSource(debitEntry
+                .getDebtAccount()
+                .getTreasuryEventsSet()
+                .stream()
+                .sorted((x, y) -> (x.getTreasuryEventDate() != null ? x.getTreasuryEventDate() : new LocalDate()).compareTo((y
+                        .getTreasuryEventDate() != null ? y.getTreasuryEventDate() : new LocalDate())))
+                .collect(Collectors.toList()));
     }
 
     public boolean isApplyInterests() {
