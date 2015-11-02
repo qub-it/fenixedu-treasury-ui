@@ -110,60 +110,58 @@ public class DebtAccountController extends TreasuryBaseController {
 
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") DebtAccount debtAccount, Model model, RedirectAttributes redirectAttributes) {
-        try {
-            assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
-            setDebtAccount(debtAccount, model);
-            checkFinantialInstitutionData(model);
-            List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
-            List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
-            List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
-            List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
-            allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
-            paymentEntries = SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
+        assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+        setDebtAccount(debtAccount, model);
+        checkFinantialInstitutionData(model);
+        List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
+        List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
+        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
+        List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
+        allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
+        paymentEntries = SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
 //                            .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
-                    .collect(Collectors.toList());
+                .collect(Collectors.toList());
 
-            exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
+        exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
 
-            pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
+        pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
 
-            model.addAttribute(
-                    "pendingDocumentsDataSet",
-                    pendingInvoiceEntries
-                            .stream()
-                            .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                    InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
-            model.addAttribute(
-                    "allDocumentsDataSet",
-                    allInvoiceEntries
-                            .stream()
-                            .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                    InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
-            model.addAttribute(
-                    "paymentsDataSet",
-                    paymentEntries.stream().sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate()))
-                            .collect(Collectors.toList()));
-            model.addAttribute("exemptionDataSet", exemptionEntries);
+        model.addAttribute(
+                "pendingDocumentsDataSet",
+                pendingInvoiceEntries
+                        .stream()
+                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+        model.addAttribute(
+                "allDocumentsDataSet",
+                allInvoiceEntries
+                        .stream()
+                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
+                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+        model.addAttribute(
+                "paymentsDataSet",
+                paymentEntries.stream().sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate()))
+                        .collect(Collectors.toList()));
+        model.addAttribute("exemptionDataSet", exemptionEntries);
 
-            
-            final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
-            for(final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
-                if(!invoiceEntry.isDebitNoteEntry()) {
-                    continue;
-                }
-                
-                usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-                usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget>toSet()));
+        final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
+        for (final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
+            if (!invoiceEntry.isDebitNoteEntry()) {
+                continue;
             }
-            
-            model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
-            
-            
-            return "treasury/accounting/managecustomer/debtaccount/read";
-        } catch (Exception ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
+
+            usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(
+                    Collectors.toSet()));
+
+            if (invoiceEntry.getFinantialDocument() != null) {
+                usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(
+                        invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget> toSet()));
+            }
         }
-        return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
+
+        model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
+
+        return "treasury/accounting/managecustomer/debtaccount/read";
     }
 
     @RequestMapping(value = "/read/{oid}/createreimbursement")
