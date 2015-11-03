@@ -423,9 +423,19 @@ public class InterestRate extends InterestRate_Base {
     }
 
     private LocalDate applyOnFirstWorkdayIfNecessary(final LocalDate date) {
-        if (isApplyInFirstWorkday() && isSaturday(date)) {
-            return date.plusDays(1);
-        } else if (isApplyInFirstWorkday() && isSunday(date)) {
+        boolean applyInFirstWorkday = isApplyInFirstWorkday();
+        
+        if (getInterestType().isGlobalRate()) {
+            if (!GlobalInterestRate.findUniqueByYear(date.getYear()).isPresent()) {
+                throw new TreasuryDomainException("error.InterestRate.global.interest.rate.not.found", String.valueOf(date.getYear()));
+            };
+
+            applyInFirstWorkday = GlobalInterestRate.findUniqueByYear(date.getYear()).get().getApplyInFirstWorkday();
+        }
+        
+        if (applyInFirstWorkday && isSaturday(date)) {
+            return date.plusDays(2);
+        } else if (applyInFirstWorkday && isSunday(date)) {
             return date.plusDays(1);
         }
 
