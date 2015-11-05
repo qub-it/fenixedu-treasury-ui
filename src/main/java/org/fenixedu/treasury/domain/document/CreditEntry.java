@@ -95,8 +95,8 @@ public class CreditEntry extends CreditEntry_Base {
          * from exemption created.
          */
 
-        if (getFromExemption() == true && CreditEntry.findActive(getDebitEntry().getTreasuryEvent(), getProduct()).count() > 1) {
-            throw new TreasuryDomainException("error.CreditEntry.from.exemption.at.most.one.per.product");
+        if (getFromExemption() == true && getDebitEntry().getCreditEntriesSet().size() > 1) {
+            throw new TreasuryDomainException("error.CreditEntry.from.exemption.at.most.one.per.debit.entry");
         }
 
         if (this.getDebitEntry() != null) {
@@ -171,10 +171,6 @@ public class CreditEntry extends CreditEntry_Base {
     public static Stream<? extends CreditEntry> findActive(final TreasuryEvent treasuryEvent, final Product product) {
         return DebitEntry.findActive(treasuryEvent, product).map(d -> d.getCreditEntriesSet()).reduce((a, b) -> Sets.union(a, b))
                 .orElse(Sets.newHashSet()).stream();
-    }
-
-    public static Stream<? extends CreditEntry> findActiveFromExemption(final TreasuryEvent treasuryEvent, final Product product) {
-        return findActive(treasuryEvent, product).filter(d -> d.isFromExemption());
     }
 
     public static CreditEntry create(FinantialDocument finantialDocument, String description, Product product, Vat vat,

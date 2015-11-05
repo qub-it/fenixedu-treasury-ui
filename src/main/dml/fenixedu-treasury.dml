@@ -396,7 +396,18 @@ class exemption.TreasuryExemption {
 			multiplicity *;
 		}
 	}
-
+	
+	relation TreasuryExemptionDebitEntry
+	{
+		document.DebitEntry playsRole debitEntry {
+			multiplicity 0..1;
+		}
+		
+		exemption.TreasuryExemption playsRole treasuryExemption {
+			multiplicity 0..1;
+		}
+	}
+	
 /*-----------
  * Tariff 
  * ----------*/
@@ -954,19 +965,6 @@ relation CurrencyBennu {
 		multiplicity *;
 	}
 }
-
-/*
-relation TreasuryExemptionDebitEntry
-{
-	document.DebitEntry playsRole debitEntry{
-		multiplicity 0..1;
-	}
-	
-	TreasuryExemption playsRole treasuryExemptions{
-		multiplicity 1..1;
-	}
-}
-*/
 
 relation PaymentMethodBennu {
 	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {

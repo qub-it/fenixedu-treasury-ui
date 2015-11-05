@@ -159,6 +159,10 @@ public class DebitEntry extends DebitEntry_Base {
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
 
+        if(getTreasuryExemption() != null) {
+            getTreasuryExemption().delete();
+        }
+        
         if (this.getInterestRate() != null) {
             InterestRate oldRate = this.getInterestRate();
             this.setInterestRate(null);
@@ -382,8 +386,8 @@ public class DebitEntry extends DebitEntry_Base {
         final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(getVatRate()));
 
         if (isProcessedInClosedDebitNote()) {
-            // If there is at least one credit entry from exemption then skip...
-            if (CreditEntry.findActiveFromExemption(getTreasuryEvent(), getProduct()).count() > 0) {
+            // If there is at least one credit entry then skip...
+            if (!getCreditEntriesSet().isEmpty()) {
                 return false;
             }
 
@@ -463,9 +467,12 @@ public class DebitEntry extends DebitEntry_Base {
 
     public boolean revertExemptionIfPossible(final TreasuryExemption treasuryExemption) {
         // For all credit entries found that are not processed nor closed, delete
-        for (final CreditEntry creditEntry : CreditEntry.findActiveFromExemption(getTreasuryEvent(), getProduct()).collect(
-                Collectors.<CreditEntry> toSet())) {
+        for (final CreditEntry creditEntry : treasuryExemption.getDebitEntry().getCreditEntriesSet()) {
 
+            if (!creditEntry.isFromExemption()) {
+                return false;
+            }
+            
             if (creditEntry.isProcessedInClosedDebitNote()) {
                 return false;
             }

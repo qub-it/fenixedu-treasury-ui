@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
 
@@ -18,22 +19,23 @@ public class TreasuryExemptionBean implements IBean, Serializable {
 
     private List<TupleDataSourceBean> treasuryExemptionTypes;
     private List<TupleDataSourceBean> products;
+    private List<TupleDataSourceBean> debitEntries;
     private TreasuryExemptionType treasuryExemptionType;
-    private Product product;
+    private DebitEntry debitEntry;
     private BigDecimal valuetoexempt;
     private String reason;
 
     public TreasuryExemptionBean() {
         this.setTreasuryExemptionTypes(TreasuryExemptionType.findAll().sorted(TreasuryExemptionType.COMPARE_BY_NAME)
                 .collect(Collectors.toList()));
-
     }
 
     public TreasuryExemptionBean(TreasuryEvent treasuryEvent) {
         this();
         this.treasuryEvent = treasuryEvent;
-        this.setProducts(treasuryEvent.getPossibleProductsToExempt().stream().sorted(Product.COMPARE_BY_NAME)
-                .collect(Collectors.toList()));
+        this.setDebitEntries(DebitEntry.findActive(treasuryEvent)
+                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getDescription()))
+                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList()));
     }
 
     public List<TupleDataSourceBean> getTreasuryExemptionTypes() {
@@ -78,12 +80,12 @@ public class TreasuryExemptionBean implements IBean, Serializable {
         this.treasuryExemptionType = treasuryExemptionType;
     }
 
-    public Product getProduct() {
-        return product;
+    public List<TupleDataSourceBean> getDebitEntries() {
+        return debitEntries;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setDebitEntries(List<TupleDataSourceBean> debitEntries) {
+        this.debitEntries = debitEntries;
     }
 
     public BigDecimal getValuetoexempt() {
@@ -101,5 +103,13 @@ public class TreasuryExemptionBean implements IBean, Serializable {
     public void setReason(String reason) {
         this.reason = reason;
     }
-
+    
+    public DebitEntry getDebitEntry() {
+        return debitEntry;
+    }
+    
+    public void setDebitEntry(DebitEntry debitEntry) {
+        this.debitEntry = debitEntry;
+    }
+    
 }

@@ -165,13 +165,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         return result;
     }
 
-    public BigDecimal getExemptedAmount(final Product product) {
-        BigDecimal result =
-                DebitEntry.findActive(this, product).map(l -> l.getExemptedAmount()).reduce((a, b) -> a.add(b))
-                        .orElse(BigDecimal.ZERO);
+    public BigDecimal getExemptedAmount(final DebitEntry debitEntry) {
+        BigDecimal result = debitEntry.getExemptedAmount();
 
         result =
-                result.add(CreditEntry.findActive(this, product).filter(l -> l.isFromExemption()).map(l -> l.getAmountWithVat())
+                result.add(debitEntry.getCreditEntriesSet().stream().map(l -> l.getAmountWithVat())
                         .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO));
 
         return result;

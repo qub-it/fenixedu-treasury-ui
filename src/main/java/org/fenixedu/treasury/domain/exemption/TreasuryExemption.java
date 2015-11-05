@@ -1,14 +1,12 @@
 package org.fenixedu.treasury.domain.exemption;
 
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -26,8 +24,18 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     }
 
     protected TreasuryExemption(final TreasuryExemptionType treasuryExemptionType, final TreasuryEvent treasuryEvent,
-            final String reason, final BigDecimal valueToExempt, final Product product, final boolean creditIfNecessary) {
+            final String reason, final BigDecimal valueToExempt, final DebitEntry debitEntry, final boolean creditIfNecessary) {
         this();
+
+        if (debitEntry.getTreasuryExemption() != null) {
+            throw new TreasuryDomainException("error.TreasuryExemption.debitEntry.already.exempted");
+        }
+        
+        for (final CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
+            if(!creditEntry.isFromExemption()) {
+                throw new TreasuryDomainException("error.TreasuryExemption.debitEntry.with.credit.not.from.exemption");
+            }
+        }
 
         setTreasuryExemptionType(treasuryExemptionType);
         setTreasuryEvent(treasuryEvent);
@@ -39,7 +47,8 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         setExemptByPercentage(false);
         setValueToExempt(valueToExempt);
 
-        setProduct(product);
+        setDebitEntry(debitEntry);
+        setProduct(debitEntry.getProduct());
 
         checkRules();
 
@@ -63,6 +72,10 @@ public class TreasuryExemption extends TreasuryExemption_Base {
             throw new TreasuryDomainException("error.TreasuryExemption.valueToExempt.positive.required");
         }
 
+        if (getDebitEntry() == null) {
+            throw new TreasuryDomainException("error.TreasuryExemption.debitEntry.required");
+        }
+
         if (getProduct() == null) {
             throw new TreasuryDomainException("error.TreasuryExemption.product.required");
         }
@@ -71,8 +84,12 @@ public class TreasuryExemption extends TreasuryExemption_Base {
             throw new TreasuryDomainException("error.TreasuryExemption.reason.empty");
         }
 
-        if (TreasuryExemption.find(getTreasuryEvent(), getProduct()).count() > 1) {
-            throw new TreasuryDomainException("error.TreasuryExemption.for.product.already.created");
+        if (getDebitEntry().isEventAnnuled()) {
+            throw new TreasuryDomainException("error.TreasuryExemption.debit.entry.annuled.in.event");
+        }
+        
+        if(Constants.isGreaterThan(getValueToExempt(), getDebitEntry().getAmountWithVat().add(getDebitEntry().getExemptedAmount()))) {
+            throw new TreasuryDomainException("error.TreasuryExemption.valueToExempt.higher.than.debitEntry");
         }
     }
 
@@ -93,38 +110,19 @@ public class TreasuryExemption extends TreasuryExemption_Base {
             return;
         }
 
-        // TreasuryEvent is not charged. Do nothing...
-        if (!getTreasuryEvent().isChargedWithDebitEntry(getProduct())) {
-            return;
-        }
-
         // We're in conditions to create credit entries. But first
         // calculate the amount to exempt
-        BigDecimal amountToExempt = getValueToExempt().subtract(getTreasuryEvent().getExemptedAmount(getProduct()));
+        final BigDecimal amountToExempt = getValueToExempt().subtract(getTreasuryEvent().getExemptedAmount(getDebitEntry()));
 
         if (!Constants.isPositive(amountToExempt)) {
             return;
         }
 
-        final List<DebitEntry> activeDebitEntries =
-                DebitEntry.findActive(getTreasuryEvent(), getProduct())
-                        .sorted(Collections.reverseOrder(DebitEntry.COMPARE_BY_OPEN_AMOUNT_WITH_VAT))
-                        .collect(Collectors.<DebitEntry> toList());
+        final BigDecimal amountToUse =
+                Constants.isGreaterThan(getDebitEntry().getAmountWithVat(), amountToExempt) ? amountToExempt : getDebitEntry()
+                        .getAmountWithVat();
 
-        for (final DebitEntry debitEntry : activeDebitEntries) {
-
-            final BigDecimal amountToUse =
-                    Constants.isGreaterThan(debitEntry.getAmountWithVat(), amountToExempt) ? amountToExempt : debitEntry
-                            .getAmountWithVat();
-
-            debitEntry.exempt(this, amountToUse);
-
-            amountToExempt = amountToExempt.subtract(amountToUse);
-
-            if (!Constants.isPositive(amountToExempt)) {
-                break;
-            }
-        }
+        getDebitEntry().exempt(this, amountToUse);
     }
 
     private void revertExemptionIfPossible() {
@@ -133,14 +131,9 @@ public class TreasuryExemption extends TreasuryExemption_Base {
             return;
         }
 
-        final List<DebitEntry> activeDebitEntries =
-                DebitEntry.findActive(getTreasuryEvent(), getProduct())
-                        .sorted(Collections.reverseOrder(DebitEntry.COMPARE_BY_OPEN_AMOUNT_WITH_VAT))
-                        .collect(Collectors.<DebitEntry> toList());
+        if (!getDebitEntry().isProcessedInClosedDebitNote() || !getDebitEntry().isEventAnnuled()) {
 
-        for (final DebitEntry debitEntry : activeDebitEntries) {
-
-            if (!debitEntry.revertExemptionIfPossible(this)) {
+            if (!getDebitEntry().revertExemptionIfPossible(this)) {
                 throw new TreasuryDomainException(
                         "error.TreasuryExemption.delete.impossible.due.to.processed.debit.or.credit.entry");
             }
@@ -164,6 +157,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         super.setTreasuryExemptionType(null);
         super.setTreasuryEvent(null);
         super.setProduct(null);
+        super.setDebitEntry(null);
 
         super.deleteDomainObject();
     }
@@ -196,10 +190,10 @@ public class TreasuryExemption extends TreasuryExemption_Base {
                 .filter(t -> t.getTreasuryEvent().getDebtAccount() == debtAccount);
     }
 
-    @pt.ist.fenixframework.Atomic
+    @Atomic
     public static TreasuryExemption create(final TreasuryExemptionType treasuryExemptionType, final TreasuryEvent treasuryEvent,
-            final String reason, final BigDecimal valueToExempt, final Product product, final boolean creditIfNecessary) {
-        return new TreasuryExemption(treasuryExemptionType, treasuryEvent, reason, valueToExempt, product, creditIfNecessary);
+            final String reason, final BigDecimal valueToExempt, final DebitEntry debitEntry, final boolean creditIfNecessary) {
+        return new TreasuryExemption(treasuryExemptionType, treasuryEvent, reason, valueToExempt, debitEntry, creditIfNecessary);
     }
 
 }

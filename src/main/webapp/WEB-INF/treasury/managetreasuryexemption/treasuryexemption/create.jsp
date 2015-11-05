@@ -168,18 +168,18 @@ ${portal.angularToolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.TreasuryExemption.product" />
+                        code="label.TreasuryExemption.debitEntry" />
                 </div>
                 <div class="col-sm-10">
-                    <ui-select id="treasuryExemption_product"
-                        ng-model="$parent.object.product"
+                    <ui-select id="treasuryExemption_debitEntry"
+                        ng-model="$parent.object.debitEntry"
                         theme="bootstrap" on-select="onChange($model)"
                         style="width:100%" ng-disabled="disabled">
                     <ui-select-match>{{$select.selected.text}}</ui-select-match>
                     <ui-select-choices
-                        repeat="product.id as product in object.products| filter: $select.search">
+                        repeat="debitEntry.id as debitEntry in object.debitEntries| filter: $select.search">
                     <span
-                        ng-bind-html="product.text | highlight: $select.search"></span>
+                        ng-bind-html="debitEntry.text | highlight: $select.search"></span>
                     </ui-select-choices> </ui-select>
                 </div>
             </div>

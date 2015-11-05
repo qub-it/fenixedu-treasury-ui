@@ -122,7 +122,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(model);
 
             TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
-                    bean.getValuetoexempt(), bean.getProduct(), true);
+                    bean.getValuetoexempt(), bean.getDebitEntry(), true);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
@@ -141,23 +141,17 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     @RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody String createpostback(@RequestParam(value = "bean", required = true) TreasuryExemptionBean bean,
             Model model) {
-        if (bean.getProduct() != null && bean.getTreasuryExemptionType() != null) {
-            for (DebitEntry debitEntry : DebitEntry.findActive(bean.getTreasuryEvent()).collect(Collectors.<DebitEntry> toSet())) {
-                if (debitEntry.getProduct().equals(bean.getProduct())) {
-                    //TODOJN : w/o vat
-                    //TODOJN : how to handle values with three decimal digits
-                    BigDecimal amount =
-                            debitEntry.getAmountWithVat().multiply(
-                                    bean.getTreasuryExemptionType().getDefaultExemptionPercentage()
-                                            .divide(BigDecimal.valueOf(100)));
-                    amount =
-                            bean.getTreasuryEvent().getDebtAccount().getFinantialInstitution().getCurrency()
-                                    .getValueWithScale(amount);
-                    bean.setValuetoexempt(amount);
-                    break;
-                }
-            }
+        if (bean.getDebitEntry() != null && bean.getTreasuryExemptionType() != null) {
+            BigDecimal amount =
+                    bean.getDebitEntry().getAmountWithVat().multiply(
+                            bean.getTreasuryExemptionType().getDefaultExemptionPercentage()
+                            .divide(BigDecimal.valueOf(100)));
+            amount =
+                    bean.getTreasuryEvent().getDebtAccount().getFinantialInstitution().getCurrency()
+                    .getValueWithScale(amount);
+            bean.setValuetoexempt(amount);
         }
+        
         setTreasuryExemptionBean(bean, model);
         return getBeanJson(bean);
     }

@@ -300,15 +300,15 @@ ${portal.toolkit()}
                     value="${treasuryEvent.debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}" />
             </c:if>
         </datatables:column>
-        <datatables:column cssStyle="width:20%">
+        <datatables:column cssStyle="width:30%">
             <datatables:columnHead>
-                <spring:message code="label.TreasuryExemption.product" />
+                <spring:message code="label.TreasuryExemption.debitEntry" />
             </datatables:columnHead>
             <p align=left>
-                <c:out value='${exemption.product.name.content}' />
+                <c:out value='${exemption.debitEntry.description}' />
             </p>
         </datatables:column>
-        <datatables:column cssStyle="width:35%">
+        <datatables:column cssStyle="width:25%">
             <datatables:columnHead>
                 <spring:message code="label.TreasuryExemption.reason" />
             </datatables:columnHead>
