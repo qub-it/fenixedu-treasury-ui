@@ -27,6 +27,14 @@
  */
 package org.fenixedu.treasury.domain.integration;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
@@ -112,12 +120,12 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
     public void appendInfoLog(String message) {
         String infoLog = this.getIntegrationLog();
         if (infoLog == null) {
-            this.setIntegrationLog("");
+            setIntegrationLog("");
         }
         StringBuilder builder = new StringBuilder();
         builder.append(this.getIntegrationLog()).append("\n");
         builder.append(new DateTime().toString()).append(message);
-        this.setIntegrationLog(builder.toString());
+        setIntegrationLog(builder.toString());
         checkRules();
     }
 
@@ -125,24 +133,110 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
     public void appendErrorLog(String message) {
         String errorLog = this.getErrorLog();
         if (errorLog == null) {
-            this.setErrorLog("");
+            setErrorLog("");
         }
         StringBuilder builder = new StringBuilder();
         builder.append(this.getErrorLog()).append("\n");
         builder.append(new DateTime().toString()).append(message);
-        this.setErrorLog(builder.toString());
+        setErrorLog(builder.toString());
         checkRules();
     }
-    
+
     @Atomic
     public void defineSoapInboundMessage(final String soapInboundMessage) {
-        super.setSoapInboundMessage(soapInboundMessage != null ? soapInboundMessage : "");
-        
+        setSoapInboundMessage(soapInboundMessage != null ? soapInboundMessage : "");
+
     }
-    
+
     @Atomic
     public void defineSoapOutboutMessage(final String soapOutboundMessage) {
-        super.setSoapOutboundMessage(soapOutboundMessage != null ? soapOutboundMessage : "");
+        setSoapOutboundMessage(soapOutboundMessage != null ? soapOutboundMessage : "");
     }
-    
+
+    private String zipValue(String value) {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        GZIPOutputStream gzipOutputStream;
+        try {
+            gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+            gzipOutputStream.write(value.getBytes());
+            gzipOutputStream.flush();
+            gzipOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new String(Base64.getEncoder().encode(byteArrayOutputStream.toByteArray()));
+    }
+
+    private String unzip(String possibleZippedString) {
+        String value = possibleZippedString;
+        if (value != null) {
+            try {
+                GZIPInputStream gzipInputStream =
+                        new GZIPInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(possibleZippedString)));
+                value = IOUtils.toString(gzipInputStream);
+                gzipInputStream.close();
+            } catch (Throwable t) {
+                // mostprobably is not a zipped string so we just return the value
+                value = possibleZippedString;
+            }
+        }
+        return value;
+    }
+
+    @Override
+    public void setSoapInboundMessage(String soapInboundMessage) {
+        String value = soapInboundMessage;
+        if (value != null) {
+            value = zipValue(value);
+        }
+        super.setSoapInboundMessage(value);
+    }
+
+    @Override
+    public String getSoapInboundMessage() {
+        return unzip(super.getSoapInboundMessage());
+    }
+
+    @Override
+    public void setSoapOutboundMessage(String soapOutboundMessage) {
+        String value = soapOutboundMessage;
+        if (value != null) {
+            value = zipValue(value);
+        }
+        super.setSoapOutboundMessage(value);
+    }
+
+    @Override
+    public String getSoapOutboundMessage() {
+        return unzip(super.getSoapOutboundMessage());
+    }
+
+    @Override
+    public void setIntegrationLog(String integrationLog) {
+        String value = integrationLog;
+        if (value != null) {
+            value = zipValue(value);
+        }
+        super.setIntegrationLog(value);
+    }
+
+    @Override
+    public String getIntegrationLog() {
+        return unzip(super.getIntegrationLog());
+    }
+
+    @Override
+    public void setErrorLog(String errorLog) {
+        String value = errorLog;
+        if (value != null) {
+            value = zipValue(value);
+        }
+        super.setErrorLog(value);
+    }
+
+    @Override
+    public String getErrorLog() {
+        return unzip(super.getErrorLog());
+    }
+
 }
