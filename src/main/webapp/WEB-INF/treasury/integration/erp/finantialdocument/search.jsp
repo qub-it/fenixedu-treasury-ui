@@ -25,6 +25,7 @@ ${portal.toolkit()}
 <link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>						
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/omnis.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 
@@ -38,7 +39,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
 <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/erpexportoperation/"  ><spring:message code="label.event.back" /></a>&nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forceintegrationexport?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceIntegrationExport" /></a>
+    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a id="forceIntegrationExportAction" class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forceintegrationexport?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceIntegrationExport" /></a>
     |&nbsp;
     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/forcecheckstatus?finantialinstitution=${param.finantialinstitution}"  ><spring:message code="label.event.integration.erp.forceCheckStatus" /></a>
 </div>
@@ -93,6 +94,9 @@ ${portal.toolkit()}
     }
         
     }
+    
+    Omnis.block('forceIntegrationExportAction');
+    
 </script>
 
 
