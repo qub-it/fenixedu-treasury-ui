@@ -30,7 +30,9 @@ ${portal.toolkit()}
 <link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/omnis.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+
 <%
         SettlementNote settlementNote= (SettlementNote) request
                         .getAttribute("settlementNote");
@@ -200,7 +202,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a class=""
+                <li><a id="exportCreditNoteIntegrationOnline" class=""
                     href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationonline"><span
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportCreditNoteIntegrationOnline" /></a></li>
                 <li><a class=""
@@ -548,6 +550,11 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
 
 <script>
 	$(document).ready(function() {
+
+		if(Omnis && Omnis.block) {
+			Omnis.block('exportCreditNoteIntegrationOnline');			
+		}
+		
 
 	});
 </script>
