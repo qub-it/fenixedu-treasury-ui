@@ -52,13 +52,13 @@ import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.services.integration.erp.ERPExporter;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,10 +69,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
-
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
+
+import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
 @BennuSpringController(value = CustomerController.class)
@@ -126,22 +127,16 @@ public class DebtAccountController extends TreasuryBaseController {
 
         pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
 
-        model.addAttribute(
-                "pendingDocumentsDataSet",
-                pendingInvoiceEntries
-                        .stream()
-                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
-        model.addAttribute(
-                "allDocumentsDataSet",
-                allInvoiceEntries
-                        .stream()
-                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
-        model.addAttribute(
-                "paymentsDataSet",
-                paymentEntries.stream().sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate()))
-                        .collect(Collectors.toList()));
+        model.addAttribute("pendingDocumentsDataSet",
+                pendingInvoiceEntries.stream().sorted(
+                        InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(InvoiceEntry.COMPARE_BY_DUE_DATE.reversed()))
+                .collect(Collectors.toList()));
+        model.addAttribute("allDocumentsDataSet",
+                allInvoiceEntries.stream().sorted(
+                        InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(InvoiceEntry.COMPARE_BY_DUE_DATE.reversed()))
+                .collect(Collectors.toList()));
+        model.addAttribute("paymentsDataSet", paymentEntries.stream()
+                .sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate())).collect(Collectors.toList()));
         model.addAttribute("exemptionDataSet", exemptionEntries);
 
         final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
@@ -150,18 +145,32 @@ public class DebtAccountController extends TreasuryBaseController {
                 continue;
             }
 
-            usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(
-                    Collectors.toSet()));
+            usedPaymentCodeTargets.addAll(
+                    MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
 
             if (invoiceEntry.getFinantialDocument() != null) {
-                usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(
-                        invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget> toSet()));
+                usedPaymentCodeTargets
+                        .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
+                                .collect(Collectors.<PaymentCodeTarget> toSet()));
             }
         }
 
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
 
+        model.addAttribute("invalidFiscalCode", isInvalidFiscalCode(debtAccount));
+        model.addAttribute("incompleteAddress", hasIncompleteAddress(debtAccount));
+
         return "treasury/accounting/managecustomer/debtaccount/read";
+    }
+
+    private Object hasIncompleteAddress(final DebtAccount debtAccount) {
+        return !debtAccount.getCustomer().hasMinimumAddressData();
+    }
+
+    private boolean isInvalidFiscalCode(final DebtAccount debtAccount) {
+        return !Strings.isNullOrEmpty(debtAccount.getCustomer().getFiscalCountry())
+                && Constants.isDefaultCountry(debtAccount.getCustomer().getFiscalCountry())
+                && !FiscalCodeValidation.isValidcontrib(debtAccount.getCustomer().getFiscalNumber());
     }
 
     @RequestMapping(value = "/read/{oid}/createreimbursement")
@@ -176,9 +185,8 @@ public class DebtAccountController extends TreasuryBaseController {
     public String processReadToCreatePayment(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-        return redirect(
-                SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + false, model,
-                redirectAttributes);
+        return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + false,
+                model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/createdebtentry")
@@ -213,20 +221,20 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
-    public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(@RequestParam(value = "q",
-            required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
+    public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(
+            @RequestParam(value = "q", required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
         final String searchFieldDecoded = URLDecoder.decode(searchField);
 
         List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
-        List<DebtAccount> debtAccounts =
-                DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
-                        .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
-                        .collect(Collectors.toList());
+        List<DebtAccount> debtAccounts = DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
+                .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
+                .collect(Collectors.toList());
 
         for (DebtAccount debt : debtAccounts) {
-            bean.add(new TupleDataSourceBean(debt.getExternalId(), debt.getCustomer().getName() + " ["
-                    + debt.getFinantialInstitution().getCode() + "] (#" + debt.getCustomer().getBusinessIdentification() + ") ("
-                    + debt.getCustomer().getIdentificationNumber() + ")"));
+            bean.add(new TupleDataSourceBean(debt.getExternalId(),
+                    debt.getCustomer().getName() + " [" + debt.getFinantialInstitution().getCode() + "] (#"
+                            + debt.getCustomer().getBusinessIdentification() + ") ("
+                            + debt.getCustomer().getIdentificationNumber() + ")"));
         }
         return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
     }
@@ -253,8 +261,8 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     private static final String _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI = "/searchopendebtaccounts/view/";
-    public static final String SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URL = CONTROLLER_URL
-            + _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI;
+    public static final String SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URL =
+            CONTROLLER_URL + _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI;
 
     @RequestMapping(value = _SEARCHOPENDEBTACCOUNTS_TO_VIEW_ACTION_URI + "{oid}")
     public String processSearchOpenDebtAccountsToViewAction(@PathVariable("oid") DebtAccount debtAccount, Model model,
@@ -269,7 +277,8 @@ public class DebtAccountController extends TreasuryBaseController {
 
         if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
             addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
+                    BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"),
+                    model);
         }
 
         if (now.getMonthOfYear() == 12 && now.getDayOfMonth() >= 15) {
@@ -297,9 +306,8 @@ public class DebtAccountController extends TreasuryBaseController {
             }
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.no.documents"), model);
         } catch (Exception ex) {
-            addErrorMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
-                            + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                    + ex.getLocalizedMessage(), model);
         }
         return read(debtAccount, model, redirectAttributes);
     }

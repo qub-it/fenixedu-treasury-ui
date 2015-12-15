@@ -1,7 +1,5 @@
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
-import java.math.BigDecimal;
-
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -45,7 +43,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI + "/{debtAccountId}", method = RequestMethod.GET)
     public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") final DebtAccount debtAccount,
             final Model model) {
-
+        
+        assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+        
         final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(debtAccount);
 
         return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
@@ -81,6 +81,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") final DebtAccount debtAccount,
             @RequestParam("bean") final PaymentReferenceCodeBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
+
+        assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
 
         try {
 

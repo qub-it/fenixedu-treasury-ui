@@ -222,6 +222,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             required = false) PaymentReferenceCodeBean bean, Model model, RedirectAttributes redirectAttributes) {
         try {
             assertUserIsFrontOfficeMember(series.getFinantialInstitution(), model);
+            
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("Creating references for Series =>" + series.getCode() + "-" + series.getName().getContent())
                     .append("\n");

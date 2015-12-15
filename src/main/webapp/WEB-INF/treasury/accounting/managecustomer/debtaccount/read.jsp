@@ -30,6 +30,7 @@ ${portal.angularToolkit()}
 <link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/omnis.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
@@ -110,13 +111,13 @@ ${portal.angularToolkit()}
             <span class="caret"></span>
         </button>
         <ul class="dropdown-menu">
+
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createPayment" /></a></li>
 
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createreimbursement"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createReimbursement" /></a></li>
-			<li><a class="" href="${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}"><span
-                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createPaymentCodeReference.several.debit.entries" /></a></li>
+
         </ul>
     </div>
     <%
@@ -167,7 +168,15 @@ ${portal.angularToolkit()}
                             href="${pageContext.request.contextPath}/academictreasury/academicdebtgenerationregistration/academicdebtgenerationregistration/create/${debtAccount.externalId}">
                                 <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicDebtGenerationRegistration.run.rules" />
                         </a></li>
-                    </ul></li>
+                        
+                        
+                    </ul>
+                    </li>
+                    
+                    <li>
+						<a class="" href="${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}"><span
+			                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createPaymentCodeReference.several.debit.entries" /></a>
+                    </li>
             </ul>
         </div>
         <%
@@ -215,7 +224,7 @@ ${portal.angularToolkit()}
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicActBlockingSuspensionController.link" />
                 </a></li>
             </c:if>
-            <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/exportintegrationonline"><span
+            <li><a id="exportintegrationline" class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/exportintegrationonline"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" /></a> &nbsp;</li>
         </ul>
     </div>
@@ -355,6 +364,23 @@ ${portal.angularToolkit()}
     </div>
 </c:if>
 
+<c:if test="${invalidFiscalCode}">
+	<div class="alert alert-danger" role="alert">
+	    <p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<spring:message code="label.DebtAccountController.invalidFiscalCode" />
+		</p>
+	</div>
+</c:if>
+
+<c:if test="${incompleteAddress}">
+	<div class="alert alert-danger" role="alert">
+	    <p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<spring:message code="label.DebtAccountController.incompleteAddress" />
+		</p>
+	</div>	
+</c:if>
 
 <h2>
     <spring:message code="label.DebtAccount" />
@@ -789,5 +815,9 @@ ${portal.angularToolkit()}
 		//Enable Bootstrap Tabs
 		$('#tabs').tab();
 
+		if(Omnis && Omnis.block) {
+			Omnis.block('exportintegrationline');			
+		}
+		
 	});
 </script>

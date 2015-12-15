@@ -1,9 +1,11 @@
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="datatables"
-    uri="http://github.com/dandelion/datatables"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
+
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -98,10 +100,21 @@ ${portal.toolkit()}
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/"><spring:message
             code="label.event.back" /></a>
     <%-- &nbsp;|&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message code="label.event.delete" /></a> --%>
+
+
+<%
+    if (TreasuryAccessControl.getInstance().isManager()) {
+%>
+
     &nbsp;|&nbsp;<span class="glyphicon glyphicon-pencil"
         aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/update/${paymentCodePool.externalId}"><spring:message
             code="label.event.update" /></a> &nbsp;
+
+<%
+    }
+%>
+
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

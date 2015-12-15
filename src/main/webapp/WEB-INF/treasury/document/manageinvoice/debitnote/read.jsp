@@ -30,6 +30,7 @@
 <link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/omnis.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
@@ -324,7 +325,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
+                    <li><a id="exportDebitNoteIntegrationOnline" class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
                             class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a></li>
                     <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
                             <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
@@ -629,5 +630,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 <script>
 	$(document).ready(function() {
 
+		if(Omnis && Omnis.block) {
+			Omnis.block('exportDebitNoteIntegrationOnline');			
+		}
+		
 	});
 </script>

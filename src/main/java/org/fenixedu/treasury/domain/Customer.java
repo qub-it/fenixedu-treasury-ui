@@ -38,6 +38,8 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 
 public abstract class Customer extends Customer_Base implements IFiscalContributor {
@@ -68,9 +70,9 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getZipCode();
 
     public abstract String getCountryCode();
-    
+
     public abstract String getNationalityCountryCode();
-    
+
     public abstract String getFiscalCountry();
 
     public abstract String getPaymentReferenceBaseCode();
@@ -88,7 +90,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public boolean isAdhocCustomer() {
         return false;
     }
-    
+
     public abstract boolean isActive();
 
     @Atomic
@@ -143,9 +145,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         searchFieldClear = searchFieldClear.replaceAll("[^\\p{ASCII}]", "");
         String nameClear = Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD);
         nameClear = nameClear.replaceAll("[^\\p{ASCII}]", "");
-        return nameClear.contains(searchFieldClear) || getIdentificationNumber() != null
-                && getIdentificationNumber().contains(searchFieldClear) || getFiscalNumber() != null
-                && getFiscalNumber().contains(searchFieldClear) || getCode() != null && getCode().contains(searchFieldClear)
+        return nameClear.contains(searchFieldClear)
+                || getIdentificationNumber() != null && getIdentificationNumber().contains(searchFieldClear)
+                || getFiscalNumber() != null && getFiscalNumber().contains(searchFieldClear)
+                || getCode() != null && getCode().contains(searchFieldClear)
                 || getBusinessIdentification() != null && getBusinessIdentification().contains(searchFieldClear);
     }
 
@@ -156,6 +159,11 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public DebtAccount getDebtAccountFor(FinantialInstitution institution) {
         return getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
                 .orElse(null);
+    }
+
+    public boolean hasMinimumAddressData() {
+        return !Strings.isNullOrEmpty(getAddress()) && !Strings.isNullOrEmpty(getZipCode())
+                && !Strings.isNullOrEmpty(getFiscalCountry());
     }
 
     @Atomic

@@ -28,12 +28,15 @@ package org.fenixedu.treasury.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Locale;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+
+import com.google.common.base.Strings;
 
 public class Constants {
 
@@ -49,6 +52,26 @@ public class Constants {
     
     public static final BigDecimal DEFAULT_QUANTITY = BigDecimal.ONE;
     
+    public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
+    public static final String DEFAULT_COUNTRY = "PT";
+
+    /* *************
+     * COUNTRY UTILS
+     * *************
+     */
+    
+    public static boolean isForeignLanguage(final Locale language) {
+        return !language.getLanguage().equals(DEFAULT_LANGUAGE.getLanguage());
+    }
+
+    public static boolean isDefaultCountry(final String country) {
+        if (Strings.isNullOrEmpty(country)) {
+            return false;
+        }
+
+        return DEFAULT_COUNTRY.equals(country.toUpperCase());
+    }
+
     // @formatter: off
     /**************
      * MATH UTILS *
