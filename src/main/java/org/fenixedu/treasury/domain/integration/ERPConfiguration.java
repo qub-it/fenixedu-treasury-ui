@@ -102,6 +102,10 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     public boolean isDeletable() {
         return true;
     }
+    
+    public boolean isIntegratedDocumentsExportationEnabled() {
+        return getIntegratedDocumentsExportationEnabled();
+    }
 
     @Atomic
     public void delete() {

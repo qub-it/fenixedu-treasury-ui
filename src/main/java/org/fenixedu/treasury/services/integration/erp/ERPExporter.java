@@ -1473,6 +1473,11 @@ public class ERPExporter {
         //Filter only anulled or closed documents
         documents = documents.stream().filter(x -> x.isAnnulled() || x.isClosed()).collect(Collectors.toList());
 
+        if(!institution.getErpIntegrationConfiguration().isIntegratedDocumentsExportationEnabled()) {
+            // Filter documents already exported
+            documents = documents.stream().filter(x -> x.isDocumentToExport()).collect(Collectors.toList());
+        }
+        
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         documents.forEach(document -> operation.addFinantialDocuments(document));
         try {
@@ -1555,8 +1560,13 @@ public class ERPExporter {
             try {
                 operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "label.ERPExporter.starting.retry.integration"));
                 for (FinantialDocument document : eRPExportOperation.getFinantialDocumentsSet()) {
-                    operation.addFinantialDocuments(document);
+                    if(eRPExportOperation.getFinantialInstitution().getErpIntegrationConfiguration().isIntegratedDocumentsExportationEnabled() || 
+                            document.isDocumentToExport()) {
+                        // Filter documents already exported
+                        operation.addFinantialDocuments(document);
+                    }
                 }
+                
                 boolean success = sendDocumentsInformationToIntegration(eRPExportOperation.getFinantialInstitution(), operation);
                 operation.setSuccess(success);
             } catch (Exception ex) {

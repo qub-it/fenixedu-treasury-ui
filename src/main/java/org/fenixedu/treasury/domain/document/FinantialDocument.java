@@ -157,6 +157,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
             }
         }
+        
+        if(getDocumentDate().isAfterNow()) {
+            throw new TreasuryDomainException("error.FinantialDocument.documentDate.cannot.be.after.now");
+        }
+        
         //If document is closed, all entries must be after of DocumentDate - RSP, this rule is invalid. I can create a debit entry today, and add it to a Document in a month
 //        if (isClosed()) {
 //            LocalDate documentDate = this.getDocumentDate().toLocalDate();

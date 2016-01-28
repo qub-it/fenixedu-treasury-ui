@@ -689,6 +689,7 @@ class integration.ERPConfiguration extends integration.Configuration
     boolean exportOnlyRelatedDocumentsPerExport;
     boolean exportAnnulledRelatedDocuments;
     Long maxSizeBytesToExportOnline;
+    boolean integratedDocumentsExportationEnabled;
 }
 relation ERPConfigurationFinantialInstitution
 {
