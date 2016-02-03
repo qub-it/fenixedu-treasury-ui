@@ -91,9 +91,8 @@ public class ERPIntegrationService extends BennuWebService {
         //Integrate the information from XML SAFT
         DateTime now = new DateTime();
         String filename = finantialInstitution.getFiscalNumber() + "_" + now.toString() + ".xml";
-        ERPImportOperation operation =
-                ERPImportOperation.create(filename, documentsInformation.getData(), finantialInstitution, now, false, false,
-                        false, null);
+        ERPImportOperation operation = ERPImportOperation.create(filename, documentsInformation.getData(), finantialInstitution,
+                now, false, false, false, null);
 
         ERPImporter importer = new ERPImporter(operation.getFile().getStream());
         DocumentsInformationOutput result = importer.processAuditFile(operation);
@@ -150,9 +149,8 @@ public class ERPIntegrationService extends BennuWebService {
         for (String documentNumber : documentNumbers) {
 //            IntegrationStatusOutput status = new IntegrationStatusOutput();
             DocumentStatusWS docStatus = new DocumentStatusWS();
-            FinantialDocument document =
-                    FinantialDocument.findByUiDocumentNumber(FinantialInstitution.findUniqueByFiscalCode(finantialInstitution)
-                            .orElse(null), documentNumber);
+            FinantialDocument document = FinantialDocument.findByUiDocumentNumber(
+                    FinantialInstitution.findUniqueByFiscalCode(finantialInstitution).orElse(null), documentNumber);
 
             if (document == null) {
                 docStatus.setIntegrationStatus(StatusType.ERROR);
@@ -177,22 +175,26 @@ public class ERPIntegrationService extends BennuWebService {
                 FinantialDocument.findUniqueByDocumentNumber(interestRequest.getDebitNoteNumber());
 
         if (!optionalFinantialDocument.isPresent()) {
-            throw new RuntimeException("Debit note not found");
+            throw new RuntimeException(
+                    Constants.bundle("error.ERPIntegrationService.debit.note.not.found", interestRequest.getDebitNoteNumber()));
         }
 
         final FinantialDocument finantialDocument = optionalFinantialDocument.get();
 
         if (!finantialDocument.isDebitNote()) {
-            throw new RuntimeException("Finantial document was not debit note");
+            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.document.is.not.debit.note",
+                    interestRequest.getDebitNoteNumber()));
         }
 
         if (!finantialDocument.getDebtAccount().getFinantialInstitution().getFiscalNumber()
                 .equals(interestRequest.getFinantialInstitutionFiscalNumber())) {
-            throw new RuntimeException("Finantial institution fiscal number invalid");
+            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.finantial.institution.fiscal.number.invalid",
+                    interestRequest.getFinantialInstitutionFiscalNumber()));
         }
 
         if (!finantialDocument.getDebtAccount().getCustomer().getCode().equals(interestRequest.getCustomerCode())) {
-            throw new RuntimeException("Customer code invalid");
+            throw new RuntimeException(
+                    Constants.bundle("error.ERPIntegrationService.customer.code.invalid", interestRequest.getCustomerCode()));
         }
 
         //2. Check if the lineNumber+DebitNoteNumber Amount is correct
@@ -200,13 +202,17 @@ public class ERPIntegrationService extends BennuWebService {
                 FinantialDocumentEntry.findUniqueByEntryOrder(finantialDocument, interestRequest.getLineNumber());
 
         if (!optionalDebitEntry.isPresent()) {
-            throw new RuntimeException("Debit entry not found");
+            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.debit.entry.not.found",
+                    String.valueOf(interestRequest.getLineNumber() != null ? interestRequest.getLineNumber() : "null"),
+                    finantialDocument.getUiDocumentNumber()));
         }
 
         FinantialDocumentEntry finantialDocumentEntry = optionalDebitEntry.get();
 
         if (!(finantialDocumentEntry instanceof DebitEntry)) {
-            throw new RuntimeException("Finantial document entry not debit entry");
+            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.finantial.document.entry.is.not.debit.entry",
+                    String.valueOf(finantialDocumentEntry.getEntryOrder()),
+                    String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
         }
 
         final DebitEntry debitEntry = (DebitEntry) finantialDocumentEntry;
@@ -214,11 +220,17 @@ public class ERPIntegrationService extends BennuWebService {
         final BigDecimal amountInDebt = debitEntry.amountInDebt(interestRequest.convertPaymentDateToLocalDate());
 
         if (!Constants.isPositive(amountInDebt)) {
-            throw new RuntimeException("Debit entry has no debt");
+            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.debit.entry.with.no.debt",
+                    String.valueOf(finantialDocumentEntry.getEntryOrder()),
+                    String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
         }
 
         if (!Constants.isEqual(amountInDebt, interestRequest.getAmount())) {
-            throw new RuntimeException("Amount in debt not equal");
+            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.debit.entry.amount.is.not.equal", 
+                    interestRequest.getAmount() != null ? interestRequest.getAmount().toString() : "null",
+                    String.valueOf(finantialDocumentEntry.getEntryOrder()),
+                    String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber()),
+                    amountInDebt.toString()));
         }
 
         if (interestRequest.getGenerateInterestDebitNote() == true
@@ -243,14 +255,12 @@ public class ERPIntegrationService extends BennuWebService {
             processInterestEntries(debitEntry, undebittedInterestRateBean, interestRequest.convertPaymentDateToLocalDate());
         }
 
-        final List<FinantialDocument> interestFinantialDocumentsSet =
-                debitEntry.getInterestDebitEntriesSet().stream().filter(l -> l.isProcessedInClosedDebitNote())
-                        .map(l -> l.getFinantialDocument()).collect(Collectors.toList());
+        final List<FinantialDocument> interestFinantialDocumentsSet = debitEntry.getInterestDebitEntriesSet().stream()
+                .filter(l -> l.isProcessedInClosedDebitNote()).map(l -> l.getFinantialDocument()).collect(Collectors.toList());
 
         if (interestFinantialDocumentsSet.size() > 0) {
-            final String saftResult =
-                    ERPExporter.exportFinantialDocumentToXML(debitEntry.getDebtAccount().getFinantialInstitution(),
-                            interestFinantialDocumentsSet);
+            final String saftResult = ERPExporter.exportFinantialDocumentToXML(
+                    debitEntry.getDebtAccount().getFinantialInstitution(), interestFinantialDocumentsSet);
 
             try {
                 bean.setInterestDocumentsContent(saftResult.getBytes("UTF-8"));
@@ -265,9 +275,8 @@ public class ERPIntegrationService extends BennuWebService {
     @Atomic
     private void processInterestEntries(final DebitEntry debitEntry, final InterestRateBean interestRateBean,
             final LocalDate paymentDate) {
-        DocumentNumberSeries debitNoteSeries =
-                DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), debitEntry.getFinantialDocument()
-                        .getDocumentNumberSeries().getSeries());
+        DocumentNumberSeries debitNoteSeries = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
+                debitEntry.getFinantialDocument().getDocumentNumberSeries().getSeries());
 
         final DebitNote interestDebitNote =
                 DebitNote.create(debitEntry.getDebtAccount(), debitNoteSeries, paymentDate.toDateTimeAtStartOfDay());
@@ -276,10 +285,9 @@ public class ERPIntegrationService extends BennuWebService {
                 Optional.<DebitNote> ofNullable(interestDebitNote));
         String documentObservations =
                 BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
-        documentObservations =
-                documentObservations + " - "
-                        + BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
-                        + paymentDate.toString("YYYY-MM-dd");
+        documentObservations = documentObservations + " - "
+                + BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
+                + paymentDate.toString("YYYY-MM-dd");
         interestDebitNote.setDocumentObservations(documentObservations);
         interestDebitNote.closeDocument();
     }
