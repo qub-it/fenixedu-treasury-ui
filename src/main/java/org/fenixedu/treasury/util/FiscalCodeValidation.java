@@ -1,6 +1,13 @@
 package org.fenixedu.treasury.util;
 
+import com.google.common.base.Strings;
+
 public class FiscalCodeValidation {
+
+    public static boolean isValidFiscalNumber(final String countryCode, final String fiscalNumber) {
+        return (!Strings.isNullOrEmpty(countryCode) && !Constants.isDefaultCountry(countryCode))
+                || FiscalCodeValidation.isValidcontrib(fiscalNumber);
+    }
 
     public static boolean isValidcontrib(String contrib) {
         boolean functionReturnValue = false;

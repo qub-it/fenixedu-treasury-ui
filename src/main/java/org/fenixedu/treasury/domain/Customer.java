@@ -194,8 +194,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     }
 
     public boolean isFiscalCodeValid() {
-        return (!Strings.isNullOrEmpty(getCountryCode()) && !Constants.isDefaultCountry(getCountryCode()))
-                || FiscalCodeValidation.isValidcontrib(getFiscalNumber());
+        return FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber());
     }
     
 }
