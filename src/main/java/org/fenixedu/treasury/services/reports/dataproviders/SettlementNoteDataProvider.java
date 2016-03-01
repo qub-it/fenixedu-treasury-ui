@@ -59,10 +59,4 @@ public class SettlementNoteDataProvider extends AbstractDataProvider implements 
         arg0.registerCollectionAsField(PAYMENT_LINES_KEY);
     }
 
-    @Override
-    public void registerFieldsMetadata(IFieldsExporter arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
 }

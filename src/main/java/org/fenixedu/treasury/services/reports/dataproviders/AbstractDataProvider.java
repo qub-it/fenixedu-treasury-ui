@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
-import com.qubit.terra.docs.util.IFieldsExporter;
 import com.qubit.terra.docs.util.IReportDataProvider;
 
 public abstract class AbstractDataProvider implements IReportDataProvider {
@@ -31,8 +30,5 @@ public abstract class AbstractDataProvider implements IReportDataProvider {
 
     @Override
     public abstract void registerFieldsAndImages(IDocumentFieldsData arg0);
-
-    @Override
-    public abstract void registerFieldsMetadata(IFieldsExporter arg0);
 
 }

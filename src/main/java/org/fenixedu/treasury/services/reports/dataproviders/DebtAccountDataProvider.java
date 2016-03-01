@@ -14,7 +14,6 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
-import com.qubit.terra.docs.util.IFieldsExporter;
 import com.qubit.terra.docs.util.IReportDataProvider;
 
 public class DebtAccountDataProvider extends AbstractDataProvider implements IReportDataProvider {
@@ -44,9 +43,8 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
         Set<PaymentReferenceCode> referencesCodes = new HashSet<PaymentReferenceCode>();
 
         if (debtProvider.debitNotesForPaymentLines == null) {
-            List<? extends InvoiceEntry> pendingDebitEntriesSet =
-                    debtProvider.debtAccount.getPendingInvoiceEntriesSet().stream().filter(x -> x.isDebitNoteEntry())
-                            .collect(Collectors.<InvoiceEntry> toList());
+            List<? extends InvoiceEntry> pendingDebitEntriesSet = debtProvider.debtAccount.getPendingInvoiceEntriesSet().stream()
+                    .filter(x -> x.isDebitNoteEntry()).collect(Collectors.<InvoiceEntry> toList());
 
             for (InvoiceEntry debitEntry : pendingDebitEntriesSet) {
                 if (debitEntry.getFinantialDocument() != null
@@ -82,12 +80,6 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
         // TODO Auto-generated method stub
         arg0.registerCollectionAsField(PAYMENT_LINES_KEY);
-
-    }
-
-    @Override
-    public void registerFieldsMetadata(IFieldsExporter arg0) {
-        // TODO Auto-generated method stub
 
     }
 

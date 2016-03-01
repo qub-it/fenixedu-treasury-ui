@@ -7,7 +7,6 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.joda.time.LocalDate;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
-import com.qubit.terra.docs.util.IFieldsExporter;
 import com.qubit.terra.docs.util.IReportDataProvider;
 
 public class PaymentReferenceCodeDataProvider extends AbstractDataProvider implements IReportDataProvider {
@@ -29,12 +28,6 @@ public class PaymentReferenceCodeDataProvider extends AbstractDataProvider imple
     @Override
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void registerFieldsMetadata(IFieldsExporter arg0) {
-        // TODO Auto-generated method stub
-
     }
 
     public PaymentReferenceCode getPaymentCode() {

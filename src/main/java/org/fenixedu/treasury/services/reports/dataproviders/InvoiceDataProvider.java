@@ -9,7 +9,6 @@ import java.util.function.Function;
 import org.fenixedu.treasury.domain.document.Invoice;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
-import com.qubit.terra.docs.util.IFieldsExporter;
 import com.qubit.terra.docs.util.IReportDataProvider;
 
 public class InvoiceDataProvider extends AbstractDataProvider implements IReportDataProvider {
@@ -50,14 +49,6 @@ public class InvoiceDataProvider extends AbstractDataProvider implements IReport
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
         // TODO Auto-generated method stub
         arg0.registerCollectionAsField(LINES_KEY);
-    }
-
-    @Override
-    public void registerFieldsMetadata(IFieldsExporter arg0) {
-        arg0.registerSimpleField("invoice", "Esta é a factura.");
-        arg0.registerSimpleField("invoice.debtAccount", "Conta Corrente");
-        arg0.registerCollectionField("invoice.invoiceLines", "Conjunto de linhas da factura");
-
     }
 
 }

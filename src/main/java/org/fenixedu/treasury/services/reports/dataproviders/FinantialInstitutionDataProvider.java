@@ -30,10 +30,4 @@ public class FinantialInstitutionDataProvider extends AbstractDataProvider imple
 
     }
 
-    @Override
-    public void registerFieldsMetadata(IFieldsExporter arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
 }
