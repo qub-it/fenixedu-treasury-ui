@@ -152,6 +152,14 @@ public class CreditNote extends CreditNote_Base {
         checkRules();
     }
 
+    @Atomic
+    public void updateCreditNote(String originDocumentNumber, String documentObservations) {
+        setOriginDocumentNumber(originDocumentNumber);
+        setDocumentObservations(documentObservations);
+        
+        checkRules();
+    }
+    
     @Override
     public BigDecimal getOpenAmount() {
         if (this.isAnnulled()) {

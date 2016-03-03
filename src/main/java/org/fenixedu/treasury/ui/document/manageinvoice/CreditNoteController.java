@@ -184,7 +184,7 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-            updateCreditNote(originDocumentNumber, documentObservations, model);
+            getCreditNote(model).updateCreditNote(originDocumentNumber, documentObservations);
 
             return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -193,13 +193,6 @@ public class CreditNoteController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(creditNote, model);
-    }
-
-    @Atomic
-    public void updateCreditNote(String originDocumentNumber, String documentObservations, Model model) {
-        getCreditNote(model).setOriginDocumentNumber(originDocumentNumber);
-        getCreditNote(model).setDocumentObservations(documentObservations);
-
     }
 
     private static final String _SEARCH_URI = "/";

@@ -126,6 +126,15 @@ public class SettlementNote extends SettlementNote_Base {
         checkRules();
     }
 
+    @Atomic
+    public void updateSettlementNote(java.lang.String originDocumentNumber, String documentObservations) {
+        setOriginDocumentNumber(originDocumentNumber);
+        setDocumentObservations(documentObservations);
+
+        checkRules();
+    }
+
+    
     @Override
     public boolean isDeletable() {
         //We can only "delete" a settlement note if is in "Preparing"

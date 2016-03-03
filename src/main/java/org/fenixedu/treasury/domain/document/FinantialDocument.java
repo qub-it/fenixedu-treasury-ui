@@ -170,6 +170,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 //                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.after.entries.date");
 //            }
 //        }
+        
+        if(!Strings.isNullOrEmpty(getOriginDocumentNumber()) && !Constants.isOriginDocumentNumberValid(getOriginDocumentNumber())) {
+            throw new TreasuryDomainException("error.FinantialDocument.originDocumentNumber.invalid");
+        }
+        
     }
 
     protected boolean isDocumentEmpty() {

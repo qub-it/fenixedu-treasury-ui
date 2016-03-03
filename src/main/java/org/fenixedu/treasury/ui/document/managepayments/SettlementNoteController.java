@@ -458,7 +458,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
-            updateSettlementNote(originDocumentNumber, documentObservations, model);
+            getSettlementNote(model).updateSettlementNote(originDocumentNumber, documentObservations);
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -467,12 +467,6 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(settlementNote, model);
-    }
-
-    @Atomic
-    public void updateSettlementNote(java.lang.String originDocumentNumber, String documentObservations, Model model) {
-        getSettlementNote(model).setOriginDocumentNumber(originDocumentNumber);
-        getSettlementNote(model).setDocumentObservations(documentObservations);
     }
 
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
