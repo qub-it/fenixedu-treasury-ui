@@ -314,6 +314,7 @@ ${portal.toolkit()}
 		               { "width": "54px", "targets": 3 } 
 		             ],
 		"data" : searcherpexportoperationDataSet,
+		"order": [[ 0, "desc" ]],
 		//Documentation: https://datatables.net/reference/option/dom
 //"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
 "dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
