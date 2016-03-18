@@ -7555,6 +7555,8 @@
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="WCFServiceWSF">
+    <!--
+    	qubExtension: This port is not used and generate many warnings log lines
         <wsdl:port name="WSHttpBinding_IWCFServiceWSF"
             binding="tns:WSHttpBinding_IWCFServiceWSF">
             <soap12:address
@@ -7568,6 +7570,7 @@
                 </Identity>
             </wsa10:EndpointReference>
         </wsdl:port>
+    -->
         <wsdl:port name="BasicHttpBinding_IWCFServiceWSF"
             binding="tns:BasicHttpBinding_IWCFServiceWSF">
             <soap:address
