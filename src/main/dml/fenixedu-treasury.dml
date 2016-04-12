@@ -631,7 +631,7 @@ class paymentcodes.PaymentReferenceCode
             
             paymentcodes.SibsTransactionDetail playsRole sibsTransactions
             {
-             multiplicity *;
+            	multiplicity *;
             }
         }
         
@@ -1718,9 +1718,12 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.bennu.
 class forwardpayments.ForwardPaymentConfiguration {
 	String paymentURL;
 	String returnURL;
-	String merchantId;
+	String virtualTPAMerchantId;
 	String virtualTPAId;
 	String implementation;
+	String paylineMerchantId;
+	String paylineMerchantAccessKey;
+	String paylineContractNumber;
 }
 
 	relation ForwardPaymentConfigurationBennu {
@@ -1757,7 +1760,13 @@ class forwardpayments.ForwardPayment {
 	ForwardPaymentStateType currentState;
 	DateTime whenOccured;
 	BigDecimalT amount;
+	BigDecimalT payedAmount;
+	DateTime transactionDate;
+	String transactionId;
+	String authorizationId;
 	long orderNumber;
+	String paylineToken;
+	String paylineRedirectUrl;
 }
 
 	relation ForwardPaymentBennu {
@@ -1800,12 +1809,14 @@ class forwardpayments.ForwardPayment {
 		}
 	}
 
+class forwardpayments.ForwardPaymentLogFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+}
+
 class forwardpayments.ForwardPaymentLog {
 	ForwardPaymentStateType type;
 	DateTime whenOccured;
-	String errorLog;
-	String requestBody;
-	String responseBody;
+	String statusCode;
+	String statusLog;
 }
 
 	relation ForwardPaymentLogBennu {
@@ -1825,5 +1836,26 @@ class forwardpayments.ForwardPaymentLog {
 		
 		forwardpayments.ForwardPaymentLog playsRole forwardPaymentLogs {
 			multiplicity *;
+		}
+	}
+	
+	relation ForwardPaymentLogRequestLogFile {
+		forwardpayments.ForwardPaymentLog playsRole forwardPaymentLogsForRequest {
+			multiplicity 1..1;
+		}
+	
+		forwardpayments.ForwardPaymentLogFile playsRole requestLogFile {
+			multiplicity 0..1;
+		}
+	}
+	
+	relation ForwardPaymentLogResponseLogFile {
+
+		forwardpayments.ForwardPaymentLog playsRole forwardPaymentLogsForResponse {
+			multiplicity 1..1;
+		}
+	
+		forwardpayments.ForwardPaymentLogFile playsRole responseLogFile {
+			multiplicity 0..1;
 		}
 	}
