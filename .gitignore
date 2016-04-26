@@ -2,11 +2,8 @@
 .project
 .classpath
 .settings/
-/target/
 /src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources.properties
 /src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources_pt.properties
 
-/target/
-/target/
-/target/
-/target/
+/src/main/java/test/not/commit
+/GERO.properties
