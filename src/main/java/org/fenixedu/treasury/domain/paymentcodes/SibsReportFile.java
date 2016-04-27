@@ -27,27 +27,17 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.commons.spreadsheet.SheetData;
-import org.fenixedu.commons.spreadsheet.SpreadsheetBuilder;
-import org.fenixedu.commons.spreadsheet.WorkbookExportFormat;
-import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationFileDTO;
-import org.fenixedu.treasury.services.payments.sibs.SIBSImportationLineDTO;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.util.Constants;
-//import pt.utl.ist.fenix.tools.spreadsheet.SheetData;
-//import pt.utl.ist.fenix.tools.spreadsheet.SpreadsheetBuilder;
-//import pt.utl.ist.fenix.tools.spreadsheet.WorkbookExportFormat
+import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
+import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -55,7 +45,6 @@ import pt.ist.fenixframework.Atomic;
 
 public class SibsReportFile extends SibsReportFile_Base {
 
-    private static final String NEWLINE_SEP = " | ";
     public static final String CONTENT_TYPE = "text/plain";
     public static final String FILE_EXTENSION = ".idm";
 
@@ -142,73 +131,24 @@ public class SibsReportFile extends SibsReportFile_Base {
     }
 
     protected static byte[] buildContentFor(final SIBSImportationFileDTO reportFileDTO) {
-        final String whenProcessedBySibsLabel =
-                BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.whenProcessedBySibs");
-        final String filenameLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.filename");
-        final String transactionsTotalAmountLabel =
-                BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.transactionsTotalAmount");
-        final String totalCostLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.totalCost");
-        final String fileVersionLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.fileVersion");
-        final String sibsTransactionIdLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.sibsTransactionId");
-        final String sibsTransactionTotalAmountLabel =
-                BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.transactionTotalAmount");
-        final String transactionWhenRegisteredLabel =
-                BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.transactionWhenRegistered");
-        final String transactionDescriptionLabel =
-                BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.transactionDescription");
-        final String transactionAmountLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.transactionAmount");
-        final String paymentCodeLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.paymentCode");
-        final String studentNumberLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.studentNumber");
-        final String personNameLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.personName");
 
-        final String descriptionLabel = BundleUtil.getString(Constants.BUNDLE, "label.SibsReportFile.description");
+        Stream<SibsSpreadsheetRowReportBean> lines =
+                reportFileDTO.getLines().stream().map(l -> new SibsSpreadsheetRowReportBean(l));
 
-        final SheetData<SIBSImportationLineDTO> sheetData = new SheetData<SIBSImportationLineDTO>(reportFileDTO.getLines()) {
+        return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
 
             @Override
-            protected void makeLine(final SIBSImportationLineDTO line) {
-                addCell(whenProcessedBySibsLabel, line.getWhenProcessedBySibs());
-                addCell(filenameLabel, line.getFilename());
-                addCell(transactionsTotalAmountLabel, line.getTransactionsTotalAmount().toPlainString());
-                addCell(totalCostLabel, line.getTotalCost().toPlainString());
-                addCell(fileVersionLabel, line.getFileVersion());
-                addCell(sibsTransactionIdLabel, line.getSibsTransactionId());
-                addCell(sibsTransactionTotalAmountLabel, line.getTransactionTotalAmount().toPlainString());
-                addCell(paymentCodeLabel, line.getCode());
-                addCell(transactionWhenRegisteredLabel, line.getTransactionWhenRegistered().toString("yyyy-MM-dd HH:mm"));
-                addCell(studentNumberLabel, line.getStudentNumber());
-                addCell(personNameLabel, line.getPersonName());
-                addCell(descriptionLabel, line.getDescription() != null ? line.getDescription().replaceAll("\n", NEWLINE_SEP) : line.getDescription());
-
-                for (int i = 0; i < line.getNumberOfTransactions(); i++) {
-                    addCell(transactionDescriptionLabel, line.getTransactionDescription(i) != null ? line.getTransactionDescription(i).replaceAll("\n", NEWLINE_SEP) : line.getTransactionDescription(i));
-                    addCell(transactionAmountLabel, line.getTransactionAmount(i));
-                }
+            public ExcelSheet[] getSheets() {
+                return new ExcelSheet[] { ExcelSheet.create(Constants.bundle("label.SibsReportFile.spreadsheet.name"),
+                        SibsSpreadsheetRowReportBean.SPREADSHEET_HEADERS, lines) };
             }
-        };
+        }, null);
 
-        final String sheetName = "label.SibsReportFile.sheetName";
-        BundleUtil.getString(Constants.BUNDLE, sheetName);
-
-        ByteArrayOutputStream outputStream = null;
-        try {
-            outputStream = new ByteArrayOutputStream();
-            new SpreadsheetBuilder().addSheet(sheetName, sheetData).build(WorkbookExportFormat.CSV, outputStream);
-            return outputStream.toByteArray();
-        } catch (IOException e) {
-            throw new TreasuryDomainException("error.SibsReportFile.spreadsheet.generation.failed");
-        } finally {
-            try {
-                outputStream.close();
-            } catch (IOException e) {
-                throw new TreasuryDomainException("error.SibsReportFile.spreadsheet.generation.failed");
-            }
-        }
     }
 
     protected static String filenameFor(final SIBSImportationFileDTO reportFileDTO) {
         final String date = new DateTime().toString("yyyyMMddHHmm");
-        return "Relatorio-SIBS-" + date + ".csv";
+        return "Relatorio-SIBS-" + date + ".xlsx";
     }
 
     protected static String displayNameFor(final SIBSImportationFileDTO reportFileDTO) {
@@ -219,9 +159,8 @@ public class SibsReportFile extends SibsReportFile_Base {
     @Atomic
     public static SibsReportFile processSIBSIncommingFile(final SIBSImportationFileDTO reportDTO) {
         byte[] content = buildContentFor(reportDTO);
-        SibsReportFile result =
-                SibsReportFile.create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(),
-                        reportDTO.getTotalCost(), displayNameFor(reportDTO), filenameFor(reportDTO), content);
+        SibsReportFile result = SibsReportFile.create(reportDTO.getWhenProcessedBySibs(), reportDTO.getTransactionsTotalAmount(),
+                reportDTO.getTotalCost(), displayNameFor(reportDTO), filenameFor(reportDTO), content);
 
         return result;
     }
