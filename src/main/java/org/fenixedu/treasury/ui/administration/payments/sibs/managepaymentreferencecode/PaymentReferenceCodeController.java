@@ -95,6 +95,10 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         List<PaymentReferenceCode> searchpaymentreferencecodeResultsDataSet =
                 filterSearchPaymentReferenceCode(referenceCode, beginDate, endDate, state);
+        
+        if(searchpaymentreferencecodeResultsDataSet.size() > 500) {
+            searchpaymentreferencecodeResultsDataSet = searchpaymentreferencecodeResultsDataSet.subList(0, 500 - 1);
+        }
 
         model.addAttribute("searchpaymentreferencecodeResultsDataSet", searchpaymentreferencecodeResultsDataSet);
         model.addAttribute("stateValues", PaymentReferenceCodeStateType.values());
