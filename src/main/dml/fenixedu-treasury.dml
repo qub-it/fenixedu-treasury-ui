@@ -1716,6 +1716,8 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.bennu.
  */
 
 class forwardpayments.ForwardPaymentConfiguration {
+	boolean active;
+	String name;
 	String paymentURL;
 	String returnURL;
 	String virtualTPAMerchantId;
@@ -1777,6 +1779,9 @@ class forwardpayments.ForwardPayment {
 	DateTime transactionDate;
 	String transactionId;
 	String authorizationId;
+	String forwardPaymentSuccessUrl;
+	String forwardPaymentInsuccessUrl;
+	String returnForwardPaymentUrlChecksum;
 	long orderNumber;
 	String paylineToken;
 	String paylineRedirectUrl;

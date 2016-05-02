@@ -4,6 +4,7 @@
 .settings/
 /src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources.properties
 /src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources_pt.properties
-
-/src/main/java/test/not/commit
+/src/main/webapp/WEB-INF/resources/FenixeduTreasuryResources_en.properties
 /GERO.properties
+/target/
+/src/main/java/test/not/commit
