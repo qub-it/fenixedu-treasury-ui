@@ -637,14 +637,12 @@ class paymentcodes.PaymentReferenceCode
         
         class paymentcodes.SibsOutputFile extends .org.fenixedu.bennu.io.domain.GenericFile
         {
-      String errorLog;
-      String infoLog;
-      String printedPaymentCodes;
-      DateTime lastSuccessfulExportation;
+		      String errorLog;
+		      String infoLog;
+		      String printedPaymentCodes;
+		      DateTime lastSuccessfulExportation;
         }
         
-
-
 class integration.OperationFile extends .org.fenixedu.bennu.io.domain.GenericFile 
 {
 }
@@ -1720,10 +1718,12 @@ class forwardpayments.ForwardPaymentConfiguration {
 	String name;
 	String paymentURL;
 	String returnURL;
+	String virtualTPAMOXXURL;
 	String virtualTPAMerchantId;
 	String virtualTPAId;
 	String virtualTPAKeyStoreName;
 	String virtualTPACertificateAlias;
+	String virtualTPACertificatePassword;
 	String implementation;
 	String paylineMerchantId;
 	String paylineMerchantAccessKey;
@@ -1750,7 +1750,7 @@ class forwardpayments.ForwardPaymentConfiguration {
 		}
 	}
 	
-	relation ForwardPaymentConfigurationDocumentNumberSeries {
+	relation ForwardPaymentConfigurationSeries {
 		forwardpayments.ForwardPaymentConfiguration playsRole forwardPaymentConfigurations {
 			multiplicity *;
 		}
@@ -1767,6 +1767,29 @@ class forwardpayments.ForwardPaymentConfiguration {
 		
        PaymentMethod playsRole paymentMethod {
            multiplicity 1..1;
+       }
+	}
+
+class forwardpayments.ForwardPaymentConfigurationFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+}
+
+	relation ForwardPaymentConfigurationFileBennu {
+       forwardpayments.ForwardPaymentConfigurationFile playsRole virtualTPACertificate {
+           multiplicity *;
+       }
+		
+		.org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+			multiplicity 1..1;
+		}
+	}
+	
+	relation ForwardPaymentConfigurationVirtualTPACertificate {
+		forwardpayments.ForwardPaymentConfiguration playsRole {
+			multiplicity *;
+		}
+		
+       forwardpayments.ForwardPaymentConfigurationFile playsRole virtualTPACertificate {
+           multiplicity 0..1;
        }
 	}
 

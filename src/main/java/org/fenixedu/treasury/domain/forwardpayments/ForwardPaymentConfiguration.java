@@ -1,13 +1,19 @@
 package org.fenixedu.treasury.domain.forwardpayments;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementation;
+import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentConfigurationBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
+
+import pt.ist.fenixframework.Atomic;
 
 public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Base {
 
@@ -16,35 +22,30 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
         setBennu(Bennu.getInstance());
     }
 
-    private ForwardPaymentConfiguration(final FinantialInstitution finantialInstitution, final Series series,
-            final String paymentURL, final String returnURL, final String virtualTPAmerchantId, final String virtualTPAId) {
-        this();
-
-        setFinantialInstitution(finantialInstitution);
-        setSeries(series);
-        setPaymentURL(paymentURL);
-        setReturnURL(returnURL);
-        setVirtualTPAMerchantId(virtualTPAmerchantId);
-        setVirtualTPAId(virtualTPAId);
-        setImplementation(TPAVirtualImplementation.class.getName());
-
-        checkRules();
-    }
-
-    private ForwardPaymentConfiguration(final FinantialInstitution finantialInstitution, final Series series,
-            final String paymentURL, final String returnURL, final String paylineMerchantId,
-            final String paylineMerchantAccessKey, final String paylineContractNumber) {
+    private ForwardPaymentConfiguration(final FinantialInstitution finantialInstitution,
+            final ForwardPaymentConfigurationBean bean) {
 
         this();
 
         setFinantialInstitution(finantialInstitution);
-        setSeries(series);
-        setPaymentURL(paymentURL);
-        setReturnURL(returnURL);
-        setPaylineMerchantId(paylineMerchantId);
-        setPaylineMerchantAccessKey(paylineMerchantAccessKey);
-        setPaylineContractNumber(paylineContractNumber);
-        setImplementation(PaylineImplementation.class.getName());
+
+        setActive(bean.isActive());
+        setName(bean.getName());
+        setPaymentURL(bean.getPaymentURL());
+        setReturnURL(bean.getReturnURL());
+        setVirtualTPAMOXXURL(bean.getVirtualTPAMOXXURL());
+        setVirtualTPAMerchantId(bean.getVirtualTPAMerchantId());
+        setVirtualTPAId(bean.getVirtualTPAId());
+        setVirtualTPAKeyStoreName(bean.getVirtualTPAKeyStoreName());
+        setVirtualTPACertificateAlias(bean.getVirtualTPACertificateAlias());
+        setVirtualTPACertificatePassword(bean.getVirtualTPACertificatePassword());
+        setImplementation(bean.getImplementation());
+        setPaylineMerchantId(bean.getPaylineMerchantId());
+        setPaylineMerchantAccessKey(bean.getPaylineMerchantAccessKey());
+        setPaylineContractNumber(bean.getPaylineContractNumber());
+
+        setSeries(bean.getSeries());
+        setPaymentMethod(bean.getPaymentMethod());
 
         checkRules();
     }
@@ -57,6 +58,39 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
         if (getFinantialInstitution().getForwardPaymentConfigurationsSet().size() > 1) {
             throw new TreasuryDomainException("error.ForwardPaymentConfiguration.finantialInstitution.only.one.allowed");
         }
+    }
+
+    @Atomic
+    public void edit(final ForwardPaymentConfigurationBean bean) {
+
+        setActive(bean.isActive());
+        setName(bean.getName());
+        setPaymentURL(bean.getPaymentURL());
+        setReturnURL(bean.getReturnURL());
+        setVirtualTPAMOXXURL(bean.getVirtualTPAMOXXURL());
+        setVirtualTPAMerchantId(bean.getVirtualTPAMerchantId());
+        setVirtualTPAId(bean.getVirtualTPAId());
+        setVirtualTPAKeyStoreName(bean.getVirtualTPAKeyStoreName());
+        setVirtualTPACertificateAlias(bean.getVirtualTPACertificateAlias());
+        setVirtualTPACertificatePassword(bean.getVirtualTPACertificatePassword());
+        setImplementation(bean.getImplementation());
+        setPaylineMerchantId(bean.getPaylineMerchantId());
+        setPaylineMerchantAccessKey(bean.getPaylineMerchantAccessKey());
+        setPaylineContractNumber(bean.getPaylineContractNumber());
+
+        setSeries(bean.getSeries());
+        setPaymentMethod(bean.getPaymentMethod());
+
+        checkRules();
+    }
+    
+    @Atomic
+    public void saveVirtualTPACertificate(final String filename, final byte[] contents) {
+        if(getVirtualTPACertificate() != null) {
+            getVirtualTPACertificate().delete();
+        }
+        
+        setVirtualTPACertificate(ForwardPaymentConfigurationFile.create(filename, contents));
     }
 
     public boolean isActive() {
@@ -79,19 +113,10 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
         }
     }
 
-    public static ForwardPaymentConfiguration createForTPAVirtual(final FinantialInstitution finantialInstitution,
-            final Series series, final String paymentURL, final String returnURL, final String merchantId,
-            final String virtualTPAId, final String implementation) {
-        return new ForwardPaymentConfiguration(finantialInstitution, series, paymentURL, returnURL, merchantId, virtualTPAId,
-                implementation);
-    }
-
-    public static ForwardPaymentConfiguration createForPayline(final FinantialInstitution finantialInstitution,
-            final Series series, final String paymentURL, final String returnURL, final String paylineMerchantId,
-            final String paylineMerchantAccessKey, final String paylineContractNumber) {
-
-        return new ForwardPaymentConfiguration(finantialInstitution, series, paymentURL, returnURL, paylineMerchantId,
-                paylineMerchantAccessKey, paylineContractNumber);
+    @Atomic
+    public static ForwardPaymentConfiguration create(final FinantialInstitution finantialInstitution,
+            final ForwardPaymentConfigurationBean bean) {
+        return new ForwardPaymentConfiguration(finantialInstitution, bean);
     }
 
     public static boolean isActive(final FinantialInstitution finantialInstitution) {

@@ -1,4 +1,6 @@
 
+<%@page import="org.fenixedu.treasury.ui.administration.forwardpayments.ManageForwardPaymentConfigurationController"%>
+<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
@@ -130,10 +132,19 @@ ${portal.toolkit()}
     |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;| &nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
-            code="label.event.update" /></a> |&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate">
-        <spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" />
-    </a> &nbsp;
+            code="label.event.update" /></a> 
+            
+            |&nbsp; 
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            <a class="" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate">
+        		<spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" />
+    		</a>
+    		|&nbsp;
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            <a href="${pageContext.request.contextPath}<%= ManageForwardPaymentConfigurationController.VIEW_URL %>/${finantialInstitution.externalId}"
+            	class="" target="_blank">
+        		<spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.forwardPaymentConfiguration" />
+    		</a>&nbsp;
 
 
     <div class="btn-group">

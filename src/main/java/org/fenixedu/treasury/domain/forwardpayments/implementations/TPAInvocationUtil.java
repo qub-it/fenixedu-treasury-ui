@@ -35,6 +35,7 @@ import org.bouncycastle.crypto.digests.SHA1Digest;
 import org.bouncycastle.crypto.macs.HMac;
 import org.bouncycastle.crypto.params.KeyParameter;
 import org.bouncycastle.util.encoders.Hex;
+import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.joda.time.DateTime;
@@ -61,8 +62,6 @@ public class TPAInvocationUtil {
     }
 
     private ForwardPayment forwardPayment;
-    private byte[] certificate;
-    private String certPassword;
 
     private static final Map<String, PropInfo> propsInfo = Maps.newHashMap();
 
@@ -106,19 +105,6 @@ public class TPAInvocationUtil {
 
     public TPAInvocationUtil(final ForwardPayment forwardPayment) {
         this.forwardPayment = forwardPayment;
-
-        // Read from configuration
-
-        try {
-            final ForwardPaymentConfiguration configuration = forwardPayment.getForwardPaymentConfiguration();
-            Certificate certificate = DomainKeyStore.readByName(configuration.getVirtualTPAKeyStoreName()).getHelper()
-                    .getCertificate(configuration.getVirtualTPACertificateAlias());
-            this.certificate = certificate.getEncoded();
-        } catch (CertificateEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
-        this.certPassword = certPassword;
     }
 
     public Map<String, String> mapAuthenticationRequest() {
@@ -200,20 +186,18 @@ public class TPAInvocationUtil {
 
     private Map<String, String> post(final LinkedHashMap<String, String> params, final boolean isXml) {
         try {
-            System.out.println(
-                    "post:" + forwardPayment.getForwardPaymentConfiguration().getPaymentURL() + "?" + httpsParams(params));
-
-            final URL url = new URL("https://teste.mbnet.pt/pvtn");
+            // https://teste.mbnet.pt/pvtn
+            final URL url = new URL(forwardPayment.getForwardPaymentConfiguration().getVirtualTPAMOXXURL());
+            
             HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
 
-            if (certificate != null /* && !Strings.isNullOrEmpty(certPassword) */) {
-                try {
-                    connection.setSSLSocketFactory(getFactory(new File("/home/anilmamede/Desktop/TAP_VIRTUAL/FPIE/FP/2016_04_27/0000016343.p12"), "HRX7K2BQ"));
-                } catch (final Exception e) {
-                    throw new RuntimeException(e);
-                }
+            try {
+                connection.setSSLSocketFactory(getFactory());
+            } catch (final Exception e) {
+                throw new RuntimeException(e);
             }
+            
             connection.setUseCaches(false);
 
             connection.setDoInput(true);
@@ -333,27 +317,14 @@ public class TPAInvocationUtil {
         return paramsStr;
     }
 
-//    private SSLSocketFactory getFactory() throws Exception {
-//        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
-//        KeyStore keyStore = KeyStore.getInstance("PKCS12");
-//
-//        InputStream keyInput = new ByteArrayInputStream(certificate);
-//        keyStore.load(keyInput, null);
-//        keyInput.close();
-//
-//        keyManagerFactory.init(keyStore, null);
-//
-//        SSLContext context = SSLContext.getInstance("TLS");
-//        context.init(keyManagerFactory.getKeyManagers(), null, new SecureRandom());
-//
-//        return context.getSocketFactory();
-//    }
+    private SSLSocketFactory getFactory() throws Exception {
+        final GenericFile pKeyFile = forwardPayment.getForwardPaymentConfiguration().getVirtualTPACertificate();
+        final String pKeyPassword = forwardPayment.getForwardPaymentConfiguration().getVirtualTPACertificatePassword();
 
-    private SSLSocketFactory getFactory(File pKeyFile, String pKeyPassword) throws Exception {
         KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
-        InputStream keyInput = new FileInputStream(pKeyFile);
+        InputStream keyInput = pKeyFile.getStream();
         keyStore.load(keyInput, pKeyPassword.toCharArray());
         keyInput.close();
 
