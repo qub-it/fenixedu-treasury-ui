@@ -99,7 +99,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
             requestMap = Maps.newLinkedHashMap();
             responseMap = tpa.postAuthorizationRequest(requestMap);
-
+            
             if (!isAuthorizationSuccess(responseMap)) {
                 final String responseCode = responseCode(responseMap);
                 forwardPayment.reject(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
@@ -135,6 +135,9 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
                 final String responseCode = responseCode(responseMap);
                 forwardPayment.reject(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
                 return false;
+            } else {
+                final String responseCode = responseCode(responseMap);
+                forwardPayment.log(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
             }
 
             resultCode = Integer.parseInt(responseMap.get(C016));

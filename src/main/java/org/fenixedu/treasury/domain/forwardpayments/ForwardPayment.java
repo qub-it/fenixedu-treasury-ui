@@ -261,7 +261,7 @@ public class ForwardPayment extends ForwardPayment_Base {
         }
     }
 
-    private ForwardPaymentLog log(final String statusCode, final String statusMessage, final String requestBody,
+    public ForwardPaymentLog log(final String statusCode, final String statusMessage, final String requestBody,
             final String responseBody) {
         final ForwardPaymentLog log = log();
 

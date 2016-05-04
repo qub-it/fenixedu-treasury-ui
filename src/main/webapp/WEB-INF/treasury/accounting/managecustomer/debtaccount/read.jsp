@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
@@ -231,8 +232,20 @@ ${portal.angularToolkit()}
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicActBlockingSuspensionController.link" />
                 </a></li>
             </c:if>
-            <li><a id="exportintegrationline" class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/exportintegrationonline"><span
-                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" /></a> &nbsp;</li>
+            <li>
+            	<a id="exportintegrationline" class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/exportintegrationonline"><span
+                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" /></a> &nbsp;
+            </li>
+			<% if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) { %>
+            <li>
+            	<a id="exportintegrationline"
+            		class=""
+            		href="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.SEARCH_URL %>?customerBusinessId=${debtAccount.customer.businessIdentification}">
+            		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true" target="_blank"></span>&nbsp;
+            		<spring:message code="label.ManageForwardPayments.search" />
+               	</a>
+            </li>
+			<% } %>            
         </ul>
     </div>
     <%
