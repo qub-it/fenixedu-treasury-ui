@@ -79,7 +79,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <input id="beginDate" class="form-control" type="text"
-                        name="beginDate" bennu-date value='<c:out value='${param.beginDate}'/>' />
+                        name="beginDate" bennu-date value='<c:out value='${param.beginDate != null ? param.beginDate.toString("yyyy-MM-dd") : beginDate.toString("yyyy-MM-dd") }'/>' />
                 </div>
             </div>
 
@@ -90,7 +90,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <input id="endDate" class="form-control" type="text"
-                        name="endDate" bennu-date value='<c:out value='${param.endDate}'/>' />
+                        name="endDate" bennu-date value='<c:out value='${param.endDate != null ? param.endDate.toString("yyyy-MM-dd") : endDate.toString("yyyy-MM-dd") }'/>' />
                 </div>
             </div>
 
@@ -101,7 +101,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-10">
                     <input id="customerName" class="form-control" type="text" name="customerName" 
-                    	value='<c:out value='${param.customerName}'/>' />
+                    	value='<c:out value='${param.customerName != null ? param.customerName : customerName }'/>' />
                 </div>
             </div>
 
@@ -112,7 +112,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-10">
                     <input id="businessCustomerId" class="form-control" type="text" name="businessCustomerId" 
-                    	value='<c:out value='${param.businessCustomerId}'/>' />
+                    	value='<c:out value='${param.businessCustomerId != null ? param.businessCustomerId : businessCustomerId }'/>' />
                 </div>
             </div>
 

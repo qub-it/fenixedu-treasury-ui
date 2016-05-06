@@ -180,7 +180,10 @@ public class ForwardPayment extends ForwardPayment_Base {
             if (debitEntry.getFinantialDocument() == null) {
                 final DebitNote debitNote = DebitNote.create(getDebtAccount(), debitNoteSeries, new DateTime());
                 debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
-                debitNote.closeDocument();
+            }
+            
+            if(debitEntry.getFinantialDocument().isPreparing()) {
+                debitEntry.getFinantialDocument().closeDocument();
             }
 
             if (org.fenixedu.treasury.util.Constants.isGreaterThan(debitEntry.getOpenAmount(), amountToConsume)) {

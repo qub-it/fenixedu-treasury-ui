@@ -23,4 +23,10 @@ public class ForwardPaymentConfigurationFile extends ForwardPaymentConfiguration
         
         return file;
     }
+    
+    @Override
+    public void delete() {
+        setBennu(null);
+        super.delete();
+    }
 }

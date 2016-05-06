@@ -45,9 +45,9 @@ public class PaylineController extends TreasuryBaseController implements IForwar
 
             return "redirect:" + forwardPayment.getPaylineRedirectUrl();
         } catch (Exception e) {
-            addErrorMessage(e.getLocalizedMessage(), model);
-            model.addAttribute("forwardPayment", forwardPayment);
-            rejectPayment(forwardPayment);
+            e.printStackTrace();
+            
+            rejectPayment(forwardPayment, e.getMessage(), e.getLocalizedMessage());
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         }
     }
@@ -67,7 +67,7 @@ public class PaylineController extends TreasuryBaseController implements IForwar
 
             // verify url checksum
             if (Strings.isNullOrEmpty(urlChecksum) || !forwardPayment.getReturnForwardPaymentUrlChecksum().equals(urlChecksum)) {
-                rejectPayment(forwardPayment);
+                rejectPayment(forwardPayment, "INVALID_CHECKSUM", "Invalid checksum");
                 return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
             }
 
@@ -87,8 +87,8 @@ public class PaylineController extends TreasuryBaseController implements IForwar
     }
 
     @Atomic
-    private void rejectPayment(final ForwardPayment forwardPayment) {
-        forwardPayment.reject("CHECKSUM_INVALID", "Checksum invalid", "", "");
+    private void rejectPayment(final ForwardPayment forwardPayment, String code, String message) {
+        forwardPayment.reject(code, message, "", "");
     }
 
     private String jspPage(final String page) {
