@@ -109,7 +109,7 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <c:if test='${not empty debitEntry }'>
                         <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date required
-                            value='${debitEntry.entryDateTime.toString("YYYY-MM-dd") }' />
+                            value='<%=new org.joda.time.LocalDate().toString("YYYY-MM-dd")%>' />
                     </c:if>
                     <c:if test='${empty debitEntry }'>
                         <c:if test='${not empty param.documentdate}'>
@@ -131,7 +131,7 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <c:if test='${not empty debitEntry }'>
                         <input id="debitNote_documentDueDate" class="form-control" type="text" name="documentduedate" bennu-date required
-                            value='${debitEntry.dueDate.toString("YYYY-MM-dd") }' />
+                            value='<%= new org.joda.time.LocalDate().toString("YYYY-MM-dd") %>' />
                     </c:if>
                     <c:if test='${empty debitEntry }'>
                         <c:if test='${not empty param.documentduedate}'>
