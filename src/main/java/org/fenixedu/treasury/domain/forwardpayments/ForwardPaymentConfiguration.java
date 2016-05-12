@@ -87,8 +87,9 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
     @Atomic
     public void saveVirtualTPACertificate(final String filename, final byte[] contents) {
         if(getVirtualTPACertificate() != null) {
+            ForwardPaymentConfigurationFile virtualTPACertificate = getVirtualTPACertificate();
             setVirtualTPACertificate(null);
-            getVirtualTPACertificate().delete();
+            virtualTPACertificate.delete();
         }
         
         setVirtualTPACertificate(ForwardPaymentConfigurationFile.create(filename, contents));

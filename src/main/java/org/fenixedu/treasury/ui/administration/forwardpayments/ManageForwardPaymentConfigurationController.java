@@ -109,7 +109,7 @@ public class ManageForwardPaymentConfigurationController extends TreasuryBaseCon
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 
-        return jspPage(UPLOAD_VIRTUAL_TPA_CERTIFICATE_URI);
+        return jspPage(VIEW_URI);
     }
 
     private static final String DOWNLOAD_VIRTUAL_TPA_CERTIFICATE_URI = "/downloadvirtualtpacertificate";
