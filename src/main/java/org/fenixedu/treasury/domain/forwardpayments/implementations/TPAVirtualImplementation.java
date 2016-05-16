@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
+import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.fenixedu.treasury.ui.document.forwardpayments.implementations.TPAVirtualController;
 import org.fenixedu.treasury.util.Constants;
@@ -99,7 +102,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
             requestMap = Maps.newLinkedHashMap();
             responseMap = tpa.postAuthorizationRequest(requestMap);
-            
+
             if (!isAuthorizationSuccess(responseMap)) {
                 final String responseCode = responseCode(responseMap);
                 forwardPayment.reject(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
@@ -108,10 +111,10 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
             forwardPayment.advanceToAuthenticatedState(responseMap.get(C016),
                     Constants.bundle("label.TPAVirtualImplementation.authenticated"), json(requestMap), json(responseMap));
-            
+
             resultCode = Integer.parseInt(responseMap.get(C016));
         }
-        
+
         if (resultCode == C016_AUTHORIZED) {
             requestMap = Maps.newLinkedHashMap();
             responseMap = tpa.postPaymentStatus(requestMap);
@@ -159,7 +162,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
             forwardPayment.advanceToPayedState(String.valueOf(resultCode),
                     Constants.bundle("label.TPAVirtualImplementation.payed"), payedAmount, transactionDate, transactionId, null,
-                    json(requestMap), json(responseMap));
+                    json(requestMap), json(responseMap), null);
 
             return true;
         }
@@ -167,6 +170,54 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
         forwardPayment.reject(String.valueOf(resultCode), errorMessage(responseMap), json(requestMap), json(responseMap));
 
         return false;
+    }
+
+    @Override
+    public ForwardPaymentStatusBean paymentStatus(final ForwardPayment forwardPayment) {
+        final LinkedHashMap<String, String> requestMap = Maps.newLinkedHashMap();
+        final TPAInvocationUtil tpa = new TPAInvocationUtil(forwardPayment);
+        final Map<String, String> responseMap = tpa.postPaymentStatus(requestMap);
+
+        final String responseCode = responseCode(responseMap);
+
+        if (!isPaymentStatusSuccess(responseMap)) {
+            return new ForwardPaymentStatusBean(isPaymentStatusSuccess(responseMap), null, responseCode,
+                    errorMessage(responseMap), json(requestMap), json(responseMap));
+        }
+
+        ForwardPaymentStateType type = null;
+
+        DateTime authorizationDate = null;
+
+        String transactionId = null;
+        DateTime transactionDate = null;
+        BigDecimal payedAmount = null;
+
+        int resultCode = Integer.parseInt(responseMap.get(C016));
+
+        if (resultCode == C016_AUTHENTICATED_STATE) {
+            type = ForwardPaymentStateType.AUTHENTICATED;
+        } else if (resultCode == C016_AUTHORIZED) {
+            type = ForwardPaymentStateType.AUTHORIZED;
+            authorizationDate = authorizationSibsDate(responseMap);
+        } else if (resultCode == C016_PAYED) {
+            type = ForwardPaymentStateType.PAYED;
+            authorizationDate = authorizationSibsDate(responseMap);
+
+            transactionId = transactionId(responseMap);
+            transactionDate = forwardPayment.getAuthorizationDate();
+            payedAmount = payedAmount(responseMap);
+        } else if (resultCode == C016_AUTHORIZED_CANCELLED) {
+            type = ForwardPaymentStateType.REJECTED;
+        }
+
+        final ForwardPaymentStatusBean bean = new ForwardPaymentStatusBean(isPaymentStatusSuccess(responseMap), type,
+                responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
+
+        bean.editAuthorizationDetails(null, authorizationDate);
+        bean.editTransactionDetails(transactionId, transactionDate, payedAmount);
+
+        return bean;
     }
 
     private String errorMessage(final Map<String, String> responseData) {
@@ -225,13 +276,13 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
     }
 
     private boolean isResponseSuccess(final Map<String, String> responseMap) {
-        if(responseMap.get(A038) == null) {
+        if (responseMap.get(A038) == null) {
             return false;
-        } 
-        
+        }
+
         try {
             return Integer.parseInt(responseMap.get(A038)) == 0;
-        } catch(NumberFormatException e) {
+        } catch (NumberFormatException e) {
             return false;
         }
     }
@@ -266,7 +317,8 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
     }
 
     public String getReturnURL(final ForwardPayment forwardPayment) {
-        return String.format("%s/%s", forwardPayment.getForwardPaymentConfiguration().getReturnURL(), forwardPayment.getExternalId());
+        return String.format("%s/%s", forwardPayment.getForwardPaymentConfiguration().getReturnURL(),
+                forwardPayment.getExternalId());
     }
 
     @Override
@@ -282,6 +334,42 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
     @Override
     public String getLogosJspPage() {
         return "implementations/tpavirtual/logos.jsp";
+    }
+
+    @Override
+    @Atomic
+    public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
+        ForwardPaymentStatusBean paymentStatusBean =
+                forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
+
+        if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
+            throw new TreasuryDomainException("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform");
+        }
+
+        final TPAInvocationUtil tpa = new TPAInvocationUtil(forwardPayment);
+        final LinkedHashMap<String, String> requestMap = Maps.newLinkedHashMap();
+        final Map<String, String> responseMap = tpa.postPaymentStatus(requestMap);
+
+        if (!isPaymentStatusSuccess(responseMap)) {
+            final String responseCode = responseCode(responseMap);
+            forwardPayment.reject(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
+            return false;
+        }
+
+        int resultCode = Integer.parseInt(responseMap.get(C016));
+
+        if (resultCode != C016_PAYED) {
+            throw new TreasuryDomainException("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform");
+        }
+
+        final String transactionId = paymentStatusBean.getTransactionId();
+        final DateTime transactionDate = paymentStatusBean.getAuthorizationDate();
+        final BigDecimal payedAmount = paymentStatusBean.getPayedAmount();
+
+        forwardPayment.advanceToPayedState(String.valueOf(resultCode), Constants.bundle("label.TPAVirtualImplementation.payed"),
+                payedAmount, transactionDate, transactionId, null, json(requestMap), json(responseMap), justification);
+
+        return true;
     }
 
 }

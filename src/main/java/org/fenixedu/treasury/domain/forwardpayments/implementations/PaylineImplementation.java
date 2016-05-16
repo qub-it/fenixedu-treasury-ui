@@ -9,7 +9,10 @@ import javax.xml.ws.BindingProvider;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
+import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Address;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Buyer;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Details;
@@ -27,7 +30,9 @@ import org.fenixedu.treasury.ui.document.forwardpayments.implementations.Payline
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
+import com.google.common.base.Strings;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
@@ -38,12 +43,15 @@ import pt.ist.fenixframework.Atomic;
 
 public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> implements IForwardPaymentImplementation {
 
+    private static final DateTimeFormatter DATE_TIME_PATTERN = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
+
     private static final String SECURITY_MODE = "SSL";
     private static final String PT = "PT";
     private static final String EURO_CURRENCY = "978";
     private static final String ACTION_AUTHORIZATION_AND_VALIDATION = "101";
     private static final String MODE_CPT = "CPT";
     private static final String TRANSACTION_APPROVED_CODE = "00000";
+    private static final String TRANSACTION_PENDING_FORM_FILL = "02306";
 
     public static final String ACTION_RETURN_URL = "return";
     public static final String ACTION_CANCEL_URL = "cancel";
@@ -59,7 +67,8 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
                 forwardPayment.getExternalId(), ACTION_RETURN_URL, forwardPayment.getReturnForwardPaymentUrlChecksum());
     }
 
-    private void saveReturnUrlChecksum(final ForwardPayment forwardPayment, final String returnControllerURL, final HttpSession session) {
+    private void saveReturnUrlChecksum(final ForwardPayment forwardPayment, final String returnControllerURL,
+            final HttpSession session) {
         final String returnUrlToChecksum =
                 String.format("%s%s/%s", forwardPayment.getForwardPaymentConfiguration().getReturnURL(), returnControllerURL,
                         forwardPayment.getExternalId());
@@ -92,10 +101,11 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     }
 
     @Atomic
-    public boolean doWebPayment(final ForwardPayment forwardPayment, final String returnControllerURL, final HttpSession session) {
+    public boolean doWebPayment(final ForwardPayment forwardPayment, final String returnControllerURL,
+            final HttpSession session) {
 
         saveReturnUrlChecksum(forwardPayment, returnControllerURL, session);
-        
+
         final Payment paymentDetails = new Payment();
         paymentDetails.setAmount(getFormattedAmount(forwardPayment));
         paymentDetails.setCurrency(EURO_CURRENCY);
@@ -209,14 +219,64 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         final String transactionId = response.getTransaction().getId();
         final String authorizationNumber = response.getAuthorization().getNumber();
 
-        final DateTime transactionDate =
-                DateTimeFormat.forPattern("dd/MM/yyyy HH:mm").parseDateTime(response.getTransaction().getDate());
+        final DateTime transactionDate = DATE_TIME_PATTERN.parseDateTime(response.getTransaction().getDate());
         final BigDecimal payedAmount = new BigDecimal(response.getPayment().getAmount()).divide(new BigDecimal("100"));
 
         forwardPayment.advanceToPayedState(response.getResult().getCode(), response.getResult().getLongMessage(), payedAmount,
-                transactionDate, transactionId, authorizationNumber, json(request), json(response));
+                transactionDate, transactionId, authorizationNumber, json(request), json(response), null);
 
         return true;
+    }
+
+    @Override
+    public ForwardPaymentStatusBean paymentStatus(ForwardPayment forwardPayment) {
+        final GetWebPaymentDetailsRequest request = new GetWebPaymentDetailsRequest();
+        request.setToken(forwardPayment.getPaylineToken());
+
+        final GetWebPaymentDetailsResponse response = getClient().getWebPaymentDetails(request);
+
+        ForwardPaymentStateType type = null;
+
+        String authorizationNumber = null;
+        DateTime authorizationDate = null;
+
+        String transactionId = null;
+        DateTime transactionDate = null;
+        BigDecimal payedAmount = null;
+
+        final boolean success = TRANSACTION_APPROVED_CODE.equals(response.getResult().getCode());
+        if (!success) {
+            if (TRANSACTION_PENDING_FORM_FILL.equals(response.getResult().getCode())) {
+                type = ForwardPaymentStateType.REQUESTED;
+            } else {
+                type = ForwardPaymentStateType.REJECTED;
+            }
+        } else {
+            authorizationNumber = response.getAuthorization().getNumber();
+            if (response.getAuthorization() != null && !Strings.isNullOrEmpty(response.getAuthorization().getDate())) {
+                authorizationDate = DATE_TIME_PATTERN.parseDateTime(response.getAuthorization().getDate());
+            }
+
+            transactionId = response.getTransaction().getId();
+
+            if (response.getPayment() != null && !Strings.isNullOrEmpty(response.getPayment().getAmount())) {
+                payedAmount = new BigDecimal(response.getPayment().getAmount()).divide(new BigDecimal("100"));
+            }
+
+            if (response.getPayment() != null && !Strings.isNullOrEmpty(response.getTransaction().getDate())) {
+                transactionDate = DATE_TIME_PATTERN.parseDateTime(response.getTransaction().getDate());
+            }
+
+            type = ForwardPaymentStateType.PAYED;
+        }
+
+        final ForwardPaymentStatusBean bean = new ForwardPaymentStatusBean(true, type, response.getResult().getCode(),
+                response.getResult().getLongMessage(), json(request), json(response));
+
+        bean.editAuthorizationDetails(authorizationNumber, authorizationDate);
+        bean.editTransactionDetails(transactionId, transactionDate, payedAmount);
+
+        return bean;
     }
 
     private void fillAddress(final Customer customer, final Buyer buyerDetails) {
@@ -253,4 +313,27 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     public String getLogosJspPage() {
         return "implementations/payline/logos.jsp";
     }
+
+    @Override
+    @Atomic
+    public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
+        ForwardPaymentStatusBean paymentStatusBean =
+                forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
+
+        if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
+            throw new TreasuryDomainException("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform");
+        }
+
+        if (Strings.isNullOrEmpty(justification)) {
+            throw new TreasuryDomainException("label.ManageForwardPayments.postProcessPayment.justification.required");
+        }
+
+        forwardPayment.advanceToPayedState(paymentStatusBean.getStatusCode(), paymentStatusBean.getStatusMessage(),
+                paymentStatusBean.getPayedAmount(), paymentStatusBean.getTransactionDate(), paymentStatusBean.getTransactionId(),
+                paymentStatusBean.getAuthorizationNumber(), paymentStatusBean.getRequestBody(),
+                paymentStatusBean.getResponseBody(), justification);
+
+        return true;
+    }
+
 }

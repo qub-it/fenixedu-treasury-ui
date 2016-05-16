@@ -35,11 +35,47 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
-		<spring:message code="label.ManageForwardPayments.view" />
+		<spring:message code="label.ManageForwardPayments.verifyForwardPayment" />
 		<small></small>
 	</h1>
 </div>
 
+
+<div class="modal fade" id="registerPaymentModal"> 
+   <div class="modal-dialog"> 
+     <div class="modal-content">
+
+       <div class="modal-header">
+         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> 
+         <h4 class="modal-title"><spring:message code="label.ManageForwardPayments.registerPayment.title"/></h4>
+       </div> 
+
+     <form id ="registerPaymentModalForm" action="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.REGISTER_PAYMENT_URL %>/${forwardPayment.externalId}"  method="POST">
+
+	       <div class="modal-body"> 
+       
+		        <p><em><spring:message code = "label.ManageForwardPayments.registerPayment.message.confirm"/></em></p>
+	            <p>&nbsp;</p>
+	            <div class="form-group row">
+	                <div class="col-sm-2 control-label">
+	                    <spring:message code="label.ManageForwardPayments.registerPayment.justitication" />
+	                </div>
+	
+	                <div class="col-sm-10">
+	                    <input class="form-control" type="text" name="justification" />
+	                </div>
+	            </div>
+		       </div> 
+		       
+		       <div class="modal-footer"> 
+		         <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
+		         <button id="registerButton" class ="btn btn-danger" type="submit"><spring:message code = "label.ManageForwardPayments.register.button"/></button>
+		       </div> 
+       </form> 
+       
+     </div> 
+   </div> 
+ </div>
 
 <!-- /.modal -->
 <%-- NAVIGATION --%>
@@ -47,11 +83,6 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
 	<a class="" href="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.SEARCH_URL %>">
 		<spring:message code="label.event.back" />
-	</a> 
-	&nbsp;|&nbsp;
-	<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;
-	<a class="" href="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.VERIFY_FORWARD_PAYMENT_URL %>/${forwardPayment.externalId}">
-		<spring:message code="label.ManageForwardPayments.verifyForwardPayment.button" />
 	</a> 
 </div>
 
@@ -136,7 +167,7 @@ ${portal.toolkit()}
                     </tr>
                     
 <%
-	if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+	if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
 %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.forwardPaymentSuccessUrl" /></th>
@@ -170,49 +201,72 @@ ${portal.toolkit()}
 </div>
 
 <h2>
-	<spring:message code="label.ManageForwardPayments.states" />
+	<spring:message code="label.ManageForwardPayments.forwardPaymentStatus" />
 </h2>
 
-<%
-	if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
-%>
+<p><strong><em><spring:message code="label.ManageForwardPayments.forwardPaymentStatus.message" /></em></strong></p>
 
-<c:forEach var="log" items="${forwardPayment.orderedForwardPaymentLogs}">
-	<div class="panel panel-primary">
-		<div class="panel-body">
-			<form method="post" class="form-horizontal">
-				<table class="table">
-					<tbody>
-	                    <tr>
-	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.type" /></th>
-	                        <td><c:out value='${log.type.localizedName.content}' /></td>
-	                    </tr>
-	                    <tr>
-	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.whenOccured" /></th>
-	                        <td><c:out value='${log.whenOccured.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
-	                    </tr>
-						<tr>
-							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.statusCode" /></th>
-							<td><c:out value='${log.statusCode}' /></td>
-						</tr>
-						<tr>
-							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.statusLog" /></th>
-							<td><c:out value='${log.statusLog}' /></td>
-						</tr>
-						<tr>
-							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.requestLogFile" /></th>
-							<td><c:out value='${log.requestLogFile.contentAsString}' /></td>
-						</tr>
-						<tr>
-							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.responseLogFile" /></th>
-							<td><c:out value='${log.responseLogFile.contentAsString}' /></td>
-						</tr>
-					</tbody>
-				</table>
-			</form>
-		</div>
+<div class="panel panel-primary">
+	<div class="panel-body">
+		<form method="post" class="form-horizontal">
+			<table class="table">
+				<tbody>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.invocationSuccess" /></th>
+                        <td>
+                        	<c:if test="${paymentStatusBean.invocationSuccess}">
+                        		<spring:message code="label.true" />
+                        	</c:if> 
+                        	<c:if test="${not paymentStatusBean.invocationSuccess}">
+                        		<spring:message code="label.true" />
+                        	</c:if> 
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.type" /></th>
+                        <td><c:out value='${paymentStatusBean.stateType.localizedName.content}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.authorizationNumber" /></th>
+                        <td><c:out value='${paymentStatusBean.authorizationNumber}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.authorizationDate" /></th>
+                        <td><c:out value='${paymentStatusBean.authorizationDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.transactionId" /></th>
+                        <td><c:out value='${paymentStatusBean.transactionId}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.transactionDate" /></th>
+                        <td><c:out value='${paymentStatusBean.transactionDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
+                    </tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.statusCode" /></th>
+						<td><c:out value='${paymentStatusBean.statusCode}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.requestLogFile" /></th>
+						<td><c:out value='${paymentStatusBean.requestBody}' /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.responseLogFile" /></th>
+						<td><c:out value='${paymentStatusBean.responseBody}' /></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
 	</div>
-</c:forEach>
-<%
-	}
-%>
+</div>
+
+<c:if test="${(forwardPayment.currentState.inStateToPostProcessPayment or forwardPayment.currentState.requested) and paymentStatusBean.stateType.payed}">
+	
+	<p><strong><spring:message code="label.ManageForwardPayments.register.payment.message"></spring:message></strong></p>
+	
+	<button class="btn btn-primary" data-toggle="modal" data-target="#registerPaymentModal"> 
+		<spring:message code="label.ManageForwardPayments.register.button" />
+	</button>
+
+</c:if>
+

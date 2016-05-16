@@ -45,11 +45,13 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
@@ -82,8 +84,8 @@ public class ForwardPaymentController extends TreasuryBaseController {
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
         model.addAttribute("settlementNoteBeanJson", getBeanJson(bean));
         model.addAttribute("settlementNoteBean", bean);
-        model.addAttribute("logosPage",
-                Bennu.getInstance().getForwardPaymentConfigurationsSet().iterator().next().implementation().getLogosJspPage());
+        model.addAttribute("logosPage", ForwardPaymentConfiguration.find(bean.getDebtAccount().getFinantialInstitution()).get()
+                .implementation().getLogosJspPage());
         model.addAttribute("chooseInvoiceEntriesUrl", readChooseInvoiceEntriesUrl());
         model.addAttribute("summaryUrl", readSummaryUrl());
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
@@ -205,7 +207,37 @@ public class ForwardPaymentController extends TreasuryBaseController {
         }
 
         setSettlementNoteBean(bean, model);
+        
+        boolean hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage = false;
+        for (int i = 0; i < bean.getDebitEntries().size(); i++) {
+            DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
+            if (debitEntryBean.isIncluded()) {
+                hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage |=
+                        hasForwardPaymentInStateOfPostPaymentAndPayedOnPlatform(debitEntryBean.getDebitEntry());
+            }
+        }
+        
+        model.addAttribute("paymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage",
+                hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage);
+
         return jspPage("summary");
+    }
+
+    private boolean hasForwardPaymentInStateOfPostPaymentAndPayedOnPlatform(final DebitEntry debitEntry) {
+        for (final ForwardPayment forwardPayment : debitEntry.getForwardPaymentsSet()) {
+            if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment()) {
+                continue;
+            }
+
+            final IForwardPaymentImplementation implementation = forwardPayment.getForwardPaymentConfiguration().implementation();
+
+            final ForwardPaymentStatusBean paymentStatusBean = implementation.paymentStatus(forwardPayment);
+            if (paymentStatusBean.isInPayedState()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static final String SUMMARY_URI = "/summary/";

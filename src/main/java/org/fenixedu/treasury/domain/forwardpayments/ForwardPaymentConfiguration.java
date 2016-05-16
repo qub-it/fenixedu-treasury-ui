@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.forwardpayments;
 
+import java.util.Optional;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.io.domain.GenericFile;
@@ -120,13 +122,17 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
             final ForwardPaymentConfigurationBean bean) {
         return new ForwardPaymentConfiguration(finantialInstitution, bean);
     }
+    
+    public static Optional<ForwardPaymentConfiguration> find(final FinantialInstitution finantialInstitution) {
+        return finantialInstitution.getForwardPaymentConfigurationsSet().stream().findFirst();
+    }
 
     public static boolean isActive(final FinantialInstitution finantialInstitution) {
-        if (finantialInstitution.getForwardPaymentConfigurationsSet().isEmpty()) {
+        if(!find(finantialInstitution).isPresent()) {
             return false;
         }
-
-        return finantialInstitution.getForwardPaymentConfigurationsSet().iterator().next().isActive();
+        
+        return find(finantialInstitution).get().isActive();
     }
 
 }

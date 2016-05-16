@@ -59,6 +59,13 @@ public class ForwardPayment extends ForwardPayment_Base {
         setCurrentState(ForwardPaymentStateType.CREATED);
         setWhenOccured(new DateTime());
 
+        // Verify that all debitEntries have open amount greater than zero
+        for(final DebitEntry debitEntry : debitEntriesSet) {
+            if(!Constants.isPositive(debitEntry.getOpenAmount())) {
+                throw new TreasuryDomainException("error.ForwardPayment.open.amount.debit.entry.not.positive");
+            }
+        }
+        
         final BigDecimal amount = debitEntriesSet.stream().map(DebitEntry::getOpenAmountWithInterests).reduce((a, c) -> a.add(c))
                 .orElse(BigDecimal.ZERO);
         setAmount(debtAccount.getFinantialInstitution().getCurrency().getValueWithScale(amount));
@@ -140,7 +147,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
     public void advanceToPayedState(final String statusCode, final String statusMessage, final BigDecimal payedAmount,
             final DateTime transactionDate, final String transactionId, final String authorizationNumber,
-            final String requestBody, final String responseBody) {
+            final String requestBody, final String responseBody, String justification) {
 
         if (!isActive()) {
             throw new TreasuryDomainException("error.ForwardPayment.not.in.active.state");
@@ -149,7 +156,7 @@ public class ForwardPayment extends ForwardPayment_Base {
         if (isInPayedState()) {
             throw new TreasuryDomainException("error.ForwardPayment.already.payed");
         }
-
+        
         setTransactionId(transactionId);
         setAuthorizationId(authorizationNumber);
         setTransactionDate(transactionDate);
@@ -223,6 +230,8 @@ public class ForwardPayment extends ForwardPayment_Base {
 
         getSettlementNote().closeDocument();
 
+        setJustification(justification);
+        
         checkRules();
     }
 

@@ -8,6 +8,9 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
+import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -39,9 +42,10 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     public static final String SEARCH_URI = "/search";
     public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
 
-    @RequestMapping(value=SEARCH_URI, method=RequestMethod.GET)
+    @RequestMapping(value = SEARCH_URI, method = RequestMethod.GET)
     public String search(
-            @RequestParam(value = "beginDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate beginDate,
+            @RequestParam(value = "beginDate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate beginDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate endDate,
             @RequestParam(value = "customerName", required = false) final String customerName,
             @RequestParam(value = "customerBusinessId", required = false) final String customerBusinessId, final Model model) {
@@ -69,8 +73,8 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
         List<ForwardPayment> forwardPayments =
                 stream.sorted(java.util.Collections.reverseOrder(Comparator.comparing(ForwardPayment::getWhenOccured)))
                         .collect(Collectors.toList());
-        
-        if(forwardPayments.size() > MAX_SEARCH_SIZE) {
+
+        if (forwardPayments.size() > MAX_SEARCH_SIZE) {
             forwardPayments = forwardPayments.subList(0, MAX_SEARCH_SIZE);
         }
 
@@ -85,8 +89,54 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     @RequestMapping(VIEW_URI + "/{forwardPaymentId}")
     public String view(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model) {
         model.addAttribute("forwardPayment", forwardPayment);
-        
+
         return jspPage(VIEW_URI);
+    }
+
+    private static final String VERIFY_FORWARD_PAYMENT_URI = "/verifyforwardpayment";
+    public static final String VERIFY_FORWARD_PAYMENT_URL = CONTROLLER_URL + VERIFY_FORWARD_PAYMENT_URI;
+
+    @RequestMapping(VERIFY_FORWARD_PAYMENT_URI + "/{forwardPaymentId}")
+    public String verifyforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model) {
+        try {
+            ForwardPaymentStatusBean paymentStatusBean =
+                    forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
+
+            model.addAttribute("forwardPayment", forwardPayment);
+            model.addAttribute("paymentStatusBean", paymentStatusBean);
+        } catch (final Exception e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+        }
+
+        return jspPage(VERIFY_FORWARD_PAYMENT_URI);
+    }
+
+    private static final String REGISTER_PAYMENT_URI = "/registerpayment";
+    public static final String REGISTER_PAYMENT_URL = CONTROLLER_URL + REGISTER_PAYMENT_URI;
+
+    @RequestMapping(value = REGISTER_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.POST)
+    public String registerPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
+            @RequestParam("justification") final String justification, final Model model) {
+        try {
+            ForwardPaymentStatusBean paymentStatusBean =
+                    forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
+
+            if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
+                addErrorMessage(Constants.bundle("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform"),
+                        model);
+                return String.format("redirect:%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId());
+            }
+
+            final IForwardPaymentImplementation implementation = forwardPayment.getForwardPaymentConfiguration().implementation();
+
+            implementation.postProcessPayment(forwardPayment, justification);
+
+            return String.format("redirect:%s/%s", VIEW_URL, forwardPayment.getExternalId());
+        } catch (final Exception e) {
+            e.printStackTrace();
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return String.format("redirect:%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId());
+        }
     }
 
     public static final String EXPORT_URI = "/export";
@@ -95,7 +145,6 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     @RequestMapping(value = EXPORT_URI, method = RequestMethod.GET)
     @ResponseBody
     public void export() {
-
     }
 
     private String jspPage(final String mapping) {

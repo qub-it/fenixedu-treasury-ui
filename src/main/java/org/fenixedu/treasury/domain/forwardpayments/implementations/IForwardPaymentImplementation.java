@@ -1,6 +1,7 @@
 package org.fenixedu.treasury.domain.forwardpayments.implementations;
 
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 
 public interface IForwardPaymentImplementation {
@@ -13,4 +14,8 @@ public interface IForwardPaymentImplementation {
     
     public String getLogosJspPage();
 
+    public ForwardPaymentStatusBean paymentStatus(final ForwardPayment forwardPayment);
+
+    public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification);
+    
 }

@@ -169,6 +169,7 @@ ${portal.angularToolkit()}
         </h3>
     </div>
     <div class="panel-body">
+    
 		<div class="alert alert-warning" role="alert">
 			<h5>
 				<spring:message code="label.ForwardPaymentController.debitEntries.confirm.and.pay" />
@@ -257,14 +258,24 @@ ${portal.angularToolkit()}
                 </c:forEach>
             </tbody>
         </table>
-        <div class="panel-footer">
-	        <p align="right">
-	            <b><spring:message
-	                    code="label.document.managepayments.settlementnote.paymentTotal" /></b>:
-	            ${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat ) }
-	        </p>
-        </div>
+        
+    	<c:if test="${paymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage}">
+			<div class="alert alert-warning" role="alert">
+				<h5>
+					<strong>
+						<spring:message code="label.ForwardPaymentController.paymentInStateOfPostPaymentAndPayedOnPlatformWarning.message" />
+					</strong>
+				</h5>
+			</div>
+    	</c:if>
+        
     </div>
+	<div class="panel-footer">
+		 <p align="right">
+			<strong><spring:message code="label.document.managepayments.settlementnote.paymentTotal" /></strong>:
+			${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( settlementNoteBean.debtAmountWithVat ) }
+		 </p>
+	</div>
 </div>
 
 <form id='summaryForm' name='form' method="post" class="form-horizontal"
