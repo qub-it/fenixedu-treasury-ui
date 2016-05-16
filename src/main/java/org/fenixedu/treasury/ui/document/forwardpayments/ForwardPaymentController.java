@@ -209,13 +209,13 @@ public class ForwardPaymentController extends TreasuryBaseController {
         setSettlementNoteBean(bean, model);
         
         boolean hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage = false;
-        for (int i = 0; i < bean.getDebitEntries().size(); i++) {
-            DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
-            if (debitEntryBean.isIncluded()) {
-                hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage |=
-                        hasForwardPaymentInStateOfPostPaymentAndPayedOnPlatform(debitEntryBean.getDebitEntry());
-            }
-        }
+//        for (int i = 0; i < bean.getDebitEntries().size(); i++) {
+//            DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
+//            if (debitEntryBean.isIncluded()) {
+//                hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage |=
+//                        hasForwardPaymentInStateOfPostPaymentAndPayedOnPlatform(debitEntryBean.getDebitEntry());
+//            }
+//        }
         
         model.addAttribute("paymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage",
                 hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage);
