@@ -210,6 +210,12 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public abstract LocalDate getTreasuryEventDate();
+    
+    public abstract String getDegreeCode();
+
+    public abstract String getDegreeName();
+    
+    public abstract String getExecutionYearName();
 
     @Atomic
     public void delete() {
