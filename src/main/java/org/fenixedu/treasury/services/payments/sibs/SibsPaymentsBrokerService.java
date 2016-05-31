@@ -53,6 +53,7 @@ Cartaxo         - A030 (Localidade do terminal)
  */
     //@formatter:on
 
+    public static final String ERROR_SIBS_PAYMENTS_BROKER_SERVICE_NO_PAYMENTS_TO_IMPORT = "error.SibsPaymentsBrokerService.no.payments.to.import";
     private static final String PAY_PREAMBLE = "E034";
 
     public static String getPaymentsFromBroker(final FinantialInstitution finantialInstitution, final LocalDate fromDate,
@@ -174,7 +175,7 @@ Cartaxo         - A030 (Localidade do terminal)
                 new SibsIncommingPaymentFileFooter(transactionsTotalAmount, BigDecimal.ZERO);
 
         if (detailLines.isEmpty()) {
-            throw new TreasuryDomainException("error.SibsPaymentsBrokerService.no.payments.to.import");
+            throw new TreasuryDomainException(ERROR_SIBS_PAYMENTS_BROKER_SERVICE_NO_PAYMENTS_TO_IMPORT);
         }
 
         return new SibsIncommingPaymentFile(String.format("SIBS_%s.inp", new DateTime().toString("yyyyMMddHHmmss")), header,

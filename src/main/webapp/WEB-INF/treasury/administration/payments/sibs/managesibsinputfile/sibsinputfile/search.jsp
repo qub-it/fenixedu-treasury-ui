@@ -57,13 +57,16 @@ ${portal.toolkit()}
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create"><spring:message
             code="label.event.create" /></a> &nbsp;|&nbsp;
-<%--             
+	
+	<c:if test="${brokerActive}">
 	<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/sibspaymentsbroker"><spring:message
             code="label.SibsPaymentsBroker.import" /></a>
---%>            
+	</c:if>
+	
 </div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 

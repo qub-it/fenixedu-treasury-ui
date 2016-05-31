@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
@@ -96,6 +97,10 @@ public class SibsInputFileController extends TreasuryBaseController {
         List<SibsInputFile> searchsibsinputfileResultsDataSet = filterSearchSibsInputFile(whenProcessedBySibs);
 
         model.addAttribute("searchsibsinputfileResultsDataSet", searchsibsinputfileResultsDataSet);
+        
+        final Boolean brokerActive = FinantialInstitution.findAll().map(f -> f.getSibsConfiguration().isPaymentsBrokerActive()).reduce((a , c) -> a || c).orElse(Boolean.FALSE); 
+        model.addAttribute("brokerActive", brokerActive);
+
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search";
     }
 

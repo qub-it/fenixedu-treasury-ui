@@ -65,7 +65,12 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
             final RedirectAttributes redirectAttributes,
             final HttpServletResponse response) {
 
+        
         try {
+            if(!paymentCodePool.getFinantialInstitution().getSibsConfiguration().isPaymentsBrokerActive()) {
+                throw new TreasuryDomainException("error.SibsPaymentsBroker.broker.inactive");
+            }
+            
             assertUserIsFrontOfficeMember(paymentCodePool.getFinantialInstitution(), model);
 
             if(FORM_ACTION_DEBUG.equals(formAction)) {

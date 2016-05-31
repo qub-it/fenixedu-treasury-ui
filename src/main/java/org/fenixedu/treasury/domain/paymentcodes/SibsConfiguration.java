@@ -70,6 +70,10 @@ public class SibsConfiguration extends SibsConfiguration_Base {
         
         checkRules();
     }
+    
+    public boolean isPaymentsBrokerActive() {
+        return !Strings.isNullOrEmpty(getSibsPaymentsBrokerUrl()) && !Strings.isNullOrEmpty(getSibsPaymentsBrokerSharedKey());
+    }
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
