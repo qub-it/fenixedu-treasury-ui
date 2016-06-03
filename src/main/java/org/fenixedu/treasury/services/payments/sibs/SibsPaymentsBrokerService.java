@@ -4,12 +4,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
-import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
-import javax.net.ssl.HttpsURLConnection;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -62,28 +67,21 @@ Cartaxo         - A030 (Localidade do terminal)
             throw new TreasuryDomainException("error.SibsPaymentsBrokerService.not.active");
         }
 
-        try {
-            final URL url = new URL(invocationUrl(finantialInstitution, fromDate, toDate));
-            final HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+        final String url = finantialInstitution.getSibsConfiguration().getSibsPaymentsBrokerUrl();
+        final String key = finantialInstitution.getSibsConfiguration().getSibsPaymentsBrokerSharedKey();
+        final String dtInicio = fromDate.toString("yyyy-MM-dd");
+        final String dtFim = toDate.toString("yyyy-MM-dd");
 
-            connection.setRequestMethod("GET");
-            connection.setUseCaches(false);
-            connection.setDoOutput(false);
+        final Client client = ClientBuilder.newClient();
+        final WebTarget target = client.target(url);
+        MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
+        formData.add("secret", key);
+        formData.add("dt_inicio", dtInicio);
+        formData.add("dt_fim", dtFim);
+        Response response = target.request().post(Entity.form(formData));
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            String strResult = "";
-            String strLine;
-            while ((strLine = in.readLine()) != null) {
-                strResult = strResult + strLine;
-            }
-            in.close();
-
-            return strResult;
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new TreasuryDomainException(e, "error.SibsPaymentsBrokerService.error.in.communication");
-        }
+        String strResult = response.readEntity(String.class);
+        return strResult;
     }
 
     public static SibsIncommingPaymentFile readPaymentsFromBroker(final FinantialInstitution finantialInstitution,
@@ -218,15 +216,6 @@ Cartaxo         - A030 (Localidade do terminal)
 
     public static boolean isSibsPaymentsBrokerActive(final FinantialInstitution finantialInstitution) {
         return !Strings.isNullOrEmpty(finantialInstitution.getSibsConfiguration().getSibsPaymentsBrokerUrl());
-    }
-
-    private static String invocationUrl(final FinantialInstitution finantialInstitution, final LocalDate fromDate,
-            final LocalDate toDate) {
-        final String url = finantialInstitution.getSibsConfiguration().getSibsPaymentsBrokerUrl();
-        final String key = finantialInstitution.getSibsConfiguration().getSibsPaymentsBrokerSharedKey();
-        final String dtInicio = fromDate.toString("yyyy-MM-dd");
-        final String dtFim = toDate.toString("yyyy-MM-dd");
-        return String.format("%s?secret=%s&dt_inicio=%s&dt_fim=%s", url, key, dtInicio, dtFim);
     }
 
     private static class SibsPaymentEntry {
