@@ -307,12 +307,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     @Atomic
-    public void anullDocument(boolean freeEntries, String anulledReason) {
+    protected void anullDocument(boolean freeEntries, String anulledReason) {
         anullDocument(freeEntries, anulledReason, true);
     }
 
     @Atomic
-    public void anullDocument(boolean freeEntries, String anulledReason, boolean markDocumentToExport) {
+    protected void anullDocument(boolean freeEntries, String anulledReason, boolean markDocumentToExport) {
         if (this.isPreparing() || this.isClosed()) {
             if (Boolean.TRUE.booleanValue() == this.getDocumentNumberSeries().getSeries().getCertificated()) {
                 throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");

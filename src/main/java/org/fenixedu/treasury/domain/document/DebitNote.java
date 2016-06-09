@@ -222,7 +222,7 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Override
-    public void anullDocument(boolean freeEntries, String reason) {
+    protected void anullDocument(boolean freeEntries, String reason) {
         if (this.hasValidSettlementEntries()) {
             throw new TreasuryDomainException("error.DebitNote.cannot.delete.has.settlemententries");
         }
@@ -277,6 +277,11 @@ public class DebitNote extends DebitNote_Base {
                 //Clear the InterestRate for DebitEntry
                 for (DebitEntry debitEntry : this.getDebitEntriesSet()) {
                     debitEntry.clearInterestRate();
+                    
+                    // Also remove from treasury event
+                    if(debitEntry.getTreasuryEvent() != null) {
+                        debitEntry.annulOnEvent();
+                    }
                 }
 
                 creditNote.closeDocument();

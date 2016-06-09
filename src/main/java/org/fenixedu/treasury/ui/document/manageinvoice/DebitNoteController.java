@@ -456,16 +456,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 }
             }
 
-            if (debitNote.getDocumentNumberSeries().getSeries().getCertificated()
-                    || debitNote.getDocumentNumberSeries().getSeries().getLegacy()) {
-                debitNote.anullDebitNoteWithCreditNote(anullReason, false);
-            } else {
-//                if (TreasuryAccessControl.getInstance().isManager()) {
-//                    debitNote.changeState(FinantialDocumentStateType.ANNULED, anullReason);
-//                } else {
-                debitNote.anullDebitNoteWithCreditNote(anullReason, false);
-//                }
-            }
+            debitNote.anullDebitNoteWithCreditNote(anullReason, false);
 
             addInfoMessage(
                     BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.anulled.sucess"),
