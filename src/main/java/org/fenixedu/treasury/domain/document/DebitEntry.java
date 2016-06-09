@@ -123,6 +123,15 @@ public class DebitEntry extends DebitEntry_Base {
         }
     };
 
+    public static Comparator<DebitEntry> COMPARE_BY_EXTERNAL_ID = new Comparator<DebitEntry>() {
+
+        @Override
+        public int compare(final DebitEntry o1, final DebitEntry o2) {
+            return o1.getExternalId().compareTo(o2.getExternalId());
+        }
+
+    };
+
     protected DebitEntry(final DebitNote debitNote, final DebtAccount debtAccount, final TreasuryEvent treasuryEvent,
             final Vat vat, final BigDecimal amount, final LocalDate dueDate, final Map<String, String> propertiesMap,
             final Product product, final String description, final BigDecimal quantity, final InterestRate interestRate,

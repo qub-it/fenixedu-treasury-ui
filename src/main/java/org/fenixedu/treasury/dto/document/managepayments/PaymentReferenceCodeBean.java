@@ -69,25 +69,23 @@ public class PaymentReferenceCodeBean implements IBean {
 
     public PaymentReferenceCodeBean(final DebtAccount debtAccount) {
         this.debtAccount = debtAccount;
-        
-        List<PaymentCodePool> activePools =
-                debtAccount.getFinantialInstitution().getPaymentCodePoolsSet().stream()
-                        .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
+
+        List<PaymentCodePool> activePools = debtAccount.getFinantialInstitution().getPaymentCodePoolsSet().stream()
+                .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
         setPaymentCodePoolDataSource(activePools);
-        
+
     }
 
     public void updateAmountOnSelectedDebitEntries() {
-        this.paymentAmount = this.selectedDebitEntries.stream().map(e -> e.getOpenAmount()).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+        this.paymentAmount =
+                this.selectedDebitEntries.stream().map(e -> e.getOpenAmount()).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
     }
 
     public List<DebitEntry> getOpenDebitEntries() {
-        return DebitEntry
-                .find(debtAccount)
-                .filter(x -> x.getFinantialDocument() != null && x.getFinantialDocument().isClosed()
-                        && Constants.isPositive(x.getOpenAmount())).sorted(MultipleEntriesPaymentCode.COMPARE_BY_EXTERNAL_ID).collect(Collectors.<DebitEntry> toList());
+        return DebitEntry.find(debtAccount).filter(x -> !x.isAnnulled() && Constants.isPositive(x.getOpenAmount()))
+                .sorted(DebitEntry.COMPARE_BY_EXTERNAL_ID).collect(Collectors.<DebitEntry> toList());
     }
-    
+
     public PaymentCodePool getPaymentCodePool() {
         return paymentCodePool;
     }
@@ -204,13 +202,13 @@ public class PaymentReferenceCodeBean implements IBean {
     public void setUseCustomPaymentAmount(boolean useCustomPaymentAmount) {
         this.useCustomPaymentAmount = useCustomPaymentAmount;
     }
-    
+
     public List<DebitEntry> getSelectedDebitEntries() {
         return selectedDebitEntries;
     }
-    
+
     public void setSelectedDebitEntries(List<DebitEntry> selectedDebitEntries) {
         this.selectedDebitEntries = selectedDebitEntries;
     }
-    
+
 }

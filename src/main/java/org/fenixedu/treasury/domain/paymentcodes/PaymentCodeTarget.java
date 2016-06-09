@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
@@ -13,6 +14,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
@@ -22,6 +24,9 @@ import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -38,8 +43,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
 
     public String getTargetPayorDescription() {
         if (getDebtAccount() != null) {
-            return getDebtAccount().getCustomer().getBusinessIdentification() + "-"
-                    + getDebtAccount().getCustomer().getName();
+            return getDebtAccount().getCustomer().getBusinessIdentification() + "-" + getDebtAccount().getCustomer().getName();
         }
         return "----";
     }
@@ -57,6 +61,9 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
     @Atomic
     protected SettlementNote internalProcessPayment(final User user, final BigDecimal amount, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments, Set<InvoiceEntry> invoiceEntriesToPay) {
+
+        final TreeSet<InvoiceEntry> sortedInvoiceEntriesToPay = Sets.newTreeSet(InvoiceEntry.COMPARE_BY_AMOUNT_AND_DUE_DATE);
+        sortedInvoiceEntriesToPay.addAll(invoiceEntriesToPay);
 
         //Process the payment of pending invoiceEntries
         //1. Find the InvoiceEntries
@@ -82,7 +89,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         //1. Find the InvoiceEntries
         //2. Create the SEttlementEntries and the SEttlementNote
         //######################################
-        for (InvoiceEntry entry : invoiceEntriesToPay) {
+        for (InvoiceEntry entry : sortedInvoiceEntriesToPay) {
             if (availableAmount.compareTo(BigDecimal.ZERO) <= 0) {
                 break;
             }
@@ -91,6 +98,20 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
             if (amountToPay.compareTo(BigDecimal.ZERO) > 0) {
                 if (entry.isDebitNoteEntry()) {
                     DebitEntry debitEntry = (DebitEntry) entry;
+
+                    if (debitEntry.getFinantialDocument() == null) {
+                        final DocumentNumberSeries documentNumberSeries =
+                                DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                        getPaymentReferenceCode().getPaymentCodePool().getFinantialInstitution()).get();
+                        final DebitNote debitNote =
+                                DebitNote.create(debitEntry.getDebtAccount(), documentNumberSeries, new DateTime());
+                        debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
+                    }
+
+                    if (debitEntry.getFinantialDocument().isPreparing()) {
+                        debitEntry.getFinantialDocument().closeDocument();
+                    }
+
                     //check if the amount to pay in the Debit Entry 
                     if (amountToPay.compareTo(availableAmount) > 0) {
                         amountToPay = availableAmount;
@@ -103,24 +124,21 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                         InterestRateBean calculateUndebitedInterestValue =
                                 debitEntry.calculateUndebitedInterestValue(whenRegistered.toLocalDate());
                         if (Constants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
-                            DebitEntry interestDebitEntry =
-                                    debitEntry.createInterestRateDebitEntry(calculateUndebitedInterestValue, whenRegistered,
-                                            Optional.<DebitNote> empty());
+                            DebitEntry interestDebitEntry = debitEntry.createInterestRateDebitEntry(
+                                    calculateUndebitedInterestValue, whenRegistered, Optional.<DebitNote> empty());
                             interestRateEntries.add(interestDebitEntry);
                         }
                     }
 
-                    SettlementEntry newSettlementEntry =
-                            SettlementEntry.create(entry, settlementNote, amountToPay, entry.getDescription(), whenRegistered,
-                                    true);
+                    SettlementEntry newSettlementEntry = SettlementEntry.create(entry, settlementNote, amountToPay,
+                            entry.getDescription(), whenRegistered, true);
 
                     //Update the amount to Pay
                     availableAmount = availableAmount.subtract(amountToPay);
 
                 } else if (entry.isCreditNoteEntry()) {
-                    SettlementEntry newSettlementEntry =
-                            SettlementEntry.create(entry, settlementNote, entry.getOpenAmount(), entry.getDescription(),
-                                    whenRegistered, true);
+                    SettlementEntry newSettlementEntry = SettlementEntry.create(entry, settlementNote, entry.getOpenAmount(),
+                            entry.getDescription(), whenRegistered, true);
                     //update the amount to Pay
                     availableAmount = availableAmount.add(amountToPay);
                 }
@@ -156,9 +174,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                         amountToPay = availableAmount;
                     }
 
-                    SettlementEntry newSettlementEntry =
-                            SettlementEntry.create(interestEntry, settlementNote, amountToPay, interestEntry.getDescription(),
-                                    whenRegistered, true);
+                    SettlementEntry newSettlementEntry = SettlementEntry.create(interestEntry, settlementNote, amountToPay,
+                            interestEntry.getDescription(), whenRegistered, true);
                     //Update the amount to Pay
                     availableAmount = availableAmount.subtract(amountToPay);
                 }
@@ -283,16 +300,16 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
             settlementNote.createAdvancedPaymentCreditNote(availableAmount,
                     BundleUtil.getString(Constants.BUNDLE, "label.PaymentCodeTarget.advancedpayment") + comments + "-"
-                            + sibsTransactionId, sibsTransactionId);
+                            + sibsTransactionId,
+                    sibsTransactionId);
         }
 
         //######################################
         //5. Close the SettlementNote
         //######################################
 
-        PaymentEntry paymentEntry =
-                PaymentEntry.create(this.getPaymentReferenceCode().getPaymentCodePool().getPaymentMethod(), settlementNote,
-                        amount, null);
+        PaymentEntry paymentEntry = PaymentEntry.create(this.getPaymentReferenceCode().getPaymentCodePool().getPaymentMethod(),
+                settlementNote, amount, null);
         settlementNote.closeDocument();
 
         //######################################

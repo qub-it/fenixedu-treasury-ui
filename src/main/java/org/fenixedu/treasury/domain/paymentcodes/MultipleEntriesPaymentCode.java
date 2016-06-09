@@ -94,7 +94,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
 
             if (activePaymentCodesOnDebitEntryCount > MAX_PAYMENT_CODES_FOR_DEBIT_ENTRY) {
                 throw new TreasuryDomainException("error.MultipleEntriesPaymentCode.debit.entry.with.active.payment.code",
-                        debitEntry.getDescription(), debitEntry.getFinantialDocument().getUiDocumentNumber());
+                        debitEntry.getDescription());
             }
         }
     }
@@ -122,23 +122,13 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     public SettlementNote processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments) {
 
-        Set<InvoiceEntry> invoiceEntriesToPay = this.getInvoiceEntriesSet().stream()
-                .sorted((x, y) -> y.getOpenAmount().compareTo(x.getOpenAmount())).collect(Collectors.toSet());
+        Set<InvoiceEntry> invoiceEntriesToPay = this.getInvoiceEntriesSet();
 
         return internalProcessPayment(person, amountToPay, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
     }
 
-    public static Comparator<DebitEntry> COMPARE_BY_EXTERNAL_ID = new Comparator<DebitEntry>() {
-
-        @Override
-        public int compare(final DebitEntry o1, final DebitEntry o2) {
-            return o1.getExternalId().compareTo(o2.getExternalId());
-        }
-
-    };
-
     public TreeSet<DebitEntry> getOrderedInvoiceEntries() {
-        final TreeSet<DebitEntry> result = new TreeSet<DebitEntry>(COMPARE_BY_EXTERNAL_ID);
+        final TreeSet<DebitEntry> result = new TreeSet<DebitEntry>(DebitEntry.COMPARE_BY_EXTERNAL_ID);
         result.addAll(getInvoiceEntriesSet().stream().map(DebitEntry.class::cast).collect(Collectors.<DebitEntry> toSet()));
 
         return result;

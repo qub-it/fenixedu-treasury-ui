@@ -64,6 +64,26 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
+    
+    public static final Comparator<InvoiceEntry> COMPARE_BY_AMOUNT_AND_DUE_DATE = new Comparator<InvoiceEntry>() {
+
+        @Override
+        public int compare(final InvoiceEntry o1, final InvoiceEntry o2) {
+            int c = - o1.getOpenAmount().compareTo(o2.getOpenAmount());
+            
+            if(c != 0) {
+                return c;
+            }
+            
+            c = o1.getDueDate().compareTo(o2.getDueDate());
+            
+            if(c != 0) {
+                return c;
+            }
+            
+            return o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
