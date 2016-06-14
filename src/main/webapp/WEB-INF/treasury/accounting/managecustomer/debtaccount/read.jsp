@@ -760,7 +760,7 @@ ${portal.angularToolkit()}
                         	<c:out value='${target.dueDate.toString("YYYY-MM-dd")}' />
                         </datatables:column>
                         	
-                        <datatables:column cssStyle="width:65%">
+                        <datatables:column cssStyle="width:55%">
 	                        <datatables:columnHead>
 	                            <spring:message code="label.InvoiceEntry.description" />
 	                    	</datatables:columnHead>
@@ -804,6 +804,12 @@ ${portal.angularToolkit()}
 
 						</datatables:column>
 						
+						<datatables:column cssStyle="width:10%">
+							<a href="${pageContext.request.contextPath}<%= org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode.PaymentReferenceCodeController.READ_URL %>/${target.paymentReferenceCode.externalId}" 
+								target="_blank" class="btn btn-default">
+								<spring:message code="label.view" />
+							</a>
+						</datatables:column>
 					</datatables:table>                
                     <script>
 						createDataTables(

@@ -211,7 +211,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
         
         final Set<MultipleEntriesPaymentCode> result = Sets.newHashSet();
         for(final MultipleEntriesPaymentCode code : paymentCodes) {
-            if(!Sets.difference(code.getInvoiceEntriesSet(), debitEntries).isEmpty()) {
+            if(!Sets.symmetricDifference(code.getInvoiceEntriesSet(), debitEntries).isEmpty()) {
                 continue;
             }
             
