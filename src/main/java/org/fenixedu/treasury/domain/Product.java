@@ -49,6 +49,7 @@ import pt.ist.fenixframework.Atomic;
 
 public class Product extends Product_Base {
 
+    private static final int MAX_CODE_LENGTH = 20;
     public static final Comparator<Product> COMPARE_BY_NAME = new Comparator<Product>() {
 
         @Override
@@ -105,6 +106,11 @@ public class Product extends Product_Base {
         if (LocalizedStringUtil.isTrimmedEmpty(getUnitOfMeasure())) {
             throw new TreasuryDomainException("error.Product.unitOfMeasure.required");
         }
+        
+        if(getCode().length() > MAX_CODE_LENGTH) {
+            throw new TreasuryDomainException("error.Product.code.size.exceded");
+        }
+        
     }
 
     public boolean isActive() {
