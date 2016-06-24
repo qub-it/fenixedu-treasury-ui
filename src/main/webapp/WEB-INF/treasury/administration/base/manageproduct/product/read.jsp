@@ -149,6 +149,14 @@ ${portal.toolkit()}
 								<spring:message code="label.false" />
 							</c:if></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.Product.legacy" /></th>
+						<td><c:if test="${product.legacy}">
+								<spring:message code="label.true" />
+							</c:if> <c:if test="${not product.legacy}">
+								<spring:message code="label.false" />
+							</c:if></td>
+					</tr>
 				</tbody>
 			</table>
 		</form>

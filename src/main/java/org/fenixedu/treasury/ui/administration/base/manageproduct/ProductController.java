@@ -148,18 +148,21 @@ public class ProductController extends TreasuryBaseController {
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "productGroup", required = false) ProductGroup productGroup, @RequestParam(
-            value = "code", required = false) String code, @RequestParam(value = "name", required = false) LocalizedString name,
-            @RequestParam(value = "unitofmeasure", required = false) LocalizedString unitOfMeasure, @RequestParam(
-                    value = "active", required = false) boolean active, @RequestParam(value = "vatExemptionReason",
-                    required = false) VatExemptionReason vatExemptionReason,
-            @RequestParam(value = "vattype", required = false) VatType vatType, @RequestParam(value = "finantialInstitution",
+            value = "code", required = false) String code, 
+            @RequestParam(value = "name", required = false) LocalizedString name,
+            @RequestParam(value = "unitofmeasure", required = false) LocalizedString unitOfMeasure, 
+            @RequestParam(value = "active", required = false) boolean active, 
+            @RequestParam(value = "legacy", required = false) boolean legacy,
+            @RequestParam(value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason,
+            @RequestParam(value = "vattype", required = false) VatType vatType, 
+            @RequestParam(value = "finantialInstitution",
                     required = false) List<FinantialInstitution> finantialInstitutions, Model model,
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsBackOfficeMember(model);
 
             Product product =
-                    createProduct(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions,
+                    createProduct(productGroup, code, name, unitOfMeasure, active, legacy, vatType, finantialInstitutions,
                             vatExemptionReason);
 
             model.addAttribute("product", product);
@@ -169,15 +172,16 @@ public class ProductController extends TreasuryBaseController {
         } catch (Exception tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
         }
+        
         return create(model);
     }
 
     @Atomic
     public Product createProduct(ProductGroup productGroup, String code, LocalizedString name, LocalizedString unitOfMeasure,
-            boolean active, VatType vatType, List<FinantialInstitution> finantialInstitutions,
+            boolean active, final boolean legacy, VatType vatType, List<FinantialInstitution> finantialInstitutions,
             VatExemptionReason vatExemptionReason) {
         Product product =
-                Product.create(productGroup, code, name, unitOfMeasure, active, vatType, finantialInstitutions,
+                Product.create(productGroup, code, name, unitOfMeasure, active, legacy, vatType, finantialInstitutions,
                         vatExemptionReason);
         return product;
     }
@@ -195,19 +199,22 @@ public class ProductController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@RequestParam(value = "productGroup", required = false) ProductGroup productGroup,
-            @PathVariable("oid") Product product, @RequestParam(value = "code", required = false) String code, @RequestParam(
-                    value = "name", required = false) LocalizedString name, @RequestParam(value = "unitofmeasure",
-                    required = false) LocalizedString unitOfMeasure,
-            @RequestParam(value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, @RequestParam(
-                    value = "active", required = false) boolean active,
-            @RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(value = "finantialInstitution",
-                    required = false) List<FinantialInstitution> finantialInstitutions, Model model,
+            @PathVariable("oid") Product product, 
+            @RequestParam(value = "code", required = false) String code, 
+            @RequestParam(value = "name", required = false) LocalizedString name, 
+            @RequestParam(value = "unitofmeasure", required = false) LocalizedString unitOfMeasure,
+            @RequestParam(value = "vatExemptionReason", required = false) VatExemptionReason vatExemptionReason, 
+            @RequestParam(value = "active", required = false) boolean active,
+            @RequestParam(value = "legacy", required = false) boolean legacy,
+            @RequestParam(value = "vatType", required = false) VatType vatType, 
+            @RequestParam(value = "finantialInstitution", required = false) List<FinantialInstitution> finantialInstitutions, 
+            Model model,
             RedirectAttributes redirectAttributes) {
         setProduct(product, model);
         try {
             assertUserIsBackOfficeMember(model);
 
-            updateProduct(productGroup, code, name, unitOfMeasure, active, finantialInstitutions, vatType, vatExemptionReason,
+            updateProduct(productGroup, code, name, unitOfMeasure, active, legacy, finantialInstitutions, vatType, vatExemptionReason,
                     model);
 
             return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
@@ -239,9 +246,9 @@ public class ProductController extends TreasuryBaseController {
 
     @Atomic
     public void updateProduct(ProductGroup productGroup, String code, LocalizedString name, LocalizedString unitOfMeasure,
-            boolean active, List<FinantialInstitution> finantialInstitutions, VatType vatType,
+            boolean active, boolean legacy, List<FinantialInstitution> finantialInstitutions, VatType vatType,
             VatExemptionReason vatExemptionReason, Model m) {
-        getProduct(m).edit(code, name, unitOfMeasure, active, vatType, productGroup, finantialInstitutions, vatExemptionReason);
+        getProduct(m).edit(code, name, unitOfMeasure, active, legacy, vatType, productGroup, finantialInstitutions, vatExemptionReason);
     }
 
 }

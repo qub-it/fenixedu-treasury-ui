@@ -176,7 +176,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input class="col-sm-6" type="text" value="<c:out value='${debtAccount.finantialInstitution.name}'/>" disabled />
+                    <input class="" type="text" value="<c:out value='${debtAccount.finantialInstitution.name}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">
@@ -185,7 +185,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input class="col-sm-6" type="text"
+                    <input class="" type="text"
                         value="<c:out value='${debtAccount.customer.businessIdentification} - ${debtAccount.customer.name}'/>"
                         disabled />
                 </div>
@@ -196,7 +196,7 @@ ${portal.angularToolkit()}
                     <spring:message code="label.PaymentReferenceCode.paymentCodePool" />
                 </div>
 
-                <div class="col-sm-4">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select id="paymentReferenceCode_paymentCodePool" name="paymentcodepool" on-select="onPoolChange($item, $model)" ng-model="$parent.object.paymentCodePool"
                         theme="bootstrap" ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices
@@ -214,7 +214,7 @@ ${portal.angularToolkit()}
                         <div class="input-group-addon">
                             <c:out value="${debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input  class="col-sm-4" type="text" ng-model="object.paymentAmount" ng-readonly="object.useCustomPaymentAmount == false" />
+                        <input  class="" type="text" ng-model="object.paymentAmount" ng-readonly="object.useCustomPaymentAmount == false" />
                     </div>
                 </div>
             </div>

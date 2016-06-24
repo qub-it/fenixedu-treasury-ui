@@ -121,8 +121,24 @@ ${portal.toolkit()}
                         <option value="false"><spring:message code="label.no" /></option>
 					</select>
 					<script>
-		$("#product_active").val('<c:out value='${not empty param.active ? param.active : product.active }'/>');
-	</script>
+						$("#product_active").select2().select2('val', '<c:out value='${not empty param.active ? param.active : product.active }'/>');
+				</script>
+				</div>
+			</div>
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.Product.legacy" />
+				</div>
+
+				<div class="col-sm-2">
+					<select id="product_legacy" name="legacy" class="form-control">
+						<option value="true"><spring:message code="label.yes" /></option>
+                        <option value="false"><spring:message code="label.no" /></option>
+					</select>
+					<script>
+						$("#product_legacy").select2().select2('val', '<c:out value='${not empty param.legacy ? param.legacy : product.legacy }'/>');
+				</script>
 				</div>
 			</div>
 

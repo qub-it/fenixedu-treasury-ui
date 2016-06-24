@@ -95,6 +95,7 @@ class Product {
 	LocalizedString name;
 	LocalizedString unitOfMeasure;
 	boolean active;
+	boolean legacy;
 }
 
 class Currency {

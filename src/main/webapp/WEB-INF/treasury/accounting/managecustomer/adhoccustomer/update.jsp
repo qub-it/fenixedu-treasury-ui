@@ -135,7 +135,7 @@ ${portal.angularToolkit()}
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.Customer.customerType" />
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-10">
                     <ui-select id="adhocCustomer_customerType"
                         ng-model="$parent.object.customerType"
                         theme="bootstrap"> <ui-select-match allow-clear="true">
@@ -229,7 +229,7 @@ ${portal.angularToolkit()}
                     <spring:message
                         code="label.Series.finantialInstitution" />
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-10">
                     <ui-select id="adhocCustomer_finantialInstitutions"
                         ng-model="$parent.object.finantialInstitutions"
                         theme="bootstrap" ng-disabled="disabled"
