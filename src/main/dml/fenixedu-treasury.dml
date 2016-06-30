@@ -268,6 +268,10 @@ class document.FinantialDocumentEntry {
 			// This property has academic significance but  
 			// is meaningless in treasury scope			
 			boolean academicalActBlockingSuspension;
+			
+			// This property blocks academic acts
+			// if not payed
+			boolean blockAcademicActsOnDebt;
 	}
 		
 	class document.CreditEntry extends document.InvoiceEntry {

@@ -578,7 +578,14 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                 <datatables:columnHead>
                     <spring:message code="label.DebitEntry.description" />
                 </datatables:columnHead>
+                
                 <c:out value="${debitEntry.description}" />
+				<c:if test="${debitEntry.academicalActBlockingSuspension}">
+				<p><span class="label label-warning"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></span></p>
+				</c:if>
+				<c:if test="${debitEntry.blockAcademicActsOnDebt}">
+				<p><span class="label label-warning"><spring:message code="label.DebitEntry.blockAcademicActsOnDebt" /></span></p>
+				</c:if>
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>

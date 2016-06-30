@@ -210,6 +210,7 @@ public class DebitEntry extends DebitEntry_Base {
          * service method
          */
         setAcademicalActBlockingSuspension(false);
+        setBlockAcademicActsOnDebt(false);
 
         checkRules();
     }
@@ -383,6 +384,10 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isAcademicalActBlockingSuspension() {
         return getAcademicalActBlockingSuspension();
     }
+    
+    public boolean isBlockAcademicActsOnDebt() {
+        return getBlockAcademicActsOnDebt();
+    }
 
     public boolean exempt(final TreasuryExemption treasuryExemption, final BigDecimal amountWithVat) {
         if (treasuryExemption.getTreasuryEvent() != getTreasuryEvent()) {
@@ -509,6 +514,11 @@ public class DebitEntry extends DebitEntry_Base {
     @Atomic
     public void markAcademicalActBlockingSuspension() {
         setAcademicalActBlockingSuspension(true);
+    }
+    
+    @Atomic
+    public void markBlockAcademicActsOnDebt() {
+        setBlockAcademicActsOnDebt(true);
     }
 
     @Atomic

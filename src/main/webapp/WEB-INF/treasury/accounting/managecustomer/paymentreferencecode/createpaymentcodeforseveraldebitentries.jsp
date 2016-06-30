@@ -176,7 +176,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input class="" type="text" value="<c:out value='${debtAccount.finantialInstitution.name}'/>" disabled />
+                    <input class="col-sm-12" type="text" value="<c:out value='${debtAccount.finantialInstitution.name}'/>" disabled />
                 </div>
             </div>
             <div class="form-group row">
@@ -185,7 +185,7 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input class="" type="text"
+                    <input class="col-sm-12" type="text"
                         value="<c:out value='${debtAccount.customer.businessIdentification} - ${debtAccount.customer.name}'/>"
                         disabled />
                 </div>

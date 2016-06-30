@@ -489,8 +489,15 @@ ${portal.angularToolkit()}
                         <datatables:column>
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.description" />
+                                
                             </datatables:columnHead>
                             <p><c:out value="${pendingEntry.description}" /></p>
+							<c:if test="${pendingEntry.isDebitNoteEntry() && pendingEntry.academicalActBlockingSuspension }">
+							<p><span class="label label-warning"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></span></p>
+							</c:if>
+							<c:if test="${pendingEntry.isDebitNoteEntry() && pendingEntry.blockAcademicActsOnDebt }">
+							<p><span class="label label-warning"><spring:message code="label.DebitEntry.blockAcademicActsOnDebt" /></span></p>
+							</c:if>
                         </datatables:column>
                         <datatables:column cssStyle="width:10%;align:right">
                             <datatables:columnHead>
@@ -639,6 +646,12 @@ ${portal.angularToolkit()}
                                 <spring:message code="label.InvoiceEntry.description" />
                             </datatables:columnHead>
                             <p><c:out value="${entry.description}" /></p>
+							<c:if test="${entry.isDebitNoteEntry() && entry.academicalActBlockingSuspension}">
+							<p><span class="label label-warning"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></span></p>
+							</c:if>
+							<c:if test="${entry.isDebitNoteEntry() && entry.blockAcademicActsOnDebt}">
+							<p><span class="label label-warning"><spring:message code="label.DebitEntry.blockAcademicActsOnDebt" /></span></p>
+							</c:if>
                         </datatables:column>
                         <datatables:column cssStyle="width:10%;align:right">
                             <datatables:columnHead>

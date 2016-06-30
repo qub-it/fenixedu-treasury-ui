@@ -134,9 +134,9 @@ ${portal.toolkit()}
                 <tr>
                     <%--!!!  Field names here --%>
                     <th><spring:message
-                            code="label.TreasuryEvent.description" /></th>
-                    <th><spring:message
                             code="label.TreasuryEvent.treasuryEventDate" /></th>
+                    <th><spring:message
+                            code="label.TreasuryEvent.description" /></th>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -184,15 +184,15 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-			{ data: 'description' },
 			{ data: 'treasuryEventDate' },
+			{ data: 'description' },
 			{ data: 'actions',className:"all" }
-			
 		],
+		"order": [[ 0, 'desc' ]],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//54
-		               { "width": "54px", "targets": 1 } 
+		               { "width": "54px", "targets": 0 } 
 		             ],
 		"data" : searchtreasuryeventsDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

@@ -371,7 +371,28 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
                                 </ul>
                             </td>
                         </tr>
-                    
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></th>
+                            <td>
+								<c:if test="${debitEntry.academicalActBlockingSuspension}">
+									<spring:message code="label.true" />
+								</c:if>
+								<c:if test="${not debitEntry.academicalActBlockingSuspension}">
+									<spring:message code="label.false" />
+								</c:if>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.blockAcademicActsOnDebt" /></th>
+                            <td>
+								<c:if test="${debitEntry.blockAcademicActsOnDebt}">
+									<spring:message code="label.true" />
+								</c:if>
+								<c:if test="${not debitEntry.blockAcademicActsOnDebt}">
+									<spring:message code="label.false" />
+								</c:if>
+                            </td>
+                        </tr>
                 </tbody>
             </table>
 
