@@ -49,7 +49,7 @@ import pt.ist.fenixframework.Atomic;
 
 public class Product extends Product_Base {
 
-    private static final int MAX_CODE_LENGTH = 20;
+    public static final int MAX_CODE_LENGTH = 20;
     public static final Comparator<Product> COMPARE_BY_NAME = new Comparator<Product>() {
 
         @Override
