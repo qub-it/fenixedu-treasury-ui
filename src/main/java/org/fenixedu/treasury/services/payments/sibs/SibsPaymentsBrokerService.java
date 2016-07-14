@@ -78,6 +78,7 @@ Cartaxo         - A030 (Localidade do terminal)
         formData.add("secret", key);
         formData.add("dt_inicio", dtInicio);
         formData.add("dt_fim", dtFim);
+        formData.add("v", "2");
         Response response = target.request().post(Entity.form(formData));
 
         String strResult = response.readEntity(String.class);
@@ -94,13 +95,13 @@ Cartaxo         - A030 (Localidade do terminal)
         String strResult = getPaymentsFromBroker(finantialInstitution, fromDate, toDate, removeInexistentReferenceCodes,
                 removeAlreadyProcessedCodes);
 
-        if(strResult.indexOf("\"data\":\"") > -1) {
-            strResult = strResult.substring(0, strResult.indexOf("\"data\":\"") + 8) + strResult
-                    .substring(strResult.indexOf("\"data\":\"") + 8, strResult.lastIndexOf("\"")).replaceAll("\\\\\"", "\"")
-                    + "}";
-    
-            strResult = strResult.replaceAll("\"data\":\"\\[", "\"data\":[");
-        }
+//        if(strResult.indexOf("\"data\":\"") > -1) {
+//            strResult = strResult.substring(0, strResult.indexOf("\"data\":\"") + 8) + strResult
+//                    .substring(strResult.indexOf("\"data\":\"") + 8, strResult.lastIndexOf("\"")).replaceAll("\\\\\"", "\"")
+//                    .replaceAll("\"E034", "u001fE034") + "}";
+//    
+//            strResult = strResult.replaceAll("\"data\":\"\\[", "\"data\":[");
+//        }
         
         final SibsPayments sibsPayments = new GsonBuilder().create().fromJson(strResult, SibsPayments.class);
 
