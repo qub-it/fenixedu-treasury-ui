@@ -39,6 +39,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
@@ -257,12 +258,20 @@ public class DebitNote extends DebitNote_Base {
 
             //Clear the InterestRate for DebitEntry
             for (DebitEntry debitEntry : this.getDebitEntriesSet()) {
+                // Annul payment reference codes
+                for (final MultipleEntriesPaymentCode paymentCode : debitEntry.getPaymentCodesSet()) {
+                    if(paymentCode.getPaymentReferenceCode().isNew() || paymentCode.getPaymentReferenceCode().isUsed()) {
+                        paymentCode.getPaymentReferenceCode().anullPaymentReferenceCode();
+                    }
+                }
+
                 debitEntry.clearInterestRate();
 
                 // Also remove from treasury event
                 if (debitEntry.getTreasuryEvent() != null) {
                     debitEntry.annulOnEvent();
                 }
+
             }
 
             creditNote.closeDocument();
@@ -311,6 +320,12 @@ public class DebitNote extends DebitNote_Base {
                 // Also remove from treasury event
                 if (debitEntry.getTreasuryEvent() != null) {
                     debitEntry.annulOnEvent();
+                }
+                
+                for (final MultipleEntriesPaymentCode paymentCode : debitEntry.getPaymentCodesSet()) {
+                    if(paymentCode.getPaymentReferenceCode().isNew() || paymentCode.getPaymentReferenceCode().isUsed()) {
+                        paymentCode.getPaymentReferenceCode().anullPaymentReferenceCode();
+                    }
                 }
             }
             
