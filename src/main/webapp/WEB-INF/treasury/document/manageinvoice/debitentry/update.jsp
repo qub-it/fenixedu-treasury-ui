@@ -393,9 +393,31 @@ ${portal.angularToolkit()}
                 </div>
             </div>
 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.academicalActBlockingSuspension" />
+                </div>
+                <div class="col-sm-2">
+                    <select id="debitEntry_academicalActBlockingSuspension" name="academicalactblockingsuspension" class="form-control" 
+                    	ng-model="object.academicalActBlockingSuspension"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                    </select>
+                </div>
+            </div>
 
-
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.blockAcademicActsOnDebt" />
+                </div>
+                <div class="col-sm-2">
+                    <select id="debitEntry_blockAcademicActsOnDebt" name="blockacademicactsondebt" class="form-control" 
+                    	ng-model="object.blockAcademicActsOnDebt"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                    </select>
+                </div>
+            </div>
         </div>
+        
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
         </div>

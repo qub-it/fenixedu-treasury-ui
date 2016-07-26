@@ -66,8 +66,11 @@ public class DebitEntryBean implements IBean {
     private boolean applyInterests;
     private FixedTariffInterestRateBean interestRate;
 
+    private boolean academicalActBlockingSuspension;
+    boolean blockAcademicActsOnDebt;
+
     public Boolean isAmountValuesEditable() {
-        return this.getDebitEntry().getFinantialDocument() == null || this.getDebitEntry().getFinantialDocument().isPreparing();
+        return false;
     }
 
     public TreasuryEvent getTreasuryEvent() {
@@ -222,6 +225,8 @@ public class DebitEntryBean implements IBean {
         this.setQuantity(BigDecimal.ONE);
         this.setAmount(BigDecimal.ZERO);
         this.setInterestRate(new FixedTariffInterestRateBean());
+        this.setAcademicalActBlockingSuspension(false);
+        this.setBlockAcademicActsOnDebt(false);
     }
 
     public DebitEntryBean(DebitEntry debitEntry) {
@@ -255,6 +260,10 @@ public class DebitEntryBean implements IBean {
                 .sorted((x, y) -> (x.getTreasuryEventDate() != null ? x.getTreasuryEventDate() : new LocalDate()).compareTo((y
                         .getTreasuryEventDate() != null ? y.getTreasuryEventDate() : new LocalDate())))
                 .collect(Collectors.toList()));
+
+    
+        this.setAcademicalActBlockingSuspension(!debitEntry.isAcademicalActBlockingSuspension());
+        this.setBlockAcademicActsOnDebt(debitEntry.isBlockAcademicActsOnDebt());
     }
 
     public boolean isApplyInterests() {
@@ -289,6 +298,22 @@ public class DebitEntryBean implements IBean {
         this.debitEntry = debitEntry;
     }
 
+    public boolean isAcademicalActBlockingSuspension() {
+        return academicalActBlockingSuspension;
+    }
+    
+    public void setAcademicalActBlockingSuspension(boolean academicalActBlockingSuspension) {
+        this.academicalActBlockingSuspension = academicalActBlockingSuspension;
+    }
+    
+    public boolean isBlockAcademicActsOnDebt() {
+        return blockAcademicActsOnDebt;
+    }
+    
+    public void setBlockAcademicActsOnDebt(boolean blockAcademicActsOnDebt) {
+        this.blockAcademicActsOnDebt = blockAcademicActsOnDebt;
+    }
+    
     public void setTreasuryEventDataSource(List<TreasuryEvent> treasuryEventDataSource) {
         this.treasuryEventDataSource = treasuryEventDataSource.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();

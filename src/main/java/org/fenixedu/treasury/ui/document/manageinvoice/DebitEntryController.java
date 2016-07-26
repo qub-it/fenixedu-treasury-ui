@@ -382,14 +382,10 @@ public class DebitEntryController extends TreasuryBaseController {
             *  UpdateLogic here
             */
 
-            //if the document is closed, then we can only update interest and treasury event
-            if (debitEntry.getFinantialDocument() != null && !debitEntry.getFinantialDocument().isPreparing()) {
-                updateDebitEntry(debitEntry.getDescription(), debitEntry.getAmount(), debitEntry.getQuantity(),
-                        bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate(), bean.getDueDate(), model);
-            } else {
-                updateDebitEntry(bean.getDescription(), bean.getAmount(), bean.getQuantity(), bean.getTreasuryEvent(),
-                        bean.isApplyInterests(), bean.getInterestRate(), bean.getDueDate(), model);
-            }
+            //event if the document is in preparing, debts cannot change their amount
+            updateDebitEntry(debitEntry.getDescription(), bean.getTreasuryEvent(), bean.isApplyInterests(),
+                    bean.getInterestRate(), bean.getDueDate(), !bean.isAcademicalActBlockingSuspension(),
+                    bean.isBlockAcademicActsOnDebt(), model);
             /*Succes Update */
 
             if (debitEntry.getFinantialDocument() != null) {
@@ -418,9 +414,9 @@ public class DebitEntryController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateDebitEntry(java.lang.String description, java.math.BigDecimal amount, java.math.BigDecimal quantity,
-            final TreasuryEvent treasuryEvent, boolean applyInterests, FixedTariffInterestRateBean interestRateBean,
-            LocalDate dueDate, Model model) {
+    public void updateDebitEntry(java.lang.String description, final TreasuryEvent treasuryEvent, boolean applyInterests,
+            FixedTariffInterestRateBean interestRateBean, LocalDate dueDate, boolean academicalActBlockingSuspension,
+            boolean blockAcademicActsOnDebt, Model model) {
 
         // @formatter: off				
         /*
@@ -435,7 +431,8 @@ public class DebitEntryController extends TreasuryBaseController {
         // @formatter: on
 
         DebitEntry debitEntry = getDebitEntry(model);
-        debitEntry.edit(description, amount, quantity, treasuryEvent, dueDate);
+        debitEntry.edit(description, treasuryEvent, dueDate, academicalActBlockingSuspension, blockAcademicActsOnDebt);
+
         if (applyInterests) {
             if (debitEntry.getInterestRate() == null) {
                 InterestRate interestRate = InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestType(),
@@ -543,26 +540,25 @@ public class DebitEntryController extends TreasuryBaseController {
     private static final String _ANNUL_DEBIT_ENTRY_URI = "/read/{oid}/annuldebitentry";
 
     @RequestMapping(value = _ANNUL_DEBIT_ENTRY_URI, method = RequestMethod.POST)
-    public String annuldebitentry(
-            @PathVariable("oid") final DebitEntry debitEntry, 
-            @RequestParam(value="annulDebitEntryReason", required=false) final String annulDebitEntryReason,
-            final Model model,
-            final RedirectAttributes redirectAttributes) {
-        
+    public String annuldebitentry(@PathVariable("oid") final DebitEntry debitEntry,
+            @RequestParam(value = "annulDebitEntryReason", required = false) final String annulDebitEntryReason,
+            final Model model, final RedirectAttributes redirectAttributes) {
+
         try {
 
             assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
             if (debitEntry.getFinantialDocument() == null) {
 
                 debitEntry.annulDebitEntry(annulDebitEntryReason);
-                
-                return redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
+
+                return redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model,
+                        redirectAttributes);
             }
 
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-        
+
         return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
     }
 

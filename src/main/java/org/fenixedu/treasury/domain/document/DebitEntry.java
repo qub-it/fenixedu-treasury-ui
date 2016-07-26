@@ -288,7 +288,7 @@ public class DebitEntry extends DebitEntry_Base {
 
     @Override
     public BigDecimal getOpenAmount() {
-        if(isAnnulled()) {
+        if (isAnnulled()) {
             return BigDecimal.ZERO;
         }
 
@@ -347,7 +347,7 @@ public class DebitEntry extends DebitEntry_Base {
         if (product == null) {
             throw new TreasuryDomainException("error.SettlementNote.need.interest.product");
         }
-        
+
         FinantialInstitution finantialInstitution = this.getDebtAccount().getFinantialInstitution();
         Vat vat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, when).orElse(null);
 
@@ -367,16 +367,15 @@ public class DebitEntry extends DebitEntry_Base {
         return interestEntry;
     }
 
-    public void edit(String description, BigDecimal amount, BigDecimal quantity, final TreasuryEvent treasuryEvent,
-            LocalDate dueDate) {
+    public void edit(final String description, final TreasuryEvent treasuryEvent, LocalDate dueDate,
+            final boolean academicalActBlockingSuspension, final boolean blockAcademicActsOnDebt) {
 
         this.setDescription(description);
-        this.setAmount(amount);
-        this.setQuantity(quantity);
         this.setTreasuryEvent(treasuryEvent);
         this.setDueDate(dueDate);
 
-        recalculateAmountValues();
+        this.setAcademicalActBlockingSuspension(academicalActBlockingSuspension);
+        this.setBlockAcademicActsOnDebt(blockAcademicActsOnDebt);
 
         checkRules();
     }
@@ -384,7 +383,7 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isAcademicalActBlockingSuspension() {
         return getAcademicalActBlockingSuspension();
     }
-    
+
     public boolean isBlockAcademicActsOnDebt() {
         return getBlockAcademicActsOnDebt();
     }
@@ -515,7 +514,7 @@ public class DebitEntry extends DebitEntry_Base {
     public void markAcademicalActBlockingSuspension() {
         setAcademicalActBlockingSuspension(true);
     }
-    
+
     @Atomic
     public void markBlockAcademicActsOnDebt() {
         setBlockAcademicActsOnDebt(true);
@@ -740,20 +739,23 @@ public class DebitEntry extends DebitEntry_Base {
 
     @Atomic
     public void annulDebitEntry(final String reason) {
-        if(isAnnulled()) {
+        if (isAnnulled()) {
             throw new TreasuryDomainException("error.DebitEntry.cannot.annul.is.already.annuled");
         }
-        
+
         if (getFinantialDocument() != null) {
             throw new TreasuryDomainException("error.DebitEntry.cannot.annul.with.finantial.document");
         }
-        
-        if(Strings.isNullOrEmpty(reason)) {
+
+        if (Strings.isNullOrEmpty(reason)) {
             throw new TreasuryDomainException("error.DebitEntry.annul.debit.entry,requires.reason");
         }
 
-        final DebitNote debitNote = DebitNote.create(getDebtAccount(), DocumentNumberSeries.findUniqueDefault(
-                FinantialDocumentType.findForDebitNote(), getDebtAccount().getFinantialInstitution()).get(), new DateTime());
+        final DebitNote debitNote = DebitNote.create(getDebtAccount(),
+                DocumentNumberSeries
+                        .findUniqueDefault(FinantialDocumentType.findForDebitNote(), getDebtAccount().getFinantialInstitution())
+                        .get(),
+                new DateTime());
 
         setFinantialDocument(debitNote);
 
