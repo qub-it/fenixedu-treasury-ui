@@ -34,7 +34,7 @@ public class ProcessSibsPaymentsFromBroker extends CronTask {
                     LocalDate now = new LocalDate();
                     
                     final SibsIncommingPaymentFile sibsFile =
-                            SibsPaymentsBrokerService.readPaymentsFromBroker(paymentCodePool.getFinantialInstitution(), now, now,
+                            SibsPaymentsBrokerService.readPaymentsFromBroker(paymentCodePool.getFinantialInstitution(), now.minusDays(1), now,
                                     true, true);
                     
                     if(sibsFile.getDetailLines().isEmpty()) {
