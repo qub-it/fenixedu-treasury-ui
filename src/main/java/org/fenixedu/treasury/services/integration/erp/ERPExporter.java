@@ -1152,9 +1152,9 @@ public class ERPExporter {
             companyAddress.setPostalCode(".");
         }
         if (!Strings.isNullOrEmpty(zipCodeRegion)) {
-            companyAddress.setRegion(".");
-        } else {
             companyAddress.setRegion(zipCodeRegion);
+        } else {
+            companyAddress.setRegion(".");
         }
         if (!Strings.isNullOrEmpty(street)) {
             companyAddress.setStreetName(Splitter.fixedLength(49).splitToList(street).get(0));
