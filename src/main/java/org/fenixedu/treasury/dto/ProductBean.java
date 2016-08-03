@@ -18,6 +18,7 @@ public class ProductBean {
     private LocalizedString unitOfMeasure;
     private boolean active;
     private boolean legacy;
+    private int tuitionInstallmentOrder;
     private VatType vatType;
     private VatExemptionReason vatExemptionReason;
     private Set<FinantialInstitution> finantialInstitutionsSet = Sets.newHashSet();
@@ -80,6 +81,14 @@ public class ProductBean {
         this.legacy = legacy;
     }
     
+    public int getTuitionInstallmentOrder() {
+        return tuitionInstallmentOrder;
+    }
+    
+    public void setTuitionInstallmentOrder(int tuitionInstallmentOrder) {
+        this.tuitionInstallmentOrder = tuitionInstallmentOrder;
+    }
+    
     public VatType getVatType() {
         return vatType;
     }
@@ -103,6 +112,4 @@ public class ProductBean {
     public void setFinantialInstitutionsSet(Set<FinantialInstitution> finantialInstitutionsSet) {
         this.finantialInstitutionsSet = finantialInstitutionsSet;
     }
-    
-    
 }

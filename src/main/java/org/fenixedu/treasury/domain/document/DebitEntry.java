@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -57,8 +56,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -66,6 +63,8 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import pt.ist.fenixframework.Atomic;
 
 public class DebitEntry extends DebitEntry_Base {
 
@@ -528,6 +527,37 @@ public class DebitEntry extends DebitEntry_Base {
     @Atomic
     public void revertEventAnnuled() {
         setEventAnnuled(false);
+    }
+
+    public DateTime getLastSettlementDate() {
+        Optional<SettlementNote> settlementNote = getSettlementEntriesSet().stream()
+                .filter(s -> !s.getFinantialDocument().isAnnulled()).map(s -> ((SettlementNote) s.getFinantialDocument()))
+                .max(Comparator.comparing(SettlementNote::getPaymentDate));
+        if (!settlementNote.isPresent()) {
+            return null;
+        }
+
+        return settlementNote.get().getPaymentDate();
+    }
+
+    /**
+     * Differs from getLastSettlementDate in obtaining payment date only
+     * from settlement notes with payment entries
+     *
+     * @return
+     */
+
+    public DateTime getLastPaymentDate() {
+        Optional<SettlementNote> settlementNote = getSettlementEntriesSet().stream()
+                .filter(s -> !s.getFinantialDocument().isAnnulled()
+                        && !((SettlementNote) s.getFinantialDocument()).getPaymentEntriesSet().isEmpty())
+                .map(s -> ((SettlementNote) s.getFinantialDocument())).max(Comparator.comparing(SettlementNote::getPaymentDate));
+        
+        if (!settlementNote.isPresent()) {
+            return null;
+        }
+
+        return settlementNote.get().getPaymentDate();
     }
 
     private Map<LocalDate, BigDecimal> amountInDebtMap(final LocalDate paymentDate) {

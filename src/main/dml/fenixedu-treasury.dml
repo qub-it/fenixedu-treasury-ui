@@ -96,6 +96,7 @@ class Product {
 	LocalizedString unitOfMeasure;
 	boolean active;
 	boolean legacy;
+	int tuitionInstallmentOrder;
 }
 
 class Currency {

@@ -67,8 +67,9 @@ public class Product extends Product_Base {
     }
 
     protected Product(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, final boolean active, final boolean legacy, final VatType vatType,
-            final List<FinantialInstitution> finantialInstitutions, VatExemptionReason vatExemptionReason) {
+            final LocalizedString unitOfMeasure, final boolean active, final boolean legacy, final int tuitionInstallmentOrder,
+            final VatType vatType, final List<FinantialInstitution> finantialInstitutions,
+            VatExemptionReason vatExemptionReason) {
         this();
         setProductGroup(productGroup);
         setCode(code);
@@ -76,6 +77,7 @@ public class Product extends Product_Base {
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
         setLegacy(legacy);
+        setTuitionInstallmentOrder(tuitionInstallmentOrder);
         setVatType(vatType);
         setVatExemptionReason(vatExemptionReason);
         updateFinantialInstitutions(finantialInstitutions);
@@ -106,30 +108,31 @@ public class Product extends Product_Base {
         if (LocalizedStringUtil.isTrimmedEmpty(getUnitOfMeasure())) {
             throw new TreasuryDomainException("error.Product.unitOfMeasure.required");
         }
-        
-        if(getCode().length() > MAX_CODE_LENGTH) {
+
+        if (getCode().length() > MAX_CODE_LENGTH) {
             throw new TreasuryDomainException("error.Product.code.size.exceded");
         }
-        
+
     }
 
     public boolean isActive() {
         return getActive();
     }
-    
+
     public boolean isLegacy() {
         return getLegacy();
     }
 
     @Atomic
-    public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active, final boolean legacy,
-            VatType vatType, final ProductGroup productGroup, final List<FinantialInstitution> finantialInstitutions,
-            VatExemptionReason vatExemptionReason) {
+    public void edit(final String code, final LocalizedString name, final LocalizedString unitOfMeasure, boolean active,
+            final boolean legacy, final int tuitionInstallmentOrder, VatType vatType, final ProductGroup productGroup,
+            final List<FinantialInstitution> finantialInstitutions, VatExemptionReason vatExemptionReason) {
         setCode(code);
         setName(name);
         setUnitOfMeasure(unitOfMeasure);
         setActive(active);
         setLegacy(legacy);
+        setTuitionInstallmentOrder(tuitionInstallmentOrder);
         setVatType(vatType);
         setProductGroup(productGroup);
         setVatExemptionReason(vatExemptionReason);
@@ -199,9 +202,10 @@ public class Product extends Product_Base {
 
     @Atomic
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,
-            final LocalizedString unitOfMeasure, final boolean active, final boolean legacy, final VatType vatType,
+            final LocalizedString unitOfMeasure, final boolean active, final boolean legacy, final int tuitionInstallmentOrder,final VatType vatType,
             final List<FinantialInstitution> finantialInstitutions, final VatExemptionReason vatExemptionReason) {
-        return new Product(productGroup, code, name, unitOfMeasure, active, legacy, vatType, finantialInstitutions, vatExemptionReason);
+        return new Product(productGroup, code, name, unitOfMeasure, active, legacy, tuitionInstallmentOrder, vatType, finantialInstitutions,
+                vatExemptionReason);
     }
 
     public Stream<Tariff> getTariffs(FinantialInstitution finantialInstitution) {
@@ -224,9 +228,7 @@ public class Product extends Product_Base {
     }
 
     public Stream<Tariff> getActiveTariffs(FinantialInstitution finantialInstitution, DateTime when) {
-        return this
-                .getTariffSet()
-                .stream()
+        return this.getTariffSet().stream()
                 .filter(x -> x.getFinantialEntity().getFinantialInstitution().equals(finantialInstitution))
                 .filter(x -> x.getBeginDate() != null && x.getBeginDate().isBefore(when)
                         && (x.getEndDate() == null || x.getEndDate().isAfter(when)));

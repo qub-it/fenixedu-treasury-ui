@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
 
@@ -97,18 +98,20 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     public static final String VERIFY_FORWARD_PAYMENT_URL = CONTROLLER_URL + VERIFY_FORWARD_PAYMENT_URI;
 
     @RequestMapping(VERIFY_FORWARD_PAYMENT_URI + "/{forwardPaymentId}")
-    public String verifyforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model) {
+    public String verifyforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model, final RedirectAttributes redirectAttributes) {
+
         try {
             ForwardPaymentStatusBean paymentStatusBean =
                     forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
 
             model.addAttribute("forwardPayment", forwardPayment);
             model.addAttribute("paymentStatusBean", paymentStatusBean);
+
+            return jspPage(VERIFY_FORWARD_PAYMENT_URI);
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
+            return redirect(VIEW_URL + "/" + forwardPayment.getExternalId() , model, redirectAttributes);
         }
-
-        return jspPage(VERIFY_FORWARD_PAYMENT_URI);
     }
 
     private static final String REGISTER_PAYMENT_URI = "/registerpayment";

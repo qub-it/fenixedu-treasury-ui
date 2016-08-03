@@ -141,7 +141,18 @@ ${portal.toolkit()}
 					</script>
 				</div>
 			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.Product.tuitionInstallmentOrder" />
+				</div>
 
+				<div class="col-sm-2">
+                    <input id="product_tuitionInstallmentOrder" class="form-control" type="text" name="tuitionInstallmentOrder" pattern="^\d+$"
+                        value='<c:out value='${not empty param.tuitionInstallmentOrder ? param.tuitionInstallmentOrder : product.tuitionInstallmentOrder }'/>' />
+				</div>
+			</div>
+			
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.Product.vatType" />
