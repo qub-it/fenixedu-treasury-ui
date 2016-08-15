@@ -107,7 +107,7 @@ ${portal.angularToolkit()}
 			[ 'ngSanitize', 'ui.select', 'bennuToolkit' ]).controller(
 			'AdhocCustomerController', [ '$scope', function($scope) {
 
-				$scope.object = angular.fromJson('${adhocCustomerBeanJson}');
+				$scope.object = ${adhocCustomerBeanJson};
 				$scope.postBack = createAngularPostbackFunction($scope);
 
 				//Begin here of Custom Screen business JS - code
