@@ -140,6 +140,7 @@ ${portal.toolkit()}
 			</tbody>
 		</table>
 
+<%-- 
         <form id="markMultipleAsExported"
             action="${pageContext.request.contextPath}<%=FinantialDocumentController.SEARCH_TO_MARK_MULTIPLE_EXPORTED_URL %>"
             style="display: none;" method="POST"></form>
@@ -150,7 +151,7 @@ ${portal.toolkit()}
             <spring:message
                 code='label.integration.erp.finantialdocument.markMultipleAsExported' />
         </button>
-
+--%>
 
 	</c:when>
 	<c:otherwise>

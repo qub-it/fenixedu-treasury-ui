@@ -105,7 +105,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                         <spring:message code="label.document.manageInvoice.readDebitNote.confirmCalculateInterestValue" />
                         
                     </p>
-                    </br>
+                    <br/>
                     
                     <div class="form-group row">
                             <div class="col-sm-4 control-label">
@@ -133,6 +133,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+
+
 
 <%
 } 
@@ -224,7 +227,59 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+
+
 <%} %>
+
+<% 
+	if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+%>
+
+<div class="modal fade" id="clearDocumentToExport">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/cleardocumenttoexport" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    	<spring:message code="label.document.manageInvoice.clearDocumentToExport" />
+                    </p>
+                    
+					<div class="form-group row">
+						<div class="col-sm-12">
+							<input class="form-control" type="text" name="reason" />
+						</div>
+					</div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-primary" type="submit">
+                        <spring:message code="label.ok" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<% 
+	}
+%>
+
 <%-- NAVIGATION --%>
 <form>
     <div class="well well-sm" style="display: inline-block">
@@ -319,18 +374,33 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a id="exportDebitNoteIntegrationOnline" class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
+                    <li><a id="exportDebitNoteIntegrationOnline" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
                             class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a></li>
-                    <li><a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
+                    <li><a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
                             <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
                     </a></li>
-                    <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?finantialinstitution=${debitNote.debtAccount.finantialInstitution.externalId}&documentnumber=${debitNote.uiDocumentNumber}"> <span
-                            class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
-                    </a></li>
+                    <li><a href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?finantialinstitution=${debitNote.debtAccount.finantialInstitution.externalId}&documentnumber=${debitNote.uiDocumentNumber}">
+                    <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
+                    </a>
+                    </li>
+
+<% 
+	if (debitNote.isDocumentToExport() && TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+%>
+                    <li>
+                    	<a href="#" data-toggle="modal" data-target="#clearDocumentToExport">
+                    		<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                    		<spring:message code="label.event.document.manageInvoice.clearDocumentToExport" />
+                    	</a>
+                    </li>
+<%} %>
+                    
                 </ul>
             </div>
         </c:if>
-        | <span class="glyphicon glyphicon-print" aria-hidden="true"></span>  <a class="" id="printLabel2" href="#"
+        | 
+        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+        <a class="" id="printLabel2" href="#"
             onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message
                 code="label.print" />
         </a> 
@@ -416,6 +486,12 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentObservations" /></th>
                             <td><c:out value='${debitNote.documentObservations}' /></td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${not empty  debitNote.clearDocumentToExportReason}">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.clearDocumentToExportReason" /></th>
+                            <td><c:out value='${debitNote.clearDocumentToExportReason}' /></td>
                         </tr>
                     </c:if>
                     <tr>

@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
@@ -65,6 +66,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -465,4 +468,31 @@ public class CreditNoteController extends TreasuryBaseController {
         return read(creditNote, model);
     }
 
+    @RequestMapping(value = "/read/{oid}/cleardocumenttoexport", method = RequestMethod.POST)
+    public String cleardocumenttoexport(@PathVariable("oid") final CreditNote creditNote,
+            @RequestParam(value = "reason", required = false) final String reason, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            
+            if(!creditNote.isDocumentToExport()) {
+                addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
+                return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+            }
+            
+            if(Strings.isNullOrEmpty(reason)) {
+                addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
+                return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+            }
+            
+            assertUserIsBackOfficeMember(model);
+
+            creditNote.clearDocumentToExport(reason);
+
+            return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
+        }
+    }
+    
 }

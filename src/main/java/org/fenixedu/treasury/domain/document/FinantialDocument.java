@@ -297,9 +297,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     @Atomic
-    public void clearDocumentToExport() {
+    public void clearDocumentToExport(final String reason) {
         if (getInstitutionForExportation() != null) {
             this.setInstitutionForExportation(null);
+            super.setClearDocumentToExportReason(reason);
         }
     }
 

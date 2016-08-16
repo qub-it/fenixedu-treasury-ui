@@ -163,7 +163,60 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
     </div>
     <!-- /.modal-dialog -->
 </div>
+
+
 <%}%>
+
+
+<% 
+	if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+%>
+
+<div class="modal fade" id="clearDocumentToExport">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/cleardocumenttoexport" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                    	<spring:message code="label.document.manageInvoice.clearDocumentToExport" />
+                    </p>
+                    
+					<div class="form-group row">
+						<div class="col-sm-12">
+							<input class="form-control" type="text" name="reason" />
+						</div>
+					</div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <spring:message code="label.cancel" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-primary" type="submit">
+                        <spring:message code="label.ok" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<% 
+	}
+%>
+
+
 <%-- NAVIGATION --%>
 <%-- NAVIGATION --%>
 <form>
@@ -205,7 +258,20 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                     </a></li>
                     <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?finantialinstitution=${creditNote.debtAccount.finantialInstitution.externalId}&documentnumber=${creditNote.uiDocumentNumber}">
                             <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
-                    </a></li>
+                    </a>
+                    </li>
+                    
+<% 
+	if (creditNote.isDocumentToExport() && TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+%>
+                    <li>
+                    	<a href="#" data-toggle="modal" data-target="#clearDocumentToExport">
+                    		<span class="glyphicon glyphicon-ok-circle" aria-hidden="true"></span>
+                    		<spring:message code="label.event.document.manageInvoice.clearDocumentToExport" />
+                    	</a>
+                    </li>
+<%} %>
+                    
                 </ul>
             </div>
         </c:if>
@@ -288,6 +354,12 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.documentObservations" /></th>
                             <td><c:out value='${creditNote.documentObservations}' /></td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${not empty  creditNote.clearDocumentToExportReason}">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.clearDocumentToExportReason" /></th>
+                            <td><c:out value='${creditNote.clearDocumentToExportReason}' /></td>
                         </tr>
                     </c:if>
                     <tr>

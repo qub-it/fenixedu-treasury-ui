@@ -202,7 +202,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
         try {
             assertUserIsManager(model);
             for (FinantialDocument document : finantialDocuments) {
-                document.clearDocumentToExport();
+                // document.clearDocumentToExport();
             }
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);

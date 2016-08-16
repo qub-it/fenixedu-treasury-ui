@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
@@ -69,6 +70,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -133,7 +136,7 @@ public class DebitNoteController extends TreasuryBaseController {
             setDebitNote(debitNote, model);
 
             if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
-                model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE, 
+                model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
                         "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
             }
 
@@ -146,18 +149,20 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = SEARCH_URI)
-    public String search(
-            @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
+    public String search(@RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
             @RequestParam(value = "finantialdocumenttype", required = false) FinantialDocumentType finantialDocumentType,
             @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "currency", required = false) Currency currency,
             @RequestParam(value = "documentnumber", required = false) String documentNumber,
-            @RequestParam(value = "documentdatefrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
-            @RequestParam(value = "documentdateto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
-                    value = "state", required = false) FinantialDocumentStateType state, Model model) {
+            @RequestParam(value = "documentdatefrom",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
+            @RequestParam(value = "documentdateto",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
+            @RequestParam(value = "documentduedate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
+            @RequestParam(value = "state", required = false) FinantialDocumentStateType state, Model model) {
 
         List<DebitNote> searchdebitnoteResultsDataSet =
                 filterSearchDebitNote(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency,
@@ -167,10 +172,8 @@ public class DebitNoteController extends TreasuryBaseController {
                 searchdebitnoteResultsDataSet.stream().limit(SEARCH_DEBIT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
         model.addAttribute("searchdebitnoteResultsDataSet", searchdebitnoteResultsDataSet);
-        model.addAttribute(
-                "DebitNote_payorDebtAccount_options",
-                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().filter(x -> x.getCustomer().isAdhocCustomer())
-                        .collect(Collectors.toList()));
+        model.addAttribute("DebitNote_payorDebtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()
+                .filter(x -> x.getCustomer().isAdhocCustomer()).collect(Collectors.toList()));
 //        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
 //                .findAll().collect(Collectors.toList()));
 //        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
@@ -194,8 +197,7 @@ public class DebitNoteController extends TreasuryBaseController {
             java.lang.String documentNumber, LocalDate documentDateFrom, LocalDate documentDateTo, LocalDate documentDueDate,
             String originDocumentNumber, FinantialDocumentStateType state) {
 
-        return getSearchUniverseSearchDebitNoteDataSet()
-                .stream()
+        return getSearchUniverseSearchDebitNoteDataSet().stream()
                 .filter(debitNote -> payorDebtAccount == null || payorDebtAccount == debitNote.getPayorDebtAccount())
                 .filter(debitNote -> finantialDocumentType == null
                         || finantialDocumentType == debitNote.getFinantialDocumentType())
@@ -204,7 +206,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 .filter(debitNote -> currency == null || currency == debitNote.getCurrency())
                 .filter(debitNote -> documentNumber == null || documentNumber.length() == 0
                         || debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0
-                        && debitNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
+                                && debitNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
                 .filter(debitNote -> documentDateFrom == null
                         || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
                         || debitNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
@@ -213,7 +215,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 .filter(debitNote -> documentDueDate == null || documentDueDate.equals(debitNote.getDocumentDueDate()))
                 .filter(debitNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
                         || debitNote.getOriginDocumentNumber() != null && debitNote.getOriginDocumentNumber().length() > 0
-                        && debitNote.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase()))
+                                && debitNote.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase()))
                 .filter(debitNote -> state == null || state.equals(debitNote.getState())).collect(Collectors.toList());
     }
 
@@ -226,8 +228,9 @@ public class DebitNoteController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount, @RequestParam(value = "debitEntry",
-                    required = false) DebitEntry debitEntry, Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
+            @RequestParam(value = "debitEntry", required = false) DebitEntry debitEntry, Model model,
+            RedirectAttributes redirectAttributes) {
         try {
 
             if (debitEntry != null) {
@@ -245,8 +248,10 @@ public class DebitNoteController extends TreasuryBaseController {
             if (documentNumberSeries != null && debtAccount != null) {
                 if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
                         .equals(debtAccount.getFinantialInstitution().getCode())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
-                            "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+                    addErrorMessage(
+                            BundleUtil.getString(Constants.BUNDLE,
+                                    "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                            model);
                     return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
                 }
             }
@@ -258,8 +263,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 finantialInstitution = debtAccount.getFinantialInstitution();
             }
 
-            model.addAttribute(
-                    "DebitNote_payorDebtAccount_options",
+            model.addAttribute("DebitNote_payorDebtAccount_options",
                     DebtAccount.find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
                             .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
                             .collect(Collectors.toList()));
@@ -274,9 +278,9 @@ public class DebitNoteController extends TreasuryBaseController {
                 model.addAttribute("DebitNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
 
             } else {
-                List<DocumentNumberSeries> availableSeries =
-                        org.fenixedu.treasury.domain.document.DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
-                                debtAccount.getFinantialInstitution()).collect(Collectors.toList());
+                List<DocumentNumberSeries> availableSeries = org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                        .find(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
+                        .collect(Collectors.toList());
 
                 if (availableSeries.size() > 0) {
                     model.addAttribute("DebitNote_documentNumberSeries_options", DocumentNumberSeries
@@ -296,21 +300,20 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
+    public String create(@RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
             @RequestParam(value = "debtaccount") DebtAccount debtAccount,
             @RequestParam(value = "debitentry") DebitEntry debitEntry,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
-                    value = "documentobservations", required = false) String documentObservations, Model model,
+            @RequestParam(value = "documentduedate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
+            @RequestParam(value = "documentobservations", required = false) String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
-            DebitNote debitNote =
-                    createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate, documentDueDate,
-                            originDocumentNumber, documentObservations);
+            DebitNote debitNote = createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate,
+                    documentDueDate, originDocumentNumber, documentObservations);
 
             if (debitEntry != null && debitEntry.getFinantialDocument() == null) {
                 addDebitEntryToDebitNote(debitEntry, debitNote);
@@ -339,9 +342,8 @@ public class DebitNoteController extends TreasuryBaseController {
             payorDebtAccount = debtAccount;
         }
 
-        DebitNote debitNote =
-                DebitNote.create(debtAccount, payorDebtAccount, documentNumberSeries, documentDate.toDateTimeAtCurrentTime(),
-                        documentDueDate, originDocumentNumber);
+        DebitNote debitNote = DebitNote.create(debtAccount, payorDebtAccount, documentNumberSeries,
+                documentDate.toDateTimeAtCurrentTime(), documentDueDate, originDocumentNumber);
         debitNote.setDocumentObservations(documentObservations);
 
         return debitNote;
@@ -351,8 +353,7 @@ public class DebitNoteController extends TreasuryBaseController {
     public String update(@PathVariable("oid") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            model.addAttribute(
-                    "DebitNote_payorDebtAccount_options",
+            model.addAttribute("DebitNote_payorDebtAccount_options",
                     DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
                             .filter(x -> x.getCustomer().isAdhocCustomer())
                             .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
@@ -368,13 +369,14 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") DebitNote debitNote,
+    public String update(@PathVariable("oid") DebitNote debitNote,
             @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber, @RequestParam(
-                    value = "documentobservations", required = false) String documentObservations, Model model,
+            @RequestParam(value = "documentdate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDate,
+            @RequestParam(value = "documentduedate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
+            @RequestParam(value = "documentobservations", required = false) String documentObservations, Model model,
             RedirectAttributes redirectAttributes) {
 
         setDebitNote(debitNote, model);
@@ -422,7 +424,7 @@ public class DebitNoteController extends TreasuryBaseController {
             // assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             debitNote.closeDocument();
-            
+
             addInfoMessage(Constants.bundle("label.document.manageinvoice.DebitNote.document.closed.sucess"), model);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
@@ -484,21 +486,20 @@ public class DebitNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             String output =
-                    ERPExporter.exportFinantialDocumentToXML(
-                            debitNote.getDebtAccount().getFinantialInstitution(),
-                            debitNote
-                                    .findRelatedDocuments(
-                                            new HashSet<FinantialDocument>(),
-                                            debitNote.getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration()
-                                                    .getExportAnnulledRelatedDocuments()).stream().collect(Collectors.toList()));
+                    ERPExporter
+                            .exportFinantialDocumentToXML(debitNote.getDebtAccount().getFinantialInstitution(),
+                                    debitNote
+                                            .findRelatedDocuments(new HashSet<FinantialDocument>(),
+                                                    debitNote.getDebtAccount().getFinantialInstitution()
+                                                            .getErpIntegrationConfiguration().getExportAnnulledRelatedDocuments())
+                                            .stream().collect(Collectors.toList()));
             response.setContentType("text/xml");
             response.setCharacterEncoding("Windows-1252");
-            String filename =
-                    URLEncoder.encode(
-                            StringNormalizer.normalizePreservingCapitalizedLetters((debitNote.getDebtAccount()
-                                    .getFinantialInstitution().getFiscalNumber()
-                                    + "_" + debitNote.getUiDocumentNumber() + ".xml").replaceAll("/", "_").replaceAll("\\s", "_")
-                                    .replaceAll(" ", "_")), "Windows-1252");
+            String filename = URLEncoder.encode(StringNormalizer
+                    .normalizePreservingCapitalizedLetters((debitNote.getDebtAccount().getFinantialInstitution().getFiscalNumber()
+                            + "_" + debitNote.getUiDocumentNumber() + ".xml").replaceAll("/", "_").replaceAll("\\s", "_")
+                                    .replaceAll(" ", "_")),
+                    "Windows-1252");
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
             response.getOutputStream().write(output.getBytes("Windows-1252"));
@@ -536,11 +537,10 @@ public class DebitNoteController extends TreasuryBaseController {
                 }
             }
 
-            List<DocumentNumberSeries> availableSeries =
-                    org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                            .find(FinantialDocumentType.findForDebitNote(),
-                                    debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution())
-                            .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
+            List<DocumentNumberSeries> availableSeries = org.fenixedu.treasury.domain.document.DocumentNumberSeries
+                    .find(FinantialDocumentType.findForDebitNote(),
+                            debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution())
+                    .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
 
             availableSeries =
                     DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
@@ -572,7 +572,8 @@ public class DebitNoteController extends TreasuryBaseController {
     public String processReadToCalculateInterestValue(@PathVariable("oid") DebitNote debitNote,
             @RequestParam("paymentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate paymentDate,
             @RequestParam("documentnumberseries") DocumentNumberSeries documentNumberSeries,
-            @RequestParam("documentobservations") String documentObservations, Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam("documentobservations") String documentObservations, Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
@@ -607,9 +608,8 @@ public class DebitNoteController extends TreasuryBaseController {
             interestDebitNote =
                     DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries, new DateTime(), paymentDate);
         } else {
-            interestDebitNote =
-                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
-                            paymentDate.toDateTimeAtStartOfDay(), paymentDate);
+            interestDebitNote = DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
+                    paymentDate.toDateTimeAtStartOfDay(), paymentDate);
         }
         interestDebitNote.setDocumentObservations(documentObservations);
         return interestDebitNote;
@@ -629,17 +629,43 @@ public class DebitNoteController extends TreasuryBaseController {
             }
 
             List<FinantialDocument> documentsToExport = Collections.singletonList(debitNote);
-            ERPExportOperation output =
-                    ERPExporter.exportFinantialDocumentToIntegration(debitNote.getDebtAccount().getFinantialInstitution(),
-                            documentsToExport);
+            ERPExportOperation output = ERPExporter.exportFinantialDocumentToIntegration(
+                    debitNote.getDebtAccount().getFinantialInstitution(), documentsToExport);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
-                            + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+                    + ex.getLocalizedMessage(), model);
         }
         setDebitNote(debitNote, model);
         return read(debitNote, model, redirectAttributes);
     }
+
+    @RequestMapping(value = "/read/{oid}/cleardocumenttoexport", method = RequestMethod.POST)
+    public String cleardocumenttoexport(@PathVariable("oid") final DebitNote debitNote,
+            @RequestParam(value = "reason", required = false) final String reason, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            
+            if(!debitNote.isDocumentToExport()) {
+                addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
+                return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            }
+            
+            if(Strings.isNullOrEmpty(reason)) {
+                addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
+                return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            }
+            
+            assertUserIsBackOfficeMember(model);
+
+            debitNote.clearDocumentToExport(reason);
+
+            return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+        }
+    }
+    
 }

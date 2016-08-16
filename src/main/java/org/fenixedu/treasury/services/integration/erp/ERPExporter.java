@@ -1270,6 +1270,7 @@ public class ERPExporter {
                 service.getIntegrationStatusFor(institution.getFiscalNumber(), documentNumbers);
         for (DocumentStatusWS documentStatus : integrationStatusFor) {
             if (documentStatus.isIntegratedWithSuccess()) {
+                String message = BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.integrating.document", documentStatus.getDocumentNumber());
 //                operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.sucess.integrating.document",
 //                        documentStatus.getDocumentNumber()));
                 FinantialDocument document =
@@ -1277,7 +1278,7 @@ public class ERPExporter {
                                 .filter(x -> x.getUiDocumentNumber().equals(documentStatus.getDocumentNumber())).findFirst()
                                 .orElse(null);
                 if (document != null) {
-                    document.clearDocumentToExport();
+                    document.clearDocumentToExport(message);
                 } else {
 //                    success = false;
 //                    operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPExporter.error.integrating.document",
@@ -1330,9 +1331,10 @@ public class ERPExporter {
                     FinantialDocument document =
                             FinantialDocument.findByUiDocumentNumber(institution, status.getDocumentNumber());
                     if (document != null) {
-                        operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
-                                "info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber()));
-                        document.clearDocumentToExport();
+                        final String message = BundleUtil.getString(Constants.BUNDLE,
+                                "info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
+                        operation.appendInfoLog(message);
+                        document.clearDocumentToExport(message);
                     } else {
                         success = false;
                         operation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
@@ -1624,7 +1626,10 @@ public class ERPExporter {
         for (DocumentStatusWS documentStatus : integrationStatusFor) {
             if (documentStatus.getDocumentNumber().equals(document.getUiDocumentNumber())
                     && documentStatus.isIntegratedWithSuccess()) {
-                document.clearDocumentToExport();
+                final String message = BundleUtil.getString(Constants.BUNDLE,
+                        "info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
+                
+                document.clearDocumentToExport(message);
             } else {
             }
         }

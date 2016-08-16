@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -83,9 +84,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
-
+import com.google.common.base.Strings;
 import com.qubit.terra.docs.util.ReportGenerationException;
+
+import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",
@@ -709,4 +711,31 @@ public class SettlementNoteController extends TreasuryBaseController {
         return read(settlementNote, model);
     }
 
+    @RequestMapping(value = "/read/{oid}/cleardocumenttoexport", method = RequestMethod.POST)
+    public String cleardocumenttoexport(@PathVariable("oid") final SettlementNote settlementNote,
+            @RequestParam(value = "reason", required = false) final String reason, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            
+            if(!settlementNote.isDocumentToExport()) {
+                addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
+                return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            }
+            
+            if(Strings.isNullOrEmpty(reason)) {
+                addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
+                return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            }
+            
+            assertUserIsBackOfficeMember(model);
+
+            settlementNote.clearDocumentToExport(reason);
+
+            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+        }
+    }
+    
 }

@@ -223,6 +223,7 @@ class document.FinantialDocument {
 	String address;
 	String annulledReason;
 	String documentObservations;
+	String clearDocumentToExportReason;
 }
 
 
