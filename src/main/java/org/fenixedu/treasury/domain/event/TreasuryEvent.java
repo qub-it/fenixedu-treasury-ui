@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -52,13 +53,13 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+
+import pt.ist.fenixframework.Atomic;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
     // @formatter:off
@@ -334,6 +335,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
     public static Stream<? extends TreasuryEvent> findActiveBy(DebtAccount debtAccount) {
         return findAll().filter(x -> x.getDebtAccount().equals(debtAccount));
+    }
+    
+    public static Stream<? extends TreasuryEvent> findByDescription(final Customer customer, final String description, final boolean trimmed) {
+        return findAll().filter(t -> customer.getDebtAccountsSet().contains(t.getDebtAccount()))
+                .filter(t -> (!trimmed && t.getDescription().getContent().equals(description)) || (trimmed && t.getDescription().getContent().trim().equals(description)));
     }
 
 }

@@ -552,7 +552,7 @@ public class DebitEntry extends DebitEntry_Base {
                 .filter(s -> !s.getFinantialDocument().isAnnulled()
                         && !((SettlementNote) s.getFinantialDocument()).getPaymentEntriesSet().isEmpty())
                 .map(s -> ((SettlementNote) s.getFinantialDocument())).max(Comparator.comparing(SettlementNote::getPaymentDate));
-        
+
         if (!settlementNote.isPresent()) {
             return null;
         }
@@ -642,6 +642,12 @@ public class DebitEntry extends DebitEntry_Base {
 
     public static Stream<? extends DebitEntry> findActive(final TreasuryEvent treasuryEvent, final Product product) {
         return findActive(treasuryEvent).filter(d -> d.getProduct() == product);
+    }
+
+    public static Stream<? extends DebitEntry> findActiveByDescription(final TreasuryEvent treasuryEvent, final String description,
+            final boolean trimmed) {
+        return findActive(treasuryEvent).filter(d -> (!trimmed && d.getDescription().equals(description))
+                || (trimmed && d.getDescription().trim().equals(description)));
     }
 
     public static Stream<? extends DebitEntry> findEventAnnuled(final TreasuryEvent treasuryEvent) {

@@ -141,6 +141,22 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.identificationNumber" /></th>
                         <td><c:out value='${customer.identificationNumber}' /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.address" /></th>
+                        <td><c:out value='${customer.address}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.districtSubdivision" /></th>
+                        <td><c:out value='${customer.districtSubdivision}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.zipCode" /></th>
+                        <td><c:out value='${customer.zipCode}' /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.countryCode" /></th>
+                        <td><c:out value='${customer.countryCode}' /></td>
+                    </tr>
                 </tbody>
             </table>
 

@@ -29,6 +29,7 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
@@ -116,7 +117,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model) {
+    public @ResponseBody String createpostback(@RequestParam(value = "bean", required = false) AdhocCustomerBean bean,
+            Model model) {
         this.setAdhocCustomerBean(bean, model);
         return getBeanJson(bean);
     }
@@ -127,26 +129,25 @@ public class AdhocCustomerController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
-            Customer adhocCustomer =
-                    createAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
-                            bean.getIdentificationNumber());
+            Customer adhocCustomer = createAdhocCustomer(bean.getCustomerType(), bean.getName(),
+                    bean.getFiscalNumber(), bean.getIdentificationNumber(), bean.getAddress(), bean.getDistrictSubdivision(),
+                    bean.getZipCode(), bean.getCountryCode());
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             setAdhocCustomer(adhocCustomer, model);
 
             return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
-        } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        } catch (DomainException ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
         }
         return create(model);
     }
 
     @Atomic
-    public Customer createAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
-            String identificationNumber) {
-        Customer adhocCustomer =
-                AdhocCustomer.create(customerType, code, fiscalNumber, name, "", "", "", "", identificationNumber);
+    public Customer createAdhocCustomer(CustomerType customerType, String name, String fiscalNumber,
+            String identificationNumber, final String address, final String districtSubdivision, final String zipCode,
+            final String countryCode) {
+        Customer adhocCustomer = AdhocCustomer.create(customerType, fiscalNumber, name, address, districtSubdivision,
+                zipCode, countryCode, identificationNumber);
         return adhocCustomer;
     }
 
@@ -158,8 +159,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/updatepostback/{oid}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public @ResponseBody String updatepostback(@PathVariable("oid") Customer adhocCustomer, @RequestParam(value = "bean",
-            required = false) AdhocCustomerBean bean, Model model) {
+    public @ResponseBody String updatepostback(@PathVariable("oid") Customer adhocCustomer,
+            @RequestParam(value = "bean", required = false) AdhocCustomerBean bean, Model model) {
         this.setAdhocCustomerBean(bean, model);
         return getBeanJson(bean);
     }
@@ -175,7 +176,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
             updateAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
-                    bean.getIdentificationNumber(), model);
+                    bean.getIdentificationNumber(), bean.getAddress(), bean.getDistrictSubdivision(), bean.getZipCode(),
+                    bean.getCountryCode(), model);
 
             return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -187,11 +189,12 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateAdhocCustomer(CustomerType customerType, String code, String name, String fiscalNumber,
-            String identificationNumber, Model model) {
+    public void updateAdhocCustomer(final CustomerType customerType, final String code, final String name,
+            final String fiscalNumber, final String identificationNumber, final String address, final String districtSubdivision,
+            final String zipCode, final String countryCode, final Model model) {
         if (getAdhocCustomer(model).isAdhocCustomer()) {
-            ((AdhocCustomer) getAdhocCustomer(model)).edit(customerType, code, fiscalNumber, name, "", "", "", "",
-                    identificationNumber);
+            ((AdhocCustomer) getAdhocCustomer(model)).edit(customerType, code, fiscalNumber, name, address, districtSubdivision,
+                    zipCode, countryCode, identificationNumber);
         }
     }
 }

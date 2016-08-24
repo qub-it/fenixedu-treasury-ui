@@ -52,12 +52,12 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return true;
     }
 
-    protected AdhocCustomer(final CustomerType customerType, final String code, final String fiscalNumber, final String name,
+    protected AdhocCustomer(final CustomerType customerType, final String fiscalNumber, final String name,
             final String address, final String districtSubdivision, final String zipCode, final String countryCode,
             final String identificationNumber) {
         this();
         setCustomerType(customerType);
-        setCode(code);
+        setCode(getExternalId());
         setFiscalNumber(fiscalNumber);
         setName(name);
         setAddress(address);
@@ -120,10 +120,10 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Atomic
-    public static AdhocCustomer create(final CustomerType customerType, final String code, final String fiscalNumber,
+    public static AdhocCustomer create(final CustomerType customerType, final String fiscalNumber,
             final String name, final String address, final String districtSubdivision, final String zipCode,
             final String countryCode, final String identificationNumber) {
-        return new AdhocCustomer(customerType, code, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
+        return new AdhocCustomer(customerType, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
                 identificationNumber);
     }
 

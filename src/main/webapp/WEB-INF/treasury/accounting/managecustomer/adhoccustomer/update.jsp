@@ -223,6 +223,101 @@ ${portal.angularToolkit()}
 					</c:if>
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.address" />
+                </div>
+
+                <div class="col-sm-10">
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_address"
+	                        class="form-control" type="text"
+	                        ng-model="object.address"
+	                        name="address"
+	                        value='<c:out value='${not empty param.address ? param.address : adhocCustomer.address }'/>' readonly="readonly" />
+					</c:if>
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <input id="adhocCustomer_address"
+	                        class="form-control" type="text"
+	                        ng-model="object.address"
+	                        name="fiscalnumber"
+	                        value='<c:out value='${not empty param.address ? param.address : adhocCustomer.address }'/>' />
+					</c:if>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.districtSubdivision" />
+                </div>
+
+                <div class="col-sm-10">
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_districtSubdivision"
+	                        class="form-control" type="text"
+	                        ng-model="object.districtSubdivision"
+	                        name="districtsubdivision"
+	                        value='<c:out value='${not empty param.districtsubdivision ? param.districtsubdivision : adhocCustomer.districtSubdivision}'/>' readonly="readonly" />
+					</c:if>
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <input id="adhocCustomer_districtSubdivision"
+	                        class="form-control" type="text"
+	                        ng-model="object.districtSubdivision"
+	                        name="districtsubdivision"
+	                        value='<c:out value='${not empty param.districtsubdivision ? param.districtsubdivision : adhocCustomer.districtSubdivision}'/>' />
+					</c:if>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.zipCode" />
+                </div>
+
+                <div class="col-sm-10">
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_zipCode"
+	                        class="form-control" type="text"
+	                        ng-model="object.zipCode"
+	                        name="zipcode"
+	                        value='<c:out value='${not empty param.zipcode ? param.zipcode : adhocCustomer.zipCode }'/>' readonly="readonly" />
+					</c:if>
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <input id="adhocCustomer_zipCode"
+	                        class="form-control" type="text"
+	                        ng-model="object.zipCode"
+	                        name="zipcode"
+	                        value='<c:out value='${not empty param.zipcode ? param.zipcode : adhocCustomer.zipCode }'/>' />
+					</c:if>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.countryCode" />
+                </div>
+
+                <div class="col-sm-10">
+                	<c:if test="${adhocCustomer.personCustomer}">
+	                    <input id="adhocCustomer_countryCode"
+	                        class="form-control" type="text"
+	                        ng-model="object.countryCode"
+	                        name="countrycode"
+	                        value='<c:out value='${not empty param.countrycode ? param.countrycode : adhocCustomer.countryCode }'/>' readonly="readonly" />
+					</c:if>
+					
+                	<c:if test="${adhocCustomer.adhocCustomer}">
+	                    <ui-select id="adhocCustomer_countryCode"
+	                        ng-model="$parent.object.countryCode" theme="bootstrap"> 
+	                        <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
+	                        <ui-select-choices repeat="c.id as c in object.countryCodesDataSource| filter: $select.search">
+			                    <span ng-bind-html="c.text | highlight: $select.search"></span>
+	                    	</ui-select-choices>
+	                    </ui-select>
+					</c:if>
+                </div>
+            </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">

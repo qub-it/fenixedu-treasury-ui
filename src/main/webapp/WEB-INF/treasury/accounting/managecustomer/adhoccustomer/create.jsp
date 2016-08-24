@@ -137,16 +137,6 @@ ${portal.angularToolkit()}
 
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.AdhocCustomer.code" />
-				</div>
-
-				<div class="col-sm-10">
-					<input id="adhocCustomer_code" class="form-control" type="text" ng-model="object.code" name="code"
-						value='<c:out value='${not empty param.code ? param.code : adhocCustomer.code }'/>' />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
 					<spring:message code="label.AdhocCustomer.name" />
 				</div>
 
@@ -175,6 +165,55 @@ ${portal.angularToolkit()}
 						value='<c:out value='${not empty param.identificationnumber ? param.identificationnumber : adhocCustomer.identificationNumber }'/>' />
 				</div>
 			</div>
+			
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.address" />
+                </div>
+
+                <div class="col-sm-10">
+	                 <input id="adhocCustomer_address" class="form-control" type="text" ng-model="object.address" name="fiscalnumber"
+	                        value='<c:out value='${not empty param.address ? param.address : adhocCustomer.address }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.districtSubdivision" />
+                </div>
+
+                <div class="col-sm-10">
+	                  <input id="adhocCustomer_districtSubdivision" class="form-control" type="text" ng-model="object.districtSubdivision" name="districtsubdivision"
+	                      value='<c:out value='${not empty param.districtsubdivision ? param.districtsubdivision : adhocCustomer.districtSubdivision}'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.zipCode" />
+                </div>
+
+                <div class="col-sm-10">
+                   <input id="adhocCustomer_zipCode" class="form-control" type="text" ng-model="object.zipCode" name="zipcode"
+                       value='<c:out value='${not empty param.zipcode ? param.zipcode : adhocCustomer.zipCode }'/>' />
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.countryCode" />
+                </div>
+
+                <div class="col-sm-10">
+                    <ui-select id="adhocCustomer_countryCode" ng-model="$parent.object.countryCode" theme="bootstrap"> 
+                        <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="c.id as c in object.countryCodesDataSource| filter: $select.search">
+		                    <span ng-bind-html="c.text | highlight: $select.search"></span>
+                    	</ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

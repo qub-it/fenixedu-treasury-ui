@@ -27,14 +27,21 @@
 
 package org.fenixedu.treasury.dto;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+
+import com.google.common.collect.Lists;
+
+import pt.ist.standards.geographic.Country;
+import pt.ist.standards.geographic.Planet;
 
 public class AdhocCustomerBean implements IBean {
 
@@ -51,13 +58,10 @@ public class AdhocCustomerBean implements IBean {
 
     private List<TupleDataSourceBean> finantialInstitutionsDataSource;
     private List<TupleDataSourceBean> customerTypesDataSource;
-
+    private List<TupleDataSourceBean> countryCodesDataSource;
+    
     public String getCode() {
         return code;
-    }
-
-    public void setCode(java.lang.String value) {
-        code = value;
     }
 
     public java.lang.String getFiscalNumber() {
@@ -127,20 +131,21 @@ public class AdhocCustomerBean implements IBean {
     public AdhocCustomerBean() {
         this.setFinantialInstitutionsDataSource(FinantialInstitution.findAll().collect(Collectors.toList()));
         this.setCustomerTypesDataSource(CustomerType.findAll().collect(Collectors.toList()));
+        this.setCountryCodesDataSource(Lists.newArrayList(Planet.getEarth().getPlaces()));
     }
 
-    public AdhocCustomerBean(Customer adhocCustomer) {
+    public AdhocCustomerBean(Customer customer) {
         this();
-        this.setCustomerType(adhocCustomer.getCustomerType());
-        this.setCode(adhocCustomer.getCode());
-        this.setFiscalNumber(adhocCustomer.getFiscalNumber());
-        this.setIdentificationNumber(adhocCustomer.getIdentificationNumber());
-        this.setName(adhocCustomer.getName());
-//        this.setAddress(adhocCustomer.getAddress());
-//        this.setDistrictSubdivision(adhocCustomer.getDistrictSubdivision());
-//        this.setZipCode(adhocCustomer.getZipCode());
-//        this.setCountryCode(adhocCustomer.getCountryCode());
-        this.setFinantialInstitutions(adhocCustomer.getDebtAccountsSet().stream().filter(x -> x.getClosed() == false)
+        this.setCustomerType(customer.getCustomerType());
+        this.code = customer.getCode();
+        this.setFiscalNumber(customer.getFiscalNumber());
+        this.setIdentificationNumber(customer.getIdentificationNumber());
+        this.setName(customer.getName());
+        this.setAddress(customer.getAddress());
+        this.setDistrictSubdivision(customer.getDistrictSubdivision());
+        this.setZipCode(customer.getZipCode());
+        this.setCountryCode(customer.getCountryCode());
+        this.setFinantialInstitutions(customer.getDebtAccountsSet().stream().filter(x -> x.getClosed() == false)
                 .map(x -> x.getFinantialInstitution()).collect(Collectors.toList()));
     }
 
@@ -176,5 +181,15 @@ public class AdhocCustomerBean implements IBean {
             customerTypeDataSource.setText(customerType.getName().getContent());
             return customerTypeDataSource;
         }).collect(Collectors.toList());
+    }
+    
+    public List<TupleDataSourceBean> getCountryCodesDataSource() {
+        return countryCodesDataSource;
+    }
+    
+    public void setCountryCodesDataSource(final List<Country> countries) {
+        this.countryCodesDataSource = countries.stream().map(c -> new TupleDataSourceBean(c.alpha2, c.getLocalizedName(I18N.getLocale()))).collect(Collectors.toList());
+        
+        Collections.sort(this.countryCodesDataSource, TupleDataSourceBean.COMPARE_BY_TEXT);
     }
 }
