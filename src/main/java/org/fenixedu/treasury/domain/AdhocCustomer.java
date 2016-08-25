@@ -81,7 +81,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Atomic
-    public void edit(final CustomerType customerType, final String code, final String fiscalNumber, final String name,
+    public void edit(final CustomerType customerType, final String fiscalNumber, final String name,
             final String address, final String districtSubdivision, final String zipCode, final String countryCode,
             final String identificationNumber) {
         setCustomerType(customerType);

@@ -175,7 +175,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
             assertUserIsBackOfficeMember(model);
 
             adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
-            updateAdhocCustomer(bean.getCustomerType(), bean.getCode(), bean.getName(), bean.getFiscalNumber(),
+            updateAdhocCustomer(bean.getCustomerType(), bean.getName(), bean.getFiscalNumber(),
                     bean.getIdentificationNumber(), bean.getAddress(), bean.getDistrictSubdivision(), bean.getZipCode(),
                     bean.getCountryCode(), model);
 
@@ -189,11 +189,11 @@ public class AdhocCustomerController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateAdhocCustomer(final CustomerType customerType, final String code, final String name,
+    public void updateAdhocCustomer(final CustomerType customerType, final String name,
             final String fiscalNumber, final String identificationNumber, final String address, final String districtSubdivision,
             final String zipCode, final String countryCode, final Model model) {
         if (getAdhocCustomer(model).isAdhocCustomer()) {
-            ((AdhocCustomer) getAdhocCustomer(model)).edit(customerType, code, fiscalNumber, name, address, districtSubdivision,
+            ((AdhocCustomer) getAdhocCustomer(model)).edit(customerType, fiscalNumber, name, address, districtSubdivision,
                     zipCode, countryCode, identificationNumber);
         }
     }
