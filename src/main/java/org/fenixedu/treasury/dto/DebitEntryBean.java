@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -68,6 +69,8 @@ public class DebitEntryBean implements IBean {
 
     private boolean academicalActBlockingSuspension;
     boolean blockAcademicActsOnDebt;
+
+    private boolean showLegacyProducts = false;
 
     public Boolean isAmountValuesEditable() {
         return false;
@@ -119,14 +122,17 @@ public class DebitEntryBean implements IBean {
     }
 
     public void setProductDataSource(List<Product> value) {
+        final String inactiveDescription = " " + Constants.bundle("label.DebitEntryBean.inactive.description");
+
         this.productDataSource =
-                value.stream().filter(x -> x.getActive())
-                        .sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent())).map(x -> {
-                            TupleDataSourceBean tuple = new TupleDataSourceBean();
-                            tuple.setId(x.getExternalId());
-                            tuple.setText(x.getName().getContent().replace("\"", "").replace("'", ""));
-                            return tuple;
-                        }).collect(Collectors.toList());
+                value.stream().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent())).map(x -> {
+                    TupleDataSourceBean tuple = new TupleDataSourceBean();
+                    tuple.setId(x.getExternalId());
+                    tuple.setText(
+                            String.format("%s", x.getName().getContent().replace("\"", "").replace("'", ""))
+                                    + (!x.isActive() ? inactiveDescription : ""));
+                    return tuple;
+                }).collect(Collectors.toList());
     }
 
     public DebtAccount getDebtAccount() {
@@ -253,15 +259,11 @@ public class DebitEntryBean implements IBean {
             this.applyInterests = true;
             this.setInterestRate(new FixedTariffInterestRateBean(debitEntry.getInterestRate()));
         }
-        this.setTreasuryEventDataSource(debitEntry
-                .getDebtAccount()
-                .getTreasuryEventsSet()
-                .stream()
-                .sorted((x, y) -> (x.getTreasuryEventDate() != null ? x.getTreasuryEventDate() : new LocalDate()).compareTo((y
-                        .getTreasuryEventDate() != null ? y.getTreasuryEventDate() : new LocalDate())))
+        this.setTreasuryEventDataSource(debitEntry.getDebtAccount().getTreasuryEventsSet().stream()
+                .sorted((x, y) -> (x.getTreasuryEventDate() != null ? x.getTreasuryEventDate() : new LocalDate())
+                        .compareTo((y.getTreasuryEventDate() != null ? y.getTreasuryEventDate() : new LocalDate())))
                 .collect(Collectors.toList()));
 
-    
         this.setAcademicalActBlockingSuspension(!debitEntry.isAcademicalActBlockingSuspension());
         this.setBlockAcademicActsOnDebt(debitEntry.isBlockAcademicActsOnDebt());
     }
@@ -301,19 +303,27 @@ public class DebitEntryBean implements IBean {
     public boolean isAcademicalActBlockingSuspension() {
         return academicalActBlockingSuspension;
     }
-    
+
     public void setAcademicalActBlockingSuspension(boolean academicalActBlockingSuspension) {
         this.academicalActBlockingSuspension = academicalActBlockingSuspension;
     }
-    
+
     public boolean isBlockAcademicActsOnDebt() {
         return blockAcademicActsOnDebt;
     }
-    
+
     public void setBlockAcademicActsOnDebt(boolean blockAcademicActsOnDebt) {
         this.blockAcademicActsOnDebt = blockAcademicActsOnDebt;
     }
-    
+
+    public boolean isShowLegacyProducts() {
+        return showLegacyProducts;
+    }
+
+    public void setShowLegacyProducts(boolean showLegacyProducts) {
+        this.showLegacyProducts = showLegacyProducts;
+    }
+
     public void setTreasuryEventDataSource(List<TreasuryEvent> treasuryEventDataSource) {
         this.treasuryEventDataSource = treasuryEventDataSource.stream().map(x -> {
             TupleDataSourceBean tuple = new TupleDataSourceBean();
@@ -332,5 +342,10 @@ public class DebitEntryBean implements IBean {
             tuple.setText(text);
             return tuple;
         }).collect(Collectors.toList());
+    }
+
+    public void refreshProductsDataSource() {
+        setProductDataSource(isShowLegacyProducts() ? Product.findAllLegacy().collect(Collectors.toList()) : Product
+                .findAllActive().collect(Collectors.toList()));
     }
 }

@@ -205,6 +205,8 @@ public class DebitEntryController extends TreasuryBaseController {
     public @ResponseBody ResponseEntity<String> createpostback(@RequestParam(value = "bean", required = true) DebitEntryBean bean,
             Model model) {
 
+        bean.refreshProductsDataSource();
+        
         Product product = bean.getProduct();
         if (product != null) {
             bean.setVat(bean.getDebtAccount().getFinantialInstitution().getActiveVat(product.getVatType(), new DateTime()));

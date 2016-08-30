@@ -685,10 +685,6 @@ public class DebitEntry extends DebitEntry_Base {
             final Map<String, String> propertiesMap, final Product product, final String description, final BigDecimal quantity,
             final InterestRate interestRate, final DateTime entryDateTime) {
 
-        if (product.getActive() == false) {
-            throw new TreasuryDomainException("error.DebitEntry.invalid.product.not.active");
-        }
-
         final DebitEntry entry = new DebitEntry(debitNote.orElse(null), debtAccount, treasuryEvent, vat, amount, dueDate,
                 propertiesMap, product, description, quantity, null, entryDateTime);
 

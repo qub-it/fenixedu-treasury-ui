@@ -199,6 +199,10 @@ public class Product extends Product_Base {
     public static LocalizedString defaultUnitOfMeasure() {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, "label.unitOfMeasure.default");
     }
+    
+    public static Stream<Product> findAllLegacy() {
+        return findAll().filter(p -> p.isLegacy());
+    }
 
     @Atomic
     public static Product create(final ProductGroup productGroup, final String code, final LocalizedString name,

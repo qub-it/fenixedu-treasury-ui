@@ -171,6 +171,16 @@ ${portal.angularToolkit()}
     <div class="panel panel-default">
         <div class="panel-body">
 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitEntry.showLegacyProducts" />
+                </div>
+                <div class="col-sm-2">
+                    <select id="debitEntry_showLegacyProducts" name="showlegacyproducts" class="form-control" ng-model="object.showLegacyProducts"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues" ng-change="onProductChange($product, $model);">
+                    </select>
+                </div>
+            </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
