@@ -55,7 +55,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     private static final BigDecimal SIBS_IGNORE_MAX_AMOUNT = BigDecimal.ZERO;
     public static final String TREASURY_OPERATION_LOG_TYPE = "TREASURY_OPERATION_LOG_TYPE";
 
-    protected PaymentReferenceCode() {
+    public PaymentReferenceCode() {
         super();
     }
 
