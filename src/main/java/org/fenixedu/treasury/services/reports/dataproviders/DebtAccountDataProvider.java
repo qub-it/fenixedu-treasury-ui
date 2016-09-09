@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
@@ -37,8 +37,6 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
     private static Object handlePaymentsLinesKey(IReportDataProvider provider) {
 
         DebtAccountDataProvider debtProvider = (DebtAccountDataProvider) provider;
-        Customer customer = debtProvider.debtAccount.getCustomer();
-        FinantialInstitution finst = debtProvider.debtAccount.getFinantialInstitution();
 
         Set<PaymentReferenceCode> referencesCodes = new HashSet<PaymentReferenceCode>();
 
@@ -46,20 +44,12 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
             List<? extends InvoiceEntry> pendingDebitEntriesSet = debtProvider.debtAccount.getPendingInvoiceEntriesSet().stream()
                     .filter(x -> x.isDebitNoteEntry()).collect(Collectors.<InvoiceEntry> toList());
 
-            for (InvoiceEntry debitEntry : pendingDebitEntriesSet) {
-                if (debitEntry.getFinantialDocument() != null
-                        && !debitEntry.getFinantialDocument().getPaymentCodesSet().isEmpty()) {
-                    referencesCodes.addAll(debitEntry.getFinantialDocument().getPaymentCodesSet().stream()
-                            .map(x -> x.getPaymentReferenceCode()).collect(Collectors.toList()));
-                }
-            }
+            for (InvoiceEntry entry : pendingDebitEntriesSet) {
+                final DebitEntry debitEntry = (DebitEntry) entry;
 
-        } else {
-            for (DebitNote debitNote : debtProvider.debitNotesForPaymentLines) {
-                if (debitNote != null && !debitNote.getPaymentCodesSet().isEmpty()) {
-                    referencesCodes.addAll(debitNote.getPaymentCodesSet().stream().map(x -> x.getPaymentReferenceCode())
-                            .collect(Collectors.toList()));
-                }
+                referencesCodes
+                        .addAll(MultipleEntriesPaymentCode.find(debitEntry).filter(m -> m.getPaymentReferenceCode().isUsed())
+                                .map(m -> m.getPaymentReferenceCode()).collect(Collectors.toSet()));
             }
         }
 
@@ -67,8 +57,8 @@ public class DebtAccountDataProvider extends AbstractDataProvider implements IRe
         for (PaymentReferenceCode code : referencesCodes) {
             codesProviders.add(new PaymentReferenceCodeDataProvider(code));
         }
+        
         return codesProviders.stream().sorted((x, y) -> x.getDueDate().compareTo(y.getDueDate())).collect(Collectors.toList());
-
     }
 
     private static Object handleDebtAccountKey(IReportDataProvider provider) {

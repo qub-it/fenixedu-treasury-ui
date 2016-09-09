@@ -3,6 +3,7 @@ package org.fenixedu.treasury.services.reports.dataproviders;
 import java.math.BigDecimal;
 
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
+import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.joda.time.LocalDate;
 
@@ -47,17 +48,7 @@ public class PaymentReferenceCodeDataProvider extends AbstractDataProvider imple
     }
 
     public LocalDate getDueDate() {
-        if (paymentCode.getPaymentCodePool().getIsVariableTimeWindow()) {
-            return paymentCode.getEndDate();
-        } else {
-            if (paymentCode.getTargetPayment() instanceof FinantialDocumentPaymentCode) {
-                ((FinantialDocumentPaymentCode) paymentCode.getTargetPayment()).getFinantialDocument().getDocumentDueDate();
-            }
-        }
-
-        //default get the Payment EndDate
-        return paymentCode.getEndDate();
-
+        return ((MultipleEntriesPaymentCode) paymentCode.getTargetPayment()).getDueDate();
     }
 
 }
