@@ -2,7 +2,8 @@ package org.fenixedu.treasury.services.reports.dataproviders;
 
 import java.math.BigDecimal;
 
-import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
+import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.joda.time.LocalDate;
@@ -40,7 +41,14 @@ public class PaymentReferenceCodeDataProvider extends AbstractDataProvider imple
     }
 
     public String getDescription() {
-        return paymentCode.getTargetPayment().getDescription();
+        final MultipleEntriesPaymentCode targetPayment = (MultipleEntriesPaymentCode) paymentCode.getTargetPayment();
+        final StringBuilder builder = new StringBuilder();
+
+        for (final FinantialDocumentEntry entry : targetPayment.getOrderedInvoiceEntries()) {
+            builder.append(((DebitEntry) entry).getProduct().getName().getContent()).append("\n");
+        }
+
+        return builder.toString();
     }
 
     public BigDecimal getAmount() {
