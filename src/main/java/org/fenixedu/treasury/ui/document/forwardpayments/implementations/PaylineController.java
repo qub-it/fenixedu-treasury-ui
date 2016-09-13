@@ -39,8 +39,9 @@ public class PaylineController extends TreasuryBaseController implements IForwar
                     paylineImplementation.doWebPayment(forwardPayment, readReturnForwardPaymentUrl(), session);
 
             if (!paylineSucess) {
-                model.addAttribute("forwardPayment", forwardPayment);
-                return jspPage("paylineRequestInsuccess");
+                return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
+//                model.addAttribute("forwardPayment", forwardPayment);
+//                return jspPage("paylineRequestInsuccess");
             }
 
             return "redirect:" + forwardPayment.getPaylineRedirectUrl();

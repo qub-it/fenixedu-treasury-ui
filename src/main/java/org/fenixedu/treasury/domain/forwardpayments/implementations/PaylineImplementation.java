@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import javax.servlet.http.HttpSession;
 import javax.xml.ws.BindingProvider;
 
+import org.apache.commons.validator.routines.EmailValidator;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -42,6 +43,8 @@ import pt.ist.fenixWebFramework.servlets.filters.contentRewrite.GenericChecksumR
 import pt.ist.fenixframework.Atomic;
 
 public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> implements IForwardPaymentImplementation {
+
+    private static final int PAYLINE_MAX_PHONE_SIZE = 14;
 
     private static final DateTimeFormatter DATE_TIME_PATTERN = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
 
@@ -128,8 +131,21 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         final Buyer buyerDetails = new Buyer();
         buyerDetails.setFirstName(customer.getFirstNames());
         buyerDetails.setLastName(customer.getLastNames());
-        buyerDetails.setEmail(customer.getEmail());
-        buyerDetails.setMobilePhone(customer.getPhoneNumber());
+
+        if (!Strings.isNullOrEmpty(customer.getEmail()) && EmailValidator.getInstance().isValid(customer.getEmail())) {
+            buyerDetails.setEmail(customer.getEmail());
+        }
+
+        if (!Strings.isNullOrEmpty(customer.getPhoneNumber())) {
+            String phone = customer.getPhoneNumber().replaceAll("[^\\d]", "");
+            
+            if(phone.length() > PAYLINE_MAX_PHONE_SIZE) {
+                phone = phone.substring(0, PAYLINE_MAX_PHONE_SIZE);
+            }
+            
+            buyerDetails.setMobilePhone(phone);
+            
+        }
 
         // fillAddress(customer, buyerDetails);
 
