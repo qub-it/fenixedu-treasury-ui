@@ -62,8 +62,11 @@ public class SINGAPExternalService extends BennuWebServiceClient<ServiceSoap> im
 
         ArrayOfResposta carregarSAFTON = client.carregarSAFTON(documentsInformation.getData());
 
-        output.setSoapInboundMessage(loggingHandler.getInboundMessage());
-        output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
+        // 2016/09/27 Disable it for now
+//        output.setSoapInboundMessage(loggingHandler.getInboundMessage());
+//        output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
+      output.setSoapInboundMessage("");
+      output.setSoapOutboundMessage("");
 
         for (Resposta resposta : carregarSAFTON.getResposta()) {
             output.setRequestId(resposta.getChavePrimaria());
