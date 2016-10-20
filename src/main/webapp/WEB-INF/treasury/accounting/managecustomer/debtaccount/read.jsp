@@ -164,7 +164,7 @@ ${portal.angularToolkit()}
                             code="label.event.accounting.manageCustomer.createDebt" />
                 </a>
                     <ul class="dropdown-menu">
-                        <li><a href="${pageContext.request.contextPath}/academictreasury/tuitiondebtcreation/tuitiondebtcreationbean/create/${debtAccount.externalId}"> <span
+                        <li><a href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createregistration/${debtAccount.externalId}"> <span
                                 class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> <spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
                         </a></li>
                         <li><a
