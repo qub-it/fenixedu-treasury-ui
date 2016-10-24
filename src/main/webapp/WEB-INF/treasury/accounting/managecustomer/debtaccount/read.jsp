@@ -769,6 +769,12 @@ ${portal.angularToolkit()}
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
+                                <spring:message code="label.SettlementNote.paymentDate" />
+                            </datatables:columnHead>
+                            <c:out value='${payment.paymentDate.toString("YYYY-MM-dd")}' />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
                                 <spring:message code="label.SettlementEntry.finantialDocument" />
                             </datatables:columnHead>
                             <a target="_blank" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${payment.externalId}"> <c:out
