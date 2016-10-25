@@ -48,6 +48,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -62,7 +63,7 @@ import com.google.gson.reflect.TypeToken;
 import pt.ist.fenixframework.Atomic;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
-    // @formatter:off
+
     public static enum TreasuryEventKeys {
         EXECUTION_YEAR, EXECUTION_SEMESTER, DEGREE_CODE;
 
@@ -127,6 +128,23 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
         return Constants.isPositive(result) ? result : BigDecimal.ZERO;
     }
+    
+    public BigDecimal getInterestsAmountToPay() {
+        return getInterestsAmountToPay(null);
+    }
+
+    public BigDecimal getInterestsAmountToPay(final Product product) {
+        final Product interestProduct = TreasurySettings.getInstance().getInterestProduct();
+                
+        final BigDecimal result =
+                DebitEntry.findActive(this).filter(d -> d.getProduct() == interestProduct)
+                        .filter(d -> product == null || (d.getDebitEntry() != null && d.getDebitEntry().getProduct() == product))
+                        .map(d -> d.getTotalAmount()).reduce((x, y) -> x.add(y))
+                        .orElse(BigDecimal.ZERO).subtract(getInterestsCreditAmount(product));
+
+        return Constants.isPositive(result) ? result : BigDecimal.ZERO;
+        
+    }
 
     public BigDecimal getCreditAmount() {
         return getCreditAmount(null);
@@ -134,6 +152,19 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
     public BigDecimal getCreditAmount(final Product product) {
         return (product != null ? CreditEntry.findActive(this, product) : CreditEntry.findActive(this))
+                .map(c -> c.getAmountWithVat()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
+    }
+    
+    public BigDecimal getInterestsCreditAmount() {
+        return getInterestsCreditAmount(null);
+    }
+    
+    public BigDecimal getInterestsCreditAmount(final Product product) {
+        final Product interestProduct = TreasurySettings.getInstance().getInterestProduct();
+        
+        return CreditEntry.findActive(this) 
+                .filter(c -> c.getDebitEntry().getProduct() == interestProduct)
+                .filter(c -> product == null || (c.getDebitEntry().getDebitEntry() != null && c.getDebitEntry().getDebitEntry().getProduct() == product))
                 .map(c -> c.getAmountWithVat()).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
     }
 
