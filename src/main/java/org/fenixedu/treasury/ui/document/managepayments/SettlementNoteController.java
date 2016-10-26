@@ -201,7 +201,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             error = true;
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
         }
-        if (!bean.isReimbursementNote() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
+        if (!bean.isReimbursementNote() && !bean.isAdvancePayment() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
         }
@@ -266,7 +266,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = CREATE_DEBIT_NOTE_URI, method = RequestMethod.POST)
     public String createDebitNote(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        if (bean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
+        if (!bean.isAdvancePayment() && bean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
             return insertPayment(bean, model);
         }
         setSettlementNoteBean(bean, model);
@@ -279,22 +279,31 @@ public class SettlementNoteController extends TreasuryBaseController {
         BigDecimal debitSum = bean.isReimbursementNote() ? bean.getDebtAmountWithVat().negate() : bean.getDebtAmountWithVat();
         BigDecimal paymentSum = bean.getPaymentAmount();
         boolean error = false;
-        if (bean.getPaymentEntries().stream().anyMatch(peb -> peb.getPaymentAmount().compareTo(BigDecimal.ZERO) == 0)) {
+
+        if (bean.getPaymentEntries().stream().anyMatch(peb -> Constants.isZero(peb.getPaymentAmount()))) {
             error = true;
             String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.reimbursement.equal.zero" : "error.SettlementNote.payment.equal.zero";
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, errorMessage), model);
         }
-        if (debitSum.compareTo(paymentSum) != 0) {
+
+        if (bean.isAdvancePayment() && Constants.isLessThan(paymentSum, debitSum)) {
             error = true;
-            String errorMessage = bean
+            final String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, errorMessage), model);
+            addErrorMessage(Constants.bundle(errorMessage), model);
+        } else if (!bean.isAdvancePayment() && !Constants.isEqual(paymentSum, debitSum)) {
+            error = true;
+            final String errorMessage = bean
+                    .isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
+            addErrorMessage(Constants.bundle(errorMessage), model);
         }
+
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/insertPayment";
         }
+
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/summary";
     }
@@ -343,22 +352,11 @@ public class SettlementNoteController extends TreasuryBaseController {
         List<SettlementNote> searchsettlementnoteResultsDataSet = filterSearchSettlementNote(debtAccount, documentNumberSeries,
                 currency, documentNumber, documentDateFrom, documentDateTo, documentDueDate, originDocumentNumber, state);
 
-        // add the results dataSet to the model
         model.addAttribute("listSize", searchsettlementnoteResultsDataSet.size());
         model.addAttribute("searchsettlementnoteResultsDataSet", searchsettlementnoteResultsDataSet);
         searchsettlementnoteResultsDataSet = searchsettlementnoteResultsDataSet.stream()
                 .limit(SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
-//        model.addAttribute("SettlementNote_finantialDocumentType_options",
-//                FinantialDocumentType.findAll().collect(Collectors.toList()));
-//        model.addAttribute("SettlementNote_debtAccount_options", DebtAccount.findAll().collect(Collectors.toList()));
-//        model.addAttribute(
-//                "SettlementNote_documentNumberSeries_options",
-//                org.fenixedu.treasury.domain.document.DocumentNumberSeries.findAll()
-//                        .filter(dNS -> dNS.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
-//                        .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList()));
-//        model.addAttribute("SettlementNote_currency_options",
-//                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.findAll());
         return "treasury/document/managepayments/settlementnote/search";
     }
@@ -472,7 +470,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote,
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
-        
+
         try {
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
             anullReason = anullReason + " - [" + Authenticate.getUser().getUsername() + "] "
@@ -716,17 +714,17 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam(value = "reason", required = false) final String reason, final Model model,
             final RedirectAttributes redirectAttributes) {
         try {
-            
-            if(!settlementNote.isDocumentToExport()) {
+
+            if (!settlementNote.isDocumentToExport()) {
                 addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
                 return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
             }
-            
-            if(Strings.isNullOrEmpty(reason)) {
+
+            if (Strings.isNullOrEmpty(reason)) {
                 addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
                 return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
             }
-            
+
             assertUserIsBackOfficeMember(model);
 
             settlementNote.clearDocumentToExport(reason);
@@ -737,5 +735,5 @@ public class SettlementNoteController extends TreasuryBaseController {
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         }
     }
-    
+
 }

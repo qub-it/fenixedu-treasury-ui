@@ -135,7 +135,6 @@ public class SettlementNote extends SettlementNote_Base {
         checkRules();
     }
 
-    
     @Override
     public boolean isDeletable() {
         //We can only "delete" a settlement note if is in "Preparing"
@@ -190,6 +189,28 @@ public class SettlementNote extends SettlementNote_Base {
         } else {
             processPaymentEntries(bean);
         }
+
+        processAdvancePayments(bean);
+    }
+
+    private void processAdvancePayments(SettlementNoteBean bean) {
+        if (bean.isReimbursementNote()) {
+            return;
+        }
+
+        if (!bean.isAdvancePayment()) {
+            return;
+        }
+
+        final BigDecimal debitSum =
+                bean.isReimbursementNote() ? bean.getDebtAmountWithVat().negate() : bean.getDebtAmountWithVat();
+        final BigDecimal paymentSum = bean.getPaymentAmount();
+
+        final BigDecimal availableAmount = paymentSum.subtract(debitSum);
+        final String comments = String.format("%s [%s]", Constants.bundle("label.SettlementNote.advancedpayment"),
+                getPaymentDate().toString(Constants.DATE_FORMAT));
+
+        createAdvancedPaymentCreditNote(availableAmount, comments, getExternalId());
     }
 
     private void processReimbursementEntries(SettlementNoteBean bean) {
@@ -200,16 +221,16 @@ public class SettlementNote extends SettlementNote_Base {
 
     private void processPaymentEntries(SettlementNoteBean bean) {
         for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
-            PaymentEntry.create(paymentEntryBean.getPaymentMethod(), this, paymentEntryBean.getPaymentAmount(), paymentEntryBean.getPaymentMethodId());
+            PaymentEntry.create(paymentEntryBean.getPaymentMethod(), this, paymentEntryBean.getPaymentAmount(),
+                    paymentEntryBean.getPaymentMethodId());
         }
     }
 
     private void processInterestEntries(SettlementNoteBean bean) {
 
-        DocumentNumberSeries debitNoteSeries =
-                DocumentNumberSeries
-                        .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
-                        .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+        DocumentNumberSeries debitNoteSeries = DocumentNumberSeries
+                .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
+                .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
         if (bean.getInterestEntries().size() == 0) {
             return;
         }
@@ -241,10 +262,9 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     private void closeDebitNotes(SettlementNoteBean bean) {
-        DocumentNumberSeries debitNoteSeries =
-                DocumentNumberSeries
-                        .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
-                        .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
+        DocumentNumberSeries debitNoteSeries = DocumentNumberSeries
+                .find(FinantialDocumentType.findForDebitNote(), bean.getDebtAccount().getFinantialInstitution())
+                .filter(x -> Boolean.TRUE.equals(x.getSeries().getDefaultSeries())).findFirst().orElse(null);
 
         List<DebitEntry> untiedDebitEntries = new ArrayList<DebitEntry>();
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
@@ -313,7 +333,8 @@ public class SettlementNote extends SettlementNote_Base {
         return findAll().filter(i -> originDocumentNumber.equalsIgnoreCase(i.getOriginDocumentNumber()));
     }
 
-    public static Stream<SettlementNote> findByState(final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    public static Stream<SettlementNote> findByState(
+            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
         return findAll().filter(i -> state.equals(i.getState()));
     }
 
@@ -326,7 +347,8 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     @Override
-    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList, Boolean includeAnulledDocuments) {
+    public Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList,
+            Boolean includeAnulledDocuments) {
 
         documentsBaseList.add(this);
 
@@ -353,7 +375,7 @@ public class SettlementNote extends SettlementNote_Base {
             setAnnulledReason(anulledReason);
 
             // Settlement note can never free entries 
-            if(markDocumentToExport) {
+            if (markDocumentToExport) {
                 this.markDocumentToExport();
             }
 
@@ -363,13 +385,13 @@ public class SettlementNote extends SettlementNote_Base {
                 this.setAdvancedPaymentCreditNote(null);
                 // this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, anulledReason);
             }
-            
+
             checkRules();
         } else {
-            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
-                    "error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(
+                    BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
         }
-        
+
     }
 
     public BigDecimal getTotalDebitAmount() {
@@ -399,7 +421,7 @@ public class SettlementNote extends SettlementNote_Base {
         if (this.getAdvancedPaymentCreditNote() != null) {
             this.getAdvancedPaymentCreditNote().closeDocument();
         }
-        
+
         super.closeDocument(markDocumentToExport);
     }
 
@@ -448,9 +470,8 @@ public class SettlementNote extends SettlementNote_Base {
         DocumentNumberSeries documentNumberSeries =
                 DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getDocumentNumberSeries().getSeries());
 
-        AdvancedPaymentCreditNote creditNote =
-                AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries, this.getDebtAccount(),
-                        availableAmount, this.getDocumentDate(), comments, originalNumber);
+        AdvancedPaymentCreditNote creditNote = AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries,
+                this.getDebtAccount(), availableAmount, this.getDocumentDate(), comments, originalNumber);
 
         this.setAdvancedPaymentCreditNote(creditNote);
     }

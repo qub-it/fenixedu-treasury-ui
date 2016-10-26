@@ -52,6 +52,8 @@ public class SettlementNoteBean implements IBean, Serializable {
     private List<String> settlementNoteStateUrls;
 
     private Stack<Integer> previousStates;
+    
+    private boolean advancePayment;
 
     public SettlementNoteBean() {
         creditEntries = new ArrayList<CreditEntryBean>();
@@ -61,6 +63,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         date = new LocalDate();
         previousStates = new Stack<Integer>();
         this.setPaymentMethods(PaymentMethod.findAvailableForPaymentInApplication().collect(Collectors.toList()));
+        
+        this.advancePayment = false;
     }
 
     public SettlementNoteBean(DebtAccount debtAccount, boolean reimbursementNote) {
@@ -84,6 +88,8 @@ public class SettlementNoteBean implements IBean, Serializable {
                         + reimbursementNote, SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL,
                         SettlementNoteController.CALCULATE_INTEREST_URL, SettlementNoteController.CREATE_DEBIT_NOTE_URL,
                         SettlementNoteController.INSERT_PAYMENT_URL, SettlementNoteController.SUMMARY_URL);
+        
+        this.advancePayment = false;
     }
 
     private void setDocumentNumberSeries(DebtAccount debtAccount, boolean reimbursementNote) {
@@ -137,6 +143,14 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     public void setInterestEntries(List<InterestEntryBean> interestEntries) {
         this.interestEntries = interestEntries;
+    }
+    
+    public boolean isAdvancePayment() {
+        return this.advancePayment;
+    }
+    
+    public void setAdvancePayment(final boolean advancePayment) {
+        this.advancePayment = advancePayment;
     }
 
     public LocalDate getDebitNoteDate() {

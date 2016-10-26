@@ -57,6 +57,16 @@ public class Constants {
 
     private static final int ORIGIN_DOCUMENT_LIMIT = 30;
 
+    public static final String DATE_FORMAT = "dd/MM/yyyy";
+
+    public static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+
+    public static final String DATE_FORMAT_YYYY_MM_DD = "yyyy/MM/dd";
+
+    public static final String DATE_TIME_FORMAT_YYYY_MM_DD = "yyyy/MM/dd HH:mm:ss";
+
+    public static final String STANDARD_DATE_FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
+
     // @formatter:off
     /* *************
      * COUNTRY UTILS

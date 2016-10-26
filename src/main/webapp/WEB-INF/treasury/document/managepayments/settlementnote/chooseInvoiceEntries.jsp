@@ -98,6 +98,10 @@ ${portal.angularToolkit()}
 					[
 							'$scope',
 							function($scope) {
+								$scope.booleanvalues = [
+									{ name : '<spring:message code="label.no"/>', value : false },
+									{ name : '<spring:message code="label.yes"/>', value : true }];
+								
 								$scope.object = angular
 										.fromJson('${settlementNoteBeanJson}');
 								if ($scope.object.previousStates.length == 0
@@ -163,6 +167,20 @@ ${portal.angularToolkit()}
                     <input class="form-control" type="text" ng-model="object.originDocumentNumber" />
                 </div>
             </div>
+
+            <c:if test="${not settlementNoteBean.reimbursementNote }">
+            <div class="form-group row">
+            	<div class="col-sm-2 control-label">
+            		<spring:message code="label.SettlementNote.advancePayment" />
+            	</div>
+            	<div class="col-sm-4">
+					<select id="settlementNote_advancePayment" name="advancepayment"
+					    class="form-control" ng-model="object.advancePayment" 
+					    ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+					</select>
+            	</div>
+            </div>
+            </c:if>
         </div>
     </div>
 

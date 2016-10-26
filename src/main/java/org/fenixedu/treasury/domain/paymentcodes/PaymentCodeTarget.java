@@ -299,7 +299,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         //if "availableAmount" still exists, then we must create a "pending Payment" or "CreditNote"
         if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
             settlementNote.createAdvancedPaymentCreditNote(availableAmount,
-                    BundleUtil.getString(Constants.BUNDLE, "label.PaymentCodeTarget.advancedpayment") + comments + "-"
+                    Constants.bundle("label.PaymentCodeTarget.advancedpayment") + comments + "-"
                             + sibsTransactionId,
                     sibsTransactionId);
         }
