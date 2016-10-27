@@ -207,6 +207,11 @@ public class SettlementNote extends SettlementNote_Base {
         final BigDecimal paymentSum = bean.getPaymentAmount();
 
         final BigDecimal availableAmount = paymentSum.subtract(debitSum);
+        
+        if(!Constants.isPositive(availableAmount)) {
+            return;
+        }
+        
         final String comments = String.format("%s [%s]", Constants.bundle("label.SettlementNote.advancedpayment"),
                 getPaymentDate().toString(Constants.DATE_FORMAT));
 
