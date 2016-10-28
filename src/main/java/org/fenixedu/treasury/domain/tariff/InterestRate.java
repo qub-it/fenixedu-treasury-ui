@@ -52,6 +52,8 @@ import pt.ist.fenixframework.Atomic;
 
 public class InterestRate extends InterestRate_Base {
 
+    private static final int MAX_YEARS = 5;
+
     protected InterestRate() {
         super();
         setBennu(Bennu.getInstance());
@@ -204,12 +206,17 @@ public class InterestRate extends InterestRate_Base {
 
     private InterestRateBean calculateMonthly(final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate,
             final LocalDate paymentDate, final TreeMap<LocalDate, BigDecimal> sortedMap) {
+        LocalDate dueDateToUse = dueDate;
+        if(dueDate.isBefore(paymentDate.minusYears(MAX_YEARS))) {
+            dueDateToUse = paymentDate.minusYears(MAX_YEARS);
+        }
+
         final InterestRateBean result = new InterestRateBean(getInterestType());
 
         BigDecimal totalInterestAmount = BigDecimal.ZERO;
         int totalOfMonths = 0;
 
-        LocalDate startDate = dueDate.plusMonths(1).withDayOfMonth(1);
+        LocalDate startDate = dueDateToUse.plusMonths(1).withDayOfMonth(1);
 
         // Iterate over amountInDebtMap and calculate amountToPay
         BigDecimal amountInDebt = null;
@@ -259,12 +266,17 @@ public class InterestRate extends InterestRate_Base {
 
     private InterestRateBean calculateDaily(final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate,
             final LocalDate paymentDate, final TreeMap<LocalDate, BigDecimal> sortedMap) {
+        LocalDate dueDateToUse = dueDate;
+        if(dueDate.isBefore(paymentDate.minusYears(MAX_YEARS))) {
+            dueDateToUse = paymentDate.minusYears(MAX_YEARS);
+        }
+
         final InterestRateBean result = new InterestRateBean(getInterestType());
 
         BigDecimal totalInterestAmount = BigDecimal.ZERO;
         int totalOfDays = 0;
 
-        LocalDate startDate = applyOnFirstWorkdayIfNecessary(dueDate.plusDays(numberOfDaysAfterDueDate(dueDate.getYear())));
+        LocalDate startDate = applyOnFirstWorkdayIfNecessary(dueDateToUse.plusDays(numberOfDaysAfterDueDate(dueDateToUse.getYear())));
 
         // Iterate over amountInDebtMap and calculate amountToPay
         BigDecimal amountInDebt = BigDecimal.ZERO;
