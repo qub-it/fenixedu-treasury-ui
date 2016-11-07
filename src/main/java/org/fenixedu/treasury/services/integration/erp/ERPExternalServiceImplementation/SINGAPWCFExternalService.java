@@ -64,8 +64,10 @@ public class SINGAPWCFExternalService extends BennuWebServiceClient<IWCFServiceW
 
         ArrayOfResposta carregarSAFTON = client.carregarSAFTON(documentsInformation.getData());
 
-        output.setSoapInboundMessage(loggingHandler.getInboundMessage());
-        output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
+//        output.setSoapInboundMessage(loggingHandler.getInboundMessage());
+//        output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
+        output.setSoapInboundMessage("");
+        output.setSoapOutboundMessage("");
 
         for (Resposta resposta : carregarSAFTON.getResposta()) {
             output.setRequestId(resposta.getChavePrimaria().getValue());
