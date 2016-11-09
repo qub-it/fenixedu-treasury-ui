@@ -200,7 +200,7 @@ public class ForwardPayment extends ForwardPayment_Base {
             amountToConsume = amountToConsume.subtract(debitEntry.getOpenAmount());
 
             SettlementEntry.create(debitEntry, getSettlementNote(), debitEntry.getOpenAmount(), debitEntry.getDescription(),
-                    new DateTime(), true);
+                    transactionDate, true);
         }
 
         // settle interest debit entries
@@ -218,7 +218,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
                 amountToConsume = amountToConsume.subtract(interestDebitEntry.getOpenAmount());
                 SettlementEntry.create(interestDebitEntry, getSettlementNote(), interestDebitEntry.getOpenAmount(),
-                        interestDebitEntry.getDescription(), new DateTime(), true);
+                        interestDebitEntry.getDescription(), transactionDate, true);
             }
         }
 
