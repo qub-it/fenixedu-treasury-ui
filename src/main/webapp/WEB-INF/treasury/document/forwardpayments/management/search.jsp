@@ -93,7 +93,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <input id="beginDate" class="form-control" type="text"
-                        name="beginDate" bennu-date value='<c:out value='${param.beginDate != null ? param.beginDate.toString("yyyy-MM-dd") : beginDate.toString("yyyy-MM-dd") }'/>' />
+                        name="beginDate" bennu-date value='<c:out value='${param.beginDate != null ? param.beginDate : "" }'/>' />
                 </div>
             </div>
 
@@ -104,7 +104,7 @@ ${portal.toolkit()}
 
                 <div class="col-sm-4">
                     <input id="endDate" class="form-control" type="text"
-                        name="endDate" bennu-date value='<c:out value='${param.endDate != null ? param.endDate.toString("yyyy-MM-dd") : endDate.toString("yyyy-MM-dd") }'/>' />
+                        name="endDate" bennu-date value='<c:out value='${param.endDate != null ? param.endDate : "" }'/>' />
                 </div>
             </div>
 

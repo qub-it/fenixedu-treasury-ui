@@ -31,7 +31,7 @@ import com.google.common.base.Strings;
 @RequestMapping(ManageForwardPaymentsController.CONTROLLER_URL)
 public class ManageForwardPaymentsController extends TreasuryBaseController {
 
-    private static final int MAX_SEARCH_SIZE = 3000;
+    private static final int MAX_SEARCH_SIZE = 500;
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/management";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/management";
 
@@ -98,7 +98,8 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     public static final String VERIFY_FORWARD_PAYMENT_URL = CONTROLLER_URL + VERIFY_FORWARD_PAYMENT_URI;
 
     @RequestMapping(VERIFY_FORWARD_PAYMENT_URI + "/{forwardPaymentId}")
-    public String verifyforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model, final RedirectAttributes redirectAttributes) {
+    public String verifyforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         try {
             ForwardPaymentStatusBean paymentStatusBean =
@@ -110,7 +111,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             return jspPage(VERIFY_FORWARD_PAYMENT_URI);
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-            return redirect(VIEW_URL + "/" + forwardPayment.getExternalId() , model, redirectAttributes);
+            return redirect(VIEW_URL + "/" + forwardPayment.getExternalId(), model, redirectAttributes);
         }
     }
 
