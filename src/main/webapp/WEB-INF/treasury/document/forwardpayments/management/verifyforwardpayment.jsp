@@ -260,9 +260,9 @@ ${portal.toolkit()}
 	</div>
 </div>
 
-<c:if test="${(forwardPayment.currentState.inStateToPostProcessPayment or forwardPayment.currentState.requested) and paymentStatusBean.stateType.payed}">
+<c:if test="${paymentStatusBean.isAbleToRegisterPostPayment(forwardPayment)}">
 	
-	<p><strong><spring:message code="label.ManageForwardPayments.register.payment.message"></spring:message></strong></p>
+	<p><strong><spring:message code="label.ManageForwardPayments.register.payment.message" /></strong></p>
 	
 	<button class="btn btn-primary" data-toggle="modal" data-target="#registerPaymentModal"> 
 		<spring:message code="label.ManageForwardPayments.register.button" />

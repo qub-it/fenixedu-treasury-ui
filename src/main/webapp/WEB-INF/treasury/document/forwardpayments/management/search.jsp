@@ -129,7 +129,40 @@ ${portal.toolkit()}
                     	value='<c:out value='${param.businessCustomerId != null ? param.businessCustomerId : businessCustomerId }'/>' />
                 </div>
             </div>
+			<div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.ManageForwardPayments.orderNumber" />
+                </div>
 
+                <div class="col-sm-10">
+                    <input id="orderNumber" class="form-control" type="text" name="orderNumber" 
+                    	value='<c:out value='${param.orderNumber != null ? param.orderNumber : orderNumber }'/>' />
+                </div>
+			</div>
+			<div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.ManageForwardPayments.withPendingPlatformPayment" />
+                </div>
+				
+				<div class="col-sm-10">
+					<select id="withPendingPlatformPayment" name="withPendingPlatformPayment" class="form-control">
+						<option value="true"><spring:message code="label.yes" /></option>
+	                    <option value="false" selected><spring:message code="label.no" /></option>
+					</select>
+					<br/>
+					<span class="label label-warning"><spring:message code="label.ManageForwardPayments.search.withPendingPlatformPayment.slow" /></span>
+					<script>
+						$("#withPendingPlatformPayment").select2();
+					</script>
+			</div>
+			<div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    &nbsp;
+                </div>
+				<div class="col-sm-10">
+					
+				</div>                
+			</div>
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" 
@@ -137,6 +170,12 @@ ${portal.toolkit()}
         </div>
     </form>
 </div>
+
+<c:if test="${limitResults}">
+	<div>
+		<p class="label label-warning"><spring:message code="label.ManageForwardPayments.search.limited.results" /></p>
+	</div>
+</c:if>
 
 <c:choose>
     <c:when test="${not empty forwardPayments}">

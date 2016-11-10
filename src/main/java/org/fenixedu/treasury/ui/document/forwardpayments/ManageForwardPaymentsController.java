@@ -9,7 +9,6 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -31,7 +30,7 @@ import com.google.common.base.Strings;
 @RequestMapping(ManageForwardPaymentsController.CONTROLLER_URL)
 public class ManageForwardPaymentsController extends TreasuryBaseController {
 
-    private static final int MAX_SEARCH_SIZE = 500;
+    private static final int MAX_SEARCH_SIZE = 250;
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/management";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/management";
 
@@ -49,33 +48,61 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate beginDate,
             @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate endDate,
             @RequestParam(value = "customerName", required = false) final String customerName,
-            @RequestParam(value = "customerBusinessId", required = false) final String customerBusinessId, final Model model) {
+            @RequestParam(value = "customerBusinessId", required = false) final String customerBusinessId,
+            @RequestParam(value = "orderNumber", required = false) final String orderNumber,
+            @RequestParam(value = "withPendingPlatformPayment", required = false) final boolean withPendingPlatformPayment,
+            final Model model) {
 
         Stream<ForwardPayment> stream = Bennu.getInstance().getForwardPaymentsSet().stream();
 
-        if (beginDate != null) {
-            stream = stream.filter(i -> !i.getWhenOccured().isBefore(beginDate.toDateTimeAtStartOfDay()));
+        if (!Strings.isNullOrEmpty(orderNumber)) {
+            stream = stream.filter(i -> orderNumber.trim().equals(String.valueOf(i.getOrderNumber())));
+        } else {
+            if (beginDate != null) {
+                stream = stream.filter(i -> !i.getWhenOccured().isBefore(beginDate.toDateTimeAtStartOfDay()));
+            }
+
+            if (endDate != null) {
+                stream = stream
+                        .filter(i -> !i.getWhenOccured().isAfter(endDate.toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1)));
+            }
+
+            if (!Strings.isNullOrEmpty(customerName)) {
+                stream = stream.filter(
+                        i -> Constants.stringNormalizedContains(i.getDebtAccount().getCustomer().getName(), customerName));
+            }
+
+            if (!Strings.isNullOrEmpty(customerBusinessId)) {
+                stream = stream
+                        .filter(i -> i.getDebtAccount().getCustomer().getBusinessIdentification().equals(customerBusinessId));
+            }
         }
 
-        if (endDate != null) {
-            stream = stream
-                    .filter(i -> !i.getWhenOccured().isAfter(endDate.toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1)));
-        }
+        if (withPendingPlatformPayment) {
+            final List<ForwardPayment> resultList = stream.collect(Collectors.toList());
+            stream = resultList.stream();
 
-        if (!Strings.isNullOrEmpty(customerName)) {
-            stream = stream
-                    .filter(i -> Constants.stringNormalizedContains(i.getDebtAccount().getCustomer().getName(), customerName));
-        }
-
-        if (!Strings.isNullOrEmpty(customerBusinessId)) {
-            stream = stream.filter(i -> i.getDebtAccount().getCustomer().getBusinessIdentification().equals(customerBusinessId));
+            int MAX_PENDING_POSSIBLE_PAYMENTS = 50;
+            if (resultList.stream()
+                    .filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested())
+                    .count() > MAX_PENDING_POSSIBLE_PAYMENTS) {
+                addErrorMessage(Constants.bundle("error.ManageForwardPayments.search.withPendingPlatformPayment.limited.narrow.search"), model);
+            } else {
+                stream = stream.filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested());
+                stream = stream.filter(
+                        i -> i.getForwardPaymentConfiguration().implementation().paymentStatus(i).isAbleToRegisterPostPayment(i));
+            }
         }
 
         List<ForwardPayment> forwardPayments =
                 stream.sorted(java.util.Collections.reverseOrder(Comparator.comparing(ForwardPayment::getWhenOccured)))
                         .collect(Collectors.toList());
 
-        if (forwardPayments.size() > MAX_SEARCH_SIZE) {
+        boolean canLimitResults =
+                !(beginDate != null && endDate != null && org.joda.time.Days.daysBetween(beginDate, endDate).getDays() <= 1);
+
+        if (canLimitResults && forwardPayments.size() > MAX_SEARCH_SIZE) {
+            model.addAttribute("limitResults", true);
             forwardPayments = forwardPayments.subList(0, MAX_SEARCH_SIZE);
         }
 

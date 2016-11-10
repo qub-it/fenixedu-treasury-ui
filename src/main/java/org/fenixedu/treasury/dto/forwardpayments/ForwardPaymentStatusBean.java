@@ -2,6 +2,7 @@ package org.fenixedu.treasury.dto.forwardpayments;
 
 import java.math.BigDecimal;
 
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.joda.time.DateTime;
 
@@ -47,6 +48,10 @@ public class ForwardPaymentStatusBean {
 
     public boolean isInPayedState() {
         return getStateType() != null && getStateType().isPayed();
+    }
+    
+    public boolean isAbleToRegisterPostPayment(final ForwardPayment forwardPayment) {
+        return (forwardPayment.getCurrentState().isInStateToPostProcessPayment() || forwardPayment.getCurrentState().isRequested()) && getStateType().isPayed();
     }
     
     // @formatter:off
