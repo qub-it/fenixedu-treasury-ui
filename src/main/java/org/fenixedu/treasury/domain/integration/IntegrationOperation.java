@@ -32,17 +32,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.joda.time.DateTime;
-
-import pt.ist.fenixframework.Atomic;
 
 import com.google.common.base.Strings;
 
+import pt.ist.fenixframework.Atomic;
+
 public abstract class IntegrationOperation extends IntegrationOperation_Base {
+
+    private static final String ERROR_LOG_TXT_FILENAME = "errorLog.txt";
+    private static final String INTEGRATION_LOG_TXT_FILENAME = "integrationLog.txt";
+    private static final String SOAP_OUTBOUND_MESSAGE_TXT_FILENAME = "soapOutboundMessage.txt";
+    private static final String SOAP_INBOUND_MESSAGE_TXT_FILENAME = "soapInboundMessage.txt";
 
     protected IntegrationOperation() {
         super();
@@ -62,41 +69,76 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         if (Strings.isNullOrEmpty(this.getErrorLog()) == false) {
             this.setSuccess(false);
         }
-        //
-        // CHANGE_ME add more busines validations
-        //
-
-        // CHANGE_ME In order to validate UNIQUE restrictions
-        // if (findByExecutionDate(getExecutionDate().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.IntegrationOperation.executionDate.duplicated");
-        // }
-        // if (findByProcessed(getProcessed().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.IntegrationOperation.processed.duplicated");
-        // }
-        // if (findBySuccess(getSuccess().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.IntegrationOperation.success.duplicated");
-        // }
-        // if (findByErrorLog(getErrorLog().count()>1)
-        // {
-        // throw new
-        // TreasuryDomainException("error.IntegrationOperation.errorLog.duplicated");
-        // }
     }
 
     @Atomic
-    public void edit(final org.joda.time.DateTime executionDate, final boolean processed, final boolean success,
-            final java.lang.String errorLog) {
-        setExecutionDate(executionDate);
-        setProcessed(processed);
-        setSuccess(success);
-        setErrorLog(errorLog);
-        checkRules();
+    public void appendLog(String errorLog, String integrationLog, String soapInboundMessage, String soapOutboundMessage) {
+
+        if(errorLog == null) {
+            errorLog = "";
+        }
+        
+        if(integrationLog == null) {
+            integrationLog = "";
+        }
+        
+        if(soapInboundMessage == null) {
+            soapInboundMessage = "";
+        }
+        
+        if(soapOutboundMessage == null) {
+            soapOutboundMessage = "";
+        }
+        
+        if(!Strings.isNullOrEmpty(getErrorLog())) {
+            errorLog = getErrorLog() + errorLog;
+        }
+        
+        if(!Strings.isNullOrEmpty(getIntegrationLog())) {
+            integrationLog = getIntegrationLog() + integrationLog;
+        }
+        
+        if(!Strings.isNullOrEmpty(getSoapInboundMessage())) {
+            soapInboundMessage = getSoapInboundMessage() + soapInboundMessage;
+        }
+        
+        if(!Strings.isNullOrEmpty(getSoapOutboundMessage())) {
+            soapOutboundMessage = getSoapOutboundMessage() + soapOutboundMessage;
+        }
+        
+        try {
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ZipOutputStream zos = new ZipOutputStream(baos);
+
+            zos.putNextEntry(new ZipEntry(ERROR_LOG_TXT_FILENAME));
+            zos.write(errorLog.getBytes("UTF-8"));
+            zos.closeEntry();
+
+            zos.putNextEntry(new ZipEntry(INTEGRATION_LOG_TXT_FILENAME));
+            zos.write(integrationLog.getBytes("UTF-8"));
+            zos.closeEntry();
+
+            zos.putNextEntry(new ZipEntry(SOAP_INBOUND_MESSAGE_TXT_FILENAME));
+            zos.write(soapInboundMessage.getBytes("UTF-8"));
+            zos.closeEntry();
+
+            zos.putNextEntry(new ZipEntry(SOAP_OUTBOUND_MESSAGE_TXT_FILENAME));
+            zos.write(soapOutboundMessage.getBytes("UTF-8"));
+            zos.closeEntry();
+
+            zos.close();
+            baos.close();
+
+            final byte[] contents = baos.toByteArray();
+            
+            if(getLogFile() != null) {
+                getLogFile().delete(); 
+            }
+            
+            OperationFile.createLog(String.format("integrationOperationLogs-%s.zip", getExternalId()), contents, this);
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public boolean isDeletable() {
@@ -116,57 +158,6 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         deleteDomainObject();
     }
 
-    @Atomic
-    public void appendInfoLog(String message) {
-        String infoLog = this.getIntegrationLog();
-        if (infoLog == null) {
-            setIntegrationLog("");
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getIntegrationLog()).append("\n");
-        builder.append(new DateTime().toString()).append(message);
-        setIntegrationLog(builder.toString());
-        checkRules();
-    }
-
-    @Atomic
-    public void appendErrorLog(String message) {
-        String errorLog = this.getErrorLog();
-        if (errorLog == null) {
-            setErrorLog("");
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append(this.getErrorLog()).append("\n");
-        builder.append(new DateTime().toString()).append(message);
-        setErrorLog(builder.toString());
-        checkRules();
-    }
-
-    @Atomic
-    public void defineSoapInboundMessage(final String soapInboundMessage) {
-        setSoapInboundMessage(soapInboundMessage != null ? soapInboundMessage : "");
-
-    }
-
-    @Atomic
-    public void defineSoapOutboutMessage(final String soapOutboundMessage) {
-        setSoapOutboundMessage(soapOutboundMessage != null ? soapOutboundMessage : "");
-    }
-
-    private String zipValue(String value) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        GZIPOutputStream gzipOutputStream;
-        try {
-            gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-            gzipOutputStream.write(value.getBytes());
-            gzipOutputStream.flush();
-            gzipOutputStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new String(Base64.getEncoder().encode(byteArrayOutputStream.toByteArray()));
-    }
-
     private String unzip(String possibleZippedString) {
         String value = possibleZippedString;
         if (value != null) {
@@ -184,59 +175,67 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
     }
 
     @Override
-    public void setSoapInboundMessage(String soapInboundMessage) {
-        String value = soapInboundMessage;
-        if (value != null) {
-            value = zipValue(value);
-        }
-        super.setSoapInboundMessage(value);
-    }
-
-    @Override
     public String getSoapInboundMessage() {
+        final String soapInboundMessage = readLogZipFile(SOAP_INBOUND_MESSAGE_TXT_FILENAME);
+
+        if (!Strings.isNullOrEmpty(soapInboundMessage)) {
+            return soapInboundMessage;
+        }
+
         return unzip(super.getSoapInboundMessage());
     }
 
     @Override
-    public void setSoapOutboundMessage(String soapOutboundMessage) {
-        String value = soapOutboundMessage;
-        if (value != null) {
-            value = zipValue(value);
-        }
-        super.setSoapOutboundMessage(value);
-    }
-
-    @Override
     public String getSoapOutboundMessage() {
+        final String soapOutboundMessage = readLogZipFile(SOAP_OUTBOUND_MESSAGE_TXT_FILENAME);
+
+        if (!Strings.isNullOrEmpty(soapOutboundMessage)) {
+            return soapOutboundMessage;
+        }
+
         return unzip(super.getSoapOutboundMessage());
     }
 
     @Override
-    public void setIntegrationLog(String integrationLog) {
-        String value = integrationLog;
-        if (value != null) {
-            value = zipValue(value);
-        }
-        super.setIntegrationLog(value);
-    }
-
-    @Override
     public String getIntegrationLog() {
+        final String integrationLog = readLogZipFile(INTEGRATION_LOG_TXT_FILENAME);
+
+        if (!Strings.isNullOrEmpty(integrationLog)) {
+            return integrationLog;
+        }
+
         return unzip(super.getIntegrationLog());
     }
 
     @Override
-    public void setErrorLog(String errorLog) {
-        String value = errorLog;
-        if (value != null) {
-            value = zipValue(value);
+    public String getErrorLog() {
+        final String errorLog = readLogZipFile(ERROR_LOG_TXT_FILENAME);
+
+        if (!Strings.isNullOrEmpty(errorLog)) {
+            return errorLog;
         }
-        super.setErrorLog(value);
+
+        return unzip(super.getErrorLog());
     }
 
-    @Override
-    public String getErrorLog() {
-        return unzip(super.getErrorLog());
+    private String readLogZipFile(final String zipFilename) {
+        try {
+            if (getLogFile() != null) {
+                final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(getLogFile().getContent()));
+                
+                ZipEntry zipEntry = null;
+                while ((zipEntry = zis.getNextEntry()) != null) {
+                    if (!zipFilename.equals(zipEntry.getName())) {
+                        continue;
+                    }
+                    
+                    return new String(IOUtils.toByteArray(zis), "UTF-8");
+                }
+            }
+        } catch (IOException e) {
+        }
+
+        return null;
     }
 
 }

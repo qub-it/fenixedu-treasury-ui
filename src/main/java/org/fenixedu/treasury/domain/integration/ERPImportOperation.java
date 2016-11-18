@@ -21,14 +21,14 @@ public class ERPImportOperation extends ERPImportOperation_Base {
     }
 
     protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final DateTime executionDate,
-            final boolean processed, final boolean success, final boolean corrected, final String errorLog) {
+            final boolean processed, final boolean success, final boolean corrected) {
         setFile(file);
         setFinantialInstitution(finantialInstitution);
         setExecutionDate(executionDate);
         setProcessed(processed);
         setSuccess(success);
         setCorrected(corrected);
-        setErrorLog(errorLog);
+
         checkRules();
     }
 
@@ -40,19 +40,6 @@ public class ERPImportOperation extends ERPImportOperation_Base {
         if (getFinantialInstitution() == null) {
             throw new TreasuryDomainException("error.ERPImportOperation.finantialInstitution.required");
         }
-    }
-
-    @Atomic
-    public void edit(final OperationFile file, final FinantialInstitution finantialInstitution, final DateTime executionDate,
-            final boolean processed, final boolean success, final boolean corrected, final String errorLog) {
-        setFile(file);
-        setFinantialInstitution(finantialInstitution);
-        setExecutionDate(executionDate);
-        setProcessed(processed);
-        setSuccess(success);
-        setCorrected(corrected);
-        setErrorLog(errorLog);
-        checkRules();
     }
 
     @Override
@@ -78,11 +65,10 @@ public class ERPImportOperation extends ERPImportOperation_Base {
 
     @Atomic
     public static ERPImportOperation create(String filename, final byte[] bytes, final FinantialInstitution finantialInstitution,
-            final DateTime executionDate, final boolean processed, final boolean success, final boolean corrected,
-            final String errorLog) {
+            final DateTime executionDate, final boolean processed, final boolean success, final boolean corrected) {
         ERPImportOperation eRPImportOperation = new ERPImportOperation();
         OperationFile file = OperationFile.create(filename, bytes, eRPImportOperation);
-        eRPImportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected, errorLog);
+        eRPImportOperation.init(file, finantialInstitution, executionDate, processed, success, corrected);
         return eRPImportOperation;
     }
 

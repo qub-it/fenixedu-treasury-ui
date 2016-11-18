@@ -39,15 +39,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import oecd.standardauditfile_tax.pt_1.AuditFile;
-import oecd.standardauditfile_tax.pt_1.PaymentMethod;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
-
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -61,6 +55,7 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
+import org.fenixedu.treasury.domain.integration.IntegrationOperationLogBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
@@ -69,10 +64,16 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
+import oecd.standardauditfile_tax.pt_1.AuditFile;
+import oecd.standardauditfile_tax.pt_1.PaymentMethod;
+import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
-
-import com.google.common.base.Strings;
 
 // ******************************************************************************************************************************
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/3B4FECDB-2380-45D7-9019-ABCA80A7E99E/0/Comunicacao_Dados_Doc_Transporte.pdf
@@ -111,7 +112,9 @@ public class ERPImporter {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public DocumentsInformationOutput processAuditFile(ERPImportOperation eRPImportOperation) {
+    public DocumentsInformationOutput processAuditFile(final ERPImportOperation eRPImportOperation) {
+        final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
+
         DocumentsInformationOutput result = new DocumentsInformationOutput();
         result.setDocumentStatus(new ArrayList<DocumentStatusWS>());
         result.setRequestId(eRPImportOperation.getExternalId());
@@ -121,12 +124,11 @@ public class ERPImporter {
             BigDecimal totalDebit = BigDecimal.ZERO;
             BigInteger totalPayments = BigInteger.ZERO;
             for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
-                DocumentStatusWS docStatus = new DocumentStatusWS();
-                eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE, "info.ERPImporter.processing.payment",
-                        payment.getPaymentRefNo()));
+                final DocumentStatusWS docStatus = new DocumentStatusWS();
+                logBean.appendIntegrationLog(Constants.bundle("info.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                 SettlementNote note = null;
                 try {
-                    note = processErpPayment(payment, eRPImportOperation);
+                    note = processErpPayment(payment, eRPImportOperation.getFinantialInstitution(), logBean);
                     if (note != null) {
                         if (Strings.isNullOrEmpty(note.getOriginDocumentNumber())) {
                             docStatus.setDocumentNumber(note.getUiDocumentNumber());
@@ -147,34 +149,24 @@ public class ERPImporter {
                         throw new TreasuryDomainException("error.ERPImporter.processing.payment", payment.getPaymentRefNo());
                     }
                 } catch (Exception ex) {
-                    eRPImportOperation.appendInfoLog(ex.getLocalizedMessage());
-                    eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
+                    logBean.appendIntegrationLog(ex.getLocalizedMessage());
+                    logBean.appendErrorLog(ex.getLocalizedMessage());
                     int count = 0;
                     for (StackTraceElement el : ex.getStackTrace()) {
-                        eRPImportOperation.appendErrorLog(el.toString());
+                        logBean.appendErrorLog(el.toString());
                         if (count++ >= 10) {
                             break;
                         }
                     }
-                    eRPImportOperation.appendInfoLog(BundleUtil.getString(Constants.BUNDLE,
-                            "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
-                    eRPImportOperation.appendErrorLog(BundleUtil.getString(Constants.BUNDLE,
-                            "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                    logBean.appendIntegrationLog(
+                            Constants.bundle("error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                    logBean.appendErrorLog(Constants.bundle("error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription("Error: " + ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
                 }
                 result.getDocumentStatus().add(docStatus);
             }
-//            if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
-//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
-//            }
-//            if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
-//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
-//            }
-//            if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
-//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
-//            }
 
             if (eRPImportOperation.getProcessed() == true) {
                 //this is a re-process. set as "corrected"
@@ -182,43 +174,46 @@ public class ERPImporter {
             }
             eRPImportOperation.setProcessed(true);
             eRPImportOperation.setExecutionDate(new DateTime());
-            if (eRPImportOperation.getErrorLog() == null || eRPImportOperation.getErrorLog().isEmpty()) {
+            if (Strings.isNullOrEmpty(logBean.getErrorLog())) {
                 eRPImportOperation.setSuccess(true);
             }
 
         } catch (Exception ex) {
 
-            eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
+            logBean.appendErrorLog(ex.getLocalizedMessage());
             int count = 0;
             for (StackTraceElement el : ex.getStackTrace()) {
-                eRPImportOperation.appendErrorLog(el.toString());
+                logBean.appendErrorLog(el.toString());
                 if (count++ >= 10) {
                     break;
                 }
             }
 
-            eRPImportOperation.appendErrorLog(ex.getLocalizedMessage());
+            logBean.appendErrorLog(ex.getLocalizedMessage());
             eRPImportOperation.setProcessed(true);
             eRPImportOperation.setCorrected(false);
             eRPImportOperation.setExecutionDate(new DateTime());
             eRPImportOperation.setSuccess(false);
+        } finally {
+            eRPImportOperation.appendLog(logBean.getErrorLog(), logBean.getIntegrationLog(), logBean.getSoapInboundMessage(),
+                    logBean.getSoapOutboundMessage());
         }
+
         return result;
     }
 
     @Atomic
-    private SettlementNote processErpPayment(Payment payment, ERPImportOperation eRPImportOperation) {
+    private SettlementNote processErpPayment(Payment payment, final FinantialInstitution finantialInstitution,
+            final IntegrationOperationLogBean logBean) {
         boolean newSettlementNoteCreated = false;
-        ERPConfiguration integrationConfig = eRPImportOperation.getFinantialInstitution().getErpIntegrationConfiguration();
-        DocumentNumberSeries seriesToIntegratePayments =
-                DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
-                        integrationConfig.getPaymentsIntegrationSeries());
+        ERPConfiguration integrationConfig = finantialInstitution.getErpIntegrationConfiguration();
+        DocumentNumberSeries seriesToIntegratePayments = DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
+                integrationConfig.getPaymentsIntegrationSeries());
 
         //if is a reimbursement, then we must find the correct document series
         if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
-            seriesToIntegratePayments =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForReimbursementNote(),
-                            integrationConfig.getPaymentsIntegrationSeries());
+            seriesToIntegratePayments = DocumentNumberSeries.find(FinantialDocumentType.findForReimbursementNote(),
+                    integrationConfig.getPaymentsIntegrationSeries());
         }
 
         if (seriesToIntegratePayments == null || seriesToIntegratePayments.getSeries().getExternSeries() == false) {
@@ -231,19 +226,16 @@ public class ERPImporter {
         SettlementNote settlementNote = null;
         DebtAccount customerDebtAccount = null;
         if (customer != null) {
-            customerDebtAccount = DebtAccount.findUnique(eRPImportOperation.getFinantialInstitution(), customer).orElse(null);
+            customerDebtAccount = DebtAccount.findUnique(finantialInstitution, customer).orElse(null);
             if (customerDebtAccount != null) {
-                SettlementNote existingSettlementNote =
-                        SettlementNote
-                                .findByDocumentNumberSeries(seriesToIntegratePayments)
-                                .filter(x -> x.getOriginDocumentNumber() != null
-                                        && x.getOriginDocumentNumber().equals(externalNumber)).findFirst().orElse(null);
+                SettlementNote existingSettlementNote = SettlementNote.findByDocumentNumberSeries(seriesToIntegratePayments)
+                        .filter(x -> x.getOriginDocumentNumber() != null && x.getOriginDocumentNumber().equals(externalNumber))
+                        .findFirst().orElse(null);
 
                 //if we couldn't find from the ExternalNumber, then try to find if SOURCE_ID has value
                 if (existingSettlementNote == null && !Strings.isNullOrEmpty(payment.getSourceID())) {
-                    existingSettlementNote =
-                            SettlementNote.findAll().filter(x -> x.getUiDocumentNumber().equals(payment.getSourceID()))
-                                    .findFirst().orElse(null);
+                    existingSettlementNote = SettlementNote.findAll()
+                            .filter(x -> x.getUiDocumentNumber().equals(payment.getSourceID())).findFirst().orElse(null);
                     //Update the OriginDocumentNumber
                     if (existingSettlementNote != null) {
                         existingSettlementNote.setOriginDocumentNumber(payment.getPaymentRefNo());
@@ -263,16 +255,15 @@ public class ERPImporter {
                             //Already annulled
                         } else {
                             //The Settlement note must be annulled
-                            settlementNote.anullDocument(
-                                    BundleUtil.getString(Constants.BUNDLE,
-                                            "label.info.integration.erpimporter.annulled.by.integration")
-                                            + " - ["
-                                            + new DateTime().toString("YYYY-MM-dd HH:mm:ss") + "]", false);
+                            settlementNote.anullDocument(BundleUtil.getString(Constants.BUNDLE,
+                                    "label.info.integration.erpimporter.annulled.by.integration") + " - ["
+                                    + new DateTime().toString("YYYY-MM-dd HH:mm:ss") + "]", false);
                         }
                         return settlementNote;
                     } else {
                         //HACK: DONT Accept repeting Documents for (UPDATE)
-                        eRPImportOperation.appendInfoLog("label.error.integration.erpimporter.invalid.already.existing.payment.ignored");
+                        logBean.appendIntegrationLog(
+                                "label.error.integration.erpimporter.invalid.already.existing.payment.ignored");
                         return settlementNote;
                         //throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
                     }
@@ -287,23 +278,22 @@ public class ERPImporter {
                         if (payment.getPaymentMethod().size() > 0) {
                             if (payment.getPaymentMethod().get(0).getPaymentDate() != null) {
                                 try {
-                                    paymentDate =
-                                            new org.joda.time.DateTime(payment.getPaymentMethod().get(0).getPaymentDate()
-                                                    .toGregorianCalendar());
+                                    paymentDate = new org.joda.time.DateTime(
+                                            payment.getPaymentMethod().get(0).getPaymentDate().toGregorianCalendar());
                                 } catch (Exception ex) {
                                     //ignore error on getting payment date
                                 }
                             }
                         }
                         //Create a new SettlementNote
-                        settlementNote =
-                                SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate, paymentDate,
-                                        externalNumber);
+                        settlementNote = SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate,
+                                paymentDate, externalNumber);
                         newSettlementNoteCreated = true;
                     }
                 }
             } else {
-                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.debtaccount.to.integrate.payments");
+                throw new TreasuryDomainException(
+                        "label.error.integration.erpimporter.invalid.debtaccount.to.integrate.payments");
             }
         } else {
             throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.customer.to.integrate.payments");
@@ -317,8 +307,7 @@ public class ERPImporter {
                 }
                 String invoiceReferenceNumber = paymentLine.getSourceDocumentID().get(0).getOriginatingON();
                 FinantialDocument referenceDocument =
-                        FinantialDocument.findByUiDocumentNumber(eRPImportOperation.getFinantialInstitution(),
-                                invoiceReferenceNumber);
+                        FinantialDocument.findByUiDocumentNumber(finantialInstitution, invoiceReferenceNumber);
                 if (referenceDocument == null || ((referenceDocument instanceof Invoice) == false)) {
                     throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
                 }
@@ -346,9 +335,8 @@ public class ERPImporter {
                 //Create a new settlement entry for this payment
                 XMLGregorianCalendar paymentStatusDate = payment.getDocumentStatus().getPaymentStatusDate();
                 DateTime paymentDate = new DateTime(paymentStatusDate.toGregorianCalendar());
-                SettlementEntry settlementEntry =
-                        SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount, invoiceEntry.getDescription(),
-                                paymentDate, false);
+                SettlementEntry settlementEntry = SettlementEntry.create(invoiceEntry, settlementNote, paymentAmount,
+                        invoiceEntry.getDescription(), paymentDate, false);
 
                 //Update the PaymentDate
                 if (paymentDate.isBefore(settlementNote.getPaymentDate())) {
@@ -359,17 +347,15 @@ public class ERPImporter {
             if (payment.getSettlementType() != null && payment.getSettlementType().equals(SAFTPTSettlementType.NR)) {
                 //Continue processing the Reimbursment Methods (New or Updating??!?!)
                 for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
-                    ReimbursementEntry reimbursmentEntry =
-                            ReimbursementEntry.create(settlementNote,
-                                    convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()),
-                                    paymentMethod.getPaymentAmount());
+                    ReimbursementEntry reimbursmentEntry = ReimbursementEntry.create(settlementNote,
+                            convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), paymentMethod.getPaymentAmount());
                 }
             } else {
                 //Continue processing the Payment Methods (New or Updating??!?!)
                 for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
                     PaymentEntry paymentEntry =
-                            PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()),
-                                    settlementNote, paymentMethod.getPaymentAmount(), null);
+                            PaymentEntry.create(convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), settlementNote,
+                                    paymentMethod.getPaymentAmount(), null);
                 }
             }
 

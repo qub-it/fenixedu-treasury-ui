@@ -74,7 +74,9 @@ public class OperationFile extends OperationFile_Base {
             throw new TreasuryDomainException("error.OperationFile.cannot.delete");
         }
 
+        this.setLogIntegrationOperation(null);
         this.setIntegrationOperation(null);
+        
         super.delete();
     }
 
@@ -83,6 +85,14 @@ public class OperationFile extends OperationFile_Base {
         OperationFile operationFile = new OperationFile();
         operationFile.init(fileName, fileName, bytes);
         operationFile.setIntegrationOperation(operation);
+        return operationFile;
+    }
+
+    @Atomic
+    public static OperationFile createLog(final String fileName, final byte[] bytes, final IntegrationOperation operation) {
+        OperationFile operationFile = new OperationFile();
+        operationFile.init(fileName, fileName, bytes);
+        operationFile.setLogIntegrationOperation(operation);
         return operationFile;
     }
 

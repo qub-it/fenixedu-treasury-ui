@@ -698,16 +698,25 @@ relation IntegrationOperationFinantialInstitution
     }
 }
 
-relation IntegrationOperationOperationFile
-{
+relation IntegrationOperationOperationFile {
     integration.OperationFile playsRole file {
         multiplicity 1..1;
     }
     
     integration.IntegrationOperation playsRole integrationOperation
     {
-        multiplicity 1..1;
+        multiplicity 0..1;
     }
+}
+
+relation IntegrationOperationLogFile {
+	integration.OperationFile playsRole logFile {
+		multiplicity 0..1;
+	}
+	
+	integration.IntegrationOperation playsRole logIntegrationOperation {
+		multiplicity 0..1;
+	}
 }
 
 /* ERP Integration */
@@ -719,6 +728,7 @@ class integration.ERPConfiguration extends integration.Configuration
     Long maxSizeBytesToExportOnline;
     boolean integratedDocumentsExportationEnabled;
 }
+
 relation ERPConfigurationFinantialInstitution
 {
     FinantialInstitution playsRole finantialInstitution {

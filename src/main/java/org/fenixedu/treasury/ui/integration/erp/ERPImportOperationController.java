@@ -218,10 +218,10 @@ public class ERPImportOperationController extends TreasuryBaseController {
             String fiscalNumber = auditFile.getHeader().getTaxRegistrationNumber() + "";
             FinantialInstitution finantialInstitution = FinantialInstitution.findUniqueByFiscalCode(fiscalNumber).orElse(null);
             if (finantialInstitution != null) {
-                OperationFile opeartionFile;
-                ERPImportOperation eRPImportOperation =
+
+                final ERPImportOperation eRPImportOperation =
                         ERPImportOperation.create(file.getOriginalFilename(), file.getBytes(), finantialInstitution,
-                                new DateTime(), false, false, false, "");
+                                new DateTime(), false, false, false);
 
                 return eRPImportOperation;
             } else {
@@ -313,7 +313,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
     private ERPImportOperation cloneERPImportOperation(ERPImportOperation erpImportOperation) {
         ERPImportOperation newERPImportOperation =
                 ERPImportOperation.create(erpImportOperation.getFile().getFilename(), erpImportOperation.getFile().getContent(),
-                        erpImportOperation.getFinantialInstitution(), new DateTime(), false, false, false, "");
+                        erpImportOperation.getFinantialInstitution(), new DateTime(), false, false, false);
         return newERPImportOperation;
     }
 }
