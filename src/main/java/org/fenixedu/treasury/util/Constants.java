@@ -29,6 +29,7 @@ package org.fenixedu.treasury.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.Normalizer;
+import java.util.List;
 import java.util.Locale;
 
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
@@ -38,6 +39,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 public class Constants {
 
@@ -158,6 +160,23 @@ public class Constants {
         final String compoundNormalized = Normalizer.normalize(compound.toLowerCase(), Normalizer.Form.NFC);
         
         return textNormalized.contains(compoundNormalized);
+    }
+    
+    public static boolean matchNames(final String value, final String searchTerms) {
+        final List<String> valuesArray = Lists.<String> newArrayList(value.split("\\s+"));
+        final List<String> searchTermsArray = Lists.<String> newArrayList(searchTerms.split("\\s+"));
+        
+        if(valuesArray.isEmpty() && !searchTermsArray.isEmpty()) {
+            return false;
+        }
+        
+        for (final String term : searchTermsArray) {
+            if(!valuesArray.contains(term)) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     // @formatter:off

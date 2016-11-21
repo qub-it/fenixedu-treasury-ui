@@ -60,9 +60,9 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getFiscalNumber();
 
     public abstract String getName();
-    
+
     public abstract String getFirstNames();
-    
+
     public abstract String getLastNames();
 
     public abstract String getIdentificationNumber();
@@ -84,9 +84,9 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getPaymentReferenceBaseCode();
 
     public abstract String getBusinessIdentification();
-    
+
     public abstract String getEmail();
-    
+
     public abstract String getPhoneNumber();
 
     public boolean isDeletable() {
@@ -151,11 +151,13 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             return getBusinessIdentification() != null && getBusinessIdentification().equals(codeToSearch);
         }
 
-        String searchFieldClear = Normalizer.normalize(searchText.toLowerCase(), Normalizer.Form.NFD);
-        searchFieldClear = searchFieldClear.replaceAll("[^\\p{ASCII}]", "");
-        String nameClear = Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD);
-        nameClear = nameClear.replaceAll("[^\\p{ASCII}]", "");
-        return nameClear.contains(searchFieldClear)
+        final String searchFieldClear =
+                Normalizer.normalize(searchText.toLowerCase(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+
+        final String nameClear =
+                Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+
+        return Constants.matchNames(nameClear, searchFieldClear)
                 || getIdentificationNumber() != null && getIdentificationNumber().contains(searchFieldClear)
                 || getFiscalNumber() != null && getFiscalNumber().contains(searchFieldClear)
                 || getCode() != null && getCode().contains(searchFieldClear)
@@ -204,5 +206,5 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public boolean isFiscalCodeValid() {
         return FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber());
     }
-    
+
 }
