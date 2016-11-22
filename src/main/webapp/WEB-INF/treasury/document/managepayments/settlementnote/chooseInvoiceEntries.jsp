@@ -285,9 +285,25 @@ ${portal.angularToolkit()}
                                     <td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
                                     <td><c:out value="${ creditEntryBean.documentDueDate }" /></td>
                                     <td><c:out value="${ creditEntryBean.creditEntry.vat.taxRate }" /></td>
-                                    <td>- <c:out
-                                            value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditEntry.openAmount ) }" />
-                                    </td>
+
+			                        <c:if test="${ not settlementNoteBean.reimbursementNote }">
+			                            <td>
+			                                <div class="input-group col-sm-12">
+			                                    <div class=" input-group-addon">
+			                                        <c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}" />
+			                                    </div>
+			                                    <input class="form-control" name="creditAmount${ loop.index }" ng-model="object.creditEntries[${ loop.index }].creditAmount" type="text"
+			                                        ng-disabled="!object.creditEntries[${ loop.index }].isIncluded" ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/"
+			                                        value='0.00' />
+			                                </div>
+			                                <p class="alert alert-danger" ng-show="form.creditAmount${ loop.index }.$error.pattern && object.creditEntries[${ loop.index }].isIncluded">
+			                                    <spring:message code="error.invalid.format.input" />
+			                                </p>
+			                            </td>
+			                        </c:if>
+			                        <c:if test="${ settlementNoteBean.reimbursementNote }">
+			                            <td>- <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( creditEntryBean.creditAmount ) }"></c:out></td>
+			                        </c:if>
                                 </tr>
                             </c:forEach>
                         </tbody>

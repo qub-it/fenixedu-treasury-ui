@@ -147,7 +147,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         }
         for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                creditSum = creditSum.add(creditEntryBean.getCreditEntry().getOpenAmount());
+                creditSum = creditSum.add(creditEntryBean.getCreditAmountWithVat());
             }
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {

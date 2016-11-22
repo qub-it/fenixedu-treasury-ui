@@ -69,8 +69,8 @@ public class SettlementEntry extends SettlementEntry_Base {
         super.delete();
     }
 
-    protected SettlementEntry(final InvoiceEntry invoiceEntry, final SettlementNote finantialDocument,
-            final BigDecimal amount, final String description, final DateTime entryDateTime, final boolean createInterestIfNeeded) {
+    protected SettlementEntry(final InvoiceEntry invoiceEntry, final SettlementNote finantialDocument, final BigDecimal amount,
+            final String description, final DateTime entryDateTime, final boolean createInterestIfNeeded) {
         this();
         init(invoiceEntry, finantialDocument, amount, description, entryDateTime);
 
@@ -84,7 +84,7 @@ public class SettlementEntry extends SettlementEntry_Base {
                 }
             }
         }
-        
+
         BennuSignalsServices.emitSignalForSettlement(finantialDocument);
     }
 
@@ -116,20 +116,23 @@ public class SettlementEntry extends SettlementEntry_Base {
 
     @Atomic
     public static SettlementEntry create(final InvoiceEntry invoiceEntry, final SettlementNote finantialDocument,
-            final BigDecimal amount, final String description, final DateTime entryDateTime, final boolean createInterestIfNeeded) {
+            final BigDecimal amount, final String description, final DateTime entryDateTime,
+            final boolean createInterestIfNeeded) {
         return new SettlementEntry(invoiceEntry, finantialDocument, amount, description, entryDateTime, createInterestIfNeeded);
     }
 
     @Atomic
-    public static SettlementEntry create(final DebitEntryBean debitEntryBean, final SettlementNote settlementNote, DateTime entryDate) {
-        return new SettlementEntry(debitEntryBean.getDebitEntry(), settlementNote, debitEntryBean.getDebtAmount(), debitEntryBean
-                .getDebitEntry().getDescription(), entryDate, true);
+    public static SettlementEntry create(final DebitEntryBean debitEntryBean, final SettlementNote settlementNote,
+            DateTime entryDate) {
+        return new SettlementEntry(debitEntryBean.getDebitEntry(), settlementNote, debitEntryBean.getDebtAmount(),
+                debitEntryBean.getDebitEntry().getDescription(), entryDate, true);
     }
 
     @Atomic
-    public static SettlementEntry create(final CreditEntryBean creditEntryBean, final SettlementNote settlementNote, DateTime entryDate) {
-        return new SettlementEntry(creditEntryBean.getCreditEntry(), settlementNote, creditEntryBean.getCreditEntry()
-                .getOpenAmount(), creditEntryBean.getCreditEntry().getDescription(), entryDate, false);
+    public static SettlementEntry create(final CreditEntryBean creditEntryBean, final SettlementNote settlementNote,
+            DateTime entryDate) {
+        return new SettlementEntry(creditEntryBean.getCreditEntry(), settlementNote, creditEntryBean.getCreditAmount(),
+                creditEntryBean.getCreditEntry().getDescription(), entryDate, false);
     }
 
     @Override

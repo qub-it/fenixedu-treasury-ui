@@ -52,7 +52,7 @@ public class SettlementNoteBean implements IBean, Serializable {
     private List<String> settlementNoteStateUrls;
 
     private Stack<Integer> previousStates;
-    
+
     private boolean advancePayment;
 
     public SettlementNoteBean() {
@@ -63,7 +63,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         date = new LocalDate();
         previousStates = new Stack<Integer>();
         this.setPaymentMethods(PaymentMethod.findAvailableForPaymentInApplication().collect(Collectors.toList()));
-        
+
         this.advancePayment = false;
     }
 
@@ -84,25 +84,25 @@ public class SettlementNoteBean implements IBean, Serializable {
         setDocumentNumberSeries(debtAccount, reimbursementNote);
 
         settlementNoteStateUrls =
-                Arrays.asList(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/"
-                        + reimbursementNote, SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL,
-                        SettlementNoteController.CALCULATE_INTEREST_URL, SettlementNoteController.CREATE_DEBIT_NOTE_URL,
-                        SettlementNoteController.INSERT_PAYMENT_URL, SettlementNoteController.SUMMARY_URL);
-        
+                Arrays.asList(
+                        SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/"
+                                + reimbursementNote,
+                        SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL, SettlementNoteController.CALCULATE_INTEREST_URL,
+                        SettlementNoteController.CREATE_DEBIT_NOTE_URL, SettlementNoteController.INSERT_PAYMENT_URL,
+                        SettlementNoteController.SUMMARY_URL);
+
         this.advancePayment = false;
     }
 
     private void setDocumentNumberSeries(DebtAccount debtAccount, boolean reimbursementNote) {
-        FinantialDocumentType finantialDocumentType =
-                (reimbursementNote) ? FinantialDocumentType.findForReimbursementNote() : FinantialDocumentType
-                        .findForSettlementNote();
+        FinantialDocumentType finantialDocumentType = (reimbursementNote) ? FinantialDocumentType
+                .findForReimbursementNote() : FinantialDocumentType.findForSettlementNote();
 
-        List<DocumentNumberSeries> availableSeries =
-                DocumentNumberSeries.find(finantialDocumentType, debtAccount.getFinantialInstitution()).collect(
-                        Collectors.toList());
+        List<DocumentNumberSeries> availableSeries = DocumentNumberSeries
+                .find(finantialDocumentType, debtAccount.getFinantialInstitution()).collect(Collectors.toList());
 
-        this.setDocumentNumberSeries(DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(
-                Collectors.toList()));
+        this.setDocumentNumberSeries(
+                DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
     }
 
     public DebtAccount getDebtAccount() {
@@ -144,11 +144,11 @@ public class SettlementNoteBean implements IBean, Serializable {
     public void setInterestEntries(List<InterestEntryBean> interestEntries) {
         this.interestEntries = interestEntries;
     }
-    
+
     public boolean isAdvancePayment() {
         return this.advancePayment;
     }
-    
+
     public void setAdvancePayment(final boolean advancePayment) {
         this.advancePayment = advancePayment;
     }
@@ -182,7 +182,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
         for (CreditEntryBean creditEntryBean : getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                sum = sum.subtract(creditEntryBean.getCreditEntry().getOpenAmount());
+                sum = sum.subtract(creditEntryBean.getCreditAmount());
             }
         }
         return sum;
@@ -203,7 +203,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
         for (CreditEntryBean creditEntryBean : getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                sum = sum.subtract(creditEntryBean.getCreditEntry().getOpenAmount());
+                sum = sum.subtract(creditEntryBean.getCreditAmountWithVat());
             }
         }
         return sum;
@@ -235,8 +235,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         for (CreditEntryBean creditEntryBean : getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
                 String vatType = creditEntryBean.getCreditEntry().getVat().getVatType().getName().getContent();
-                sumByVat.get(vatType).subtractAmount(creditEntryBean.getCreditEntry().getOpenAmount());
-                sumByVat.get(vatType).subtractAmountWithVat(creditEntryBean.getCreditEntry().getOpenAmount());
+                sumByVat.get(vatType).subtractAmount(creditEntryBean.getCreditAmount());
+                sumByVat.get(vatType).subtractAmountWithVat(creditEntryBean.getCreditAmountWithVat());
             }
         }
         return sumByVat;
@@ -377,11 +377,18 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public BigDecimal getDebtAmount() {
-
+            if(debtAmount == null) {
+                return null;
+            }
+            
             return debitEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(debtAmount);
         }
 
         public BigDecimal getDebtAmountWithVat() {
+            if(debtAmount == null) {
+                return null;
+            }
+            
             return debitEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(debtAmount);
         }
 
@@ -406,11 +413,18 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         private boolean isIncluded;
 
+        private boolean isNotValid;
+
+        private BigDecimal creditAmount;
+
         public CreditEntryBean() {
         }
 
         public CreditEntryBean(CreditEntry creditEntry) {
             this.creditEntry = creditEntry;
+            this.isIncluded = false;
+            this.isNotValid = false;
+            this.creditAmount = creditEntry.getOpenAmount();
         }
 
         public CreditEntry getCreditEntry() {
@@ -426,8 +440,8 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         public LocalDate getDocumentDueDate() {
-            return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument().getDocumentDueDate() : creditEntry
-                    .getEntryDateTime().toLocalDate();
+            return creditEntry.getFinantialDocument() != null ? creditEntry.getFinantialDocument()
+                    .getDocumentDueDate() : creditEntry.getEntryDateTime().toLocalDate();
         }
 
         public boolean isIncluded() {
@@ -436,6 +450,34 @@ public class SettlementNoteBean implements IBean, Serializable {
 
         public void setIncluded(boolean isIncluded) {
             this.isIncluded = isIncluded;
+        }
+
+        public BigDecimal getCreditAmount() {
+            if(creditAmount == null) {
+                return null;
+            }
+            
+            return creditEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(creditAmount);
+        }
+
+        public BigDecimal getCreditAmountWithVat() {
+            if(creditAmount == null) {
+                return null;
+            }
+            
+            return creditEntry.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(creditAmount);
+        }
+
+        public void setCreditAmount(BigDecimal creditAmount) {
+            this.creditAmount = creditAmount;
+        }
+
+        public boolean isNotValid() {
+            return isNotValid;
+        }
+
+        public void setNotValid(boolean notValid) {
+            this.isNotValid = notValid;
         }
     }
 
@@ -497,7 +539,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         private BigDecimal paymentAmount;
 
         private PaymentMethod paymentMethod;
-        
+
         private String paymentMethodId;
 
         public PaymentEntryBean() {
@@ -524,11 +566,11 @@ public class SettlementNoteBean implements IBean, Serializable {
         public void setPaymentMethod(PaymentMethod paymentMethod) {
             this.paymentMethod = paymentMethod;
         }
-        
+
         public String getPaymentMethodId() {
             return paymentMethodId;
         }
-        
+
         public void setPaymentMethodId(String paymentMethodId) {
             this.paymentMethodId = paymentMethodId;
         }

@@ -165,28 +165,51 @@ public class SettlementNoteController extends TreasuryBaseController {
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
-                if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
+                if (debitEntryBean.getDebtAmountWithVat() == null
+                        || debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.debtAmount.equal.zero",
-                            Integer.toString(i + 1)), model);
+                    addErrorMessage(Constants.bundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
                 } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.exceeded.openAmount",
-                            Integer.toString(i + 1)), model);
+                    addErrorMessage(Constants.bundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
                 } else {
                     debitEntryBean.setNotValid(false);
                 }
-                //Always perform the sum, in order to verify if creditSum is not higher than debitSum
-                debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
+
+                if (!debitEntryBean.isNotValid()) {
+                    //Always perform the sum, in order to verify if creditSum is not higher than debitSum
+                    debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
+                }
             } else {
                 debitEntryBean.setNotValid(false);
             }
         }
-        for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
+        for (int i = 0; i < bean.getCreditEntries().size(); i++) {
+            final CreditEntryBean creditEntryBean = bean.getCreditEntries().get(i);
+
             if (creditEntryBean.isIncluded()) {
-                creditSum = creditSum.add(creditEntryBean.getCreditEntry().getOpenAmount());
+                if (creditEntryBean.getCreditAmountWithVat() == null
+                        || creditEntryBean.getCreditAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
+                    creditEntryBean.setNotValid(true);
+                    error = true;
+                    addErrorMessage(Constants.bundle("error.CreditEntry.creditAmount.equal.zero", Integer.toString(i + 1)),
+                            model);
+                } else if (creditEntryBean.getCreditAmountWithVat()
+                        .compareTo(creditEntryBean.getCreditEntry().getOpenAmount()) > 0) {
+                    creditEntryBean.setNotValid(true);
+                    error = true;
+                    addErrorMessage(Constants.bundle("error.CreditEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
+                } else {
+                    creditEntryBean.setNotValid(false);
+                }
+                
+                if(!creditEntryBean.isNotValid()) {
+                    creditSum = creditSum.add(creditEntryBean.getCreditAmountWithVat());
+                }
+            } else {
+                creditEntryBean.setNotValid(false);
             }
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
