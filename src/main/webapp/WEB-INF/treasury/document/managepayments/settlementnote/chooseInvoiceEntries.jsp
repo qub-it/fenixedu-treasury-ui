@@ -218,8 +218,10 @@ ${portal.angularToolkit()}
                             <tr>
                         </c:if>
 
-                        <td><span class="glyphicon glyphicon-remove-circle" ng-show="object.debitEntries[${ loop.index }].isNotValid"></span> <input class="form-control"
-                            ng-model="object.debitEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+                        <td>
+                        	<span class="glyphicon glyphicon-remove-circle" ng-show="object.debitEntries[${ loop.index }].isNotValid"></span> 
+                        	<input class="form-control" ng-model="object.debitEntries[${ loop.index }].isIncluded" type="checkbox" />
+                        </td>
                         <td><c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></td>
                         <td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
                         <td><c:out value="${ debitEntryBean.documentDueDate }" /></td>
@@ -267,6 +269,7 @@ ${portal.angularToolkit()}
                     <table id="creditEntriesTable" class="table responsive table-bordered table-hover" width="100%">
                         <col style="width: 3%" />
                         <thead>
+                        
                             <tr>
                                 <%-- Check Column --%>
                                 <th style="min-width: 35px;"></th>
@@ -279,8 +282,17 @@ ${portal.angularToolkit()}
                         </thead>
                         <tbody>
                             <c:forEach items="${ settlementNoteBean.creditEntries}" var="creditEntryBean" varStatus="loop">
-                                <tr>
-                                    <td><input class="form-control" ng-model="object.creditEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+
+	                        <c:if test="${ creditEntryBean.notValid }">
+	                            <tr class="alert alert-danger">
+	                        </c:if>
+	                        <c:if test="${ not creditEntryBean.notValid }">
+	                            <tr>
+	                        </c:if>
+                                    <td>
+										<span class="glyphicon glyphicon-remove-circle" ng-show="object.creditEntries[${ loop.index }].isNotValid"></span>
+                                    	<input class="form-control" ng-model="object.creditEntries[${ loop.index }].isIncluded" type="checkbox" />
+                                    </td>
                                     <td><c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }" /></td>
                                     <td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
                                     <td><c:out value="${ creditEntryBean.documentDueDate }" /></td>
