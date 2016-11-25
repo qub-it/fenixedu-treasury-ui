@@ -148,6 +148,10 @@ public class SettlementNote extends SettlementNote_Base {
             return false;
         }
     }
+    
+    public boolean isAdvancePaymentSetByUser() {
+        return getAdvancePaymentSetByUser();
+    }
 
     @Override
     @Atomic
@@ -191,6 +195,8 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         processAdvancePayments(bean);
+        
+        setAdvancePaymentSetByUser(bean.isAdvancePayment());
     }
 
     private void processAdvancePayments(SettlementNoteBean bean) {
