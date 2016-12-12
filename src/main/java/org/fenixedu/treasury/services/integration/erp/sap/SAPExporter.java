@@ -86,6 +86,7 @@ import org.fenixedu.treasury.generated.sources.saft.sap.OrderReferences;
 import org.fenixedu.treasury.generated.sources.saft.sap.PaymentMethod;
 import org.fenixedu.treasury.generated.sources.saft.sap.ReimbursementStatusType;
 import org.fenixedu.treasury.generated.sources.saft.sap.SAFTPTMovementTaxType;
+import org.fenixedu.treasury.generated.sources.saft.sap.SAFTPTPaymentType;
 import org.fenixedu.treasury.generated.sources.saft.sap.SAFTPTSettlementType;
 import org.fenixedu.treasury.generated.sources.saft.sap.SAFTPTSourceBilling;
 import org.fenixedu.treasury.generated.sources.saft.sap.SAFTPTSourcePayment;
@@ -401,17 +402,18 @@ public class SAPExporter implements IERPExporter {
 
             /* ANIL: 2015/10/20 converted from dateTime to Date */
             payment.setTransactionDate(convertToXMLDate(dataTypeFactory, documentDate));
+            
+            /* SAP: 2016/09/19 This element is required */
+            payment.setPaymentType(SAFTPTPaymentType.RG);
 
             // DocumentNumber
             payment.setPaymentRefNo(document.getUiDocumentNumber());
 
             // Finantial Transaction Reference
-            if(!Strings.isNullOrEmpty(document.getFinantialTransactionReference())) {
-                payment.setFinantialTransactionReference(document.getFinantialTransactionReference());
-            }
-            
+            payment.setFinantialTransactionReference(!Strings.isNullOrEmpty(document.getFinantialTransactionReference()) ? document.getFinantialTransactionReference() : "");
+
             //OriginDocumentNumber
-            payment.setSourceID(document.getOriginDocumentNumber());
+            payment.setSourceID(!Strings.isNullOrEmpty(document.getVersioningCreator()) ? document.getVersioningCreator() : " ");
 
             // CustomerID
             payment.setCustomerID(document.getDebtAccount().getCustomer().getCode());
@@ -434,7 +436,7 @@ public class SAPExporter implements IERPExporter {
             } else {
                 status.setPaymentStatusDate(payment.getSystemEntryDate());
                 // Utilizador responsável pelo estado atual do docu-mento.
-                status.setSourceID("");
+                status.setSourceID(" ");
             }
             status.setReason(document.getDocumentObservations());
             // Deve ser preenchido com:
@@ -459,7 +461,7 @@ public class SAPExporter implements IERPExporter {
                     method.setPaymentDate(convertToXMLDate(dataTypeFactory, document.getPaymentDate()));
 
                     method.setPaymentMechanism(convertToSAFTPaymentMechanism(paymentEntry.getPaymentMethod()));
-                    method.setPaymentMethodReference(paymentEntry.getPaymentMethodId());
+                    method.setPaymentMethodReference(!Strings.isNullOrEmpty(paymentEntry.getPaymentMethodId()) ? paymentEntry.getPaymentMethodId() : "");
                     payment.getPaymentMethod().add(method);
                 }
                 payment.setSettlementType(SAFTPTSettlementType.NL);
@@ -476,12 +478,12 @@ public class SAPExporter implements IERPExporter {
                     payment.getPaymentMethod().add(method);
                     payment.setSettlementType(SAFTPTSettlementType.NR);
                 }
-                
+
                 // Fill reimbursement process status
                 ReimbursementProcess reimbursementProcess = new ReimbursementProcess();
                 reimbursementProcess.setStatusDate(convertToXMLDate(dataTypeFactory, document.getDocumentDate()));
                 reimbursementProcess.setStatus(ReimbursementStatusType.PENDING);
-                
+
                 payment.setReimbursementProcess(reimbursementProcess);
             } else {
                 PaymentMethod voidMethod = new PaymentMethod();
@@ -495,7 +497,6 @@ public class SAPExporter implements IERPExporter {
                 payment.setSettlementType(SAFTPTSettlementType.NN);
             }
 
-            payment.setSourceID(document.getVersioningCreator());
 
             // DocumentTotals
             SourceDocuments.Payments.Payment.DocumentTotals docTotals = new SourceDocuments.Payments.Payment.DocumentTotals();
@@ -555,9 +556,6 @@ public class SAPExporter implements IERPExporter {
              */
             payment.setPeriod(document.getDocumentDate().getMonthOfYear());
 
-            // SourceID
-            payment.setSourceID(document.getOriginDocumentNumber());
-
         } catch (DatatypeConfigurationException e) {
 
             e.printStackTrace();
@@ -585,7 +583,7 @@ public class SAPExporter implements IERPExporter {
             Map<String, org.fenixedu.treasury.generated.sources.saft.sap.Customer> baseCustomers,
             Map<String, org.fenixedu.treasury.generated.sources.saft.sap.Product> baseProducts) {
         WorkDocument workDocument = new WorkDocument();
-        
+
         // Find the Customer in BaseCustomers
         org.fenixedu.treasury.generated.sources.saft.sap.Customer customer = null;
 
@@ -629,7 +627,7 @@ public class SAPExporter implements IERPExporter {
 
             /* Anil: 14/06/2016: Fill with 0's the Hash element */
             workDocument.setHash(Strings.repeat("0", 172));
-            
+
             // SystemEntryDate
             workDocument.setSystemEntryDate(convertToXMLDateTime(dataTypeFactory, documentDate));
 
@@ -667,7 +665,7 @@ public class SAPExporter implements IERPExporter {
             } else {
                 status.setWorkStatusDate(workDocument.getSystemEntryDate());
                 // Utilizador responsável pelo estado atual do docu-mento.
-                status.setSourceID("");
+                status.setSourceID(" ");
             }
             // status.setReason("");
             // Deve ser preenchido com:
@@ -712,7 +710,7 @@ public class SAPExporter implements IERPExporter {
             workDocument.setPeriod(document.getDocumentDate().getMonthOfYear());
 
             // SourceID
-            workDocument.setSourceID(document.getOriginDocumentNumber());
+            workDocument.setSourceID(!Strings.isNullOrEmpty(document.getVersioningCreator()) ? document.getVersioningCreator() : "");
 
         } catch (DatatypeConfigurationException e) {
 
@@ -1162,7 +1160,7 @@ public class SAPExporter implements IERPExporter {
 
         // Telephone
         // c.setTelephone("");
-        
+
         c.setFiscalCountry(customer.getFiscalCountry());
         c.setNationality(customer.getNationalityCountryCode());
 
@@ -1441,6 +1439,8 @@ public class SAPExporter implements IERPExporter {
         return binaryStream;
     }
 
+    // SERVICE
+    @Override
     public String exportFinantialDocumentToXML(final FinantialInstitution finantialInstitution,
             final List<FinantialDocument> documents) {
         UnaryOperator<AuditFile> auditFilePreProcess = getAuditFilePreProcessOperator(finantialInstitution);
@@ -1691,24 +1691,9 @@ public class SAPExporter implements IERPExporter {
     }
 
     private UnaryOperator<AuditFile> getAuditFilePreProcessOperator(final FinantialInstitution finantialInstitution) {
-
-        String className = finantialInstitution.getErpIntegrationConfiguration().getImplementationClassName();
-        try {
-
-            WebServiceClientConfiguration clientConfiguration = WebServiceConfiguration.readByImplementationClass(className);
-
-            IERPExternalService client = clientConfiguration.getClient();
-
-			return client.getAuditFilePreProcessOperator();
-        } catch (Exception e) {
-            throw new TreasuryDomainException("error.ERPConfiguration.invalid.external.service");
-        }
+        return (AuditFile x) -> {
+            return x;
+        };
     }
 
-//    private UnaryOperator<AuditFile> getAuditFilePreProcessOperator(final FinantialInstitution finantialInstitution) {
-//        return (AuditFile x) -> {
-//            return x;
-//        };
-//    }
-    
 }
