@@ -100,9 +100,8 @@ public class ERPExporterManager {
 //
 //    }
 
-    private static final int LIMIT = 100;
-
-    public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(FinantialInstitution finantialInstitution) {
+    public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(
+            FinantialInstitution finantialInstitution) {
         List<ERPExportOperation> result = new ArrayList<ERPExportOperation>();
 
         if (finantialInstitution.getErpIntegrationConfiguration().getActive() == false) {
@@ -148,16 +147,20 @@ public class ERPExporterManager {
                     sortedDocuments.remove(doc);
 
                     //Create a ExportOperation
-                    ERPExportOperation exportFinantialDocumentToIntegration =
-                            ERPExporter
-                                    .exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc));
+                    final IERPExporter erpExporter = finantialInstitution.getErpIntegrationConfiguration()
+                            .getERPExternalServiceImplementation().getERPExporter();
+
+                    ERPExportOperation exportFinantialDocumentToIntegration = erpExporter
+                            .exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc));
                     result.add(exportFinantialDocumentToIntegration);
                 }
 
             } else {
+                final IERPExporter erpExporter = finantialInstitution.getErpIntegrationConfiguration()
+                        .getERPExternalServiceImplementation().getERPExporter();
 
                 ERPExportOperation exportFinantialDocumentToIntegration =
-                        ERPExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
+                        erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
 
                 result.add(exportFinantialDocumentToIntegration);
             }
@@ -168,6 +171,7 @@ public class ERPExporterManager {
     }
 
     public static void requestPendingDocumentStatus(FinantialInstitution finantialInstitution) {
-        ERPExporter.requestPendingDocumentStatus(finantialInstitution);
+        final IERPExporter erpExporter = finantialInstitution.getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
+        erpExporter.requestPendingDocumentStatus(finantialInstitution);
     }
 }

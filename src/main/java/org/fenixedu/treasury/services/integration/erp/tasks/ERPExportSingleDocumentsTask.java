@@ -10,7 +10,7 @@ import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
-import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
@@ -41,6 +41,18 @@ public class ERPExportSingleDocumentsTask extends CronTask {
                         taskLog("Bypass document closed after 01/01/2017 00:00:00 : " + externalId);
                         return;
                     }
+                    else
+                    {
+                FinantialInstitution finantialInstitution =
+                        document.getDocumentNumberSeries().getSeries().getFinantialInstitution();
+                final IERPExporter erpExporter = finantialInstitution.getErpIntegrationConfiguration()
+                        .getERPExternalServiceImplementation().getERPExporter();
+
+                ERPExportOperation exportOperation =
+                        erpExporter.exportFinantialDocumentToIntegration(finantialInstitution,
+                                Collections.singletonList(document));
+                taskLog("Exported document: " + document.getUiDocumentNumber() + "=>"
+                        + (exportOperation.getSuccess() ? "OK" : "NOK"));
 
                     if (document.isPreparing()) {
                         taskLog("Ignored, trying to export a PREPARING document, oid: " + externalId);
