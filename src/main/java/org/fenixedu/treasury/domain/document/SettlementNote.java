@@ -246,9 +246,8 @@ public class SettlementNote extends SettlementNote_Base {
             return;
         }
 
-        DebitNote interestDebitNote = DebitNote.create(bean.getDebtAccount(), debitNoteSeries, new DateTime());
-
         for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
+            DebitNote interestDebitNote = DebitNote.create(bean.getDebtAccount(), debitNoteSeries, new DateTime());
 
             DebitEntry interestDebitEntry =
                     interestEntryBean.getDebitEntry().createInterestRateDebitEntry(interestEntryBean.getInterest(),
