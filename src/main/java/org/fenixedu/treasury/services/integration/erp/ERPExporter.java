@@ -106,6 +106,7 @@ import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationIn
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1423,6 +1424,9 @@ public class ERPExporter {
 
     }
 
+//    private static final DateTime ERP_END_DATE = DateTimeFormat.forPattern(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)
+//            .parseLocalDate("2017-01-01").toDateTimeAtStartOfDay();
+
     @Atomic(mode = TxMode.WRITE)
     public static ERPExportOperation exportFinantialDocumentToIntegration(FinantialInstitution institution,
             List<FinantialDocument> documents) {
@@ -1436,6 +1440,9 @@ public class ERPExporter {
             // Filter documents already exported
             documents = documents.stream().filter(x -> x.isDocumentToExport()).collect(Collectors.toList());
         }
+
+        // TODO: For ERP replacement only allow documents which close date is less than 01/01/2017
+        // documents = documents.stream().filter(x -> ERP_END_DATE.isAfter(x.getCloseDate())).collect(Collectors.toList());
 
         final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
         final ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
@@ -1558,7 +1565,7 @@ public class ERPExporter {
             List<FinantialDocument> allDocuments = new ArrayList<>(eRPExportOperation.getFinantialDocumentsSet());
             ERPExportOperation operation =
                     ERPExporter.exportFinantialDocumentToIntegration(eRPExportOperation.getFinantialInstitution(), allDocuments);
-            
+
             final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
             logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.retry.integration"));
             operation.appendLog("", logBean.getIntegrationLog(), "", "");

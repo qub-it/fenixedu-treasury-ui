@@ -269,7 +269,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                     BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
 
         }
-
+        
+        setCloseDate(new DateTime());
         checkRules();
     }
 
@@ -305,6 +306,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     public boolean isDocumentToExport() {
         return getInstitutionForExportation() != null;
+    }
+    
+    public boolean isExportedInLegacyERP() {
+        return getExportedInLegacyERP();
     }
 
     @Atomic
