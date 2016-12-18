@@ -227,12 +227,10 @@ ${portal.toolkit()}
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
-                    <th><spring:message
-                            code="label.ERPImportOperation.executionDate" /></th>
-                    <th><spring:message
-                            code="label.ERPImportOperation.finantialInstitution" /></th>
-                    <th><spring:message
-                            code="label.ERPImportOperation.success" /></th>
+                    <th><spring:message code="label.ERPImportOperation.executionDate" /></th>
+                    <th><spring:message code="label.ERPImportOperation.finantialInstitution" /></th>
+                    <th><spring:message code="label.ERPImportOperation.finantialDocuments" /></th>
+                    <th><spring:message code="label.ERPImportOperation.success" /></th>
                     <%-- <th><spring:message code="label.ERPImportOperation.corrected"/></th> --%>
                     <%-- Operations Column --%>
                     <th></th>
@@ -270,15 +268,16 @@ ${portal.toolkit()}
 			<c:forEach items="${searcherpimportoperationResultsDataSet}" var="searchResult">
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
-				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd  HH:mm:ss")}'/>",
-"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
-"success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
-// "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
-"actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-                "" 
-			},
+					"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+					"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd  HH:mm:ss")}'/>",
+					"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
+					"finantialdocuments" : '<ul><c:forEach items="${searchResult.finantialDocuments}" var="doc"><li><c:out value="${doc.uiDocumentNumber}" /></li></c:forEach></ul>',
+					"success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
+					// "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
+					"actions" :
+					" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/erpimportoperation/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+	                "" 
+				},
             </c:forEach>
     ];
 	
@@ -293,6 +292,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'executiondate' },
 			{ data: 'finantialinstitution' },
+			{data : 'finantialdocuments'},
 			{ data: 'success' },
 // 			{ data: 'corrected' },
 			{ data: 'actions',className:"all" }
@@ -307,8 +307,8 @@ ${portal.toolkit()}
 		"order": [[ 0, "desc" ]],
 		//Documentation: https://datatables.net/reference/option/dom
 //"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
         "tableTools": {
             "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	

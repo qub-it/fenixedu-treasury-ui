@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -48,11 +47,11 @@ import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocum
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
+
+import pt.ist.fenixframework.Atomic;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
@@ -152,16 +151,16 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             final FinantialDocument previousFinantialDocument =
                     stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
 
-            if (previousFinantialDocument != null
-                    && !(previousFinantialDocument.getDocumentDate().toLocalDate().compareTo(getDocumentDate().toLocalDate()) <= 0)) {
+            if (previousFinantialDocument != null && !(previousFinantialDocument.getDocumentDate().toLocalDate()
+                    .compareTo(getDocumentDate().toLocalDate()) <= 0)) {
                 throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
             }
         }
-        
-        if(getDocumentDate().isAfterNow()) {
+
+        if (getDocumentDate().isAfterNow()) {
             throw new TreasuryDomainException("error.FinantialDocument.documentDate.cannot.be.after.now");
         }
-        
+
         //If document is closed, all entries must be after of DocumentDate - RSP, this rule is invalid. I can create a debit entry today, and add it to a Document in a month
 //        if (isClosed()) {
 //            LocalDate documentDate = this.getDocumentDate().toLocalDate();
@@ -170,11 +169,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 //                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.after.entries.date");
 //            }
 //        }
-        
-        if(!Strings.isNullOrEmpty(getOriginDocumentNumber()) && !Constants.isOriginDocumentNumberValid(getOriginDocumentNumber())) {
+
+        if (!Strings.isNullOrEmpty(getOriginDocumentNumber())
+                && !Constants.isOriginDocumentNumberValid(getOriginDocumentNumber())) {
             throw new TreasuryDomainException("error.FinantialDocument.originDocumentNumber.invalid");
         }
-        
+
     }
 
     protected boolean isDocumentEmpty() {
@@ -182,9 +182,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public String getUiDocumentNumber() {
-        return String.format("%s %s/%s", this.getDocumentNumberSeries().getFinantialDocumentType()
-                .getDocumentNumberSeriesPrefix(), this.getDocumentNumberSeries().getSeries().getCode(),
-                Strings.padStart(this.getDocumentNumber(), 7, '0'));
+        return String.format("%s %s/%s",
+                this.getDocumentNumberSeries().getFinantialDocumentType().getDocumentNumberSeriesPrefix(),
+                this.getDocumentNumberSeries().getSeries().getCode(), Strings.padStart(this.getDocumentNumber(), 7, '0'));
     }
 
     public BigDecimal getTotalAmount() {
@@ -265,11 +265,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 this.markDocumentToExport();
             }
         } else {
-            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE,
-                    "error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(
+                    BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
 
         }
-        
+
         checkRules();
     }
 
@@ -293,7 +293,6 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 SchedulerSystem.queue(new TaskRunner(new ERPExportSingleDocumentsTask(refDocument.getExternalId())));
             };
         }.start();
-
     }
 
     @Atomic
@@ -344,6 +343,68 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public abstract Set<FinantialDocument> findRelatedDocuments(Set<FinantialDocument> documentsBaseList,
             Boolean includeAnulledDocuments);
 
+    public Boolean getClosed() {
+        return this.getState().equals(FinantialDocumentStateType.CLOSED);
+    }
+
+    public BigDecimal getOpenAmount() {
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
+            return getTotalAmount();
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    public BigDecimal getOpenAmountWithInterests() {
+        if (this.getState().isPreparing() || this.getState().isClosed()) {
+            return getTotalAmount();
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    public boolean isDocumentSeriesNumberSet() {
+        return Long.parseLong(getDocumentNumber()) != 0;
+    }
+
+    public Optional<ERPExportOperation> getLastERPExportOperation() {
+        if (getErpExportOperationsSet().isEmpty()) {
+            return Optional.empty();
+        }
+
+        return getErpExportOperationsSet().stream().sorted(ERPExportOperation.COMPARE_BY_VERSIONING_CREATION_DATE.reversed())
+                .findFirst();
+    }
+
+    public String getUiLastERPExportationErrorMessage() {
+        Optional<ERPExportOperation> lastERPExportOperation = getLastERPExportOperation();
+
+        if (!lastERPExportOperation.isPresent()) {
+            return "";
+        }
+
+        if (lastERPExportOperation.get().getSuccess()) {
+            return "";
+        }
+
+        final String[] lines = lastERPExportOperation.get().getErrorLog()
+                .replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z", "").split("\n");
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(3, lines.length); i++) {
+            sb.append(lines[i]).append("<br />");
+        }
+
+        return sb.toString();
+    }
+
+    // @formatter:off
+    /* ********
+     * SERVICES
+     * ********
+     */
+    // @formatter:on
+
     public static Stream<? extends FinantialDocument> findAll() {
         return Bennu.getInstance().getFinantialDocumentsSet().stream();
     }
@@ -364,30 +425,6 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             final DocumentNumberSeries documentNumberSeries, final String documentNumber) {
         return find(documentNumberSeries).filter(
                 d -> d.isClosed() && COMPARE_BY_DOCUMENT_NUMBER_STRING.compare(d.getDocumentNumber(), documentNumber) < 0);
-    }
-
-    public Boolean getClosed() {
-        return this.getState().equals(FinantialDocumentStateType.CLOSED);
-    }
-
-    public BigDecimal getOpenAmount() {
-        if (this.getState().isPreparing() || this.getState().isClosed()) {
-            return getTotalAmount();
-        } else {
-            return BigDecimal.ZERO;
-        }
-    }
-
-    public BigDecimal getOpenAmountWithInterests() {
-        if (this.getState().isPreparing() || this.getState().isClosed()) {
-            return getTotalAmount();
-        } else {
-            return BigDecimal.ZERO;
-        }
-    }
-    
-    public boolean isDocumentSeriesNumberSet() {
-        return Long.parseLong(getDocumentNumber()) != 0;
     }
 
     public static FinantialDocument findByUiDocumentNumber(FinantialInstitution finantialInstitution, String docNumber) {

@@ -1,6 +1,7 @@
 package org.fenixedu.treasury.domain.integration;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +17,15 @@ import pt.ist.fenixframework.Atomic;
 
 public class ERPExportOperation extends ERPExportOperation_Base {
 
+    public static final Comparator<ERPExportOperation> COMPARE_BY_VERSIONING_CREATION_DATE = new Comparator<ERPExportOperation>() {
+
+        @Override
+        public int compare(final ERPExportOperation o1, final ERPExportOperation o2) {
+            int c = Comparator.comparing(IntegrationOperation::getVersioningCreationDate).compare(o1, o2);
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+        
     protected ERPExportOperation() {
         super();
     }

@@ -31,9 +31,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Comparator;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -74,38 +74,38 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
     @Atomic
     public void appendLog(String errorLog, String integrationLog, String soapInboundMessage, String soapOutboundMessage) {
 
-        if(errorLog == null) {
+        if (errorLog == null) {
             errorLog = "";
         }
-        
-        if(integrationLog == null) {
+
+        if (integrationLog == null) {
             integrationLog = "";
         }
-        
-        if(soapInboundMessage == null) {
+
+        if (soapInboundMessage == null) {
             soapInboundMessage = "";
         }
-        
-        if(soapOutboundMessage == null) {
+
+        if (soapOutboundMessage == null) {
             soapOutboundMessage = "";
         }
-        
-        if(!Strings.isNullOrEmpty(getErrorLog())) {
+
+        if (!Strings.isNullOrEmpty(getErrorLog())) {
             errorLog = getErrorLog() + errorLog;
         }
-        
-        if(!Strings.isNullOrEmpty(getIntegrationLog())) {
+
+        if (!Strings.isNullOrEmpty(getIntegrationLog())) {
             integrationLog = getIntegrationLog() + integrationLog;
         }
-        
-        if(!Strings.isNullOrEmpty(getSoapInboundMessage())) {
+
+        if (!Strings.isNullOrEmpty(getSoapInboundMessage())) {
             soapInboundMessage = getSoapInboundMessage() + soapInboundMessage;
         }
-        
-        if(!Strings.isNullOrEmpty(getSoapOutboundMessage())) {
+
+        if (!Strings.isNullOrEmpty(getSoapOutboundMessage())) {
             soapOutboundMessage = getSoapOutboundMessage() + soapOutboundMessage;
         }
-        
+
         try {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ZipOutputStream zos = new ZipOutputStream(baos);
@@ -130,11 +130,11 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
             baos.close();
 
             final byte[] contents = baos.toByteArray();
-            
-            if(getLogFile() != null) {
-                getLogFile().delete(); 
+
+            if (getLogFile() != null) {
+                getLogFile().delete();
             }
-            
+
             OperationFile.createLog(String.format("integrationOperationLogs-%s.zip", getExternalId()), contents, this);
         } catch (final IOException e) {
             throw new RuntimeException(e);
@@ -222,13 +222,13 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
         try {
             if (getLogFile() != null) {
                 final ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(getLogFile().getContent()));
-                
+
                 ZipEntry zipEntry = null;
                 while ((zipEntry = zis.getNextEntry()) != null) {
                     if (!zipFilename.equals(zipEntry.getName())) {
                         continue;
                     }
-                    
+
                     return new String(IOUtils.toByteArray(zis), "UTF-8");
                 }
             }

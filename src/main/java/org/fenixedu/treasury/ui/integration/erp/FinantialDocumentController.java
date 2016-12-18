@@ -143,8 +143,8 @@ public class FinantialDocumentController extends TreasuryBaseController {
 
     @RequestMapping(value = _SEARCH_TO_FORCEINTEGRATIONEXPORT_URI)
     public String processSearchToForceIntegrationExport(
-            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution,
-            Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution, Model model,
+            RedirectAttributes redirectAttributes) {
 //
         try {
             assertUserIsBackOfficeMember(finantialInstitution, model);
@@ -152,12 +152,15 @@ public class FinantialDocumentController extends TreasuryBaseController {
             List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution =
                     ERPExporterManager.exportPendingDocumentsForFinantialInstitution(finantialInstitution);
             if (exportPendingDocumentsForFinantialInstitution.size() == 0) {
-                addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"), model);
+                addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"),
+                        model);
                 return redirect(SEARCH_URL, model, redirectAttributes);
             } else if (exportPendingDocumentsForFinantialInstitution.size() == 1) {
                 addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "info.integration.erp.success.export"), model);
-                return redirect(ERPExportOperationController.READ_URL
-                        + exportPendingDocumentsForFinantialInstitution.get(0).getExternalId(), model, redirectAttributes);
+                return redirect(
+                        ERPExportOperationController.READ_URL
+                                + exportPendingDocumentsForFinantialInstitution.get(0).getExternalId(),
+                        model, redirectAttributes);
             } else {
                 addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "info.integration.erp.multiple.success.export"), model);
                 return redirect(ERPExportOperationController.SEARCH_URL, model, redirectAttributes);
@@ -177,8 +180,8 @@ public class FinantialDocumentController extends TreasuryBaseController {
 
     @RequestMapping(value = _SEARCH_TO_FORCECHECK_STATUS_URI)
     public String processSearchToForceCehckStatus(
-            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution,
-            Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution, Model model,
+            RedirectAttributes redirectAttributes) {
 //
         try {
             assertUserIsBackOfficeMember(finantialInstitution, model);
@@ -212,4 +215,20 @@ public class FinantialDocumentController extends TreasuryBaseController {
         return redirect(SEARCH_URL, model, redirectAttributes);
     }
 
+    private static final String _READ_FINANTIAL_DOCUMENT_URI = "/readfinantialdocument";
+    public static final String READ_FINANTIAL_DOCUMENT_URL = CONTROLLER_URL + _READ_FINANTIAL_DOCUMENT_URI;
+
+    @RequestMapping(value = _READ_FINANTIAL_DOCUMENT_URI + "/{id}", method = RequestMethod.GET)
+    public String readfinantialdocument(@PathVariable("id") final FinantialDocument finantialDocument, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        if (finantialDocument.isDebitNote()) {
+            return redirect(DebitNoteController.READ_URL + "/" + finantialDocument.getExternalId(), model, redirectAttributes);
+        } else if (finantialDocument.isCreditNote()) {
+            return redirect(CreditNoteController.READ_URL + "/" + finantialDocument.getExternalId(), model, redirectAttributes);
+        } else if (finantialDocument.isSettlementNote()) {
+            return redirect(SettlementNoteController.READ_URL + "/" + finantialDocument.getExternalId(), model, redirectAttributes);
+        }
+
+        return null;
+    }
 }
