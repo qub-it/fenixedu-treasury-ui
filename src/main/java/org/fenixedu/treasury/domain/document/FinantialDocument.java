@@ -382,25 +382,29 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public String getUiLastERPExportationErrorMessage() {
-        Optional<ERPExportOperation> lastERPExportOperation = getLastERPExportOperation();
+        try {
+            Optional<ERPExportOperation> lastERPExportOperation = getLastERPExportOperation();
 
-        if (!lastERPExportOperation.isPresent()) {
+            if (!lastERPExportOperation.isPresent()) {
+                return "";
+            }
+
+            if (lastERPExportOperation.get().getSuccess()) {
+                return "";
+            }
+            
+            final String[] lines = lastERPExportOperation.get().getErrorLog()
+                    .replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z", "").split("\n");
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Math.min(3, lines.length); i++) {
+                sb.append(lines[i]).append("<br />");
+            }
+
+            return sb.toString();
+        } catch(Exception e) {
             return "";
         }
-
-        if (lastERPExportOperation.get().getSuccess()) {
-            return "";
-        }
-
-        final String[] lines = lastERPExportOperation.get().getErrorLog()
-                .replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z", "").split("\n");
-
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < Math.min(3, lines.length); i++) {
-            sb.append(lines[i]).append("<br />");
-        }
-
-        return sb.toString();
     }
 
     // @formatter:off
