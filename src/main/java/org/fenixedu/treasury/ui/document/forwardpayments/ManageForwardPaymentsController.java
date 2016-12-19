@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -24,13 +25,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 @SpringFunctionality(app = TreasuryController.class, title = "label.ManageForwardPayments.functionality",
         accessGroup = "treasuryBackOffice")
 @RequestMapping(ManageForwardPaymentsController.CONTROLLER_URL)
 public class ManageForwardPaymentsController extends TreasuryBaseController {
 
-    private static final int MAX_SEARCH_SIZE = 250;
+    private static final int MAX_SEARCH_SIZE = 1000;
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/management";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/management";
 
@@ -51,6 +53,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             @RequestParam(value = "customerBusinessId", required = false) final String customerBusinessId,
             @RequestParam(value = "orderNumber", required = false) final String orderNumber,
             @RequestParam(value = "withPendingPlatformPayment", required = false) final boolean withPendingPlatformPayment,
+            @RequestParam(value = "forwardPaymentStateType", required = false) final ForwardPaymentStateType type,
             final Model model) {
 
         Stream<ForwardPayment> stream = Bennu.getInstance().getForwardPaymentsSet().stream();
@@ -76,19 +79,26 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
                 stream = stream
                         .filter(i -> i.getDebtAccount().getCustomer().getBusinessIdentification().equals(customerBusinessId));
             }
+
+            if (type != null) {
+                stream = stream.filter(i -> i.getCurrentState() == type);
+            }
         }
 
         if (withPendingPlatformPayment) {
             final List<ForwardPayment> resultList = stream.collect(Collectors.toList());
             stream = resultList.stream();
 
-            int MAX_PENDING_POSSIBLE_PAYMENTS = 50;
+            int MAX_PENDING_POSSIBLE_PAYMENTS = 500;
             if (resultList.stream()
                     .filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested())
                     .count() > MAX_PENDING_POSSIBLE_PAYMENTS) {
-                addErrorMessage(Constants.bundle("error.ManageForwardPayments.search.withPendingPlatformPayment.limited.narrow.search"), model);
+                addErrorMessage(
+                        Constants.bundle("error.ManageForwardPayments.search.withPendingPlatformPayment.limited.narrow.search"),
+                        model);
             } else {
-                stream = stream.filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested());
+                stream = stream
+                        .filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested());
                 stream = stream.filter(
                         i -> i.getForwardPaymentConfiguration().implementation().paymentStatus(i).isAbleToRegisterPostPayment(i));
             }
@@ -106,6 +116,8 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             forwardPayments = forwardPayments.subList(0, MAX_SEARCH_SIZE);
         }
 
+        model.addAttribute("forwardPaymentStateTypes", Lists.newArrayList(ForwardPaymentStateType.values()).stream()
+                .sorted(ForwardPaymentStateType.COMPARE_BY_LOCALIZED_NAME).collect(Collectors.toList()));
         model.addAttribute("forwardPayments", forwardPayments);
 
         return jspPage(SEARCH_URI);

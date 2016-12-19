@@ -141,18 +141,40 @@ ${portal.toolkit()}
 			</div>
 			<div class="form-group row">
                 <div class="col-sm-2 control-label">
+                    <spring:message code="label.ManageForwardPayments.forwardPaymentStateType" />
+                </div>
+				
+				<div class="col-sm-10">
+					<select id="forwardPaymentStateType" name="forwardPaymentStateType" class="form-control">
+						<option value="">&nbsp;</option>
+						<c:forEach items="${forwardPaymentStateTypes}" var="t">
+							<option value="${t}"><c:out value="${t.localizedName.content}" /></option>
+						</c:forEach>
+					</select>
+					<br/>
+					<script>
+						$(document).ready(function() {
+							$("#forwardPaymentStateType").select2().select2('val', '<c:out value="${param.forwardPaymentStateType}" />');
+						});
+					</script>
+				</div>
+			</div>
+			<div class="form-group row">
+                <div class="col-sm-2 control-label">
                     <spring:message code="label.ManageForwardPayments.withPendingPlatformPayment" />
                 </div>
 				
 				<div class="col-sm-10">
 					<select id="withPendingPlatformPayment" name="withPendingPlatformPayment" class="form-control">
-						<option value="true"><spring:message code="label.yes" /></option>
 	                    <option value="false" selected><spring:message code="label.no" /></option>
+						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
 					<br/>
 					<span class="label label-warning"><spring:message code="label.ManageForwardPayments.search.withPendingPlatformPayment.slow" /></span>
 					<script>
-						$("#withPendingPlatformPayment").select2();
+						$(document).ready(function() {
+							$("#withPendingPlatformPayment").select2().select2('val', '<c:out value="${param.withPendingPlatformPayment}" />');
+						});
 					</script>
 			</div>
 			<div class="form-group row">
