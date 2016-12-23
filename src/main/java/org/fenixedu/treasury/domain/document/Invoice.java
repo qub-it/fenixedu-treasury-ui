@@ -231,5 +231,9 @@ public abstract class Invoice extends Invoice_Base {
 
         return invoice.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
+    
+    public boolean isForPayorDebtAccount() {
+        return getPayorDebtAccount() != null;
+    }
 
 }
