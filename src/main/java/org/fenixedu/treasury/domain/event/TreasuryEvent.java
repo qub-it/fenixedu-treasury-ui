@@ -357,5 +357,9 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public static Stream<? extends TreasuryEvent> findAll() {
         return Bennu.getInstance().getTreasuryEventsSet().stream();
     }
+    
+    public static Stream<? extends TreasuryEvent> find(final Customer customer) {
+        return customer.getTreasuryEventsSet().stream();
+    }
 
 }
