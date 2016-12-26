@@ -292,7 +292,7 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
         </a>
         --%>
         
-	<c:if test="${creditNote.isClosed() && not creditNote.documentToExport}">
+	<c:if test="${creditNote.isClosed() && not creditNote.exportedInLegacyERP && not creditNote.documentToExport}">
        	&nbsp;|&nbsp;
         <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
         <a href="${pageContext.request.contextPath}<%= CreditNoteController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${creditNote.externalId}">
@@ -336,6 +336,22 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
         </c:forEach>
 
     </div>
+</c:if>
+
+<c:if test="${not validAddress}">
+	<div class="alert alert-danger" role="alert">
+	    <p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<spring:message code="label.DebtAccountController.incompleteAddress" />
+		</p>
+		
+	<c:forEach items="${addressErrorMessages}" var="m">
+		<p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<c:out value="${m}" />
+		</p>
+	</c:forEach>
+	</div>	
 </c:if>
 
 <div class="panel panel-primary">
@@ -457,8 +473,11 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                             </td>
                         </tr>
                     </c:if>
-
-              <tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.exportedInLegacyERP" /></th>
+                        <td><spring:message code="label.${creditNote.exportedInLegacyERP}" /></td>
+                    </tr>
+					<tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${creditNote.getVersioningCreator()}' />] <joda:format value="${creditNote.getVersioningCreationDate()}" style="SS" /></td>
                     </tr>

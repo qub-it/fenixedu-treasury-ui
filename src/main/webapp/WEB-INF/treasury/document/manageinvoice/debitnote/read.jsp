@@ -436,13 +436,14 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                 </ul>
             </div>
         </c:if>
-	<c:if test="${debitNote.isClosed() && not debitNote.documentToExport}">
-       	&nbsp;|&nbsp;
-        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
-        <a href="${pageContext.request.contextPath}<%= DebitNoteController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${debitNote.externalId}">
-        	<spring:message code="label.FinantialDocument.download.invoice" />
-        </a>
-	</c:if>
+        
+		<c:if test="${debitNote.isClosed() && not debitNote.exportedInLegacyERP && not debitNote.documentToExport}">
+	       	&nbsp;|&nbsp;
+	        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+	        <a href="${pageContext.request.contextPath}<%= DebitNoteController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${debitNote.externalId}">
+	        	<spring:message code="label.FinantialDocument.download.invoice" />
+	        </a>
+		</c:if>
     </div>
 </form>
 
@@ -657,8 +658,10 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                             </td>
                         </tr>
                     </c:if>
-
-
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.exportedInLegacyERP" /></th>
+                        <td><spring:message code="label.${debitNote.exportedInLegacyERP}" /></td>
+                    </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${debitNote.getVersioningCreator()}' />] <joda:format value="${debitNote.getVersioningCreationDate()}" style="SS" /></td>
