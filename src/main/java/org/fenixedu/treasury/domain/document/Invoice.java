@@ -115,40 +115,13 @@ public abstract class Invoice extends Invoice_Base {
         super.delete(deleteEntries);
     }
 
-    public abstract ERPCustomerFieldsBean saveCustomerDataBeforeExportation();
-    public abstract ERPCustomerFieldsBean savePayorCustomerDataBeforeExportation();
-    
-    public void editCustomerFieldsForIntegration(final ERPCustomerFieldsBean bean) {
-    }
-
-    public void editPayorCustomerFieldsForIntegration(final ERPCustomerFieldsBean bean) {
-        if (!isDocumentToExport()) {
-            throw new TreasuryDomainException(
-                    "error.FinantialDocument.editCustomerFieldsForIntegration.document.not.pending.for.exportation");
-        }
-
-        setPayorCustomerBusinessId(bean.getCustomerBusinessId());
-        setPayorCustomerFiscalCountry(bean.getCustomerFiscalCountry());
-        setPayorCustomerNationality(bean.getCustomerNationality());
-        setPayorCustomerId(bean.getCustomerId());
-        setPayorCustomerAccountId(bean.getCustomerAccountId());
-        setPayorCustomerFiscalNumber(bean.getCustomerFiscalNumber());
-        setPayorCustomerName(bean.getCustomerName());
-        setPayorCustomerStreetName(bean.getCustomerStreetName());
-        setPayorCustomerAddressDetail(bean.getCustomerAddressDetail());
-        setPayorCustomerCity(bean.getCustomerCity());
-        setPayorCustomerZipCode(bean.getCustomerZipCode());
-        setPayorCustomerRegion(bean.getCustomerRegion());
-        setPayorCustomerCountry(bean.getCustomerCountry());
-    }
-    
     // @formatter:off
     /* ********
      * SERVICES
      * ********
      */
     // @formatter:on
-    
+
     public static Stream<? extends Invoice> findAll() {
         return FinantialDocument.findAll().filter(x -> x instanceof Invoice).map(Invoice.class::cast);
     }
@@ -204,36 +177,8 @@ public abstract class Invoice extends Invoice_Base {
                 .orElse(false);
     }
 
-    // @formatter:off
-    /* *********************
-     * ERP INTEGRATION UTILS
-     * *********************
-     */
-    // @formatter:on
-
-    public BigDecimal amountAtDate(final Invoice invoice, final DateTime when) {
-        BigDecimal amount = BigDecimal.ZERO;
-        for (FinantialDocumentEntry entry : invoice.getFinantialDocumentEntriesSet()) {
-            amount = amount.add(((InvoiceEntry) entry).openAmountAtDate(when));
-        }
-
-        return invoice.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
-    }
-
-    public BigDecimal netAmountAtDate(final Invoice invoice, final DateTime when) {
-        BigDecimal amount = BigDecimal.ZERO;
-        for (FinantialDocumentEntry entry : invoice.getFinantialDocumentEntriesSet()) {
-            BigDecimal entryAmountAtDate = ((InvoiceEntry) entry).openAmountAtDate(when);
-            entryAmountAtDate = divide(entry.getNetAmount().multiply(entryAmountAtDate), entry.getTotalAmount());
-
-            amount = amount.add(entryAmountAtDate);
-        }
-
-        return invoice.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
-    }
-    
     public boolean isForPayorDebtAccount() {
-        return getPayorDebtAccount() != null;
+        return getPayorDebtAccount() != null && getPayorDebtAccount() != getDebtAccount();
     }
 
 }
