@@ -100,6 +100,8 @@ public class ERPExporterManager {
 //
 //    }
 
+    private static final int LIMIT = 100;
+
     public static List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution(FinantialInstitution finantialInstitution) {
         List<ERPExportOperation> result = new ArrayList<ERPExportOperation>();
 
@@ -109,7 +111,9 @@ public class ERPExporterManager {
 
         Set<FinantialDocument> pendingDocuments =
                 finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream()
-                        .filter(x -> x.isAnnulled() || x.isClosed()).limit(100).collect(Collectors.toSet());
+                        .filter(x -> x.getCloseDate().isBefore(ERPExporter.ERP_START_DATE))
+                        .filter(x -> x.isAnnulled() || x.isClosed())
+                        .limit(LIMIT).collect(Collectors.toSet());
 
         Comparator<FinantialDocument> sortingComparator = new Comparator<FinantialDocument>() {
 
@@ -133,7 +137,7 @@ public class ERPExporterManager {
                 pendingDocuments.stream().sorted(sortingComparator).collect(Collectors.toList());
 
         //HACK : LIMIT MAX OF 100 DOCUMENTS TO EXPORT!!!
-        sortedDocuments = sortedDocuments.stream().limit(100).collect(Collectors.toList());
+        sortedDocuments = sortedDocuments.stream().limit(LIMIT).collect(Collectors.toList());
 
         if (pendingDocuments.isEmpty() == false) {
 
@@ -165,6 +169,5 @@ public class ERPExporterManager {
 
     public static void requestPendingDocumentStatus(FinantialInstitution finantialInstitution) {
         ERPExporter.requestPendingDocumentStatus(finantialInstitution);
-
     }
 }

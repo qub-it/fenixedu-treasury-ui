@@ -476,6 +476,10 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentDueDate" /></th>
                         <td><joda:format value="${debitNote.documentDueDate}" style="S-" /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.closeDate" /></th>
+                        <td><joda:format value="${debitNote.closeDate}" style="S-" /></td>
+                    </tr>
                     <c:if test="${not empty  debitNote.originDocumentNumber}">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.originDocumentNumber" /></th>

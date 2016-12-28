@@ -27,8 +27,6 @@
  */
 package org.fenixedu.treasury.services.integration.erp;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -56,29 +54,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import oecd.standardauditfile_tax.pt_1.AddressStructure;
-import oecd.standardauditfile_tax.pt_1.AddressStructurePT;
-import oecd.standardauditfile_tax.pt_1.AuditFile;
-import oecd.standardauditfile_tax.pt_1.Header;
-import oecd.standardauditfile_tax.pt_1.MovementTax;
-import oecd.standardauditfile_tax.pt_1.OrderReferences;
-import oecd.standardauditfile_tax.pt_1.PaymentMethod;
-import oecd.standardauditfile_tax.pt_1.SAFTPTMovementTaxType;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSourceBilling;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSourcePayment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.AdvancedPaymentCredit;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.AdvancedPayment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line.Metadata;
-import oecd.standardauditfile_tax.pt_1.Tax;
-import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
-
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -106,16 +81,37 @@ import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationIn
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.Atomic.TxMode;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+
+import oecd.standardauditfile_tax.pt_1.AddressStructure;
+import oecd.standardauditfile_tax.pt_1.AddressStructurePT;
+import oecd.standardauditfile_tax.pt_1.AuditFile;
+import oecd.standardauditfile_tax.pt_1.Header;
+import oecd.standardauditfile_tax.pt_1.MovementTax;
+import oecd.standardauditfile_tax.pt_1.OrderReferences;
+import oecd.standardauditfile_tax.pt_1.PaymentMethod;
+import oecd.standardauditfile_tax.pt_1.SAFTPTMovementTaxType;
+import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
+import oecd.standardauditfile_tax.pt_1.SAFTPTSourceBilling;
+import oecd.standardauditfile_tax.pt_1.SAFTPTSourcePayment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.AdvancedPaymentCredit;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.AdvancedPayment;
+import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line.Metadata;
+import oecd.standardauditfile_tax.pt_1.Tax;
+import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
+import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.Atomic.TxMode;
 
 // ******************************************************************************************************************************
 // http://info.portaldasfinancas.gov.pt/NR/rdonlyres/3B4FECDB-2380-45D7-9019-ABCA80A7E99E/0/Comunicacao_Dados_Doc_Transporte.pdf
@@ -131,6 +127,8 @@ public class ERPExporter {
     private static Logger logger = LoggerFactory.getLogger(ERPExporter.class);
     public final static String ERP_HEADER_VERSION_1_00_00 = "1.0.3";
 
+    public static final DateTime ERP_START_DATE = new LocalDate(2017, 1, 1).toDateTimeAtStartOfDay();
+    
     private String generateERPFile(FinantialInstitution institution, DateTime fromDate, DateTime toDate,
             List<? extends FinantialDocument> allDocuments, Boolean generateAllCustomers, Boolean generateAllProducts,
             java.util.function.UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize) {
@@ -344,6 +342,10 @@ public class ERPExporter {
     private Payment convertToSAFTPaymentDocument(SettlementNote document,
             Map<String, oecd.standardauditfile_tax.pt_1.Customer> baseCustomers,
             Map<String, oecd.standardauditfile_tax.pt_1.Product> productMap) {
+        if(!document.getCloseDate().isBefore(ERP_START_DATE)) {
+            throw new RuntimeException("Attempt to export document not closed before 01/01/2017");
+        }
+        
         Payment payment = new Payment();
 
         // Find the Customer in BaseCustomers
@@ -538,6 +540,11 @@ public class ERPExporter {
     private WorkDocument convertToSAFTWorkDocument(Invoice document,
             Map<String, oecd.standardauditfile_tax.pt_1.Customer> baseCustomers,
             Map<String, oecd.standardauditfile_tax.pt_1.Product> baseProducts) {
+        
+        if(!document.getCloseDate().isBefore(ERP_START_DATE)) {
+            throw new RuntimeException("Attempt to export document not closed before 01/01/2017");
+        }
+        
         WorkDocument workDocument = new WorkDocument();
 
         // Find the Customer in BaseCustomers
@@ -1218,11 +1225,21 @@ public class ERPExporter {
             ERPExporter saftExporter = new ERPExporter();
             List<FinantialDocument> documents =
                     new ArrayList<FinantialDocument>(institution.getExportableDocuments(fromDate, toDate));
+            
+            documents = documents.stream()
+                // Allow closed documents not after 01/01/2016
+                .filter(x -> x.getCloseDate().isBefore(ERPExporter.ERP_START_DATE))
+                .collect(Collectors.<FinantialDocument> toList());
+            
             logger.info("Collecting " + documents.size() + " documents to export to institution " + institution.getCode());
             UnaryOperator<AuditFile> auditFilePreProcess =
                     institution.getErpIntegrationConfiguration().getAuditFilePreProcessOperator();
-            String xml = saftExporter.generateERPFile(institution, fromDate, toDate, documents, true, true, auditFilePreProcess);
 
+            if(documents.isEmpty()) {
+                throw new TreasuryDomainException("error.ERPExporter.no.document.to.export");
+            }
+            
+            String xml = saftExporter.generateERPFile(institution, fromDate, toDate, documents, true, true, auditFilePreProcess);
             OperationFile operationFile = writeContentToExportOperation(xml, operation);
 
             boolean success = sendDocumentsInformationToIntegration(institution, operationFile, logBean);
@@ -1377,7 +1394,11 @@ public class ERPExporter {
 
     private static String exportFinantialDocumentToXML(FinantialInstitution finantialInstitution,
             List<FinantialDocument> documents, UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize) {
-
+        
+        if(documents.isEmpty()) {
+            throw new TreasuryDomainException("error.ERPExporter.no.document.to.export");
+        }
+        
         checkForUnsetDocumentSeriesNumberInDocumentsToExport(documents);
 
         ERPExporter saftExporter = new ERPExporter();
@@ -1434,7 +1455,11 @@ public class ERPExporter {
         checkForUnsetDocumentSeriesNumberInDocumentsToExport(documents);
 
         //Filter only anulled or closed documents
-        documents = documents.stream().filter(x -> x.isAnnulled() || x.isClosed()).collect(Collectors.toList());
+        documents = documents.stream()
+                .filter(x -> x.isAnnulled() || x.isClosed())
+                // Allow closed documents not after 01/01/2017
+                .filter(x -> x.getCloseDate().isBefore(ERPExporter.ERP_START_DATE))
+                .collect(Collectors.toList());
 
         if (!institution.getErpIntegrationConfiguration().isIntegratedDocumentsExportationEnabled()) {
             // Filter documents already exported

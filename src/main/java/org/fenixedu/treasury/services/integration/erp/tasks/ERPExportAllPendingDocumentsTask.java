@@ -109,7 +109,10 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
 
             Set<FinantialDocument> pendingDocuments =
                     finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream()
-                            .filter(x -> x.isAnnulled() || x.isClosed()).filter(x -> x.isSettlementNote() == exportSettlementNotes).limit(LIMIT)
+                            .filter(x -> x.isAnnulled() || x.isClosed()).filter(x -> x.isSettlementNote() == exportSettlementNotes)
+                            // Allow closed documents not after 01/01/2017
+                            .filter(x -> x.getCloseDate().isBefore(ERPExporter.ERP_START_DATE))
+                            .limit(LIMIT)
                             .collect(Collectors.toSet());
 
 

@@ -344,6 +344,10 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.documentDate" /></th>
                         <td><joda:format value="${creditNote.documentDate}" style="S-" /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.closeDate" /></th>
+                        <td><joda:format value="${creditNote.closeDate}" style="S-" /></td>
+                    </tr>
                     <c:if test="${not empty  creditNote.originDocumentNumber}">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.originDocumentNumber" /></th>
