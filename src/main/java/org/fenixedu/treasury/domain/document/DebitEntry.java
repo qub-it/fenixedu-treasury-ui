@@ -453,6 +453,11 @@ public class DebitEntry extends DebitEntry_Base {
             setExemptedAmount(amountWithoutVat);
 
             recalculateAmountValues();
+            
+            if(getTreasuryEvent() != null) {
+                getTreasuryEvent().invokeSettlementCallbacks();
+            }
+            
         }
 
         checkRules();

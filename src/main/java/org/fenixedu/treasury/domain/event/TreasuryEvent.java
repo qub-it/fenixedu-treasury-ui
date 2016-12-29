@@ -354,6 +354,9 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         return DebitEntry.findActive(this).map(l -> l.isDeletable()).reduce((a, c) -> a && c).orElse(Boolean.TRUE);
     }
 
+    public void invokeSettlementCallbacks() {
+    }
+    
     // @formatter: off
     /************
      * SERVICES *
