@@ -237,13 +237,11 @@ ${portal.toolkit()}
                                 code="label.ERPExportOperation.finantialDocuments" /></th>
                         <td>
                             <ul>
-                                <c:forEach
-                                    items="${eRPExportOperation.finantialDocuments}"
-                                    var="element">
-                                    <li><c:out
-                                            value="${element.uiDocumentNumber}" /></li>
+                                <c:forEach items="${eRPExportOperation.finantialDocuments}" var="e">
+                                    
+                                    <li><c:out value="${e.uiDocumentNumber}" />&nbsp;[<em><joda:format value='${e.closeDate}' style='S-'/></em>]</li>
                                 </c:forEach>
-                                <ul>
+							</ul>
                         </td>
                     </tr>
                 </tbody>

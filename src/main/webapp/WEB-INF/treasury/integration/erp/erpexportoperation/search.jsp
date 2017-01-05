@@ -280,7 +280,7 @@ ${portal.toolkit()}
 				"creator" : "<c:out value='${searchResult.versioningCreator}'/>",
 				"executiondate" : "<c:out value='${searchResult.executionDate.toString("YYYY-MM-dd HH:mm:ss")}'/>",
 				"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
-				"finantialdocuments" : '<ul><c:forEach items="${searchResult.finantialDocuments}" var="doc"><li><c:out value="${doc.uiDocumentNumber}" /></li></c:forEach></ul>', 
+				"finantialdocuments" : '<ul><c:forEach items="${searchResult.finantialDocuments}" var="doc"><li><c:out value="${doc.uiDocumentNumber}" />&nbsp;[<em><joda:format value="${doc.closeDate}" style="S-"/></em>]</li></c:forEach></ul>', 
 				"success" : "<c:if test="${searchResult.success}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.success}"><spring:message code="label.false" /></c:if>",
 				// "corrected" : "<c:if test="${searchResult.corrected}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.corrected}"><spring:message code="label.false" /></c:if>",
 				"actions" :

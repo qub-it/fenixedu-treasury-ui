@@ -140,6 +140,7 @@ ${portal.toolkit()}
 					<%--!!!  Field names here --%>
 <th><spring:message code="label.FinantialDocument.documentNumber"/></th>
 <th><spring:message code="label.FinantialDocument.documentDate"/></th>
+<th><spring:message code="label.DebitNote.closeDate"/></th>
 <th><spring:message code="label.FinantialDocument.state"/></th>
 <%-- Operations Column --%>
 					<th></th>
@@ -182,6 +183,7 @@ ${portal.toolkit()}
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
 				"documentnumber" : '<a target="blank" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/readfinantialdocument/${searchResult.externalId}"><c:out value="${searchResult.uiDocumentNumber}"/></a>&nbsp<em>(<c:out value="${searchResult.state.descriptionI18N.content}"/>)</em>',
 				"documentdate" : "<c:out value='${searchResult.documentDate.toString("YYYY-MM-dd HH:mm:ss")}'/>",
+				"closedate" : "<c:out value='${searchResult.closeDate.toString("YYYY-MM-dd")}'/>",
 				"errorlog" : '<c:out value="${searchResult.uiLastERPExportationErrorMessage}" escapeXml="false" />',
 				"actions" :
 				" <a target=\"#\" class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
@@ -225,6 +227,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'documentnumber' },
 			{ data: 'documentdate' },
+			{ data: 'closedate' },
 			{ data: 'errorlog' },
 			{ data: 'actions', className:"all" }
 			
