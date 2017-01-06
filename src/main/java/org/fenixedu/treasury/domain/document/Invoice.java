@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.divide;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -150,21 +152,50 @@ public abstract class Invoice extends Invoice_Base {
     }
 
     public InvoiceEntry getEntryInOrder(Integer lineNumber) {
-        FinantialDocumentEntry entry =
-                this.getFinantialDocumentEntriesSet().stream().filter(x -> x.getEntryOrder().equals(lineNumber)).findFirst()
-                        .orElse(null);
+        FinantialDocumentEntry entry = this.getFinantialDocumentEntriesSet().stream()
+                .filter(x -> x.getEntryOrder().equals(lineNumber)).findFirst().orElse(null);
         if (entry != null) {
             return (InvoiceEntry) entry;
         }
         return null;
     }
-    
+
     public boolean isTotalSettledWithoutPaymentEntries() {
-        if(isAnnulled() || Constants.isPositive(getOpenAmount())) {
+        if (isAnnulled() || Constants.isPositive(getOpenAmount())) {
             return false;
         }
-        
-        return !getRelatedSettlementEntries().stream().map(e -> !((SettlementNote) e.getFinantialDocument()).getPaymentEntriesSet().isEmpty()).reduce((a, c) -> a || c).orElse(false);
+
+        return !getRelatedSettlementEntries().stream()
+                .map(e -> !((SettlementNote) e.getFinantialDocument()).getPaymentEntriesSet().isEmpty()).reduce((a, c) -> a || c)
+                .orElse(false);
+    }
+
+    // @formatter:off
+    /* *********************
+     * ERP INTEGRATION UTILS
+     * *********************
+     */
+    // @formatter:on
+
+    public BigDecimal amountAtDate(final Invoice invoice, final DateTime when) {
+        BigDecimal amount = BigDecimal.ZERO;
+        for (FinantialDocumentEntry entry : invoice.getFinantialDocumentEntriesSet()) {
+            amount = amount.add(((InvoiceEntry) entry).openAmountAtDate(when));
+        }
+
+        return invoice.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
+    }
+
+    public BigDecimal netAmountAtDate(final Invoice invoice, final DateTime when) {
+        BigDecimal amount = BigDecimal.ZERO;
+        for (FinantialDocumentEntry entry : invoice.getFinantialDocumentEntriesSet()) {
+            BigDecimal entryAmountAtDate = ((InvoiceEntry) entry).openAmountAtDate(when);
+            entryAmountAtDate = divide(entry.getNetAmount().multiply(entryAmountAtDate), entry.getTotalAmount());
+
+            amount = amount.add(entryAmountAtDate);
+        }
+
+        return invoice.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
 
 }

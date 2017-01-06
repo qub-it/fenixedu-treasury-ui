@@ -27,12 +27,16 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.divide;
+import static org.fenixedu.treasury.util.Constants.isPositive;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -243,4 +247,39 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     public abstract BigDecimal getOpenAmountWithInterests();
 
     public abstract LocalDate getDueDate();
+    
+    // @formatter:off
+    /* *********************
+     * ERP INTEGRATION UTILS
+     * *********************
+     */
+    // @formatter:on
+    
+    public BigDecimal openAmountAtDate(final DateTime when) {
+        final Currency currency = getDebtAccount().getFinantialInstitution().getCurrency();
+        
+        if (isAnnulled()) {
+            return BigDecimal.ZERO;
+        }
+
+        final BigDecimal openAmount = getAmountWithVat().subtract(payedAmountAtDate(when));
+
+        return currency.getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
+    }
+    
+    public BigDecimal payedAmountAtDate(final DateTime when) {
+        BigDecimal amount = BigDecimal.ZERO;
+        for (final SettlementEntry entry : getSettlementEntriesSet()) {
+            if(entry.getEntryDateTime().isAfter(when)) {
+                continue;
+            }
+            
+            if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isClosed()) {
+                amount = amount.add(entry.getTotalAmount());
+            }
+        }
+        
+        return amount;
+    }
+    
 }
