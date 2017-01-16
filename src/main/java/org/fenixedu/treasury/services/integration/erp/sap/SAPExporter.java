@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.services.integration.erp.sap;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -120,31 +121,6 @@ import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import fr.opensagres.xdocreport.core.io.internal.ByteArrayOutputStream;
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.Atomic.TxMode;
-
-import oecd.standardauditfile_tax.pt_1.AddressStructure;
-import oecd.standardauditfile_tax.pt_1.AddressStructurePT;
-import oecd.standardauditfile_tax.pt_1.AuditFile;
-import oecd.standardauditfile_tax.pt_1.Header;
-import oecd.standardauditfile_tax.pt_1.MovementTax;
-import oecd.standardauditfile_tax.pt_1.OrderReferences;
-import oecd.standardauditfile_tax.pt_1.PaymentMethod;
-import oecd.standardauditfile_tax.pt_1.SAFTPTMovementTaxType;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSourceBilling;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSourcePayment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.AdvancedPaymentCredit;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line.SourceDocumentID;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.AdvancedPayment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument.Line.Metadata;
-import oecd.standardauditfile_tax.pt_1.Tax;
-import oecd.standardauditfile_tax.pt_1.TaxTableEntry;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
@@ -1391,7 +1367,6 @@ public class SAPExporter implements IERPExporter {
 
             logger.info("Collecting " + documents.size() + " documents to export to institution " + institution.getCode());
             UnaryOperator<AuditFile> auditFilePreProcess = getAuditFilePreProcessOperator(institution);
-            String xml = saftExporter.generateERPFile(institution, fromDate, toDate, documents, true, true, auditFilePreProcess);
 
             if(documents.isEmpty()) {
                 throw new TreasuryDomainException("error.ERPExporter.no.document.to.export");
@@ -1677,13 +1652,6 @@ public class SAPExporter implements IERPExporter {
             List<FinantialDocument> documents) {
 
         checkForUnsetDocumentSeriesNumberInDocumentsToExport(documents);
-
-        //Filter only anulled or closed documents
-        documents = documents.stream()
-                .filter(x -> x.isAnnulled() || x.isClosed())
-                // Allow closed documents not after 01/01/2017
-                .filter(x -> x.getCloseDate().isBefore(ERPExporter.ERP_START_DATE))
-                .collect(Collectors.toList());
 
         if (!institution.getErpIntegrationConfiguration().isIntegratedDocumentsExportationEnabled()) {
             // Filter documents already exported

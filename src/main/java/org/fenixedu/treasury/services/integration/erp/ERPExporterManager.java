@@ -3,7 +3,6 @@ package org.fenixedu.treasury.services.integration.erp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
