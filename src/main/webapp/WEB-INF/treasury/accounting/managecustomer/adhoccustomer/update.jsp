@@ -184,20 +184,11 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                	<c:if test="${adhocCustomer.personCustomer}">
-	                    <input id="adhocCustomer_fiscalNumber"
-	                        class="form-control" type="text"
-	                        ng-model="object.fiscalNumber"
-	                        name="fiscalnumber"
-	                        value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' readonly="readonly" />
-					</c:if>
-                	<c:if test="${adhocCustomer.adhocCustomer}">
-	                    <input id="adhocCustomer_fiscalNumber"
-	                        class="form-control" type="text"
-	                        ng-model="object.fiscalNumber"
-	                        name="fiscalnumber"
-	                        value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' />
-					</c:if>
+	                <input id="adhocCustomer_fiscalNumber"
+	                    class="form-control" type="text"
+	                    ng-model="object.fiscalNumber"
+	                    name="fiscalnumber"
+	                    value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' readonly="readonly" />
                 </div>
             </div>
             <div class="form-group row">
@@ -295,27 +286,41 @@ ${portal.angularToolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.AdhocCustomer.countryCode" />
+                        code="label.AdhocCustomer.addressCountryCode" />
                 </div>
 
                 <div class="col-sm-10">
                 	<c:if test="${adhocCustomer.personCustomer}">
-	                    <input id="adhocCustomer_countryCode"
+	                    <input id="adhocCustomer_addressCountryCode"
 	                        class="form-control" type="text"
-	                        ng-model="object.countryCode"
-	                        name="countrycode"
-	                        value='<c:out value='${not empty param.countrycode ? param.countrycode : adhocCustomer.countryCode }'/>' readonly="readonly" />
+	                        ng-model="object.addressCountryCode"
+	                        name="addresscountrycode"
+	                        value='<c:out value='${not empty param.addresscountrycode ? param.addresscountrycode : adhocCustomer.addressCountryCode }'/>' readonly="readonly" />
 					</c:if>
 					
                 	<c:if test="${adhocCustomer.adhocCustomer}">
-	                    <ui-select id="adhocCustomer_countryCode"
-	                        ng-model="$parent.object.countryCode" theme="bootstrap"> 
+	                    <ui-select id="adhocCustomer_addressCountryCode"
+	                        ng-model="$parent.object.addressCountryCode" theme="bootstrap"> 
 	                        <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
-	                        <ui-select-choices repeat="c.id as c in object.countryCodesDataSource| filter: $select.search">
+	                        <ui-select-choices repeat="c.id as c in object.countryCodesDataSource | filter: $select.search">
 			                    <span ng-bind-html="c.text | highlight: $select.search"></span>
 	                    	</ui-select-choices>
 	                    </ui-select>
 					</c:if>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.countryCode" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="adhocCustomer_countryCode"
+                        class="form-control" type="text"
+                        ng-model="object.countryCode"
+                        name="countrycode"
+                        value='<c:out value='${not empty param.countrycode ? param.countrycode : adhocCustomer.countryCode }'/>' readonly="readonly" />
                 </div>
             </div>
 

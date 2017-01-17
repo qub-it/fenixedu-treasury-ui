@@ -27,7 +27,9 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.math.BigDecimal;
 import java.text.Normalizer;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,6 +37,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
@@ -48,6 +51,15 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public static final String DEFAULT_FISCAL_NUMBER = "999999990";
     public static final int MAX_CODE_LENGHT = 20;
+
+    public static final Comparator<Customer> COMPARE_BY_NAME_IGNORE_CASE = new Comparator<Customer>() {
+
+        @Override
+        public int compare(final Customer o1, final Customer o2) {
+            int c = o1.getName().compareToIgnoreCase(o2.getName());
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
 
     protected Customer() {
         super();
@@ -75,6 +87,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract String getZipCode();
 
+    public abstract String getAddressCountryCode();
+
     public abstract String getCountryCode();
 
     public abstract String getNationalityCountryCode();
@@ -88,6 +102,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract String getEmail();
 
     public abstract String getPhoneNumber();
+
+    public abstract BigDecimal getGlobalBalance();
 
     public boolean isDeletable() {
         return false;
@@ -103,12 +119,15 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract boolean isActive();
 
+    public abstract Customer getActiveCustomer();
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.Customer.cannot.delete");
         }
 
+        setCustomerType(null);
         setBennu(null);
 
         deleteDomainObject();
@@ -138,6 +157,19 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public static Stream<? extends Customer> findByCode(final java.lang.String code) {
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
+    }
+
+    public static Stream<? extends Customer> findByFiscalInformation(final String fiscalCountryCode, final String fiscalNumber) {
+        if (Strings.isNullOrEmpty(fiscalCountryCode)) {
+            throw new TreasuryDomainException("error.Customer.findByFiscalCountryAndNumber.fiscalCountryCode.required");
+        }
+
+        if (Strings.isNullOrEmpty(fiscalNumber)) {
+            throw new TreasuryDomainException("error.Customer.findByFiscalCountryAndNumber.fiscalNumber.required");
+        }
+
+        return findAll().filter(c -> lowerCase(c.getFiscalCountry()).equals(lowerCase(fiscalCountryCode))
+                && lowerCase(c.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
     }
 
     public boolean matchesMultiFilter(String searchText) {
@@ -173,11 +205,6 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
                 .orElse(null);
     }
 
-    public boolean hasMinimumAddressData() {
-        return !Strings.isNullOrEmpty(getAddress()) && !Strings.isNullOrEmpty(getZipCode())
-                && !Strings.isNullOrEmpty(getFiscalCountry());
-    }
-
     @Atomic
     public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
 
@@ -205,6 +232,27 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public boolean isFiscalCodeValid() {
         return FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber());
+    }
+
+    public abstract Set<? extends TreasuryEvent> getTreasuryEventsSet();
+
+    public abstract boolean isUiOtherRelatedCustomerActive();
+
+    public abstract String uiRedirectToActiveCustomer(final String url);
+
+    public String getUiFiscalNumber() {
+        final String fiscalCountry = !Strings.isNullOrEmpty(getFiscalCountry()) ? getFiscalCountry() : "";
+        final String fiscalNumber = !Strings.isNullOrEmpty(getFiscalNumber()) ? getFiscalNumber() : "";
+
+        return (fiscalCountry + " " + fiscalNumber).trim();
+    }
+
+    protected static String lowerCase(final String value) {
+        if (value == null) {
+            return null;
+        }
+
+        return value.toLowerCase();
     }
 
 }

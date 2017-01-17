@@ -36,16 +36,15 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.scheduler.TaskRunner;
-import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
-import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -182,8 +181,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public String getUiDocumentNumber() {
-        return String.format("%s %s/%s",
-                this.getDocumentNumberSeries().getFinantialDocumentType().getDocumentNumberSeriesPrefix(),
+        return String.format("%s %s/%s", this.getDocumentNumberSeries().documentNumberSeriesPrefix(),
                 this.getDocumentNumberSeries().getSeries().getCode(), Strings.padStart(this.getDocumentNumber(), 7, '0'));
     }
 
@@ -269,8 +267,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                     BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
 
         }
-        
-        setCloseDate(new DateTime());
+
+        if (getCloseDate() == null) {
+            setCloseDate(new DateTime());
+        }
+
         checkRules();
     }
 
@@ -281,19 +282,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
         }
 
-        final FinantialDocument refDocument = this;
-
-        new Thread() {
-            @Override
-            @Atomic
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
-                SchedulerSystem.queue(new TaskRunner(new ERPExportSingleDocumentsTask(refDocument.getExternalId())));
-            };
-        }.start();
+        if(getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration().getActive()) {
+            ERPExporterManager.scheduleSingleDocument(this);
+        }
     }
 
     @Atomic
@@ -304,10 +295,34 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         }
     }
 
+    @Atomic
+    public void clearDocumentToExportAndSaveERPCertificationData(final String reason, final LocalDate erpCertificationDate,
+            final String erpCertificateDocumentReference) {
+        if (getInstitutionForExportation() != null) {
+            this.setInstitutionForExportation(null);
+            super.setClearDocumentToExportReason(reason);
+
+            this.editERPCertificationData(erpCertificationDate, erpCertificateDocumentReference);
+        }
+    }
+
+    private void editERPCertificationData(final LocalDate erpCertificationDate, final String erpCertificateDocumentReference) {
+        if (erpCertificationDate == null) {
+            throw new TreasuryDomainException("error.FinantialDocument.erpCertificationDate.required");
+        }
+
+        if (Strings.isNullOrEmpty(erpCertificateDocumentReference)) {
+            throw new TreasuryDomainException("error.FinantialDocument.erpCertificateDocumentReference.required");
+        }
+
+        this.setErpCertificationDate(erpCertificationDate);
+        this.setErpCertificateDocumentReference(erpCertificateDocumentReference);
+    }
+
     public boolean isDocumentToExport() {
         return getInstitutionForExportation() != null;
     }
-    
+
     public boolean isExportedInLegacyERP() {
         return getExportedInLegacyERP();
     }
@@ -372,6 +387,34 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         return Long.parseLong(getDocumentNumber()) != 0;
     }
 
+    public boolean isCertifiedPrintedDocumentAvailable() {
+        if (!isClosed()) {
+            return false;
+        }
+
+        if (isExportedInLegacyERP()) {
+            return false;
+        }
+
+        if (isDocumentToExport()) {
+            return false;
+        }
+
+        if (isSettlementNote() && ((SettlementNote) this).isReimbursement()) {
+            return false;
+        }
+
+        if (getDocumentNumberSeries().getSeries().isRegulationSeries()) {
+            return false;
+        }
+
+        if (isCreditNote() && ((CreditNote) this).isAdvancePayment()) {
+            return false;
+        }
+
+        return true;
+    }
+
     public Optional<ERPExportOperation> getLastERPExportOperation() {
         if (getErpExportOperationsSet().isEmpty()) {
             return Optional.empty();
@@ -392,7 +435,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             if (lastERPExportOperation.get().getSuccess()) {
                 return "";
             }
-            
+
             final String[] lines = lastERPExportOperation.get().getErrorLog()
                     .replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z", "").split("\n");
 
@@ -402,7 +445,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             }
 
             return sb.toString();
-        } catch(Exception e) {
+        } catch (Exception e) {
             return "";
         }
     }

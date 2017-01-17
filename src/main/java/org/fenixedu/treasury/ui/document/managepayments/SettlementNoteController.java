@@ -30,8 +30,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -50,7 +48,6 @@ import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
@@ -64,7 +61,8 @@ import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
-import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -150,7 +148,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model) {
         assertUserIsAllowToModifySettlements(debtAccount.getFinantialInstitution(), model);
         if (bean == null) {
-            bean = new SettlementNoteBean(debtAccount, reimbursementNote);
+            bean = new SettlementNoteBean(debtAccount, reimbursementNote, false);
         }
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -204,38 +202,50 @@ public class SettlementNoteController extends TreasuryBaseController {
                 } else {
                     creditEntryBean.setNotValid(false);
                 }
-                
-                if(!creditEntryBean.isNotValid()) {
+
+                if (!creditEntryBean.isNotValid()) {
                     creditSum = creditSum.add(creditEntryBean.getCreditAmountWithVat());
                 }
             } else {
                 creditEntryBean.setNotValid(false);
             }
         }
+
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.positive.payment.value"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.positive.payment.value"), model);
         }
+
         if (!bean.isReimbursementNote() && creditSum.compareTo(debitSum) > 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.negative.payment.value"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.negative.payment.value"), model);
         }
+
         if (bean.isReimbursementNote() && creditSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
+            addErrorMessage(Constants.bundle("error.CreditEntry.no.creditEntries.selected"), model);
         }
+
         if (!bean.isReimbursementNote() && !bean.isAdvancePayment() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
+            addErrorMessage(Constants.bundle("error.DebiEntry.no.debitEntries.selected"), model);
         }
+
         if (bean.getDate().isAfter(new LocalDate())) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.date.is.after"), model);
         }
+
         if (bean.getDocNumSeries() == null) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.need.documentSeries"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.need.documentSeries"), model);
         }
+        
+        if(bean.getReferencedCustomers().size() > 1) {
+            error = true;
+            addErrorMessage(Constants.bundle("error.SettlementNote.referencedCustomers.only.one.allowed"), model);
+        }
+
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -303,6 +313,11 @@ public class SettlementNoteController extends TreasuryBaseController {
         BigDecimal paymentSum = bean.getPaymentAmount();
         boolean error = false;
 
+        if (bean.getPaymentEntries().size() > 1) {
+            error = true;
+            addErrorMessage(Constants.bundle("error.SettlementNote.only.one.payment.method.is.supported"), model);
+        }
+
         if (bean.getPaymentEntries().stream().anyMatch(peb -> Constants.isZero(peb.getPaymentAmount()))) {
             error = true;
             String errorMessage = bean
@@ -352,8 +367,13 @@ public class SettlementNoteController extends TreasuryBaseController {
         if (bean.getDocNumSeries().getSeries().getCertificated() == false) {
             documentDate = bean.getDate().toDateTimeAtStartOfDay();
         }
-        SettlementNote settlementNote = SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate,
-                bean.getDate().toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber());
+        SettlementNote settlementNote =
+                SettlementNote
+                        .create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate,
+                                bean.getDate().toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber(),
+                                !Strings.isNullOrEmpty(bean.getFinantialTransactionReference()) ? bean
+                                        .getFinantialTransactionReferenceYear() + "/"
+                                        + bean.getFinantialTransactionReference() : "");
         settlementNote.processSettlementNoteCreation(bean);
         settlementNote.closeDocument();
         return settlementNote;
@@ -495,11 +515,15 @@ public class SettlementNoteController extends TreasuryBaseController {
         setSettlementNote(settlementNote, model);
 
         try {
+            if (settlementNote.isReimbursement()) {
+                throw new TreasuryDomainException("error.SettlementNote.reimbursement.must.be.rejected.in.erp");
+            }
+
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
             anullReason = anullReason + " - [" + Authenticate.getUser().getUsername() + "] "
                     + new DateTime().toString("YYYY-MM-dd HH:mm");
-            settlementNote.anullDocument(anullReason, true);
 
+            settlementNote.anullDocument(anullReason, true);
             addInfoMessage(Constants.bundle("label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
@@ -512,24 +536,21 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
+            final String saftEncoding =
+                    ERPExporterManager.saftEncoding(settlementNote.getDebtAccount().getFinantialInstitution());
 
-            String output =
-                    ERPExporter.exportFinantialDocumentToXML(settlementNote.getDebtAccount().getFinantialInstitution(),
-                            settlementNote
-                                    .findRelatedDocuments(new HashSet<FinantialDocument>(),
-                                            settlementNote.getDebtAccount().getFinantialInstitution()
-                                                    .getErpIntegrationConfiguration().getExportAnnulledRelatedDocuments())
-                                    .stream().collect(Collectors.toList()));
+            final String output = ERPExporterManager.exportFinantialDocumentToXML(settlementNote);
+
             response.setContentType("text/xml");
-            response.setCharacterEncoding("Windows-1252");
+            response.setCharacterEncoding(saftEncoding);
             String filename = URLEncoder.encode(StringNormalizer.normalizePreservingCapitalizedLetters(
                     (settlementNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
                             + settlementNote.getUiDocumentNumber() + ".xml").replaceAll("/", "_").replaceAll("\\s", "_")
                                     .replaceAll(" ", "_")),
-                    "Windows-1252");
+                    saftEncoding);
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
-            response.getOutputStream().write(output.getBytes("Windows-1252"));
+            response.getOutputStream().write(output.getBytes(saftEncoding));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
@@ -558,7 +579,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/closesettlementnote", method = RequestMethod.POST)
-    public String processReadToCloseDebitNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
+    public String processReadToCloseSettlementtNote(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
         setSettlementNote(settlementNote, model);
 
@@ -708,27 +729,32 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationonline")
-    public String processReadToExportIntegrationOnline(@PathVariable("oid") SettlementNote settlementNote, Model model,
+    public String processReadToExportIntegrationOnline(@PathVariable("oid") final SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
             try {
+                final IERPExporter erpExporter = settlementNote.getDebtAccount().getFinantialInstitution()
+                        .getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
                 //Force a check status first of the document 
-                ERPExporter.checkIntegrationDocumentStatus(settlementNote);
+                erpExporter.checkIntegrationDocumentStatus(settlementNote);
             } catch (Exception ex) {
-
             }
 
-            List<FinantialDocument> documentsToExport = Collections.singletonList(settlementNote);
-            ERPExportOperation output = ERPExporter.exportFinantialDocumentToIntegration(
-                    settlementNote.getDebtAccount().getFinantialInstitution(), documentsToExport);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            final ERPExportOperation output = ERPExporterManager.exportSettlementNote(settlementNote);
+            if(output == null) {
+                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                return read(settlementNote, model);
+            }
+
+            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error")
                     + ex.getLocalizedMessage(), model);
         }
+        
         return read(settlementNote, model);
     }
 
@@ -757,6 +783,51 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(e.getLocalizedMessage(), model);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         }
+    }
+
+    private static final String _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI = "/downloadcertifieddocumentprint";
+    public static final String DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL = CONTROLLER_URL + _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI;
+
+    @RequestMapping(value = _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI + "/{oid}", method = RequestMethod.GET)
+    public String downloadcertifieddocumentprint(@PathVariable("oid") final SettlementNote settlementNote, final Model model,
+            final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
+
+        try {
+
+            final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(settlementNote);
+
+            response.setContentType("application/pdf");
+            String filename = URLEncoder.encode(StringNormalizer.normalizePreservingCapitalizedLetters(
+                    (settlementNote.getDebtAccount().getFinantialInstitution().getFiscalNumber() + "_"
+                            + settlementNote.getUiDocumentNumber() + ".pdf").replaceAll("/", "_").replaceAll("\\s", "_")
+                                    .replaceAll(" ", "_")),
+                    "Windows-1252");
+
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(contents);
+
+            return null;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return read(settlementNote, model);
+        }
+    }
+
+    private static final String _UPDATE_REIMBURSEMENT_STATE_URI = "/updatereimbursementstate";
+    public static final String UPDATE_REIMBURSEMENT_STATE_URL = CONTROLLER_URL + _UPDATE_REIMBURSEMENT_STATE_URI;
+
+    @RequestMapping(value = _UPDATE_REIMBURSEMENT_STATE_URI + "/{oid}", method = RequestMethod.POST)
+    public String updatereimbursementstate(@PathVariable("oid") final SettlementNote settlementNote, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            ERPExporterManager.updateReimbursementState(settlementNote);
+            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return read(settlementNote, model);
+        }
+
     }
 
 }

@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.ReimbursementProcessStateLogController"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
@@ -216,12 +220,10 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
 	}
 %>
 
-
-
 <%} %>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<a class=""
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 <% 
@@ -229,7 +231,14 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
 %>             
             |&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message
-            code="label.event.update" /></a> &nbsp;
+            code="label.event.update" /></a> 
+
+		&nbsp;|&nbsp;
+		<a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/printdocument">
+		    <span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp; 
+			<spring:message code="label.FinantialDocument.print.uncertified.settlement.note" />
+		</a>
+    
     <c:if test="${settlementNote.isPreparing()}">
         |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
                 code="label.event.delete" /></a> &nbsp;|&nbsp; 
@@ -237,10 +246,12 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
         <a class="" href="#" data-toggle="modal" data-target="#closeModal"> <spring:message code="label.event.document.manageInvoice.closeSettlementNote" />
         </a> &nbsp;
     </c:if>
-    <c:if test="${settlementNote.isClosed()}">
+    
+    <c:if test="${settlementNote.isClosed() && not settlementNote.reimbursement}">
         |&nbsp;<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-        <a class="" href="#" data-toggle="modal" data-target="#anullModal"> <spring:message code="label.event.document.managePayments.anullSettlementNote" />
-        </a> &nbsp;      
+        <a class="" href="#" data-toggle="modal" data-target="#anullModal">
+        	<spring:message code="label.event.document.managePayments.anullSettlementNote" />
+        </a>&nbsp;      
     </c:if>
     <%} %>
     <c:if test="${settlementNote.documentSeriesNumberSet}">
@@ -253,16 +264,53 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                <li><a id="exportCreditNoteIntegrationOnline" class=""
-                    href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationonline"><span
-                        class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportCreditNoteIntegrationOnline" /></a></li>
-                <li><a class=""
-                    href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile"> <span
-                        class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
-                </a></li>
-                <li><a class="" href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?finantialinstitution=${settlementNote.debtAccount.finantialInstitution.externalId}&documentnumber=${settlementNote.uiDocumentNumber}">
-                        <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
-                </a>
+            	<c:if test="${settlementNote.reimbursement}">
+            	<c:if test="${not settlementNote.exportedInLegacyERP}">
+            	<c:if test="${settlementNote.reimbursementPending}">
+                <li>
+       	            <form id="updateReimbursementState" action="${pageContext.request.contextPath}<%= SettlementNoteController.UPDATE_REIMBURSEMENT_STATE_URL %>/${settlementNote.externalId}" method="post">
+                	</form>
+            		<a href="#" data-toggle="modal" onclick="$('#updateReimbursementState').submit();">
+	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+	                	<spring:message code="label.event.document.manageInvoice.updateReimbursementState" />
+            		</a>
+                </li>
+            	</c:if>
+            	</c:if>
+            	</c:if>
+
+            	<c:if test="${settlementNote.reimbursement}">
+            	<c:if test="${not settlementNote.exportedInLegacyERP}">
+                <li>
+            		<a href="${pageContext.request.contextPath}<%= ReimbursementProcessStateLogController.SEARCH_URL %>/${settlementNote.externalId}">
+	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+	                	<spring:message code="label.ReimbursementProcessStateLog.title" />
+            		</a>
+                </li>
+            	</c:if>
+            	</c:if>
+            
+				<c:if test="${settlementNote.documentToExport}">
+                <li>
+                	<a id="exportCreditNoteIntegrationOnline" class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationonline">
+	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+	                	<spring:message code="label.event.document.manageInvoice.exportCreditNoteIntegrationOnline" />
+                	</a>
+                </li>
+                </c:if>
+                
+                <li>
+                	<a href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationfile">
+                		<span class="glyphicon glyphicon-export" aria-hidden="true"></span> 
+                		<spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
+                	</a>
+                </li>
+                
+                <li>
+	                <a href="${pageContext.request.contextPath}<%= ERPExportOperationController.SEARCH_URL %>?finantialinstitution=${settlementNote.debtAccount.finantialInstitution.externalId}&documentnumber=${settlementNote.uiDocumentNumber}">
+	                        <span class="glyphicon glyphicon-export" aria-hidden="true"></span>
+	                        <spring:message code="label.event.document.manageInvoice.searchExportOperations" />
+	                </a>
                 </li>
                 
 <% 
@@ -278,13 +326,15 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
             </ul>
         </div>
     </c:if>
-<!--     |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" href="#" -->
-<%--         onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message --%>
-<%--             code="label.print" /> --%>
-    |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/printdocument">
-        <spring:message
-            code="label.print" />
-    </a> &nbsp;
+    
+	<c:if test="${settlementNote.certifiedPrintedDocumentAvailable}">
+       	&nbsp;|&nbsp;
+        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+        <a href="${pageContext.request.contextPath}<%= SettlementNoteController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${settlementNote.externalId}">
+        	<spring:message code="label.FinantialDocument.download.settlement.note" />
+        </a>
+	</c:if>
+    
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -345,18 +395,38 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.state" /></th>
-                        <td><c:if test="${settlementNote.isAnnulled()}">
+                        <td>
+                        	<c:if test="${settlementNote.isAnnulled()}">
                                 <span class="label label-danger">
-                            </c:if> <c:if test="${settlementNote.isPreparing() }">
+                            </c:if> 
+                            <c:if test="${settlementNote.isPreparing() }">
                                 <span class="label label-warning">
-                            </c:if> <c:if test="${settlementNote.isClosed()}">
+                            </c:if> 
+                            <c:if test="${settlementNote.isClosed()}">
                                 <span class="label label-primary">
-                            </c:if> <c:out value='${settlementNote.state.descriptionI18N.content}' /></span> <c:if test="${not settlementNote.isPreparing() }">
-                                <c:if test="${settlementNote.isDocumentToExport() }">
-                                    &nbsp;<span class="label label-warning"> <spring:message code="label.FinantialDocument.document.is.pending.to.export" />
-                                    </span>
-                                </c:if>
-                            </c:if></td>
+                            </c:if> 
+                            <c:out value='${settlementNote.state.descriptionI18N.content}' /></span>
+                            <c:if test="${not settlementNote.isPreparing() and settlementNote.isDocumentToExport()}">
+	                            &nbsp;
+	                            <span class="label label-warning">
+	                            	<spring:message code="label.FinantialDocument.document.is.pending.to.export" />
+	                            </span>
+                            </c:if>
+                            
+                            <c:if test="${settlementNote.reimbursement and settlementNote.currentReimbursementProcessStatus != null}">
+                            &nbsp;
+                            <c:if test="${settlementNote.reimbursementPending}">
+                                <span class="label label-warning">
+                            </c:if>
+                            <c:if test="${settlementNote.reimbursementConcluded}">
+                                <span class="label label-primary">
+                            </c:if>
+                            <c:if test="${settlementNote.reimbursementRejected}">
+                                <span class="label label-danger">
+                            </c:if>
+                            <c:out value='${settlementNote.currentReimbursementProcessStatus.description}' />
+                            </c:if>
+                       </td>
                     </tr>
 
                     <c:if test="${settlementNote.isAnnulled()}">
@@ -369,10 +439,12 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentDate" /></th>
                         <td><joda:format value="${settlementNote.documentDate}" style="S-" /></td>
                     </tr>
+                    <c:if test="${not settlementNote.reimbursement}">
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.paymentDate" /></th>
                         <td><joda:format value="${settlementNote.paymentDate}" style="S-" /></td>
                     </tr>
+                    </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.closeDate" /></th>
                         <td><joda:format value="${settlementNote.closeDate}" style="S-" /></td>
@@ -385,6 +457,12 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.documentObservations" /></th>
                             <td><c:out value='${settlementNote.documentObservations}' /></td>
+                        </tr>
+                    </c:if>
+                    <c:if test="${not empty  settlementNote.finantialTransactionReference}">
+                        <tr>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.finantialTransactionReference" /></th>
+                            <td><c:out value='${settlementNote.finantialTransactionReference}' /></td>
                         </tr>
                     </c:if>
                     <c:if test="${not empty  settlementNote.clearDocumentToExportReason}">
@@ -412,6 +490,10 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                         </c:if>
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.exportedInLegacyERP" /></th>
+                        <td><spring:message code="label.${settlementNote.exportedInLegacyERP}" /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${settlementNote.getVersioningCreator()}' />] <joda:format value="${settlementNote.getVersioningCreationDate()}" style="SS" /></td>
                     </tr>
@@ -436,13 +518,40 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 <datatables:columnHead>
                     <spring:message code="label.InvoiceEntry.document" />
                 </datatables:columnHead>
-                <c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+	            <c:choose>
+		            <c:when test="${settlementEntry.invoiceEntry.isDebitNoteEntry()}">
+		            	<a href="${pageContext.request.contextPath}<%= DebitNoteController.READ_URL %>/${settlementEntry.invoiceEntry.finantialDocument.externalId}">
+			                <c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+		                </a>
+		            </c:when>
+		            <c:when test="${settlementEntry.invoiceEntry.isCreditNoteEntry()}">
+		            	<a href="${pageContext.request.contextPath}<%= CreditNoteController.READ_URL %>/${settlementEntry.invoiceEntry.finantialDocument.externalId}">
+			                <c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+		                </a>
+		            </c:when>
+		            <c:otherwise>
+		                <c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+		            </c:otherwise>
+	            </c:choose>
+                
             </datatables:column>
             <datatables:column>
                 <datatables:columnHead>
                     <spring:message code="label.SettlementEntry.description" />
                 </datatables:columnHead>
-                <c:out value="${settlementEntry.description}" />
+                <p><c:out value="${settlementEntry.description}" /></p>
+               	<c:if test="${settlementEntry.invoiceEntry.finantialDocument != null}">
+               	<c:if test="${settlementEntry.invoiceEntry.finantialDocument.forPayorDebtAccount}">
+               		<p>
+               			<em>
+               				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+               				<span><c:out value="${settlementEntry.invoiceEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
+               				&nbsp;-&nbsp;
+               				<span><c:out value="${settlementEntry.invoiceEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
+               			</em>
+               	</c:if>
+               	</c:if>
+                
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
@@ -513,7 +622,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
             <datatables:columnHead>
                 <spring:message code="label.InvoiceEntry.document" />
             </datatables:columnHead>
-            <c:out value="${advancedPaymentEntry.finantialDocument.uiDocumentNumber}" />
+			<a href="${pageContext.request.contextPath}<%= CreditNoteController.READ_URL %>/${settlementNote.advancedPaymentCreditNote.externalId}">
+				<c:out value="${settlementNote.advancedPaymentCreditNote.uiDocumentNumber}" />
+			</a>
         </datatables:column>
         <datatables:column>
             <datatables:columnHead>
@@ -552,30 +663,30 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
         <h2>
             <spring:message code="label.SettlementNote.paymentEntries" />
         </h2>
-        <datatables:table id="paymentEntries" row="payemntEntry" data="${settlementNote.paymentEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
+        <datatables:table id="paymentEntries" row="paymentEntry" data="${settlementNote.paymentEntriesSet}" cssClass="table responsive table-bordered table-hover" cdn="false"
             cellspacing="2">
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.document.managepayments.settlementnote.PaymentMethod" />
                 </datatables:columnHead>
-                <c:out value="${payemntEntry.paymentMethod.name.content}" />
+                <c:out value="${paymentEntry.paymentMethod.name.content}" />
             </datatables:column>
             <datatables:column cssStyle="width:10%">
                 <datatables:columnHead>
                     <spring:message code="label.PaymentEntry.payedAmount" />
                 </datatables:columnHead>
-                <c:out value="${settlementNote.currency.getValueFor(payemntEntry.payedAmount)}" />
+                <c:out value="${settlementNote.currency.getValueFor(paymentEntry.payedAmount)}" />
+            </datatables:column>
+            <datatables:column cssStyle="width:20%">
+            	<datatables:columnHead>
+            		<spring:message code="label.PaymentEntry.paymentMethodId" />
+            	</datatables:columnHead>
+                <c:out value="${paymentEntry.paymentMethodId}" />
             </datatables:column>
         </datatables:table>
         <script>
-									createDataTables(
-											'paymentEntries',
-											false,
-											false,
-											false,
-											"${pageContext.request.contextPath}",
-											"${datatablesI18NUrl}");
-								</script>
+			createDataTables('paymentEntries', false, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
+		</script>
     </c:when>
     <c:when test="${not empty settlementNote.reimbursementEntriesSet}">
         <h2>
@@ -595,16 +706,16 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 </datatables:columnHead>
                 <c:out value="${settlementNote.currency.getValueFor(reimbursementEntry.reimbursedAmount)}" />
             </datatables:column>
+            <datatables:column cssStyle="width:20%">
+            	<datatables:columnHead>
+            		<spring:message code="label.PaymentEntry.reimbursementMethodId" />
+            	</datatables:columnHead>
+                <c:out value="${reimbursementEntry.reimbursementMethodId}" />
+            </datatables:column>
         </datatables:table>
         <script>
-									createDataTables(
-											'reimbursementEntries',
-											false,
-											false,
-											false,
-											"${pageContext.request.contextPath}",
-											"${datatablesI18NUrl}");
-								</script>
+			createDataTables('reimbursementEntries', false, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
+		</script>
     </c:when>
     <c:otherwise>
         <h2>

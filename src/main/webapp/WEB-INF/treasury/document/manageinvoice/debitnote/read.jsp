@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
@@ -297,13 +298,19 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                     </spring:message>
                     <span class="caret"></span>
                 </button>
+                
 <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
         <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
-<li>            
-            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> <spring:message
-                    code="label.event.update" />
-            </a></li>
-    		
+			<li>            
+	            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/update/${debitNote.externalId}">
+	            	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.update" />
+	            </a>
+            </li>
+            <li>
+	            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/updatepayordebtaccount/${debitNote.externalId}">
+	            	<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitNote.event.updatePayorDebtAccount" />
+	            </a>
+            </li>
 		</c:if>
 
         <c:if test="${debitNote.isPreparing()}">
@@ -325,12 +332,14 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
 	            </a>
             </li>
 
+        <c:if test="${debitNote.isClosed()}">
             <li>
 	            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}">
 	            	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 	            	<spring:message code="label.event.document.manageInvoice.createCreditNote" />
 	            </a>
             </li>
+		</c:if>        
 		    
             <c:if test="${debitNote.isClosed() }">
                     <li>
@@ -341,7 +350,19 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                 </li>
             </c:if>
         </c:if>
-        </ul>
+        	
+        	<%--
+	        <li>
+		        <a class="" id="printLabel2" href="#"
+		            onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> 
+			        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+	            	<spring:message code="label.print" />
+		        </a>
+	        </li>
+	        --%>
+        
+</ul>
+
         </div>
 <%} else { %>
             <div class="btn-group">
@@ -374,8 +395,17 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                     <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                    <li><a id="exportDebitNoteIntegrationOnline" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline"><span
-                            class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" /></a></li>
+					<c:if test="${debitNote.documentToExport}">
+					<c:if test="${validAddress}">
+                    <li>
+                    	<a id="exportDebitNoteIntegrationOnline" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationonline">
+	                    	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+	                    	<spring:message code="label.event.document.manageInvoice.exportDebitNoteIntegrationOnline" />
+                    	</a>
+                    </li>
+					</c:if>
+                    </c:if>
+                            
                     <li><a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/exportintegrationfile">
                             <span class="glyphicon glyphicon-export" aria-hidden="true"></span> <spring:message code="label.event.document.manageInvoice.exportIntegrationFile" />
                     </a></li>
@@ -398,15 +428,16 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                 </ul>
             </div>
         </c:if>
-        | 
-        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
-        <a class="" id="printLabel2" href="#"
-            onclick="document.getElementById('accordion').style.display = 'none';window.print();document.getElementById('accordion').style.display = 'block';"> <spring:message
-                code="label.print" />
-        </a> 
+        
+		<c:if test="${debitNote.certifiedPrintedDocumentAvailable}">
+	       	&nbsp;|&nbsp;
+	        <span class="glyphicon glyphicon-print" aria-hidden="true"></span>
+	        <a href="${pageContext.request.contextPath}<%= DebitNoteController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${debitNote.externalId}">
+	        	<spring:message code="label.FinantialDocument.download.invoice" />
+	        </a>
+		</c:if>
     </div>
 </form>
-
 
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
@@ -438,6 +469,22 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
     </div>
 </c:if>
 
+<c:if test="${not validAddress}">
+	<div class="alert alert-danger" role="alert">
+	    <p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<spring:message code="label.DebtAccountController.incompleteAddress" />
+		</p>
+		
+	<c:forEach items="${addressErrorMessages}" var="m">
+		<p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<c:out value="${m}" />
+		</p>
+	</c:forEach>
+	</div>	
+</c:if>
+
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">
@@ -460,7 +507,7 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                         <c:if test='${not debitNote.payorDebtAccount.equals(debitNote.debtAccount)}'>
                             <tr>
                                 <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payorDebtAccount" /></th>
-                                <td><c:out value='${debitNote.payorDebtAccount.customer.businessIdentification} - ${debitNote.payorDebtAccount.customer.name}' /></td>
+                                <td><c:out value='${debitNote.payorDebtAccount.customer.uiFiscalNumber} - ${debitNote.payorDebtAccount.customer.name}' /></td>
                             </tr>
                         </c:if>
                     </c:if>
@@ -602,8 +649,10 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                             </td>
                         </tr>
                     </c:if>
-
-
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.exportedInLegacyERP" /></th>
+                        <td><spring:message code="label.${debitNote.exportedInLegacyERP}" /></td>
+                    </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${debitNote.getVersioningCreator()}' />] <joda:format value="${debitNote.getVersioningCreationDate()}" style="SS" /></td>
@@ -617,6 +666,7 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
 
 <p></p>
 <p></p>
+
 <h2>
     <spring:message code="label.DebitNote.debitEntries" />
 </h2>

@@ -40,7 +40,8 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
-import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -96,6 +97,14 @@ public class ERPExportOperationController extends TreasuryBaseController {
             @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
             @RequestParam(value = "success", required = false) Boolean success, @RequestParam(value = "documentnumber",
                     required = false) String documentNumber, Model model) {
+        if(fromExecutionDate != null) {
+            fromExecutionDate = fromExecutionDate.toLocalDate().toDateTimeAtStartOfDay();
+        }
+        
+        if(toExecutionDate != null) {
+            toExecutionDate = toExecutionDate.toLocalDate().plusDays(1).toDateTimeAtStartOfDay().minusDays(1);
+        }
+        
         List<ERPExportOperation> searcherpexportoperationResultsDataSet =
                 filterSearchERPExportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
         model.addAttribute("limit_exceeded", searcherpexportoperationResultsDataSet.size() > SEARCH_OPERATION_LIST_LIMIT_SIZE);
@@ -120,11 +129,8 @@ public class ERPExportOperationController extends TreasuryBaseController {
         if (Strings.isNullOrEmpty(documentNumber)) {
 
             return getSearchUniverseSearchERPExportOperationDataSet()
-                    .filter(eRPExportOperation -> finantialInstitution == null
-                            || eRPExportOperation.getFinantialInstitution().equals(finantialInstitution))
-                    .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null
-                            || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate)
-                            && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
+                    .filter(eRPExportOperation -> finantialInstitution == null || eRPExportOperation.getFinantialInstitution().equals(finantialInstitution))
+                    .filter(eRPExportOperation -> fromExecutionDate == null || toExecutionDate == null || eRPExportOperation.getExecutionDate().isAfter(fromExecutionDate) && eRPExportOperation.getExecutionDate().isBefore(toExecutionDate))
                     .filter(eRPExportOperation -> success == null || eRPExportOperation.getSuccess() == success)
 //                    .limit(EXPORT_OPERATIONS_MAX_SIZE)
                     .collect(Collectors.toList());
@@ -246,8 +252,9 @@ public class ERPExportOperationController extends TreasuryBaseController {
         setERPExportOperation(eRPExportOperation, model);
         try {
             assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
+            
+            final ERPExportOperation retryExportOperation = ERPExporterManager.retryExportToIntegration(eRPExportOperation);
 
-            ERPExportOperation retryExportOperation = ERPExporter.retryExportToIntegration(eRPExportOperation);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 
             return redirect(READ_URL + retryExportOperation.getExternalId(), model, redirectAttributes);

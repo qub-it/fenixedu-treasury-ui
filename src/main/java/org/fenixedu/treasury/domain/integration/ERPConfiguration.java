@@ -28,9 +28,6 @@
 package org.fenixedu.treasury.domain.integration;
 
 import java.util.Collection;
-import java.util.function.UnaryOperator;
-
-import oecd.standardauditfile_tax.pt_1.AuditFile;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -38,10 +35,10 @@ import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceClientConfiguration;
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceConfiguration;
+
+import pt.ist.fenixframework.Atomic;
 
 public class ERPConfiguration extends ERPConfiguration_Base {
 
@@ -81,7 +78,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     public void edit(final boolean active, final Series paymentsIntegrationSeries, final String externalURL,
             final String username, final String password, final boolean exportAnnulledRelatedDocuments,
             final boolean exportOnlyRelatedDocumentsPerExport, final String implementationClassName,
-            Long maxSizeBytesToExportOnline) {
+            Long maxSizeBytesToExportOnline, final String erpIdProcess) {
         setActive(active);
         setPaymentsIntegrationSeries(paymentsIntegrationSeries);
         setExternalURL(externalURL);
@@ -91,6 +88,8 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         setExportOnlyRelatedDocumentsPerExport(exportOnlyRelatedDocumentsPerExport);
         setImplementationClassName(implementationClassName);
         setMaxSizeBytesToExportOnline(maxSizeBytesToExportOnline);
+        setErpIdProcess(erpIdProcess);
+        
         checkRules();
     }
 
@@ -147,18 +146,4 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         }
     }
 
-    public UnaryOperator<AuditFile> getAuditFilePreProcessOperator() {
-        String className = this.getImplementationClassName();
-        try {
-
-            WebServiceClientConfiguration clientConfiguration = WebServiceConfiguration.readByImplementationClass(className);
-
-            IERPExternalService client = clientConfiguration.getClient();
-
-            return client.getAuditFilePreProcessOperator();
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new TreasuryDomainException("error.ERPConfiguration.invalid.external.service");
-        }
-    }
 }

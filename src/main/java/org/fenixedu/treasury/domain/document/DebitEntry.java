@@ -39,6 +39,7 @@ import java.util.TreeSet;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
@@ -269,10 +270,18 @@ public class DebitEntry extends DebitEntry_Base {
             throw new TreasuryDomainException("error.DebitEntry.dueDate.invalid");
         }
 
+        if (Strings.isNullOrEmpty(getDescription())) {
+            throw new TreasuryDomainException("error.DebitEntry.description.required");
+        }
+
         // If it exempted then it must be on itself or with credit entry but not both
         if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
             throw new TreasuryDomainException(
                     "error.DebitEntry.exemption.cannot.be.on.debit.entry.and.with.credit.entry.at.same.time");
+        }
+
+        if (getTreasuryEvent() != null && getProduct().isTransferBalanceProduct()) {
+            throw new TreasuryDomainException("error.DebitEntry.transferBalanceProduct.cannot.be.associated.to.academic.event");
         }
     }
 
@@ -283,27 +292,6 @@ public class DebitEntry extends DebitEntry_Base {
 
     public boolean isEventAnnuled() {
         return isAnnulled() || getEventAnnuled();
-    }
-
-    @Override
-    public BigDecimal getOpenAmount() {
-        if (isAnnulled()) {
-            return BigDecimal.ZERO;
-        }
-
-        final BigDecimal openAmount = this.getAmountWithVat().subtract(getPayedAmount());
-
-        return getCurrency().getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
-    }
-
-    public BigDecimal getPayedAmount() {
-        BigDecimal amount = BigDecimal.ZERO;
-        for (SettlementEntry entry : this.getSettlementEntriesSet()) {
-            if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isClosed()) {
-                amount = amount.add(entry.getTotalAmount());
-            }
-        }
-        return amount;
     }
 
     public BigDecimal getPendingInterestAmount() {
@@ -408,39 +396,15 @@ public class DebitEntry extends DebitEntry_Base {
                 return false;
             }
 
-            final String description =
-                    BundleUtil.getString(Constants.BUNDLE, "label.TreasuryExemption.credit.entry.exemption.description",
-                            getDescription(), treasuryExemption.getTreasuryExemptionType().getName().getContent());
+            final DateTime now = new DateTime();
 
-            final DocumentNumberSeries documentNumberSeriesCreditNote = DocumentNumberSeries.find(
-                    FinantialDocumentType.findForCreditNote(), this.getFinantialDocument().getDocumentNumberSeries().getSeries());
-            final DocumentNumberSeries documentNumberSeriesSettlementNote =
-                    DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
-                            this.getFinantialDocument().getDocumentNumberSeries().getSeries());
+            final String reason = Constants.bundle("label.TreasuryExemption.credit.entry.exemption.description", getDescription(),
+                    treasuryExemption.getTreasuryExemptionType().getName().getContent());
 
-            final CreditNote creditNote = CreditNote.create(getDebtAccount(), documentNumberSeriesCreditNote, new DateTime(),
-                    (DebitNote) getFinantialDocument(), null);
-            CreditEntry creditEntryFromExemption = CreditEntry.createFromExemption(treasuryExemption, creditNote, description,
-                    amountWithoutVat, new DateTime(), this);
+            final CreditEntry creditEntryFromExemption =
+                    createCreditEntry(now, getDescription(), null, amountWithoutVat, treasuryExemption, null);
 
-            creditNote.closeDocument();
-
-            DateTime now = new DateTime();
-
-            final SettlementNote settlementNote =
-                    SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "");
-            settlementNote.setDocumentObservations(description);
-
-            final BigDecimal creditOpenAmount = creditEntryFromExemption.getOpenAmount();
-            final BigDecimal debitOpenAmount = getOpenAmount();
-            final BigDecimal openAmountToUse =
-                    Constants.isLessThan(creditOpenAmount, debitOpenAmount) ? creditOpenAmount : debitOpenAmount;
-
-            SettlementEntry.create(creditEntryFromExemption, settlementNote, openAmountToUse, description, now, false);
-            SettlementEntry.create(creditEntryFromExemption.getDebitEntry(), settlementNote, openAmountToUse, description, now,
-                    false);
-
-            settlementNote.closeDocument();
+            closeCreditEntryIfPossible(reason, now, creditEntryFromExemption);
 
         } else {
             BigDecimal originalAmount = getAmount();
@@ -463,6 +427,71 @@ public class DebitEntry extends DebitEntry_Base {
         checkRules();
 
         return true;
+    }
+
+    public CreditEntry createCreditEntry(final DateTime documentDate, final String description, final String documentObservations,
+            final BigDecimal amountForCredit, final TreasuryExemption treasuryExemption, CreditNote creditNote) {
+        final DebitNote finantialDocument = (DebitNote) this.getFinantialDocument();
+
+        if (finantialDocument == null) {
+            throw new TreasuryDomainException("error.DebitEntry.createCreditEntry.requires.finantial.document");
+        }
+
+        final DocumentNumberSeries documentNumberSeries = DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(),
+                finantialDocument.getDocumentNumberSeries().getSeries());
+
+        if(creditNote == null) {
+            creditNote = CreditNote.create(this.getDebtAccount(), documentNumberSeries, documentDate, finantialDocument,
+                finantialDocument.getUiDocumentNumber());
+        }
+
+        if (!Strings.isNullOrEmpty(documentObservations)) {
+            creditNote.setDocumentObservations(documentObservations);
+        }
+
+        if (!Constants.isPositive(amountForCredit)) {
+            throw new TreasuryDomainException("error.DebitEntry.createCreditEntry.amountForCredit.not.positive");
+        }
+
+        if (treasuryExemption != null) {
+            return CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountForCredit, new DateTime(),
+                    this);
+        } else {
+            return CreditEntry.create(creditNote, description, getProduct(), getVat(), amountForCredit, documentDate, this,
+                    BigDecimal.ONE);
+        }
+    }
+
+    public void closeCreditEntryIfPossible(final String reason, final DateTime now, final CreditEntry creditEntry) {
+        final DocumentNumberSeries documentNumberSeriesSettlementNote = DocumentNumberSeries.find(
+                FinantialDocumentType.findForSettlementNote(), this.getFinantialDocument().getDocumentNumberSeries().getSeries());
+
+        if (!creditEntry.getFinantialDocument().isPreparing()) {
+            return;
+        }
+
+        if (!Constants.isPositive(getOpenAmount())) {
+            return;
+        }
+
+        if (Constants.isLessThan(getOpenAmount(), creditEntry.getOpenAmount())) {
+            // split credit entry
+            creditEntry.splitCreditEntry(creditEntry.getOpenAmount().subtract(getOpenAmount()));
+        }
+
+        creditEntry.getFinantialDocument().closeDocument();
+
+        final SettlementNote settlementNote =
+                SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "", null);
+        settlementNote.setDocumentObservations(
+                reason + " - [" + Authenticate.getUser().getUsername() + "] " + new DateTime().toString("YYYY-MM-dd HH:mm"));
+
+        SettlementEntry.create(creditEntry, settlementNote, creditEntry.getOpenAmount(),
+                reason + ": " + creditEntry.getDescription(), now, false);
+        SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, creditEntry.getOpenAmount(),
+                reason + ": " + creditEntry.getDebitEntry().getDescription(), now, false);
+
+        settlementNote.closeDocument();
     }
 
     public BigDecimal amountInDebt(final LocalDate paymentDate) {
@@ -649,8 +678,8 @@ public class DebitEntry extends DebitEntry_Base {
         return findActive(treasuryEvent).filter(d -> d.getProduct() == product);
     }
 
-    public static Stream<? extends DebitEntry> findActiveByDescription(final TreasuryEvent treasuryEvent, final String description,
-            final boolean trimmed) {
+    public static Stream<? extends DebitEntry> findActiveByDescription(final TreasuryEvent treasuryEvent,
+            final String description, final boolean trimmed) {
         return findActive(treasuryEvent).filter(d -> (!trimmed && d.getDescription().equals(description))
                 || (trimmed && d.getDescription().trim().equals(description)));
     }
@@ -677,7 +706,7 @@ public class DebitEntry extends DebitEntry_Base {
             final InterestRate interestRate, final DateTime entryDateTime) {
 
         /* Debt can only be created if customer is active */
-        if (!debtAccount.getCustomer().isActive()) {
+        if (product != TreasurySettings.getInstance().getTransferBalanceProduct() && !debtAccount.getCustomer().isActive()) {
             throw new TreasuryDomainException("error.DebitEntry.customer.not.active");
         }
 
@@ -744,34 +773,31 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public String getERPIntegrationMetadata() {
-        Map<String, String> propertiesMap = Maps.newHashMap();
 
         String degreeCode = "";
+        if (getTreasuryEvent() != null && !Strings.isNullOrEmpty(getTreasuryEvent().getDegreeCode())) {
+            degreeCode = getTreasuryEvent().getDegreeCode();
+        } else if (getPropertiesMap() != null) {
+            if (getPropertiesMap().containsKey(TreasuryEventKeys.DEGREE_CODE)) {
+                degreeCode = getPropertiesMap().get(TreasuryEventKeys.DEGREE_CODE);
+            } else if (getPropertiesMap().containsKey(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent())) {
+                degreeCode = getPropertiesMap().get(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent());
+            }
+        }
+
         String executionYear = "";
-
-        if (this.getPropertiesMap() != null && this.getPropertiesMap().isEmpty() == false) {
-            propertiesMap = this.getPropertiesMap();
-        } else if (this.getTreasuryEvent() != null) {
-            //Return the TreasuryEvent Metadata
-            return this.getTreasuryEvent().getERPIntegrationMetadata();
+        if (getTreasuryEvent() != null && !Strings.isNullOrEmpty(getTreasuryEvent().getExecutionYearName())) {
+            executionYear = getTreasuryEvent().getExecutionYearName();
+        } else if (getPropertiesMap() != null) {
+            if (getPropertiesMap().containsKey(TreasuryEventKeys.EXECUTION_YEAR)) {
+                executionYear = getPropertiesMap().get(TreasuryEventKeys.EXECUTION_YEAR);
+            } else if (getPropertiesMap().containsKey(TreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent())) {
+                executionYear = getPropertiesMap().get(TreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent());
+            }
         }
 
-        if (propertiesMap.containsKey(TreasuryEventKeys.DEGREE_CODE)) {
-            degreeCode = propertiesMap.get(TreasuryEventKeys.DEGREE_CODE);
-        } else if (propertiesMap.containsKey(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent())) {
-            degreeCode = propertiesMap.get(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent());
-        }
-
-        if (propertiesMap.containsKey(TreasuryEventKeys.EXECUTION_YEAR)) {
-            executionYear = propertiesMap.get(TreasuryEventKeys.EXECUTION_YEAR);
-        } else if (propertiesMap.containsKey(TreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent())) {
-            executionYear = propertiesMap.get(TreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent());
-        }
-
-        //HACK: This should be done using GJSON
         return "{\"" + TreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\"" + TreasuryEventKeys.EXECUTION_YEAR + "\":\""
                 + executionYear + "\"}";
-        //WHY ISN't 
     }
 
     @Atomic

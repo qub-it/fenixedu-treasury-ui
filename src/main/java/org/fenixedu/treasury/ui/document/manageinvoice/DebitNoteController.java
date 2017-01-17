@@ -31,7 +31,6 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,14 +46,15 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
-import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
@@ -72,6 +72,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -139,6 +140,17 @@ public class DebitNoteController extends TreasuryBaseController {
                 model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
                         "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
             }
+
+            final List<String> errorMessages = Lists.newArrayList();
+            boolean validAddress = ERPCustomerFieldsBean.validateAddress(debitNote.getDebtAccount().getCustomer(), errorMessages);
+
+            if (debitNote.isForPayorDebtAccount()) {
+                validAddress =
+                        ERPCustomerFieldsBean.validateAddress(debitNote.getPayorDebtAccount().getCustomer(), errorMessages);
+            }
+
+            model.addAttribute("validAddress", validAddress);
+            model.addAttribute("addressErrorMessages", errorMessages);
 
             return "treasury/document/manageinvoice/debitnote/read";
         } catch (Exception ex) {
@@ -284,7 +296,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
                 if (availableSeries.size() > 0) {
                     model.addAttribute("DebitNote_documentNumberSeries_options", DocumentNumberSeries
-                            .applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
+                            .applyActiveSelectableAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
                 } else {
                     addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
                             "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
@@ -353,11 +365,6 @@ public class DebitNoteController extends TreasuryBaseController {
     public String update(@PathVariable("oid") DebitNote debitNote, Model model, RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            model.addAttribute("DebitNote_payorDebtAccount_options",
-                    DebtAccount.find(debitNote.getDebtAccount().getFinantialInstitution())
-                            .filter(x -> x.getCustomer().isAdhocCustomer())
-                            .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
-                            .collect(Collectors.toSet())); //
 
             model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
             setDebitNote(debitNote, model);
@@ -370,7 +377,6 @@ public class DebitNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") DebitNote debitNote,
-            @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
             @RequestParam(value = "documentdate",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDate,
             @RequestParam(value = "documentduedate",
@@ -383,7 +389,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            updateDebitNote(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber, documentObservations, model);
+            updateDebitNote(documentDate, documentDueDate, originDocumentNumber, documentObservations, model);
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -395,14 +401,15 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateDebitNote(DebtAccount payorDebtAccount, LocalDate documentDate, LocalDate documentDueDate,
-            String originDocumentNumber, String documentObservations, Model model) {
+    public void updateDebitNote(LocalDate documentDate, LocalDate documentDueDate, String originDocumentNumber,
+            String documentObservations, Model model) {
         DebitNote note = getDebitNote(model);
         if (note.isPreparing()) {
-            note.edit(payorDebtAccount, documentDate, documentDueDate, originDocumentNumber);
+            note.edit(documentDate, documentDueDate, originDocumentNumber);
         } else {
-            note.edit(payorDebtAccount, note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber);
+            note.edit(note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber);
         }
+
         note.setDocumentObservations(documentObservations);
     }
 
@@ -481,34 +488,29 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")
-    public void processReadToExportIntegrationFile(@PathVariable("oid") DebitNote debitNote, Model model,
-            RedirectAttributes redirectAttributes, HttpServletResponse response) {
+    public void processReadToExportIntegrationFile(@PathVariable("oid") final DebitNote debitNote, final Model model,
+            final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            String output =
-                    ERPExporter
-                            .exportFinantialDocumentToXML(debitNote.getDebtAccount().getFinantialInstitution(),
-                                    debitNote
-                                            .findRelatedDocuments(new HashSet<FinantialDocument>(),
-                                                    debitNote.getDebtAccount().getFinantialInstitution()
-                                                            .getErpIntegrationConfiguration().getExportAnnulledRelatedDocuments())
-                                            .stream().collect(Collectors.toList()));
+
+            final String saftEncoding = ERPExporterManager.saftEncoding(debitNote.getDebtAccount().getFinantialInstitution());
+            final String output = ERPExporterManager.exportFinantialDocumentToXML(debitNote);
+
             response.setContentType("text/xml");
-            response.setCharacterEncoding("Windows-1252");
+            response.setCharacterEncoding(saftEncoding);
             String filename = URLEncoder.encode(StringNormalizer
                     .normalizePreservingCapitalizedLetters((debitNote.getDebtAccount().getFinantialInstitution().getFiscalNumber()
                             + "_" + debitNote.getUiDocumentNumber() + ".xml").replaceAll("/", "_").replaceAll("\\s", "_")
                                     .replaceAll(" ", "_")),
-                    "Windows-1252");
+                    saftEncoding);
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
 
-            response.getOutputStream().write(output.getBytes("Windows-1252"));
+            response.getOutputStream().write(output.getBytes(saftEncoding));
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
                 response.sendRedirect(redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -542,8 +544,8 @@ public class DebitNoteController extends TreasuryBaseController {
                             debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution())
                     .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
 
-            availableSeries =
-                    DocumentNumberSeries.applyActiveAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList());
+            availableSeries = DocumentNumberSeries.applyActiveSelectableAndDefaultSorting(availableSeries.stream())
+                    .collect(Collectors.toList());
             if (availableSeries.size() > 0) {
                 model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
             } else {
@@ -622,21 +624,28 @@ public class DebitNoteController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             try {
-                //Force a check status first of the document 
-                ERPExporter.checkIntegrationDocumentStatus(debitNote);
-            } catch (Exception ex) {
+                final IERPExporter erpExporter = debitNote.getDebtAccount().getFinantialInstitution()
+                        .getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
 
+                //Force a check status first of the document 
+                erpExporter.checkIntegrationDocumentStatus(debitNote);
+            } catch (Exception ex) {
             }
 
-            List<FinantialDocument> documentsToExport = Collections.singletonList(debitNote);
-            ERPExportOperation output = ERPExporter.exportFinantialDocumentToIntegration(
-                    debitNote.getDebtAccount().getFinantialInstitution(), documentsToExport);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            final ERPExportOperation output = ERPExporterManager.exportSingleDocument(debitNote);
+
+            if(output == null) {
+                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                setDebitNote(debitNote, model);
+                return read(debitNote, model, redirectAttributes);
+            }
+            
+            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
-                    + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
+        
         setDebitNote(debitNote, model);
         return read(debitNote, model, redirectAttributes);
     }
@@ -646,17 +655,17 @@ public class DebitNoteController extends TreasuryBaseController {
             @RequestParam(value = "reason", required = false) final String reason, final Model model,
             final RedirectAttributes redirectAttributes) {
         try {
-            
-            if(!debitNote.isDocumentToExport()) {
+
+            if (!debitNote.isDocumentToExport()) {
                 addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
                 return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
-            
-            if(Strings.isNullOrEmpty(reason)) {
+
+            if (Strings.isNullOrEmpty(reason)) {
                 addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
                 return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
-            
+
             assertUserIsBackOfficeMember(model);
 
             debitNote.clearDocumentToExport(reason);
@@ -667,5 +676,83 @@ public class DebitNoteController extends TreasuryBaseController {
             return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
     }
-    
+
+    private static final String UPDATE_PAYOR_DEBT_ACCOUNT_URI = "/updatepayordebtaccount";
+    public static final String UPDATE_PAYOR_DEBT_ACCOUNT_URL = CONTROLLER_URL + UPDATE_PAYOR_DEBT_ACCOUNT_URI;
+
+    @RequestMapping(value = UPDATE_PAYOR_DEBT_ACCOUNT_URI + "/{oid}", method = RequestMethod.GET)
+    public String updatepayordebtaccount(@PathVariable("oid") final DebitNote debitNote, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
+
+            if (!debitNote.isPreparing() && !debitNote.isClosed()) {
+                addErrorMessage(Constants.bundle("error.DebitNote.updatePayorDebtAccount.not.preparing.nor.closed"), model);
+                return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            }
+
+            setDebitNote(debitNote, model);
+
+            model.addAttribute("DebitNote_payorDebtAccount_options",
+                    DebtAccount.findAdhocDebtAccountsSortedByCustomerName(debitNote.getDebtAccount().getFinantialInstitution()));
+
+            model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
+
+            return "treasury/document/manageinvoice/debitnote/updatepayordebtaccount";
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+        }
+
+        return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+    }
+
+    @RequestMapping(value = UPDATE_PAYOR_DEBT_ACCOUNT_URI + "/{oid}", method = RequestMethod.POST)
+    public String updatepayordebtaccount(@PathVariable("oid") final DebitNote debitNote,
+            @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            final DebtAccount oldPayorDebtAccount = debitNote.getPayorDebtAccount();
+
+            final DebitNote newDebitNote = debitNote.updatePayorDebtAccount(payorDebtAccount);
+
+            if (oldPayorDebtAccount != newDebitNote.getPayorDebtAccount()) {
+                addInfoMessage(Constants.bundle("label.DebitNote.update.payorDebtAccount.success"), model);
+                return redirect(READ_URL + newDebitNote.getExternalId(), model, redirectAttributes);
+            } else {
+                addErrorMessage(Constants.bundle("error.DebitNote.updatePayorDebtAccount.payor.not.changed"), model);
+            }
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+        }
+
+        return updatepayordebtaccount(debitNote, model, redirectAttributes);
+    }
+
+    private static final String _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI = "/downloadcertifieddocumentprint";
+    public static final String DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL = CONTROLLER_URL + _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI;
+
+    @RequestMapping(value = _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI + "/{oid}", method = RequestMethod.GET)
+    public String downloadcertifieddocumentprint(@PathVariable("oid") final DebitNote debitNote, final Model model,
+            final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
+
+        try {
+            final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(debitNote);
+
+            response.setContentType("application/pdf");
+            String filename = URLEncoder.encode(StringNormalizer
+                    .normalizePreservingCapitalizedLetters((debitNote.getDebtAccount().getFinantialInstitution().getFiscalNumber()
+                            + "_" + debitNote.getUiDocumentNumber() + ".pdf").replaceAll("/", "_").replaceAll("\\s", "_")
+                                    .replaceAll(" ", "_")),
+                    "Windows-1252");
+
+            response.setHeader("Content-disposition", "attachment; filename=" + filename);
+            response.getOutputStream().write(contents);
+
+            return null;
+        } catch (final Exception e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+            return read(debitNote, model, redirectAttributes);
+        }
+    }
+
 }

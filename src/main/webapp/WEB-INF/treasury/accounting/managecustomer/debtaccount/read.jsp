@@ -68,10 +68,11 @@ ${portal.angularToolkit()}
 			FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount
 					.getFinantialInstitution();
 %>
-<div class="modal fade" id="deleteModal">
+
+<div class="modal fade" id="transferBalanceModal">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/delete/${debtAccount.externalId}" method="POST">
+            <form id="deleteForm" action="${pageContext.request.contextPath}<%= DebtAccountController.TRANSFERBALANCE_URL %>/${debtAccount.externalId}" method="POST">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -82,7 +83,7 @@ ${portal.angularToolkit()}
                 </div>
                 <div class="modal-body">
                     <p>
-                        <spring:message code="label.accounting.manageCustomer.readDebtAccount.confirmDelete" />
+                        <spring:message code="label.accounting.manageCustomer.readDebtAccount.confirm.transfer.balance" />
                     </p>
                 </div>
                 <div class="modal-footer">
@@ -90,7 +91,7 @@ ${portal.angularToolkit()}
                         <spring:message code="label.close" />
                     </button>
                     <button id="deleteButton" class="btn btn-danger" type="submit">
-                        <spring:message code="label.delete" />
+                        <spring:message code="label.transfer" />
                     </button>
                 </div>
             </form>
@@ -100,6 +101,7 @@ ${portal.angularToolkit()}
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
@@ -167,28 +169,34 @@ ${portal.angularToolkit()}
                         <li><a href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createregistration/${debtAccount.externalId}"> <span
                                 class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> <spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
                         </a></li>
+
                         <li><a
                             href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createstandalone/${debtAccount.externalId}">
-                                <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>&nbsp; <spring:message
-                                    code="label.TuitionDebtCreationBean.create.standalonetuition.debts" />
+                                <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+                                &nbsp;<spring:message code="label.TuitionDebtCreationBean.create.standalonetuition.debts" />
                         </a></li>
+
                         <li><a
                             href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createextracurricular/${debtAccount.externalId}">
-                                <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>&nbsp; <spring:message
-                                    code="label.TuitionDebtCreationBean.create.extracurriculartuition.debts" />
+                                <span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+                                &nbsp;<spring:message code="label.TuitionDebtCreationBean.create.extracurriculartuition.debts" />
                         </a></li>
+
                         <li><a href="${pageContext.request.contextPath}/academictreasury/academictaxdebtcreation/academictaxdebtcreationbean/create/${debtAccount.externalId}">
-                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message
-                                    code="label.AcademicTaxDebtCreationBean.create.academictax.debts" />
+                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                                &nbsp;<spring:message code="label.AcademicTaxDebtCreationBean.create.academictax.debts" />
                         </a></li>
+
                         <li><a
                             href="${pageContext.request.contextPath}/academictreasury/academicservicerequestdebtcreation/academicservicerequestdebtcreationbean/create/${debtAccount.externalId}">
-                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message
-                                    code="label.AcademicServiceRequestDebtCreationBean.create.academicservicerequest.debts" />
+                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                                &nbsp;<spring:message code="label.AcademicServiceRequestDebtCreationBean.create.academicservicerequest.debts" />
                         </a></li>
+                        
                         <li><a
                             href="${pageContext.request.contextPath}/academictreasury/academicdebtgenerationregistration/academicdebtgenerationregistration/create/${debtAccount.externalId}">
-                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicDebtGenerationRegistration.run.rules" />
+                                <span class="glyphicon glyphicon-book" aria-hidden="true"></span>
+                                &nbsp;<spring:message code="label.AcademicDebtGenerationRegistration.run.rules" />
                         </a></li>
                         
                         
@@ -204,23 +212,7 @@ ${portal.angularToolkit()}
         <%
             }
         %>
-        <%
-            if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
-        %>
-        <div class="btn-group">
-            <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-                <spring:message code="label.event.accounting.manageCustomer.credits" />
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createcreditnote"><span
-                        class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createCreditNote" /></a></li>
-            </ul>
-        </div>
-        <%
-            }
-        %>
+
     </c:if>
     <c:if test='${debtAccount.getClosed() }'>
      |&nbsp;
@@ -246,20 +238,44 @@ ${portal.angularToolkit()}
                         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message code="label.AcademicActBlockingSuspensionController.link" />
                 </a></li>
             </c:if>
+            <c:if test="${validAddress}">
             <li>
-            	<a id="exportintegrationline" class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/exportintegrationonline"><span
-                    class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" /></a> &nbsp;
+            	<a id="exportintegrationline" class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/exportintegrationonline">
+            	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+            	<spring:message code="label.event.accounting.manageCustomer.exportintegrationline" />
+            	</a>
             </li>
+            </c:if>
+            
 			<% if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) { %>
             <li>
             	<a id="exportintegrationline"
-            		class=""
             		href="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.SEARCH_URL %>?customerBusinessId=${debtAccount.customer.businessIdentification}">
             		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true" target="_blank"></span>&nbsp;
             		<spring:message code="label.ManageForwardPayments.search" />
                	</a>
             </li>
-			<% } %>            
+			<% } %>
+			
+			<% if(TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) { %>
+            <li>
+            	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/search?customerId=${debtAccount.customer.externalId}">
+            		<span class="glyphicon glyphicon-upload" aria-hidden="true" target="_blank"></span>&nbsp;
+            		<spring:message code="label.ERPTuitionInfo.title" />
+               	</a>
+            </li>
+			<% } %>
+
+			<% if(TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>
+			<c:if test="${not debtAccount.customer.active}">
+            <li>
+            	<a href="#" data-toggle="modal" data-target="#transferBalanceModal">
+            		<span class="glyphicon glyphicon-upload" aria-hidden="true"></span>&nbsp;
+            		<spring:message code="label.event.accounting.manageCustomer.transferBalance" />
+               	</a>
+            </li>
+            </c:if>
+			<% } %>
         </ul>
     </div>
     <%
@@ -330,7 +346,7 @@ ${portal.angularToolkit()}
                     </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
-                        <td><c:out value='${debtAccount.customer.fiscalNumber}' /></td>
+                        <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
                     </tr>
 
                     <tr>
@@ -375,29 +391,6 @@ ${portal.angularToolkit()}
     </div>
 </div>
 
-<c:if test="${debtAccount.hasPreparingDocuments() }">
-    <div class="alert alert-danger" role="alert">
-        <c:if test="${debtAccount.hasPreparingDebitNotes()}">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-                <spring:message code="label.have.debitNote.in.preparing" />
-            </p>
-        </c:if>
-        <c:if test="${debtAccount.hasPreparingCreditNotes()}">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-                <spring:message code="label.have.creditNote.in.preparing" />
-            </p>
-        </c:if>
-        <c:if test="${debtAccount.hasPreparingSettlementNotes()}">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-                <spring:message code="label.have.settlementNote.in.preparing" />
-            </p>
-        </c:if>
-    </div>
-</c:if>
-
 <c:if test="${invalidFiscalCode}">
 	<div class="alert alert-danger" role="alert">
 	    <p>
@@ -407,12 +400,19 @@ ${portal.angularToolkit()}
 	</div>
 </c:if>
 
-<c:if test="${incompleteAddress}">
+<c:if test="${not validAddress}">
 	<div class="alert alert-danger" role="alert">
 	    <p>
 	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
 			<spring:message code="label.DebtAccountController.incompleteAddress" />
 		</p>
+		
+	<c:forEach items="${addressErrorMessages}" var="m">
+		<p>
+	    	<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+			<c:out value="${m}" />
+		</p>
+	</c:forEach>
 	</div>	
 </c:if>
 
@@ -423,7 +423,7 @@ ${portal.angularToolkit()}
 <c:if test="${!debtAccount.customer.active}">
     <div class="alert alert-warning">
     	<span class="glyphicon glyphicon-exclamation-sign"></span>
-    	<strong><spring:message code="warning.Customer.is.inactive.due.merge.message" /></strong>
+    	<strong><spring:message code="warning.Customer.is.inactive.due.merge.or.fiscal.change.message" /></strong>
    	</div>
 </c:if>
 
@@ -491,7 +491,22 @@ ${portal.angularToolkit()}
                                 <spring:message code="label.InvoiceEntry.description" />
                                 
                             </datatables:columnHead>
-                            <p><c:out value="${pendingEntry.description}" /></p>
+                            <p>
+                            	<c:out value="${pendingEntry.description}" />
+                            </p>
+                        	<c:if test="${pendingEntry.finantialDocument != null}">
+                        	<c:if test="${pendingEntry.finantialDocument.forPayorDebtAccount}">
+                        		<p>
+                        			<em>
+                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+                        				<span><c:out value="${pendingEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
+                        				&nbsp;-&nbsp;
+                        				<span><c:out value="${pendingEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
+                        			</em>
+                        		</p>
+                        	</c:if>
+                        	</c:if>
+                            
 							<c:if test="${pendingEntry.isDebitNoteEntry() && pendingEntry.academicalActBlockingSuspension }">
 							<p><span class="label label-warning"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></span></p>
 							</c:if>
@@ -645,7 +660,21 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.description" />
                             </datatables:columnHead>
-                            <p><c:out value="${entry.description}" /></p>
+                            <p>
+                            	<c:out value="${entry.description}" />
+                            </p>
+                        	<c:if test="${entry.finantialDocument != null}">
+                        	<c:if test="${entry.finantialDocument.forPayorDebtAccount}">
+                        		<p>
+                        			<em>
+                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+                        				<span><c:out value="${entry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
+                        				&nbsp;-&nbsp;
+                        				<span><c:out value="${entry.finantialDocument.payorDebtAccount.customer.name}" /></span>
+                        			</em>
+                        	</c:if>
+                        	</c:if>
+							
 							<c:if test="${entry.isDebitNoteEntry() && entry.academicalActBlockingSuspension}">
 							<p><span class="label label-warning"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></span></p>
 							</c:if>
@@ -771,7 +800,9 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.SettlementNote.paymentDate" />
                             </datatables:columnHead>
-                            <c:out value='${payment.paymentDate.toString("YYYY-MM-dd")}' />
+                            <c:if test="${not payment.reimbursement}">
+	                            <c:out value='${payment.paymentDate.toString("YYYY-MM-dd")}' />
+                            </c:if>
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>

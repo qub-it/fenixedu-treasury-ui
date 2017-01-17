@@ -34,16 +34,14 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import oecd.standardauditfile_tax.pt_1.AuditFile;
-
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
-import org.fenixedu.treasury.domain.integration.OperationFile;
-import org.fenixedu.treasury.services.integration.erp.ERPImporter;
+import org.fenixedu.treasury.services.integration.erp.IERPImporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.Constants;
@@ -57,10 +55,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
-
-import com.google.common.base.Strings;
 
 //@Component("org.fenixedu.treasury.ui.integration.erp") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.integration.erp.import",
@@ -96,17 +94,26 @@ public class ERPImportOperationController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_URI)
     public String search(
             @RequestParam(value = "finantialinstitution", required = false) FinantialInstitution finantialInstitution,
-            @RequestParam(value = "fromexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime fromExecutionDate,
-            @RequestParam(value = "toexecutiondate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
-            @RequestParam(value = "success", required = false) Boolean success, @RequestParam(value = "documentnumber",
-                    required = false) String documentNumber, Model model) {
+            @RequestParam(value = "fromexecutiondate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime fromExecutionDate,
+            @RequestParam(value = "toexecutiondate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
+            @RequestParam(value = "success", required = false) Boolean success,
+            @RequestParam(value = "documentnumber", required = false) String documentNumber, Model model) {
+        if(fromExecutionDate != null) {
+            fromExecutionDate = fromExecutionDate.toLocalDate().toDateTimeAtStartOfDay();
+        }
+        
+        if(toExecutionDate != null) {
+            toExecutionDate = toExecutionDate.toLocalDate().plusDays(1).toDateTimeAtStartOfDay().minusSeconds(1);
+        }
+        
         List<ERPImportOperation> searcherpimportoperationResultsDataSet =
                 filterSearchERPImportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
         model.addAttribute("limit_exceeded", searcherpimportoperationResultsDataSet.size() > SEARCH_OPERATION_LIST_LIMIT_SIZE);
         model.addAttribute("searchoperationResultsDataSet_totalCount", searcherpimportoperationResultsDataSet.size());
-        searcherpimportoperationResultsDataSet =
-                searcherpimportoperationResultsDataSet.stream().limit(SEARCH_OPERATION_LIST_LIMIT_SIZE)
-                        .collect(Collectors.toList());
+        searcherpimportoperationResultsDataSet = searcherpimportoperationResultsDataSet.stream()
+                .limit(SEARCH_OPERATION_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         model.addAttribute("searcherpimportoperationResultsDataSet", searcherpimportoperationResultsDataSet);
@@ -127,18 +134,16 @@ public class ERPImportOperationController extends TreasuryBaseController {
                             || eRPImportOperation.getFinantialInstitution().equals(finantialInstitution))
                     .filter(eRPImportOperation -> fromExecutionDate == null || toExecutionDate == null
                             || eRPImportOperation.getExecutionDate().isAfter(fromExecutionDate)
-                            && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
+                                    && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
                     .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
                     .collect(Collectors.toList());
         } else {
             FinantialDocument document = FinantialDocument.findByUiDocumentNumber(finantialInstitution, documentNumber);
             if (document != null) {
-                return document
-                        .getErpImportOperationsSet()
-                        .stream()
+                return document.getErpImportOperationsSet().stream()
                         .filter(eRPImportOperation -> fromExecutionDate == null || toExecutionDate == null
                                 || eRPImportOperation.getExecutionDate().isAfter(fromExecutionDate)
-                                && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
+                                        && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
                         .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
                         .collect(Collectors.toList());
             } else {
@@ -151,9 +156,8 @@ public class ERPImportOperationController extends TreasuryBaseController {
     public static final String SEARCH_TO_DELETEMULTIPLE_URL = CONTROLLER_URL + _SEARCH_TO_DELETEMULTIPLE_URI;
 
     @RequestMapping(value = _SEARCH_TO_DELETEMULTIPLE_URI)
-    public String processSearchToDeleteMultiple(
-            @RequestParam("eRPImportOperations") List<ERPImportOperation> eRPImportOperations, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processSearchToDeleteMultiple(@RequestParam("eRPImportOperations") List<ERPImportOperation> eRPImportOperations,
+            Model model, RedirectAttributes redirectAttributes) {
 
         try {
             if (eRPImportOperations.isEmpty() == false) {
@@ -187,18 +191,22 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
+        model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/integration/erp/erpimportoperation/create";
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "file", required = true) MultipartFile file, Model model,
+    public String create(
+            @RequestParam(value = "finantialinstitution", required = true) final FinantialInstitution finantialInstitution,
+            @RequestParam(value = "file", required = true) MultipartFile file, Model model,
             RedirectAttributes redirectAttributes) {
         try {
 
-            ERPImportOperation eRPImportOperation = createERPImportOperation(file);
+            ERPImportOperation eRPImportOperation = createERPImportOperation(finantialInstitution, file);
 
-            ERPImporter importer = new ERPImporter(file.getInputStream());
-            importer.processAuditFile(eRPImportOperation);
+            final IERPImporter erpImporter = finantialInstitution.getErpIntegrationConfiguration()
+                    .getERPExternalServiceImplementation().getERPImporter(file.getInputStream());
+            erpImporter.processAuditFile(eRPImportOperation);
             model.addAttribute("eRPImportOperation", eRPImportOperation);
 
             return redirect(READ_URL + getERPImportOperation(model).getExternalId(), model, redirectAttributes);
@@ -211,25 +219,21 @@ public class ERPImportOperationController extends TreasuryBaseController {
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public ERPImportOperation createERPImportOperation(MultipartFile file) throws IOException {
-        ERPImporter importer = new ERPImporter(file.getInputStream());
-        AuditFile auditFile = importer.readAuditFileFromXML();
-        if (auditFile != null) {
-            String fiscalNumber = auditFile.getHeader().getTaxRegistrationNumber() + "";
-            FinantialInstitution finantialInstitution = FinantialInstitution.findUniqueByFiscalCode(fiscalNumber).orElse(null);
-            if (finantialInstitution != null) {
+    public ERPImportOperation createERPImportOperation(final FinantialInstitution finantialInstitution, final MultipartFile file)
+            throws IOException {
+        IERPImporter erpImporter = finantialInstitution.getErpIntegrationConfiguration().getERPExternalServiceImplementation()
+                .getERPImporter(file.getInputStream());
+        FinantialInstitution finantialInstitutionFromFile =
+                FinantialInstitution.findUniqueByFiscalCode(erpImporter.readTaxRegistrationNumberFromAuditFile()).orElse(null);
 
-                final ERPImportOperation eRPImportOperation =
-                        ERPImportOperation.create(file.getOriginalFilename(), file.getBytes(), finantialInstitution,
-                                new DateTime(), false, false, false);
-
-                return eRPImportOperation;
-            } else {
-                throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.fiscalinstitution.file");
-            }
-        } else {
-            throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.audit.file");
+        if (finantialInstitution != finantialInstitutionFromFile) {
+            throw new TreasuryDomainException("label.error.integration.erp.erpimportoperation.invalid.fiscalinstitution.file");
         }
+
+        ERPImportOperation eRPImportOperation = ERPImportOperation.create(file.getOriginalFilename(), file.getBytes(),
+                finantialInstitution, null, new DateTime(), false, false, false);
+
+        return eRPImportOperation;
     }
 
     private static final String _READ_URI = "/read/";
@@ -279,7 +283,8 @@ public class ERPImportOperationController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
-                response.sendRedirect(redirect(READ_URL + getERPImportOperation(model).getExternalId(), model, redirectAttributes));
+                response.sendRedirect(
+                        redirect(READ_URL + getERPImportOperation(model).getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -288,16 +293,17 @@ public class ERPImportOperationController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/retryimport")
-    public String processReadToRetryImport(@PathVariable("oid") ERPImportOperation eRPImportOperation, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processReadToRetryImport(@PathVariable("oid") final ERPImportOperation eRPImportOperation, final Model model,
+            final RedirectAttributes redirectAttributes) {
         setERPImportOperation(eRPImportOperation, model);
         try {
             assertUserIsFrontOfficeMember(eRPImportOperation.getFinantialInstitution(), model);
 
-            ERPImportOperation newERPImportOperation = cloneERPImportOperation(eRPImportOperation);
+            final ERPImportOperation newERPImportOperation = cloneERPImportOperation(eRPImportOperation);
 
-            ERPImporter importer = new ERPImporter(eRPImportOperation.getFile().getStream());
-            importer.processAuditFile(newERPImportOperation);
+            final IERPImporter erpImporter = eRPImportOperation.getFinantialInstitution().getErpIntegrationConfiguration()
+                    .getERPExternalServiceImplementation().getERPImporter(eRPImportOperation.getFile().getStream());
+            erpImporter.processAuditFile(newERPImportOperation);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.importoperation.success"), model);
             return redirect(READ_URL + newERPImportOperation.getExternalId(), model, redirectAttributes);
@@ -313,7 +319,52 @@ public class ERPImportOperationController extends TreasuryBaseController {
     private ERPImportOperation cloneERPImportOperation(ERPImportOperation erpImportOperation) {
         ERPImportOperation newERPImportOperation =
                 ERPImportOperation.create(erpImportOperation.getFile().getFilename(), erpImportOperation.getFile().getContent(),
-                        erpImportOperation.getFinantialInstitution(), new DateTime(), false, false, false);
+                        erpImportOperation.getFinantialInstitution(), erpImportOperation.getErpOperationId(), new DateTime(), false, false, false);
         return newERPImportOperation;
     }
+    
+    @RequestMapping(value = "/soapoutboundmessage/{oid}")
+    public void soapOutboundMessage(@PathVariable("oid") final ERPImportOperation eRPImportOperation, final Model model,
+            final RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setERPImportOperation(eRPImportOperation, model);
+        try {
+            assertUserIsFrontOfficeMember(eRPImportOperation.getFinantialInstitution(), model);
+
+            response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
+            response.setHeader("Content-disposition",
+                    String.format("attachment; filename=SOAP_Outbound_Message_%s.xml", eRPImportOperation.getExternalId()));
+            response.getWriter().write(
+                    eRPImportOperation.getSoapOutboundMessage() != null ? eRPImportOperation.getSoapOutboundMessage() : "");
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + eRPImportOperation.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @RequestMapping(value = "/soapinboundmessage/{oid}")
+    public void soapInboundMessage(@PathVariable("oid") final ERPImportOperation eRPImportOperation, final Model model,
+            final RedirectAttributes redirectAttributes, HttpServletResponse response) {
+        setERPImportOperation(eRPImportOperation, model);
+        try {
+            assertUserIsFrontOfficeMember(eRPImportOperation.getFinantialInstitution(), model);
+
+            response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
+            response.setHeader("Content-disposition",
+                    String.format("attachment; filename=SOAP_Inbound_Message_%s.xml", eRPImportOperation.getExternalId()));
+            response.getWriter().write(
+                    eRPImportOperation.getSoapInboundMessage() != null ? eRPImportOperation.getSoapInboundMessage() : "");
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            try {
+                response.sendRedirect(redirect(READ_URL + eRPImportOperation.getExternalId(), model, redirectAttributes));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

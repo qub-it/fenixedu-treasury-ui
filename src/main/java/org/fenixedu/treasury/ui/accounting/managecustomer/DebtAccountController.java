@@ -29,6 +29,7 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,18 +39,22 @@ import javax.servlet.http.HttpServletResponse;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
-import org.fenixedu.treasury.services.integration.erp.ERPExporter;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
@@ -71,6 +76,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
 
@@ -159,22 +165,29 @@ public class DebtAccountController extends TreasuryBaseController {
             }
         }
 
+        checkIncompleteAddress(debtAccount, model);
+
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
 
         model.addAttribute("invalidFiscalCode", isInvalidFiscalCode(debtAccount));
-        model.addAttribute("incompleteAddress", hasIncompleteAddress(debtAccount));
 
         return "treasury/accounting/managecustomer/debtaccount/read";
     }
 
-    private Object hasIncompleteAddress(final DebtAccount debtAccount) {
-        return !debtAccount.getCustomer().hasMinimumAddressData();
+    private void checkIncompleteAddress(final DebtAccount debtAccount, final Model model) {
+        final List<String> errorMessages = Lists.newArrayList();
+        final boolean validAddress =
+                ERPCustomerFieldsBean.checkIncompleteAddressForDebtAccountAndPayors(debtAccount, errorMessages);
+
+        model.addAttribute("validAddress", validAddress);
+        model.addAttribute("addressErrorMessages", errorMessages);
     }
 
     private boolean isInvalidFiscalCode(final DebtAccount debtAccount) {
         return !Strings.isNullOrEmpty(debtAccount.getCustomer().getFiscalCountry())
                 && Constants.isDefaultCountry(debtAccount.getCustomer().getFiscalCountry())
-                && !FiscalCodeValidation.isValidcontrib(debtAccount.getCustomer().getFiscalNumber());
+                && !FiscalCodeValidation.isValidcontrib(debtAccount.getCustomer().getFiscalCountry(),
+                        debtAccount.getCustomer().getFiscalNumber());
     }
 
     @RequestMapping(value = "/read/{oid}/createreimbursement")
@@ -301,24 +314,20 @@ public class DebtAccountController extends TreasuryBaseController {
 
             }
         }
-
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationonline")
-    public String processReadToExportIntegrationOnline(@PathVariable("oid") DebtAccount debtAccount, Model model,
+    public String processReadToExportIntegrationOnline(@PathVariable("oid") final DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
-            List<FinantialDocument> pendingDocuments = new ArrayList(debtAccount.getFinantialDocumentsSet().stream()
-                    .filter(d -> d.isDocumentSeriesNumberSet()).collect(Collectors.toSet()));
-            
-            if (pendingDocuments.size() > 0) {
-                ERPExportOperation output =
-                        ERPExporter.exportFinantialDocumentToIntegration(debtAccount.getFinantialInstitution(), pendingDocuments);
-                addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
-                return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
-            }
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.no.documents"), model);
+            throw new TreasuryDomainException("Desactivado");
+
+//            
+//            ERPExporterManager.exportPendingDocumentsForDebtAccount(debtAccount);
+//
+//            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+//            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
                     + ex.getLocalizedMessage(), model);
@@ -340,6 +349,35 @@ public class DebtAccountController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+        }
+    }
+
+    private static final String _TRANSFERBALANCE_URI = "/transferbalance";
+    public static final String TRANSFERBALANCE_URL = CONTROLLER_URL + _TRANSFERBALANCE_URI;
+
+    @RequestMapping(value = _TRANSFERBALANCE_URI + "/{oid}")
+    public String transferbalance(@PathVariable("oid") final DebtAccount debtAccount, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            if (debtAccount.getCustomer().isActive()) {
+                throw new TreasuryDomainException("error.DebtAccount.transfer.from.must.not.be.active");
+            }
+
+            final FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
+
+            Optional<DebtAccount> activeDebtAccount =
+                    DebtAccount.findUnique(finantialInstitution, debtAccount.getCustomer().getActiveCustomer());
+
+            if (!activeDebtAccount.isPresent()) {
+                throw new TreasuryDomainException("error.DebtAccount.active.debt.account.not.found");
+            }
+
+            debtAccount.transferBalance(activeDebtAccount.get());
+            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
+        } catch (final Exception ex) {
+            ex.printStackTrace();
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return read(debtAccount, model, redirectAttributes);
         }
     }
 

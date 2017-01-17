@@ -38,7 +38,9 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Currency;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessStatusType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
@@ -48,7 +50,11 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
+import com.google.common.collect.Sets;
+
 import pt.ist.fenixframework.Atomic;
+
+import static org.fenixedu.treasury.util.Constants.bundle;
 
 public class SettlementNote extends SettlementNote_Base {
 
@@ -58,13 +64,16 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     protected SettlementNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
+            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber,
+            final String finantialTransactionReference) {
         this();
-        init(debtAccount, documentNumberSeries, documentDate, paymentDate, originDocumentNumber);
+        init(debtAccount, documentNumberSeries, documentDate, paymentDate, originDocumentNumber, finantialTransactionReference);
     }
 
     protected void init(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
+            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber,
+            final String finantialTransactionReference) {
+        setFinantialTransactionReference(finantialTransactionReference);
         setOriginDocumentNumber(originDocumentNumber);
         if (paymentDate == null) {
             setPaymentDate(documentDate);
@@ -72,12 +81,17 @@ public class SettlementNote extends SettlementNote_Base {
             setPaymentDate(paymentDate);
         }
         super.init(debtAccount, documentNumberSeries, documentDate);
+
         checkRules();
     }
 
     @Override
     public boolean isSettlementNote() {
         return true;
+    }
+
+    public boolean isReimbursement() {
+        return getDocumentNumberSeries().getFinantialDocumentType() == FinantialDocumentType.findForReimbursementNote();
     }
 
     protected BigDecimal checkDiferenceInAmount() {
@@ -106,6 +120,22 @@ public class SettlementNote extends SettlementNote_Base {
                 && !getDocumentNumberSeries().getFinantialDocumentType().getType()
                         .equals(FinantialDocumentTypeEnum.REIMBURSEMENT_NOTE)) {
             throw new TreasuryDomainException("error.FinantialDocument.finantialDocumentType.invalid");
+        }
+
+        if (isClosed() && isReimbursement() && getCurrentReimbursementProcessStatus() == null) {
+            throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.current.status.invalid");
+        }
+
+        if (isClosed()) {
+            for (final SettlementEntry settlementEntry : getSettlemetEntriesSet()) {
+                if (!settlementEntry.getInvoiceEntry().isCreditNoteEntry()) {
+                    continue;
+                }
+
+                if (!settlementEntry.getInvoiceEntry().getFinantialDocument().isClosed()) {
+                    throw new TreasuryDomainException("error.SettlementNote.settlement.entry.for.credit.entry.not.closed");
+                }
+            }
         }
     }
 
@@ -148,9 +178,47 @@ public class SettlementNote extends SettlementNote_Base {
             return false;
         }
     }
-    
+
     public boolean isAdvancePaymentSetByUser() {
         return getAdvancePaymentSetByUser();
+    }
+
+    public boolean isReimbursementPending() {
+        if (!isReimbursement()) {
+            return false;
+        }
+
+        if (getCurrentReimbursementProcessStatus() == null) {
+            return false;
+        }
+
+        return getCurrentReimbursementProcessStatus().isInitialStatus();
+    }
+
+    public boolean isReimbursementConcluded() {
+        if (!isReimbursement()) {
+            return false;
+        }
+
+        final ReimbursementProcessStatusType currentStatus = getCurrentReimbursementProcessStatus();
+        if (currentStatus == null) {
+            return false;
+        }
+
+        return currentStatus.isFinalStatus() && !currentStatus.isRejectedStatus();
+    }
+
+    public boolean isReimbursementRejected() {
+        if (!isReimbursement()) {
+            return false;
+        }
+
+        final ReimbursementProcessStatusType currentStatus = getCurrentReimbursementProcessStatus();
+        if (currentStatus == null) {
+            return false;
+        }
+
+        return currentStatus.isFinalStatus() && currentStatus.isRejectedStatus();
     }
 
     @Override
@@ -195,8 +263,19 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         processAdvancePayments(bean);
-        
+
         setAdvancePaymentSetByUser(bean.isAdvancePayment());
+
+        if (isReimbursement()) {
+            // Ensure only one settlement entry with credit entry
+            if (getSettlemetEntries().count() != 1) {
+                throw new TreasuryDomainException("error.SettlementNote.reimbursement.supports.only.one.settlement.entry");
+            }
+
+            if (!getSettlemetEntries().findFirst().get().getInvoiceEntry().getFinantialDocument().isCreditNote()) {
+                throw new TreasuryDomainException("error.SettlementNote.reimbursement.invoice.entry.not.from.credit.note.");
+            }
+        }
     }
 
     private void processAdvancePayments(SettlementNoteBean bean) {
@@ -213,11 +292,11 @@ public class SettlementNote extends SettlementNote_Base {
         final BigDecimal paymentSum = bean.getPaymentAmount();
 
         final BigDecimal availableAmount = paymentSum.subtract(debitSum);
-        
-        if(!Constants.isPositive(availableAmount)) {
+
+        if (!Constants.isPositive(availableAmount)) {
             return;
         }
-        
+
         final String comments = String.format("%s [%s]", Constants.bundle("label.SettlementNote.advancedpayment"),
                 getPaymentDate().toString(Constants.DATE_FORMAT));
 
@@ -226,7 +305,8 @@ public class SettlementNote extends SettlementNote_Base {
 
     private void processReimbursementEntries(SettlementNoteBean bean) {
         for (PaymentEntryBean paymentEntryBean : bean.getPaymentEntries()) {
-            ReimbursementEntry.create(this, paymentEntryBean.getPaymentMethod(), paymentEntryBean.getPaymentAmount());
+            ReimbursementEntry.create(this, paymentEntryBean.getPaymentMethod(), paymentEntryBean.getPaymentAmount(),
+                    paymentEntryBean.getPaymentMethodId());
         }
     }
 
@@ -264,9 +344,17 @@ public class SettlementNote extends SettlementNote_Base {
     private void closeCreditNotes(SettlementNoteBean bean) {
         for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                if (!creditEntryBean.getCreditEntry().getFinantialDocument().isClosed()) {
-                    creditEntryBean.getCreditEntry().getFinantialDocument().closeDocument();
+                final CreditEntry creditEntry = creditEntryBean.getCreditEntry();
+
+                if (!creditEntry.getFinantialDocument().isClosed()) {
+                    if (Constants.isLessThan(creditEntryBean.getCreditAmountWithVat(), creditEntry.getOpenAmount())) {
+                        creditEntry
+                                .splitCreditEntry(creditEntry.getOpenAmount().subtract(creditEntryBean.getCreditAmountWithVat()));
+                    }
+
+                    creditEntry.getFinantialDocument().closeDocument();
                 }
+
                 SettlementEntry.create(creditEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
             }
         }
@@ -296,57 +384,6 @@ public class SettlementNote extends SettlementNote_Base {
             debitNote.addDebitNoteEntries(untiedDebitEntries);
             debitNote.closeDocument();
         }
-    }
-
-    @Atomic
-    public static SettlementNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
-            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber) {
-        SettlementNote settlementNote =
-                new SettlementNote(debtAccount, documentNumberSeries, documentDate, paymentDate, originDocumentNumber);
-
-        return settlementNote;
-    }
-
-    public static Stream<SettlementNote> findAll() {
-        return Bennu.getInstance().getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
-                .map(SettlementNote.class::cast);
-    }
-
-    public static Stream<SettlementNote> findByFinantialDocumentType(final FinantialDocumentType finantialDocumentType) {
-        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
-    }
-
-    public static Stream<SettlementNote> findByDebtAccount(final DebtAccount debtAccount) {
-        return findAll().filter(i -> debtAccount.equals(i.getDebtAccount()));
-    }
-
-    public static Stream<SettlementNote> findByDocumentNumberSeries(final DocumentNumberSeries documentNumberSeries) {
-        return findAll().filter(i -> documentNumberSeries.equals(i.getDocumentNumberSeries()));
-    }
-
-    public static Stream<SettlementNote> findByCurrency(final Currency currency) {
-        return findAll().filter(i -> currency.equals(i.getCurrency()));
-    }
-
-    public static Stream<SettlementNote> findByDocumentNumber(final java.lang.String documentNumber) {
-        return findAll().filter(i -> documentNumber.equalsIgnoreCase(i.getDocumentNumber()));
-    }
-
-    public static Stream<SettlementNote> findByDocumentDate(final org.joda.time.DateTime documentDate) {
-        return findAll().filter(i -> documentDate.equals(i.getDocumentDate()));
-    }
-
-    public static Stream<SettlementNote> findByDocumentDueDate(final org.joda.time.DateTime documentDueDate) {
-        return findAll().filter(i -> documentDueDate.equals(i.getDocumentDueDate()));
-    }
-
-    public static Stream<SettlementNote> findByOriginDocumentNumber(final java.lang.String originDocumentNumber) {
-        return findAll().filter(i -> originDocumentNumber.equalsIgnoreCase(i.getOriginDocumentNumber()));
-    }
-
-    public static Stream<SettlementNote> findByState(
-            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
-        return findAll().filter(i -> state.equals(i.getState()));
     }
 
     public Stream<SettlementEntry> getSettlemetEntries() {
@@ -382,6 +419,14 @@ public class SettlementNote extends SettlementNote_Base {
         if (this.isPreparing()) {
             this.delete(true);
         } else if (this.isClosed()) {
+            if (isExportedInLegacyERP()) {
+                throw new TreasuryDomainException("error.SettlementNote.cannot.anull.settlement.exported.in.legacy.erp");
+            }
+
+            if (getAdvancedPaymentCreditNote() != null && getAdvancedPaymentCreditNote().hasValidSettlementEntries()) {
+                throw new TreasuryDomainException("error.SettlementNote.cannot.anull.settlement.due.to.advanced.payment.settled");
+            }
+
             setState(FinantialDocumentStateType.ANNULED);
             setAnnulledReason(anulledReason);
 
@@ -390,17 +435,13 @@ public class SettlementNote extends SettlementNote_Base {
                 this.markDocumentToExport();
             }
 
-            //if we have advanced payments, we must "anull" the "advanced payments"
             if (this.getAdvancedPaymentCreditNote() != null) {
-                //only "disconnect" the advanced payment credit note
-                this.setAdvancedPaymentCreditNote(null);
-                // this.getAdvancedPaymentCreditNote().anullDocument(freeEntries, anulledReason);
+                this.getAdvancedPaymentCreditNote().anullDocument(anulledReason);
             }
 
             checkRules();
         } else {
-            throw new TreasuryDomainException(
-                    BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(bundle("error.FinantialDocumentState.invalid.state.change.request"));
         }
 
     }
@@ -425,15 +466,74 @@ public class SettlementNote extends SettlementNote_Base {
             }
         }
 
-        if (Constants.isZero(checkDiferenceInAmount()) == false) {
+        if (!Constants.isZero(checkDiferenceInAmount())) {
             throw new TreasuryDomainException("error.SettlementNote.invalid.amounts.in.settlement.note");
+        }
+
+        if (getReferencedCustomers().size() > 1) {
+            throw new TreasuryDomainException("error.SettlementNote.referencedCustomers.only.one.allowed");
         }
 
         if (this.getAdvancedPaymentCreditNote() != null) {
             this.getAdvancedPaymentCreditNote().closeDocument();
         }
 
+        if (isReimbursement()) {
+            processReimbursementStateChange(ReimbursementProcessStatusType.findUniqueByInitialStatus().get(),
+                    String.valueOf(getDocumentDate().getYear()), new DateTime());
+        }
+
         super.closeDocument(markDocumentToExport);
+
+        checkRules();
+    }
+
+    @Atomic
+    public void processReimbursementStateChange(final ReimbursementProcessStatusType reimbursementStatus,
+            final String exerciseYear, final DateTime reimbursementStatusDate) {
+
+        if (reimbursementStatus == null) {
+            throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementStatus");
+        }
+
+        if (!isReimbursement()) {
+            throw new TreasuryDomainException("error.integration.erp.invalid.settlementNote");
+        }
+
+        if (!isClosed() && !reimbursementStatus.isInitialStatus()) {
+            throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.state");
+        }
+
+        if (!reimbursementStatus.isInitialStatus() && getCurrentReimbursementProcessStatus() == null) {
+            throw new TreasuryDomainException("error.SettlementNote.currentReimbursementProcessStatus.invalid");
+        }
+
+        if (getCurrentReimbursementProcessStatus() != null
+                && !reimbursementStatus.isAfter(getCurrentReimbursementProcessStatus())) {
+            throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.next.status.invalid");
+        }
+
+        if (getCurrentReimbursementProcessStatus() != null && getCurrentReimbursementProcessStatus().isFinalStatus()) {
+            throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.current.status.is.final");
+        }
+
+        setCurrentReimbursementProcessStatus(reimbursementStatus);
+
+        if (getCurrentReimbursementProcessStatus() == null) {
+            throw new TreasuryDomainException("error.SettlementNote.currentReimbursementProcessStatus.invalid");
+        }
+
+        if (getCurrentReimbursementProcessStatus().isRejectedStatus() && isClosed()) {
+            final CreditNote creditNote =
+                    (CreditNote) getSettlemetEntries().findFirst().get().getInvoiceEntry().getFinantialDocument();
+
+            creditNote
+                    .anullReimbursementCreditNoteAndCopy(Constants.bundle("error.SettlementNote.reimbursement.rejected.reason"));
+            anullDocument(Constants.bundle("label.ReimbursementProcessStatusType.annuled.reimbursement.by.annuled.process"),
+                    false);
+
+            markDocumentToExport();
+        }
     }
 
     public BigDecimal getTotalCreditAmount() {
@@ -498,4 +598,80 @@ public class SettlementNote extends SettlementNote_Base {
         }
         return this.getFinantialDocumentEntriesSet().isEmpty();
     }
+
+    public Set<Customer> getReferencedCustomers() {
+        final Set<Customer> result = Sets.newHashSet();
+
+        for (final SettlementEntry settlementEntry : getSettlemetEntriesSet()) {
+            final Invoice invoice = (Invoice) settlementEntry.getInvoiceEntry().getFinantialDocument();
+
+            if (invoice.isForPayorDebtAccount()) {
+                result.add(invoice.getPayorDebtAccount().getCustomer());
+            } else {
+                result.add(invoice.getDebtAccount().getCustomer());
+            }
+        }
+
+        return result;
+    }
+
+    // @formatter:off
+    /* ********
+     * SERVICES
+     * ********
+     */
+    // @formatter:on
+
+    @Atomic
+    public static SettlementNote create(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
+            final DateTime documentDate, final DateTime paymentDate, final String originDocumentNumber,
+            final String finantialTransactionReference) {
+        SettlementNote settlementNote = new SettlementNote(debtAccount, documentNumberSeries, documentDate, paymentDate,
+                originDocumentNumber, finantialTransactionReference);
+
+        return settlementNote;
+    }
+
+    public static Stream<SettlementNote> findAll() {
+        return Bennu.getInstance().getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
+                .map(SettlementNote.class::cast);
+    }
+
+    public static Stream<SettlementNote> findByFinantialDocumentType(final FinantialDocumentType finantialDocumentType) {
+        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
+    }
+
+    public static Stream<SettlementNote> findByDebtAccount(final DebtAccount debtAccount) {
+        return findAll().filter(i -> debtAccount.equals(i.getDebtAccount()));
+    }
+
+    public static Stream<SettlementNote> findByDocumentNumberSeries(final DocumentNumberSeries documentNumberSeries) {
+        return findAll().filter(i -> documentNumberSeries.equals(i.getDocumentNumberSeries()));
+    }
+
+    public static Stream<SettlementNote> findByCurrency(final Currency currency) {
+        return findAll().filter(i -> currency.equals(i.getCurrency()));
+    }
+
+    public static Stream<SettlementNote> findByDocumentNumber(final java.lang.String documentNumber) {
+        return findAll().filter(i -> documentNumber.equalsIgnoreCase(i.getDocumentNumber()));
+    }
+
+    public static Stream<SettlementNote> findByDocumentDate(final org.joda.time.DateTime documentDate) {
+        return findAll().filter(i -> documentDate.equals(i.getDocumentDate()));
+    }
+
+    public static Stream<SettlementNote> findByDocumentDueDate(final org.joda.time.DateTime documentDueDate) {
+        return findAll().filter(i -> documentDueDate.equals(i.getDocumentDueDate()));
+    }
+
+    public static Stream<SettlementNote> findByOriginDocumentNumber(final java.lang.String originDocumentNumber) {
+        return findAll().filter(i -> originDocumentNumber.equalsIgnoreCase(i.getOriginDocumentNumber()));
+    }
+
+    public static Stream<SettlementNote> findByState(
+            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+        return findAll().filter(i -> state.equals(i.getState()));
+    }
+
 }

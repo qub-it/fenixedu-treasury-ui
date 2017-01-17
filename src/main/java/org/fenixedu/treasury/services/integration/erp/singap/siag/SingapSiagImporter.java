@@ -25,7 +25,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with FenixEdu Treasury.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.fenixedu.treasury.services.integration.erp;
+package org.fenixedu.treasury.services.integration.erp.singap.siag;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -41,7 +41,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -56,6 +55,13 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.domain.integration.IntegrationOperationLogBean;
+import org.fenixedu.treasury.generated.sources.saft.singap.siag.AuditFile;
+import org.fenixedu.treasury.generated.sources.saft.singap.siag.PaymentMethod;
+import org.fenixedu.treasury.generated.sources.saft.singap.siag.SAFTPTSettlementType;
+import org.fenixedu.treasury.generated.sources.saft.singap.siag.SourceDocuments.Payments.Payment;
+import org.fenixedu.treasury.generated.sources.saft.singap.siag.SourceDocuments.Payments.Payment.Line;
+import org.fenixedu.treasury.generated.sources.saft.singap.siag.SourceDocuments.WorkingDocuments.WorkDocument;
+import org.fenixedu.treasury.services.integration.erp.IERPImporter;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
@@ -66,12 +72,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
-import oecd.standardauditfile_tax.pt_1.AuditFile;
-import oecd.standardauditfile_tax.pt_1.PaymentMethod;
-import oecd.standardauditfile_tax.pt_1.SAFTPTSettlementType;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.Payments.Payment.Line;
-import oecd.standardauditfile_tax.pt_1.SourceDocuments.WorkingDocuments.WorkDocument;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
@@ -84,13 +84,13 @@ import pt.ist.fenixframework.Atomic.TxMode;
 // Versão 1.0.3
 // https://info.portaldasfinancas.gov.pt/NR/rdonlyres/BA9FB096-D482-445D-A5DB-C05B1980F7D7/0/Portaria_274_2013_21_09.pdf
 // ******************************************************************************************************************************
-public class ERPImporter {
+public class SingapSiagImporter implements IERPImporter {
 
     private static JAXBContext jaxbContext = null;
-    private static Logger logger = LoggerFactory.getLogger(ERPImporter.class);
+    private static Logger logger = LoggerFactory.getLogger(SingapSiagImporter.class);
     private InputStream fileStream;
 
-    public ERPImporter(InputStream fileStream) {
+    public SingapSiagImporter(InputStream fileStream) {
         this.fileStream = fileStream;
     }
 
@@ -112,6 +112,7 @@ public class ERPImporter {
     }
 
     @Atomic(mode = TxMode.WRITE)
+    @Override
     public DocumentsInformationOutput processAuditFile(final ERPImportOperation eRPImportOperation) {
         final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
 
@@ -124,11 +125,12 @@ public class ERPImporter {
             BigDecimal totalDebit = BigDecimal.ZERO;
             BigInteger totalPayments = BigInteger.ZERO;
             for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
-                final DocumentStatusWS docStatus = new DocumentStatusWS();
-                logBean.appendIntegrationLog(Constants.bundle("info.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                DocumentStatusWS docStatus = new DocumentStatusWS();
+                logBean.appendIntegrationLog(
+                        Constants.bundle("info.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                 SettlementNote note = null;
                 try {
-                    note = processErpPayment(payment, eRPImportOperation.getFinantialInstitution(), logBean);
+                    note = processErpPayment(payment, eRPImportOperation, logBean);
                     if (note != null) {
                         if (Strings.isNullOrEmpty(note.getOriginDocumentNumber())) {
                             docStatus.setDocumentNumber(note.getUiDocumentNumber());
@@ -158,15 +160,25 @@ public class ERPImporter {
                             break;
                         }
                     }
-                    logBean.appendIntegrationLog(
-                            Constants.bundle("error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
-                    logBean.appendErrorLog(Constants.bundle("error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                    logBean.appendIntegrationLog(Constants.bundle(
+                            "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                    logBean.appendErrorLog(Constants.bundle(
+                            "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription("Error: " + ex.getLocalizedMessage());
                     docStatus.setIntegrationStatus(StatusType.ERROR);
                 }
                 result.getDocumentStatus().add(docStatus);
             }
+//            if (totalPayments.compareTo(auditFile.getSourceDocuments().getPayments().getNumberOfEntries()) != 0) {
+//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.number.of.payments");
+//            }
+//            if (totalDebit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalDebit()) != 0) {
+//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.debit");
+//            }
+//            if (totalCredit.compareTo(auditFile.getSourceDocuments().getPayments().getTotalCredit()) != 0) {
+//                throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.total.credit");
+//            }
 
             if (eRPImportOperation.getProcessed() == true) {
                 //this is a re-process. set as "corrected"
@@ -174,7 +186,7 @@ public class ERPImporter {
             }
             eRPImportOperation.setProcessed(true);
             eRPImportOperation.setExecutionDate(new DateTime());
-            if (Strings.isNullOrEmpty(logBean.getErrorLog())) {
+            if (eRPImportOperation.getErrorLog() == null || eRPImportOperation.getErrorLog().isEmpty()) {
                 eRPImportOperation.setSuccess(true);
             }
 
@@ -198,15 +210,14 @@ public class ERPImporter {
             eRPImportOperation.appendLog(logBean.getErrorLog(), logBean.getIntegrationLog(), logBean.getSoapInboundMessage(),
                     logBean.getSoapOutboundMessage());
         }
-
         return result;
     }
 
     @Atomic
-    private SettlementNote processErpPayment(Payment payment, final FinantialInstitution finantialInstitution,
+    private SettlementNote processErpPayment(Payment payment, ERPImportOperation eRPImportOperation,
             final IntegrationOperationLogBean logBean) {
         boolean newSettlementNoteCreated = false;
-        ERPConfiguration integrationConfig = finantialInstitution.getErpIntegrationConfiguration();
+        ERPConfiguration integrationConfig = eRPImportOperation.getFinantialInstitution().getErpIntegrationConfiguration();
         DocumentNumberSeries seriesToIntegratePayments = DocumentNumberSeries.find(FinantialDocumentType.findForSettlementNote(),
                 integrationConfig.getPaymentsIntegrationSeries());
 
@@ -226,7 +237,7 @@ public class ERPImporter {
         SettlementNote settlementNote = null;
         DebtAccount customerDebtAccount = null;
         if (customer != null) {
-            customerDebtAccount = DebtAccount.findUnique(finantialInstitution, customer).orElse(null);
+            customerDebtAccount = DebtAccount.findUnique(eRPImportOperation.getFinantialInstitution(), customer).orElse(null);
             if (customerDebtAccount != null) {
                 SettlementNote existingSettlementNote = SettlementNote.findByDocumentNumberSeries(seriesToIntegratePayments)
                         .filter(x -> x.getOriginDocumentNumber() != null && x.getOriginDocumentNumber().equals(externalNumber))
@@ -262,8 +273,7 @@ public class ERPImporter {
                         return settlementNote;
                     } else {
                         //HACK: DONT Accept repeting Documents for (UPDATE)
-                        logBean.appendIntegrationLog(
-                                "label.error.integration.erpimporter.invalid.already.existing.payment.ignored");
+                        logBean.appendIntegrationLog("label.error.integration.erpimporter.invalid.already.existing.payment.ignored");
                         return settlementNote;
                         //throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.already.existing.payment");
                     }
@@ -287,7 +297,7 @@ public class ERPImporter {
                         }
                         //Create a new SettlementNote
                         settlementNote = SettlementNote.create(customerDebtAccount, seriesToIntegratePayments, documentDate,
-                                paymentDate, externalNumber);
+                                paymentDate, externalNumber, null);
                         newSettlementNoteCreated = true;
                     }
                 }
@@ -306,8 +316,8 @@ public class ERPImporter {
                     throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
                 }
                 String invoiceReferenceNumber = paymentLine.getSourceDocumentID().get(0).getOriginatingON();
-                FinantialDocument referenceDocument =
-                        FinantialDocument.findByUiDocumentNumber(finantialInstitution, invoiceReferenceNumber);
+                FinantialDocument referenceDocument = FinantialDocument
+                        .findByUiDocumentNumber(eRPImportOperation.getFinantialInstitution(), invoiceReferenceNumber);
                 if (referenceDocument == null || ((referenceDocument instanceof Invoice) == false)) {
                     throw new TreasuryDomainException("label.error.integration.erpimporter.invalid.line.source.in.payment");
                 }
@@ -348,7 +358,7 @@ public class ERPImporter {
                 //Continue processing the Reimbursment Methods (New or Updating??!?!)
                 for (PaymentMethod paymentMethod : payment.getPaymentMethod()) {
                     ReimbursementEntry reimbursmentEntry = ReimbursementEntry.create(settlementNote,
-                            convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), paymentMethod.getPaymentAmount());
+                            convertFromSAFTPaymentMethod(paymentMethod.getPaymentMechanism()), paymentMethod.getPaymentAmount(), null);
                 }
             } else {
                 //Continue processing the Payment Methods (New or Updating??!?!)
@@ -384,8 +394,6 @@ public class ERPImporter {
         org.fenixedu.treasury.domain.PaymentMethod paymentMethod =
                 org.fenixedu.treasury.domain.PaymentMethod.findByCode(paymentMechanism);
         if (paymentMethod == null) {
-            // TODO: Ask why returns some payment method
-            // return org.fenixedu.treasury.domain.PaymentMethod.findAll().findFirst().orElse(null);
             throw new TreasuryDomainException("error.ERPImporter.unkown.payment.method", paymentMechanism);
         }
         return paymentMethod;
@@ -399,8 +407,8 @@ public class ERPImporter {
         for (WorkDocument w : file.getSourceDocuments().getWorkingDocuments().getWorkDocument()) {
             result.add(w.getDocumentNumber());
         }
-        for (oecd.standardauditfile_tax.pt_1.SourceDocuments.SalesInvoices.Invoice i : file.getSourceDocuments()
-                .getSalesInvoices().getInvoice()) {
+        for (org.fenixedu.treasury.generated.sources.saft.singap.siag.SourceDocuments.SalesInvoices.Invoice i : file
+                .getSourceDocuments().getSalesInvoices().getInvoice()) {
             result.add(i.getInvoiceNo());
         }
         for (Payment p : file.getSourceDocuments().getPayments().getPayment()) {
@@ -408,4 +416,11 @@ public class ERPImporter {
         }
         return result;
     }
+
+    @Override
+    public String readTaxRegistrationNumberFromAuditFile() {
+        final AuditFile auditFile = readAuditFileFromXML();
+        return auditFile.getHeader().getTaxRegistrationNumber() + "";
+    }
+
 }

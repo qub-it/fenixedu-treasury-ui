@@ -167,6 +167,7 @@ class AdhocCustomer extends Customer {
 	String address;
 	String districtSubdivision;
 	String zipCode;
+	String addressCountryCode;
 	String countryCode;
 }
 
@@ -203,10 +204,23 @@ class document.Series {
 	boolean certificated;
 	boolean legacy;
 	boolean defaultSeries;
+	boolean selectable;
 }
+
+	relation FinantialInstitutionRegulationSeries {
+		FinantialInstitution playsRole finantialInstitutionForRegulationSeries {
+			multiplicity 0..1;
+		}
+		
+		document.Series playsRole regulationSeries {
+			multiplicity 0..1;
+		}
+	}
 
 class document.DocumentNumberSeries {
 	int counter;
+	boolean replacePrefix;
+	String replacingPrefix;
 }
 
 class event.TreasuryEvent {
@@ -226,12 +240,14 @@ class document.FinantialDocument {
 	String clearDocumentToExportReason;
 	DateTime closeDate;
 	boolean exportedInLegacyERP;
+	String legacyERPCertificateDocumentReference;
+	LocalDate erpCertificationDate;
+	String erpCertificateDocumentReference;
 }
-
 
 	class document.Invoice extends document.FinantialDocument {
 	}
-	
+
 		class document.DebitNote extends document.Invoice {
 		}
 		
@@ -245,6 +261,7 @@ class document.FinantialDocument {
 	class document.SettlementNote extends document.FinantialDocument {
 	   DateTime paymentDate;
 	   boolean advancePaymentSetByUser;
+	   String finantialTransactionReference;
 	}
 
 class document.FinantialDocumentEntry {
@@ -261,7 +278,6 @@ class document.FinantialDocumentEntry {
 		BigDecimalT vatRate;
 		BigDecimalT netAmount;
 		BigDecimalT amountWithVat;
-	
 	}
 
 	class document.DebitEntry extends document.InvoiceEntry {
@@ -293,6 +309,7 @@ class document.PaymentEntry {
 
 class document.ReimbursementEntry {
 	BigDecimalT reimbursedAmount;
+	String reimbursementMethodId;
 }
 
 
@@ -678,14 +695,15 @@ class integration.OperationFile extends .org.fenixedu.bennu.io.domain.GenericFil
 
 class integration.IntegrationOperation
 {
-       DateTime executionDate;
-       boolean processed;
-       boolean success;
-       boolean corrected;
-       String errorLog;
-       String integrationLog;
-       String soapInboundMessage;
-       String soapOutboundMessage;
+	DateTime executionDate;
+	boolean processed;
+	boolean success;
+	boolean corrected;
+	String errorLog;
+	String integrationLog;
+	String soapInboundMessage;
+	String soapOutboundMessage;
+	String erpOperationId;
 }
 /* --- IntegrationOperation --- */
 
@@ -730,6 +748,7 @@ class integration.ERPConfiguration extends integration.Configuration
     boolean exportAnnulledRelatedDocuments;
     Long maxSizeBytesToExportOnline;
     boolean integratedDocumentsExportationEnabled;
+    String erpIdProcess;
 }
 
 relation ERPConfigurationFinantialInstitution
@@ -846,6 +865,16 @@ relation TreasurySettingsCurrency {
 	Currency playsRole defaultCurrency {
 		multiplicity 0..1;
 	}
+}
+
+relation TreasurySettingsTransferBalanceProduct {
+	settings.TreasurySettings playsRole transferBalanceTreasurySettings {
+		multiplicity 0..1;
+	}
+	
+    Product playsRole transferBalanceProduct {
+        multiplicity 0..1;
+    }
 }
 
 /*************
@@ -1261,14 +1290,13 @@ relation TreasuryEventProduct {
 relation TreasuryEventDebtAccount {
 	
 	debt.DebtAccount playsRole debtAccount {
-		multiplicity 1..1;
+		multiplicity 0..1;
 	}
 	
 	event.TreasuryEvent playsRole treasuryEvents {
 		multiplicity *;
 	}
 }
-
 
 /* --- FinantialDocument --- */
 
@@ -1555,6 +1583,74 @@ relation ReimbursementEntryPaymentMode {
         multiplicity *;
     }
 }
+
+class document.reimbursement.ReimbursementProcessStatusType {
+	String code;
+	String description;
+	boolean initialStatus;
+	boolean finalStatus;
+	int orderNumber;
+	boolean rejectedStatus;
+}
+
+	relation ReimbursementProcessStatusTypeBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		document.reimbursement.ReimbursementProcessStatusType playsRole reimbursementProcessStatusTypes {
+			multiplicity *;
+		}
+	}
+
+	relation ReimbursementProcessStatusTypeSettlementNote {
+		document.SettlementNote playsRole settlementNotes {
+			multiplicity *;
+		}
+	
+		document.reimbursement.ReimbursementProcessStatusType playsRole currentReimbursementProcessStatus {
+			multiplicity 0..1;
+		}
+	}
+
+class document.reimbursement.ReimbursementProcessStateLog {
+	String erpProcessId;
+	String statusId;
+	DateTime statusDate;
+	String remarks;
+}
+
+	relation ReimbursementProcessStateLogBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		document.reimbursement.ReimbursementProcessStateLog playsRole reimbursementProcessStateLogs {
+			multiplicity *;
+		}
+	}
+	
+	relation ReimbursementProcessStateLogReimbursementProcessStatusType {
+	
+		document.reimbursement.ReimbursementProcessStatusType playsRole ReimbursementProcessStatusType {
+			multiplicity 1..1;
+		}
+				
+		document.reimbursement.ReimbursementProcessStateLog playsRole reimbursementProcessStateLogs {
+			multiplicity *;
+		}
+	}
+
+	relation ReimbursementProcessStateLogSettlementNote {
+	
+		document.SettlementNote playsRole settlementNote {
+			multiplicity 1..1;
+		}
+
+		document.reimbursement.ReimbursementProcessStateLog playsRole reimbursementProcessStateLogs {
+			multiplicity *;
+		}
+	}
 
 relation FinantialDocumentPendingForExportationFinantialInstitution {
 	document.FinantialDocument playsRole finantialDocumentsPendingForExportation {

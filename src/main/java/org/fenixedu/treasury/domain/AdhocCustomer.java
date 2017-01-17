@@ -27,11 +27,17 @@
  */
 package org.fenixedu.treasury.domain;
 
+import java.math.BigDecimal;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
+
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -46,14 +52,19 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     public boolean isAdhocCustomer() {
         return true;
     }
-    
+
     @Override
     public boolean isActive() {
         return true;
     }
 
-    protected AdhocCustomer(final CustomerType customerType, final String fiscalNumber, final String name,
-            final String address, final String districtSubdivision, final String zipCode, final String countryCode,
+    @Override
+    public Customer getActiveCustomer() {
+        return this;
+    }
+
+    protected AdhocCustomer(final CustomerType customerType, final String fiscalNumber, final String name, final String address,
+            final String districtSubdivision, final String zipCode, final String addressCountryCode, final String countryCode,
             final String identificationNumber) {
         this();
         setCustomerType(customerType);
@@ -63,6 +74,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setAddress(address);
         setDistrictSubdivision(districtSubdivision);
         setZipCode(zipCode);
+        setAddressCountryCode(addressCountryCode);
         setCountryCode(countryCode);
         setIdentificationNumber(identificationNumber);
 
@@ -73,6 +85,17 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     protected void checkRules() {
         super.checkRules();
 
+        /* TODO: CHECK
+        if (Constants.isDefaultCountry(getFiscalCountry()) && DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
+            throw new TreasuryDomainException("error.AdhocCustomer.default.fiscal.number.not.supported");
+        }
+        */
+        
+        if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
+            if (findByFiscalInformation(getFiscalCountry(), getFiscalNumber()).count() > 1) {
+                throw new TreasuryDomainException("error.AdhocCustomer.customer.with.fiscal.information.exists");
+            }
+        }
     }
 
     @Override
@@ -81,25 +104,37 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Atomic
-    public void edit(final CustomerType customerType, final String fiscalNumber, final String name,
-            final String address, final String districtSubdivision, final String zipCode, final String countryCode,
-            final String identificationNumber) {
+    public void edit(final CustomerType customerType, final String name, final String address, final String districtSubdivision,
+            final String zipCode, final String addressCountryCode, final String identificationNumber) {
         setCustomerType(customerType);
-        setFiscalNumber(fiscalNumber);
         setName(name);
         setAddress(address);
         setDistrictSubdivision(districtSubdivision);
         setZipCode(zipCode);
-        setCountryCode(countryCode);
+        setAddressCountryCode(addressCountryCode);
         setIdentificationNumber(identificationNumber);
 
         checkRules();
     }
 
     @Override
+    public Set<? extends TreasuryEvent> getTreasuryEventsSet() {
+        return Sets.newHashSet();
+    }
+
+    @Override
+    public boolean isUiOtherRelatedCustomerActive() {
+        return false;
+    }
+
+    @Override
+    public String uiRedirectToActiveCustomer(final String url) {
+        return url + "/" + getExternalId();
+    }
+
+    @Override
     public boolean isDeletable() {
         return getDebtAccountsSet().stream().allMatch(da -> da.isDeletable());
-
     }
 
     @Override
@@ -119,12 +154,72 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         deleteDomainObject();
     }
 
+    @Override
+    public String getFirstNames() {
+        throw new RuntimeException("not supported");
+    }
+
+    @Override
+    public String getLastNames() {
+        throw new RuntimeException("not supported");
+    }
+
+    @Override
+    public String getBusinessIdentification() {
+        return this.getIdentificationNumber();
+    }
+
+    @Override
+    public String getDistrict() {
+        return getDistrictSubdivision();
+    }
+
+    @Override
+    public String getNationalityCountryCode() {
+        return null;
+    }
+
+    @Override
+    public String getFiscalCountry() {
+        return getCountryCode();
+    }
+
+    @Override
+    public String getEmail() {
+        throw new RuntimeException("not supported");
+    }
+
+    @Override
+    public String getPhoneNumber() {
+        throw new RuntimeException("not supported");
+    }
+
+    public BigDecimal getGlobalBalance() {
+        BigDecimal globalBalance = BigDecimal.ZERO;
+        for (final DebtAccount debtAccount : getDebtAccountsSet()) {
+            globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
+        }
+
+        return globalBalance;
+    }
+
+    // @formatter:off
+    /* ********
+     * SERVICES
+     * ********
+     */
+    // @formatter:on
+
+    public static CustomerType getDefaultCustomerType() {
+        return CustomerType.findByCode("ADHOC").findFirst().orElse(null);
+    }
+
     @Atomic
-    public static AdhocCustomer create(final CustomerType customerType, final String fiscalNumber,
-            final String name, final String address, final String districtSubdivision, final String zipCode,
+    public static AdhocCustomer create(final CustomerType customerType, final String fiscalNumber, final String name,
+            final String address, final String districtSubdivision, final String zipCode, final String addressCountryCode,
             final String countryCode, final String identificationNumber) {
-        return new AdhocCustomer(customerType, fiscalNumber, name, address, districtSubdivision, zipCode, countryCode,
-                identificationNumber);
+        return new AdhocCustomer(customerType, fiscalNumber, name, address, districtSubdivision, zipCode, addressCountryCode,
+                countryCode, identificationNumber);
     }
 
     public static Stream<AdhocCustomer> findAll() {
@@ -160,48 +255,4 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
-    public static CustomerType getDefaultCustomerType() {
-        return CustomerType.findByCode("ADHOC").findFirst().orElse(null);
-    }
-
-    @Override
-    public String getFirstNames() {
-        throw new RuntimeException("not supported");
-    }
-
-    @Override
-    public String getLastNames() {
-        throw new RuntimeException("not supported");
-    }
-
-    @Override
-    public String getBusinessIdentification() {
-        return this.getIdentificationNumber();
-    }
-
-    @Override
-    public String getDistrict() {
-        return getDistrictSubdivision();
-    }
-    
-    @Override
-    public String getNationalityCountryCode() {
-        return null;
-    }
-    
-    @Override
-    public String getFiscalCountry() {
-        return null;
-    }
-
-    @Override
-    public String getEmail() {
-        throw new RuntimeException("not supported");
-    }
-
-    @Override
-    public String getPhoneNumber() {
-        throw new RuntimeException("not supported");
-    }
-    
 }

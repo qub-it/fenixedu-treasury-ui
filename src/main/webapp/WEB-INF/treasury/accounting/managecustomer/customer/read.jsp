@@ -134,6 +134,10 @@ ${portal.toolkit()}
                         <td><c:out value='${customer.name}' /></td>
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.countryCode" /></th>
+                        <td><c:out value='${customer.fiscalCountry}' /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
                         <td><c:out value='${customer.fiscalNumber}' /></td>
                     </tr>
@@ -154,8 +158,8 @@ ${portal.toolkit()}
                         <td><c:out value='${customer.zipCode}' /></td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.countryCode" /></th>
-                        <td><c:out value='${customer.countryCode}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.addressCountryCode" /></th>
+                        <td><c:out value='${customer.addressCountryCode}' /></td>
                     </tr>
                 </tbody>
             </table>
@@ -176,8 +180,16 @@ ${portal.toolkit()}
                 <tbody>
 			                   <c:forEach var="debtAccount" items='${customer.debtAccountsSet}'>
 			                       <tr>
-			                           <th scope="row" class="col-xs-3"><c:out value="${debtAccount.finantialInstitution.name}" /></th>
-			                           <td style="vertical-align: middle">
+			                           <th scope="row" class="col-xs-4"><c:out value="${debtAccount.finantialInstitution.name}" /></th>
+			                           <td class="col-xs-2">
+			                           		<p><c:out value="${debtAccount.customer.uiFiscalNumber}" /></p>
+			                           		<c:if test="${debtAccount.customer.personCustomer}">
+			                           		<c:if test="${debtAccount.customer.fromPersonMerge}">
+				                           		<p>[<spring:message code="label.Customer.fromPersonMerge" />]</p>
+			                           		</c:if>
+			                           		</c:if>
+			                           </td>
+			                           <td >
 			                               <div class="col-xs-3">
 			                                   <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
 			                               </div> &nbsp;&nbsp;<a class="btn btn-primary btn-xs"
@@ -196,19 +208,39 @@ ${portal.toolkit()}
 			                   <c:forEach var="inactiveCustomer" items='${customer.person.inactivePersonCustomersSet}'>
 				                   <c:forEach var="debtAccount" items='${inactiveCustomer.debtAccountsSet}'>
 				                       <tr>
-				                           <th scope="row" class="col-xs-3">
+				                           <th scope="row" class="col-xs-4">
 				                           	<c:out value="${debtAccount.finantialInstitution.name}" />
 			                               <c:if test="${!inactiveCustomer.active}">
-			                                   <p><span class="label label-warning"><spring:message code="warning.Customer.is.inactive.due.merge" /></span></p>
+			                                   <p>
+													<span class="label label-warning">
+														<spring:message code="warning.Customer.is.inactive.due.merge.or.fiscal.change" />
+													</span>
+			                                   </p>
 			                               </c:if>
 				                           </th>
-				                           <td style="vertical-align: middle">
+				                           <td class="col-xs-2">
+				                           		<p>
+					                           		<c:out value="${debtAccount.customer.uiFiscalNumber}" />
+				                           		</p>
+				                           		<c:if test="${debtAccount.customer.personCustomer}">
+				                           		<c:if test="${debtAccount.customer.fromPersonMerge}">
+				                           		<p>
+						                           		<em>[<spring:message code="label.Customer.fromPersonMerge" />]</em>
+				                           		</p>
+				                           		</c:if>
+				                           		</c:if>
+				                           </td>
+				                           <td>
 				                               <div class="col-xs-3">
 				                                   <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
-				                               </div> &nbsp;&nbsp;<a class="btn btn-primary btn-xs"
-				                               href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
+				                               </div> &nbsp;&nbsp;
+				                               
+				                               <a class="btn btn-primary btn-xs"
+					                               href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
 				                               <span class="glyphicon glyphicon-user" >&nbsp;</span><spring:message
-				                                       code="label.customer.read.showdebtaccount"></spring:message></a> <c:if test="${debtAccount.totalInDebt < 0 }">
+				                                       code="label.customer.read.showdebtaccount"></spring:message>
+												</a> 
+												<c:if test="${debtAccount.totalInDebt < 0 }">
 				                                   <span class="label label-primary"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
 				                                   </span>
 				                               </c:if> 
@@ -229,8 +261,5 @@ ${portal.toolkit()}
 </div>
 
 <script>
-	$(document).ready(function() {
-
-
-	});
+	$(document).ready(function() {});
 </script>

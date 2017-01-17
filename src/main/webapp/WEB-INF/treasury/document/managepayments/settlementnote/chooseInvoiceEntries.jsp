@@ -47,7 +47,8 @@ ${portal.angularToolkit()}
                     - ${settlementNoteBean.debtAccount.customer.name}</a>
             </p>
             <p>
-                <strong><spring:message code="label.Customer.fiscalNumber" />: </strong>${ settlementNoteBean.debtAccount.customer.fiscalNumber }</p>
+                <strong><spring:message code="label.Customer.fiscalNumber" />:</strong>&nbsp;<c:out value="${settlementNoteBean.debtAccount.customer.uiFiscalNumber}" />
+            </p>
         </div>
     </div>
 </div>
@@ -141,6 +142,7 @@ ${portal.angularToolkit()}
             </p>
         </div>
         <div class="panel-body">
+        	<c:if test="${not settlementNoteBean.reimbursementNote }">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.date" />
@@ -149,6 +151,7 @@ ${portal.angularToolkit()}
                     <input class="form-control" type="text" bennu-date="object.date" />
                 </div>
             </div>
+            </c:if>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.SettlementNote.documentNumberSeries" />
@@ -181,9 +184,28 @@ ${portal.angularToolkit()}
             	</div>
             </div>
             </c:if>
+            
+			<c:if test="${ not settlementNoteBean.reimbursementNote }">
+            <div class="form-group row">
+            	<div class="col-sm-2 control-label">
+            		<spring:message code="label.SettlementNote.finantialTransactionReference" />
+            	</div>
+           		<div class="col-sm-1">
+            		<select class="form-control" ng-model="object.finantialTransactionReferenceYear">
+            			<c:forEach var="year" items="${settlementNoteBean.finantialTransactionReferenceYears}">
+	            			<option value="${year}"><c:out value="${year}" /></option>
+            			</c:forEach>
+            		</select>
+           		</div>
+            	<div class="col-sm-3">
+	           		<input class="form-control" type="text" ng-model="object.finantialTransactionReference" />
+            	</div>
+            </div>
+            </c:if>
         </div>
     </div>
 
+	<c:if test="${ not settlementNoteBean.reimbursementNote }">
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
@@ -211,6 +233,7 @@ ${portal.angularToolkit()}
                 </thead>
                 <tbody>
                     <c:forEach items="${ settlementNoteBean.debitEntries}" var="debitEntryBean" varStatus="loop">
+                    	<tr>
                         <c:if test="${ debitEntryBean.notValid }">
                             <tr class="alert alert-danger">
                         </c:if>
@@ -222,37 +245,48 @@ ${portal.angularToolkit()}
                         	<span class="glyphicon glyphicon-remove-circle" ng-show="object.debitEntries[${ loop.index }].isNotValid"></span> 
                         	<input class="form-control" ng-model="object.debitEntries[${ loop.index }].isIncluded" type="checkbox" />
                         </td>
-                        <td><c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></td>
-                        <td><c:out value="${ debitEntryBean.debitEntry.description }" /></td>
+                        <td>
+                        	<p><c:out value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></p>
+                        </td>
+                        <td>
+                        	<p><c:out value="${ debitEntryBean.debitEntry.description }" /></p>
+                        	<c:if test="${debitEntryBean.debitEntry.finantialDocument != null}">
+                        	<c:if test="${debitEntryBean.debitEntry.finantialDocument.forPayorDebtAccount}">
+                        		<p>
+                        			<em>
+                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+                        				<span><c:out value="${debitEntryBean.debitEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
+                        				&nbsp;-&nbsp;
+                        				<span><c:out value="${debitEntryBean.debitEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
+                        			</em>
+                        	</c:if>
+                        	</c:if>
+                        </td>
                         <td><c:out value="${ debitEntryBean.documentDueDate }" /></td>
                         <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" /></td>
                         <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmount ) }" /></td>
                         <td><c:out value="${ debitEntryBean.debitEntry.vat.taxRate }" /></td>
-                        <c:if test="${ not settlementNoteBean.reimbursementNote }">
-                            <td>
-                                <div class="input-group col-sm-12">
-                                    <div class=" input-group-addon">
-                                        <c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}" />
-                                    </div>
-                                    <input class="form-control" name="debtAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].debtAmount" type="text"
-                                        ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/"
-                                        value='0.00' />
+                        <td>
+                            <div class="input-group col-sm-12">
+                                <div class=" input-group-addon">
+                                    <c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.symbol}" />
                                 </div>
-                                <p class="alert alert-danger" ng-show="form.debtAmount${ loop.index }.$error.pattern && object.debitEntries[${ loop.index }].isIncluded">
-                                    <spring:message code="error.invalid.format.input" />
-                                </p>
-                            </td>
-                        </c:if>
-                        <c:if test="${ settlementNoteBean.reimbursementNote }">
-                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmount ) }"></c:out></td>
-                        </c:if>
+                                <input class="form-control" name="debtAmount${ loop.index }" ng-model="object.debitEntries[${ loop.index }].debtAmount" type="text"
+                                    ng-disabled="!object.debitEntries[${ loop.index }].isIncluded" ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/"
+                                    value='0.00' />
+                            </div>
+                            <p class="alert alert-danger" ng-show="form.debtAmount${ loop.index }.$error.pattern && object.debitEntries[${ loop.index }].isIncluded">
+                                <spring:message code="error.invalid.format.input" />
+                            </p>
+                        </td>
                         </tr>
                     </c:forEach>
                 </tbody>
             </table>
         </div>
     </div>
-
+	</c:if>
+	
     <div class="panel panel-primary">
         <div class="panel-heading">
             <h3 class="panel-title">
@@ -294,7 +328,20 @@ ${portal.angularToolkit()}
                                     	<input class="form-control" ng-model="object.creditEntries[${ loop.index }].isIncluded" type="checkbox" />
                                     </td>
                                     <td><c:out value="${ creditEntryBean.creditEntry.finantialDocument.uiDocumentNumber }" /></td>
-                                    <td><c:out value="${ creditEntryBean.creditEntry.description }" /></td>
+                                    <td>
+                                    	<p><c:out value="${ creditEntryBean.creditEntry.description }" /></p>
+			                        	<c:if test="${creditEntryBean.creditEntry.finantialDocument != null}">
+			                        	<c:if test="${creditEntryBean.creditEntry.finantialDocument.forPayorDebtAccount}">
+			                        		<p>
+			                        			<em>
+			                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+			                        				<span><c:out value="${creditEntryBean.creditEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
+			                        				&nbsp;-&nbsp;
+			                        				<span><c:out value="${creditEntryBean.creditEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
+			                        			</em>
+			                        	</c:if>
+			                        	</c:if>
+                                    </td>
                                     <td><c:out value="${ creditEntryBean.documentDueDate }" /></td>
                                     <td><c:out value="${ creditEntryBean.creditEntry.vat.taxRate }" /></td>
 
