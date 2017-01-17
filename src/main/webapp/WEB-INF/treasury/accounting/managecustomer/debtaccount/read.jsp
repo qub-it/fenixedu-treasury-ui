@@ -139,9 +139,11 @@ ${portal.angularToolkit()}
                     class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.forwardPayment" /></a></li>
 
 			<% } %>
-
+			
+			<%-- 
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createreimbursement"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createReimbursement" /></a></li>
+			--%>                    
         </ul>
     </div>
     <%
