@@ -742,14 +742,19 @@ public class SettlementNoteController extends TreasuryBaseController {
             } catch (Exception ex) {
             }
 
-            final ERPExportOperation output = ERPExporterManager.exportSingleDocument(settlementNote);
-            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
+            final ERPExportOperation output = ERPExporterManager.exportSettlementNote(settlementNote);
+            if(output == null) {
+                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                return read(settlementNote, model);
+            }
 
+            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error")
                     + ex.getLocalizedMessage(), model);
         }
+        
         return read(settlementNote, model);
     }
 

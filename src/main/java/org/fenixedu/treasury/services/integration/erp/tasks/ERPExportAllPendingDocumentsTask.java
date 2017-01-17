@@ -109,19 +109,14 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                 return result;
             }
 
-            final Set<FinantialDocument> pendingDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet()
+            final List<FinantialDocument> sortedDocuments = ERPExporterManager
+                    .filterDocumentsToExport(finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream())
                     .stream()
-                    .filter(x -> !x.isCreditNote())
-                    .filter(x -> x.isAnnulled() || x.isClosed())
                     .filter(x -> x.isSettlementNote() == exportSettlementNotes)
-                    .collect(Collectors.toSet());
-
-            final List<FinantialDocument> sortedDocuments = pendingDocuments.stream()
-                    .sorted(ERPExporterManager.COMPARE_BY_DOCUMENT_TYPE)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.<FinantialDocument> toList());
 
             int count = 0;
-            if (pendingDocuments.isEmpty() == false) {
+            if (sortedDocuments.isEmpty() == false) {
 
                 if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
                     while (sortedDocuments.isEmpty() == false) {
@@ -139,7 +134,9 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                         //Create a ExportOperation
                         ERPExportOperation exportFinantialDocumentToIntegration = ERPExporterManager.exportSingleDocument(doc);
 
-                        result.add(exportFinantialDocumentToIntegration);
+                        if (exportFinantialDocumentToIntegration != null) {
+                            result.add(exportFinantialDocumentToIntegration);
+                        }
                     }
                 } else {
 //                    final IERPExporter erpExporter = finantialInstitution.getErpIntegrationConfiguration()

@@ -443,6 +443,11 @@ public class CreditNoteController extends TreasuryBaseController {
 
             final ERPExportOperation output = ERPExporterManager.exportSingleDocument(creditNote);
 
+            if(output == null) {
+                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                return read(creditNote, model);
+            }
+            
             addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {

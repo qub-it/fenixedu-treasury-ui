@@ -183,11 +183,12 @@ ${portal.angularToolkit()}
                         code="label.AdhocCustomer.fiscalNumber" />
                 </div>
 
-                <input id="adhocCustomer_fiscalNumber"
-                    class="form-control" type="text"
-                    ng-model="object.fiscalNumber"
-                    name="fiscalnumber"
-                    value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' readonly="readonly" />
+                <div class="col-sm-10">
+	                <input id="adhocCustomer_fiscalNumber"
+	                    class="form-control" type="text"
+	                    ng-model="object.fiscalNumber"
+	                    name="fiscalnumber"
+	                    value='<c:out value='${not empty param.fiscalnumber ? param.fiscalnumber : adhocCustomer.fiscalNumber }'/>' readonly="readonly" />
                 </div>
             </div>
             <div class="form-group row">

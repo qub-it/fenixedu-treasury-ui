@@ -633,11 +633,19 @@ public class DebitNoteController extends TreasuryBaseController {
             }
 
             final ERPExportOperation output = ERPExporterManager.exportSingleDocument(debitNote);
+
+            if(output == null) {
+                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                setDebitNote(debitNote, model);
+                return read(debitNote, model, redirectAttributes);
+            }
+            
             addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
+        
         setDebitNote(debitNote, model);
         return read(debitNote, model, redirectAttributes);
     }

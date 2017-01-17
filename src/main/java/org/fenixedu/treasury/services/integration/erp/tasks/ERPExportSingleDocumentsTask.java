@@ -52,6 +52,10 @@ public class ERPExportSingleDocumentsTask extends CronTask {
         try {
             final ERPExportOperation exportOperation = ERPExporterManager.exportSingleDocument(document);
             
+            if(exportOperation == null) {
+                return;
+            }
+            
             taskLog(String.format("Exported document: %s => %s", document.getUiDocumentNumber(),
                     (exportOperation.getSuccess() ? "OK" : "NOK")));
         } catch (final Exception ex) {

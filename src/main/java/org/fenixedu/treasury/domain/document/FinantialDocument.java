@@ -282,7 +282,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
         }
 
-        ERPExporterManager.scheduleSingleDocument(this);
+        if(getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration().getActive()) {
+            ERPExporterManager.scheduleSingleDocument(this);
+        }
     }
 
     @Atomic

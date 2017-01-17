@@ -1870,11 +1870,6 @@ public class SAPExporter implements IERPExporter {
     @Override
     @Atomic(mode = TxMode.WRITE)
     public ReimbursementStateBean checkReimbursementState(final SettlementNote reimbursementNote) {
-        if (true) {
-            return new ReimbursementStateBean(reimbursementNote, ReimbursementProcessStatusType.findUniqueByCode("ANNULED").get(),
-                    "2016", new DateTime(), true);
-        }
-
         final FinantialInstitution institution = reimbursementNote.getDebtAccount().getFinantialInstitution();
 
         final ERPConfiguration erpIntegrationConfiguration = institution.getErpIntegrationConfiguration();

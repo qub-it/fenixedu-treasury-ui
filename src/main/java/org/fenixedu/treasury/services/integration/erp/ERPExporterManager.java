@@ -3,23 +3,28 @@ package org.fenixedu.treasury.services.integration.erp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessStateLog;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation.ReimbursementStateBean;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -71,11 +76,8 @@ public class ERPExporterManager {
             return Lists.newArrayList();
         }
 
-        final List<FinantialDocument> sortedDocuments = finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream()
-                .filter(x -> !x.isCreditNote())
-                .filter(x -> x.isAnnulled() || x.isClosed())
-                .collect(Collectors.toSet()).stream()
-                .sorted(COMPARE_BY_DOCUMENT_TYPE).collect(Collectors.toList());
+        final List<FinantialDocument> sortedDocuments =
+                filterDocumentsToExport(finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream());
 
         if (sortedDocuments.isEmpty()) {
             return Lists.newArrayList();
@@ -101,23 +103,24 @@ public class ERPExporterManager {
         return Lists.newArrayList();
     }
 
+    private static final int LIMIT = 200;
+    
     public static List<ERPExportOperation> exportPendingDocumentsForDebtAccount(final DebtAccount debtAccount) {
         final FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
 
-        final List<FinantialDocument> sortedDocuments = debtAccount.getFinantialDocumentsSet().stream()
-                .filter(d -> d.isDocumentSeriesNumberSet())
-                .filter(d -> !d.isCreditNote())
-                .filter(d -> d.isDocumentToExport())
-                .filter(d -> d.isAnnulled() || d.isClosed())
-                .sorted(COMPARE_BY_DOCUMENT_TYPE).collect(Collectors.toList());
-        
+        final List<FinantialDocument> sortedDocuments = filterDocumentsToExport(debtAccount.getFinantialDocumentsSet().stream());
+
+        if (sortedDocuments.isEmpty()) {
+            return Lists.newArrayList();
+        }
 
         final IERPExporter erpExporter = debtAccount.getFinantialInstitution().getErpIntegrationConfiguration()
                 .getERPExternalServiceImplementation().getERPExporter();
 
         if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
             final List<ERPExportOperation> result = Lists.newArrayList();
-
+            
+            int i = 0;
             while (!sortedDocuments.isEmpty()) {
                 final FinantialDocument doc = sortedDocuments.iterator().next();
 
@@ -126,15 +129,20 @@ public class ERPExporterManager {
 
                 result.add(
                         erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc)));
+                
+                /* For now limit to 200 finantial documents */
+                if(++i >= LIMIT) {
+                    System.out.println("ERPExporterManager: Limit " + LIMIT + " finantial documents.");
+                    break;
+                }
             }
 
             return result;
         }
-        
+
         return Lists.newArrayList();
     }
 
-    
     public static void scheduleSingleDocument(final FinantialDocument finantialDocument) {
         if (finantialDocument.isCreditNote()) {
             return;
@@ -159,17 +167,62 @@ public class ERPExporterManager {
     }
 
     public static ERPExportOperation exportSingleDocument(final FinantialDocument finantialDocument) {
-        if (finantialDocument.isCreditNote()) {
-            throw new TreasuryDomainException("error.ERPExporterManager.scheduleSingleDocument.creditNote.disabled");
+        final List<FinantialDocument> documentsToExport =
+                filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
+
+        if (documentsToExport.isEmpty()) {
+            return null;
         }
 
         final FinantialInstitution finantialInstitution = finantialDocument.getDebtAccount().getFinantialInstitution();
         final ERPConfiguration erpIntegrationConfiguration = finantialInstitution.getErpIntegrationConfiguration();
 
-        final List<FinantialDocument> documentsToExport = Collections.singletonList(finantialDocument);
         final IERPExporter erpExporter = erpIntegrationConfiguration.getERPExternalServiceImplementation().getERPExporter();
 
         return erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, documentsToExport);
+    }
+
+    public static ERPExportOperation exportSettlementNote(final SettlementNote settlementNote) {
+        List<FinantialDocument> documentsToExport = filterDocumentsToExport(Collections.singletonList(settlementNote).stream());
+        
+        if (documentsToExport.isEmpty()) {
+            return null;
+        }
+
+        for (final SettlementEntry settlementEntry : settlementNote.getSettlemetEntriesSet()) {
+            if(settlementEntry.getInvoiceEntry().isDebitNoteEntry()) {
+                documentsToExport.add(settlementEntry.getInvoiceEntry().getFinantialDocument());
+            }
+        }
+        
+        documentsToExport = filterDocumentsToExport(documentsToExport.stream());
+        
+        final FinantialInstitution finantialInstitution = settlementNote.getDebtAccount().getFinantialInstitution();
+        final ERPConfiguration erpIntegrationConfiguration = finantialInstitution.getErpIntegrationConfiguration();
+
+        final IERPExporter erpExporter = erpIntegrationConfiguration.getERPExternalServiceImplementation().getERPExporter();
+
+        if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
+
+            ERPExportOperation settlementExportOperation = null;
+            
+            while (!documentsToExport.isEmpty()) {
+                final FinantialDocument doc = documentsToExport.iterator().next();
+
+                //remove the related documents from the original Set
+                documentsToExport.remove(doc);
+
+                ERPExportOperation exportOperation = erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc));
+                if(settlementNote == doc) {
+                    settlementExportOperation = exportOperation;
+                }
+            }
+
+            return settlementExportOperation;
+        } else {
+            // Review
+            return null;
+        }
     }
 
     public static void requestPendingDocumentStatus(FinantialInstitution finantialInstitution) {
@@ -230,5 +283,19 @@ public class ERPExporterManager {
         reimbursementNote.processReimbursementStateChange(reimbursementStateBean.getReimbursementProcessStatus(),
                 reimbursementStateBean.getExerciseYear(), reimbursementStateBean.getReimbursementStateDate());
     }
+
+    // @formatter:off
+    public static List<FinantialDocument> filterDocumentsToExport(
+            final Stream<? extends FinantialDocument> finantialDocumentsStream) {
+        return finantialDocumentsStream
+                .filter(d -> d.isDocumentToExport())
+                .filter(d -> !d.isCreditNote())
+                .filter(d -> d.isAnnulled() || d.isClosed())
+                .filter(d -> d.isDocumentSeriesNumberSet())
+                .filter(x -> x.getCloseDate() != null)
+                .filter(x -> x.isDebitNote() || (x.isSettlementNote() && !x.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)))
+                .sorted(COMPARE_BY_DOCUMENT_TYPE).collect(Collectors.<FinantialDocument> toList());
+    }
+    // @formatter:on
 
 }
