@@ -187,7 +187,7 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
         } catch (final ServerSOAPFaultException e) {
             e.printStackTrace();
             throw new TreasuryDomainException(e,
-                    "error.IERPExternalService.getCertifiedDocumentPrinted.unable.to.retrieve.document");
+                    "error.IERPExternalService.getCertifiedDocumentPrinted.unable.to.retrieve.document", e.getMessage());
         }
 
     }
