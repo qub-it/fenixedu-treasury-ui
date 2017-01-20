@@ -4,6 +4,7 @@ import static org.fenixedu.treasury.util.Constants.bundle;
 import static org.fenixedu.treasury.util.Constants.isEqual;
 import static org.fenixedu.treasury.util.Constants.isGreaterOrEqualThan;
 import static org.fenixedu.treasury.util.Constants.isPositive;
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -150,8 +151,12 @@ public class BalanceTransferService {
                 final BigDecimal availableCreditAmount = debitEntry.getAvailableAmountForCredit();
 
                 if (isGreaterOrEqualThan(availableCreditAmount, openAmount)) {
+
+                    final BigDecimal openAmountWithoutVat = debitEntry.getCurrency().getValueWithScale(
+                            Constants.divide(openAmount, BigDecimal.ONE.add(rationalRatRate(debitEntry))));
                     final CreditEntry newCreditEntry =
-                            debitEntry.createCreditEntry(now, debitEntry.getDescription(), null, openAmount, null, null);
+                            debitEntry.createCreditEntry(now, debitEntry.getDescription(), null, openAmountWithoutVat, null, null);
+
                     newCreditEntry.getFinantialDocument().closeDocument();
 
                     SettlementEntry.create(debitEntry, settlementNote, openAmount, debitEntry.getDescription(), now, false);
@@ -199,7 +204,7 @@ public class BalanceTransferService {
 
     private DebitEntry createDestinyDebitEntry(final DebitNote destinyDebitNote, final DebitEntry debitEntry) {
         final BigDecimal openAmountWithoutVat =
-                Constants.divide(debitEntry.getOpenAmount(), BigDecimal.ONE.add(debitEntry.getVatRate()));
+                Constants.divide(debitEntry.getOpenAmount(), BigDecimal.ONE.add(rationalRatRate(debitEntry)));
 
         final DebitEntry newDebitEntry = DebitEntry.create(Optional.of(destinyDebitNote), destinyDebtAccount,
                 debitEntry.getTreasuryEvent(), debitEntry.getVat(), openAmountWithoutVat, debitEntry.getDueDate(),

@@ -389,7 +389,13 @@ if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
                     </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.documentNumber" /></th>
-                        <td><c:out value='${creditNote.uiDocumentNumber}' /></td>
+                        <td>
+                        	<c:out value='${creditNote.uiDocumentNumber}' />
+                        	&nbsp;
+                        	<c:if test="${creditNote.advancePayment}">
+                        		<span class="label label-info"><spring:message code="label.AdvancedPaymentCreditNote.description" /></span>
+                        	</c:if>
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.documentDate" /></th>

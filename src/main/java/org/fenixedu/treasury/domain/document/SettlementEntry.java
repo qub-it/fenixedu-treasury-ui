@@ -112,6 +112,10 @@ public class SettlementEntry extends SettlementEntry_Base {
         if (getInvoiceEntry().isCreditNoteEntry() && !Constants.isEqual(getAmount(), getTotalAmount())) {
             throw new TreasuryDomainException("error.SettlementEntry.creditNoteEntry.total.amount.not.equal");
         }
+        
+        if (!Constants.isPositive(getAmount())) {
+            throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.less.than.zero");
+        }
     }
 
     public static Stream<SettlementEntry> findAll() {

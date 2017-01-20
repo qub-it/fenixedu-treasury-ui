@@ -58,6 +58,7 @@ import com.google.common.collect.Maps;
 
 import pt.ist.fenixframework.Atomic;
 import static org.fenixedu.treasury.util.Constants.isPositive;
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
 public class DebitNote extends DebitNote_Base {
 
@@ -334,23 +335,31 @@ public class DebitNote extends DebitNote_Base {
             final boolean createForInterestRateEntries) {
         for (DebitEntry entry : this.getDebitEntriesSet()) {
             //Get the amount for credit without tax, and considering the credit quantity FOR ONE
-            final BigDecimal amountForCredit =
-                    entry.getCurrency().getValueWithScale(Constants.divide(entry.getAvailableAmountForCredit(),
-                            BigDecimal.ONE.add(Constants.divide(entry.getVatRate(), BigDecimal.valueOf(100)))));
-            entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCredit, null, null);
+            final BigDecimal amountForCreditWithoutVat = entry.getCurrency().getValueWithScale(
+                    Constants.divide(entry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(entry))));
+
+            if (Constants.isZero(amountForCreditWithoutVat) && entry.getTreasuryExemption() != null && Constants.isZero(entry.getAmount())) {
+                continue;
+            }
+
+            entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCreditWithoutVat, null, null);
         }
 
         if (!createForInterestRateEntries) {
             return;
         }
 
-        for (final DebitEntry entry : this.getDebitEntriesSet()) {
-            for (DebitEntry interestEntry : entry.getInterestDebitEntriesSet()) {
-                final BigDecimal amountForCredit = interestEntry.getCurrency()
-                        .getValueWithScale(Constants.divide(interestEntry.getAvailableAmountForCredit(),
-                                BigDecimal.ONE.add(Constants.divide(entry.getVatRate(), BigDecimal.valueOf(100)))));
-                interestEntry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCredit,
-                        null, null);
+        for (final DebitEntry debitEntry : this.getDebitEntriesSet()) {
+            for (DebitEntry interestEntry : debitEntry.getInterestDebitEntriesSet()) {
+                final BigDecimal amountForCreditWithoutVat = interestEntry.getCurrency().getValueWithScale(Constants
+                        .divide(interestEntry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(interestEntry))));
+
+                if (Constants.isZero(amountForCreditWithoutVat) && interestEntry.getTreasuryExemption() != null && Constants.isZero(interestEntry.getAmount())) {
+                    continue;
+                }
+
+                interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(), documentObservations, amountForCreditWithoutVat, null,
+                        null);
             }
         }
     }
@@ -371,6 +380,15 @@ public class DebitNote extends DebitNote_Base {
 
         if (getPayorDebtAccount() == payorDebtAccount) {
             throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.payor.not.changed");
+        }
+        
+        if(isClosed()) {
+            // Check if debit entries has settlement entries
+            for (final DebitEntry debitEntry : this.getDebitEntriesSet()) {
+                if(debitEntry.getSettlementEntriesSet().stream().filter(s -> !s.isAnnulled()).count() > 0) {
+                    throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.debit.entries.has.settlements");
+                }
+            }
         }
 
         final DebitNote updatingDebitNote = isPreparing() ? this : anullAndCopyDebitNote(
@@ -450,17 +468,16 @@ public class DebitNote extends DebitNote_Base {
         final Product balanceTransferProduct = TreasurySettings.getInstance().getTransferBalanceProduct();
         final Vat transferVat = Vat.findActiveUnique(balanceTransferProduct.getVatType(), finantialInstitution, entryDate).get();
 
-        if(Strings.isNullOrEmpty(entryDescription)) {
+        if (Strings.isNullOrEmpty(entryDescription)) {
             entryDescription = balanceTransferProduct.getName().getContent();
         }
-        
+
         final DebitNote debitNote = DebitNote.create(debtAccount, payorDebtAccount, numberSeries, new DateTime(),
                 new DateTime().toLocalDate(), originNumber);
 
         final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
         return DebitEntry.create(Optional.of(debitNote), debtAccount, null, transferVat, amountWithoutVat, dueDate,
-                Maps.newHashMap(), balanceTransferProduct, entryDescription, BigDecimal.ONE, null,
-                entryDate);
+                Maps.newHashMap(), balanceTransferProduct, entryDescription, BigDecimal.ONE, null, entryDate);
     }
 
 }

@@ -35,6 +35,7 @@ import java.util.Locale;
 import org.fenixedu.bennu.FenixeduTreasurySpringConfiguration;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -134,6 +135,10 @@ public class Constants {
         return a.divide(b, SCALE, RoundingMode.HALF_EVEN);
     }
 
+    public static BigDecimal rationalRatRate(final InvoiceEntry entry) {
+        return divide(entry.getVatRate(), BigDecimal.valueOf(100));
+    }
+    
     // @formatter:off
     /**************
      * DATE UTILS *

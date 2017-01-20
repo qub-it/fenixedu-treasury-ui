@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.Constants.divide;
 import static org.fenixedu.treasury.util.Constants.isPositive;
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -68,23 +69,23 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
-    
+
     public static final Comparator<InvoiceEntry> COMPARE_BY_AMOUNT_AND_DUE_DATE = new Comparator<InvoiceEntry>() {
 
         @Override
         public int compare(final InvoiceEntry o1, final InvoiceEntry o2) {
-            int c = - o1.getOpenAmount().compareTo(o2.getOpenAmount());
-            
-            if(c != 0) {
+            int c = -o1.getOpenAmount().compareTo(o2.getOpenAmount());
+
+            if (c != 0) {
                 return c;
             }
-            
+
             c = o1.getDueDate().compareTo(o2.getDueDate());
-            
-            if(c != 0) {
+
+            if (c != 0) {
                 return c;
             }
-            
+
             return o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
@@ -94,7 +95,8 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         super.checkForDeletionBlockers(blockers);
 
         if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
-            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.invoiceentry.cannot.be.deleted.document.is.not.preparing"));
+            blockers.add(
+                    BundleUtil.getString(Constants.BUNDLE, "error.invoiceentry.cannot.be.deleted.document.is.not.preparing"));
         }
 
         if (!getSettlementEntriesSet().isEmpty()) {
@@ -198,11 +200,9 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     protected boolean checkAmountValues() {
         if (getNetAmount() != null && getVatAmount() != null && getAmountWithVat() != null) {
             BigDecimal netAmount = getCurrency().getValueWithScale(getQuantity().multiply(getAmount()));
-            BigDecimal vatAmount =
-                    getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate().divide(BigDecimal.valueOf(100))));
+            BigDecimal vatAmount = getCurrency().getValueWithScale(getNetAmount().multiply(rationalRatRate(this)));
             BigDecimal amountWithVat =
-                    getCurrency().getValueWithScale(
-                            getNetAmount().multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100)))));
+                    getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this))));
 
             //Compare the re-calculated values with the original ones
             return netAmount.compareTo(getNetAmount()) == 0 && vatAmount.compareTo(getVatAmount()) == 0
@@ -217,9 +217,8 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             this.setVatRate(super.getVat().getTaxRate());
         }
         setNetAmount(getCurrency().getValueWithScale(getQuantity().multiply(getAmount())));
-        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(getVatRate().divide(BigDecimal.valueOf(100)))));
-        setAmountWithVat(getCurrency().getValueWithScale(
-                getNetAmount().multiply(BigDecimal.ONE.add(getVatRate().divide(BigDecimal.valueOf(100))))));
+        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(rationalRatRate(this))));
+        setAmountWithVat(getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this)))));
     }
 
     public static Stream<? extends InvoiceEntry> findAll() {
@@ -232,7 +231,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         }
         return this.getOpenAmount().compareTo(BigDecimal.ZERO) != 0;
     }
-    
+
     public boolean hasPreparingSettlementEntries() {
         return getSettlementEntriesSet().stream().anyMatch(se -> se.getFinantialDocument().isPreparing());
     }
@@ -251,7 +250,7 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
         }
         return amount;
     }
-    
+
     public BigDecimal getOpenAmount() {
         if (isAnnulled()) {
             return BigDecimal.ZERO;
@@ -265,17 +264,17 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     public abstract BigDecimal getOpenAmountWithInterests();
 
     public abstract LocalDate getDueDate();
-    
+
     // @formatter:off
     /* *********************
      * ERP INTEGRATION UTILS
      * *********************
      */
     // @formatter:on
-    
+
     public BigDecimal openAmountAtDate(final DateTime when) {
         final Currency currency = getDebtAccount().getFinantialInstitution().getCurrency();
-        
+
         if (isAnnulled()) {
             return BigDecimal.ZERO;
         }
@@ -284,20 +283,20 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
         return currency.getValueWithScale(isPositive(openAmount) ? openAmount : BigDecimal.ZERO);
     }
-    
+
     public BigDecimal payedAmountAtDate(final DateTime when) {
         BigDecimal amount = BigDecimal.ZERO;
         for (final SettlementEntry entry : getSettlementEntriesSet()) {
-            if(entry.getEntryDateTime().isAfter(when)) {
+            if (entry.getEntryDateTime().isAfter(when)) {
                 continue;
             }
-            
+
             if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isClosed()) {
                 amount = amount.add(entry.getTotalAmount());
             }
         }
-        
+
         return amount;
     }
-    
+
 }

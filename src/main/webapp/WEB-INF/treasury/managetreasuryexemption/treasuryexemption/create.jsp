@@ -56,8 +56,7 @@ ${portal.angularToolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message
-            code="label.manageTreasuryExemption.createTreasuryExemption" />
+        <spring:message code="label.manageTreasuryExemption.createTreasuryExemption" />
         <small></small>
     </h1>
 </div>
@@ -70,6 +69,45 @@ ${portal.angularToolkit()}
         <spring:message code="label.event.back" />
     </a> &nbsp;
 </div>
+
+
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            <spring:message code="label.details" />
+        </h3>
+    </div>
+    <div class="panel-body">
+		<table class="table">
+		    <tbody>
+		        <c:if test='${ debtAccount.getClosed() }'>
+		            <tr>
+		                <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.closed" /></th>
+		                <td><span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span></td>
+		            </tr>
+		        </c:if>
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
+		            <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
+		        </tr>
+		
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+		            <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
+		        </tr>
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
+		            <td><c:out value='${debtAccount.finantialInstitution.name}' /></td>
+		        </tr>
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.TreasuryEvent.description" /></th>
+		            <td><c:out value='${treasuryEvent.description.content}' /></td>
+		        </tr>
+		    </tbody>
+		</table>
+    </div>
+</div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
@@ -167,19 +205,17 @@ ${portal.angularToolkit()}
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.TreasuryExemption.debitEntry" />
+                    <spring:message code="label.TreasuryExemption.debitEntry" />
                 </div>
                 <div class="col-sm-10">
                     <ui-select id="treasuryExemption_debitEntry"
                         ng-model="$parent.object.debitEntry"
                         theme="bootstrap" on-select="onChange($model)"
                         style="width:100%" ng-disabled="disabled">
-                    <ui-select-match>{{$select.selected.text}}</ui-select-match>
-                    <ui-select-choices
-                        repeat="debitEntry.id as debitEntry in object.debitEntries| filter: $select.search">
-                    <span
-                        ng-bind-html="debitEntry.text | highlight: $select.search"></span>
+	                    <ui-select-match>{{$select.selected.text}}</ui-select-match>
+	                    <ui-select-choices
+	                        repeat="debitEntry.id as debitEntry in object.debitEntries| filter: $select.search">
+	                    <span ng-bind-html="debitEntry.text | highlight: $select.search"></span>
                     </ui-select-choices> </ui-select>
                 </div>
             </div>
@@ -189,9 +225,8 @@ ${portal.angularToolkit()}
                         code="label.TreasuryExemption.valueToExempt" />
                 </div>
                 <div class="input-group col-sm-4" style="padding-right: 15px; padding-left: 15px;">
-                    <div class=" input-group-addon">
-                        <c:out
-                            value="${treasuryEvent.debtAccount.finantialInstitution.currency.symbol}" />
+                    <div class="input-group-addon">
+                        <c:out value="${debtAccount.finantialInstitution.currency.symbol}" />
                     </div>
                     <input id="treasuryExemption_valueToExempt"
                         class="form-control"

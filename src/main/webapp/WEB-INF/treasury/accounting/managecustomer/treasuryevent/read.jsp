@@ -176,7 +176,7 @@ ${portal.toolkit()}
                 </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
-                        <td><c:out value='${debtAccount.customer.fiscalNumber}' /></td>
+                        <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
                     </tr>
 
                     <tr>
@@ -207,14 +207,6 @@ ${portal.toolkit()}
                         </th>
                         <td>
                         	<joda:format value="${treasuryEvent.treasuryEventDate}" style="S-" />
-                        </td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3">
-                        	Nome do aluno
-                        </th>
-                        <td>
-                        	<c:out value="${treasuryEvent.person.name}" />
                         </td>
                     </tr>
                </tbody>

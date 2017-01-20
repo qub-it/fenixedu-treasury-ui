@@ -67,6 +67,8 @@ import com.google.gson.reflect.TypeToken;
 
 import pt.ist.fenixframework.Atomic;
 
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+
 public class DebitEntry extends DebitEntry_Base {
 
     public static final Comparator<DebitEntry> COMPARE_BY_OPEN_AMOUNT_WITH_VAT = new Comparator<DebitEntry>() {
@@ -388,7 +390,7 @@ public class DebitEntry extends DebitEntry_Base {
             throw new RuntimeException("error.DebitEntry.is.event.annuled.cannot.be.exempted");
         }
 
-        final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(getVatRate()));
+        final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(rationalRatRate(this)));
 
         if (isProcessedInClosedDebitNote()) {
             // If there is at least one credit entry then skip...
@@ -430,7 +432,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public CreditEntry createCreditEntry(final DateTime documentDate, final String description, final String documentObservations,
-            final BigDecimal amountForCredit, final TreasuryExemption treasuryExemption, CreditNote creditNote) {
+            final BigDecimal amountForCreditWithoutVat, final TreasuryExemption treasuryExemption, CreditNote creditNote) {
         final DebitNote finantialDocument = (DebitNote) this.getFinantialDocument();
 
         if (finantialDocument == null) {
@@ -449,15 +451,15 @@ public class DebitEntry extends DebitEntry_Base {
             creditNote.setDocumentObservations(documentObservations);
         }
 
-        if (!Constants.isPositive(amountForCredit)) {
+        if (!Constants.isPositive(amountForCreditWithoutVat)) {
             throw new TreasuryDomainException("error.DebitEntry.createCreditEntry.amountForCredit.not.positive");
         }
 
         if (treasuryExemption != null) {
-            return CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountForCredit, new DateTime(),
+            return CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountForCreditWithoutVat, new DateTime(),
                     this);
         } else {
-            return CreditEntry.create(creditNote, description, getProduct(), getVat(), amountForCredit, documentDate, this,
+            return CreditEntry.create(creditNote, description, getProduct(), getVat(), amountForCreditWithoutVat, documentDate, this,
                     BigDecimal.ONE);
         }
     }

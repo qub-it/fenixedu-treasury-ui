@@ -44,6 +44,9 @@ import org.joda.time.LocalDate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.Constants.divide;
+
 public class CreditEntry extends CreditEntry_Base {
 
     protected CreditEntry(final FinantialDocument finantialDocument, final Product product, final Vat vat,
@@ -75,7 +78,7 @@ public class CreditEntry extends CreditEntry_Base {
         recalculateAmountValues();
 
         checkRules();
-        
+
         // Ensure this credit entry is only one in credit note
         if (getFinantialDocument().getFinantialDocumentEntriesSet().size() != 1) {
             throw new TreasuryDomainException("error.CreditEntry.finantialDocument.with.unexpected.entries");
@@ -206,22 +209,22 @@ public class CreditEntry extends CreditEntry_Base {
 
         final Currency currency = getDebtAccount().getFinantialInstitution().getCurrency();
 
-        final BigDecimal remainingAmountWithoutVatDividedByQuantity = currency.getValueWithScale(Constants
-                .divide(Constants.defaultScale(remainingAmount).multiply(BigDecimal.ONE.subtract(getVatRate())), getQuantity()));
+        final BigDecimal remainingAmountWithoutVatDividedByQuantity = currency
+                .getValueWithScale(divide(divide(remainingAmount, BigDecimal.ONE.add(rationalRatRate(this))), getQuantity()));
 
         final CreditNote newCreditNote = CreditNote.create(this.getDebtAccount(),
                 getFinantialDocument().getDocumentNumberSeries(), getFinantialDocument().getDocumentDate(),
                 ((CreditNote) getFinantialDocument()).getDebitNote(), getFinantialDocument().getOriginDocumentNumber());
         newCreditNote.setDocumentObservations(getFinantialDocument().getDocumentObservations());
 
-        final BigDecimal newOpenAmountWithoutVatDividedByQuantity = Constants
-                .divide(Constants.defaultScale(getOpenAmount()).multiply(BigDecimal.ONE.subtract(getVatRate())), getQuantity());
+        final BigDecimal newOpenAmountWithoutVatDividedByQuantity =
+                divide(divide(getOpenAmount(), BigDecimal.ONE.add(rationalRatRate(this))), getQuantity());
 
         setAmount(newOpenAmountWithoutVatDividedByQuantity.subtract(remainingAmountWithoutVatDividedByQuantity));
         recalculateAmountValues();
 
         final CreditEntry newCreditEntry = CreditEntry.create(newCreditNote, getDescription(), getProduct(), getVat(),
-                remainingAmountWithoutVatDividedByQuantity, getEntryDateTime(), getDebitEntry(), BigDecimal.ONE);
+                remainingAmountWithoutVatDividedByQuantity, getEntryDateTime(), getDebitEntry(), getQuantity());
         newCreditEntry.setFromExemption(isFromExemption());
 
         return newCreditEntry;

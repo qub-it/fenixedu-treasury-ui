@@ -128,31 +128,29 @@ ${portal.toolkit()}
         </h3>
     </div>
     <div class="panel-body">
-        <form method="post" class="form-horizontal">
-            <table class="table">
-                <tbody>
-                    <c:if test='${ debtAccount.getClosed() }'>
-                        <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.closed" /></th>
-                            <td><span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span></td>
-                        </tr>
-                    </c:if>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
-                        <td><c:out value='${debtAccount.customer.fiscalNumber}' /></td>
-                    </tr>
-
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
-                        <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
-                        <td><c:out value='${debtAccount.finantialInstitution.name}' /></td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
+		<table class="table">
+		    <tbody>
+		        <c:if test='${ debtAccount.getClosed() }'>
+		            <tr>
+		                <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.closed" /></th>
+		                <td><span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span></td>
+		            </tr>
+		        </c:if>
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
+		            <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
+		        </tr>
+		
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+		            <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
+		        </tr>
+		        <tr>
+		            <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
+		            <td><c:out value='${debtAccount.finantialInstitution.name}' /></td>
+		        </tr>
+		    </tbody>
+		</table>
     </div>
 </div>
 

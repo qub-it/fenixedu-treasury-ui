@@ -100,7 +100,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         return super.getExemptByPercentage();
     }
 
-    public BigDecimal getExemptedAmount(final TreasuryEvent treasuryEvent) {
+    public BigDecimal getExemptedAmount() {
         if (isExemptByPercentage()) {
             throw new TreasuryDomainException("error.TreasuryExemption.exempted.by.percentage.not.supported");
         }

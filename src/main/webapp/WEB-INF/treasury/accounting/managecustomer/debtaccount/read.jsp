@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
@@ -818,27 +820,58 @@ ${portal.angularToolkit()}
                             </c:if>
                                     
                         </datatables:column>
-                        <datatables:column>
+                        <datatables:column cssStyle="width:700px">
                             <datatables:columnHead>
                                 <spring:message code="label.SettlementNote.settlementEntries" />
                             </datatables:columnHead>
-                            <ul>
+                            <table class="table table-bordered table-hover" style="background-color: white;">
                                 <c:forEach var="settlementEntry" items="${payment.settlemetEntriesSet}">
-                                    <c:if test="${settlementEntry.invoiceEntry.isDebitNoteEntry() }">
-                                        <li><c:out value="[ ${payment.currency.getValueFor(settlementEntry.amount)} ] ${settlementEntry.description}" /></li>
-                                    </c:if>
-                                    <c:if test="${settlementEntry.invoiceEntry.isCreditNoteEntry() }">
-                                        <li><c:out value="[ -${payment.currency.getValueFor(settlementEntry.amount)} ] ${settlementEntry.description}    " /></li>
-                                    </c:if>
+									<tr class="row">
+										<td class="col-xs-2" >
+											<c:if test="${settlementEntry.invoiceEntry.finantialDocument.debitNote}">
+												<a href="<%= DebitNoteController.READ_URL %>${settlementEntry.invoiceEntry.finantialDocument.externalId}">
+													<c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+												</a>
+											</c:if>
+											<c:if test="${settlementEntry.invoiceEntry.finantialDocument.creditNote}">
+												<a href="<%= CreditNoteController.READ_URL %>${settlementEntry.invoiceEntry.finantialDocument.externalId}">
+													<c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+												</a>
+											</c:if>
+										</td>
+										<td class="col-xs-8" >
+											<c:out value="${settlementEntry.description}" />
+										</td>
+										<td class="col-xs-2" style="text-align: right">
+		                                    <c:if test="${settlementEntry.invoiceEntry.isCreditNoteEntry() }">
+		                                   		<span>-</span>
+		                                   	</c:if>
+											<c:out value="${payment.currency.getValueFor(settlementEntry.amount)}" />
+										</td>
+                                    </tr>
                                 </c:forEach>
-                                <c:if test='${not empty payment.advancedPaymentCreditNote }'>
-                                    <c:forEach var="advancedPaymentEntry" items="${payment.advancedPaymentCreditNote.creditEntriesSet}">
-                                        <li><c:out value="[ -${payment.currency.getValueFor(advancedPaymentEntry.amount)} ] ${advancedPaymentEntry.description}    " /></li>
-                                    </c:forEach>
-                                </c:if>
-                            </ul>
+                            </table>
+                            <c:if test='${not empty payment.advancedPaymentCreditNote }'>
+	                            <table class="table table-bordered table-hover" style="background-color: white;">
+	                                <c:forEach var="advancedPaymentEntry" items="${payment.advancedPaymentCreditNote.creditEntriesSet}">
+										<tr class="row">
+											<td class="col-xs-2" >
+												<a href="<%= CreditNoteController.READ_URL %>${advancedPaymentEntry.finantialDocument.externalId}">
+													<c:out value="${advancedPaymentEntry.finantialDocument.uiDocumentNumber}" />
+												</a>
+											</td>
+											<td class="col-xs-8" >
+												<c:out value="${advancedPaymentEntry.description}" />
+											</td>
+											<td class="col-xs-2" style="text-align: right">
+												<c:out value="${payment.currency.getValueFor(advancedPaymentEntry.amount)}" />
+											</td>
+	                                    </tr>
+	                                </c:forEach>
+	                            </table>
+                            </c:if>
                         </datatables:column>
-                        <datatables:column>
+                        <datatables:column >
                             <datatables:columnHead>
                                 <spring:message code="label.SettlementNote.paymentEntries" />
                             </datatables:columnHead>
