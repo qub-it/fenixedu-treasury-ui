@@ -30,7 +30,7 @@ public class SAPExporterUtils {
     public static BigDecimal payedAmountAtDate(final InvoiceEntry invoiceEntry, final DateTime when) {
         BigDecimal amount = BigDecimal.ZERO;
         for (final SettlementEntry entry : invoiceEntry.getSettlementEntriesSet()) {
-            if(entry.getVersioningCreationDate().isAfter(when)) {
+            if(!entry.getVersioningCreationDate().isBefore(when)) {
                 continue;
             }
             
