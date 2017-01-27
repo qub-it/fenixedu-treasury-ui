@@ -26,7 +26,8 @@ public interface IERPExporter {
 
     public void testExportToIntegration(final FinantialInstitution finantialInstitution);
 
-    public ERPExportOperation retryExportToIntegration(final ERPExportOperation eRPExportOperation);
+    // Deprecated
+    //public ERPExportOperation retryExportToIntegration(final ERPExportOperation eRPExportOperation);
 
     public void requestPendingDocumentStatus(final FinantialInstitution finantialInstitution);
 

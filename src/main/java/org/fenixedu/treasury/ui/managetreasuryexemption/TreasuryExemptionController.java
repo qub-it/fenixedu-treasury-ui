@@ -81,28 +81,6 @@ public class TreasuryExemptionController extends TreasuryBaseController {
         m.addAttribute("treasuryEvent", treasuryEvent);
     }
 
-    private static final String _SEARCH_TO_DELETE_ACTION_URI = "/search/delete/";
-    public static final String SEARCH_TO_DELETE_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_DELETE_ACTION_URI;
-
-    @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{debtAccountId}/{oid}", method = RequestMethod.POST)
-    public String processSearchToDeleteAction(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @PathVariable("oid") final TreasuryExemption treasuryExemption, Model model, RedirectAttributes redirectAttributes) {
-
-        final TreasuryEvent treasuryEvent = treasuryExemption.getTreasuryEvent();
-
-        try {
-            assertUserIsFrontOfficeMember(model);
-
-            treasuryExemption.delete();
-
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-        } catch (DomainException ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
-        }
-
-        return redirect(treasuryEventUrl(debtAccount, treasuryEvent), model, redirectAttributes);
-    }
-
     private String treasuryEventUrl(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent) {
         return String.format("%s/%s/%s", TreasuryEventController.READ_URL, debtAccount.getExternalId(),
                 treasuryEvent.getExternalId());

@@ -144,11 +144,14 @@ public class ERPExporterManager {
     }
 
     public static void scheduleSingleDocument(final FinantialDocument finantialDocument) {
-        if (finantialDocument.isCreditNote()) {
+        final List<FinantialDocument> documentsToExport =
+                filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
+
+        if (documentsToExport.isEmpty()) {
             return;
         }
 
-        final String externalId = finantialDocument.getExternalId();
+        final String externalId = documentsToExport.iterator().next().getExternalId();
 
         new Thread() {
 
@@ -232,12 +235,9 @@ public class ERPExporterManager {
     }
 
     public static ERPExportOperation retryExportToIntegration(final ERPExportOperation eRPExportOperation) {
-        final IERPExporter erpExporter = eRPExportOperation.getFinantialInstitution().getErpIntegrationConfiguration()
-                .getERPExternalServiceImplementation().getERPExporter();
+        final List<FinantialDocument> documentsToExport = filterDocumentsToExport(eRPExportOperation.getFinantialDocumentsSet().stream());
 
-        ERPExportOperation retryExportOperation = erpExporter.retryExportToIntegration(eRPExportOperation);
-
-        return retryExportOperation;
+        return exportSingleDocument(documentsToExport.iterator().next());
     }
 
     public static byte[] downloadCertifiedDocumentPrint(final FinantialDocument finantialDocument) {
@@ -294,7 +294,9 @@ public class ERPExporterManager {
                 .filter(d -> d.isDocumentSeriesNumberSet())
                 .filter(x -> x.getCloseDate() != null)
                 .filter(x -> x.isDebitNote() || (x.isSettlementNote() && !x.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)))
-                .sorted(COMPARE_BY_DOCUMENT_TYPE).collect(Collectors.<FinantialDocument> toList());
+                .filter(x -> x.isDebitNote() || (x.isSettlementNote() && !((SettlementNote) x).isReimbursement()))
+                .sorted(COMPARE_BY_DOCUMENT_TYPE)
+                .collect(Collectors.<FinantialDocument> toList());
     }
     // @formatter:on
 

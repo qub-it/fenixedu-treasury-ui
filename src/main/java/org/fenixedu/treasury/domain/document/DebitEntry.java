@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -66,8 +68,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import pt.ist.fenixframework.Atomic;
-
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
 public class DebitEntry extends DebitEntry_Base {
 
@@ -517,6 +517,10 @@ public class DebitEntry extends DebitEntry_Base {
 
     public boolean revertExemptionIfPossible(final TreasuryExemption treasuryExemption) {
         // For all credit entries found that are not processed nor closed, delete
+        if (isProcessedInClosedDebitNote()) {
+            return false;
+        }
+        
         for (final CreditEntry creditEntry : treasuryExemption.getDebitEntry().getCreditEntriesSet()) {
 
             if (!creditEntry.isFromExemption()) {
@@ -528,11 +532,6 @@ public class DebitEntry extends DebitEntry_Base {
             }
 
             creditEntry.delete();
-            return true;
-        }
-
-        if (isProcessedInClosedDebitNote()) {
-            return false;
         }
 
         setAmount(getAmount().add(getExemptedAmount()));
@@ -574,6 +573,10 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         return settlementNote.get().getPaymentDate();
+    }
+    
+    public BigDecimal getExemptedAmountWithVat() {
+        return getExemptedAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this)));
     }
 
     /**

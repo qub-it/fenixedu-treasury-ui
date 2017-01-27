@@ -229,7 +229,7 @@ ${portal.toolkit()}
 
     <script type="text/javascript">
 		function processDelete(externalId) {
-			url = '${pageContext.request.contextPath}<%=TreasuryExemptionController.SEARCH_TO_DELETE_ACTION_URL %>${debtAccount.externalId}/' + externalId;
+			url = '${pageContext.request.contextPath}<%=TreasuryEventController.SEARCH_TO_DELETE_ACTION_URL %>${debtAccount.externalId}/' + externalId;
 			$("#deleteForm").attr("action", url);
 			$('#deleteModal').modal('toggle')
 		}
@@ -515,7 +515,7 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <p align=right>
                         <c:out
-                            value="${debtAccount.finantialInstitution.currency.getValueFor(debitEntry.amount)}" />
+                            value="${debtAccount.finantialInstitution.currency.getValueFor(debitEntry.amountWithVat)}" />
                     </p>
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
@@ -525,7 +525,7 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <p align=right>
                         <c:out
-                            value="${debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmount)}" />
+                            value="${debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmountWithVat)}" />
                     </p>
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">

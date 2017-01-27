@@ -40,11 +40,13 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -200,6 +202,34 @@ public class TreasuryEventController extends TreasuryBaseController {
         }
 
         return read(debtAccount, treasuryEvent, model);
+    }
+
+    private static final String _SEARCH_TO_DELETE_ACTION_URI = "/treasuryexemption/delete/";
+    public static final String SEARCH_TO_DELETE_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_DELETE_ACTION_URI;
+
+    @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{debtAccountId}/{oid}", method = RequestMethod.POST)
+    public String processSearchToDeleteAction(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @PathVariable("oid") final TreasuryExemption treasuryExemption, Model model, RedirectAttributes redirectAttributes) {
+
+        final TreasuryEvent treasuryEvent = treasuryExemption.getTreasuryEvent();
+
+        try {
+            assertUserIsFrontOfficeMember(model);
+
+            treasuryExemption.delete();
+
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+        } catch (final DomainException ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return read(debtAccount, treasuryEvent, model);
+        }
+
+        return redirect(treasuryEventUrl(debtAccount, treasuryEvent), model, redirectAttributes);
+    }
+
+    private String treasuryEventUrl(final DebtAccount debtAccount, final TreasuryEvent treasuryEvent) {
+        return String.format("%s/%s/%s", TreasuryEventController.READ_URL, debtAccount.getExternalId(),
+                treasuryEvent.getExternalId());
     }
 
 }

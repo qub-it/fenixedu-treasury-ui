@@ -233,6 +233,19 @@
 							<schemaFiles>FenixEdu_ERP_Integration_1.0.5.xsd</schemaFiles>
 						</configuration>
 					</execution>
+					<execution>
+						<id>xjc-modelo46</id>
+						<goals>
+							<goal>xjc</goal>
+						</goals>
+						<configuration>
+							<forceRegenerate>true</forceRegenerate>
+							<packageName>org.fenixedu.treasury.generated.sources.modelo46</packageName>
+							<outputDirectory>${basedir}/target/generated-sources/xsd/modelo46</outputDirectory>
+							<schemaDirectory>${basedir}/src/main/xsd/modelo46/</schemaDirectory>
+							<schemaFiles>Modelo46.xsd</schemaFiles>
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 			<plugin>

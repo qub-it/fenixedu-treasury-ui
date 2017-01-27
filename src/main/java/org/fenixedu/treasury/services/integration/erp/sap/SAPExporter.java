@@ -1747,8 +1747,7 @@ public class SAPExporter implements IERPExporter {
     }
 
     @Atomic
-    @Override
-    public ERPExportOperation retryExportToIntegration(final ERPExportOperation eRPExportOperation) {
+    public ERPExportOperation deprecated_retryExportToIntegration(final ERPExportOperation eRPExportOperation) {
         if (eRPExportOperation.getFinantialDocumentsSet().isEmpty()) {
             final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
             final ERPExportOperation operation = createSaftExportOperation(eRPExportOperation.getFile().getContent(),

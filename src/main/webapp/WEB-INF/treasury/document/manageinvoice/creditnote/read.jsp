@@ -423,17 +423,32 @@ if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
                             <td><c:out value='${creditNote.clearDocumentToExportReason}' /></td>
                         </tr>
                     </c:if>
+                    
+                    <c:if test="${creditNote.advancePayment && not empty creditNote.advancedPaymentSettlementNote}">
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.advancedPaymentSettlementNote" /></th>
+						<td>
+							<a href="${pageContext.request.contextPath}<%=SettlementNoteController.READ_URL %>${creditNote.advancedPaymentSettlementNote.externalId}">
+								<c:out value='${creditNote.advancedPaymentSettlementNote.uiDocumentNumber}' />
+							</a>
+						</td>
+					</tr>
+					</c:if>
+                    <c:if test="${not creditNote.advancePayment}">
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.debitNote" /></th>
-                        <td><c:if test="${empty creditNote.debitNote}">
+                        <td>
+                        	<c:if test="${empty creditNote.debitNote}">
                                 <span class="label label-warning"> <spring:message code="label.document.manageinvoice.creditnote.without.debitnote" />
                                 </span>
-                            </c:if> <c:if test="${not empty creditNote.debitNote}">
-
+                            </c:if> 
+                            <c:if test="${not empty creditNote.debitNote}">
                                 <a href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${creditNote.getDebitNote().externalId}"><c:out
                                         value='${creditNote.getDebitNote().uiDocumentNumber}' /></a>
-                            </c:if></td>
+                            </c:if>
+                        </td>
                     </tr>
+                    </c:if>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.CreditNote.state" /></th>
                         <td><c:if test="${creditNote.isAnnulled()}">
