@@ -260,7 +260,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     @Atomic
     public void annulAllDebitEntries(final String reason) {
 
-        final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason", reason);
+        final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
 
         final Set<DebitEntry> unprocessedDebitEntries = Sets.newHashSet();
         while (DebitEntry.findActive(this).map(DebitEntry.class::cast).count() > 0) {

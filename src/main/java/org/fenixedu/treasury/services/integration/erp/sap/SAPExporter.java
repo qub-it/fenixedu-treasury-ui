@@ -845,10 +845,11 @@ public class SAPExporter implements IERPExporter {
         org.fenixedu.treasury.generated.sources.saft.sap.SourceDocuments.WorkingDocuments.WorkDocument.Line line =
                 new org.fenixedu.treasury.generated.sources.saft.sap.SourceDocuments.WorkingDocuments.WorkDocument.Line();
 
+        // Consider in replacing amount with net amount (check SAFT)
         if (entry.isCreditNoteEntry()) {
-            line.setCreditAmount(entry.getAmount().setScale(2, RoundingMode.HALF_EVEN));
+            line.setCreditAmount(entry.getNetAmount().setScale(2, RoundingMode.HALF_EVEN));
         } else if (entry.isDebitNoteEntry()) {
-            line.setDebitAmount(entry.getAmount().setScale(2, RoundingMode.HALF_EVEN));
+            line.setDebitAmount(entry.getNetAmount().setScale(2, RoundingMode.HALF_EVEN));
         }
 
         // If document was exported in legacy ERP than the amount is open amount when integration started
@@ -945,7 +946,7 @@ public class SAPExporter implements IERPExporter {
 
         if (entry.getFinantialDocument().isExportedInLegacyERP()) {
             line.setUnitPrice(
-                    SAPExporterUtils.openAmountAtDate(entry, ERP_INTEGRATION_START_DATE).setScale(2, RoundingMode.HALF_EVEN));
+                    Constants.divide(SAPExporterUtils.openAmountAtDate(entry, ERP_INTEGRATION_START_DATE), entry.getQuantity()).setScale(2, RoundingMode.HALF_EVEN));
         }
 
         return line;

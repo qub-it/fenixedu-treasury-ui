@@ -244,6 +244,8 @@ public class DebitNote extends DebitNote_Base {
     @Atomic
     public void anullDebitNoteWithCreditNote(String reason, boolean anullGeneratedInterests) {
 
+        final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
+
         if (this.getFinantialDocumentEntriesSet().size() > 0 && this.isClosed()) {
 
             final DateTime now = new DateTime();
@@ -284,7 +286,7 @@ public class DebitNote extends DebitNote_Base {
                 }
 
                 for (final CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
-                    debitEntry.closeCreditEntryIfPossible(reason, now, creditEntry);
+                    debitEntry.closeCreditEntryIfPossible(reasonDescription, now, creditEntry);
                 }
             }
 
