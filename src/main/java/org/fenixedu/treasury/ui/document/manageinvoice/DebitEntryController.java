@@ -231,11 +231,13 @@ public class DebitEntryController extends TreasuryBaseController {
                     bean.setDueDate(new LocalDate());
                 }
             } else {
-                return new ResponseEntity<String>(BundleUtil.getString(Constants.BUNDLE, "label.Tariff.no.valid.fixed"),
-                        HttpStatus.BAD_REQUEST);
+                bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(BigDecimal.ZERO));
+                bean.setDueDate(new LocalDate());
             }
+            
             bean.setDescription(product.getName().getContent());
         }
+        
         return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
     }
 
@@ -252,7 +254,7 @@ public class DebitEntryController extends TreasuryBaseController {
             }
 
             DebitEntry debitEntry = createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
-                    bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getDueDate(), bean.getEntryDate(),
+                    bean.getProduct(), bean.getAmount(), bean.getDueDate(), bean.getEntryDate(),
                     bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate());
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
@@ -290,9 +292,8 @@ public class DebitEntryController extends TreasuryBaseController {
 
     @Atomic
     public DebitEntry createDebitEntry(DebitNote debitNote, DebtAccount debtAccount, java.lang.String description,
-            org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, java.math.BigDecimal quantity,
-            LocalDate dueDate, DateTime entryDateTime, final TreasuryEvent treasuryEvent, boolean applyInterests,
-            final FixedTariffInterestRateBean interestRateBean) {
+            org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, LocalDate dueDate, DateTime entryDateTime,
+            final TreasuryEvent treasuryEvent, boolean applyInterests, final FixedTariffInterestRateBean interestRateBean) {
 
         // @formatter: off
 
@@ -309,13 +310,11 @@ public class DebitEntryController extends TreasuryBaseController {
         //Instead, use individual SETTERS and validate "CheckRules" in the end
         // @formatter: on
 
-        Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
-
         Optional<Vat> activeVat =
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
         DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> ofNullable(debitNote), debtAccount, treasuryEvent,
-                activeVat.orElse(null), amount, dueDate, null, product, description, quantity, null, entryDateTime);
+                activeVat.orElse(null), amount, dueDate, null, product, description, BigDecimal.ONE, null, entryDateTime);
 
         if (applyInterests) {
             InterestRate interestRate = InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestType(),
@@ -419,18 +418,6 @@ public class DebitEntryController extends TreasuryBaseController {
     public void updateDebitEntry(java.lang.String description, final TreasuryEvent treasuryEvent, boolean applyInterests,
             FixedTariffInterestRateBean interestRateBean, LocalDate dueDate, boolean academicalActBlockingSuspension,
             boolean blockAcademicActsOnDebt, Model model) {
-
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getDebitEntry(model).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
 
         DebitEntry debitEntry = getDebitEntry(model);
         debitEntry.edit(description, treasuryEvent, dueDate, academicalActBlockingSuspension, blockAcademicActsOnDebt);

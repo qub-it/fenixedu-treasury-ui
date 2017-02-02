@@ -174,6 +174,16 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             throw new TreasuryDomainException("error.FinantialDocument.originDocumentNumber.invalid");
         }
 
+        // Check that all finantial document entries are from the same debt account
+        for (final FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
+            if (!(entry instanceof InvoiceEntry)) {
+                continue;
+            }
+            
+            if(((InvoiceEntry) entry).getDebtAccount() != getDebtAccount()) {
+                throw new TreasuryDomainException("error.FinantialDocument.entries.belongs.different.debt.account");
+            }
+        }
     }
 
     protected boolean isDocumentEmpty() {

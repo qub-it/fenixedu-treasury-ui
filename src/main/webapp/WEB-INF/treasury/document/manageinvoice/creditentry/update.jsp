@@ -136,39 +136,48 @@ ${portal.toolkit()}
                 </div>
             </div>
 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.InvoiceEntry.amount" />
+                </div>
 
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditEntry.debtAccount.finantialInstitution.currency.getValueFor(creditEntry.amount)}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.InvoiceEntry.quantity" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value="${creditEntry.quantity}" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.InvoiceEntry.totalAmount" />
+                </div>
+
+                <div class="col-sm-10">
+                    <div class="form-control">
+                        <c:out value='${creditEntry.debtAccount.finantialInstitution.currency.getValueFor(creditEntry.totalAmount)}' />
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>
     
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.quantity" />
-                </div>
-
-                <div class="col-sm-3">
-                    <input id="creditEntry_quantity" class="form-control" type="text" name="quantity"
-                        value='<c:out value='${not empty param.quantity ? param.quantity: creditEntry.quantity}'/>' />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.CreditEntry.amount" />
-                </div>
-
-
-                <div class="col-sm-3">
-                    <div class="input-group">
-                        <div class="input-group-addon">
-                            <c:out value="${creditEntry.debtAccount.finantialInstitution.currency.symbol}" />
-                        </div>
-                        <input pattern = "\d+(\.\d{2})?" id="creditEntry_amount" class="form-control" type="text" name="amount"
-                            value='<c:out value='${not empty param.amount ? param.amount : creditEntry.amount }'/>' />
-                    </div>
-                </div>
-            </div>
+            
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.CreditEntry.description" />
@@ -179,8 +188,6 @@ ${portal.toolkit()}
                         value='<c:out value='${not empty param.description ? param.description : creditEntry.description }'/>' />
                 </div>
             </div>
-
-
 
         </div>
         <div class="panel-footer">

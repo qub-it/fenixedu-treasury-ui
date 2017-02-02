@@ -169,8 +169,7 @@ public class CreditEntryController extends TreasuryBaseController {
 
             CreditEntry creditEntry =
                     createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
-                            bean.getProduct(), bean.getAmount(), bean.getQuantity(), bean.getFinantialDocument()
-                                    .getDocumentDueDate());
+                            bean.getProduct(), bean.getAmount(), bean.getFinantialDocument().getDocumentDueDate());
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
 
@@ -192,16 +191,15 @@ public class CreditEntryController extends TreasuryBaseController {
 
     @Atomic
     public CreditEntry createCreditEntry(CreditNote creditNote, DebtAccount debtAccount, String description,
-            org.fenixedu.treasury.domain.Product product, BigDecimal amount, BigDecimal quantity, LocalDate dueDate) {
-
-        Optional<Tariff> tariff = product.getActiveTariffs(debtAccount.getFinantialInstitution(), new DateTime()).findFirst();
+            org.fenixedu.treasury.domain.Product product, BigDecimal amount, LocalDate dueDate) {
 
         Optional<Vat> activeVat =
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
         CreditEntry creditEntry =
                 CreditEntry.create(creditNote, description, product, activeVat.orElse(null), amount, new DateTime(), null,
-                        quantity);
+                        BigDecimal.ONE);
+        
         return creditEntry;
     }
 
@@ -248,17 +246,16 @@ public class CreditEntryController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") CreditEntry creditEntry,
-            @RequestParam(value = "description", required = true) String description, @RequestParam(value = "amount",
-                    required = true) BigDecimal amount, @RequestParam(value = "quantity", required = true) BigDecimal quantity,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable("oid") final CreditEntry creditEntry, 
+            @RequestParam(value = "description", required = true) final String description,
+            final Model model, final RedirectAttributes redirectAttributes) {
 
         setCreditEntry(creditEntry, model);
 
         try {
             assertUserIsAllowToModifyInvoices(creditEntry.getDebtAccount().getFinantialInstitution(), model);
 
-            updateCreditEntry(description, amount, quantity, model);
+            updateCreditEntry(description, model);
 
             return redirect(CreditNoteController.READ_URL + getCreditEntry(model).getFinantialDocument().getExternalId(), model,
                     redirectAttributes);
@@ -271,7 +268,7 @@ public class CreditEntryController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateCreditEntry(String description, BigDecimal amount, BigDecimal quantity, Model model) {
-        getCreditEntry(model).edit(description, amount, quantity);
+    public void updateCreditEntry(final String description, final Model model) {
+        getCreditEntry(model).edit(description);
     }
 }

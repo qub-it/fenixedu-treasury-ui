@@ -219,16 +219,7 @@ ${portal.angularToolkit()}
                     </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.InvoiceEntry.quantity" />
-                </div>
-
-                <div class="col-sm-10">
-                    <input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity" />
-                </div>
-            </div>
-
+            
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.FinantialDocumentEntry.entryDateTime" />

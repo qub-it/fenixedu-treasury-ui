@@ -218,6 +218,18 @@ ${portal.angularToolkit()}
                         </div>
                     </div>
                 </div>
+                
+                <div class="form-group row">
+                    <div class="col-sm-2 control-label">
+                        <spring:message code="label.InvoiceEntry.totalAmount" />
+                    </div>
+
+                    <div class="col-sm-10">
+                        <div class="form-control">
+                            <c:out value='${debitEntryBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.debitEntry.totalAmount)}' />
+                        </div>
+                    </div>
+                </div>
             </c:if>
 
             <!-- <div class="form-group row"> -->
@@ -239,43 +251,7 @@ ${portal.angularToolkit()}
     </div>
     <div class="panel panel-default">
         <div class="panel-body">
-            <c:if test='${debitEntryBean.isAmountValuesEditable() }'>
 
-                <div class="form-group row">
-                    <div class="col-sm-2 control-label">
-                        <spring:message code="label.DebitEntry.description" />
-                    </div>
-
-                    <div class="col-sm-10">
-                        <input id="debitEntry_description" class="form-control" type="text" ng-model="object.description" name="description"
-                            value='<c:out value='${not empty param.description ? param.description : debitEntry.description }'/>' />
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2 control-label">
-                        <spring:message code="label.DebitEntry.amount" />
-                    </div>
-
-                    <div class="col-sm-10">
-                        <div class="input-group">
-                            <div class="input-group-addon">
-                                <c:out value="${debitEntryBean.debtAccount.finantialInstitution.currency.symbol}" />
-                            </div>
-                            <input id="debitEntry_amount" class="form-control" type="text" ng-model="object.amount" name="amount" pattern="^[0-9]+(\.[0-9][0-9]?[0-9]?)?$"
-                                data-number-to-fixed="2" data-number-stepfactor="100" />
-                        </div>
-                    </div>
-                </div>
-                <div class="form-group row">
-                    <div class="col-sm-2 control-label">
-                        <spring:message code="label.InvoiceEntry.quantity" />
-                    </div>
-
-                    <div class="col-sm-10">
-                        <input id="debitEntry_quantity" class="form-control" type="text" ng-model="object.quantity" name="quantity" />
-                    </div>
-                </div>
-            </c:if>
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.DebitEntry.dueDate" />
