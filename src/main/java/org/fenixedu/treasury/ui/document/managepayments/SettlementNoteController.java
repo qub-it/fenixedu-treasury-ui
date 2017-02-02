@@ -396,9 +396,9 @@ public class SettlementNoteController extends TreasuryBaseController {
                 currency, documentNumber, documentDateFrom, documentDateTo, documentDueDate, originDocumentNumber, state);
 
         model.addAttribute("listSize", searchsettlementnoteResultsDataSet.size());
-        model.addAttribute("searchsettlementnoteResultsDataSet", searchsettlementnoteResultsDataSet);
         searchsettlementnoteResultsDataSet = searchsettlementnoteResultsDataSet.stream()
                 .limit(SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
+        model.addAttribute("searchsettlementnoteResultsDataSet", searchsettlementnoteResultsDataSet);
 
         model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.findAll());
         return "treasury/document/managepayments/settlementnote/search";
