@@ -59,6 +59,7 @@ public class SettlementEntry extends SettlementEntry_Base {
     protected SettlementEntry() {
         super();
         setBennu(Bennu.getInstance());
+        setCloseDate(new DateTime());
     }
 
     @Override

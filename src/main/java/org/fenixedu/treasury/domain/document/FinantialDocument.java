@@ -144,30 +144,24 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         }
 
         if (isClosed() && getDocumentNumberSeries().getSeries().getCertificated()) {
-            final Stream<? extends FinantialDocument> stream =
-                    findClosedUntilDocumentNumberExclusive(getDocumentNumberSeries(), getDocumentNumber());
-
-            final FinantialDocument previousFinantialDocument =
-                    stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
-
-            if (previousFinantialDocument != null && !(previousFinantialDocument.getDocumentDate().toLocalDate()
-                    .compareTo(getDocumentDate().toLocalDate()) <= 0)) {
-                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
-            }
+            // 2017-02-03: Document order check is taking too much time. The close date will be the certification
+            // date for documents
+//            final Stream<? extends FinantialDocument> stream =
+//                    findClosedUntilDocumentNumberExclusive(getDocumentNumberSeries(), getDocumentNumber());
+//
+//            final FinantialDocument previousFinantialDocument =
+//                    stream.sorted(COMPARE_BY_DOCUMENT_NUMBER).findFirst().orElse(null);
+//
+//            if (previousFinantialDocument != null && !(previousFinantialDocument.getDocumentDate().toLocalDate()
+//                    .compareTo(getDocumentDate().toLocalDate()) <= 0)) {
+//                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.not.after.than.previous.document");
+//            }
+//
         }
 
         if (getDocumentDate().isAfterNow()) {
             throw new TreasuryDomainException("error.FinantialDocument.documentDate.cannot.be.after.now");
         }
-
-        //If document is closed, all entries must be after of DocumentDate - RSP, this rule is invalid. I can create a debit entry today, and add it to a Document in a month
-//        if (isClosed()) {
-//            LocalDate documentDate = this.getDocumentDate().toLocalDate();
-//            if (getFinantialDocumentEntriesSet().stream()
-//                    .anyMatch(x -> x.getEntryDateTime().toLocalDate().isBefore(documentDate))) {
-//                throw new TreasuryDomainException("error.FinantialDocument.documentDate.is.after.entries.date");
-//            }
-//        }
 
         if (!Strings.isNullOrEmpty(getOriginDocumentNumber())
                 && !Constants.isOriginDocumentNumberValid(getOriginDocumentNumber())) {
@@ -278,6 +272,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         }
 
+        /* 
+         * 2017-02-03
+         * Close date will be the certification date and not document date. Document date is used
+         * when document is created.
+         * 
+         */
         if (getCloseDate() == null) {
             setCloseDate(new DateTime());
         }
