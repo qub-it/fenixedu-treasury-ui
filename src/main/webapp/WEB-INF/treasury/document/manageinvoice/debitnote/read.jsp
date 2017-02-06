@@ -306,11 +306,15 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
 	            	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.update" />
 	            </a>
             </li>
-            <li>
-	            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/updatepayordebtaccount/${debitNote.externalId}">
-	            	<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitNote.event.updatePayorDebtAccount" />
-	            </a>
-            </li>
+            
+            <c:if test="${!debitNote.documentNumberSeries.series.regulationSeries}">
+	            <li>
+		            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/updatepayordebtaccount/${debitNote.externalId}">
+		            	<span class="glyphicon glyphicon-user" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitNote.event.updatePayorDebtAccount" />
+		            </a>
+	            </li>
+            </c:if>
+            
 		</c:if>
 
         <c:if test="${debitNote.isPreparing()}">
@@ -324,28 +328,30 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
 		</c:if>
 
         <c:if test="${debitNote.isPreparing() || debitNote.isClosed()}">
+			
+			<c:if test="${!debitNote.documentNumberSeries.series.regulationSeries}" >
+	            <li>
+	                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> 
+	                	<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
+	                	<spring:message code="label.event.document.manageInvoice.anullDebitNote" />
+		            </a>
+	            </li>
+            </c:if>
 
-            <li>
-                <a class="" href="#" data-toggle="modal" data-target="#anullModal"> 
-                	<span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span>
-                	<spring:message code="label.event.document.manageInvoice.anullDebitNote" />
-	            </a>
-            </li>
-
-        <c:if test="${debitNote.isClosed()}">
-            <li>
-	            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}">
-	            	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-	            	<spring:message code="label.event.document.manageInvoice.createCreditNote" />
-	            </a>
-            </li>
-		</c:if>        
-		    
-            <c:if test="${debitNote.isClosed() }">
-                    <li>
-            
-                    <a class="" href="#" data-toggle="modal" data-target="#calculateInterestValueModal"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span> <spring:message
-                    code="label.event.document.manageInvoice.debitNote.calculateInterestValue" />
+	        <c:if test="${!debitNote.documentNumberSeries.series.regulationSeries and debitNote.isClosed()}">
+	            <li>
+		            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}">
+		            	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+		            	<spring:message code="label.event.document.manageInvoice.createCreditNote" />
+		            </a>
+	            </li>
+			</c:if>        
+			    
+            <c:if test="${debitNote.isClosed()}">
+                <li>
+                    <a class="" href="#" data-toggle="modal" data-target="#calculateInterestValueModal"> 
+                    	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                    	<spring:message code="label.event.document.manageInvoice.debitNote.calculateInterestValue" />
                     </a>
                 </li>
             </c:if>

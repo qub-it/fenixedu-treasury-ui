@@ -652,8 +652,16 @@ public class SAPExporter implements IERPExporter {
             workDocument.setAdvancedPayment(advancedPayment);
         }
 
+        if(document.getPayorDebtAccount() == document.getDebtAccount()) {
+            throw new TreasuryDomainException("error.SAPExporter.payor.same.as.debt.account");
+        }
+        
         //check the PayorDebtAccount
-        if (document.getPayorDebtAccount() != null && document.getPayorDebtAccount() != document.getDebtAccount()) {
+        if (document.getPayorDebtAccount() != null) {
+            if(!document.getPayorDebtAccount().getCustomer().isAdhocCustomer()) {
+                throw new TreasuryDomainException("error.SAPExporter.payor.debt.account.not.adhoc.customer");
+            }
+            
             ERPCustomerFieldsBean payorCustomerBean = null;
 
             if (document.isDebitNote()) {

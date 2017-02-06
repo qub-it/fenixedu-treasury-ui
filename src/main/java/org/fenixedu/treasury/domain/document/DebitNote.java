@@ -384,6 +384,10 @@ public class DebitNote extends DebitNote_Base {
             throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.payor.not.changed");
         }
         
+        if(payorDebtAccount == getDebtAccount()) {
+            throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.payor.same.as.debt.account");
+        }
+        
         if(isClosed()) {
             // Check if debit entries has settlement entries
             for (final DebitEntry debitEntry : this.getDebitEntriesSet()) {
@@ -461,17 +465,16 @@ public class DebitNote extends DebitNote_Base {
     }
 
     public static DebitEntry createBalanceTransferDebit(final DebtAccount debtAccount, final DateTime entryDate,
-            final LocalDate dueDate, final String originNumber, final BigDecimal amountWithVat,
-            final DebtAccount payorDebtAccount, String entryDescription) {
+            final LocalDate dueDate, final String originNumber, final Product product, final BigDecimal amountWithVat,
+            final DebtAccount payorDebtAccount, String entryDescription, final InterestRate interestRate) {
         final FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
         final Series regulationSeries = finantialInstitution.getRegulationSeries();
         final DocumentNumberSeries numberSeries =
                 DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), regulationSeries);
-        final Product balanceTransferProduct = TreasurySettings.getInstance().getTransferBalanceProduct();
-        final Vat transferVat = Vat.findActiveUnique(balanceTransferProduct.getVatType(), finantialInstitution, entryDate).get();
+        final Vat transferVat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, entryDate).get();
 
         if (Strings.isNullOrEmpty(entryDescription)) {
-            entryDescription = balanceTransferProduct.getName().getContent();
+            entryDescription = product.getName().getContent();
         }
 
         final DebitNote debitNote = DebitNote.create(debtAccount, payorDebtAccount, numberSeries, new DateTime(),
@@ -479,7 +482,7 @@ public class DebitNote extends DebitNote_Base {
 
         final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
         return DebitEntry.create(Optional.of(debitNote), debtAccount, null, transferVat, amountWithoutVat, dueDate,
-                Maps.newHashMap(), balanceTransferProduct, entryDescription, BigDecimal.ONE, null, entryDate);
+                Maps.newHashMap(), product, entryDescription, BigDecimal.ONE, interestRate, entryDate);
     }
 
 }

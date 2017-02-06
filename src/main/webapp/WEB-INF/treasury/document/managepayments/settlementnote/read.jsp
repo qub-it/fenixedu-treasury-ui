@@ -264,32 +264,6 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-            	<c:if test="${settlementNote.reimbursement}">
-            	<c:if test="${not settlementNote.exportedInLegacyERP}">
-            	<c:if test="${settlementNote.reimbursementPending}">
-                <li>
-       	            <form id="updateReimbursementState" action="${pageContext.request.contextPath}<%= SettlementNoteController.UPDATE_REIMBURSEMENT_STATE_URL %>/${settlementNote.externalId}" method="post">
-                	</form>
-            		<a href="#" data-toggle="modal" onclick="$('#updateReimbursementState').submit();">
-	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-	                	<spring:message code="label.event.document.manageInvoice.updateReimbursementState" />
-            		</a>
-                </li>
-            	</c:if>
-            	</c:if>
-            	</c:if>
-
-            	<c:if test="${settlementNote.reimbursement}">
-            	<c:if test="${not settlementNote.exportedInLegacyERP}">
-                <li>
-            		<a href="${pageContext.request.contextPath}<%= ReimbursementProcessStateLogController.SEARCH_URL %>/${settlementNote.externalId}">
-	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-	                	<spring:message code="label.ReimbursementProcessStateLog.title" />
-            		</a>
-                </li>
-            	</c:if>
-            	</c:if>
-            
 				<c:if test="${settlementNote.documentToExport}">
                 <li>
                 	<a id="exportCreditNoteIntegrationOnline" class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/read/${settlementNote.externalId}/exportintegrationonline">
@@ -323,6 +297,33 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 	</a>
                 </li>
 <%} %>
+
+            	<c:if test="${settlementNote.reimbursement}">
+            	<c:if test="${not settlementNote.exportedInLegacyERP}">
+            	<c:if test="${settlementNote.reimbursementPending}">
+                <li>
+       	            <form id="updateReimbursementState" action="${pageContext.request.contextPath}<%= SettlementNoteController.UPDATE_REIMBURSEMENT_STATE_URL %>/${settlementNote.externalId}" method="post">
+                	</form>
+            		<a href="#" data-toggle="modal" onclick="$('#updateReimbursementState').submit();">
+	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+	                	<spring:message code="label.event.document.manageInvoice.updateReimbursementState" />
+            		</a>
+                </li>
+            	</c:if>
+            	</c:if>
+            	</c:if>
+
+            	<c:if test="${settlementNote.reimbursement}">
+            	<c:if test="${not settlementNote.exportedInLegacyERP}">
+                <li>
+            		<a href="${pageContext.request.contextPath}<%= ReimbursementProcessStateLogController.SEARCH_URL %>/${settlementNote.externalId}">
+	                	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+	                	<spring:message code="label.ReimbursementProcessStateLog.title" />
+            		</a>
+                </li>
+            	</c:if>
+            	</c:if>
+            
             </ul>
         </div>
     </c:if>
@@ -630,7 +631,17 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
             <datatables:columnHead>
                 <spring:message code="label.SettlementEntry.description" />
             </datatables:columnHead>
-            <c:out value="${advancedPaymentEntry.description}" />
+            <p><c:out value="${advancedPaymentEntry.description}" /></p>
+          	<c:if test="${settlementNote.advancedPaymentCreditNote.forPayorDebtAccount}">
+          		<p>
+          			<em>
+          				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+          				<span><c:out value="${settlementNote.advancedPaymentCreditNote.payorDebtAccount.customer.fiscalNumber}" /></span>
+          				&nbsp;-&nbsp;
+          				<span><c:out value="${settlementNote.advancedPaymentCreditNote.payorDebtAccount.customer.name}" /></span>
+          			</em>
+          		</p>
+          	</c:if>
         </datatables:column>
         <datatables:column cssStyle="width:10%">
             <datatables:columnHead>

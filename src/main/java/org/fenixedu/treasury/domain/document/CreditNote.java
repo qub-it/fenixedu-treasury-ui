@@ -97,6 +97,10 @@ public class CreditNote extends CreditNote_Base {
         if (getDebitNote() != null && getPayorDebtAccount() != getDebitNote().getPayorDebtAccount()) {
             throw new TreasuryDomainException("error.CreditNote.with.payorDebtAccount.different.from.debit.note");
         }
+        
+        if(getDebitNote() != null && getDebitNote().getDocumentNumberSeries().getSeries().isRegulationSeries()) {
+            throw new TreasuryDomainException("error.CreditNote.debit.note.cannot.be.from.regulation.series");
+        }
 
         super.checkRules();
     }
@@ -360,25 +364,24 @@ public class CreditNote extends CreditNote_Base {
     }
 
     public static CreditEntry createBalanceTransferCredit(final DebtAccount debtAccount, final DateTime documentDate,
-            final String originNumber, final BigDecimal amountWithVat, final DebtAccount payorDebtAccount,
+            final String originNumber, final Product product, final BigDecimal amountWithVat, final DebtAccount payorDebtAccount,
             String entryDescription) {
 
         final FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
         final Series regulationSeries = finantialInstitution.getRegulationSeries();
         final DocumentNumberSeries numberSeries =
                 DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), regulationSeries);
-        final Product balanceTransferProduct = TreasurySettings.getInstance().getTransferBalanceProduct();
         final Vat transferVat =
-                Vat.findActiveUnique(balanceTransferProduct.getVatType(), finantialInstitution, documentDate).get();
+                Vat.findActiveUnique(product.getVatType(), finantialInstitution, documentDate).get();
 
         if (Strings.isNullOrEmpty(entryDescription)) {
-            entryDescription = balanceTransferProduct.getName().getContent();
+            entryDescription = product.getName().getContent();
         }
 
         final CreditNote creditNote = CreditNote.create(debtAccount, numberSeries, documentDate, null, originNumber);
 
         final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
-        CreditEntry entry = CreditEntry.create(creditNote, entryDescription, balanceTransferProduct, transferVat,
+        CreditEntry entry = CreditEntry.create(creditNote, entryDescription, product, transferVat,
                 amountWithoutVat, documentDate, null, BigDecimal.ONE);
 
         creditNote.editPayorDebtAccount(payorDebtAccount);

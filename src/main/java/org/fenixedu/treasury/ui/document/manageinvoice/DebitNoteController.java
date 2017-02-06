@@ -350,10 +350,6 @@ public class DebitNoteController extends TreasuryBaseController {
     public DebitNote createDebitNote(DebtAccount payorDebtAccount, DebtAccount debtAccount,
             DocumentNumberSeries documentNumberSeries, LocalDate documentDate, LocalDate documentDueDate,
             String originDocumentNumber, String documentObservations) {
-        if (payorDebtAccount == null) {
-            payorDebtAccount = debtAccount;
-        }
-
         DebitNote debitNote = DebitNote.create(debtAccount, payorDebtAccount, documentNumberSeries,
                 documentDate.toDateTimeAtCurrentTime(), documentDueDate, originDocumentNumber);
         debitNote.setDocumentObservations(documentObservations);

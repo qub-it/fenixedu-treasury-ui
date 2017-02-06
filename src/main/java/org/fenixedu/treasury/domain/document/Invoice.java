@@ -27,8 +27,6 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.divide;
-
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,6 +47,14 @@ public abstract class Invoice extends Invoice_Base {
 
     @Override
     protected void checkRules() {
+        if(getDebtAccount() == getPayorDebtAccount()) {
+            throw new TreasuryDomainException("error.Invoice.payor.same.as.debt.account");
+        }
+        
+        if(getPayorDebtAccount() != null && !getPayorDebtAccount().getCustomer().isAdhocCustomer()) {
+            throw new TreasuryDomainException("error.Invoice.payor.debt.account.not.adhoc.customer");
+        }
+        
         //check if all invoiceEntries are for the same debtaccount of invoice
         for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
             InvoiceEntry invoiceEntry = (InvoiceEntry) entry;
@@ -72,7 +78,11 @@ public abstract class Invoice extends Invoice_Base {
     protected void init(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
             final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         this.init(debtAccount, documentNumberSeries, documentDate);
-
+        
+        if(debtAccount == payorDebtAccount) {
+            throw new TreasuryDomainException("error.Invoice.payor.same.as.debt.account");
+        }
+        
         setPayorDebtAccount(payorDebtAccount);
     }
 
@@ -169,7 +179,7 @@ public abstract class Invoice extends Invoice_Base {
                 .map(e -> !((SettlementNote) e.getFinantialDocument()).getPaymentEntriesSet().isEmpty()).reduce((a, c) -> a || c)
                 .orElse(false);
     }
-
+    
     public boolean isForPayorDebtAccount() {
         return getPayorDebtAccount() != null && getPayorDebtAccount() != getDebtAccount();
     }

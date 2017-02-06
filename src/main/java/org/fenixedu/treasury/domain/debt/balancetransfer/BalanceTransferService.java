@@ -103,11 +103,11 @@ public class BalanceTransferService {
                 creditEntry.getFinantialDocument() != null && ((Invoice) creditEntry.getFinantialDocument())
                         .isForPayorDebtAccount() ? ((Invoice) creditEntry.getFinantialDocument()).getPayorDebtAccount() : null;
         DebitEntry regulationDebitEntry = DebitNote.createBalanceTransferDebit(objectDebtAccount, now, now.toLocalDate(),
-                originNumber, creditOpenAmount, payorDebtAccount, null);
+                originNumber, creditEntry.getProduct(), creditOpenAmount, payorDebtAccount, creditEntry.getDescription(), null);
 
         regulationDebitEntry.getFinantialDocument().closeDocument();
-        CreditNote.createBalanceTransferCredit(destinyDebtAccount, now, originNumber, creditOpenAmount, payorDebtAccount,
-                creditEntry.getDescription());
+        CreditNote.createBalanceTransferCredit(destinyDebtAccount, now, originNumber, creditEntry.getProduct(), creditOpenAmount,
+                payorDebtAccount, creditEntry.getDescription());
 
         final SettlementNote settlementNote =
                 SettlementNote.create(objectDebtAccount, settlementNoteSeries, now, now, null, null);
@@ -150,12 +150,13 @@ public class BalanceTransferService {
                 final BigDecimal openAmount = debitEntry.getOpenAmount();
                 final BigDecimal availableCreditAmount = debitEntry.getAvailableAmountForCredit();
 
-                if (isGreaterOrEqualThan(availableCreditAmount, openAmount)) {
+                if (!debitEntry.getFinantialDocument().getDocumentNumberSeries().getSeries().isRegulationSeries()
+                        && isGreaterOrEqualThan(availableCreditAmount, openAmount)) {
 
-                    final BigDecimal openAmountWithoutVat = debitEntry.getCurrency().getValueWithScale(
-                            Constants.divide(openAmount, BigDecimal.ONE.add(rationalRatRate(debitEntry))));
-                    final CreditEntry newCreditEntry =
-                            debitEntry.createCreditEntry(now, debitEntry.getDescription(), null, openAmountWithoutVat, null, null);
+                    final BigDecimal openAmountWithoutVat = debitEntry.getCurrency()
+                            .getValueWithScale(Constants.divide(openAmount, BigDecimal.ONE.add(rationalRatRate(debitEntry))));
+                    final CreditEntry newCreditEntry = debitEntry.createCreditEntry(now, debitEntry.getDescription(), null,
+                            openAmountWithoutVat, null, null);
 
                     newCreditEntry.getFinantialDocument().closeDocument();
 
@@ -180,7 +181,8 @@ public class BalanceTransferService {
                     {
                         //final BigDecimal differenceAmount = openAmount.subtract(availableCreditAmount);
                         final CreditEntry regulationCreditEntry = CreditNote.createBalanceTransferCredit(objectDebtAccount, now,
-                                objectDebitNote.getUiDocumentNumber(), openAmount, payorDebtAccount, null);
+                                objectDebitNote.getUiDocumentNumber(), debitEntry.getProduct(), openAmount, payorDebtAccount,
+                                null);
 
                         regulationCreditEntry.getFinantialDocument().closeDocument();
 
@@ -190,8 +192,8 @@ public class BalanceTransferService {
 
                         final DebitEntry regulationDebitEntry = DebitNote.createBalanceTransferDebit(destinyDebtAccount,
                                 debitEntry.getEntryDateTime(), debitEntry.getDueDate(),
-                                regulationCreditEntry.getFinantialDocument().getUiDocumentNumber(), openAmount, payorDebtAccount,
-                                debitEntry.getDescription());
+                                regulationCreditEntry.getFinantialDocument().getUiDocumentNumber(), debitEntry.getProduct(),
+                                openAmount, payorDebtAccount, debitEntry.getDescription(), debitEntry.getInterestRate());
 
                         regulationDebitEntry.getFinantialDocument().closeDocument();
                     }

@@ -710,13 +710,28 @@ public class DebitEntry extends DebitEntry_Base {
             final Map<String, String> propertiesMap, final Product product, final String description, final BigDecimal quantity,
             final InterestRate interestRate, final DateTime entryDateTime) {
 
-        /* Debt can only be created if customer is active */
-        if (product != TreasurySettings.getInstance().getTransferBalanceProduct() && !debtAccount.getCustomer().isActive()) {
+        if(!isDebitEntryCreationAllowed(debtAccount, debitNote, product)) {
             throw new TreasuryDomainException("error.DebitEntry.customer.not.active");
         }
-
+        
         return _create(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description, quantity,
                 interestRate, entryDateTime);
+    }
+
+    private static boolean isDebitEntryCreationAllowed(final DebtAccount debtAccount, Optional<DebitNote> debitNote, Product product) {
+        if (debtAccount.getCustomer().isActive()) {
+            return true;
+        }
+        
+//        if(product == TreasurySettings.getInstance().getInterestProduct()) {
+//            return true;
+//        }
+//        
+        if(debitNote.isPresent() && debitNote.get().getDocumentNumberSeries().getSeries().isRegulationSeries()) {
+            return true;
+        }
+        
+        return false;
     }
 
     private static DebitEntry _create(final Optional<DebitNote> debitNote, final DebtAccount debtAccount,
