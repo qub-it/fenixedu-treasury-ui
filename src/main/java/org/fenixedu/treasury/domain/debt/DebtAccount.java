@@ -125,7 +125,7 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public static Optional<DebtAccount> findUnique(final FinantialInstitution finantialInstitution, final Customer customer) {
-        return find(finantialInstitution).filter(d -> d.getCustomer() == customer).findFirst();
+        return Optional.ofNullable(customer.getDebtAccountFor(finantialInstitution));
     }
 
     public static SortedSet<DebtAccount> findAdhocDebtAccountsSortedByCustomerName(

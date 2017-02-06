@@ -20,21 +20,15 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
             final DateTime documentDate) {
         super();
 
-        init(debtAccount, documentNumberSeries, documentDate);
-        checkRules();
-    }
-
-    @Override
-    protected void init(DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries, DateTime documentDate) {
         super.init(debtAccount, documentNumberSeries, documentDate);
-
+        checkRules();
     }
 
     protected AdvancedPaymentCreditNote(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
             final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         super();
 
-        init(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
+        super.init(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
         checkRules();
     }
 
@@ -65,7 +59,7 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
     public boolean isAdvancePayment() {
         return true;
     }
-    
+
     @Override
     public void anullDocument(final String reason) {
         if (this.isClosed()) {
@@ -89,7 +83,7 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
 
         checkRules();
     }
-    
+
     @Override
     @Atomic
     public void delete(boolean deleteEntries) {
@@ -107,36 +101,40 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
      ************/
     // @formatter: on
 
-    @Atomic
-    public static AdvancedPaymentCreditNote create(final DebtAccount debtAccount,
+    private static AdvancedPaymentCreditNote create(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
             final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
-        AdvancedPaymentCreditNote note = new AdvancedPaymentCreditNote(debtAccount, documentNumberSeries, documentDate);
+        AdvancedPaymentCreditNote note =
+                new AdvancedPaymentCreditNote(debtAccount, payorDebtAccount, documentNumberSeries, documentDate);
+
         note.checkRules();
+
         return note;
     }
 
     @Atomic
     public static AdvancedPaymentCreditNote createCreditNoteForAdvancedPayment(DocumentNumberSeries documentNumberSeries,
-            DebtAccount debtAccount, BigDecimal availableAmount, DateTime documentDate, String description, String originalNumber) {
-        AdvancedPaymentCreditNote note = create(debtAccount, documentNumberSeries, documentDate);
+            DebtAccount debtAccount, BigDecimal availableAmount, DateTime documentDate, String description, String originalNumber,
+            final DebtAccount payorDebtAccount) {
+        AdvancedPaymentCreditNote note = create(debtAccount, 
+                payorDebtAccount != debtAccount ? payorDebtAccount : null,
+                documentNumberSeries,  documentDate);
 
         note.setOriginDocumentNumber(originalNumber);
         Product advancedPaymentProduct = TreasurySettings.getInstance().getAdvancePaymentProduct();
         if (advancedPaymentProduct == null) {
             throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.product.for.advanced.payment");
         }
-        Vat vat =
-                Vat.findActiveUnique(advancedPaymentProduct.getVatType(), debtAccount.getFinantialInstitution(), new DateTime())
-                        .orElse(null);
+        Vat vat = Vat.findActiveUnique(advancedPaymentProduct.getVatType(), debtAccount.getFinantialInstitution(), new DateTime())
+                .orElse(null);
         if (vat == null) {
             throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.vat.type.for.advanced.payment");
         }
         String lineDescription =
                 BundleUtil.getString(Constants.BUNDLE, "label.AdvancedPaymentCreditNote.advanced.payment.description")
                         + description;
-        CreditEntry entry =
-                CreditEntry.create(note, lineDescription, advancedPaymentProduct, vat, availableAmount, documentDate, null,
-                        BigDecimal.ONE);
+        CreditEntry entry = CreditEntry.create(note, lineDescription, advancedPaymentProduct, vat, availableAmount, documentDate,
+                null, BigDecimal.ONE);
+
         return note;
     }
 

@@ -581,8 +581,20 @@ public class SettlementNote extends SettlementNote_Base {
         DocumentNumberSeries documentNumberSeries =
                 DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), this.getDocumentNumberSeries().getSeries());
 
+        if (getReferencedCustomers().size() > 1) {
+            throw new TreasuryDomainException("error.SettlementNote.referencedCustomers.only.one.allowed");
+        }
+
+        final Customer payorCustomer = getReferencedCustomers().iterator().next();
+        DebtAccount payorDebtAccount = null;
+        if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).isPresent()) {
+            if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get() != getDebtAccount()) {
+                payorDebtAccount = DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get();
+            }
+        }
+        
         AdvancedPaymentCreditNote creditNote = AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries,
-                this.getDebtAccount(), availableAmount, this.getDocumentDate(), comments, originalNumber);
+                this.getDebtAccount(), availableAmount, this.getDocumentDate(), comments, originalNumber, payorDebtAccount);
 
         this.setAdvancedPaymentCreditNote(creditNote);
     }

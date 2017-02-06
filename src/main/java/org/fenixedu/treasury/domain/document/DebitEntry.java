@@ -778,18 +778,14 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public String getERPIntegrationMetadata() {
+        String degreeCode = getDegreeCode();
+        String executionYear = getExecutionYearName();
 
-        String degreeCode = "";
-        if (getTreasuryEvent() != null && !Strings.isNullOrEmpty(getTreasuryEvent().getDegreeCode())) {
-            degreeCode = getTreasuryEvent().getDegreeCode();
-        } else if (getPropertiesMap() != null) {
-            if (getPropertiesMap().containsKey(TreasuryEventKeys.DEGREE_CODE)) {
-                degreeCode = getPropertiesMap().get(TreasuryEventKeys.DEGREE_CODE);
-            } else if (getPropertiesMap().containsKey(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent())) {
-                degreeCode = getPropertiesMap().get(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent());
-            }
-        }
+        return "{\"" + TreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\"" + TreasuryEventKeys.EXECUTION_YEAR + "\":\""
+                + executionYear + "\"}";
+    }
 
+    public String getExecutionYearName() {
         String executionYear = "";
         if (getTreasuryEvent() != null && !Strings.isNullOrEmpty(getTreasuryEvent().getExecutionYearName())) {
             executionYear = getTreasuryEvent().getExecutionYearName();
@@ -800,9 +796,21 @@ public class DebitEntry extends DebitEntry_Base {
                 executionYear = getPropertiesMap().get(TreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent());
             }
         }
+        return executionYear;
+    }
 
-        return "{\"" + TreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\"" + TreasuryEventKeys.EXECUTION_YEAR + "\":\""
-                + executionYear + "\"}";
+    public String getDegreeCode() {
+        String degreeCode = "";
+        if (getTreasuryEvent() != null && !Strings.isNullOrEmpty(getTreasuryEvent().getDegreeCode())) {
+            degreeCode = getTreasuryEvent().getDegreeCode();
+        } else if (getPropertiesMap() != null) {
+            if (getPropertiesMap().containsKey(TreasuryEventKeys.DEGREE_CODE)) {
+                degreeCode = getPropertiesMap().get(TreasuryEventKeys.DEGREE_CODE);
+            } else if (getPropertiesMap().containsKey(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent())) {
+                degreeCode = getPropertiesMap().get(TreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent());
+            }
+        }
+        return degreeCode;
     }
 
     @Atomic
