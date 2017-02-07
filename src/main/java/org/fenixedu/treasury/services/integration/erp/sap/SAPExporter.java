@@ -1755,49 +1755,6 @@ public class SAPExporter implements IERPExporter {
         return operation;
     }
 
-    @Atomic
-    public ERPExportOperation deprecated_retryExportToIntegration(final ERPExportOperation eRPExportOperation) {
-        if (eRPExportOperation.getFinantialDocumentsSet().isEmpty()) {
-            final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
-            final ERPExportOperation operation = createSaftExportOperation(eRPExportOperation.getFile().getContent(),
-                    eRPExportOperation.getFinantialInstitution(), new DateTime());
-            try {
-                logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.starting.retry.integration"));
-                for (FinantialDocument document : eRPExportOperation.getFinantialDocumentsSet()) {
-                    if (eRPExportOperation.getFinantialInstitution().getErpIntegrationConfiguration()
-                            .isIntegratedDocumentsExportationEnabled() || document.isDocumentToExport()) {
-                        // Filter documents already exported
-                        operation.addFinantialDocuments(document);
-                    }
-                }
-
-                boolean success = sendDocumentsInformationToIntegration(eRPExportOperation.getFinantialInstitution(),
-                        eRPExportOperation.getFile(), logBean);
-                operation.setSuccess(success);
-
-            } catch (Exception ex) {
-                writeError(operation, logBean, ex);
-            } finally {
-                logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.retry.integration"));
-                operation.appendLog(logBean.getErrorLog(), logBean.getIntegrationLog(), logBean.getSoapInboundMessage(),
-                        logBean.getSoapOutboundMessage());
-            }
-
-            return operation;
-
-        } else {
-            List<FinantialDocument> allDocuments = new ArrayList<>(eRPExportOperation.getFinantialDocumentsSet());
-            ERPExportOperation operation =
-                    exportFinantialDocumentToIntegration(eRPExportOperation.getFinantialInstitution(), allDocuments);
-
-            final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.retry.integration"));
-            operation.appendLog("", logBean.getIntegrationLog(), "", "");
-
-            return operation;
-        }
-    }
-
     @Override
     public void testExportToIntegration(final FinantialInstitution institution) {
         ERPConfiguration erpIntegrationConfiguration = institution.getErpIntegrationConfiguration();

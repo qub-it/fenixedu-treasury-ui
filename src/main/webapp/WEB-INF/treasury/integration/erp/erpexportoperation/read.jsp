@@ -1,3 +1,6 @@
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -238,7 +241,25 @@ ${portal.toolkit()}
                             <ul>
                                 <c:forEach items="${eRPExportOperation.finantialDocuments}" var="e">
                                     
-                                    <li><c:out value="${e.uiDocumentNumber}" />&nbsp;[<em><joda:format value='${e.closeDate}' style='S-'/></em>]</li>
+                                    <li>
+                                    	<c:if test="${e.debitNote}">
+	                                    	<a href="<%= DebitNoteController.READ_URL %>${e.externalId}">
+		                                    	<c:out value="${e.uiDocumentNumber}" />
+	                                    	</a>
+                                    	</c:if>
+                                    	<c:if test="${e.creditNote}">
+	                                    	<a href="<%= CreditNoteController.READ_URL %>${e.externalId}">
+		                                    	<c:out value="${e.uiDocumentNumber}" />
+	                                    	</a>
+                                    	</c:if>
+                                    	<c:if test="${e.settlementNote}">
+	                                    	<a href="<%= SettlementNoteController.READ_URL %>${e.externalId}">
+		                                    	<c:out value="${e.uiDocumentNumber}" />
+	                                    	</a>
+                                    	</c:if>
+                                    	&nbsp;
+                                    	[<em><joda:format value='${e.closeDate}' style='S-'/></em>]
+                                    </li>
                                 </c:forEach>
 							</ul>
                         </td>

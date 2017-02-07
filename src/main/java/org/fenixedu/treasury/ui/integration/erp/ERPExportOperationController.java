@@ -102,7 +102,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
         }
         
         if(toExecutionDate != null) {
-            toExecutionDate = toExecutionDate.toLocalDate().plusDays(1).toDateTimeAtStartOfDay().minusDays(1);
+            toExecutionDate = toExecutionDate.toLocalDate().plusDays(1).toDateTimeAtStartOfDay().minusSeconds(1);
         }
         
         List<ERPExportOperation> searcherpexportoperationResultsDataSet =

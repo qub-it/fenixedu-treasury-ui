@@ -585,11 +585,13 @@ public class SettlementNote extends SettlementNote_Base {
             throw new TreasuryDomainException("error.SettlementNote.referencedCustomers.only.one.allowed");
         }
 
-        final Customer payorCustomer = getReferencedCustomers().iterator().next();
         DebtAccount payorDebtAccount = null;
-        if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).isPresent()) {
-            if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get() != getDebtAccount()) {
-                payorDebtAccount = DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get();
+        if(!getReferencedCustomers().isEmpty()) {
+            final Customer payorCustomer =  getReferencedCustomers().iterator().next();
+            if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).isPresent()) {
+                if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get() != getDebtAccount()) {
+                    payorDebtAccount = DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get();
+                }
             }
         }
         
