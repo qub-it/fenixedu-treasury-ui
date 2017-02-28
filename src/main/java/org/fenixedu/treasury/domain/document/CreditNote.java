@@ -330,15 +330,20 @@ public class CreditNote extends CreditNote_Base {
             throw new TreasuryDomainException("error.CreditNote.creditNote.not.from.reimbursement");
         }
 
+        if(ReimbursementUtils.isCreditNoteSettledWithPayment(this)) {
+            throw new TreasuryDomainException("error.CreditNote.annulment.over.credit.with.payments.not.possible");
+        }
+
         setState(FinantialDocumentStateType.ANNULED);
         setAnnulledReason(annuledReason);
 
         final CreditNote creditNote = CreditNote.create(getDebtAccount(), getDocumentNumberSeries(), new DateTime(),
                 getDebitNote(), getOriginDocumentNumber());
 
-        final CreditEntry creditEntry = getCreditEntries().findFirst().get();
-        CreditEntry.create(creditNote, creditEntry.getDescription(), creditEntry.getProduct(), creditEntry.getVat(),
-                creditEntry.getAmount(), new DateTime(), creditEntry.getDebitEntry(), creditEntry.getQuantity());
+        for (final CreditEntry creditEntry : getCreditEntriesSet()) {
+            CreditEntry.create(creditNote, creditEntry.getDescription(), creditEntry.getProduct(), creditEntry.getVat(),
+                    creditEntry.getAmount(), new DateTime(), creditEntry.getDebitEntry(), creditEntry.getQuantity());
+        }
 
         return creditNote;
     }

@@ -19,12 +19,13 @@ import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
-import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.ReimbursementUtils;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.joda.time.LocalDate;
@@ -105,11 +106,11 @@ public class SettlementNoteBean implements IBean, Serializable {
                     continue;
                 }
 
-                if (reimbursementNote
-                        && !(invoiceEntry.getFinantialDocument() != null && (invoiceEntry.getFinantialDocument().isPreparing()
-                                || ((CreditNote) invoiceEntry.getFinantialDocument()).isAdvancePayment()))) {
-                    continue;
-                }
+//                if (reimbursementNote
+//                        && !(invoiceEntry.getFinantialDocument() != null && (invoiceEntry.getFinantialDocument().isPreparing()
+//                                || ((CreditNote) invoiceEntry.getFinantialDocument()).isAdvancePayment()))) {
+//                    continue;
+//                }
 
                 creditEntries.add(new CreditEntryBean((CreditEntry) invoiceEntry));
             }
@@ -121,9 +122,9 @@ public class SettlementNoteBean implements IBean, Serializable {
                 Arrays.asList(
                         SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/"
                                 + reimbursementNote,
-                        SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL, SettlementNoteController.CALCULATE_INTEREST_URL,
-                        SettlementNoteController.CREATE_DEBIT_NOTE_URL, SettlementNoteController.INSERT_PAYMENT_URL,
-                        SettlementNoteController.SUMMARY_URL);
+                                SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL, SettlementNoteController.CALCULATE_INTEREST_URL,
+                                SettlementNoteController.CREATE_DEBIT_NOTE_URL, SettlementNoteController.INSERT_PAYMENT_URL,
+                                SettlementNoteController.SUMMARY_URL);
 
         this.advancePayment = false;
         this.finantialTransactionReferenceYear = String.valueOf((new LocalDate()).getYear());
@@ -165,6 +166,19 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
 
         return result;
+    }
+    
+    public boolean isReimbursementWithCompensation() {
+        if(!isReimbursementNote()) {
+            return false;
+        }
+        
+        if(getCreditEntries().stream().filter(ce -> ce.isIncluded()).count() > 1) {
+            throw new TreasuryDomainException("error.SettlementNote.reimbursement.supports.only.one.settlement.entry");
+        }
+        
+        final CreditEntry creditEntry = getCreditEntries().iterator().next().getCreditEntry();
+        return ReimbursementUtils.isCreditNoteForReimbursementMustBeClosedWithDebitNoteAndCreatedNew(creditEntry);
     }
 
     // @formatter:off

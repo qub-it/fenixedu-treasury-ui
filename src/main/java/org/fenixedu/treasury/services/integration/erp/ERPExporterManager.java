@@ -294,7 +294,7 @@ public class ERPExporterManager {
                 .filter(d -> d.isDocumentSeriesNumberSet())
                 .filter(x -> x.getCloseDate() != null)
                 .filter(x -> x.isDebitNote() || (x.isSettlementNote() && !x.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)))
-                .filter(x -> x.isDebitNote() || (x.isSettlementNote() && !((SettlementNote) x).isReimbursement()))
+                //.filter(x -> x.isDebitNote() || (x.isSettlementNote() && !((SettlementNote) x).isReimbursement()))
                 .sorted(COMPARE_BY_DOCUMENT_TYPE)
                 .collect(Collectors.<FinantialDocument> toList());
     }

@@ -246,6 +246,12 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(Constants.bundle("error.SettlementNote.referencedCustomers.only.one.allowed"), model);
         }
 
+        if (!error && bean.isReimbursementNote() && bean.getCreditEntries().stream()
+                .filter(ce -> ce.isIncluded()).count() != 1) {
+            error = true;
+            addErrorMessage(Constants.bundle("error.SettlementNote.reimbursement.supports.only.one.settlement.entry"), model);
+        }
+        
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -303,9 +309,23 @@ public class SettlementNoteController extends TreasuryBaseController {
             return insertPayment(bean, model);
         }
         setSettlementNoteBean(bean, model);
+        
+        if(bean.isReimbursementWithCompensation()) {
+            return "treasury/document/managepayments/settlementnote/reimbursementWithCompensation";
+        }
+        
         return "treasury/document/managepayments/settlementnote/insertPayment";
     }
-
+    
+    private static final String CONTINUE_TO_INSERT_PAYMENT_URI = "/continueToInsertPayment/";
+    public static final String CONTINUE_TO_INSERT_PAYMENT_URL = CONTROLLER_URL + CONTINUE_TO_INSERT_PAYMENT_URI;
+    
+    @RequestMapping(value = CONTINUE_TO_INSERT_PAYMENT_URI, method = RequestMethod.POST)
+    public String continueToInsertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        setSettlementNoteBean(bean, model);
+        return "treasury/document/managepayments/settlementnote/insertPayment";
+    }
+    
     @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);

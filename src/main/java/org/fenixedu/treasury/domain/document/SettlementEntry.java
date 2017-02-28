@@ -138,10 +138,9 @@ public class SettlementEntry extends SettlementEntry_Base {
     }
 
     @Atomic
-    public static SettlementEntry create(final CreditEntryBean creditEntryBean, final SettlementNote settlementNote,
-            DateTime entryDate) {
-        return new SettlementEntry(creditEntryBean.getCreditEntry(), settlementNote, creditEntryBean.getCreditAmount(),
-                creditEntryBean.getCreditEntry().getDescription(), entryDate, false);
+    public static SettlementEntry create(final CreditEntry creditEntry, final BigDecimal creditAmount, final String creditDescription, 
+            final SettlementNote settlementNote, final DateTime entryDate) {
+        return new SettlementEntry(creditEntry, settlementNote, creditAmount, creditDescription, entryDate, false);
     }
 
     @Override

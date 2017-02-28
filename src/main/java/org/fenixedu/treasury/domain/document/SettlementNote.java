@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.bundle;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +38,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -53,8 +54,6 @@ import org.joda.time.DateTime;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
-
-import static org.fenixedu.treasury.util.Constants.bundle;
 
 public class SettlementNote extends SettlementNote_Base {
 
@@ -263,7 +262,6 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         processAdvancePayments(bean);
-
         setAdvancePaymentSetByUser(bean.isAdvancePayment());
 
         if (isReimbursement()) {
@@ -272,9 +270,15 @@ public class SettlementNote extends SettlementNote_Base {
                 throw new TreasuryDomainException("error.SettlementNote.reimbursement.supports.only.one.settlement.entry");
             }
 
-            if (!getSettlemetEntries().findFirst().get().getInvoiceEntry().getFinantialDocument().isCreditNote()) {
+            CreditNote creditNote = (CreditNote) getSettlemetEntries().findFirst().get().getInvoiceEntry().getFinantialDocument();
+            if (!creditNote.isCreditNote()) {
                 throw new TreasuryDomainException("error.SettlementNote.reimbursement.invoice.entry.not.from.credit.note.");
             }
+
+            if (ReimbursementUtils.isCreditNoteSettledWithPayment(creditNote)) {
+                throw new TreasuryDomainException("error.CreditNote.reimbursement.over.credit.with.payments.not.possible");
+            }
+
         }
     }
 
@@ -344,18 +348,28 @@ public class SettlementNote extends SettlementNote_Base {
     private void closeCreditNotes(SettlementNoteBean bean) {
         for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
-                final CreditEntry creditEntry = creditEntryBean.getCreditEntry();
+                CreditEntry creditEntry = creditEntryBean.getCreditEntry();
+                
+                final BigDecimal creditAmountWithVat = creditEntryBean.getCreditAmountWithVat();
+                
+                if (bean.isReimbursementNote()) {
+                    if (ReimbursementUtils.isCreditNoteForReimbursementMustBeClosedWithDebitNoteAndCreatedNew(creditEntry)) {
+                        creditEntry = ReimbursementUtils.closeWithDebitNoteAndCreateNewCreditNoteForReimbursement(creditEntry,
+                                creditAmountWithVat);
+                    }
+                }
 
                 if (!creditEntry.getFinantialDocument().isClosed()) {
-                    if (Constants.isLessThan(creditEntryBean.getCreditAmountWithVat(), creditEntry.getOpenAmount())) {
+                    if (Constants.isLessThan(creditAmountWithVat, creditEntry.getOpenAmount())) {
                         creditEntry
-                                .splitCreditEntry(creditEntry.getOpenAmount().subtract(creditEntryBean.getCreditAmountWithVat()));
+                                .splitCreditEntry(creditEntry.getOpenAmount().subtract(creditAmountWithVat));
                     }
 
                     creditEntry.getFinantialDocument().closeDocument();
                 }
 
-                SettlementEntry.create(creditEntryBean, this, bean.getDate().toDateTimeAtStartOfDay());
+                final String creditDescription = creditEntryBean.getCreditEntry().getDescription();
+                SettlementEntry.create(creditEntry, creditAmountWithVat, creditDescription, this, bean.getDate().toDateTimeAtStartOfDay());
             }
         }
     }
@@ -586,15 +600,17 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         DebtAccount payorDebtAccount = null;
-        if(!getReferencedCustomers().isEmpty()) {
-            final Customer payorCustomer =  getReferencedCustomers().iterator().next();
-            if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).isPresent()) {
-                if(DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get() != getDebtAccount()) {
-                    payorDebtAccount = DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get();
+        if (!getReferencedCustomers().isEmpty()) {
+            final Customer payorCustomer = getReferencedCustomers().iterator().next();
+            if (DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).isPresent()) {
+                if (DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer)
+                        .get() != getDebtAccount()) {
+                    payorDebtAccount =
+                            DebtAccount.findUnique(this.getDebtAccount().getFinantialInstitution(), payorCustomer).get();
                 }
             }
         }
-        
+
         AdvancedPaymentCreditNote creditNote = AdvancedPaymentCreditNote.createCreditNoteForAdvancedPayment(documentNumberSeries,
                 this.getDebtAccount(), availableAmount, this.getDocumentDate(), comments, originalNumber, payorDebtAccount);
 

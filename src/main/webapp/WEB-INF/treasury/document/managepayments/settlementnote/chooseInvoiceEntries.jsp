@@ -34,7 +34,12 @@ ${portal.angularToolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" />
+    	<c:if test="${not settlementNoteBean.reimbursementNote}">
+        	<spring:message code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" />
+        </c:if>
+        <c:if test="${settlementNoteBean.reimbursementNote}">
+        	<spring:message code="label.administration.manageCustomer.createSettlementNote.reimbursement.chooseInvoiceEntries" />
+        </c:if>
         <small></small>
     </h1>
     <div>
@@ -55,8 +60,10 @@ ${portal.angularToolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>${settlementNoteBean.debtAccount.externalId}"><spring:message code="label.event.back" /></a>
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
+    <a class="" href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>${settlementNoteBean.debtAccount.externalId}">
+        <spring:message code="label.event.back" />
+    </a>
     &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -115,15 +122,27 @@ ${portal.angularToolkit()}
 
 <div>
     <p>
-        <b>1. <spring:message code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" /></b> <span class="glyphicon glyphicon-arrow-right"
-            aria-hidden="true"></span> 2.
-        <spring:message code="label.administration.manageCustomer.createSettlementNote.calculateInterest" />
-        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 3.
-        <spring:message code="label.administration.manageCustomer.createSettlementNote.createDebitNote" />
-        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 4.
-        <spring:message code="label.administration.manageCustomer.createSettlementNote.insertpayment" />
-        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 5.
-        <spring:message code="label.administration.manageCustomer.createSettlementNote.summary" />
+    	<c:if test="${not settlementNoteBean.reimbursementNote }">
+	        <b>1. <spring:message code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" /></b>
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        2. <spring:message code="label.administration.manageCustomer.createSettlementNote.calculateInterest" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        3. <spring:message code="label.administration.manageCustomer.createSettlementNote.createDebitNote" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        4. <spring:message code="label.administration.manageCustomer.createSettlementNote.insertpayment" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        5. <spring:message code="label.administration.manageCustomer.createSettlementNote.summary" />
+        </c:if>
+        
+        <c:if test="${settlementNoteBean.reimbursementNote}">
+	        <b>1. <spring:message code="label.administration.manageCustomer.createSettlementNote.reimbursement.chooseInvoiceEntries" /></b>
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        2. <spring:message code="label.administration.manageCustomer.createSettlementNote.reimbursement.compensate.with.debit" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        3. <spring:message code="label.administration.manageCustomer.createSettlementNote.insertpayment" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        4. <spring:message code="label.administration.manageCustomer.createSettlementNote.summary" />
+        </c:if>
     </p>
 </div>
 

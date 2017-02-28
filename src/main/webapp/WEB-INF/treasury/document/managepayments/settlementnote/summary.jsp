@@ -56,8 +56,12 @@ ${portal.angularToolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message
-            code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" />
+    	<c:if test="${not settlementNoteBean.reimbursementNote}">
+        	<spring:message code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" />
+        </c:if>
+        <c:if test="${settlementNoteBean.reimbursementNote}">
+        	<spring:message code="label.administration.manageCustomer.createSettlementNote.reimbursement.chooseInvoiceEntries" />
+        </c:if>
         <small></small>
     </h1>
     <div>
@@ -113,6 +117,7 @@ ${portal.angularToolkit()}
 
 <div>
     <p>
+    	<c:if test="${not settlementNoteBean.reimbursementNote }">
         1.
         <spring:message
             code="label.administration.manageCustomer.createSettlementNote.chooseInvoiceEntries" />
@@ -131,6 +136,17 @@ ${portal.angularToolkit()}
         <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
         <b>5. <spring:message
                 code="label.administration.manageCustomer.createSettlementNote.summary" /></b>
+        </c:if>
+
+        <c:if test="${settlementNoteBean.reimbursementNote}">
+	        1. <spring:message code="label.administration.manageCustomer.createSettlementNote.reimbursement.chooseInvoiceEntries" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        2. <spring:message code="label.administration.manageCustomer.createSettlementNote.reimbursement.compensate.with.debit" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        3. <spring:message code="label.administration.manageCustomer.createSettlementNote.insertpayment" />
+	        <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> 
+	        <b>4. <spring:message code="label.administration.manageCustomer.createSettlementNote.summary" /></b>
+        </c:if>
     </p>
 </div>
 
