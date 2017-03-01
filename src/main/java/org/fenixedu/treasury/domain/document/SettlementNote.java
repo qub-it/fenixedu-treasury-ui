@@ -275,10 +275,9 @@ public class SettlementNote extends SettlementNote_Base {
                 throw new TreasuryDomainException("error.SettlementNote.reimbursement.invoice.entry.not.from.credit.note.");
             }
 
-            if (ReimbursementUtils.isCreditNoteSettledWithPayment(creditNote)) {
+            if (!creditNote.isAdvancePayment() && ReimbursementUtils.isCreditNoteSettledWithPayment(creditNote)) {
                 throw new TreasuryDomainException("error.CreditNote.reimbursement.over.credit.with.payments.not.possible");
             }
-
         }
     }
 
@@ -538,14 +537,18 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         if (getCurrentReimbursementProcessStatus().isRejectedStatus() && isClosed()) {
+            
             final CreditNote creditNote =
                     (CreditNote) getSettlemetEntries().findFirst().get().getInvoiceEntry().getFinantialDocument();
 
-            creditNote
-                    .anullReimbursementCreditNoteAndCopy(Constants.bundle("error.SettlementNote.reimbursement.rejected.reason"));
+            if(!creditNote.isAdvancePayment()) {
+                creditNote
+                        .anullReimbursementCreditNoteAndCopy(Constants.bundle("error.SettlementNote.reimbursement.rejected.reason"));
+            }
+            
             anullDocument(Constants.bundle("label.ReimbursementProcessStatusType.annuled.reimbursement.by.annuled.process"),
                     false);
-
+            
             markDocumentToExport();
         }
     }

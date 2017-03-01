@@ -330,6 +330,10 @@ public class CreditNote extends CreditNote_Base {
             throw new TreasuryDomainException("error.CreditNote.creditNote.not.from.reimbursement");
         }
 
+        if(isAdvancePayment()) {
+            throw new TreasuryDomainException("error.CreditNote.annulment.over.advance.payment.not.possible");
+        }
+
         if(ReimbursementUtils.isCreditNoteSettledWithPayment(this)) {
             throw new TreasuryDomainException("error.CreditNote.annulment.over.credit.with.payments.not.possible");
         }

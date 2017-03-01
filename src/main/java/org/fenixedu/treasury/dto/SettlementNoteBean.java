@@ -177,7 +177,7 @@ public class SettlementNoteBean implements IBean, Serializable {
             throw new TreasuryDomainException("error.SettlementNote.reimbursement.supports.only.one.settlement.entry");
         }
         
-        final CreditEntry creditEntry = getCreditEntries().iterator().next().getCreditEntry();
+        final CreditEntry creditEntry = getCreditEntries().stream().filter(ce -> ce.isIncluded()).findFirst().get().getCreditEntry();
         return ReimbursementUtils.isCreditNoteForReimbursementMustBeClosedWithDebitNoteAndCreatedNew(creditEntry);
     }
 
