@@ -62,10 +62,9 @@ public class DocumentPrinter {
 //
 //      } else {
         //HACK...
-        generator =
-                DocumentGenerator.create(
-                        "F:\\O\\fenixedu\\fenixedu-academic-treasury\\src\\main\\resources\\templates\\tuitionsPaymentPlan.odt",
-                        outputMimeType);
+        generator = DocumentGenerator.create(
+                "F:\\O\\fenixedu\\fenixedu-academic-treasury\\src\\main\\resources\\templates\\tuitionsPaymentPlan.odt",
+                outputMimeType);
 //          throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
 //      }
 
@@ -74,7 +73,7 @@ public class DocumentPrinter {
 
         registerHelpers(generator);
         generator.registerDataProvider(new DebtAccountDataProvider(debtAccount, documents));
-        generator.registerDataProvider(new CustomerDataProvider(customer));
+        generator.registerDataProvider(new CustomerDataProvider(customer, "customer"));
         generator.registerDataProvider(new FinantialInstitutionDataProvider(finst));
 
         //... add more providers...
@@ -87,21 +86,19 @@ public class DocumentPrinter {
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
     public static byte[] printFinantialDocument(FinantialDocument document, String outputMimeType) {
 
-        TreasuryDocumentTemplate templateInEntity =
-                TreasuryDocumentTemplate
-                        .findByFinantialDocumentTypeAndFinantialEntity(document.getFinantialDocumentType(),
-                                document.getDebtAccount().getFinantialInstitution().getFinantialEntitiesSet().iterator().next())
-                        .filter(x -> x.isActive()).findFirst().orElse(null);
+        TreasuryDocumentTemplate templateInEntity = TreasuryDocumentTemplate
+                .findByFinantialDocumentTypeAndFinantialEntity(document.getFinantialDocumentType(),
+                        document.getDebtAccount().getFinantialInstitution().getFinantialEntitiesSet().iterator().next())
+                .filter(x -> x.isActive()).findFirst().orElse(null);
         DocumentGenerator generator = null;
 
         if (templateInEntity != null) {
             generator = DocumentGenerator.create(templateInEntity, outputMimeType);
 
         } else {
-            generator =
-                    DocumentGenerator.create(
-                            "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
-                            outputMimeType);
+            generator = DocumentGenerator.create(
+                    "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
+                    outputMimeType);
 //            //HACK...
 //            throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
         }
@@ -113,9 +110,21 @@ public class DocumentPrinter {
             generator.registerDataProvider(new SettlementNoteDataProvider((SettlementNote) document));
         }
         generator.registerDataProvider(new DebtAccountDataProvider(document.getDebtAccount()));
-        generator.registerDataProvider(new CustomerDataProvider(document.getDebtAccount().getCustomer()));
+        generator.registerDataProvider(new CustomerDataProvider(document.getDebtAccount().getCustomer(), "customer"));
         generator.registerDataProvider(new FinantialInstitutionDataProvider(document.getDebtAccount().getFinantialInstitution()));
 
+        if (document.isInvoice()) {
+            final Invoice invoice = (Invoice) document;
+
+            final Customer payorCustomer = invoice.getPayorDebtAccount() != null ? 
+                    invoice.getPayorDebtAccount().getCustomer() : invoice.getDebtAccount().getCustomer();
+            generator.registerDataProvider(new CustomerDataProvider(payorCustomer, "payorCustomer"));
+        } else if(document.isSettlementNote()) {
+            final SettlementNote settlementNote = (SettlementNote) document;
+
+            final Customer payorCustomer = settlementNote.getReferencedCustomers().iterator().next();
+            generator.registerDataProvider(new CustomerDataProvider(payorCustomer, "payorCustomer"));
+        }
         //... add more providers...
 
         byte[] outputReport = generator.generateReport();

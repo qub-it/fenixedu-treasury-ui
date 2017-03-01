@@ -7,13 +7,11 @@ import com.qubit.terra.docs.util.IReportDataProvider;
 
 public class CustomerDataProvider extends AbstractDataProvider implements IReportDataProvider {
 
-    protected static final String CUSTOMER_KEY = "customer";
-
     private Customer customer;
-
-    public CustomerDataProvider(final Customer customer) {
+    
+    public CustomerDataProvider(final Customer customer, final String key) {
         this.customer = customer;
-        registerKey(CUSTOMER_KEY, CustomerDataProvider::handleCustomerKey);
+        registerKey(key, CustomerDataProvider::handleCustomerKey);
     }
 
     private static Object handleCustomerKey(IReportDataProvider provider) {
