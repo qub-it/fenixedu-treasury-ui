@@ -337,6 +337,11 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
     }
 
     @Override
+    public String getWarningBeforeRedirectionJspPage() {
+        return null;
+    }
+
+    @Override
     @Atomic
     public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
         ForwardPaymentStatusBean paymentStatusBean =

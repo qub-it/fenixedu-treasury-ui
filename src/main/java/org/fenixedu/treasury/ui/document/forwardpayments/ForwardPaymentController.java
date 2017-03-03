@@ -37,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -82,10 +83,14 @@ public class ForwardPaymentController extends TreasuryBaseController {
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment";
 
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
+        final IForwardPaymentImplementation implementation =
+                ForwardPaymentConfiguration.find(bean.getDebtAccount().getFinantialInstitution()).get().implementation();
+
         model.addAttribute("settlementNoteBeanJson", getBeanJson(bean));
         model.addAttribute("settlementNoteBean", bean);
-        model.addAttribute("logosPage", ForwardPaymentConfiguration.find(bean.getDebtAccount().getFinantialInstitution()).get()
-                .implementation().getLogosJspPage());
+        model.addAttribute("logosPage", implementation.getLogosJspPage());
+        model.addAttribute("warningBeforeRedirectionPage", implementation.getWarningBeforeRedirectionJspPage());
+        model.addAttribute("localeCode", I18N.getLocale().getLanguage());
         model.addAttribute("chooseInvoiceEntriesUrl", readChooseInvoiceEntriesUrl());
         model.addAttribute("summaryUrl", readSummaryUrl());
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
@@ -207,7 +212,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         }
 
         setSettlementNoteBean(bean, model);
-        
+
         boolean hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage = false;
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
@@ -216,7 +221,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
                         hasForwardPaymentInStateOfPostPaymentAndPayedOnPlatform(debitEntryBean.getDebitEntry());
             }
         }
-        
+
         model.addAttribute("paymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage",
                 hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage);
 

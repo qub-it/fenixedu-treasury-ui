@@ -13,6 +13,8 @@ public interface IForwardPaymentImplementation {
     public String getFormattedAmount(final ForwardPayment forwardPayment);
     
     public String getLogosJspPage();
+    
+    public String getWarningBeforeRedirectionJspPage();
 
     public ForwardPaymentStatusBean paymentStatus(final ForwardPayment forwardPayment);
 

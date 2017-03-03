@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.validator.routines.EmailValidator;
+import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -59,6 +60,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     public static final String ACTION_RETURN_URL = "return";
     public static final String ACTION_CANCEL_URL = "cancel";
     public static final String LANG_PT = "pt";
+    public static final String LANG_EN = "en";
 
     @Override
     public String getPaymentURL(final ForwardPayment forwardPayment) {
@@ -155,7 +157,9 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         request.setOrder(order);
         request.setReturnURL(getReturnURL(forwardPayment, returnControllerURL));
         request.setCancelURL(getCancelURL(forwardPayment, returnControllerURL));
-        request.setLanguageCode(LANG_PT);
+        
+        final String languageToUse = "en".equals(I18N.getLocale().getLanguage()) ? LANG_EN : LANG_PT;
+        request.setLanguageCode(languageToUse);
 
         request.setBuyer(buyerDetails);
         request.setSecurityMode(SECURITY_MODE);
@@ -328,6 +332,11 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     @Override
     public String getLogosJspPage() {
         return "implementations/payline/logos.jsp";
+    }
+    
+    @Override
+    public String getWarningBeforeRedirectionJspPage() {
+        return "implementations/payline/warning.jsp";
     }
 
     @Override

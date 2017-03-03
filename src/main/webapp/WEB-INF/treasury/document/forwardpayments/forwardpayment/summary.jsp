@@ -164,8 +164,7 @@ ${portal.angularToolkit()}
 <div class="panel panel-primary ">
     <div class="panel-heading">
         <h3 class="panel-title">
-            <spring:message
-                code="label.ForwardPaymentController.debitEntries.to.confirm" />
+            <spring:message code="label.ForwardPaymentController.debitEntries.to.confirm" />
         </h3>
     </div>
     <div class="panel-body">
@@ -175,27 +174,26 @@ ${portal.angularToolkit()}
 				<spring:message code="label.ForwardPaymentController.debitEntries.confirm.and.pay" />
 			</h5>
 		</div>
+		
+		<c:if test="${warningBeforeRedirectionPage != null}">
+			<jsp:include page="${warningBeforeRedirectionPage}" />
+		</c:if>
 
         <table id="debitNoteTable"
             class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
-                    <th><spring:message
-                            code="label.DebitEntry.documentNumber" /></th>
-                    <th><spring:message
-                            code="label.DebitEntry.description" /></th>
-                    <th><spring:message
-                            code="label.DebitEntry.dueDate" /></th>
+                    <th><spring:message code="label.DebitEntry.documentNumber" /></th>
+                    <th><spring:message code="label.DebitEntry.description" /></th>
+                    <th><spring:message code="label.DebitEntry.dueDate" /></th>
                     <th><spring:message code="label.DebitEntry.vat" /></th>
-                    <th><spring:message
-                            code="label.DebitEntry.amountWithVat" /></th>
+                    <th><spring:message code="label.DebitEntry.amountWithVat" /></th>
                 </tr>
             </thead>
             <tbody>
                 <c:set var="debitNoteDate"
                     value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
-                <c:forEach items="${ settlementNoteBean.debitEntries }"
-                    var="debitEntryBean">
+                <c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
                     <c:if
                         test="${ debitEntryBean.included && empty debitEntryBean.debitEntry.finantialDocument  }">
                         <tr>
@@ -203,14 +201,9 @@ ${portal.angularToolkit()}
                             <td><c:out
                                     value="${ debitEntryBean.debitEntry.description }" />
                             </td>
-                            <td><c:out value='${ debitNoteDate }' />
-                            </td>
-                            <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }" />
-                            </td>
-                            <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
-                            </td>
+                            <td><c:out value='${ debitNoteDate }' /></td>
+                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }" /></td>
+                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" /></td>
                         </tr>
                     </c:if>
                 </c:forEach>
@@ -221,8 +214,7 @@ ${portal.angularToolkit()}
                         <tr>
                             <td>---</td>
                             <td><spring:message code="label.InterestEntry.interest" />
-                                       &nbsp; <c:out
-                                    value="${ interestEntryBean.debitEntry.description }" />
+                                       &nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" />
                             </td>
                             <td><c:out value='${ debitNoteDate }' />
                             </td>
