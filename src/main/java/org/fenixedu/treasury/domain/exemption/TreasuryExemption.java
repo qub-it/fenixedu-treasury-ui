@@ -204,6 +204,10 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     @Atomic
     public static TreasuryExemption create(final TreasuryExemptionType treasuryExemptionType, final TreasuryEvent treasuryEvent,
             final String reason, final BigDecimal valueToExempt, final DebitEntry debitEntry) {
+        if(Constants.isGreaterThan(debitEntry.getQuantity(), BigDecimal.ONE)) {
+            throw new TreasuryDomainException("error.TreasuryExemption.not.possible.to.exempt.debit.entry.with.more.than.one.in.quantity");
+        }
+        
         return new TreasuryExemption(treasuryExemptionType, treasuryEvent, reason, valueToExempt, debitEntry);
     }
 

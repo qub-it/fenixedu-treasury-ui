@@ -277,7 +277,7 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         // If it exempted then it must be on itself or with credit entry but not both
-        if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).count() > 0) {
+        if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).filter(c -> c.getDebitEntry() == this).count() > 0) {
             throw new TreasuryDomainException(
                     "error.DebitEntry.exemption.cannot.be.on.debit.entry.and.with.credit.entry.at.same.time");
         }
