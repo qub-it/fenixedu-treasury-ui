@@ -142,19 +142,17 @@ ${portal.toolkit()}
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.DebitNote.documentDate" />
                 </div>
-<c:if test='${debitNote.isPreparing()}'>
+
+				<c:if test='${debitNote.isPreparing()}'>
                 <div class="col-sm-6">
-                    <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date
-                        value='<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>'/>
+                    <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" bennu-date value='<c:out value='${not empty param.documentdate ? param.documentdate : debitNote.documentDate }'/>'/>
                 </div>
-</c:if>
+				</c:if>
 
                 <c:if test='${not debitNote.isPreparing()}'>
-                                <div class="col-sm-4">
-                    <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" 
-                        value='<c:out value='${debitNote.documentDate.toString("YYYY-MM-dd") }'/>'  readonly />
+                <div class="col-sm-4">
+                    <input id="debitNote_documentDate" class="form-control" type="text" name="documentdate" value='<c:out value='${debitNote.documentDate.toString("YYYY-MM-dd") }'/>'  readonly />
                 </div>
-                
                 </c:if>
 
             </div>
@@ -162,19 +160,29 @@ ${portal.toolkit()}
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.DebitNote.dueDate" />
                 </div>
-<c:if test='${debitNote.isPreparing()}'>
+
+				<c:if test='${debitNote.isPreparing()}'>
                 <div class="col-sm-6">
                     <input id="debitNote_dueDate" class="form-control" type="text" name="documentduedate" bennu-date
                         value='<c:out value='${not empty param.documentduedate ? param.documentduedate : debitNote.documentDueDate }'/>'  />
                 </div>
                 </c:if>
+
                 <c:if test='${not debitNote.isPreparing()}'>
-                                <div class="col-sm-4">
-                    <input id="debitNote_dueDate" class="form-control" type="text" name="documentduedate" 
-                        value='<c:out value='${debitNote.documentDueDate }'/>'  readonly />
+                <div class="col-sm-4">
+                    <input id="debitNote_dueDate" class="form-control" type="text" name="documentduedate" value='<c:out value='${debitNote.documentDueDate }'/>'  readonly />
                 </div>
-                
                 </c:if>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.DebitNote.legacyERPCertificateDocumentReference" />
+                </div>
+
+                <div class="col-sm-10">
+                    <input id="debitNote_legacyERPCertificateDocumentReference" class="form-control" type="text" name="legacyerpcertificatedocumentreference"
+                        value='<c:out value='${not empty param.legacyERPCertificateDocumentReference ? param.legacyERPCertificateDocumentReference : debitNote.legacyERPCertificateDocumentReference }'/>' />
+                </div>
             </div>
         </div>
         <div class="panel-footer">

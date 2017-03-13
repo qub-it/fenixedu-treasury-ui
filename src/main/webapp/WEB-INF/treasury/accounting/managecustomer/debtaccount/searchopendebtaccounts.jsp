@@ -92,6 +92,7 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
+<th><spring:message code="label.Customer.code"/></th>
 <th><spring:message code="label.Customer.identificationNumber"/></th>
 <th><spring:message code="label.Customer.fiscalNumber"/></th>
 <th><spring:message code="label.Customer.name"/></th>
@@ -121,8 +122,9 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+                "studentNumber" : "<c:out value='${searchResult.customer.businessIdentification}'/>",
                 "identificationNumber" : "<c:out value='${searchResult.customer.identificationNumber}'/>",
-				"fiscalNumber" : "<c:out value='${searchResult.customer.fiscalNumber}'/>",
+				"fiscalNumber" : "<c:out value='${searchResult.customer.uiFiscalNumber}'/>",
 				"name" : "<c:out value='${searchResult.customer.name}'/>",
 "openAmount" : "<c:out value='${searchResult.finantialInstitution.currency.getValueFor(searchResult.totalInDebt)}'/>",
 "actions" :
@@ -141,6 +143,7 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
+{ data: 'studentNumber' },
 { data: 'identificationNumber' },
 { data: 'fiscalNumber' },
 { data: 'name' },

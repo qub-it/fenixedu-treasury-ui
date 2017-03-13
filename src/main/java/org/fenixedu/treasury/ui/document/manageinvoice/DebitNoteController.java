@@ -373,19 +373,21 @@ public class DebitNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") DebitNote debitNote,
-            @RequestParam(value = "documentdate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDate,
-            @RequestParam(value = "documentduedate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
-            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
-            @RequestParam(value = "documentobservations", required = false) String documentObservations, Model model,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate documentDate,
+            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate documentDueDate,
+            @RequestParam(value = "origindocumentnumber", required = false) final String originDocumentNumber,
+            @RequestParam(value = "documentobservations", required = false) final String documentObservations,
+            @RequestParam(value = "legacyerpcertificatedocumentreference", required = false) final String legacyERPCertificateDocumentReference,
+            Model model, RedirectAttributes redirectAttributes) {
 
         setDebitNote(debitNote, model);
 
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            updateDebitNote(documentDate, documentDueDate, originDocumentNumber, documentObservations, model);
+
+            final DebitNote note = getDebitNote(model);
+            note.edit(note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber, documentObservations, 
+                    legacyERPCertificateDocumentReference);
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -393,20 +395,8 @@ public class DebitNoteController extends TreasuryBaseController {
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
         }
+        
         return update(debitNote, model, redirectAttributes);
-    }
-
-    @Atomic
-    public void updateDebitNote(LocalDate documentDate, LocalDate documentDueDate, String originDocumentNumber,
-            String documentObservations, Model model) {
-        DebitNote note = getDebitNote(model);
-        if (note.isPreparing()) {
-            note.edit(documentDate, documentDueDate, originDocumentNumber);
-        } else {
-            note.edit(note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber);
-        }
-
-        note.setDocumentObservations(documentObservations);
     }
 
     @RequestMapping(value = "/read/{oid}/addentry")

@@ -143,12 +143,18 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public void edit(final LocalDate documentDate, LocalDate documentDueDate, final String originDocumentNumber) {
+    public void edit(final LocalDate documentDate, LocalDate documentDueDate, final String originDocumentNumber, final String documentObservations,
+            final String legacyERPCertificateDocumentReference) {
 
-        setDocumentDate(documentDate.toDateTimeAtStartOfDay());
-        setDocumentDueDate(documentDueDate);
+        if (isPreparing()) {
+            setDocumentDate(documentDate.toDateTimeAtStartOfDay());
+            setDocumentDueDate(documentDueDate);
+        }
+        
         setOriginDocumentNumber(originDocumentNumber);
-
+        setDocumentObservations(documentObservations);
+        setLegacyERPCertificateDocumentReference(legacyERPCertificateDocumentReference);
+        
         checkRules();
     }
 

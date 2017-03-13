@@ -660,6 +660,10 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                         <td><spring:message code="label.${debitNote.exportedInLegacyERP}" /></td>
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.legacyERPCertificateDocumentReference" /></th>
+                        <td><c:out value="${debitNote.legacyERPCertificateDocumentReference}" /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${debitNote.getVersioningCreator()}' />] <joda:format value="${debitNote.getVersioningCreationDate()}" style="SS" /></td>
                     </tr>
