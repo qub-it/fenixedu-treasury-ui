@@ -363,7 +363,7 @@ public class SAPExporter implements IERPExporter {
         }
         String xml = exportAuditFileToXML(auditFile);
 
-        logger.info("SAFT File export concluded with success.");
+        logger.debug("SAFT File export concluded with success.");
         return xml;
     }
 
