@@ -523,6 +523,7 @@ class paymentcodes.PaymentReferenceCode
 	  Boolean active;
 	  Boolean useCheckDigit;
 	  boolean generateReferenceCodeOnDemand;
+	  Long nextReferenceCode;
 	}
 	
 

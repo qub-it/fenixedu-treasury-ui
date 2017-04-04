@@ -48,9 +48,9 @@ import org.fenixedu.treasury.services.payments.paymentscodegenerator.SequentialP
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
+
+import pt.ist.fenixframework.Atomic;
 
 public class PaymentCodePool extends PaymentCodePool_Base {
 
@@ -75,6 +75,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             PaymentMethod paymentMethod) {
         setName(name);
         setEntityReferenceCode(entityReferenceCode);
+        setNextReferenceCode(minReferenceCode);
         setMinReferenceCode(minReferenceCode);
         setMaxReferenceCode(maxReferenceCode);
         setMinAmount(minAmount);
@@ -163,7 +164,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         }
 
     }
-    
+
     public boolean isGenerateReferenceCodeOnDemand() {
         return getGenerateReferenceCodeOnDemand();
     }
@@ -205,8 +206,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             throw new TreasuryDomainException(
                     "error.administration.payments.sibs.managepaymentcodepool.invalid.entity.reference.code.from.finantial.institution");
         }
-        return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                validFrom, validTo, active, useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
+        return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount, validFrom,
+                validTo, active, useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
 
     }
 
@@ -220,7 +221,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                 }).stream();
     }
 
-    public static Stream<PaymentCodePool> findByName(final java.lang.String name, final FinantialInstitution finantialInstitution) {
+    public static Stream<PaymentCodePool> findByName(final java.lang.String name,
+            final FinantialInstitution finantialInstitution) {
         return findByFinantialInstitution(finantialInstitution).filter(i -> name.equalsIgnoreCase(i.getName()));
     }
 
@@ -267,6 +269,12 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return _referenceCodeGenerator;
     }
 
+    public Long getAndIncrementNextReferenceCode() {
+        final Long nextReferenceCode = getNextReferenceCode();
+        setNextReferenceCode(nextReferenceCode + 1);
+        return nextReferenceCode;
+    }
+
     @Atomic
     public void setNewValidPeriod(LocalDate validFrom, LocalDate validTo) {
         if (this.getPaymentReferenceCodesSet().size() > 0
@@ -300,10 +308,9 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     @Atomic
     public void changeReferenceCode(String entityReferenceCode, Long minReferenceCode, Long maxReferenceCode) {
-        if (this.getPaymentReferenceCodesSet().size() > 0
-                && (!this.getEntityReferenceCode().equals(entityReferenceCode)
-                        || !this.getMinReferenceCode().equals(minReferenceCode) || !this.getMaxReferenceCode().equals(
-                        maxReferenceCode))) {
+        if (this.getPaymentReferenceCodesSet().size() > 0 && (!this.getEntityReferenceCode().equals(entityReferenceCode)
+                || !this.getMinReferenceCode().equals(minReferenceCode)
+                || !this.getMaxReferenceCode().equals(maxReferenceCode))) {
             throw new TreasuryDomainException("error.PaymentCodePool.invalid.change.state.with.generated.references");
         }
         this.setEntityReferenceCode(entityReferenceCode);

@@ -28,11 +28,8 @@
 package org.fenixedu.treasury.services.payments.paymentscodegenerator;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
@@ -43,26 +40,18 @@ import pt.ist.fenixframework.Atomic;
 
 public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGenerator {
 
-    private static final String CODE_FILLER = "0";
     private static final int NUM_CONTROL_DIGITS = 2;
-    private static final int NUM_SEQUENTIAL_NUMBERS = 7;
 
     private final PaymentCodePool referenceCodePool;
+
+    @Override
+    public PaymentCodePool getReferenceCodePool() {
+        return referenceCodePool;
+    }
 
     public SequentialPaymentWithCheckDigitCodeGenerator(PaymentCodePool pool) {
         super();
         this.referenceCodePool = pool;
-    }
-
-    @Override
-    public boolean canGenerateNewCode(boolean forceGeneration) {
-        if(!this.referenceCodePool.isGenerateReferenceCodeOnDemand() && !forceGeneration) {
-            return false;
-        }
-        
-        final PaymentReferenceCode lastPaymentCode = findLastPaymentReferenceCode();
-        return lastPaymentCode == null ? true : Integer.valueOf(getSequentialNumber(lastPaymentCode)) < referenceCodePool
-                .getMaxReferenceCode();
     }
 
     @Override
@@ -71,7 +60,7 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
             boolean useFixedAmount) {
         return generateNewCodeFor(amount, validFrom, validTo, useFixedAmount, false);
     }
-    
+
     @Override
     @Atomic
     public PaymentReferenceCode generateNewCodeFor(final BigDecimal amount, LocalDate validFrom, LocalDate validTo,
@@ -83,25 +72,13 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
         if (validTo == null) {
             validTo = referenceCodePool.getValidTo();
         }
-        PaymentReferenceCode lastReferenceCode = findLastPaymentReferenceCode();
-        long nextReferenceCode = 0;
-        if (lastReferenceCode == null) {
-            nextReferenceCode = referenceCodePool.getMinReferenceCode();
-        } else {
 
-            String lastReferenceCodeString = lastReferenceCode.getReferenceCodeWithoutCheckDigits();
-            Long lastReferenceCodeValue = Long.parseLong(lastReferenceCodeString);
-            if (lastReferenceCodeValue < referenceCodePool.getMaxReferenceCode()) {
-                nextReferenceCode = lastReferenceCodeValue + 1;
-            }
-        }
-
+        Long nextReferenceCode = referenceCodePool.getAndIncrementNextReferenceCode();
         if (nextReferenceCode > referenceCodePool.getMaxReferenceCode()) {
             //The pool is "OVER"... Try to get the first unused code
 
-            PaymentReferenceCode availableReferenceCode =
-                    this.referenceCodePool.getPaymentReferenceCodesSet().stream().filter(x -> x.isAvailableForReuse())
-                            .findFirst().orElse(null);
+            PaymentReferenceCode availableReferenceCode = this.referenceCodePool.getPaymentReferenceCodesSet().stream()
+                    .filter(x -> x.isAvailableForReuse()).findFirst().orElse(null);
             if (availableReferenceCode != null) {
                 nextReferenceCode = Long.parseLong(availableReferenceCode.getReferenceCodeWithoutCheckDigits());
             } else {
@@ -112,9 +89,8 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
         String referenceCodeString = "";
 
 //        if (Boolean.TRUE.equals(referenceCodePool.getUseAmountToValidateCheckDigit())) {
-        referenceCodeString =
-                CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
-                        + nextReferenceCode, amount);
+        referenceCodeString = CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(),
+                "" + nextReferenceCode, amount);
 //        } else {
 //            referenceCodeString =
 //                    CheckDigitGenerator.generateReferenceCodeWithCheckDigit(referenceCodePool.getEntityReferenceCode(), ""
@@ -127,9 +103,8 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
             minAmount = amount;
             maxAmount = amount;
         }
-        PaymentReferenceCode newPaymentReference =
-                PaymentReferenceCode.create(referenceCodeString, validFrom, validTo, PaymentReferenceCodeStateType.UNUSED,
-                        referenceCodePool, minAmount, maxAmount);
+        PaymentReferenceCode newPaymentReference = PaymentReferenceCode.create(referenceCodeString, validFrom, validTo,
+                PaymentReferenceCodeStateType.UNUSED, referenceCodePool, minAmount, maxAmount);
         newPaymentReference.setPayableAmount(amount);
 
         return newPaymentReference;
@@ -140,59 +115,8 @@ public class SequentialPaymentWithCheckDigitCodeGenerator extends PaymentCodeGen
         return paymentCode.getPaymentCodePool().equals(this);
     }
 
-    protected PaymentReferenceCode findLastPaymentReferenceCode() {
-        //Sort the payment referenceCodes
-        final List<PaymentReferenceCode> paymentCodes =
-                allPaymentCodes(referenceCodePool)
-                        .stream()
-                        .sorted((x, y) -> Long.valueOf(x.getReferenceCodeWithoutCheckDigits()).compareTo(
-                                Long.valueOf(y.getReferenceCodeWithoutCheckDigits()))).collect(Collectors.toList());
-
-        PaymentReferenceCode last = null;
-        for (PaymentReferenceCode referenceCode : paymentCodes) {
-            if (last == null) {
-                last = referenceCode;
-            } else {
-                //if there is an emptyspace in the pool, use the emptySpace
-                if (Long.parseLong(referenceCode.getReferenceCodeWithoutCheckDigits()) > Long.parseLong(last
-                        .getReferenceCodeWithoutCheckDigits()) + 1) {
-                    break;
-                } else {
-                    last = referenceCode;
-                }
-            }
-        }
-        return last;
-    }
-
     protected Set<PaymentReferenceCode> allPaymentCodes(PaymentCodePool referenceCodePool) {
-        return PaymentReferenceCode.findAll().filter(x -> x.getPaymentCodePool().equals(referenceCodePool))
-                .collect(Collectors.toSet());
-    }
-
-//
-//    @Override
-//    public String generateNewCodeFor(PaymentCodeType paymentCodeType, Person person) {
-//
-//        if (!canGenerateNewCode(paymentCodeType, person)) {
-//            throw new RuntimeException("Cannot generate new payment codes");
-//        }
-//
-//        final PaymentCode lastPaymentCode = findLastPaymentCode();
-//        int nextSequentialNumber = lastPaymentCode != null ? Integer.valueOf(getSequentialNumber(lastPaymentCode)) + 1 : 0;
-//
-//        String sequentialNumberPadded =
-//                StringUtils.leftPad(String.valueOf(nextSequentialNumber), NUM_SEQUENTIAL_NUMBERS, CODE_FILLER);
-//        String controDigitsPadded =
-//                StringUtils.leftPad(String.valueOf((new Random()).nextInt(99)), NUM_CONTROL_DIGITS, CODE_FILLER);
-//
-//        return sequentialNumberPadded + controDigitsPadded;
-//    }
-//
-
-//
-    private static String getSequentialNumber(PaymentReferenceCode paymentCode) {
-        return paymentCode.getReferenceCode().substring(0, paymentCode.getReferenceCode().length() - NUM_CONTROL_DIGITS);
+        return referenceCodePool.getPaymentReferenceCodesSet();
     }
 
 }
