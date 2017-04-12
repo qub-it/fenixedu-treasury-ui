@@ -130,7 +130,7 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
             throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.vat.type.for.advanced.payment");
         }
         String lineDescription =
-                BundleUtil.getString(Constants.BUNDLE, "label.AdvancedPaymentCreditNote.advanced.payment.description")
+                Constants.bundleI18N("label.AdvancedPaymentCreditNote.advanced.payment.description").getContent(Constants.DEFAULT_LANGUAGE)
                         + description;
         CreditEntry entry = CreditEntry.create(note, lineDescription, advancedPaymentProduct, vat, availableAmount, documentDate,
                 null, BigDecimal.ONE);

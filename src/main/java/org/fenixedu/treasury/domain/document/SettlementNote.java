@@ -300,7 +300,7 @@ public class SettlementNote extends SettlementNote_Base {
             return;
         }
 
-        final String comments = String.format("%s [%s]", Constants.bundle("label.SettlementNote.advancedpayment"),
+        final String comments = String.format("%s [%s]", Constants.bundleI18N("label.SettlementNote.advancedpayment").getContent(Constants.DEFAULT_LANGUAGE),
                 getPaymentDate().toString(Constants.DATE_FORMAT));
 
         createAdvancedPaymentCreditNote(availableAmount, comments, getExternalId());
