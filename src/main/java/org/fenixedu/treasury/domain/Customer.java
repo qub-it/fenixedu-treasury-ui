@@ -157,6 +157,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             }
         }
         
+        if(!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+            throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
+        }
+        
     }
 
     public static Stream<? extends Customer> findAll() {
