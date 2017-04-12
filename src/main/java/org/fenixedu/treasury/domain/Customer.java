@@ -149,6 +149,14 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         if (this.getCode().length() > Customer.MAX_CODE_LENGHT) {
             throw new TreasuryDomainException("error.Customer.code.maxlenght");
         }
+        
+        if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
+            if (findByFiscalInformation(getFiscalCountry(), getFiscalNumber()).filter(c -> c.isActive()).count() > 1) {
+                
+                throw new TreasuryDomainException("error.Customer.customer.with.fiscal.information.exists");
+            }
+        }
+        
     }
 
     public static Stream<? extends Customer> findAll() {

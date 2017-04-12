@@ -168,7 +168,33 @@ ${portal.toolkit()}
                 </tr>
             </thead>
             <tbody>
-
+				<c:forEach items="${searchcustomerResultsDataSet}" var="row">
+					<tr>
+						<td>
+							<c:if test='${row.isPersonCustomer() }'>
+								<c:out value='${row.businessIdentification}' />
+							</c:if>
+							<c:if test='${row.isAdhocCustomer() }'>
+								<c:out value='${row.code}' />
+							</c:if>
+						</td>
+						
+						<td>
+							<p><c:out value='${row.name}'/></p>
+							<c:if test="${not row.active}">
+								<span class="label label-warning"><spring:message code="warning.Customer.is.inactive.due.merge.or.fiscal.change" /></span>
+							</c:if>
+						</td>
+						<td><c:out value='${row.fiscalNumber}'/></td>
+						<td><c:out value='${row.identificationNumber}'/></td>
+						
+						<td>
+							<a  class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/search/view/${row.externalId}">
+								<spring:message code='label.view'/>
+							</a>
+						</td>
+					</tr>
+				</c:forEach>
             </tbody>
         </table>
     </c:when>
@@ -187,27 +213,6 @@ ${portal.toolkit()}
 
 <script>
 
-	var searchcustomerDataSet = [
-			<c:forEach items="${searchcustomerResultsDataSet}" var="searchResult">
-				<%-- Field access / formatting  here CHANGE_ME --%>
-				{
-				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-<c:if test='${searchResult.isPersonCustomer() }'>
-"code" : "<c:out value='${searchResult.businessIdentification}'/>",
-</c:if>
-<c:if test='${searchResult.isAdhocCustomer() }'>
-"code" : "<c:out value='${searchResult.code}'/>",
-</c:if>
-"name" : "<c:out value='${searchResult.name}'/>",
-"fiscalnumber" : "<c:out value='${searchResult.fiscalNumber}'/>",
-"identificationnumber" : "<c:out value='${searchResult.identificationNumber}'/>",
-"actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-                "" 
-			},
-            </c:forEach>
-    ];
-	
 	$(document).ready(function() {
 		customerType_options = [
 		                        <c:forEach items="${Customer_customerType_options}" var="element"> 
@@ -248,7 +253,6 @@ ${portal.toolkit()}
 		//54
 		               { "width": "54px", "targets": 4 } 
 		             ],
-		"data" : searchcustomerDataSet,
 		//Documentation: https://datatables.net/reference/option/dom
 //"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
 //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES

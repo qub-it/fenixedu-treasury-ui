@@ -85,17 +85,6 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     protected void checkRules() {
         super.checkRules();
 
-        /* TODO: CHECK
-        if (Constants.isDefaultCountry(getFiscalCountry()) && DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
-            throw new TreasuryDomainException("error.AdhocCustomer.default.fiscal.number.not.supported");
-        }
-        */
-        
-        if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
-            if (findByFiscalInformation(getFiscalCountry(), getFiscalNumber()).count() > 1) {
-                throw new TreasuryDomainException("error.AdhocCustomer.customer.with.fiscal.information.exists");
-            }
-        }
     }
 
     @Override
