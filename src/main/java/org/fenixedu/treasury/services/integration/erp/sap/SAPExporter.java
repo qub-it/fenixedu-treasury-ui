@@ -1270,10 +1270,22 @@ public class SAPExporter implements IERPExporter {
         // Telephone
         // c.setTelephone("");
 
-        c.setFiscalCountry(customer.getCustomerFiscalCountry());
-        c.setNationality(customer.getCustomerNationality());
+        c.setFiscalCountry(translateCountryCodeForExceptions(customer.getCustomerFiscalCountry()));
+        c.setNationality(translateCountryCodeForExceptions(customer.getCustomerNationality()));
 
         return c;
+    }
+
+    private static String translateCountryCodeForExceptions(final String countryCode) {
+        if(Strings.isNullOrEmpty(countryCode)) {
+            return countryCode;
+        }
+        
+        if("GR".equals(countryCode.toUpperCase())) {
+            return "EL";
+        }
+        
+        return countryCode;
     }
 
     public static AddressStructure convertAddressToSAFTAddress(final ERPCustomerFieldsBean customer) {
