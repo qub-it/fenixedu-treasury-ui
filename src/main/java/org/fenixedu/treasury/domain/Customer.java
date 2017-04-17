@@ -261,7 +261,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     protected static String lowerCase(final String value) {
         if (value == null) {
-            return null;
+            return "";
         }
 
         return value.toLowerCase();
