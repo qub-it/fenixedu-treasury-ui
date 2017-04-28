@@ -210,12 +210,16 @@ public class ForwardPayment extends ForwardPayment_Base {
                 if (de.isAnnulled()) {
                     continue;
                 }
-
+                
                 for (DebitEntry interestDebitEntry : de.getInterestDebitEntriesSet()) {
                     if (interestDebitEntry.isAnnulled()) {
                         continue;
                     }
-
+                    
+                    if(!interestDebitEntry.isInDebt()) {
+                        continue;
+                    }
+                    
                     if (org.fenixedu.treasury.util.Constants.isGreaterThan(interestDebitEntry.getOpenAmount(), amountToConsume)) {
                         break;
                     }
