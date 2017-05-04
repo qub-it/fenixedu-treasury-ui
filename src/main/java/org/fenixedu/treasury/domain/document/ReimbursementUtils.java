@@ -46,6 +46,13 @@ public class ReimbursementUtils {
         if (creditNote.isExportedInLegacyERP()) {
             return true;
         }
+        
+        if(creditNote.getDocumentNumberSeries().getSeries().isRegulationSeries() && 
+                creditNote.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)) {
+            // ANIL 2017-05-04: This is applied to advanced payments in legacy ERP converted 
+            // to regulation series with specific product
+            return true;
+        }
 
         if (creditNote.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)) {
             throw new TreasuryDomainException(
