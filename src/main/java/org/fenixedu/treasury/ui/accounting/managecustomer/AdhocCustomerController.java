@@ -112,7 +112,11 @@ public class AdhocCustomerController extends TreasuryBaseController {
 
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
-        this.setAdhocCustomerBean(new AdhocCustomerBean(), model);
+        return _create(new AdhocCustomerBean(), model);
+    }
+    
+    private String _create(final AdhocCustomerBean bean, final Model model) {
+        this.setAdhocCustomerBean(bean, model);
         return "treasury/accounting/managecustomer/adhoccustomer/create";
     }
 
@@ -139,7 +143,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-        return create(model);
+        return _create(bean, model);
     }
 
     @Atomic

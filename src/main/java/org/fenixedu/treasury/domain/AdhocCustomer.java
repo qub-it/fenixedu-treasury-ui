@@ -36,6 +36,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.FiscalCodeValidation;
 
 import com.google.common.collect.Sets;
 
@@ -77,7 +78,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setAddressCountryCode(addressCountryCode);
         setCountryCode(countryCode);
         setIdentificationNumber(identificationNumber);
-
+        
+        if(!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+            throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
+        }
+        
         checkRules();
     }
 
