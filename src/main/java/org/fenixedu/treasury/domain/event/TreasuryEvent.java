@@ -130,10 +130,15 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public BigDecimal getInterestsAmountToPay() {
         return getInterestsAmountToPay(null, null);
     }
+    
+    public BigDecimal getInterestsAmountToPay(final Customer customer) {
+        return getInterestsAmountToPay(customer, null);
+    }
 
     public BigDecimal getInterestsAmountToPay(final Customer customer, final Product product) {
         final Product interestProduct = TreasurySettings.getInstance().getInterestProduct();
-        Stream<? extends DebitEntry> s = DebitEntry.findActive(this).filter(d -> d.getProduct() == interestProduct)
+        Stream<? extends DebitEntry> s = DebitEntry.findActive(this)
+                .filter(d -> d.getProduct() == interestProduct)
                 .filter(d -> product == null || (d.getDebitEntry() != null && d.getDebitEntry().getProduct() == product));
 
         if (customer != null) {
@@ -291,6 +296,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
             // ensure interest debit entries are closed in document entry
             for (final DebitEntry otherDebitEntry : ((DebitNote) debitEntry.getFinantialDocument()).getDebitEntriesSet()) {
                 for (final DebitEntry interestDebitEntry : otherDebitEntry.getInterestDebitEntriesSet()) {
+                    if(interestDebitEntry.isAnnulled()) {
+                        continue;
+                    }
+                    
                     if (!interestDebitEntry.isProcessedInDebitNote()) {
                         final DebitNote debitNoteForUnprocessedEntries =
                                 DebitNote
