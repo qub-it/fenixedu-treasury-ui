@@ -1292,7 +1292,7 @@ public class SAPExporter implements IERPExporter {
         final AddressStructure companyAddress = new AddressStructure();
 
         companyAddress.setCountry(
-                !Strings.isNullOrEmpty(customer.getCustomerCountry()) ? customer.getCustomerCountry() : MORADA_DESCONHECIDO);
+                !Strings.isNullOrEmpty(customer.getCustomerCountry()) ? translateCountryCodeForExceptions(customer.getCustomerCountry()) : MORADA_DESCONHECIDO);
 
         companyAddress.setAddressDetail(!Strings.isNullOrEmpty(customer.getCustomerAddressDetail()) ? customer
                 .getCustomerAddressDetail() : MORADA_DESCONHECIDO);
