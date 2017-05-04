@@ -180,8 +180,11 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             throw new TreasuryDomainException("error.Customer.findByFiscalCountryAndNumber.fiscalNumber.required");
         }
 
-        return findAll().filter(c -> lowerCase(c.getFiscalCountry()).equals(lowerCase(fiscalCountryCode))
-                && lowerCase(c.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
+        return findAll().filter(c -> 
+            !Strings.isNullOrEmpty(c.getFiscalCountry()) 
+            && lowerCase(c.getFiscalCountry()).equals(lowerCase(fiscalCountryCode)) 
+            && !Strings.isNullOrEmpty(c.getFiscalNumber()) 
+            && lowerCase(c.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
     }
 
     public boolean matchesMultiFilter(String searchText) {
@@ -261,7 +264,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     protected static String lowerCase(final String value) {
         if (value == null) {
-            return "";
+            return null;
         }
 
         return value.toLowerCase();
