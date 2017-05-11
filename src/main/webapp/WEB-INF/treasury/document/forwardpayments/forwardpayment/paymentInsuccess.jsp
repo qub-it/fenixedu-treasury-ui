@@ -64,9 +64,9 @@ ${portal.angularToolkit()}
             </p>
             <p>
                 <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
-				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.address}" />,&nbsp;
-				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
-				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.locality}" />
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.address}" />,&nbsp;
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.locality}" />
             </p>
             <p>&nbsp;</p>
             <p>
