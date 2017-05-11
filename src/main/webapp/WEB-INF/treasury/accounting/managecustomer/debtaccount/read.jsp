@@ -827,12 +827,12 @@ ${portal.angularToolkit()}
 									<tr class="row">
 										<td class="col-xs-2" >
 											<c:if test="${settlementEntry.invoiceEntry.finantialDocument.debitNote}">
-												<a href="<%= DebitNoteController.READ_URL %>${settlementEntry.invoiceEntry.finantialDocument.externalId}">
+												<a href="${pageContext.request.contextPath}<%= DebitNoteController.READ_URL %>${settlementEntry.invoiceEntry.finantialDocument.externalId}">
 													<c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
 												</a>
 											</c:if>
 											<c:if test="${settlementEntry.invoiceEntry.finantialDocument.creditNote}">
-												<a href="<%= CreditNoteController.READ_URL %>${settlementEntry.invoiceEntry.finantialDocument.externalId}">
+												<a href="${pageContext.request.contextPath}<%= CreditNoteController.READ_URL %>${settlementEntry.invoiceEntry.finantialDocument.externalId}">
 													<c:out value="${settlementEntry.invoiceEntry.finantialDocument.uiDocumentNumber}" />
 												</a>
 											</c:if>
@@ -854,7 +854,7 @@ ${portal.angularToolkit()}
 	                                <c:forEach var="advancedPaymentEntry" items="${payment.advancedPaymentCreditNote.creditEntriesSet}">
 										<tr class="row">
 											<td class="col-xs-2" >
-												<a href="<%= CreditNoteController.READ_URL %>${advancedPaymentEntry.finantialDocument.externalId}">
+												<a href="${pageContext.request.contextPath}<%= CreditNoteController.READ_URL %>${advancedPaymentEntry.finantialDocument.externalId}">
 													<c:out value="${advancedPaymentEntry.finantialDocument.uiDocumentNumber}" />
 												</a>
 											</td>

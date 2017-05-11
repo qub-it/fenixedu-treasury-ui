@@ -74,6 +74,13 @@ ${portal.toolkit()}
                 <c:out value="${settlementNote.debtAccount.finantialInstitution.name}" />
             </p>
             <p>
+                <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.address}" />,&nbsp;
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.locality}" />
+            </p>
+            <p>&nbsp;</p>
+            <p>
                 <strong><spring:message code="label.DebtAccount.customer" />: </strong>
                	<c:out value='${settlementNote.debtAccount.customer.businessIdentification} - ${settlementNote.debtAccount.customer.name}' />
             </p>
