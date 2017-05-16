@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="pf" uri="http://example.com/placeFunctions"%>
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -66,7 +67,8 @@ ${portal.angularToolkit()}
                 <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
 				<c:out value="${forwardPayment.debtAccount.finantialInstitution.address}" />,&nbsp;
 				<c:out value="${forwardPayment.debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
-				<c:out value="${forwardPayment.debtAccount.finantialInstitution.locality}" />
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.locality}" />,&nbsp;
+				<pf:placeName place="${forwardPayment.debtAccount.finantialInstitution.country}" />
             </p>
             <p>&nbsp;</p>
             <p>
