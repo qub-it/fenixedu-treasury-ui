@@ -652,6 +652,10 @@ ${portal.angularToolkit()}
                                         href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${entry.finantialDocument.externalId}"> <c:out
                                             value="${entry.finantialDocument.uiDocumentNumber}" />
                                     </a>
+
+									<c:if test="${entry.finantialDocument.isAnnulled()}">
+	                                	<p><span class="label label-danger"><c:out value='${entry.finantialDocument.state.descriptionI18N.content}' /></span>
+		                            </c:if>
                                 </c:if>
                             </c:if>
                             <c:if test="${empty entry.finantialDocument }">

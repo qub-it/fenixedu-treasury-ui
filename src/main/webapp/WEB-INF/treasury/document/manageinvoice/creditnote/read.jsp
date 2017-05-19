@@ -66,11 +66,25 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
                         <spring:message code="label.confirmation" />
                     </h4>
                 </div>
+
                 <div class="modal-body">
                     <p>
                         <spring:message code="label.document.manageInvoice.readCreditNote.confirmAnull" />
                     </p>
+                    <br /> <br />
+                    <div class="form">
+                        <div class="form-group row">
+                            <div class="col-sm-4 control-label">
+                                <spring:message code="label.CreditNote.annulledReason" />
+                            </div>
+
+                            <div class="col-sm-8">
+                                <input id="creditNote_anullReason" class="form-control" type="text" name="reason" required value='' />
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">
                         <spring:message code="label.close" />
@@ -86,6 +100,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
 
 <div class="modal fade" id="closeModal">
     <div class="modal-dialog">
@@ -119,52 +134,6 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditNote.ge
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-
-<div class="modal fade" id="anullModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/anullcreditnote" method="POST">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">
-                        <spring:message code="label.confirmation" />
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <spring:message code="label.document.manageInvoice.readCreditNote.confirmAnull" />
-                    </p>
-                    <div class="form">
-                        <div class="form-group row">
-                            <div class="col-sm-4 control-label">
-                                <spring:message code="label.CreditNote.annulledReason" />
-                            </div>
-
-                            <div class="col-sm-8">
-                                <input id="CreditNote_anullReason" class="form-control" type="text" name="anullReason" required value='' />
-                            </div>
-                        </div>
-                    </div>
-
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <spring:message code="label.cancel" />
-                    </button>
-                    <button id="deleteButton" class="btn btn-danger" type="submit">
-                        <spring:message code="label.annull" />
-                    </button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-
 
 <%}%>
 
@@ -522,14 +491,7 @@ if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
 <% 
                 if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
 %>  
-<!-- NAVIGATION -->
-<c:if test="${creditNote.isPreparing()}">
-    <div class="well well-sm" style="display: inline-block">
-        <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
-            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/read/${creditNote.externalId}/addentry"><spring:message
-                code="label.event.document.manageInvoice.addCreditEntry" /></a>
-    </div>
-</c:if>
+
 <%} %>
 <c:choose>
     <c:when test="${not empty creditNote.creditEntriesSet}">

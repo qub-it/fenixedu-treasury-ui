@@ -87,11 +87,6 @@ public class CreditEntryController extends TreasuryBaseController {
         model.addAttribute("creditEntry", creditEntry);
     }
 
-    @Atomic
-    public void deleteCreditEntry(CreditEntry creditEntry) {
-        creditEntry.delete();
-    }
-
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
@@ -210,30 +205,6 @@ public class CreditEntryController extends TreasuryBaseController {
     public String read(@PathVariable("oid") CreditEntry creditEntry, Model model) {
         setCreditEntry(creditEntry, model);
         return "treasury/document/manageinvoice/creditentry/read";
-    }
-
-    private static final String _DELETE_URI = "/delete/";
-    public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
-
-    @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") CreditEntry creditEntry, Model model, RedirectAttributes redirectAttributes) {
-
-        setCreditEntry(creditEntry, model);
-        try {
-            CreditNote note = (CreditNote) creditEntry.getFinantialDocument();
-
-            assertUserIsAllowToModifyInvoices(creditEntry.getDebtAccount().getFinantialInstitution(), model);
-
-            deleteCreditEntry(creditEntry);
-
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect(CreditNoteController.READ_URL + note.getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
-        } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
-        }
-        return redirect(READ_URL + getCreditEntry(model).getExternalId(), model, redirectAttributes);
     }
 
     private static final String _UPDATE_URI = "/update/";

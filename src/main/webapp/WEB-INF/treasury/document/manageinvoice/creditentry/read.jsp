@@ -44,43 +44,7 @@ ${portal.toolkit()}
                         .getAttribute("creditEntry");
 FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.getDebtAccount().getFinantialInstitution();
     %>
-<% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
-%>  
-<div class="modal fade" id="deleteModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="deleteForm" action="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/delete/${creditEntry.externalId}" method="POST">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title">
-                        <spring:message code="label.confirmation" />
-                    </h4>
-                </div>
-                <div class="modal-body">
-                    <p>
-                        <spring:message code="label.document.manageInvoice.readCreditEntry.confirmDelete" />
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">
-                        <spring:message code="label.close" />
-                    </button>
-                    <button id="deleteButton" class="btn btn-danger" type="submit">
-                        <spring:message code="label.delete" />
-                    </button>
-                </div>
-            </form>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
 
-<%} %>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <c:if test="${not empty creditEntry.finantialDocument }">
@@ -96,9 +60,11 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.g
                 if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
 %>  
     <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
-        |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-                code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}"><spring:message code="label.event.update" /></a>
+        |&nbsp;
+        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;
+		<a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditentry/update/${creditEntry.externalId}">
+			<spring:message code="label.event.update" />
+		</a>
     &nbsp;
     </c:if>
    <%} %>
@@ -201,6 +167,5 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.g
 
 <script>
     $(document).ready(function() {
-
     });
 </script>

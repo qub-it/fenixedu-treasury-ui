@@ -293,12 +293,16 @@ public class CreditNote extends CreditNote_Base {
     @Atomic
     public void anullDocument(final String reason) {
 
+        if(Strings.isNullOrEmpty(reason)) {
+            throw new TreasuryDomainException("error.CreditNote.anullDocument.reason.required");
+        }
+        
         if (this.isPreparing()) {
 
-            if (this.getDocumentNumberSeries().getSeries().getCertificated()) {
-                throw new TreasuryDomainException("error.FinantialDocument.certificatedseris.cannot.anulled");
-            }
-
+            if (getCreditEntries().anyMatch(ce -> ce.isFromExemption())) {
+                throw new TreasuryDomainException("error.CreditNote.entry.from.exemption.cannot.be.annuled");
+            }            
+            
             if (getCreditEntries().anyMatch(ce -> !ce.getSettlementEntriesSet().isEmpty())) {
                 throw new TreasuryDomainException("error.CreditNote.cannot.delete.has.settlemententries");
             }
@@ -306,15 +310,14 @@ public class CreditNote extends CreditNote_Base {
             setState(FinantialDocumentStateType.ANNULED);
 
             if (Authenticate.getUser() != null) {
-                setAnnulledReason(reason + " - [" + Authenticate.getUser().getUsername() + "]"
+                setAnnulledReason(reason + " - [" + Authenticate.getUser().getUsername() + "] "
                         + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             } else {
                 setAnnulledReason(reason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             }
 
         } else {
-            throw new TreasuryDomainException(
-                    BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(Constants.bundle("error.FinantialDocumentState.invalid.state.change.request"));
         }
 
         checkRules();

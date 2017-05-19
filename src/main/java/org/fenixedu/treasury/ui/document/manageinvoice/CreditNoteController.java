@@ -35,10 +35,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -94,8 +96,8 @@ public class CreditNoteController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void anullCreditNote(CreditNote creditNote) {
-        creditNote.anullDocument(Constants.bundle("Reason"));
+    public void anullCreditNote(CreditNote creditNote, final String reason) {
+        creditNote.anullDocument(reason);
     }
 
     private static final String _READ_URI = "/read/";
@@ -134,36 +136,27 @@ public class CreditNoteController extends TreasuryBaseController {
         return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/anullcreditnote", method = RequestMethod.POST)
-    public String processReadToAnullCreditNote(@PathVariable("oid") CreditNote creditNote,
-            @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "/anull/{oid}", method = RequestMethod.POST)
+    public String anull(@PathVariable("oid") final CreditNote creditNote, @RequestParam(value="reason", required=false) final String reason, 
+            final Model model, final RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
+
         try {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            creditNote.anullDocument(anullReason);
+
+            // For now limit this functionality to managers
+            if (!TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
+                addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.invoices"), model);
+                throw new SecurityException(Constants.bundle("error.authorization.not.allow.to.modify.invoices"));
+            }
+            
+            anullCreditNote(creditNote, reason);
             addInfoMessage(Constants.bundle("label.document.manageinvoice.CreditNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-
+        
         return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
-    }
-
-    @RequestMapping(value = "/anull/{oid}", method = RequestMethod.POST)
-    public String anull(@PathVariable("oid") final CreditNote creditNote, Model model, RedirectAttributes redirectAttributes) {
-        setCreditNote(creditNote, model);
-        DebtAccount debtAccount = creditNote.getDebtAccount();
-        try {
-            assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-
-            anullCreditNote(creditNote);
-            addInfoMessage(Constants.bundle("label.success.delete"), model);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(Constants.bundle("label.error.delete") + tde.getLocalizedMessage(), model);
-        } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
-        }
-        return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/addentry")
