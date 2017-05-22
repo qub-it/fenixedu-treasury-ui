@@ -61,6 +61,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         setExportOnlyRelatedDocumentsPerExport(false);
         setImplementationClassName(implementationClassName);
         setMaxSizeBytesToExportOnline(maxSizeBytesToExportOnline);
+        setCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled(false);
         checkRules();
     }
 
@@ -104,6 +105,10 @@ public class ERPConfiguration extends ERPConfiguration_Base {
     
     public boolean isIntegratedDocumentsExportationEnabled() {
         return getIntegratedDocumentsExportationEnabled();
+    }
+    
+    public boolean isCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled() {
+        return getCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled();
     }
 
     @Atomic

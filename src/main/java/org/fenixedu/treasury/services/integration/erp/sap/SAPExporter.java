@@ -307,7 +307,7 @@ public class SAPExporter implements IERPExporter {
         paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
         paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
         paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
-
+        
         if (!generateAllCustomers && !generateAllProducts) {
             for (FinantialDocument document : allDocuments) {
                 checkForUnsetDocumentSeriesNumberInDocumentsToExport(Lists.newArrayList(document));
@@ -827,6 +827,8 @@ public class SAPExporter implements IERPExporter {
 
     private org.fenixedu.treasury.generated.sources.saft.sap.SourceDocuments.WorkingDocuments.WorkDocument.Line convertToSAFTWorkDocumentLine(
             InvoiceEntry entry, Map<String, org.fenixedu.treasury.generated.sources.saft.sap.Product> baseProducts) {
+        final FinantialInstitution institution = entry.getDebtAccount().getFinantialInstitution();
+        
         org.fenixedu.treasury.generated.sources.saft.sap.Product currentProduct = null;
 
         Product product = entry.getProduct();
@@ -894,6 +896,12 @@ public class SAPExporter implements IERPExporter {
                     if (!Strings.isNullOrEmpty(debitNote.getLegacyERPCertificateDocumentReference())) {
                         reference.setOriginatingON(debitNote.getLegacyERPCertificateDocumentReference());
                     } else {
+                        if(!institution.getErpIntegrationConfiguration().isCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled()) {
+                            throw new TreasuryDomainException("error.ERPExporter.credit.note.of.legacy.debit.note.without.legacyERPCertificateDocumentReference", 
+                                    debitNote.getUiDocumentNumber(),
+                                    creditEntry.getFinantialDocument().getUiDocumentNumber());
+                        }
+                        
                         reference.setOriginatingON("");
                     }
                 }

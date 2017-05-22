@@ -245,6 +245,24 @@ ${portal.toolkit()}
                                 value='${eRPConfiguration.erpIdProcess}' />
                         </td>
                     </tr>
+                    
+                    <tr>
+                    	<th scope="row" class="col-xs-3">
+                    		<spring:message code="label.ERPConfiguration.integratedDocumentsExportationEnabled" />
+                    	</th>
+                    	<td>
+                    		<spring:message code="label.${eRPConfiguration.integratedDocumentsExportationEnabled}" />
+                    	</td>
+                    </tr>
+                    
+                    <tr>
+                    	<th scope="row" class="col-xs-3">
+                    		<spring:message code="label.ERPConfiguration.creditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled" />
+                    	</th>
+                    	<td>
+                    		<spring:message code="label.${eRPConfiguration.creditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled}" />
+                    	</td>
+                    </tr>
                 </tbody>
             </table>
         </form>
@@ -252,7 +270,5 @@ ${portal.toolkit()}
 </div>
 
 <script>
-	$(document).ready(function() {
-
-	});
+	$(document).ready(function() {});
 </script>

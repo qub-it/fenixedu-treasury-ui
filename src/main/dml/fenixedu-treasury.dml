@@ -751,6 +751,7 @@ class integration.ERPConfiguration extends integration.Configuration
     Long maxSizeBytesToExportOnline;
     boolean integratedDocumentsExportationEnabled;
     String erpIdProcess;
+    boolean creditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled;
 }
 
 relation ERPConfigurationFinantialInstitution
