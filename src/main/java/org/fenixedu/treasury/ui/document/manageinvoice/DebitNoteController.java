@@ -40,6 +40,7 @@ import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
+import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -276,9 +277,7 @@ public class DebitNoteController extends TreasuryBaseController {
             }
 
             model.addAttribute("DebitNote_payorDebtAccount_options",
-                    DebtAccount.find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
-                            .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
-                            .collect(Collectors.toList()));
+                    DebtAccount.findActiveAdhocDebtAccountsSortedByCustomerName(finantialInstitution));
 
             if (debtAccount != null) {
                 model.addAttribute("DebitNote_debtAccount_options", Collections.singleton(debtAccount));
@@ -680,7 +679,7 @@ public class DebitNoteController extends TreasuryBaseController {
             setDebitNote(debitNote, model);
 
             model.addAttribute("DebitNote_payorDebtAccount_options",
-                    DebtAccount.findAdhocDebtAccountsSortedByCustomerName(debitNote.getDebtAccount().getFinantialInstitution()));
+                    DebtAccount.findActiveAdhocDebtAccountsSortedByCustomerName(debitNote.getDebtAccount().getFinantialInstitution()));
 
             model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
 

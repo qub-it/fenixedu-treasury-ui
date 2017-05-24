@@ -116,8 +116,9 @@ public class DebtAccount extends DebtAccount_Base {
         return findAll().filter(d -> d.getFinantialInstitution() == finantialInstitution);
     }
 
-    public static Stream<DebtAccount> findAdhoc(final FinantialInstitution finantialInstitution) {
-        return find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer());
+    public static Stream<DebtAccount> findActiveAdhoc(final FinantialInstitution finantialInstitution) {
+        return find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
+                .filter(x -> x.getCustomer().isActive());
     }
 
     public static Stream<DebtAccount> find(final Customer customer) {
@@ -128,10 +129,10 @@ public class DebtAccount extends DebtAccount_Base {
         return Optional.ofNullable(customer.getDebtAccountFor(finantialInstitution));
     }
 
-    public static SortedSet<DebtAccount> findAdhocDebtAccountsSortedByCustomerName(
+    public static SortedSet<DebtAccount> findActiveAdhocDebtAccountsSortedByCustomerName(
             final FinantialInstitution finantialInstitution) {
         final SortedSet<DebtAccount> result = Sets.newTreeSet(COMPARATOR_BY_CUSTOMER_NAME_IGNORE_CASE);
-        result.addAll(DebtAccount.findAdhoc(finantialInstitution).collect(Collectors.toSet()));
+        result.addAll(DebtAccount.findActiveAdhoc(finantialInstitution).collect(Collectors.toSet()));
 
         return result;
     }
@@ -199,7 +200,7 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public boolean isDeletable() {
-        return this.getFinantialDocumentsSet().isEmpty() && getInvoiceEntrySet().isEmpty();
+        return this.getFinantialDocumentsSet().isEmpty() && getInvoiceEntrySet().isEmpty() && getInvoiceSet().isEmpty();
     }
 
     @Atomic

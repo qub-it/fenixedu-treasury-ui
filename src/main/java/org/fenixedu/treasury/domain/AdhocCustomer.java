@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -35,7 +36,6 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 
 import com.google.common.collect.Sets;
@@ -56,7 +56,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     @Override
     public boolean isActive() {
-        return true;
+        return getDebtAccountsSet().stream().filter(d -> !d.getClosed()).count() > 0;
     }
 
     @Override
@@ -99,7 +99,9 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     @Atomic
     public void edit(final CustomerType customerType, final String name, final String address, final String districtSubdivision,
-            final String zipCode, final String addressCountryCode, final String identificationNumber) {
+            final String zipCode, final String addressCountryCode, final String identificationNumber, final List<FinantialInstitution> newFinantialInstitutions) {
+        registerFinantialInstitutions(newFinantialInstitutions);
+        
         setCustomerType(customerType);
         setName(name);
         setAddress(address);
@@ -220,7 +222,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return Bennu.getInstance().getCustomersSet().stream().filter(x -> x instanceof AdhocCustomer)
                 .map(AdhocCustomer.class::cast);
     }
-
+    
     public static Stream<AdhocCustomer> findByFiscalNumber(final String fiscalNumber) {
         return findAll().filter(i -> fiscalNumber.equalsIgnoreCase(i.getFiscalNumber()));
     }

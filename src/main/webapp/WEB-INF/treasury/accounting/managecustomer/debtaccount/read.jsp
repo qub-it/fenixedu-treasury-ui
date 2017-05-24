@@ -108,12 +108,12 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
-	<c:if test='${debtAccount.customer.active}'>
+	<c:if test='${debtAccount.customer.adhocCustomer or debtAccount.customer.active}'>
 	    <a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.externalId}">
 	    	<spring:message code="label.event.back" />
 	    </a>
    	</c:if>
-	<c:if test='${not debtAccount.customer.active}'>
+	<c:if test='${debtAccount.customer.personCustomer and not debtAccount.customer.active}'>
 	    <a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/read/${debtAccount.customer.personForInactivePersonCustomer.personCustomer.externalId}">
 	    	<spring:message code="label.event.back" />
 	    </a>

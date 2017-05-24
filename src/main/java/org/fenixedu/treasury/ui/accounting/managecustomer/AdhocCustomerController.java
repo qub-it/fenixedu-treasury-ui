@@ -30,15 +30,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -178,27 +177,25 @@ public class AdhocCustomerController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
-            adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
-            updateAdhocCustomer(bean.getCustomerType(), bean.getName(), bean.getIdentificationNumber(),
+            updateAdhocCustomer(getAdhocCustomer(model), bean.getCustomerType(), bean.getName(), bean.getIdentificationNumber(),
                     bean.getAddress(), bean.getDistrictSubdivision(), bean.getZipCode(), bean.getAddressCountryCode(),
-                    model);
+                    bean.getFinantialInstitutions(), model);
 
             return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(ex.getLocalizedMessage(), model);
         }
         return update(adhocCustomer, model);
     }
 
-    @Atomic
-    public void updateAdhocCustomer(final CustomerType customerType, final String name, final String identificationNumber,
+    public void updateAdhocCustomer(final Customer customer, final CustomerType customerType, final String name, final String identificationNumber,
             final String address, final String districtSubdivision, final String zipCode, final String addressCountryCode,
-            final Model model) {
-        if (getAdhocCustomer(model).isAdhocCustomer()) {
-            ((AdhocCustomer) getAdhocCustomer(model)).edit(customerType, name, address, districtSubdivision, zipCode,
-                    addressCountryCode, identificationNumber);
+            final List<FinantialInstitution> finantialInstitutions, final Model model) {
+        if (customer.isAdhocCustomer()) {
+            ((AdhocCustomer) customer).edit(customerType, name, address, districtSubdivision, zipCode,
+                    addressCountryCode, identificationNumber, finantialInstitutions);
         }
     }
 }
