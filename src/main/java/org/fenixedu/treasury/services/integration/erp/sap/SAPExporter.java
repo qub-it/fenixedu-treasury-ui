@@ -283,8 +283,8 @@ public class SAPExporter implements IERPExporter {
                         }
 
                     } catch (Exception ex) {
-                        logger.error(
-                                "Error processing document " + document.getUiDocumentNumber() + ": " + ex.getLocalizedMessage());
+//                        logger.error(
+//                                "Error processing document " + document.getUiDocumentNumber() + ": " + ex.getLocalizedMessage());
                         throw ex;
                     }
                 } else {
@@ -327,8 +327,8 @@ public class SAPExporter implements IERPExporter {
                                     totalDebitOfPaymentsDocuments.add(((SettlementNote) document).getTotalDebitAmount());
                         }
                     } catch (Exception ex) {
-                        logger.error(
-                                "Error processing document " + document.getUiDocumentNumber() + ": " + ex.getLocalizedMessage());
+//                        logger.error(
+//                                "Error processing document " + document.getUiDocumentNumber() + ": " + ex.getLocalizedMessage());
                         throw ex;
                     }
                 } else {
