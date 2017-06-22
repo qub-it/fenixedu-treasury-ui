@@ -196,6 +196,8 @@ public class AdhocCustomerController extends TreasuryBaseController {
         if (customer.isAdhocCustomer()) {
             ((AdhocCustomer) customer).edit(customerType, name, address, districtSubdivision, zipCode,
                     addressCountryCode, identificationNumber, finantialInstitutions);
+        } else if(customer.isPersonCustomer()) {
+            customer.registerFinantialInstitutions(finantialInstitutions);
         }
     }
 }

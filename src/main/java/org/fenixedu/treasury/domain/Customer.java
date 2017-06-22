@@ -44,6 +44,7 @@ import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -219,7 +220,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     @Atomic
     public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
 
-        Set<FinantialInstitution> actualInstitutions = getFinantialInstitutions();
+        Set<FinantialInstitution> actualInstitutions = Sets.newHashSet(getFinantialInstitutions());
+        
         for (FinantialInstitution newInst : newFinantialInstitutions) {
             if (actualInstitutions.contains(newInst)) {
                 this.getDebtAccountFor(newInst).reopenDebtAccount();
