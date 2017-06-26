@@ -51,7 +51,8 @@ public class ForwardPaymentStatusBean {
     }
     
     public boolean isAbleToRegisterPostPayment(final ForwardPayment forwardPayment) {
-        return (forwardPayment.getCurrentState().isInStateToPostProcessPayment() || forwardPayment.getCurrentState().isRequested()) && getStateType().isPayed();
+        return (forwardPayment.getCurrentState().isInStateToPostProcessPayment() || forwardPayment.getCurrentState().isRequested()) 
+                && getStateType() != null && getStateType().isPayed();
     }
     
     // @formatter:off

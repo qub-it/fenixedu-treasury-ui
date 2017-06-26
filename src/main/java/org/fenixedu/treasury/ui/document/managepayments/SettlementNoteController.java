@@ -252,6 +252,16 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(Constants.bundle("error.SettlementNote.reimbursement.supports.only.one.settlement.entry"), model);
         }
         
+        if(!bean.isReimbursementNote() && !bean.checkAdvancePaymentCreditsWithPaymentDate()) {
+            final SettlementNote settlementNote = bean.getLastPaidAdvancedCreditSettlementNote().get();
+            
+            error = true;
+            addErrorMessage(Constants.bundle("error.SettlementNote.advancedPaymentCredit.originSettlementNote.payment.date.after",
+                    settlementNote.getAdvancedPaymentCreditNote().getUiDocumentNumber(),
+                    settlementNote.getPaymentDate().toLocalDate().toString(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD))
+                    , model);
+        }
+        
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";

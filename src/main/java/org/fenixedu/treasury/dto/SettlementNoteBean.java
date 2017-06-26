@@ -5,9 +5,11 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -18,13 +20,16 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.ReimbursementUtils;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
@@ -179,6 +184,31 @@ public class SettlementNoteBean implements IBean, Serializable {
         
         final CreditEntry creditEntry = getCreditEntries().stream().filter(ce -> ce.isIncluded()).findFirst().get().getCreditEntry();
         return ReimbursementUtils.isCreditNoteForReimbursementMustBeClosedWithDebitNoteAndCreatedNew(creditEntry);
+    }
+    
+    public boolean checkAdvancePaymentCreditsWithPaymentDate() {
+        final Optional<SettlementNote> lastAdvancedCreditSettlementNote = getLastPaidAdvancedCreditSettlementNote();
+
+        if(!lastAdvancedCreditSettlementNote.isPresent()) {
+            return true;
+        }
+
+        return !getDate().isBefore(lastAdvancedCreditSettlementNote.get().getPaymentDate().toLocalDate());
+    }
+
+    public Optional<SettlementNote> getLastPaidAdvancedCreditSettlementNote() {
+        final Optional<SettlementNote> lastAdvancedCreditSettlementNote = getCreditEntries().stream()
+                .filter(ce -> ce.isIncluded())
+                .filter(ce -> ce.getCreditEntry().getFinantialDocument() != null && 
+                    ((CreditNote) ce.getCreditEntry().getFinantialDocument()).isAdvancePayment())
+                .map(ce -> ce.getCreditEntry().getFinantialDocument())
+                .map(AdvancedPaymentCreditNote.class::cast)
+                .filter(c -> c.getAdvancedPaymentSettlementNote() != null)
+                .map(c -> c.getAdvancedPaymentSettlementNote())
+                .sorted(Comparator.comparing(SettlementNote::getPaymentDate).reversed())
+                .findFirst();
+        
+        return lastAdvancedCreditSettlementNote;
     }
 
     // @formatter:off
