@@ -95,14 +95,6 @@ Cartaxo         - A030 (Localidade do terminal)
         String strResult = getPaymentsFromBroker(finantialInstitution, fromDate, toDate, removeInexistentReferenceCodes,
                 removeAlreadyProcessedCodes);
 
-//        if(strResult.indexOf("\"data\":\"") > -1) {
-//            strResult = strResult.substring(0, strResult.indexOf("\"data\":\"") + 8) + strResult
-//                    .substring(strResult.indexOf("\"data\":\"") + 8, strResult.lastIndexOf("\"")).replaceAll("\\\\\"", "\"")
-//                    .replaceAll("\"E034", "u001fE034") + "}";
-//    
-//            strResult = strResult.replaceAll("\"data\":\"\\[", "\"data\":[");
-//        }
-        
         final SibsPayments sibsPayments = new GsonBuilder().create().fromJson(strResult, SibsPayments.class);
 
         if (sibsPayments == null) {
@@ -126,24 +118,10 @@ Cartaxo         - A030 (Localidade do terminal)
         final List<SibsIncommingPaymentFileDetailLine> detailLines = Lists.newArrayList();
         BigDecimal transactionsTotalAmount = BigDecimal.ZERO;
         for (final SibsPaymentEntry entry : sibsPayments.data) {
-            if (!"SIBS".equals(entry.tipo)) {
-                continue;
-            }
 
-            if (Strings.isNullOrEmpty(entry.msg) || entry.msg.indexOf(PAY_PREAMBLE) == -1) {
-                continue;
-            }
-
-            final String rawLine = entry.msg.substring(entry.msg.indexOf(PAY_PREAMBLE));
-            final String[] fields = splitLine(rawLine);
-
-            if (fields.length != FIELD_SIZES.length) {
-                throw new TreasuryDomainException("error.SibsPaymentsBrokerService.unexpected.fields.length");
-            }
-
-            final String referenceCode = getCodeFrom(fields);
-            final String entityReferenceCode = getEntityCodeFrom(fields);
-            final DateTime whenOccuredTransactionFrom = getWhenOccuredTransactionFrom(fields);
+            final String referenceCode = getCodeFrom(entry);
+            final String entityReferenceCode = getEntityCodeFrom(entry);
+            final DateTime whenOccuredTransactionFrom = getWhenOccuredTransactionFrom(entry);
 
             if (!finantialInstitution.getSibsConfiguration().getEntityReferenceCode().equals(entityReferenceCode)) {
                 continue;
@@ -155,7 +133,7 @@ Cartaxo         - A030 (Localidade do terminal)
             }
 
             SibsIncommingPaymentFileDetailLine line = new SibsIncommingPaymentFileDetailLine(whenOccuredTransactionFrom,
-                    getAmountFrom(fields), getSibsTransactionIdFrom(fields), referenceCode);
+                    getAmountFrom(entry), getSibsTransactionIdFrom(entry), referenceCode);
 
             if (removeAlreadyProcessedCodes && SibsTransactionDetail.isReferenceProcessingDuplicate(referenceCode,
                     entityReferenceCode, whenOccuredTransactionFrom)) {
@@ -181,25 +159,25 @@ Cartaxo         - A030 (Localidade do terminal)
                 footer, detailLines);
     }
 
-    public static String getEntityCodeFrom(String[] fields) {
-        return fields[5];
+    public static String getEntityCodeFrom(final SibsPaymentEntry entry) {
+        return entry.entityReferenceCode;
     }
 
-    private static String getCodeFrom(String[] fields) {
-        return fields[6];
+    private static String getCodeFrom(final SibsPaymentEntry entry) {
+        return entry.referenceCode;
     }
 
-    private static String getSibsTransactionIdFrom(String[] fields) {
-        return fields[3];
+    private static String getSibsTransactionIdFrom(final SibsPaymentEntry entry) {
+        return entry.sibsTransactionId;
     }
 
-    private static BigDecimal getAmountFrom(String[] fields) {
-        return BigDecimal.valueOf(Double.parseDouble(fields[7].substring(0, 8) + "." + fields[7].substring(8)));
+    private static BigDecimal getAmountFrom(final SibsPaymentEntry entry) {
+        return BigDecimal.valueOf(Double.parseDouble(entry.amount.substring(0, 8) + "." + entry.amount.substring(8)));
     }
 
-    private static DateTime getWhenOccuredTransactionFrom(String[] fields) {
+    private static DateTime getWhenOccuredTransactionFrom(final SibsPaymentEntry entry) {
         try {
-            return new DateTime(new SimpleDateFormat(DATE_TIME_FORMAT).parse(fields[9]));
+            return new DateTime(new SimpleDateFormat(DATE_TIME_FORMAT).parse(entry.whenOccuredTransaction));
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
@@ -220,10 +198,11 @@ Cartaxo         - A030 (Localidade do terminal)
     }
 
     private static class SibsPaymentEntry {
-        private String id;
-        private String msg;
-        private String tipo;
-        private String data;
+        private String sibsTransactionId;
+        private String entityReferenceCode;
+        private String referenceCode;
+        private String amount;
+        private String whenOccuredTransaction;
     }
 
     private static class SibsPayments {
