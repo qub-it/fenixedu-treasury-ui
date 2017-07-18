@@ -896,7 +896,8 @@ public class SAPExporter implements IERPExporter {
                     if (!Strings.isNullOrEmpty(debitNote.getLegacyERPCertificateDocumentReference())) {
                         reference.setOriginatingON(debitNote.getLegacyERPCertificateDocumentReference());
                     } else {
-                        if(!institution.getErpIntegrationConfiguration().isCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled()) {
+                        if(!creditEntry.getFinantialDocument().isExportedInLegacyERP() && 
+                                !institution.getErpIntegrationConfiguration().isCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled()) {
                             throw new TreasuryDomainException("error.ERPExporter.credit.note.of.legacy.debit.note.without.legacyERPCertificateDocumentReference", 
                                     debitNote.getUiDocumentNumber(),
                                     creditEntry.getFinantialDocument().getUiDocumentNumber());
