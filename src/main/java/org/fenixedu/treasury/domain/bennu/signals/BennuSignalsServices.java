@@ -12,7 +12,12 @@ public class BennuSignalsServices {
         Signal.emit(SETTLEMENT_EVENT, new DomainObjectEvent<SettlementNote>(settlementNote));
     }
     
-    public static void registerSettlementEventHandler(final Object handler) {
+    public synchronized static void registerSettlementEventHandler(final Object handler) {
         Signal.register(SETTLEMENT_EVENT, handler);
     }
+    
+    public synchronized static void unregisterSettlementEventHandler(final Object handler) {
+        Signal.unregister(SETTLEMENT_EVENT, handler);
+    }
+    
 }
