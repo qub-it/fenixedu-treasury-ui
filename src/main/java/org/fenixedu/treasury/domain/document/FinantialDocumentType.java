@@ -232,22 +232,22 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
     public static void initializeFinantialDocumentType() {
         if (FinantialDocumentType.findAll().count() == 0) {
             FinantialDocumentType.createForCreditNote(
-                    "NAC",
+                    "NA",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
-                            "label.FinantialDocumentType.CreditNote")), "NAC", true);
+                            "label.FinantialDocumentType.CreditNote")), "NA", true);
             FinantialDocumentType.createForDebitNote(
-                    "NDI",
+                    "ND",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
-                            "label.FinantialDocumentType.DebitNote")), "NDI", true);
+                            "label.FinantialDocumentType.DebitNote")), "ND", true);
             FinantialDocumentType.createForSettlementNote(
-                    "NPA",
+                    "NP",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
-                            "label.FinantialDocumentType.SettlementNote")), "NPA", true);
+                            "label.FinantialDocumentType.SettlementNote")), "NP", true);
 
             FinantialDocumentType.createForReimbursementNote(
-                    "NRE",
+                    "NR",
                     new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
-                            "label.FinantialDocumentType.ReimbursementNote")), "NRE", true);
+                            "label.FinantialDocumentType.ReimbursementNote")), "NR", true);
 
         }
 

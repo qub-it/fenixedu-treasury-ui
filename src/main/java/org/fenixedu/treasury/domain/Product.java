@@ -103,7 +103,7 @@ public class Product extends Product_Base {
         }
 
         if (findByCode(getCode()).count() > 1) {
-            throw new TreasuryDomainException("error.Product.code.duplicated");
+            throw new TreasuryDomainException("error.Product.code.duplicated", getCode());
         }
 
         if (LocalizedStringUtil.isTrimmedEmpty(getUnitOfMeasure())) {
