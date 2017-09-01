@@ -157,6 +157,11 @@ public abstract class IntegrationOperation extends IntegrationOperation_Base {
             this.getFile().delete();
         }
         this.setFile(null);
+        
+        if(getLogFile() != null) {
+            getLogFile().delete();
+        }
+        
         deleteDomainObject();
     }
 
