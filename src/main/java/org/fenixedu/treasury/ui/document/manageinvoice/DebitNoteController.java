@@ -92,7 +92,7 @@ public class DebitNoteController extends TreasuryBaseController {
     private static final String READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + READ_URI;
 
-    public static final long SEARCH_DEBIT_NOTE_LIST_LIMIT_SIZE = 500;
+    public static final long SEARCH_DEBIT_NOTE_LIST_LIMIT_SIZE = 100;
 
     @RequestMapping
     public String home(Model model) {

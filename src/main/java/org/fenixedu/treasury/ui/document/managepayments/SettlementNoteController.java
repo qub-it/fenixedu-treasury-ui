@@ -116,7 +116,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     private static final String TRANSACTIONS_SUMMARY_URI = "/transactions/summary/";
     public static final String TRANSACTIONS_SUMMARY_URL = CONTROLLER_URL + TRANSACTIONS_SUMMARY_URI;
 
-    public static final long SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE = 500;
+    public static final long SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE = 100;
     public static final long SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD = 30;
 
     @RequestMapping

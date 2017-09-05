@@ -80,7 +80,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/document/manageinvoice/creditnote";
 
-    public static final long SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE = 500;
+    public static final long SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE = 100;
 
     @RequestMapping
     public String home(Model model) {
