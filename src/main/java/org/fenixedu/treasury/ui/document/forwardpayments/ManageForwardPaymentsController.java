@@ -113,6 +113,9 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
         if (canLimitResults && forwardPayments.size() > MAX_SEARCH_SIZE) {
             model.addAttribute("limitResults", true);
+            model.addAttribute("limit", MAX_SEARCH_SIZE);
+            model.addAttribute("total", forwardPayments.size());
+            
             forwardPayments = forwardPayments.subList(0, MAX_SEARCH_SIZE);
         }
 

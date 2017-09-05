@@ -343,12 +343,21 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
     @Override
     @Atomic
-    public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
-        ForwardPaymentStatusBean paymentStatusBean =
+    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
+        if(true) {
+            throw new TreasuryDomainException("label.ManageForwardPayments.postProcessPayment.not.supported.yet");
+        }
+        
+        final ForwardPaymentStateType previousState = forwardPayment.getCurrentState();
+        final ForwardPaymentStatusBean paymentStatusBean =
                 forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
 
         if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
             throw new TreasuryDomainException("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform");
+        }
+
+        if (Strings.isNullOrEmpty(justification)) {
+            throw new TreasuryDomainException("label.ManageForwardPayments.postProcessPayment.justification.required");
         }
 
         final TPAInvocationUtil tpa = new TPAInvocationUtil(forwardPayment);
@@ -358,7 +367,8 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
         if (!isPaymentStatusSuccess(responseMap)) {
             final String responseCode = responseCode(responseMap);
             forwardPayment.reject(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
-            return false;
+            
+            return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, false);
         }
 
         int resultCode = Integer.parseInt(responseMap.get(C016));
@@ -374,7 +384,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
         forwardPayment.advanceToPayedState(String.valueOf(resultCode), Constants.bundle("label.TPAVirtualImplementation.payed"),
                 payedAmount, transactionDate, transactionId, null, json(requestMap), json(responseMap), justification);
 
-        return true;
+        return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, true);
     }
 
 }

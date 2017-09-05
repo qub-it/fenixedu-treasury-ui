@@ -18,6 +18,6 @@ public interface IForwardPaymentImplementation {
 
     public ForwardPaymentStatusBean paymentStatus(final ForwardPayment forwardPayment);
 
-    public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification);
+    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification);
     
 }

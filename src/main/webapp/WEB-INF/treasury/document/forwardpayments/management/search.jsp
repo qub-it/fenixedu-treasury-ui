@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.document.forwardpayments.PostForwardPaymentsReportFilesController"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.AdhocCustomerController"%>
@@ -50,7 +51,15 @@ ${portal.toolkit()}
         <small></small>
     </h1>
 </div>
+
 <%-- NAVIGATION --%>
+<div class="well well-sm" style="display: inline-block">
+	<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
+	<a class="" href="${pageContext.request.contextPath}<%= PostForwardPaymentsReportFilesController.CONTROLLER_URL %>">
+		<spring:message code="label.PostForwardPaymentsReportFile.search" />
+	</a>&nbsp;
+</div>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
@@ -195,7 +204,7 @@ ${portal.toolkit()}
 
 <c:if test="${limitResults}">
 	<div>
-		<p class="label label-warning"><spring:message code="label.ManageForwardPayments.search.limited.results" /></p>
+		<p class="label label-warning"><spring:message code="label.ManageForwardPayments.search.limited.results" arguments='${limit},${total}' /></p>
 	</div>
 </c:if>
 

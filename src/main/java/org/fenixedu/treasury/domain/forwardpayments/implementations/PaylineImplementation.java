@@ -35,6 +35,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.GsonBuilder;
@@ -341,24 +342,47 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
     @Override
     @Atomic
-    public boolean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
-        ForwardPaymentStatusBean paymentStatusBean =
+    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
+        final ForwardPaymentStateType previousState = forwardPayment.getCurrentState();
+
+        final ForwardPaymentStatusBean paymentStatusBean =
                 forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
 
-        if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
-            throw new TreasuryDomainException("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform");
+        if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment()) {
+            throw new TreasuryDomainException("error.ManageForwardPayments.forwardPayment.not.created.nor.requested",
+                    String.valueOf(forwardPayment.getOrderNumber()));
         }
+        
 
         if (Strings.isNullOrEmpty(justification)) {
             throw new TreasuryDomainException("label.ManageForwardPayments.postProcessPayment.justification.required");
         }
 
+        if(Lists.newArrayList(ForwardPaymentStateType.CREATED, ForwardPaymentStateType.REQUESTED).contains(paymentStatusBean.getStateType())) {
+            // Do nothing
+            return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, false);
+        }
+
+        final boolean success = TRANSACTION_APPROVED_CODE.equals(paymentStatusBean.getStatusCode());
+
+        if(!paymentStatusBean.isInvocationSuccess()) {
+            throw new TreasuryDomainException("error.ManageForwardPayments.postProcessPayment.invocation.unsucessful", 
+                    String.valueOf(forwardPayment.getOrderNumber()));
+        }
+        
+        if (!success) {
+            forwardPayment.reject(paymentStatusBean.getStatusCode(), paymentStatusBean.getStatusMessage(), 
+                    paymentStatusBean.getRequestBody(), paymentStatusBean.getResponseBody());
+
+            return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, false);
+        }
+        
         forwardPayment.advanceToPayedState(paymentStatusBean.getStatusCode(), paymentStatusBean.getStatusMessage(),
                 paymentStatusBean.getPayedAmount(), paymentStatusBean.getTransactionDate(), paymentStatusBean.getTransactionId(),
                 paymentStatusBean.getAuthorizationNumber(), paymentStatusBean.getRequestBody(),
                 paymentStatusBean.getResponseBody(), justification);
 
-        return true;
+        return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, true);
     }
 
 }

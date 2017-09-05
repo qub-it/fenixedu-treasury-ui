@@ -285,6 +285,11 @@ public class DebitEntry extends DebitEntry_Base {
         if (getTreasuryEvent() != null && getProduct().isTransferBalanceProduct()) {
             throw new TreasuryDomainException("error.DebitEntry.transferBalanceProduct.cannot.be.associated.to.academic.event");
         }
+        
+        if(isBlockAcademicActsOnDebt() && isAcademicalActBlockingSuspension()) {
+            throw new TreasuryDomainException("error.DebitEntry.cannot.suspend.and.also.block.academical.acts.on.debt");
+        }
+        
     }
 
     @Override

@@ -21,16 +21,15 @@ public class ForwardPaymentStatusBean {
 
     private String statusCode;
     private String statusMessage;
-    private String errorMessage;
     private String requestBody;
     private String responseBody;
 
     public ForwardPaymentStatusBean(final boolean invocationSuccess, final ForwardPaymentStateType type, final String statusCode,
-            final String errorMessage, final String requestBody, final String responseBody) {
+            final String statusMessage, final String requestBody, final String responseBody) {
         this.invocationSuccess = invocationSuccess;
         this.stateType = type;
         this.statusCode = statusCode;
-        this.errorMessage = errorMessage;
+        this.statusMessage = statusMessage;
         this.requestBody = requestBody;
         this.responseBody = responseBody;
     }
@@ -92,10 +91,6 @@ public class ForwardPaymentStatusBean {
 
     public String getStatusCode() {
         return statusCode;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
     }
 
     public String getRequestBody() {

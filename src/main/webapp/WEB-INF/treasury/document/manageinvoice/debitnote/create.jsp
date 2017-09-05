@@ -201,16 +201,9 @@ $(document).ready(function() {
 			</c:forEach>
 		];
 		
-		$("#debitNote_payorDebtAccount").select2(
-			{
-				data : payorDebtAccount_options,
-			}	  
-	    );
+		$("#debitNote_payorDebtAccount").select2({ data : payorDebtAccount_options });
 	    
-	    
-	    
-	    $("#debitNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payordebtaccount}'/>');
-	
+	    $("#debitNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payordebtaccount != null ? param.payordebtaccount : debitEntry.getPayorDebtAccount() != null ? debitEntry.getPayorDebtAccount().getExternalId() : "" }' />');
 	
 		<%-- End block for providing finantialDocumentType options --%>
 		<%-- Block for providing debtAccount options --%>
@@ -224,13 +217,7 @@ $(document).ready(function() {
 			</c:forEach>
 		];
 		
-		$("#debitNote_debtAccount").select2(
-			{
-				data : debtAccount_options,
-			}	  
-	    );
-	    
-	    
+		$("#debitNote_debtAccount").select2({ data : debtAccount_options});
 	    
 	    $("#debitNote_debtAccount").select2().select2('val', '<c:out value='${param.debtaccount}'/>');
 	

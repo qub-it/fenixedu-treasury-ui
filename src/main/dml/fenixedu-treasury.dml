@@ -1485,6 +1485,17 @@ relation DebitEntryInterestDebitEntry {
     }
 }
 
+relation debitEntryTuitionPayorDebtAccount {
+	.org.fenixedu.treasury.domain.debt.DebtAccount playsRole payorDebtAccount {
+		multiplicity 0..1;
+	}
+	
+	.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntries {
+		multiplicity *;
+	}
+}
+	
+
 /* --- CreditEntry --- */
 
 relation CreditEntryDebitEntry {
@@ -2052,3 +2063,18 @@ class forwardpayments.ForwardPaymentLog {
 			multiplicity 0..1;
 		}
 	}
+
+class forwardpayments.PostForwardPaymentsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	DateTime postForwardPaymentsExecutionDate;
+}
+
+	relation PostForwardPaymentsReportFileBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+
+		forwardpayments.PostForwardPaymentsReportFile playsRole PostForwardPaymentsReportFiles {
+			multiplicity *;
+		}
+	}
+	
