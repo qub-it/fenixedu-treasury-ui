@@ -665,7 +665,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static Stream<? extends DebitEntry> find(final DebtAccount debtAccount) {
-        return findAll().filter(d -> d.getDebtAccount() == debtAccount);
+        return debtAccount.getInvoiceEntrySet().stream().filter(i -> i.isDebitNoteEntry()).map(DebitEntry.class::cast);
     }
 
     public static Stream<? extends DebitEntry> find(final DebitNote debitNote) {
@@ -676,8 +676,7 @@ public class DebitEntry extends DebitEntry_Base {
         return treasuryEvent.getDebitEntriesSet().stream().filter(d -> d.getTreasuryEvent() == treasuryEvent);
     }
 
-    @Deprecated
-    public static Stream<? extends DebitEntry> deprecated_findActive(final DebtAccount debtAccount, final Product product) {
+    public static Stream<? extends DebitEntry> findActive(final DebtAccount debtAccount, final Product product) {
         return find(debtAccount).filter(d -> d.getProduct() == product && !d.isEventAnnuled());
     }
 
