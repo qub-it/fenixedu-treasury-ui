@@ -669,14 +669,15 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static Stream<? extends DebitEntry> find(final DebitNote debitNote) {
-        return findAll().filter(d -> d.getFinantialDocument() == debitNote);
+        return debitNote.getFinantialDocumentEntriesSet().stream().map(DebitEntry.class::cast);
     }
 
     public static Stream<? extends DebitEntry> find(final TreasuryEvent treasuryEvent) {
         return treasuryEvent.getDebitEntriesSet().stream().filter(d -> d.getTreasuryEvent() == treasuryEvent);
     }
 
-    public static Stream<? extends DebitEntry> findActive(final DebtAccount debtAccount, final Product product) {
+    @Deprecated
+    public static Stream<? extends DebitEntry> deprecated_findActive(final DebtAccount debtAccount, final Product product) {
         return find(debtAccount).filter(d -> d.getProduct() == product && !d.isEventAnnuled());
     }
 
