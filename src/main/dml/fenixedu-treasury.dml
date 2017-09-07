@@ -1490,7 +1490,7 @@ relation debitEntryTuitionPayorDebtAccount {
 		multiplicity 0..1;
 	}
 	
-	.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntries {
+	.org.fenixedu.treasury.domain.document.DebitEntry playsRole payorDebitEntries {
 		multiplicity *;
 	}
 }
