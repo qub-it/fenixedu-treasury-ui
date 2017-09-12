@@ -2066,6 +2066,8 @@ class forwardpayments.ForwardPaymentLog {
 
 class forwardpayments.PostForwardPaymentsReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 	DateTime postForwardPaymentsExecutionDate;
+	DateTime beginDate;
+	DateTime endDate;
 }
 
 	relation PostForwardPaymentsReportFileBennu {

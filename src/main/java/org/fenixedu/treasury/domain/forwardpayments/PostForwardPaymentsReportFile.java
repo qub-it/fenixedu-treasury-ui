@@ -11,11 +11,15 @@ import pt.ist.fenixframework.Atomic;
 
 public class PostForwardPaymentsReportFile extends PostForwardPaymentsReportFile_Base {
     
-    private PostForwardPaymentsReportFile(final DateTime postForwardPaymentsExecutionDate, final String filename, final byte[] content) {
+    private PostForwardPaymentsReportFile(final DateTime postForwardPaymentsExecutionDate, 
+            final DateTime beginDate, final DateTime endDate,
+            final String filename, final byte[] content) {
         super();
 
         setBennu(Bennu.getInstance());
         setPostForwardPaymentsExecutionDate(postForwardPaymentsExecutionDate);
+        setBeginDate(beginDate);
+        setEndDate(endDate);
         
         init(filename, filename, content);
     }
@@ -37,8 +41,9 @@ public class PostForwardPaymentsReportFile extends PostForwardPaymentsReportFile
     }
 
     @Atomic
-    public static PostForwardPaymentsReportFile create(final DateTime postForwardPaymentsExecutionDate, final String filename, final byte[] content) {
-        return new PostForwardPaymentsReportFile(postForwardPaymentsExecutionDate, filename, content);
+    public static PostForwardPaymentsReportFile create(final DateTime postForwardPaymentsExecutionDate, final DateTime beginDate, final DateTime endDate, 
+            final String filename, final byte[] content) {
+        return new PostForwardPaymentsReportFile(postForwardPaymentsExecutionDate, beginDate, endDate, filename, content);
     }
 
 }

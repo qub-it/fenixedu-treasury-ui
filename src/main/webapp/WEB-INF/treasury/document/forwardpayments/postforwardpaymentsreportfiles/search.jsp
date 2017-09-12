@@ -7,6 +7,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+
 <script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
@@ -14,6 +15,7 @@
 <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
 <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" />
 
 
@@ -90,6 +92,8 @@ ${portal.toolkit()}
                 <tr>
                     <%--!!!  Field names here --%>
                     <th><spring:message code="label.PostForwardPaymentsReportFile.postForwardPaymentsExecutionDate" /></th>
+                    <th><spring:message code="label.PostForwardPaymentsReportFile.beginDate" /></th>
+                    <th><spring:message code="label.PostForwardPaymentsReportFile.endDate" /></th>
                     <th><spring:message code="label.PostForwardPaymentsReportFile.file" /></th>
                 </tr>
             </thead>
@@ -97,6 +101,8 @@ ${portal.toolkit()}
 				<c:forEach var="p" items="${postForwardPaymentsReportFilesSet}">
 					<tr>
 						<td><c:out value='${p.postForwardPaymentsExecutionDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
+						<td><c:out value='${p.beginDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>	
+						<td><c:out value='${p.endDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>	
 						<td>
 							<a href="${pageContext.request.contextPath}/treasury/document/forwardpayments/postforwardpaymentsreportfiles/download/${p.externalId}">
 								<c:out value="${p.filename}" />
@@ -127,6 +133,8 @@ ${portal.toolkit()}
 		
 		"columns": [
 			{ data: 'postForwardPaymentsExecutionDate' },
+			{ data: 'beginDate' },
+			{ data: 'endDate' },
 			{ data: 'file' }
 		],
 		"order": [[ 1, "desc" ]],
@@ -151,5 +159,6 @@ ${portal.toolkit()}
 			$(this).toggleClass('selected');
 		});
 	}); 
+	
 </script>
 

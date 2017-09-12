@@ -456,11 +456,11 @@ public class ForwardPayment extends ForwardPayment_Base {
             }
         });
 
-        writeExcel(reportBeans, postForwardPaymentsExecutionDate);
+        writeExcel(reportBeans, postForwardPaymentsExecutionDate, beginDate, endDate);
     }
 
     private static void writeExcel(final List<PostForwardPaymentReportBean> reportBeans,
-            final DateTime postForwardPaymentsExecutionDate) {
+            final DateTime postForwardPaymentsExecutionDate, final DateTime beginDate, final DateTime endDate) {
 
         final byte[] content = Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
 
@@ -479,6 +479,7 @@ public class ForwardPayment extends ForwardPayment_Base {
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.executionDate"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.forwardPaymentExternalId"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.forwardPaymentOrderNumber"),
+                                Constants.bundle("label.PostForwardPaymentReportBean.cell.forwardPaymentWhenOccured"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.customerCode"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.customerName"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.previousStateDescription"),
@@ -505,7 +506,8 @@ public class ForwardPayment extends ForwardPayment_Base {
         final String filename = Constants.bundle("label.PostForwardPaymentsReportFile.filename",
                 postForwardPaymentsExecutionDate.toString("yyyy_MM_dd_HH_mm_ss"));
 
-        PostForwardPaymentsReportFile.create(postForwardPaymentsExecutionDate, filename, content);
+        PostForwardPaymentsReportFile.create(postForwardPaymentsExecutionDate, 
+                beginDate, endDate, filename, content);
     }
 
     private static PostForwardPaymentReportBean updateForwardPayment(final String forwardPaymentId, final PrintWriter logWriter) throws IOException {
@@ -550,6 +552,7 @@ public class ForwardPayment extends ForwardPayment_Base {
             this.executionDate = new DateTime().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
             this.forwardPaymentExternalId = forwardPayment.getExternalId();
             this.forwardPaymentOrderNumber = forwardPayment.getReferenceNumber();
+            this.forwardPaymentWhenOccured = forwardPayment.getWhenOccured().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
             this.customerCode = forwardPayment.getDebtAccount().getCustomer().getBusinessIdentification();
             this.customerName = forwardPayment.getDebtAccount().getCustomer().getName();
             this.previousStateDescription = postProcessPaymentStatusBean.getPreviousState().getLocalizedName().getContent();
@@ -572,6 +575,7 @@ public class ForwardPayment extends ForwardPayment_Base {
         private String executionDate;
         private String forwardPaymentExternalId;
         private String forwardPaymentOrderNumber;
+        private String forwardPaymentWhenOccured;
         private String customerCode;
         private String customerName;
         private String previousStateDescription;
@@ -591,6 +595,7 @@ public class ForwardPayment extends ForwardPayment_Base {
             row.createCell(i++).setCellValue(executionDate);
             row.createCell(i++).setCellValue(forwardPaymentExternalId);
             row.createCell(i++).setCellValue(forwardPaymentOrderNumber);
+            row.createCell(i++).setCellValue(forwardPaymentWhenOccured);
             row.createCell(i++).setCellValue(customerCode);
             row.createCell(i++).setCellValue(customerName);
             row.createCell(i++).setCellValue(previousStateDescription);
