@@ -137,10 +137,9 @@ ${portal.toolkit()}
 			{ data: 'endDate' },
 			{ data: 'file' }
 		],
-		"order": [[ 1, "desc" ]],
+		"order": [[ 0, "desc" ]],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
-			{ "width": "54px", "targets": 2 } 
 		],
         dom: '<"col-sm-5"l><"col-sm-3"f><"col-sm-3"B>rtip', //FilterBox = YES && ExportOptions = YES
         buttons: [
