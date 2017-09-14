@@ -661,7 +661,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static Stream<? extends DebitEntry> find(final Customer customer) {
-        return findAll().filter(d -> d.getDebtAccount().getCustomer() == customer);
+        return customer.getDebtAccountsSet().stream().flatMap(d -> find(d));
     }
 
     public static Stream<? extends DebitEntry> find(final DebtAccount debtAccount) {
