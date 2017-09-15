@@ -5,13 +5,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.Stream.Builder;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -85,14 +86,14 @@ public class ERPImportOperation extends ERPImportOperation_Base {
     }
 
     public static Stream<ERPImportOperation> findByFile(final OperationFile file) {
-        final Builder<ERPImportOperation> builder = Stream.builder();
+        final Set<ERPImportOperation> result = Sets.newHashSet();
 
         final IntegrationOperation operation = file.getIntegrationOperation();
         if (operation != null && operation instanceof ERPImportOperation) {
-            builder.add((ERPImportOperation) operation);
+            result.add((ERPImportOperation) operation);
         }
 
-        return builder.build();
+        return result.stream();
     }
 
     public static Stream<ERPImportOperation> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
