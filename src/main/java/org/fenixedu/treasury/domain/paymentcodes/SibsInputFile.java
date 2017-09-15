@@ -102,7 +102,7 @@ public class SibsInputFile extends SibsInputFile_Base {
     }
 
     public static Stream<SibsInputFile> findByUploader(final User uploader) {
-        return findAll().filter(i -> uploader.equals(i.getUploader()));
+        return uploader.getSibsInputFilesSet().stream();
     }
 
     @Override
