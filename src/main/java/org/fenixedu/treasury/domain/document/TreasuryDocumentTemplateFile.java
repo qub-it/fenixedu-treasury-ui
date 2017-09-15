@@ -100,7 +100,7 @@ public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_B
     }
 
     public static Stream<TreasuryDocumentTemplateFile> findByDocumentTemplate(final TreasuryDocumentTemplate documentTemplate) {
-        return findAll().filter(i -> documentTemplate.equals(i.getTreasuryDocumentTemplate()));
+        return documentTemplate.getTreasuryDocumentTemplateFilesSet().stream();
     }
 
     @Override
