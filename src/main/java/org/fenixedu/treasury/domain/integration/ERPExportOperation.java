@@ -17,24 +17,25 @@ import pt.ist.fenixframework.Atomic;
 
 public class ERPExportOperation extends ERPExportOperation_Base {
 
-    public static final Comparator<ERPExportOperation> COMPARE_BY_VERSIONING_CREATION_DATE = new Comparator<ERPExportOperation>() {
+    public static final Comparator<ERPExportOperation> COMPARE_BY_VERSIONING_CREATION_DATE =
+            new Comparator<ERPExportOperation>() {
 
-        @Override
-        public int compare(final ERPExportOperation o1, final ERPExportOperation o2) {
-            int c = Comparator.comparing(IntegrationOperation::getVersioningCreationDate).compare(o1, o2);
-            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
-        }
-    };
-        
+                @Override
+                public int compare(final ERPExportOperation o1, final ERPExportOperation o2) {
+                    int c = Comparator.comparing(IntegrationOperation::getVersioningCreationDate).compare(o1, o2);
+                    return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+                }
+            };
+
     protected ERPExportOperation() {
         super();
     }
 
-    protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final String erpOperationId, final DateTime executionDate,
-            final boolean processed, final boolean success, final boolean corrected) {
+    protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final String erpOperationId,
+            final DateTime executionDate, final boolean processed, final boolean success, final boolean corrected) {
         setFile(file);
         setFinantialInstitution(finantialInstitution);
-		setErpOperationId(erpOperationId);
+        setErpOperationId(erpOperationId);
         setExecutionDate(executionDate);
         setProcessed(processed);
         setSuccess(success);
@@ -77,8 +78,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
     @Atomic
     public static ERPExportOperation create(final byte[] data, final String filename,
-            final FinantialInstitution finantialInstitution, final String erpOperationId, final DateTime executionDate, final boolean processed,
-            final boolean success, final boolean corrected) {
+            final FinantialInstitution finantialInstitution, final String erpOperationId, final DateTime executionDate,
+            final boolean processed, final boolean success, final boolean corrected) {
         ERPExportOperation eRPExportOperation = new ERPExportOperation();
         OperationFile file;
         if (data == null) {
@@ -100,6 +101,7 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         return results.stream();
     }
 
+    // TODO legidio, shouldn't be just file.getIntegrationOperation(), if instanceof ERPExportOperation?
     public static Stream<ERPExportOperation> findByFile(final FinantialInstitution finantialInstitution,
             final OperationFile file) {
         return findByFinantialInstitution(finantialInstitution).filter(i -> file.equals(i.getFile()));

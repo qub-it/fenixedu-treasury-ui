@@ -211,6 +211,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     }
 
+    // TODO legidio, can we please change this to Bennu.getInstance().getFinantialInstitutionsSet().flatMap(x -> x.getPaymentCodePoolsSet().stream()) ?
     public static Stream<PaymentCodePool> findAll() {
         Set<PaymentCodePool> codes = new HashSet<PaymentCodePool>();
 
