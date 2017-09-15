@@ -174,8 +174,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             if (!(entry instanceof InvoiceEntry)) {
                 continue;
             }
-            
-            if(((InvoiceEntry) entry).getDebtAccount() != getDebtAccount()) {
+
+            if (((InvoiceEntry) entry).getDebtAccount() != getDebtAccount()) {
                 throw new TreasuryDomainException("error.FinantialDocument.entries.belongs.different.debt.account");
             }
         }
@@ -293,7 +293,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.setInstitutionForExportation(this.getDocumentNumberSeries().getSeries().getFinantialInstitution());
         }
 
-        if(getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration().getActive()) {
+        if (getDebtAccount().getFinantialInstitution().getErpIntegrationConfiguration().getActive()) {
             ERPExporterManager.scheduleSingleDocument(this);
         }
     }
@@ -473,11 +473,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public static Stream<? extends FinantialDocument> find(final FinantialDocumentType finantialDocumentType) {
-        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
+        return finantialDocumentType.getFinantialDocumentsSet().stream();
     }
 
     public static Stream<? extends FinantialDocument> find(final DocumentNumberSeries documentNumberSeries) {
-        return findAll().filter(x -> x.getDocumentNumberSeries() == documentNumberSeries);
+        return documentNumberSeries.getFinantialDocumentsSet().stream();
     }
 
     public static Optional<? extends FinantialDocument> findUniqueByDocumentNumber(final String documentNumber) {
@@ -490,7 +490,8 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 d -> d.isClosed() && COMPARE_BY_DOCUMENT_NUMBER_STRING.compare(d.getDocumentNumber(), documentNumber) < 0);
     }
 
-    public static FinantialDocument findByUiDocumentNumber(final FinantialInstitution finantialInstitution, final String docNumber) {
+    public static FinantialDocument findByUiDocumentNumber(final FinantialInstitution finantialInstitution,
+            final String docNumber) {
         //parse the Document Number in {DOCUMENT_TYPE} {DOCUMENT_SERIES}/{DOCUMENT_NUMBER}
         String documentType;
         String seriesNumber;
@@ -505,12 +506,12 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 //            documentNumber = values2.get(1);
 
             FinantialDocumentType type = FinantialDocumentType.findByCode(documentType);
-            
+
             if (type != null) {
                 Series series = Series.findByCode(finantialInstitution, seriesNumber);
                 if (series != null) {
                     DocumentNumberSeries dns = DocumentNumberSeries.find(type, series);
-                    
+
                     if (dns != null) {
                         return dns.getFinantialDocumentsSet().stream().filter(x -> x.getUiDocumentNumber().equals(docNumber))
                                 .findFirst().orElse(null);
@@ -518,32 +519,31 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
                 }
             } else {
                 Set<FinantialDocument> docs = FinantialDocument.findAll()
-                    .filter(d -> d.getDebtAccount().getFinantialInstitution() == finantialInstitution)
-                    .filter(d -> d.getUiDocumentNumber().equals(docNumber))
-                    .collect(Collectors.<FinantialDocument> toSet());
-                
-                if(docs.isEmpty()) {
+                        .filter(d -> d.getDebtAccount().getFinantialInstitution() == finantialInstitution)
+                        .filter(d -> d.getUiDocumentNumber().equals(docNumber)).collect(Collectors.<FinantialDocument> toSet());
+
+                if (docs.isEmpty()) {
                     return null;
                 }
-                
-                if(docs.size() > 1) {
+
+                if (docs.size() > 1) {
                     throw new TreasuryDomainException("error.FinantialDocument.findByUiDocumentNumber.found.more.than.one");
                 }
-                
+
                 final FinantialDocument finantialDocument = docs.iterator().next();
-                if(!finantialDocument.getDocumentNumberSeries().isReplacePrefix()) {
+                if (!finantialDocument.getDocumentNumberSeries().isReplacePrefix()) {
                     throw new TreasuryDomainException("error.FinantialDocument.findByUiDocumentNumber.not.from.replacing.prefix");
                 }
-                
-                if(!documentType.equals(finantialDocument.getDocumentNumberSeries().getReplacingPrefix())) {
+
+                if (!documentType.equals(finantialDocument.getDocumentNumberSeries().getReplacingPrefix())) {
                     throw new TreasuryDomainException("error.FinantialDocument.findByUiDocumentNumber.documentType.not.equal");
                 }
-                
+
                 return finantialDocument;
             }
         } catch (Exception ex) {
         }
-        
+
         return null;
     }
 }
