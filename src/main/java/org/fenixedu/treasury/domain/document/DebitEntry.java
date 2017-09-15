@@ -277,7 +277,8 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         // If it exempted then it must be on itself or with credit entry but not both
-        if (isPositive(getExemptedAmount()) && CreditEntry.findActive(getTreasuryEvent(), getProduct()).filter(c -> c.getDebitEntry() == this).count() > 0) {
+        if (isPositive(getExemptedAmount())
+                && CreditEntry.findActive(getTreasuryEvent(), getProduct()).filter(c -> c.getDebitEntry() == this).count() > 0) {
             throw new TreasuryDomainException(
                     "error.DebitEntry.exemption.cannot.be.on.debit.entry.and.with.credit.entry.at.same.time");
         }
@@ -285,11 +286,11 @@ public class DebitEntry extends DebitEntry_Base {
         if (getTreasuryEvent() != null && getProduct().isTransferBalanceProduct()) {
             throw new TreasuryDomainException("error.DebitEntry.transferBalanceProduct.cannot.be.associated.to.academic.event");
         }
-        
-        if(isBlockAcademicActsOnDebt() && isAcademicalActBlockingSuspension()) {
+
+        if (isBlockAcademicActsOnDebt() && isAcademicalActBlockingSuspension()) {
             throw new TreasuryDomainException("error.DebitEntry.cannot.suspend.and.also.block.academical.acts.on.debt");
         }
-        
+
     }
 
     @Override
@@ -424,11 +425,11 @@ public class DebitEntry extends DebitEntry_Base {
             setExemptedAmount(amountWithoutVat);
 
             recalculateAmountValues();
-            
-            if(getTreasuryEvent() != null) {
+
+            if (getTreasuryEvent() != null) {
                 getTreasuryEvent().invokeSettlementCallbacks();
             }
-            
+
         }
 
         checkRules();
@@ -447,9 +448,9 @@ public class DebitEntry extends DebitEntry_Base {
         final DocumentNumberSeries documentNumberSeries = DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(),
                 finantialDocument.getDocumentNumberSeries().getSeries());
 
-        if(creditNote == null) {
+        if (creditNote == null) {
             creditNote = CreditNote.create(this.getDebtAccount(), documentNumberSeries, documentDate, finantialDocument,
-                finantialDocument.getUiDocumentNumber());
+                    finantialDocument.getUiDocumentNumber());
         }
 
         if (!Strings.isNullOrEmpty(documentObservations)) {
@@ -461,11 +462,11 @@ public class DebitEntry extends DebitEntry_Base {
         }
 
         if (treasuryExemption != null) {
-            return CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountForCreditWithoutVat, new DateTime(),
-                    this);
+            return CreditEntry.createFromExemption(treasuryExemption, creditNote, description, amountForCreditWithoutVat,
+                    new DateTime(), this);
         } else {
-            return CreditEntry.create(creditNote, description, getProduct(), getVat(), amountForCreditWithoutVat, documentDate, this,
-                    BigDecimal.ONE);
+            return CreditEntry.create(creditNote, description, getProduct(), getVat(), amountForCreditWithoutVat, documentDate,
+                    this, BigDecimal.ONE);
         }
     }
 
@@ -525,7 +526,7 @@ public class DebitEntry extends DebitEntry_Base {
         if (isProcessedInClosedDebitNote()) {
             return false;
         }
-        
+
         for (final CreditEntry creditEntry : treasuryExemption.getDebitEntry().getCreditEntriesSet()) {
 
             if (!creditEntry.isFromExemption()) {
@@ -579,7 +580,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         return settlementNote.get().getPaymentDate();
     }
-    
+
     public BigDecimal getExemptedAmountWithVat() {
         return getExemptedAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this)));
     }
@@ -669,11 +670,12 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public static Stream<? extends DebitEntry> find(final DebitNote debitNote) {
-        return debitNote.getFinantialDocumentEntriesSet().stream().map(DebitEntry.class::cast);
+        return debitNote.getFinantialDocumentEntriesSet().stream().filter(f -> f instanceof DebitEntry)
+                .map(DebitEntry.class::cast);
     }
 
     public static Stream<? extends DebitEntry> find(final TreasuryEvent treasuryEvent) {
-        return treasuryEvent.getDebitEntriesSet().stream().filter(d -> d.getTreasuryEvent() == treasuryEvent);
+        return treasuryEvent.getDebitEntriesSet().stream();
     }
 
     public static Stream<? extends DebitEntry> findActive(final DebtAccount debtAccount, final Product product) {
@@ -715,27 +717,28 @@ public class DebitEntry extends DebitEntry_Base {
             final Map<String, String> propertiesMap, final Product product, final String description, final BigDecimal quantity,
             final InterestRate interestRate, final DateTime entryDateTime) {
 
-        if(!isDebitEntryCreationAllowed(debtAccount, debitNote, product)) {
+        if (!isDebitEntryCreationAllowed(debtAccount, debitNote, product)) {
             throw new TreasuryDomainException("error.DebitEntry.customer.not.active");
         }
-        
+
         return _create(debitNote, debtAccount, treasuryEvent, vat, amount, dueDate, propertiesMap, product, description, quantity,
                 interestRate, entryDateTime);
     }
 
-    private static boolean isDebitEntryCreationAllowed(final DebtAccount debtAccount, Optional<DebitNote> debitNote, Product product) {
+    private static boolean isDebitEntryCreationAllowed(final DebtAccount debtAccount, Optional<DebitNote> debitNote,
+            Product product) {
         if (debtAccount.getCustomer().isActive()) {
             return true;
         }
-        
+
 //        if(product == TreasurySettings.getInstance().getInterestProduct()) {
 //            return true;
 //        }
 //        
-        if(debitNote.isPresent() && debitNote.get().getDocumentNumberSeries().getSeries().isRegulationSeries()) {
+        if (debitNote.isPresent() && debitNote.get().getDocumentNumberSeries().getSeries().isRegulationSeries()) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -847,10 +850,8 @@ public class DebitEntry extends DebitEntry_Base {
             throw new TreasuryDomainException("error.DebitEntry.annul.debit.entry,requires.reason");
         }
 
-        final DebitNote debitNote = DebitNote.create(getDebtAccount(),
-                DocumentNumberSeries
-                        .findUniqueDefault(FinantialDocumentType.findForDebitNote(), getDebtAccount().getFinantialInstitution())
-                        .get(),
+        final DebitNote debitNote = DebitNote.create(getDebtAccount(), DocumentNumberSeries
+                .findUniqueDefault(FinantialDocumentType.findForDebitNote(), getDebtAccount().getFinantialInstitution()).get(),
                 new DateTime());
 
         setFinantialDocument(debitNote);
