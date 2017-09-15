@@ -39,13 +39,10 @@ import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public class Series extends Series_Base {
 
@@ -79,7 +76,8 @@ public class Series extends Series_Base {
     }
 
     protected Series(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
-            final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries, final boolean selectable) {
+            final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries,
+            final boolean selectable) {
         this();
         setActive(true);
         setFinantialInstitution(finantialInstitution);
@@ -154,9 +152,9 @@ public class Series extends Series_Base {
             }
             setLegacy(legacy);
         }
-        
+
         setSelectable(selectable);
-        
+
         checkRules();
     }
 
@@ -174,11 +172,11 @@ public class Series extends Series_Base {
     public boolean isDefaultSeries() {
         return super.getDefaultSeries();
     }
-    
+
     public boolean isSelectable() {
         return super.getSelectable();
     }
-    
+
     public boolean isRegulationSeries() {
         return getFinantialInstitution().getRegulationSeries() == this;
     }
@@ -204,17 +202,9 @@ public class Series extends Series_Base {
     }
 
     public static Set<Series> find(final FinantialInstitution finantialInstitution) {
-        Set<Series> result = Sets.newHashSet();
-
-        for (final Series it : findAll()) {
-            if (it.getFinantialInstitution() == finantialInstitution) {
-                result.add(it);
-            }
-        }
-
-        return result;
+        return finantialInstitution.getSeriesSet();
     }
-    
+
     public static Series findByCode(final FinantialInstitution finantialInstitution, final String code) {
         Series result = null;
 
@@ -258,7 +248,8 @@ public class Series extends Series_Base {
 
     @Atomic
     public static Series create(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
-            final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries, final boolean selectable) {
+            final boolean externSeries, final boolean certificated, final boolean legacy, final boolean defaultSeries,
+            final boolean selectable) {
         return new Series(finantialInstitution, code, name, externSeries, certificated, legacy, defaultSeries, selectable);
     }
 
