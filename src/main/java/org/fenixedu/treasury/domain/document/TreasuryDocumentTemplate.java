@@ -34,10 +34,10 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.qubit.terra.docs.core.IDocumentTemplate;
 import com.qubit.terra.docs.core.IDocumentTemplateVersion;
+
+import pt.ist.fenixframework.Atomic;
 
 public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base implements IDocumentTemplate {
 
@@ -46,7 +46,8 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base impl
         setBennu(Bennu.getInstance());
     }
 
-    protected TreasuryDocumentTemplate(final FinantialDocumentType finantialDocumentTypes, final FinantialEntity finantialEntity) {
+    protected TreasuryDocumentTemplate(final FinantialDocumentType finantialDocumentTypes,
+            final FinantialEntity finantialEntity) {
         this();
         setFinantialDocumentType(finantialDocumentTypes);
         setFinantialEntity(finantialEntity);
@@ -133,18 +134,18 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base impl
         return Bennu.getInstance().getTreasuryDocumentTemplatesSet().stream();
     }
 
-    public static Stream<TreasuryDocumentTemplate> findByFinantialDocumentType(final FinantialDocumentType finantialDocumentType) {
-        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
+    public static Stream<TreasuryDocumentTemplate> findByFinantialDocumentType(
+            final FinantialDocumentType finantialDocumentType) {
+        return finantialDocumentType.getTreasuryDocumentTemplatesSet().stream();
     }
 
     public static Stream<TreasuryDocumentTemplate> findByFinantialEntity(final FinantialEntity finantialEntity) {
-        return findAll().filter(i -> finantialEntity.equals(i.getFinantialEntity()));
+        return finantialEntity.getTreasuryDocumentTemplatesSet().stream();
     }
 
     public static Stream<TreasuryDocumentTemplate> findByFinantialDocumentTypeAndFinantialEntity(
             final FinantialDocumentType finantialDocumentType, final FinantialEntity finantialEntity) {
-        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType())).filter(
-                i -> finantialEntity.equals(i.getFinantialEntity()));
+        return findByFinantialDocumentType(finantialDocumentType).filter(i -> finantialEntity.equals(i.getFinantialEntity()));
     }
 
     @Override
