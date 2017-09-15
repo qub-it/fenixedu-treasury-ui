@@ -55,8 +55,8 @@ public class SibsOutputFile extends SibsOutputFile_Base {
             StringBuilder errorsBuilder) {
         SibsOutgoingPaymentFile sibsOutgoingPaymentFile =
                 new SibsOutgoingPaymentFile(finantialInstiution.getSibsConfiguration().getSourceInstitutionId(),
-                        finantialInstiution.getSibsConfiguration().getDestinationInstitutionId(), finantialInstiution
-                                .getSibsConfiguration().getEntityReferenceCode(), lastSuccessfulSentDateTime);
+                        finantialInstiution.getSibsConfiguration().getDestinationInstitutionId(),
+                        finantialInstiution.getSibsConfiguration().getEntityReferenceCode(), lastSuccessfulSentDateTime);
 
         for (PaymentReferenceCode referenceCode : getNotPayedReferenceCodes(finantialInstiution, errorsBuilder)) {
             addCalculatedPaymentCodesFromEvent(sibsOutgoingPaymentFile, referenceCode, errorsBuilder);
@@ -129,7 +129,8 @@ public class SibsOutputFile extends SibsOutputFile_Base {
         private final StringBuilder errorsBuilder;
         private final SibsOutgoingPaymentFile sibsFile;
 
-        public CalculatePaymentCodes(String paymentReferenceCodeId, StringBuilder errorsBuilder, SibsOutgoingPaymentFile sibsFile) {
+        public CalculatePaymentCodes(String paymentReferenceCodeId, StringBuilder errorsBuilder,
+                SibsOutgoingPaymentFile sibsFile) {
             this.paymentReferenceCodeId = paymentReferenceCodeId;
             this.errorsBuilder = errorsBuilder;
             this.sibsFile = sibsFile;
@@ -216,7 +217,7 @@ public class SibsOutputFile extends SibsOutputFile_Base {
     }
 
     public static Stream<SibsOutputFile> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
+        return finantialInstitution.getSibsOutputFilesSet().stream();
     }
 
     public static Stream<SibsOutputFile> findByErrorLog(final java.lang.String errorLog) {
