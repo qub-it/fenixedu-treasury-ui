@@ -97,8 +97,9 @@ public abstract class Tariff extends Tariff_Base {
             throw new TreasuryDomainException("error.Tariff.fixedDueDate.must.be.after.or.equal.beginDate");
         }
 
-        if ((getDueDateCalculationType().isDaysAfterCreation() || getDueDateCalculationType()
-                .isBestOfFixedDateAndDaysAfterCreation()) && getNumberOfDaysAfterCreationForDueDate() < 0) {
+        if ((getDueDateCalculationType().isDaysAfterCreation()
+                || getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation())
+                && getNumberOfDaysAfterCreationForDueDate() < 0) {
             throw new TreasuryDomainException("error.Tariff.numberOfDaysAfterCreationForDueDate.must.be.positive");
         }
 
@@ -212,11 +213,11 @@ public abstract class Tariff extends Tariff_Base {
         if (getDueDateCalculationType().isFixedDate()) {
             return getFixedDueDate();
         }
-        
-        if(getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation()) {
+
+        if (getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation()) {
             final LocalDate daysAfterCreation = requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());
-            
-            if(daysAfterCreation.isAfter(getFixedDueDate())) {
+
+            if (daysAfterCreation.isAfter(getFixedDueDate())) {
                 return daysAfterCreation;
             } else {
                 return getFixedDueDate();
@@ -237,7 +238,7 @@ public abstract class Tariff extends Tariff_Base {
     }
 
     public static Stream<? extends Tariff> find(final Product product) {
-        return findAll().filter(t -> t.getProduct() == product);
+        return product.getTariffSet().stream();
     }
 
     public static Stream<? extends Tariff> find(final Product product, final DateTime when) {
