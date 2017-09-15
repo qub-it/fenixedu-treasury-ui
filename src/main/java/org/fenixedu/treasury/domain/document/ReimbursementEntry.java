@@ -50,13 +50,13 @@ public class ReimbursementEntry extends ReimbursementEntry_Base {
         init(settlementNote, paymentMethod, reimbursedAmount, reimbursementMethodId);
     }
 
-    protected void init(final SettlementNote settlementNote, final PaymentMethod paymentMethod, final BigDecimal reimbursedAmount, 
-                final String reimbursementMethodId) {
+    protected void init(final SettlementNote settlementNote, final PaymentMethod paymentMethod, final BigDecimal reimbursedAmount,
+            final String reimbursementMethodId) {
         setSettlementNote(settlementNote);
         setPaymentMethod(paymentMethod);
         setReimbursedAmount(reimbursedAmount);
         setReimbursementMethodId(reimbursementMethodId);
-        
+
         checkRules();
     }
 
@@ -136,11 +136,11 @@ public class ReimbursementEntry extends ReimbursementEntry_Base {
     }
 
     public static Stream<ReimbursementEntry> findBySettlementNote(final SettlementNote settlementNote) {
-        return findAll().filter(i -> settlementNote.equals(i.getSettlementNote()));
+        return settlementNote.getReimbursementEntriesSet().stream();
     }
 
     public static Stream<ReimbursementEntry> findByPaymentMethod(final PaymentMethod paymentMethod) {
-        return findAll().filter(i -> paymentMethod.equals(i.getPaymentMethod()));
+        return paymentMethod.getReimbursementEntriesSet().stream();
     }
 
     public static Stream<ReimbursementEntry> findByReimbursedAmount(final java.math.BigDecimal reimbursedAmount) {
