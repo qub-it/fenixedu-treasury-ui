@@ -133,7 +133,7 @@ public class Vat extends Vat_Base {
     }
 
     public static Stream<Vat> find(final VatType vatType) {
-        return findAll().filter(v -> v.getVatType() == vatType);
+        return vatType.getVatsSet().stream();
     }
 
     protected static Stream<Vat> findActive(final VatType vatType, final DateTime when) {
@@ -143,8 +143,8 @@ public class Vat extends Vat_Base {
     protected static Stream<Vat> findActive(final FinantialInstitution finantialInstitution, final VatType vatType,
             final DateTime begin, final DateTime end) {
         final Interval interval = new Interval(begin, end);
-        return find(vatType).filter(v -> v.getFinantialInstitution().equals(finantialInstitution)).filter(
-                v -> v.interval().overlaps(interval));
+        return find(vatType).filter(v -> v.getFinantialInstitution().equals(finantialInstitution))
+                .filter(v -> v.interval().overlaps(interval));
     }
 
     public static Optional<Vat> findActiveUnique(final VatType vatType, final FinantialInstitution finantialInstiution,
