@@ -78,12 +78,12 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
         if (getSeries() == null) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.series.required");
         }
-        
-        if(isReplacePrefix() && Strings.isNullOrEmpty(getReplacingPrefix())) {
+
+        if (isReplacePrefix() && Strings.isNullOrEmpty(getReplacingPrefix())) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.replacePrefix.wrong.arguments");
         }
-        
-        if(!isReplacePrefix() && !Strings.isNullOrEmpty(getReplacingPrefix())) {
+
+        if (!isReplacePrefix() && !Strings.isNullOrEmpty(getReplacingPrefix())) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.replacePrefix.wrong.arguments");
         }
 
@@ -105,7 +105,7 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
         return count;
     }
-    
+
     public boolean isReplacePrefix() {
         return getReplacePrefix();
     }
@@ -116,14 +116,14 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     public void editReplacingPrefix(final boolean replacePrefix, final String replacingPrefix) {
         setReplacePrefix(replacePrefix);
-        
-        if(isReplacePrefix()) {
+
+        if (isReplacePrefix()) {
             setReplacingPrefix(replacingPrefix);
         }
-        
+
         checkRules();
     }
-    
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -141,13 +141,10 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
     }
 
     public static DocumentNumberSeries find(final FinantialDocumentType finantialDocumentType, final Series series) {
-        final Set<DocumentNumberSeries> result =
-                finantialDocumentType
-                        .getDocumentNumberSeriesSet()
-                        .stream()
-                        .filter(dns -> dns.getSeries().getCode().equals(series.getCode())
-                                && dns.getSeries().getFinantialInstitution().equals(series.getFinantialInstitution()))
-                        .collect(Collectors.toSet());
+        final Set<DocumentNumberSeries> result = finantialDocumentType.getDocumentNumberSeriesSet().stream()
+                .filter(dns -> dns.getSeries().getCode().equals(series.getCode())
+                        && dns.getSeries().getFinantialInstitution().equals(series.getFinantialInstitution()))
+                .collect(Collectors.toSet());
         if (result.size() > 1) {
             throw new TreasuryDomainException("error.DocumentNumberSeries.not.unique.in.finantialDocumentType.and.series");
         }
@@ -156,8 +153,8 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     public static Stream<DocumentNumberSeries> find(final FinantialDocumentType finantialDocumentType,
             final FinantialInstitution finantialInstitution) {
-        return findAll().filter(x -> x.getSeries().getFinantialInstitution().getCode().equals(finantialInstitution.getCode()))
-                .filter(x -> x.getFinantialDocumentType().equals(finantialDocumentType));
+        return finantialDocumentType.getDocumentNumberSeriesSet().stream()
+                .filter(x -> x.getSeries().getFinantialInstitution().getCode().equals(finantialInstitution.getCode()));
     }
 
     public static Optional<DocumentNumberSeries> findUniqueDefault(final FinantialDocumentType finantialDocumentType,
@@ -188,14 +185,15 @@ public class DocumentNumberSeries extends DocumentNumberSeries_Base {
 
     public static Stream<DocumentNumberSeries> applyActiveSelectableAndDefaultSorting(Stream<DocumentNumberSeries> stream) {
 
-        return stream.filter(x -> x.getSeries().getActive()).filter(d -> d.getSeries().isSelectable()).sorted(COMPARE_BY_DEFAULT.thenComparing(COMPARE_BY_NAME));
+        return stream.filter(x -> x.getSeries().getActive()).filter(d -> d.getSeries().isSelectable())
+                .sorted(COMPARE_BY_DEFAULT.thenComparing(COMPARE_BY_NAME));
     }
 
     public String documentNumberSeriesPrefix() {
-        if(isReplacePrefix()) {
+        if (isReplacePrefix()) {
             return getReplacingPrefix();
         }
-        
+
         return getFinantialDocumentType().getDocumentNumberSeriesPrefix();
     }
 
