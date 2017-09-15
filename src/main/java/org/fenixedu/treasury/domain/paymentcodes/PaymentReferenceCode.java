@@ -46,9 +46,9 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
+
+import pt.ist.fenixframework.Atomic;
 
 public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     private static final int LENGTH_REFERENCE_CODE = 9;
@@ -140,28 +140,28 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 .filter(x -> x.getPaymentCodePool().getEntityReferenceCode().equals(entityReferenceCode));
     }
 
+    private static Stream<PaymentReferenceCode> find(final FinantialInstitution finantialInstitution) {
+        return finantialInstitution.getPaymentCodePoolsSet().stream().flatMap(i -> i.getPaymentReferenceCodesSet().stream());
+    }
+
     public static Stream<PaymentReferenceCode> findByReferenceCode(final String referenceCode,
             FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> referenceCode.equalsIgnoreCase(i.getReferenceCode()))
-                .filter(x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
+        return find(finantialInstitution).filter(i -> referenceCode.equalsIgnoreCase(i.getReferenceCode()));
     }
 
     public static Stream<PaymentReferenceCode> findByBeginDate(final LocalDate beginDate,
             FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> beginDate.equals(i.getBeginDate()))
-                .filter(x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
+        return find(finantialInstitution).filter(i -> beginDate.equals(i.getBeginDate()));
     }
 
     public static Stream<PaymentReferenceCode> findByEndDate(final LocalDate endDate, FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> endDate.equals(i.getEndDate()))
-                .filter(x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
+        return find(finantialInstitution).filter(i -> endDate.equals(i.getEndDate()));
     }
 
     public static Stream<PaymentReferenceCode> findByState(
             final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state,
             FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> state.equals(i.getState()))
-                .filter(x -> x.getPaymentCodePool().getFinantialInstitution().equals(finantialInstitution));
+        return find(finantialInstitution).filter(i -> state.equals(i.getState()));
     }
 
     public String getFormattedCode() {
