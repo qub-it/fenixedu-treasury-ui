@@ -113,16 +113,15 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public static Stream<DebtAccount> find(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(d -> d.getFinantialInstitution() == finantialInstitution);
+        return finantialInstitution.getDebtAccountsSet().stream();
     }
 
     public static Stream<DebtAccount> findActiveAdhoc(final FinantialInstitution finantialInstitution) {
-        return find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer())
-                .filter(x -> x.getCustomer().isActive());
+        return find(finantialInstitution).filter(x -> x.getCustomer().isAdhocCustomer()).filter(x -> x.getCustomer().isActive());
     }
 
     public static Stream<DebtAccount> find(final Customer customer) {
-        return findAll().filter(d -> d.getCustomer() == customer);
+        return customer.getDebtAccountsSet().stream();
     }
 
     public static Optional<DebtAccount> findUnique(final FinantialInstitution finantialInstitution, final Customer customer) {
