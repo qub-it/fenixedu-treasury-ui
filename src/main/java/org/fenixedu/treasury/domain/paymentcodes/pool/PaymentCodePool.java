@@ -241,18 +241,20 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         return findByFinantialInstitution(finantialInstitution).filter(i -> minAmount.equals(i.getMinAmount()));
     }
 
+    // TODO legidio finantialInstitution not used
     public static Stream<PaymentCodePool> findByMaxAmount(final java.math.BigDecimal maxAmount,
             final FinantialInstitution finantialInstitution) {
         return findAll().filter(i -> maxAmount.equals(i.getMaxAmount()));
     }
 
+    // TODO legidio finantialInstitution not used
     public static Stream<PaymentCodePool> findByActive(final java.lang.Boolean active,
             final FinantialInstitution finantialInstitution) {
         return findAll().filter(i -> active.equals(i.getActive()));
     }
 
     public static Stream<PaymentCodePool> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> i.getFinantialInstitution().equals(finantialInstitution));
+        return finantialInstitution.getPaymentCodePoolsSet().stream();
     }
 
     private PaymentCodeGenerator _referenceCodeGenerator;
