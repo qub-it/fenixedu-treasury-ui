@@ -47,14 +47,14 @@ public abstract class Invoice extends Invoice_Base {
 
     @Override
     protected void checkRules() {
-        if(getDebtAccount() == getPayorDebtAccount()) {
+        if (getDebtAccount() == getPayorDebtAccount()) {
             throw new TreasuryDomainException("error.Invoice.payor.same.as.debt.account");
         }
-        
-        if(getPayorDebtAccount() != null && !getPayorDebtAccount().getCustomer().isAdhocCustomer()) {
+
+        if (getPayorDebtAccount() != null && !getPayorDebtAccount().getCustomer().isAdhocCustomer()) {
             throw new TreasuryDomainException("error.Invoice.payor.debt.account.not.adhoc.customer");
         }
-        
+
         //check if all invoiceEntries are for the same debtaccount of invoice
         for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
             InvoiceEntry invoiceEntry = (InvoiceEntry) entry;
@@ -78,11 +78,11 @@ public abstract class Invoice extends Invoice_Base {
     protected void init(final DebtAccount debtAccount, final DebtAccount payorDebtAccount,
             final DocumentNumberSeries documentNumberSeries, final DateTime documentDate) {
         this.init(debtAccount, documentNumberSeries, documentDate);
-        
-        if(debtAccount == payorDebtAccount) {
+
+        if (debtAccount == payorDebtAccount) {
             throw new TreasuryDomainException("error.Invoice.payor.same.as.debt.account");
         }
-        
+
         setPayorDebtAccount(payorDebtAccount);
     }
 
@@ -130,7 +130,7 @@ public abstract class Invoice extends Invoice_Base {
     }
 
     public static Stream<? extends Invoice> find(final DebtAccount debtAccount) {
-        return Invoice.findAll().filter(x -> x.getDebtAccount() == debtAccount);
+        return debtAccount.getFinantialDocumentsSet().stream().filter(x -> x instanceof Invoice).map(Invoice.class::cast);
     }
 
     public BigDecimal getTotalVatAmount() {
@@ -179,7 +179,7 @@ public abstract class Invoice extends Invoice_Base {
                 .map(e -> !((SettlementNote) e.getFinantialDocument()).getPaymentEntriesSet().isEmpty()).reduce((a, c) -> a || c)
                 .orElse(false);
     }
-    
+
     public boolean isForPayorDebtAccount() {
         return getPayorDebtAccount() != null && getPayorDebtAccount() != getDebtAccount();
     }
