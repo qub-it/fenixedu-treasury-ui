@@ -27,6 +27,9 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.divide;
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
@@ -43,9 +46,6 @@ import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
-
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
-import static org.fenixedu.treasury.util.Constants.divide;
 
 public class CreditEntry extends CreditEntry_Base {
 
@@ -150,7 +150,8 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public static Stream<? extends CreditEntry> find(final CreditNote creditNote) {
-        return findAll().filter(d -> d.getFinantialDocument() == creditNote);
+        return creditNote.getFinantialDocumentEntriesSet().stream().filter(f -> f instanceof CreditEntry)
+                .map(CreditEntry.class::cast);
     }
 
     public static Stream<? extends CreditEntry> find(final TreasuryEvent treasuryEvent) {
