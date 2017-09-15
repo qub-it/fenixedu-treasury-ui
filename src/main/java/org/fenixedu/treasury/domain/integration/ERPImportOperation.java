@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.Stream.Builder;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -20,8 +21,8 @@ public class ERPImportOperation extends ERPImportOperation_Base {
         super();
     }
 
-    protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final String erpOperationId, final DateTime executionDate,
-            final boolean processed, final boolean success, final boolean corrected) {
+    protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final String erpOperationId,
+            final DateTime executionDate, final boolean processed, final boolean success, final boolean corrected) {
         setFile(file);
         setFinantialInstitution(finantialInstitution);
         setErpOperationId(erpOperationId);
@@ -66,7 +67,8 @@ public class ERPImportOperation extends ERPImportOperation_Base {
 
     @Atomic
     public static ERPImportOperation create(String filename, final byte[] bytes, final FinantialInstitution finantialInstitution,
-            final String erpOperationId, final DateTime executionDate, final boolean processed, final boolean success, final boolean corrected) {
+            final String erpOperationId, final DateTime executionDate, final boolean processed, final boolean success,
+            final boolean corrected) {
         ERPImportOperation eRPImportOperation = new ERPImportOperation();
         OperationFile file = OperationFile.create(filename, bytes, eRPImportOperation);
         eRPImportOperation.init(file, finantialInstitution, erpOperationId, executionDate, processed, success, corrected);
@@ -83,11 +85,19 @@ public class ERPImportOperation extends ERPImportOperation_Base {
     }
 
     public static Stream<ERPImportOperation> findByFile(final OperationFile file) {
-        return findAll().filter(i -> file.equals(i.getFile()));
+        final Builder<ERPImportOperation> builder = Stream.builder();
+
+        final IntegrationOperation operation = file.getIntegrationOperation();
+        if (operation != null && operation instanceof ERPImportOperation) {
+            builder.add((ERPImportOperation) operation);
+        }
+
+        return builder.build();
     }
 
     public static Stream<ERPImportOperation> findByFinantialInstitution(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(i -> finantialInstitution.equals(i.getFinantialInstitution()));
+        return finantialInstitution.getIntegrationOperationsSet().stream().filter(x -> x instanceof ERPImportOperation)
+                .map(ERPImportOperation.class::cast);
     }
 
     public static Stream<ERPImportOperation> findByExecutionDate(final DateTime executionDate) {
