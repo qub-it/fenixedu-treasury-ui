@@ -117,7 +117,6 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
     }
 
     public static Stream<TreasuryExemptionType> findByDebtAccount(DebtAccount debtAccount) {
-        //return findAll().filter(x -> x.getDebitEntry() != null && debtAccount.equals(x.getDebitEntry().getDebtAccount()));
         return Stream.empty();
     }
 

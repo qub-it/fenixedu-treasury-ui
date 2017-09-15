@@ -102,10 +102,6 @@ public class SibsReportFile extends SibsReportFile_Base {
         return Bennu.getInstance().getSibsReportFilesSet().stream();
     }
 
-    public static Stream<SibsReportFile> findByBennu(final Bennu bennu) {
-        return findAll().filter(i -> bennu.equals(i.getBennu()));
-    }
-
     public static Stream<SibsReportFile> findByWhenProcessedBySibs(final LocalDate whenProcessedBySibs) {
         return findAll().filter(i -> whenProcessedBySibs.equals(i.getWhenProcessedBySibs()));
     }

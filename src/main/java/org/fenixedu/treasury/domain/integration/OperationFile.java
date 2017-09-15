@@ -76,7 +76,7 @@ public class OperationFile extends OperationFile_Base {
 
         this.setLogIntegrationOperation(null);
         this.setIntegrationOperation(null);
-        
+
         super.delete();
     }
 
@@ -95,21 +95,5 @@ public class OperationFile extends OperationFile_Base {
         operationFile.setLogIntegrationOperation(operation);
         return operationFile;
     }
-
-    // @formatter: off
-    /************
-     * SERVICES *
-     ************/
-    // @formatter: on
-
-//	public static Stream<OperationFile> findAll() {
-//		return Bennu.getInstance().getOperationFilesSet().stream();
-//	}
-//
-//	public static Stream<OperationFile> findByIntegrationOperation(
-//			final IntegrationOperation integrationOperation) {
-//		return findAll().filter(
-//				i -> integrationOperation.equals(i.getIntegrationOperation()));
-//	}
 
 }
