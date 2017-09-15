@@ -52,11 +52,11 @@ public class FinantialEntity extends FinantialEntity_Base {
         @Override
         public int compare(FinantialEntity o1, FinantialEntity o2) {
             int c = o1.getName().getContent().compareTo(o2.getName().getContent());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
-    
+
     protected FinantialEntity() {
         super();
         setBennu(Bennu.getInstance());
@@ -91,7 +91,7 @@ public class FinantialEntity extends FinantialEntity_Base {
         getName().getLocales().stream().forEach(l -> {
             if (findByName(getFinantialInstitution(), getName().getContent(l)).count() > 1) {
                 throw new TreasuryDomainException("error.FinantialEntity.name.duplicated", l.toString());
-            };
+            } ;
         });
     }
 
@@ -141,13 +141,14 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     public static Stream<FinantialEntity> find(final FinantialInstitution finantialInstitution) {
-        return findAll().filter(fe -> fe.getFinantialInstitution() == finantialInstitution);
+        return finantialInstitution.getFinantialEntitiesSet().stream();
     }
 
     public static Stream<FinantialEntity> findByCode(final FinantialInstitution finantialInstitution, final String code) {
         return find(finantialInstitution).filter(fe -> fe.getCode().equalsIgnoreCase(code));
     }
 
+    // TODO legidio finantialInstitution not used
     public static Stream<FinantialEntity> findByName(final FinantialInstitution finantialInstitution, final String name) {
         return findAll().filter(fe -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(fe.getName(), name));
     }
