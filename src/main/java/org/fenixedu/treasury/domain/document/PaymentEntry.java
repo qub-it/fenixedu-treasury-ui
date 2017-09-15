@@ -43,17 +43,19 @@ public class PaymentEntry extends PaymentEntry_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected PaymentEntry(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount, final String paymentMethodId) {
+    protected PaymentEntry(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount,
+            final String paymentMethodId) {
         this();
         init(paymentMethod, settlementNote, payedAmount, paymentMethodId);
     }
 
-    protected void init(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount, final String paymentMethodId) {
+    protected void init(final PaymentMethod paymentMethod, final SettlementNote settlementNote, final BigDecimal payedAmount,
+            final String paymentMethodId) {
         setPaymentMethod(paymentMethod);
         setSettlementNote(settlementNote);
         setPayedAmount(payedAmount);
         setPaymentMethodId(paymentMethodId);
-        
+
         checkRules();
     }
 
@@ -127,14 +129,15 @@ public class PaymentEntry extends PaymentEntry_Base {
     }
 
     public static Stream<PaymentEntry> findByPaymentMethod(final PaymentMethod paymentMethod) {
-        return findAll().filter(i -> paymentMethod.equals(i.getPaymentMethod()));
+        return paymentMethod.getPaymentEntriesSet().stream();
     }
 
     public static Stream<PaymentEntry> findBySettlementNote(final SettlementNote settlementNote) {
-        return findAll().filter(i -> settlementNote.equals(i.getSettlementNote()));
+        return settlementNote.getPaymentEntriesSet().stream();
     }
 
     public static Stream<PaymentEntry> findByPayedAmount(final java.math.BigDecimal payedAmount) {
         return findAll().filter(i -> payedAmount.equals(i.getPayedAmount()));
     }
+
 }
