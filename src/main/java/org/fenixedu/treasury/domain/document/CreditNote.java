@@ -29,12 +29,10 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -42,8 +40,6 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
@@ -74,7 +70,7 @@ public class CreditNote extends CreditNote_Base {
         if (debitNote != null) {
             this.setPayorDebtAccount(debitNote.getPayorDebtAccount());
         }
-        
+
         if (!getCreditEntriesSet().isEmpty() && getCreditEntriesSet().size() > 1) {
             throw new TreasuryDomainException("error.CreditNote.with.unexpected.credit.entries");
         }
@@ -97,8 +93,8 @@ public class CreditNote extends CreditNote_Base {
         if (getDebitNote() != null && getPayorDebtAccount() != getDebitNote().getPayorDebtAccount()) {
             throw new TreasuryDomainException("error.CreditNote.with.payorDebtAccount.different.from.debit.note");
         }
-        
-        if(getDebitNote() != null && getDebitNote().getDocumentNumberSeries().getSeries().isRegulationSeries()) {
+
+        if (getDebitNote() != null && getDebitNote().getDocumentNumberSeries().getSeries().isRegulationSeries()) {
             throw new TreasuryDomainException("error.CreditNote.debit.note.cannot.be.from.regulation.series");
         }
 
@@ -144,11 +140,11 @@ public class CreditNote extends CreditNote_Base {
 
         return settlementNote.isReimbursement();
     }
-    
+
     @Override
     public void closeDocument(boolean markDocumentToExport) {
         super.closeDocument(markDocumentToExport);
-    
+
         if (!getCreditEntriesSet().isEmpty() && getCreditEntriesSet().size() > 1) {
             throw new TreasuryDomainException("error.CreditNote.with.unexpected.credit.entries");
         }
@@ -293,16 +289,16 @@ public class CreditNote extends CreditNote_Base {
     @Atomic
     public void anullDocument(final String reason) {
 
-        if(Strings.isNullOrEmpty(reason)) {
+        if (Strings.isNullOrEmpty(reason)) {
             throw new TreasuryDomainException("error.CreditNote.anullDocument.reason.required");
         }
-        
+
         if (this.isPreparing()) {
 
             if (getCreditEntries().anyMatch(ce -> ce.isFromExemption())) {
                 throw new TreasuryDomainException("error.CreditNote.entry.from.exemption.cannot.be.annuled");
-            }            
-            
+            }
+
             if (getCreditEntries().anyMatch(ce -> !ce.getSettlementEntriesSet().isEmpty())) {
                 throw new TreasuryDomainException("error.CreditNote.cannot.delete.has.settlemententries");
             }
@@ -333,19 +329,19 @@ public class CreditNote extends CreditNote_Base {
             throw new TreasuryDomainException("error.CreditNote.creditNote.not.from.reimbursement");
         }
 
-        if(isAdvancePayment()) {
+        if (isAdvancePayment()) {
             throw new TreasuryDomainException("error.CreditNote.annulment.over.advance.payment.not.possible");
         }
 
-        if(ReimbursementUtils.isCreditNoteSettledWithPayment(this)) {
+        if (ReimbursementUtils.isCreditNoteSettledWithPayment(this)) {
             throw new TreasuryDomainException("error.CreditNote.annulment.over.credit.with.payments.not.possible");
         }
 
         setState(FinantialDocumentStateType.ANNULED);
         setAnnulledReason(annuledReason);
 
-        final CreditNote creditNote = CreditNote.create(getDebtAccount(), getDocumentNumberSeries(), new DateTime(),
-                getDebitNote(), getOriginDocumentNumber());
+        final CreditNote creditNote =
+                create(getDebtAccount(), getDocumentNumberSeries(), new DateTime(), getDebitNote(), getOriginDocumentNumber());
 
         for (final CreditEntry creditEntry : getCreditEntriesSet()) {
             CreditEntry.create(creditNote, creditEntry.getDescription(), creditEntry.getProduct(), creditEntry.getVat(),
@@ -383,18 +379,17 @@ public class CreditNote extends CreditNote_Base {
         final Series regulationSeries = finantialInstitution.getRegulationSeries();
         final DocumentNumberSeries numberSeries =
                 DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), regulationSeries);
-        final Vat transferVat =
-                Vat.findActiveUnique(product.getVatType(), finantialInstitution, documentDate).get();
+        final Vat transferVat = Vat.findActiveUnique(product.getVatType(), finantialInstitution, documentDate).get();
 
         if (Strings.isNullOrEmpty(entryDescription)) {
             entryDescription = product.getName().getContent();
         }
 
-        final CreditNote creditNote = CreditNote.create(debtAccount, numberSeries, documentDate, null, originNumber);
+        final CreditNote creditNote = create(debtAccount, numberSeries, documentDate, null, originNumber);
 
         final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
-        CreditEntry entry = CreditEntry.create(creditNote, entryDescription, product, transferVat,
-                amountWithoutVat, documentDate, null, BigDecimal.ONE);
+        CreditEntry entry = CreditEntry.create(creditNote, entryDescription, product, transferVat, amountWithoutVat, documentDate,
+                null, BigDecimal.ONE);
 
         creditNote.editPayorDebtAccount(payorDebtAccount);
 

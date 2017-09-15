@@ -222,7 +222,7 @@ public class CreditEntry extends CreditEntry_Base {
         setAmount(newOpenAmountWithoutVatDividedByQuantity.subtract(remainingAmountWithoutVatDividedByQuantity));
         recalculateAmountValues();
 
-        final CreditEntry newCreditEntry = CreditEntry.create(newCreditNote, getDescription(), getProduct(), getVat(),
+        final CreditEntry newCreditEntry = create(newCreditNote, getDescription(), getProduct(), getVat(),
                 remainingAmountWithoutVatDividedByQuantity, getEntryDateTime(), getDebitEntry(), getQuantity());
         newCreditEntry.setFromExemption(isFromExemption());
 
