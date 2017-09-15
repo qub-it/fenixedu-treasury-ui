@@ -300,7 +300,8 @@ public class SettlementNote extends SettlementNote_Base {
             return;
         }
 
-        final String comments = String.format("%s [%s]", Constants.bundleI18N("label.SettlementNote.advancedpayment").getContent(Constants.DEFAULT_LANGUAGE),
+        final String comments = String.format("%s [%s]",
+                Constants.bundleI18N("label.SettlementNote.advancedpayment").getContent(Constants.DEFAULT_LANGUAGE),
                 getPaymentDate().toString(Constants.DATE_FORMAT));
 
         createAdvancedPaymentCreditNote(availableAmount, comments, getExternalId());
@@ -348,9 +349,9 @@ public class SettlementNote extends SettlementNote_Base {
         for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
                 CreditEntry creditEntry = creditEntryBean.getCreditEntry();
-                
+
                 final BigDecimal creditAmountWithVat = creditEntryBean.getCreditAmountWithVat();
-                
+
                 if (bean.isReimbursementNote()) {
                     if (ReimbursementUtils.isCreditNoteForReimbursementMustBeClosedWithDebitNoteAndCreatedNew(creditEntry)) {
                         creditEntry = ReimbursementUtils.closeWithDebitNoteAndCreateNewCreditNoteForReimbursement(creditEntry,
@@ -360,15 +361,15 @@ public class SettlementNote extends SettlementNote_Base {
 
                 if (!creditEntry.getFinantialDocument().isClosed()) {
                     if (Constants.isLessThan(creditAmountWithVat, creditEntry.getOpenAmount())) {
-                        creditEntry
-                                .splitCreditEntry(creditEntry.getOpenAmount().subtract(creditAmountWithVat));
+                        creditEntry.splitCreditEntry(creditEntry.getOpenAmount().subtract(creditAmountWithVat));
                     }
 
                     creditEntry.getFinantialDocument().closeDocument();
                 }
 
                 final String creditDescription = creditEntryBean.getCreditEntry().getDescription();
-                SettlementEntry.create(creditEntry, creditAmountWithVat, creditDescription, this, bean.getDate().toDateTimeAtStartOfDay());
+                SettlementEntry.create(creditEntry, creditAmountWithVat, creditDescription, this,
+                        bean.getDate().toDateTimeAtStartOfDay());
             }
         }
     }
@@ -537,18 +538,18 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         if (getCurrentReimbursementProcessStatus().isRejectedStatus() && isClosed()) {
-            
+
             final CreditNote creditNote =
                     (CreditNote) getSettlemetEntries().findFirst().get().getInvoiceEntry().getFinantialDocument();
 
-            if(!creditNote.isAdvancePayment()) {
-                creditNote
-                        .anullReimbursementCreditNoteAndCopy(Constants.bundle("error.SettlementNote.reimbursement.rejected.reason"));
+            if (!creditNote.isAdvancePayment()) {
+                creditNote.anullReimbursementCreditNoteAndCopy(
+                        Constants.bundle("error.SettlementNote.reimbursement.rejected.reason"));
             }
-            
+
             anullDocument(Constants.bundle("label.ReimbursementProcessStatusType.annuled.reimbursement.by.annuled.process"),
                     false);
-            
+
             markDocumentToExport();
         }
     }
@@ -671,19 +672,23 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     public static Stream<SettlementNote> findByFinantialDocumentType(final FinantialDocumentType finantialDocumentType) {
-        return findAll().filter(i -> finantialDocumentType.equals(i.getFinantialDocumentType()));
+        return finantialDocumentType.getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
+                .map(SettlementNote.class::cast);
     }
 
     public static Stream<SettlementNote> findByDebtAccount(final DebtAccount debtAccount) {
-        return findAll().filter(i -> debtAccount.equals(i.getDebtAccount()));
+        return debtAccount.getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
+                .map(SettlementNote.class::cast);
     }
 
     public static Stream<SettlementNote> findByDocumentNumberSeries(final DocumentNumberSeries documentNumberSeries) {
-        return findAll().filter(i -> documentNumberSeries.equals(i.getDocumentNumberSeries()));
+        return documentNumberSeries.getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
+                .map(SettlementNote.class::cast);
     }
 
     public static Stream<SettlementNote> findByCurrency(final Currency currency) {
-        return findAll().filter(i -> currency.equals(i.getCurrency()));
+        return currency.getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
+                .map(SettlementNote.class::cast);
     }
 
     public static Stream<SettlementNote> findByDocumentNumber(final java.lang.String documentNumber) {
@@ -702,8 +707,7 @@ public class SettlementNote extends SettlementNote_Base {
         return findAll().filter(i -> originDocumentNumber.equalsIgnoreCase(i.getOriginDocumentNumber()));
     }
 
-    public static Stream<SettlementNote> findByState(
-            final org.fenixedu.treasury.domain.document.FinantialDocumentStateType state) {
+    public static Stream<SettlementNote> findByState(final FinantialDocumentStateType state) {
         return findAll().filter(i -> state.equals(i.getState()));
     }
 
