@@ -150,18 +150,22 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         if (this.getCode().length() > Customer.MAX_CODE_LENGHT) {
             throw new TreasuryDomainException("error.Customer.code.maxlenght");
         }
-        
+
         if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
             if (findByFiscalInformation(getFiscalCountry(), getFiscalNumber()).filter(c -> c.isActive()).count() > 1) {
-                
+
                 throw new TreasuryDomainException("error.Customer.customer.with.fiscal.information.exists");
             }
         }
-        
+
     }
 
     public static Stream<? extends Customer> findAll() {
         return Bennu.getInstance().getCustomersSet().stream();
+    }
+
+    public static Stream<? extends Customer> find(final FinantialInstitution institution) {
+        return institution.getDebtAccountsSet().stream().map(debtAccount -> debtAccount.getCustomer());
     }
 
     public static Stream<? extends Customer> findByCode(final java.lang.String code) {
@@ -177,11 +181,9 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             throw new TreasuryDomainException("error.Customer.findByFiscalCountryAndNumber.fiscalNumber.required");
         }
 
-        return findAll().filter(c -> 
-            !Strings.isNullOrEmpty(c.getFiscalCountry()) 
-            && lowerCase(c.getFiscalCountry()).equals(lowerCase(fiscalCountryCode)) 
-            && !Strings.isNullOrEmpty(c.getFiscalNumber()) 
-            && lowerCase(c.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
+        return findAll().filter(c -> !Strings.isNullOrEmpty(c.getFiscalCountry())
+                && lowerCase(c.getFiscalCountry()).equals(lowerCase(fiscalCountryCode))
+                && !Strings.isNullOrEmpty(c.getFiscalNumber()) && lowerCase(c.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
     }
 
     public boolean matchesMultiFilter(String searchText) {
@@ -221,7 +223,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
 
         Set<FinantialInstitution> actualInstitutions = Sets.newHashSet(getFinantialInstitutions());
-        
+
         for (FinantialInstitution newInst : newFinantialInstitutions) {
             if (actualInstitutions.contains(newInst)) {
                 this.getDebtAccountFor(newInst).reopenDebtAccount();
