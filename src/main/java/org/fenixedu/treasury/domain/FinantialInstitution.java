@@ -192,6 +192,11 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         return Bennu.getInstance().getFinantialInstitutionsSet().stream();
     }
 
+    public static Optional<FinantialInstitution> findUnique() {
+        final Set<FinantialInstitution> all = Bennu.getInstance().getFinantialInstitutionsSet();
+        return all.size() != 1 ? Optional.empty() : Optional.of(all.iterator().next());
+    }
+
     public static Stream<FinantialInstitution> findByCode(final String code) {
         return findAll().filter(fi -> fi.getCode().equalsIgnoreCase(code));
     }
