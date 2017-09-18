@@ -27,10 +27,12 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.isPositive;
+import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,11 +44,9 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
@@ -57,8 +57,6 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 
 import pt.ist.fenixframework.Atomic;
-import static org.fenixedu.treasury.util.Constants.isPositive;
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
 public class DebitNote extends DebitNote_Base {
 
@@ -143,18 +141,18 @@ public class DebitNote extends DebitNote_Base {
     }
 
     @Atomic
-    public void edit(final LocalDate documentDate, LocalDate documentDueDate, final String originDocumentNumber, final String documentObservations,
-            final String legacyERPCertificateDocumentReference) {
+    public void edit(final LocalDate documentDate, LocalDate documentDueDate, final String originDocumentNumber,
+            final String documentObservations, final String legacyERPCertificateDocumentReference) {
 
         if (isPreparing()) {
             setDocumentDate(documentDate.toDateTimeAtStartOfDay());
             setDocumentDueDate(documentDueDate);
         }
-        
+
         setOriginDocumentNumber(originDocumentNumber);
         setDocumentObservations(documentObservations);
         setLegacyERPCertificateDocumentReference(legacyERPCertificateDocumentReference);
-        
+
         checkRules();
     }
 
@@ -167,6 +165,10 @@ public class DebitNote extends DebitNote_Base {
 
     public static Stream<DebitNote> findAll() {
         return FinantialDocument.findAll().filter(x -> x instanceof DebitNote).map(DebitNote.class::cast);
+    }
+
+    public static Stream<DebitNote> find(final DebtAccount debtAccount) {
+        return debtAccount.getFinantialDocumentsSet().stream().filter(x -> x instanceof DebitNote).map(DebitNote.class::cast);
     }
 
     @Atomic
@@ -350,7 +352,8 @@ public class DebitNote extends DebitNote_Base {
                 continue;
             }
 
-            entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCreditWithoutVat, null, null);
+            entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCreditWithoutVat, null,
+                    null);
         }
 
         if (!createForInterestRateEntries) {
@@ -366,8 +369,8 @@ public class DebitNote extends DebitNote_Base {
                     continue;
                 }
 
-                interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(), documentObservations, amountForCreditWithoutVat, null,
-                        null);
+                interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(), documentObservations,
+                        amountForCreditWithoutVat, null, null);
             }
         }
     }
@@ -389,15 +392,15 @@ public class DebitNote extends DebitNote_Base {
         if (getPayorDebtAccount() == payorDebtAccount) {
             throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.payor.not.changed");
         }
-        
-        if(payorDebtAccount == getDebtAccount()) {
+
+        if (payorDebtAccount == getDebtAccount()) {
             throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.payor.same.as.debt.account");
         }
-        
-        if(isClosed()) {
+
+        if (isClosed()) {
             // Check if debit entries has settlement entries
             for (final DebitEntry debitEntry : this.getDebitEntriesSet()) {
-                if(debitEntry.getSettlementEntriesSet().stream().filter(s -> !s.isAnnulled()).count() > 0) {
+                if (debitEntry.getSettlementEntriesSet().stream().filter(s -> !s.isAnnulled()).count() > 0) {
                     throw new TreasuryDomainException("error.DebitNote.updatePayorDebtAccount.debit.entries.has.settlements");
                 }
             }
