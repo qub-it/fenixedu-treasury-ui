@@ -56,6 +56,41 @@ public class SettlementEntry extends SettlementEntry_Base {
 
     };
 
+    public static final Comparator<SettlementEntry> COMPARATOR_BY_TUITION_INSTALLMENT_ORDER_AND_DESCRIPTION = new Comparator<SettlementEntry>() {
+
+        @Override
+        public int compare(final SettlementEntry o1, final SettlementEntry o2) {
+            if(o1.getInvoiceEntry().getProduct().getTuitionInstallmentOrder() != 0 && o2.getInvoiceEntry().getProduct().getTuitionInstallmentOrder() != 0) {
+                int c = Integer.compare(o1.getInvoiceEntry().getProduct().getTuitionInstallmentOrder(), o2.getInvoiceEntry().getProduct().getTuitionInstallmentOrder());
+            
+                return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+            } else if(o1.getInvoiceEntry().getProduct().getTuitionInstallmentOrder() != 0 && o2.getInvoiceEntry().getProduct().getTuitionInstallmentOrder() == 0) {
+                return -1;
+            } else if(o1.getInvoiceEntry().getProduct().getTuitionInstallmentOrder() == 0 && o2.getInvoiceEntry().getProduct().getTuitionInstallmentOrder() != 0) {
+                return 1;
+            }
+            
+            final int c = o1.getDescription().compareTo(o2.getDescription());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+    
+    public static final Comparator<SettlementEntry> COMPARATOR_BY_ENTRY_ORDER = new Comparator<SettlementEntry>() {
+
+        @Override
+        public int compare(final SettlementEntry o1, final SettlementEntry o2) {
+            if(o1.getEntryOrder() == null || o2.getEntryOrder() == null) {
+                throw new RuntimeException("error");
+            }
+            
+            int c = o1.getEntryOrder().compareTo(o2.getEntryOrder());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+        
+    };
+    
     protected SettlementEntry() {
         super();
         setBennu(Bennu.getInstance());

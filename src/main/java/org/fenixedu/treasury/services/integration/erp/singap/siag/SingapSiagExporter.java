@@ -469,14 +469,22 @@ public class SingapSiagExporter implements IERPExporter {
             // DocumentTotals
             SourceDocuments.Payments.Payment.DocumentTotals docTotals = new SourceDocuments.Payments.Payment.DocumentTotals();
 
+            final List<SettlementEntry> settlementEntriesList = document.getSettlemetEntriesSet().stream()
+                    .sorted(SettlementEntry.COMPARATOR_BY_ENTRY_ORDER)
+                    .collect(Collectors.toList());
+
+            if(settlementEntriesList.size() != document.getSettlemetEntriesSet().size()) {
+                throw new RuntimeException("error");
+            }
+            
             //Lines
             BigInteger i = BigInteger.ONE;
-            for (SettlementEntry settlementEntry : document.getSettlemetEntriesSet()) {
+            for (SettlementEntry settlementEntry : settlementEntriesList) {
                 SourceDocuments.Payments.Payment.Line line = new SourceDocuments.Payments.Payment.Line();
                 line.setLineNumber(i);
                 //SourceDocument
                 SourceDocumentID sourceDocument = new SourceDocumentID();
-                sourceDocument.setLineNumber(BigInteger.valueOf(settlementEntry.getInvoiceEntry().getEntryOrder()));
+                sourceDocument.setLineNumber(BigInteger.valueOf(settlementEntry.getInvoiceEntry().getEntryOrder().intValue()));
                 sourceDocument.setOriginatingON(settlementEntry.getInvoiceEntry().getFinantialDocument().getUiDocumentNumber());
 
                 /* ANIL: 2015/10/20 converted from dateTime to Date */

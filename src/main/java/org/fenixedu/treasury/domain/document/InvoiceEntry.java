@@ -89,6 +89,28 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             return o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
+    
+    public static final Comparator<InvoiceEntry> COMPARATOR_BY_TUITION_INSTALLMENT_ORDER_AND_DESCRIPTION = new Comparator<InvoiceEntry>() {
+
+        @Override
+        public int compare(InvoiceEntry o1, InvoiceEntry o2) {
+            if(o1.getProduct().getTuitionInstallmentOrder() != 0 && o2.getProduct().getTuitionInstallmentOrder() != 0) {
+                int c = Integer.compare(o1.getProduct().getTuitionInstallmentOrder(), o2.getProduct().getTuitionInstallmentOrder());
+                
+                return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+                
+            } else if(o1.getProduct().getTuitionInstallmentOrder() != 0 && o2.getProduct().getTuitionInstallmentOrder() == 0) {
+                return -1;
+            } else if(o1.getProduct().getTuitionInstallmentOrder() == 0 && o2.getProduct().getTuitionInstallmentOrder() != 0) {
+                return 1;
+            }
+            
+            final int c = o1.getDescription().compareTo(o2.getDescription());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+        
+    };
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {

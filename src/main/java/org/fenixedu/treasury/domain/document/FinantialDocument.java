@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -252,17 +253,23 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public final void closeDocument() {
         closeDocument(true);
     }
+    
+    protected abstract SortedSet<? extends FinantialDocumentEntry> getFinantialDocumentEntriesOrderedByTuitionInstallmentOrderAndDescription();
 
     @Atomic
     public void closeDocument(boolean markDocumentToExport) {
         if (this.isPreparing()) {
             this.setDocumentNumber("" + this.getDocumentNumberSeries().getSequenceNumberAndIncrement());
             setState(FinantialDocumentStateType.CLOSED);
+            
+            final SortedSet<? extends FinantialDocumentEntry> orderedEntries = getFinantialDocumentEntriesOrderedByTuitionInstallmentOrderAndDescription();
+            
             int order = 1;
-            for (FinantialDocumentEntry entry : getFinantialDocumentEntriesSet()) {
+            for (final FinantialDocumentEntry entry : orderedEntries) {
                 entry.setEntryOrder(Integer.valueOf(order));
                 order = order + 1;
             }
+            
             this.setAddress(this.getDebtAccount().getCustomer().getAddress() + this.getDebtAccount().getCustomer().getZipCode());
             if (markDocumentToExport) {
                 this.markDocumentToExport();

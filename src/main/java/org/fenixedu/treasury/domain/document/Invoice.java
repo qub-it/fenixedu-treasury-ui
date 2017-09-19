@@ -30,12 +30,16 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -182,6 +186,19 @@ public abstract class Invoice extends Invoice_Base {
 
     public boolean isForPayorDebtAccount() {
         return getPayorDebtAccount() != null && getPayorDebtAccount() != getDebtAccount();
+    }
+    
+    @Override
+    protected SortedSet<? extends FinantialDocumentEntry> getFinantialDocumentEntriesOrderedByTuitionInstallmentOrderAndDescription() {
+        final SortedSet<InvoiceEntry> result = Sets.newTreeSet(InvoiceEntry.COMPARATOR_BY_TUITION_INSTALLMENT_ORDER_AND_DESCRIPTION);
+        
+        result.addAll(getFinantialDocumentEntriesSet().stream().map(InvoiceEntry.class::cast).collect(Collectors.toSet()));
+        
+        if(result.size() != getFinantialDocumentEntriesSet().size()) {
+            throw new RuntimeException("error");
+        }
+
+        return result;
     }
 
 }
