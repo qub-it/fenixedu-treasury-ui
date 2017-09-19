@@ -492,10 +492,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     public static FinantialDocument findByUiDocumentNumber(final FinantialInstitution finantialInstitution,
             final String docNumber) {
+
+        if (finantialInstitution == null || Strings.isNullOrEmpty(docNumber)) {
+            return null;
+        }
+
         //parse the Document Number in {DOCUMENT_TYPE} {DOCUMENT_SERIES}/{DOCUMENT_NUMBER}
         String documentType;
         String seriesNumber;
-        String documentNumber;
 
         try {
             List<String> values = Splitter.on(' ').splitToList(docNumber);
@@ -546,4 +550,5 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
         return null;
     }
+
 }
