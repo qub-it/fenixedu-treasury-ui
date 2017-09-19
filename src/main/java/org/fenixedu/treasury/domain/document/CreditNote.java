@@ -358,8 +358,12 @@ public class CreditNote extends CreditNote_Base {
      */
     // @formatter:on
 
-    public static Stream<? extends CreditNote> findAll() {
+    public static Stream<CreditNote> findAll() {
         return Invoice.findAll().filter(i -> i instanceof CreditNote).map(CreditNote.class::cast);
+    }
+
+    public static Stream<CreditNote> find(final DebtAccount debtAccount) {
+        return debtAccount.getFinantialDocumentsSet().stream().filter(x -> x instanceof CreditNote).map(CreditNote.class::cast);
     }
 
     @Atomic
