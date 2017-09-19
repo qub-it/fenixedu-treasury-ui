@@ -28,7 +28,9 @@ package org.fenixedu.treasury.ui.document.manageinvoice;
 
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -38,7 +40,6 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -61,6 +62,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -80,7 +82,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/document/manageinvoice/creditnote";
 
-    public static final long SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE = 100;
+    public static final long SEARCH_LIMIT_SIZE = 75;
 
     @RequestMapping
     public String home(Model model) {
@@ -137,8 +139,9 @@ public class CreditNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/anull/{oid}", method = RequestMethod.POST)
-    public String anull(@PathVariable("oid") final CreditNote creditNote, @RequestParam(value="reason", required=false) final String reason, 
-            final Model model, final RedirectAttributes redirectAttributes) {
+    public String anull(@PathVariable("oid") final CreditNote creditNote,
+            @RequestParam(value = "reason", required = false) final String reason, final Model model,
+            final RedirectAttributes redirectAttributes) {
         setCreditNote(creditNote, model);
 
         try {
@@ -149,13 +152,13 @@ public class CreditNoteController extends TreasuryBaseController {
                 addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.invoices"), model);
                 throw new SecurityException(Constants.bundle("error.authorization.not.allow.to.modify.invoices"));
             }
-            
+
             anullCreditNote(creditNote, reason);
             addInfoMessage(Constants.bundle("label.document.manageinvoice.CreditNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-        
+
         return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
     }
 
@@ -203,72 +206,73 @@ public class CreditNoteController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "debitnote", required = false) DebitNote debitNote,
-            @RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
-            @RequestParam(value = "finantialdocumenttype", required = false) FinantialDocumentType finantialDocumentType,
-            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) Currency currency,
+    public String search(@RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
             @RequestParam(value = "documentnumber", required = false) String documentNumber,
             @RequestParam(value = "documentdatefrom",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
             @RequestParam(value = "documentdateto",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
-            @RequestParam(value = "documentduedate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
             @RequestParam(value = "state", required = false) FinantialDocumentStateType state, Model model) {
-        List<CreditNote> searchcreditnoteResultsDataSet =
-                filterSearchCreditNote(debitNote, payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries,
-                        currency, documentNumber, documentDateFrom, documentDateTo, documentDueDate, originDocumentNumber, state);
-        model.addAttribute("listSize", searchcreditnoteResultsDataSet.size());
-        searchcreditnoteResultsDataSet =
-                searchcreditnoteResultsDataSet.stream().limit(SEARCH_CREDIT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
 
-        model.addAttribute("searchcreditnoteResultsDataSet", searchcreditnoteResultsDataSet);
-//        model.addAttribute("CreditNote_debitNote_options", new ArrayList<DebitNote>());
-//        model.addAttribute("CreditNote_payorDebtAccount_options", new ArrayList<DebtAccount>());
-//        model.addAttribute("CreditNote_finantialDocumentType_options", new ArrayList<FinantialDocumentType>());
-//        model.addAttribute("CreditNote_debtAccount_options", new ArrayList<DebtAccount>());
-//        model.addAttribute("CreditNote_documentNumberSeries_options", new ArrayList<DocumentNumberSeries>());
-//        model.addAttribute("CreditNote_currency_options", new ArrayList<Currency>());
+        final List<CreditNote> result =
+                filterSearch(debtAccount, documentNumber, documentDateFrom, documentDateTo, originDocumentNumber, state);
+        model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
+        model.addAttribute("listSize", result.size());
+        model.addAttribute("searchcreditnoteResultsDataSet",
+                result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
+
         model.addAttribute("stateValues", FinantialDocumentStateType.findAll());
 
         return "treasury/document/manageinvoice/creditnote/search";
     }
 
-    private List<CreditNote> getSearchUniverseSearchCreditNoteDataSet() {
-        return CreditNote.findAll().collect(Collectors.<CreditNote> toList());
+    private List<CreditNote> getSearchUniverse(final DebtAccount debtAccount) {
+        final Stream<CreditNote> result = debtAccount == null ? CreditNote.findAll() : CreditNote.find(debtAccount);
+        return result.collect(Collectors.toList());
     }
 
-    private List<CreditNote> filterSearchCreditNote(DebitNote debitNote, DebtAccount payorDebtAccount,
-            FinantialDocumentType finantialDocumentType, DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries,
-            Currency currency, String documentNumber, LocalDate documentDateFrom, LocalDate documentDateTo,
-            DateTime documentDueDate, String originDocumentNumber, FinantialDocumentStateType state) {
+    private List<CreditNote> filterSearch(DebtAccount debtAccount, String documentNumber, LocalDate documentDateFrom,
+            LocalDate documentDateTo, String originDocumentNumber, FinantialDocumentStateType state) {
 
-        return getSearchUniverseSearchCreditNoteDataSet().stream()
-                .filter(creditNote -> debitNote == null || debitNote == creditNote.getDebitNote())
-                .filter(creditNote -> payorDebtAccount == null || payorDebtAccount == creditNote.getPayorDebtAccount())
-                .filter(creditNote -> finantialDocumentType == null
-                        || finantialDocumentType == creditNote.getFinantialDocumentType())
-                .filter(creditNote -> debtAccount == null || debtAccount == creditNote.getDebtAccount())
-                .filter(creditNote -> documentNumberSeries == null
-                        || documentNumberSeries == creditNote.getDocumentNumberSeries())
-                .filter(creditNote -> currency == null || currency == creditNote.getCurrency())
-                .filter(creditNote -> documentNumber == null || documentNumber.length() == 0
-                        || creditNote.getDocumentNumber() != null && creditNote.getDocumentNumber().length() > 0
-                                && creditNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
-                .filter(creditNote -> documentDateFrom == null
-                        || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
-                        || creditNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
-                .filter(creditNote -> documentDateTo == null || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
-                        || creditNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
-                .filter(creditNote -> documentDueDate == null || documentDueDate.equals(creditNote.getDocumentDueDate()))
-                .filter(creditNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
-                        || creditNote.getOriginDocumentNumber() != null && creditNote.getOriginDocumentNumber().length() > 0
-                                && creditNote.getOriginDocumentNumber().toLowerCase()
-                                        .contains(originDocumentNumber.toLowerCase()))
-                .filter(creditNote -> state == null || state.equals(creditNote.getState())).collect(Collectors.toList());
+        final List<CreditNote> result = Lists.newArrayList();
+        // FIXME legidio, wish there was a way to test an empty Predicate
+        boolean search = false;
+
+        Predicate<CreditNote> predicate = i -> true;
+        if (debtAccount != null) {
+            search = true;
+        }
+        if (!Strings.isNullOrEmpty(documentNumber)) {
+            search = true;
+            predicate = predicate.and(i -> !Strings.isNullOrEmpty(i.getDocumentNumber())
+                    && i.getUiDocumentNumber().toLowerCase().contains(documentNumber.trim().toLowerCase()));
+        }
+        if (documentDateFrom != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
+                    || i.getDocumentDate().toLocalDate().isAfter(documentDateFrom));
+        }
+        if (documentDateTo != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getDocumentDate().toLocalDate().isEqual(documentDateTo)
+                    || i.getDocumentDate().toLocalDate().isBefore(documentDateTo));
+        }
+        if (!StringUtils.isEmpty(originDocumentNumber)) {
+            search = true;
+            predicate = predicate.and(i -> !StringUtils.isEmpty(i.getOriginDocumentNumber())
+                    && i.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.trim().toLowerCase()));
+        }
+        if (state != null) {
+            search = true;
+            predicate = predicate.and(i -> state == i.getState());
+        }
+
+        if (search) {
+            getSearchUniverse(debtAccount).stream().filter(predicate).collect(Collectors.toCollection(() -> result));
+        }
+
+        return result;
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -436,11 +440,11 @@ public class CreditNoteController extends TreasuryBaseController {
 
             final ERPExportOperation output = ERPExporterManager.exportSingleDocument(creditNote);
 
-            if(output == null) {
+            if (output == null) {
                 addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
                 return read(creditNote, model);
             }
-            
+
             addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {

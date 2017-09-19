@@ -32,7 +32,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -40,8 +42,6 @@ import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
-import org.fenixedu.treasury.domain.AdhocCustomer;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -66,6 +66,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,7 +93,7 @@ public class DebitNoteController extends TreasuryBaseController {
     private static final String READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + READ_URI;
 
-    public static final long SEARCH_DEBIT_NOTE_LIST_LIMIT_SIZE = 100;
+    public static final long SEARCH_LIMIT_SIZE = 75;
 
     @RequestMapping
     public String home(Model model) {
@@ -162,74 +163,73 @@ public class DebitNoteController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "payordebtaccount", required = false) DebtAccount payorDebtAccount,
-            @RequestParam(value = "finantialdocumenttype", required = false) FinantialDocumentType finantialDocumentType,
-            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) Currency currency,
+    public String search(@RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
             @RequestParam(value = "documentnumber", required = false) String documentNumber,
             @RequestParam(value = "documentdatefrom",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
             @RequestParam(value = "documentdateto",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
-            @RequestParam(value = "documentduedate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
             @RequestParam(value = "state", required = false) FinantialDocumentStateType state, Model model) {
 
-        List<DebitNote> searchdebitnoteResultsDataSet =
-                filterSearchDebitNote(payorDebtAccount, finantialDocumentType, debtAccount, documentNumberSeries, currency,
-                        documentNumber, documentDateFrom, documentDateTo, documentDueDate, originDocumentNumber, state);
-        model.addAttribute("listSize", searchdebitnoteResultsDataSet.size());
-        searchdebitnoteResultsDataSet =
-                searchdebitnoteResultsDataSet.stream().limit(SEARCH_DEBIT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
+        final List<DebitNote> result =
+                filterSearch(debtAccount, documentNumber, documentDateFrom, documentDateTo, originDocumentNumber, state);
+        model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
+        model.addAttribute("listSize", result.size());
+        model.addAttribute("searchdebitnoteResultsDataSet",
+                result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
 
-        model.addAttribute("searchdebitnoteResultsDataSet", searchdebitnoteResultsDataSet);
-        model.addAttribute("DebitNote_payorDebtAccount_options", org.fenixedu.treasury.domain.debt.DebtAccount.findAll()
-                .filter(x -> x.getCustomer().isAdhocCustomer()).collect(Collectors.toList()));
-//        model.addAttribute("DebitNote_finantialDocumentType_options", org.fenixedu.treasury.domain.document.FinantialDocumentType
-//                .findAll().collect(Collectors.toList()));
-//        model.addAttribute("DebitNote_debtAccount_options", new ArrayList<org.fenixedu.treasury.domain.debt.DebtAccount>()); // CHANGE_ME
-//        model.addAttribute("DebitNote_debtAccount_options",
-//                org.fenixedu.treasury.domain.debt.DebtAccount.findAll().collect(Collectors.toList()));
-//        model.addAttribute("DebitNote_documentNumberSeries_options", org.fenixedu.treasury.domain.document.DocumentNumberSeries
-//                .findAll().collect(Collectors.toList()));
-//        model.addAttribute("DebitNote_currency_options",
-//                org.fenixedu.treasury.domain.Currency.findAll().collect(Collectors.toList()));
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.findAll());
+        model.addAttribute("stateValues", FinantialDocumentStateType.findAll());
 
         return "treasury/document/manageinvoice/debitnote/search";
     }
 
-    private List<DebitNote> getSearchUniverseSearchDebitNoteDataSet() {
-        return DebitNote.findAll().collect(Collectors.toList());
+    static private List<DebitNote> getSearchUniverse(final DebtAccount debtAccount) {
+        final Stream<DebitNote> result = debtAccount == null ? DebitNote.findAll() : DebitNote.find(debtAccount);
+        return result.collect(Collectors.toList());
     }
 
-    private List<DebitNote> filterSearchDebitNote(DebtAccount payorDebtAccount, FinantialDocumentType finantialDocumentType,
-            DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries, Currency currency,
-            java.lang.String documentNumber, LocalDate documentDateFrom, LocalDate documentDateTo, LocalDate documentDueDate,
-            String originDocumentNumber, FinantialDocumentStateType state) {
+    static private List<DebitNote> filterSearch(DebtAccount debtAccount, String documentNumber, LocalDate documentDateFrom,
+            LocalDate documentDateTo, String originDocumentNumber, FinantialDocumentStateType state) {
 
-        return getSearchUniverseSearchDebitNoteDataSet().stream()
-                .filter(debitNote -> payorDebtAccount == null || payorDebtAccount == debitNote.getPayorDebtAccount())
-                .filter(debitNote -> finantialDocumentType == null
-                        || finantialDocumentType == debitNote.getFinantialDocumentType())
-                .filter(debitNote -> debtAccount == null || debtAccount == debitNote.getDebtAccount())
-                .filter(debitNote -> documentNumberSeries == null || documentNumberSeries == debitNote.getDocumentNumberSeries())
-                .filter(debitNote -> currency == null || currency == debitNote.getCurrency())
-                .filter(debitNote -> documentNumber == null || documentNumber.length() == 0
-                        || debitNote.getDocumentNumber() != null && debitNote.getDocumentNumber().length() > 0
-                                && debitNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
-                .filter(debitNote -> documentDateFrom == null
-                        || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
-                        || debitNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
-                .filter(debitNote -> documentDateTo == null || debitNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
-                        || debitNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
-                .filter(debitNote -> documentDueDate == null || documentDueDate.equals(debitNote.getDocumentDueDate()))
-                .filter(debitNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
-                        || debitNote.getOriginDocumentNumber() != null && debitNote.getOriginDocumentNumber().length() > 0
-                                && debitNote.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.toLowerCase()))
-                .filter(debitNote -> state == null || state.equals(debitNote.getState())).collect(Collectors.toList());
+        final List<DebitNote> result = Lists.newArrayList();
+        // FIXME legidio, wish there was a way to test an empty Predicate
+        boolean search = false;
+
+        Predicate<DebitNote> predicate = i -> true;
+        if (debtAccount != null) {
+            search = true;
+        }
+        if (!Strings.isNullOrEmpty(documentNumber)) {
+            search = true;
+            predicate = predicate.and(i -> !Strings.isNullOrEmpty(i.getDocumentNumber())
+                    && i.getUiDocumentNumber().toLowerCase().contains(documentNumber.trim().toLowerCase()));
+        }
+        if (documentDateFrom != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
+                    || i.getDocumentDate().toLocalDate().isAfter(documentDateFrom));
+        }
+        if (documentDateTo != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getDocumentDate().toLocalDate().isEqual(documentDateTo)
+                    || i.getDocumentDate().toLocalDate().isBefore(documentDateTo));
+        }
+        if (!StringUtils.isEmpty(originDocumentNumber)) {
+            search = true;
+            predicate = predicate.and(i -> !StringUtils.isEmpty(i.getOriginDocumentNumber())
+                    && i.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.trim().toLowerCase()));
+        }
+        if (state != null) {
+            search = true;
+            predicate = predicate.and(i -> state == i.getState());
+        }
+
+        if (search) {
+            getSearchUniverse(debtAccount).stream().filter(predicate).collect(Collectors.toCollection(() -> result));
+        }
+
+        return result;
     }
 
     @RequestMapping(value = "/search/view/{oid}")
@@ -372,11 +372,14 @@ public class DebitNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") DebitNote debitNote,
-            @RequestParam(value = "documentdate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate documentDate,
-            @RequestParam(value = "documentduedate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate documentDueDate,
+            @RequestParam(value = "documentdate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate documentDate,
+            @RequestParam(value = "documentduedate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) final String originDocumentNumber,
             @RequestParam(value = "documentobservations", required = false) final String documentObservations,
-            @RequestParam(value = "legacyerpcertificatedocumentreference", required = false) final String legacyERPCertificateDocumentReference,
+            @RequestParam(value = "legacyerpcertificatedocumentreference",
+                    required = false) final String legacyERPCertificateDocumentReference,
             Model model, RedirectAttributes redirectAttributes) {
 
         setDebitNote(debitNote, model);
@@ -385,7 +388,7 @@ public class DebitNoteController extends TreasuryBaseController {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             final DebitNote note = getDebitNote(model);
-            note.edit(note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber, documentObservations, 
+            note.edit(note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber, documentObservations,
                     legacyERPCertificateDocumentReference);
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
@@ -394,7 +397,7 @@ public class DebitNoteController extends TreasuryBaseController {
         } catch (Exception de) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
         }
-        
+
         return update(debitNote, model, redirectAttributes);
     }
 
@@ -619,18 +622,18 @@ public class DebitNoteController extends TreasuryBaseController {
 
             final ERPExportOperation output = ERPExporterManager.exportSingleDocument(debitNote);
 
-            if(output == null) {
+            if (output == null) {
                 addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
                 setDebitNote(debitNote, model);
                 return read(debitNote, model, redirectAttributes);
             }
-            
+
             addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
-        
+
         setDebitNote(debitNote, model);
         return read(debitNote, model, redirectAttributes);
     }
@@ -678,8 +681,8 @@ public class DebitNoteController extends TreasuryBaseController {
 
             setDebitNote(debitNote, model);
 
-            model.addAttribute("DebitNote_payorDebtAccount_options",
-                    DebtAccount.findActiveAdhocDebtAccountsSortedByCustomerName(debitNote.getDebtAccount().getFinantialInstitution()));
+            model.addAttribute("DebitNote_payorDebtAccount_options", DebtAccount
+                    .findActiveAdhocDebtAccountsSortedByCustomerName(debitNote.getDebtAccount().getFinantialInstitution()));
 
             model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
 

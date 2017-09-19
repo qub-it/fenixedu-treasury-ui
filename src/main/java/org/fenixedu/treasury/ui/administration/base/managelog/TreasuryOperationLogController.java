@@ -56,7 +56,7 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/administration/base/managetreasuryoperationlog/treasuryoperationlog";
 
-    public static final long SEARCH_LOG_LIST_LIMIT_SIZE = 30;
+    public static final long SEARCH_LIMIT_SIZE = 75;
 
     private List<TreasuryOperationLog> getTreasuryOperationLogSet(Model model) {
         return (List<TreasuryOperationLog>) model.asMap().get("treasuryOperationLogSet");
@@ -86,25 +86,22 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.read.object.oid.not.valid"), model);
         } else {
             setDomainObject(domainObject, model);
-            setTreasuryOperationLogSet(
-                    filterSearchTreasuryOperationLog(domainObject.getExternalId(), null, logDateFrom, logDateTo), model);
+            setTreasuryOperationLogSet(filterSearch(domainObject.getExternalId(), null, logDateFrom, logDateTo), model);
         }
         return "treasury/administration/base/managetreasuryoperationlog/treasuryoperationlog/read";
     }
 
-    private Stream<TreasuryOperationLog> getSearchUniverseSearchTreasuryOperationLogDataSet() {
+    private Stream<TreasuryOperationLog> getSearchUniverse() {
         return TreasuryOperationLog.findAll();
     }
 
-    private List<TreasuryOperationLog> filterSearchTreasuryOperationLog(String oid, String type, LocalDate from, LocalDate to) {
-        return getSearchUniverseSearchTreasuryOperationLogDataSet()
-                .filter(log -> oid == null || log.getDomainOid().equals(oid))
+    private List<TreasuryOperationLog> filterSearch(String oid, String type, LocalDate from, LocalDate to) {
+        return getSearchUniverse().filter(log -> oid == null || log.getDomainOid().equals(oid))
                 .filter(log -> type == null || log.getType().equals(type))
                 .filter(log -> from == null || log.getVersioningCreationDate().toLocalDate().isAfter(from)
                         || log.getVersioningCreationDate().toLocalDate().isEqual(from))
                 .filter(log -> to == null || log.getVersioningCreationDate().toLocalDate().isBefore(to)
                         || log.getVersioningCreationDate().toLocalDate().isEqual(to))
-                .sorted(TreasuryOperationLog.COMPARATOR_BY_CREATION_DATE).limit(SEARCH_LOG_LIST_LIMIT_SIZE)
-                .collect(Collectors.toList());
+                .sorted(TreasuryOperationLog.COMPARATOR_BY_CREATION_DATE).limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList());
     }
 }

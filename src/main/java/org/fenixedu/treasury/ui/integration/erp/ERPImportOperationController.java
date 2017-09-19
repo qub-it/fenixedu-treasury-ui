@@ -27,8 +27,8 @@
 package org.fenixedu.treasury.ui.integration.erp;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,7 +39,6 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.services.integration.erp.IERPImporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -48,6 +47,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -55,7 +55,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -68,7 +68,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/treasury/integration/erp/erpimportoperation";
 
-    public static final long SEARCH_OPERATION_LIST_LIMIT_SIZE = 3000;
+    public static final long SEARCH_LIMIT_SIZE = 1000;
 
     @RequestMapping
     public String home(Model model) {
@@ -100,56 +100,73 @@ public class ERPImportOperationController extends TreasuryBaseController {
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime toExecutionDate,
             @RequestParam(value = "success", required = false) Boolean success,
             @RequestParam(value = "documentnumber", required = false) String documentNumber, Model model) {
-        if(fromExecutionDate != null) {
+
+        if (fromExecutionDate != null) {
             fromExecutionDate = fromExecutionDate.toLocalDate().toDateTimeAtStartOfDay();
         }
-        
-        if(toExecutionDate != null) {
+
+        if (toExecutionDate != null) {
             toExecutionDate = toExecutionDate.toLocalDate().plusDays(1).toDateTimeAtStartOfDay().minusSeconds(1);
         }
-        
-        List<ERPImportOperation> searcherpimportoperationResultsDataSet =
-                filterSearchERPImportOperation(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
-        model.addAttribute("limit_exceeded", searcherpimportoperationResultsDataSet.size() > SEARCH_OPERATION_LIST_LIMIT_SIZE);
-        model.addAttribute("searchoperationResultsDataSet_totalCount", searcherpimportoperationResultsDataSet.size());
-        searcherpimportoperationResultsDataSet = searcherpimportoperationResultsDataSet.stream()
-                .limit(SEARCH_OPERATION_LIST_LIMIT_SIZE).collect(Collectors.toList());
+
+        final List<ERPImportOperation> result =
+                filterSearch(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
+        model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
+        model.addAttribute("searchoperationResultsDataSet_totalCount", result.size());
+        model.addAttribute("searcherpimportoperationResultsDataSet",
+                result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
 
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
-        model.addAttribute("searcherpimportoperationResultsDataSet", searcherpimportoperationResultsDataSet);
+
         return "treasury/integration/erp/erpimportoperation/search";
     }
 
-    private Stream<ERPImportOperation> getSearchUniverseSearchERPImportOperationDataSet() {
+    private Stream<ERPImportOperation> getSearchUniverse(final FinantialInstitution finantialInstitution,
+            final String documentNumber) {
+
+        final FinantialDocument finantialDocument =
+                FinantialDocument.findByUiDocumentNumber(finantialInstitution, documentNumber);
+        if (finantialDocument != null) {
+            return ERPImportOperation.find(finantialDocument);
+        }
+
+        if (finantialInstitution != null) {
+            return ERPImportOperation.findByFinantialInstitution(finantialInstitution);
+        }
+
         return ERPImportOperation.findAll();
     }
 
-    private List<ERPImportOperation> filterSearchERPImportOperation(FinantialInstitution finantialInstitution,
-            DateTime fromExecutionDate, DateTime toExecutionDate, Boolean success, String documentNumber) {
+    private List<ERPImportOperation> filterSearch(FinantialInstitution finantialInstitution, DateTime fromExecutionDate,
+            DateTime toExecutionDate, Boolean success, String documentNumber) {
 
-        if (Strings.isNullOrEmpty(documentNumber)) {
+        final List<ERPImportOperation> result = Lists.newArrayList();
+        // FIXME legidio, wish there was a way to test an empty Predicate
+        boolean search = false;
 
-            return getSearchUniverseSearchERPImportOperationDataSet()
-                    .filter(eRPImportOperation -> finantialInstitution == null
-                            || eRPImportOperation.getFinantialInstitution().equals(finantialInstitution))
-                    .filter(eRPImportOperation -> fromExecutionDate == null || toExecutionDate == null
-                            || eRPImportOperation.getExecutionDate().isAfter(fromExecutionDate)
-                                    && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
-                    .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
-                    .collect(Collectors.toList());
-        } else {
-            FinantialDocument document = FinantialDocument.findByUiDocumentNumber(finantialInstitution, documentNumber);
-            if (document != null) {
-                return document.getErpImportOperationsSet().stream()
-                        .filter(eRPImportOperation -> fromExecutionDate == null || toExecutionDate == null
-                                || eRPImportOperation.getExecutionDate().isAfter(fromExecutionDate)
-                                        && eRPImportOperation.getExecutionDate().isBefore(toExecutionDate))
-                        .filter(eRPImportOperation -> success == null || eRPImportOperation.getSuccess() == success)
-                        .collect(Collectors.toList());
-            } else {
-                return new ArrayList<ERPImportOperation>();
-            }
+        Predicate<ERPImportOperation> predicate = i -> true;
+        if (!StringUtils.isEmpty(documentNumber)) {
+            search = true;
         }
+        if (fromExecutionDate != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getExecutionDate().isAfter(fromExecutionDate));
+        }
+        if (toExecutionDate != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getExecutionDate().isBefore(toExecutionDate));
+        }
+        if (success != null) {
+            search = true;
+            predicate = predicate.and(i -> i.getSuccess() == success);
+        }
+
+        if (search) {
+            getSearchUniverse(finantialInstitution, documentNumber).filter(predicate)
+                    .collect(Collectors.toCollection(() -> result));
+        }
+
+        return result;
     }
 
     private static final String _SEARCH_TO_DELETEMULTIPLE_URI = "/search/deletemultiple";
@@ -317,12 +334,12 @@ public class ERPImportOperationController extends TreasuryBaseController {
 
     @Atomic
     private ERPImportOperation cloneERPImportOperation(ERPImportOperation erpImportOperation) {
-        ERPImportOperation newERPImportOperation =
-                ERPImportOperation.create(erpImportOperation.getFile().getFilename(), erpImportOperation.getFile().getContent(),
-                        erpImportOperation.getFinantialInstitution(), erpImportOperation.getErpOperationId(), new DateTime(), false, false, false);
+        ERPImportOperation newERPImportOperation = ERPImportOperation.create(erpImportOperation.getFile().getFilename(),
+                erpImportOperation.getFile().getContent(), erpImportOperation.getFinantialInstitution(),
+                erpImportOperation.getErpOperationId(), new DateTime(), false, false, false);
         return newERPImportOperation;
     }
-    
+
     @RequestMapping(value = "/soapoutboundmessage/{oid}")
     public void soapOutboundMessage(@PathVariable("oid") final ERPImportOperation eRPImportOperation, final Model model,
             final RedirectAttributes redirectAttributes, HttpServletResponse response) {
@@ -355,8 +372,8 @@ public class ERPImportOperationController extends TreasuryBaseController {
             response.setContentType(com.google.common.net.MediaType.XML_UTF_8.toString());
             response.setHeader("Content-disposition",
                     String.format("attachment; filename=SOAP_Inbound_Message_%s.xml", eRPImportOperation.getExternalId()));
-            response.getWriter().write(
-                    eRPImportOperation.getSoapInboundMessage() != null ? eRPImportOperation.getSoapInboundMessage() : "");
+            response.getWriter()
+                    .write(eRPImportOperation.getSoapInboundMessage() != null ? eRPImportOperation.getSoapInboundMessage() : "");
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {

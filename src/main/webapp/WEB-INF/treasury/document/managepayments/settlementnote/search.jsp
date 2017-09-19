@@ -196,8 +196,7 @@ ${portal.toolkit()}
     </form>
 </div>
 
-<c:set var="limit"><%=SettlementNoteController.SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE%></c:set>
-<c:if test="${listSize > limit}">
+<c:if test="${limit_exceeded}">
     <div class="alert alert-warning" role="alert">
         <p>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>

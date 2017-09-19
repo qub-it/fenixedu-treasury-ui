@@ -28,6 +28,7 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,6 +46,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.accounting.manageCustomer") <-- Use for duplicate controller name disambiguation
@@ -59,7 +63,7 @@ public class CustomerController extends TreasuryBaseController {
     private static final String READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URI + READ_URI;
 
-    public static final long SEARCH_CUSTOMER_LIST_LIMIT_SIZE = 100;
+    public static final long SEARCH_LIMIT_SIZE = 75;
 
     @RequestMapping
     public String home(Model model) {
@@ -80,34 +84,49 @@ public class CustomerController extends TreasuryBaseController {
 
     @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "finantialInstitution", required = false) FinantialInstitution institution,
-            @RequestParam(value = "customertype", required = false) CustomerType customerType, @RequestParam(value = "customer",
-                    required = false) String customer, Model model) {
-        List<Customer> searchcustomerResultsDataSet = filterSearchCustomer(institution, customerType, customer);
-        model.addAttribute("limit_exceeded", searchcustomerResultsDataSet.size() > SEARCH_CUSTOMER_LIST_LIMIT_SIZE);
-        model.addAttribute("searchcustomerResultsDataSet_totalCount", searchcustomerResultsDataSet.size());
-        searchcustomerResultsDataSet =
-                searchcustomerResultsDataSet.stream().limit(SEARCH_CUSTOMER_LIST_LIMIT_SIZE).collect(Collectors.toList());
+            @RequestParam(value = "customertype", required = false) CustomerType customerType,
+            @RequestParam(value = "customer", required = false) String customer, Model model) {
+
+        final List<Customer> result = filterSearch(institution, customerType, customer);
+        model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
+        model.addAttribute("searchcustomerResultsDataSet_totalCount", result.size());
+        model.addAttribute("searchcustomerResultsDataSet", result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
 
         model.addAttribute("Customer_customerType_options", CustomerType.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialinstitution_options", FinantialInstitution.findAll().collect(Collectors.toList()));
 
-        model.addAttribute("searchcustomerResultsDataSet", searchcustomerResultsDataSet);
-
         return "treasury/accounting/managecustomer/customer/search";
     }
 
-    private Stream<? extends Customer> getSearchUniverseSearchCustomerDataSet() {
-        return Customer.findAll().sorted((x, y) -> x.getName().compareToIgnoreCase(y.getName()));
+    static private Stream<? extends Customer> getSearchUniverse(final FinantialInstitution institution) {
+        return institution == null ? Customer.findAll() : Customer.find(institution);
     }
 
-    private List<Customer> filterSearchCustomer(FinantialInstitution institution, CustomerType customerType, String customerString) {
-        return getSearchUniverseSearchCustomerDataSet()
-                .filter(customer -> customerType == null || customerType == customer.getCustomerType())
-                .filter(customer -> customerString == null || customer.matchesMultiFilter(customerString))
-                .filter(customer -> institution == null
-                        || customer.getDebtAccountsSet().stream()
-                                .anyMatch(debtAccount -> debtAccount.getFinantialInstitution().equals(institution)))
-                .collect(Collectors.<Customer> toList());
+    static private List<Customer> filterSearch(FinantialInstitution institution, CustomerType customerType,
+            String customerString) {
+
+        final List<Customer> result = Lists.newArrayList();
+        // FIXME legidio, wish there was a way to test an empty Predicate
+        boolean search = false;
+
+        Predicate<Customer> predicate = i -> true;
+        if (institution != null) {
+            search = true;
+        }
+        if (customerType != null) {
+            search = true;
+            predicate = predicate.and(i -> customerType == i.getCustomerType());
+        }
+        if (!Strings.isNullOrEmpty(customerString)) {
+            search = true;
+            predicate = predicate.and(i -> i.matchesMultiFilter(customerString.trim()));
+        }
+
+        if (search) {
+            getSearchUniverse(institution).filter(predicate).collect(Collectors.toCollection(() -> result));
+        }
+
+        return result;
     }
 
     public static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -119,11 +138,12 @@ public class CustomerController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = READ_URI + "{oid}")
-    public String read(@PathVariable("oid") final Customer customer, final Model model, final RedirectAttributes redirectAttributes) {
-        if(!customer.isActive() && customer.isUiOtherRelatedCustomerActive()) {
+    public String read(@PathVariable("oid") final Customer customer, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        if (!customer.isActive() && customer.isUiOtherRelatedCustomerActive()) {
             return redirect(customer.uiRedirectToActiveCustomer(READ_URL), model, redirectAttributes);
         }
-        
+
         setCustomer(customer, model);
 
 //        //If the customer has only one debtAccount, redirect to the Read Of DebtAccount
@@ -136,12 +156,10 @@ public class CustomerController extends TreasuryBaseController {
         for (DebtAccount debtAccount : customer.getDebtAccountsSet()) {
             pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
         }
-        model.addAttribute(
-                "pendingDocumentsDataSet",
-                pendingInvoiceEntries
-                        .stream()
-                        .sorted(InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(
-                                InvoiceEntry.COMPARE_BY_DUE_DATE.reversed())).collect(Collectors.toList()));
+        model.addAttribute("pendingDocumentsDataSet",
+                pendingInvoiceEntries.stream().sorted(
+                        InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(InvoiceEntry.COMPARE_BY_DUE_DATE.reversed()))
+                        .collect(Collectors.toList()));
 
         return "treasury/accounting/managecustomer/customer/read";
     }

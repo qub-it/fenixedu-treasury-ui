@@ -32,6 +32,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,12 +43,10 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
-import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
@@ -76,6 +75,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -83,6 +83,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.qubit.terra.docs.util.ReportGenerationException;
 
 import pt.ist.fenixframework.Atomic;
@@ -116,7 +117,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     private static final String TRANSACTIONS_SUMMARY_URI = "/transactions/summary/";
     public static final String TRANSACTIONS_SUMMARY_URL = CONTROLLER_URL + TRANSACTIONS_SUMMARY_URI;
 
-    public static final long SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE = 100;
+    public static final long SEARCH_LIMIT_SIZE = 75;
     public static final long SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD = 30;
 
     @RequestMapping
@@ -240,28 +241,26 @@ public class SettlementNoteController extends TreasuryBaseController {
             error = true;
             addErrorMessage(Constants.bundle("error.SettlementNote.need.documentSeries"), model);
         }
-        
-        if(bean.getReferencedCustomers().size() > 1) {
+
+        if (bean.getReferencedCustomers().size() > 1) {
             error = true;
             addErrorMessage(Constants.bundle("error.SettlementNote.referencedCustomers.only.one.allowed"), model);
         }
 
-        if (!error && bean.isReimbursementNote() && bean.getCreditEntries().stream()
-                .filter(ce -> ce.isIncluded()).count() != 1) {
+        if (!error && bean.isReimbursementNote() && bean.getCreditEntries().stream().filter(ce -> ce.isIncluded()).count() != 1) {
             error = true;
             addErrorMessage(Constants.bundle("error.SettlementNote.reimbursement.supports.only.one.settlement.entry"), model);
         }
-        
-        if(!bean.isReimbursementNote() && !bean.checkAdvancePaymentCreditsWithPaymentDate()) {
+
+        if (!bean.isReimbursementNote() && !bean.checkAdvancePaymentCreditsWithPaymentDate()) {
             final SettlementNote settlementNote = bean.getLastPaidAdvancedCreditSettlementNote().get();
-            
+
             error = true;
             addErrorMessage(Constants.bundle("error.SettlementNote.advancedPaymentCredit.originSettlementNote.payment.date.after",
                     settlementNote.getAdvancedPaymentCreditNote().getUiDocumentNumber(),
-                    settlementNote.getPaymentDate().toLocalDate().toString(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD))
-                    , model);
+                    settlementNote.getPaymentDate().toLocalDate().toString(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)), model);
         }
-        
+
         if (error) {
             setSettlementNoteBean(bean, model);
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
@@ -319,23 +318,23 @@ public class SettlementNoteController extends TreasuryBaseController {
             return insertPayment(bean, model);
         }
         setSettlementNoteBean(bean, model);
-        
-        if(bean.isReimbursementWithCompensation()) {
+
+        if (bean.isReimbursementWithCompensation()) {
             return "treasury/document/managepayments/settlementnote/reimbursementWithCompensation";
         }
-        
+
         return "treasury/document/managepayments/settlementnote/insertPayment";
     }
-    
+
     private static final String CONTINUE_TO_INSERT_PAYMENT_URI = "/continueToInsertPayment/";
     public static final String CONTINUE_TO_INSERT_PAYMENT_URL = CONTROLLER_URL + CONTINUE_TO_INSERT_PAYMENT_URI;
-    
+
     @RequestMapping(value = CONTINUE_TO_INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String continueToInsertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/insertPayment";
     }
-    
+
     @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
@@ -397,13 +396,10 @@ public class SettlementNoteController extends TreasuryBaseController {
         if (bean.getDocNumSeries().getSeries().getCertificated() == false) {
             documentDate = bean.getDate().toDateTimeAtStartOfDay();
         }
-        SettlementNote settlementNote =
-                SettlementNote
-                        .create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate,
-                                bean.getDate().toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber(),
-                                !Strings.isNullOrEmpty(bean.getFinantialTransactionReference()) ? bean
-                                        .getFinantialTransactionReferenceYear() + "/"
-                                        + bean.getFinantialTransactionReference() : "");
+        SettlementNote settlementNote = SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate,
+                bean.getDate().toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber(),
+                !Strings.isNullOrEmpty(bean.getFinantialTransactionReference()) ? bean.getFinantialTransactionReferenceYear()
+                        + "/" + bean.getFinantialTransactionReference() : "");
         settlementNote.processSettlementNoteCreation(bean);
         settlementNote.closeDocument();
         return settlementNote;
@@ -411,60 +407,73 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = SEARCH_URI)
     public String search(@RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "currency", required = false) Currency currency,
             @RequestParam(value = "documentnumber", required = false) String documentNumber,
             @RequestParam(value = "documentdatefrom",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateFrom,
             @RequestParam(value = "documentdateto",
                     required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
-            @RequestParam(value = "documentduedate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDueDate,
             @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
             @RequestParam(value = "state", required = false) FinantialDocumentStateType state, Model model) {
-        List<SettlementNote> searchsettlementnoteResultsDataSet = filterSearchSettlementNote(debtAccount, documentNumberSeries,
-                currency, documentNumber, documentDateFrom, documentDateTo, documentDueDate, originDocumentNumber, state);
 
-        model.addAttribute("listSize", searchsettlementnoteResultsDataSet.size());
-        searchsettlementnoteResultsDataSet = searchsettlementnoteResultsDataSet.stream()
-                .limit(SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE).collect(Collectors.toList());
-        model.addAttribute("searchsettlementnoteResultsDataSet", searchsettlementnoteResultsDataSet);
+        final List<SettlementNote> result =
+                filterSearch(debtAccount, documentNumber, documentDateFrom, documentDateTo, originDocumentNumber, state);
+        model.addAttribute("listSize", result.size());
+        model.addAttribute("searchsettlementnoteResultsDataSet",
+                result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
 
-        model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.findAll());
+        model.addAttribute("stateValues", FinantialDocumentStateType.findAll());
+
         return "treasury/document/managepayments/settlementnote/search";
     }
 
-    private List<SettlementNote> getSearchUniverseSearchSettlementNoteDataSet() {
-        return SettlementNote.findAll().collect(Collectors.toList());
+    static private List<SettlementNote> getSearchUniverse(final DebtAccount debtAccount) {
+        final Stream<SettlementNote> result =
+                debtAccount == null ? SettlementNote.findAll() : SettlementNote.findByDebtAccount(debtAccount);
+        return result.collect(Collectors.toList());
     }
 
-    private List<SettlementNote> filterSearchSettlementNote(DebtAccount debtAccount, DocumentNumberSeries documentNumberSeries,
-            Currency currency, String documentNumber, LocalDate documentDateFrom, LocalDate documentDateTo,
-            DateTime documentDueDate, String originDocumentNumber, FinantialDocumentStateType state) {
+    private List<SettlementNote> filterSearch(DebtAccount debtAccount, String documentNumber, LocalDate documentDateFrom,
+            LocalDate documentDateTo, String originDocumentNumber, FinantialDocumentStateType state) {
 
-        return getSearchUniverseSearchSettlementNoteDataSet().stream()
-                .filter(settlementNote -> FinantialDocumentType.findForSettlementNote() == settlementNote
-                        .getFinantialDocumentType()
-                || FinantialDocumentType.findForReimbursementNote() == settlementNote.getFinantialDocumentType())
-                .filter(settlementNote -> debtAccount == null || debtAccount == settlementNote.getDebtAccount())
-                .filter(settlementNote -> documentNumberSeries == null
-                        || documentNumberSeries == settlementNote.getDocumentNumberSeries())
-                .filter(settlementNote -> currency == null || currency == settlementNote.getCurrency())
-                .filter(settlementNote -> documentNumber == null || documentNumber.length() == 0
-                        || settlementNote.getDocumentNumber() != null && settlementNote.getDocumentNumber().length() > 0
-                                && settlementNote.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()))
-                .filter(creditNote -> documentDateFrom == null
-                        || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
-                        || creditNote.getDocumentDate().toLocalDate().isAfter(documentDateFrom))
-                .filter(creditNote -> documentDateTo == null || creditNote.getDocumentDate().toLocalDate().isEqual(documentDateTo)
-                        || creditNote.getDocumentDate().toLocalDate().isBefore(documentDateTo))
-                .filter(settlementNote -> documentDueDate == null || documentDueDate.equals(settlementNote.getDocumentDueDate()))
-                .filter(settlementNote -> originDocumentNumber == null || originDocumentNumber.length() == 0
-                        || settlementNote.getOriginDocumentNumber() != null
-                                && settlementNote.getOriginDocumentNumber().length() > 0
-                                && settlementNote.getOriginDocumentNumber().toLowerCase()
-                                        .contains(originDocumentNumber.toLowerCase()))
-                .filter(settlementNote -> state == null || state.equals(settlementNote.getState())).collect(Collectors.toList());
+        final List<SettlementNote> result = Lists.newArrayList();
+        // FIXME legidio, wish there was a way to test an empty Predicate
+        boolean filter = false;
+
+        Predicate<SettlementNote> predicate = i -> FinantialDocumentType.findForSettlementNote() == i.getFinantialDocumentType()
+                || FinantialDocumentType.findForReimbursementNote() == i.getFinantialDocumentType();
+        if (debtAccount != null) {
+            filter = true;
+        }
+        if (!Strings.isNullOrEmpty(documentNumber)) {
+            filter = true;
+            predicate = predicate.and(i -> !Strings.isNullOrEmpty(i.getDocumentNumber())
+                    && i.getUiDocumentNumber().toLowerCase().contains(documentNumber.toLowerCase()));
+        }
+        if (documentDateFrom != null) {
+            filter = true;
+            predicate = predicate.and(i -> i.getDocumentDate().toLocalDate().isEqual(documentDateFrom)
+                    || i.getDocumentDate().toLocalDate().isAfter(documentDateFrom));
+        }
+        if (documentDateTo != null) {
+            filter = true;
+            predicate = predicate.and(i -> i.getDocumentDate().toLocalDate().isEqual(documentDateTo)
+                    || i.getDocumentDate().toLocalDate().isBefore(documentDateTo));
+        }
+        if (!StringUtils.isEmpty(originDocumentNumber)) {
+            filter = true;
+            predicate = predicate.and(i -> !StringUtils.isEmpty(i.getOriginDocumentNumber())
+                    && i.getOriginDocumentNumber().toLowerCase().contains(originDocumentNumber.trim().toLowerCase()));
+        }
+        if (state != null) {
+            filter = true;
+            predicate = predicate.and(i -> state == i.getState());
+        }
+
+        if (filter) {
+            getSearchUniverse(debtAccount).stream().filter(predicate).collect(Collectors.toCollection(() -> result));
+        }
+
+        return result;
     }
 
     @RequestMapping(value = "/search/view/{oid}")
@@ -773,7 +782,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             }
 
             final ERPExportOperation output = ERPExporterManager.exportSettlementNote(settlementNote);
-            if(output == null) {
+            if (output == null) {
                 addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
                 return read(settlementNote, model);
             }
@@ -781,10 +790,9 @@ public class SettlementNoteController extends TreasuryBaseController {
             addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error")
-                    + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
-        
+
         return read(settlementNote, model);
     }
 
