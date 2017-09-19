@@ -112,6 +112,10 @@ public class ERPExportOperation extends ERPExportOperation_Base {
                 .map(ERPExportOperation.class::cast);
     }
 
+    public static Stream<ERPExportOperation> find(final FinantialDocument finantialDocument) {
+        return finantialDocument.getErpExportOperationsSet().stream();
+    }
+
     public static Stream<ERPExportOperation> findByExecutionDate(final FinantialInstitution finantialInstitution,
             final DateTime executionDate) {
         return findByFinantialInstitution(finantialInstitution).filter(i -> executionDate.equals(i.getExecutionDate()));

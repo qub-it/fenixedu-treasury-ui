@@ -101,6 +101,10 @@ public class ERPImportOperation extends ERPImportOperation_Base {
                 .map(ERPImportOperation.class::cast);
     }
 
+    public static Stream<ERPImportOperation> find(final FinantialDocument finantialDocument) {
+        return finantialDocument.getErpImportOperationsSet().stream();
+    }
+
     public static Stream<ERPImportOperation> findByExecutionDate(final DateTime executionDate) {
         return findAll().filter(i -> executionDate.equals(i.getExecutionDate()));
     }
