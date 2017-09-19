@@ -43,18 +43,14 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
-import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
-import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
@@ -62,7 +58,6 @@ import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
-import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
@@ -140,11 +135,11 @@ public class DebtAccountController extends TreasuryBaseController {
         model.addAttribute("pendingDocumentsDataSet",
                 pendingInvoiceEntries.stream().sorted(
                         InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(InvoiceEntry.COMPARE_BY_DUE_DATE.reversed()))
-                .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
         model.addAttribute("allDocumentsDataSet",
                 allInvoiceEntries.stream().sorted(
                         InvoiceEntry.COMPARE_BY_ENTRY_DATE.reversed().thenComparing(InvoiceEntry.COMPARE_BY_DUE_DATE.reversed()))
-                .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
         model.addAttribute("paymentsDataSet", paymentEntries.stream()
                 .sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate())).collect(Collectors.toList()));
         model.addAttribute("exemptionDataSet", exemptionEntries);
@@ -248,7 +243,7 @@ public class DebtAccountController extends TreasuryBaseController {
     @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(
             @RequestParam(value = "q", required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
-        final String searchFieldDecoded = URLDecoder.decode(searchField);
+        final String searchFieldDecoded = URLDecoder.decode(searchField).trim();
 
         List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
         List<DebtAccount> debtAccounts = DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
