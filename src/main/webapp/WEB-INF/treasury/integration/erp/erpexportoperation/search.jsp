@@ -216,12 +216,13 @@ ${portal.toolkit()}
 
         <p>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-            <spring:message code="label.limitexceeded" arguments="${searcherpexportoperationResultsDataSet.size()};${searchoperationResultsDataSet_totalCount}" argumentSeparator=";"
+            <spring:message code="label.limitexceeded" arguments="${searcherpexportoperationResultsDataSet.size()};${searcherpexportoperationResultsDataSet_totalCount}" argumentSeparator=";"
                 htmlEscape="false" />
         </p>
 
     </div>
 </c:if>
+
 <c:choose>
     <c:when test="${not empty searcherpexportoperationResultsDataSet}">
         <table id="searcherpexportoperationTable"

@@ -112,7 +112,7 @@ public class ERPImportOperationController extends TreasuryBaseController {
         final List<ERPImportOperation> result =
                 filterSearch(finantialInstitution, fromExecutionDate, toExecutionDate, success, documentNumber);
         model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
-        model.addAttribute("searchoperationResultsDataSet_totalCount", result.size());
+        model.addAttribute("searcherpimportoperationResultsDataSet_totalCount", result.size());
         model.addAttribute("searcherpimportoperationResultsDataSet",
                 result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
 

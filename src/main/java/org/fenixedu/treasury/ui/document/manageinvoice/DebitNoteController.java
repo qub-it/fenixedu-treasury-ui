@@ -175,7 +175,7 @@ public class DebitNoteController extends TreasuryBaseController {
         final List<DebitNote> result =
                 filterSearch(debtAccount, documentNumber, documentDateFrom, documentDateTo, originDocumentNumber, state);
         model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
-        model.addAttribute("listSize", result.size());
+        model.addAttribute("searchdebitnoteResultsDataSet_totalCount", result.size());
         model.addAttribute("searchdebitnoteResultsDataSet",
                 result.stream().limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList()));
 

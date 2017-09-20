@@ -198,10 +198,13 @@ ${portal.toolkit()}
 
 <c:if test="${limit_exceeded}">
     <div class="alert alert-warning" role="alert">
+
         <p>
             <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-            <spring:message code="label.limitexceeded" arguments="${limit},${listSize}" />
+            <spring:message code="label.limitexceeded" arguments="${searchsettlementnoteResultsDataSet.size()};${searchsettlementnoteResultsDataSet_totalCount}" argumentSeparator=";"
+                htmlEscape="false" />
         </p>
+
     </div>
 </c:if>
 
