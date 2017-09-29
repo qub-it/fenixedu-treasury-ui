@@ -267,7 +267,7 @@ ${portal.angularToolkit()}
 				</a>
 				<ul class="dropdown-menu">
 		            <li>
-		            	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/search?customerId=${debtAccount.customer.externalId}">
+		            	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/search?studentNumber=${debtAccount.customer.businessIdentification}&uiFiscalNumber=${debtAccount.customer.uiFiscalNumber}">
 		            		<span class="glyphicon glyphicon-list-alt" aria-hidden="true" target="_blank"></span>&nbsp;
 		            		<spring:message code="label.ERPTuitionInfo.search" />
 		               	</a>
