@@ -4,10 +4,13 @@
 
 <div style="text-align:center;">
 
-	<a href="http://www.redunicre.pt" target="_blank">
-		<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/payline/redunicre.png" />
+	<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/payline/Redunicre_Autocolante_final.jpg" />
+	&nbsp;
+	<a href="${pageContext.request.contextPath}/treasury/document/forwardpayments/verifiedbyvisalearnmore" target="_blank">
+		<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/payline/VerifiedByVisa-Learnmore.gif" />
 	</a>
 	&nbsp;
-	<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/payline/master_card_secure_code.png" />
-	
+	<a href="http://www.MasterCardbusiness.com/mcbiz/index.jsp?template=/orphans&content=securecodepopup" target="_blank">
+		<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/payline/Master_Card_sc_learn_156x83.gif" />
+	</a>
 </div>
