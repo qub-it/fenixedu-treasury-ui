@@ -50,6 +50,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -145,7 +146,7 @@ public class CreditNoteController extends TreasuryBaseController {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             // For now limit this functionality to managers
-            if (!TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
+            if (!TreasuryAccessControl.getInstance().isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
                 addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.invoices"), model);
                 throw new SecurityException(Constants.bundle("error.authorization.not.allow.to.modify.invoices"));
             }

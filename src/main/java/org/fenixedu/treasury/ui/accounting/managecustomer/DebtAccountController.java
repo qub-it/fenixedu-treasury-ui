@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -52,13 +51,13 @@ import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
-import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
@@ -242,22 +241,22 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
-    public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(
+    public @ResponseBody ResponseEntity<List<TreasuryTupleDataSourceBean>> processReadToReadEvent(
             @RequestParam(value = "q", required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
         final String searchFieldDecoded = URLDecoder.decode(searchField);
 
-        List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
+        List<TreasuryTupleDataSourceBean> bean = new ArrayList<TreasuryTupleDataSourceBean>();
         List<DebtAccount> debtAccounts = DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
                 .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
                 .collect(Collectors.toList());
 
         for (DebtAccount debt : debtAccounts) {
-            bean.add(new TupleDataSourceBean(debt.getExternalId(),
+            bean.add(new TreasuryTupleDataSourceBean(debt.getExternalId(),
                     debt.getCustomer().getName() + " [" + debt.getFinantialInstitution().getCode() + "] (#"
                             + debt.getCustomer().getBusinessIdentification() + ") ("
                             + debt.getCustomer().getIdentificationNumber() + ")"));
         }
-        return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
+        return new ResponseEntity<List<TreasuryTupleDataSourceBean>>(bean, HttpStatus.OK);
     }
 
     private static final String _SEARCHOPENDEBTACCOUNTS_URI = "/searchopendebtaccounts";

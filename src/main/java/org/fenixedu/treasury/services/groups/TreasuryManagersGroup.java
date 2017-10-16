@@ -30,7 +30,7 @@ public class TreasuryManagersGroup extends CustomGroup {
 
     @Override
     public Set<User> getMembers() {
-        return TreasuryAccessControlAPI.getTreasuryManagerMembers();
+        return toPersistentGroup().getMembers();
     }
 
     @Override

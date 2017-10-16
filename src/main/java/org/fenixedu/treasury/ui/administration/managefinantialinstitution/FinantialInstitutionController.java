@@ -123,7 +123,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     private List<FinantialInstitution> getSearchUniverseSearchFinantialInstitutionDataSet() {
-        return new ArrayList<FinantialInstitution>(Bennu.getInstance().getFinantialInstitutionsSet());
+        return new ArrayList<FinantialInstitution>(FinantialInstitution.findAll().collect(Collectors.toSet()));
     }
 
     private static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";

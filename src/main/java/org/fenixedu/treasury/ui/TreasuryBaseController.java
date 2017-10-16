@@ -32,18 +32,17 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.fenixedu.bennu.adapters.CountryAdapter;
-import org.fenixedu.bennu.adapters.DistrictAdapter;
-import org.fenixedu.bennu.adapters.DomainObjectAdapter;
-import org.fenixedu.bennu.adapters.LocalizedStringAdapter;
-import org.fenixedu.bennu.adapters.MunicipalityAdapter;
-import org.fenixedu.bennu.converters.BeanConverterService;
 import org.fenixedu.bennu.converters.CountryConverterService;
 import org.fenixedu.bennu.converters.DistrictConverterService;
 import org.fenixedu.bennu.converters.MunicipalityConverterService;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.adapters.CountryAdapter;
+import org.fenixedu.treasury.adapters.DistrictAdapter;
+import org.fenixedu.treasury.adapters.DomainObjectAdapter;
+import org.fenixedu.treasury.adapters.LocalizedStringAdapter;
+import org.fenixedu.treasury.adapters.MunicipalityAdapter;
+import org.fenixedu.treasury.converters.BeanConverterService;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.dto.ITreasuryBean;
@@ -73,67 +72,66 @@ import pt.ist.standards.geographic.Municipality;
 public class TreasuryBaseController {
 
     protected void assertUserIsManager(Model model) {
-        if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
+        if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser().getUsername())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"));
+            addErrorMessage(Constants.bundle("error.authorization.not.manager"), model);
+            throw new SecurityException(Constants.bundle("error.authorization.not.manager"));
         }
     }
 
     protected void assertUserIsBackOfficeMember(Model model) {
-        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) {
+        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser().getUsername())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"));
+            addErrorMessage(Constants.bundle("error.authorization.not.backoffice"), model);
+            throw new SecurityException(Constants.bundle("error.authorization.not.backoffice"));
         }
     }
 
     protected void assertUserIsFrontOfficeMember(Model model) {
-        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser())) {
+        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser().getUsername())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(Constants.bundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(Constants.bundle("error.authorization.not.frontoffice"));
         }
     }
 
     protected void assertUserIsBackOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser().getUsername(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"));
+            addErrorMessage(Constants.bundle("error.authorization.not.backoffice"), model);
+            throw new SecurityException(Constants.bundle("error.authorization.not.backoffice"));
         }
     }
 
     protected void assertUserIsAllowToModifySettlements(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+        if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser().getUsername(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.allow.to.modify.settlements"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE,
-                    "error.authorization.not.allow.to.modify.settlements"));
+            addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.settlements"), model);
+            throw new SecurityException(Constants.bundle("error.authorization.not.allow.to.modify.settlements"));
         }
     }
 
     protected void assertUserIsAllowToModifyInvoices(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+        if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser().getUsername(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.allow.to.modify.invoices"), model);
+            addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.invoices"), model);
             throw new SecurityException(
-                    BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.allow.to.modify.invoices"));
+                    Constants.bundle("error.authorization.not.allow.to.modify.invoices"));
         }
     }
 
     protected void assertUserIsFrontOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser().getUsername(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(Constants.bundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(Constants.bundle("error.authorization.not.frontoffice"));
         }
     }
 

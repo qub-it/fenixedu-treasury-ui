@@ -36,7 +36,7 @@ public class TreasuryBackOfficeGroup extends CustomGroup {
 
     @Override
     public Set<User> getMembers() {
-        return TreasuryAccessControlAPI.getBackOfficeMembers();
+        return toPersistentGroup().getMembers();
     }
 
     @Override

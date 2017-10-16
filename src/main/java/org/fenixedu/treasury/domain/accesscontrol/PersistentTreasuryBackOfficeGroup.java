@@ -7,12 +7,13 @@ import org.fenixedu.treasury.services.groups.TreasuryBackOfficeGroup;
 import org.fenixedu.treasury.services.groups.TreasuryFrontOfficeGroup;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class PersistentTreasuryBackOfficeGroup extends PersistentTreasuryBackOfficeGroup_Base {
     
     public PersistentTreasuryBackOfficeGroup() {
         super();
-        setBennuForPersistentTreasuryBackOfficeGroup(Bennu.getInstance());
+        setDomainRootForPersistentTreasuryBackOfficeGroup(FenixFramework.getDomainRoot());
     }
 
     @Override
@@ -22,10 +23,10 @@ public class PersistentTreasuryBackOfficeGroup extends PersistentTreasuryBackOff
 
     @Atomic
     public static PersistentGroup getInstance() {
-        if(Bennu.getInstance().getPersistentTreasuryBackOfficeGroup() == null) {
+        if(FenixFramework.getDomainRoot().getPersistentTreasuryBackOfficeGroup() == null) {
             new PersistentTreasuryBackOfficeGroup();
         }
         
-        return Bennu.getInstance().getPersistentTreasuryBackOfficeGroup();
+        return FenixFramework.getDomainRoot().getPersistentTreasuryBackOfficeGroup();
     }
 }

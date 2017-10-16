@@ -31,7 +31,7 @@ public class TreasuryFrontOfficeGroup extends CustomGroup {
     
     @Override
     public Set<User> getMembers() {
-        return TreasuryAccessControlAPI.getFrontOfficeMembers();
+        return toPersistentGroup().getMembers();
     }
 
     @Override

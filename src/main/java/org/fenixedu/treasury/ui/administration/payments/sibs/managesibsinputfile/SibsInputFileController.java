@@ -42,6 +42,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
@@ -223,7 +224,8 @@ public class SibsInputFileController extends TreasuryBaseController {
 
         SibsInputFile sibsInputFile =
                 SibsInputFile.create(pool.getFinantialInstitution(), whenProcessedBySibs, documentSibsInputFile.getName(),
-                        documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile), Authenticate.getUser());
+                        documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile), 
+                        TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername());
         return sibsInputFile;
 
     }

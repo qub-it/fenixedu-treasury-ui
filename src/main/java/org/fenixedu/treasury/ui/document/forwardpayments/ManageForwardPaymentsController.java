@@ -27,6 +27,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
+import pt.ist.fenixframework.FenixFramework;
+
 @SpringFunctionality(app = TreasuryController.class, title = "label.ManageForwardPayments.functionality",
         accessGroup = "treasuryBackOffice")
 @RequestMapping(ManageForwardPaymentsController.CONTROLLER_URL)
@@ -56,7 +58,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             @RequestParam(value = "forwardPaymentStateType", required = false) final ForwardPaymentStateType type,
             final Model model) {
 
-        Stream<ForwardPayment> stream = Bennu.getInstance().getForwardPaymentsSet().stream();
+        Stream<ForwardPayment> stream = FenixFramework.getDomainRoot().getForwardPaymentsSet().stream();
 
         if (!Strings.isNullOrEmpty(orderNumber)) {
             stream = stream.filter(i -> orderNumber.trim().equals(String.valueOf(i.getOrderNumber())));

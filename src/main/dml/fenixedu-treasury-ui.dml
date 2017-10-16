@@ -6,13 +6,13 @@ package org.fenixedu.treasury.domain;
  * **************
  */
  
-class accesscontrol.PersistentTreasuryFrontOfficeGroup extends .org.fenixedu.domainRoot.core.domain.groups.PersistentGroup {
+class accesscontrol.PersistentTreasuryFrontOfficeGroup extends .org.fenixedu.bennu.core.domain.groups.PersistentGroup {
 }
 
-class accesscontrol.PersistentTreasuryBackOfficeGroup extends .org.fenixedu.domainRoot.core.domain.groups.PersistentGroup {
+class accesscontrol.PersistentTreasuryBackOfficeGroup extends .org.fenixedu.bennu.core.domain.groups.PersistentGroup {
 }
 
-class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.domainRoot.core.domain.groups.PersistentGroup {
+class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.bennu.core.domain.groups.PersistentGroup {
 }
 
 	relation PersistentTreasuryFrontOfficeGroupBennu {
@@ -20,7 +20,7 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.domain
 	        multiplicity 0..1;
 	    }
 	    
-		.pt.ist.fenixframework.DomainRoot playsRole bennuForPersistentTreasuryFrontOfficeGroup {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPersistentTreasuryFrontOfficeGroup {
 	        multiplicity 0..1;
 	    }
 	}
@@ -30,7 +30,7 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.domain
 	        multiplicity 0..1;
 	    }
 	    
-		.pt.ist.fenixframework.DomainRoot playsRole bennuForPersistentTreasuryBackOfficeGroup {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPersistentTreasuryBackOfficeGroup {
 	        multiplicity 0..1;
 	    }
 	}
@@ -40,7 +40,7 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.domain
 	        multiplicity 0..1;
 	    }
 	    
-		.pt.ist.fenixframework.DomainRoot playsRole bennuForPersistentTreasuryManagersGroup {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPersistentTreasuryManagersGroup {
 	        multiplicity 0..1;
 	    }
 	}
