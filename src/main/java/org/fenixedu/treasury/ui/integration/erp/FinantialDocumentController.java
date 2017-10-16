@@ -35,6 +35,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
@@ -126,7 +127,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
             return redirect(CreditNoteController.READ_URL + finantialDocument.getExternalId(), model, redirectAttributes);
 
         } else if (finantialDocument.isSettlementNote()) {
-            return redirect(SettlementNoteController.READ_URL + finantialDocument.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + finantialDocument.getExternalId(), model, redirectAttributes);
         }
 
         addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.invalid.document.type"), model);
@@ -152,7 +153,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
 //            assertUserIsBackOfficeMember(finantialInstitution, model);
 
             List<ERPExportOperation> exportPendingDocumentsForFinantialInstitution =
-                    ERPExporterManager.exportPendingDocumentsForFinantialInstitution(finantialInstitution);
+                    ERPExporterManager.getInstance().exportPendingDocumentsForFinantialInstitution(finantialInstitution);
             if (exportPendingDocumentsForFinantialInstitution.size() == 0) {
                 addWarningMessage(BundleUtil.getString(Constants.BUNDLE, "warning.integration.erp.no.documents.to.export"),
                         model);
@@ -188,7 +189,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(finantialInstitution, model);
 
-            ERPExporterManager.requestPendingDocumentStatus(finantialInstitution);
+            ERPExporterManager.getInstance().requestPendingDocumentStatus(finantialInstitution);
 
         } catch (Exception ex) {
             addErrorMessage(ex.getMessage(), model);
@@ -228,7 +229,7 @@ public class FinantialDocumentController extends TreasuryBaseController {
         } else if (finantialDocument.isCreditNote()) {
             return redirect(CreditNoteController.READ_URL + "/" + finantialDocument.getExternalId(), model, redirectAttributes);
         } else if (finantialDocument.isSettlementNote()) {
-            return redirect(SettlementNoteController.READ_URL + "/" + finantialDocument.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + "/" + finantialDocument.getExternalId(), model, redirectAttributes);
         }
 
         return null;

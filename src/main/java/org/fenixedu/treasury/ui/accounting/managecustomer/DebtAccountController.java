@@ -43,18 +43,15 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
-import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
-import org.fenixedu.treasury.services.integration.erp.IERPExporter;
+import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
@@ -62,7 +59,6 @@ import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
-import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
@@ -194,7 +190,7 @@ public class DebtAccountController extends TreasuryBaseController {
     public String processReadToCreateReimbursement(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-        return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + true,
+        return redirect(SettlementNoteBean.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + true,
                 model, redirectAttributes);
     }
 
@@ -202,7 +198,7 @@ public class DebtAccountController extends TreasuryBaseController {
     public String processReadToCreatePayment(@PathVariable("oid") DebtAccount debtAccount, Model model,
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-        return redirect(SettlementNoteController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + false,
+        return redirect(SettlementNoteBean.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId() + "/" + false,
                 model, redirectAttributes);
     }
 
@@ -324,7 +320,7 @@ public class DebtAccountController extends TreasuryBaseController {
             throw new TreasuryDomainException("Desactivado");
 
 //            
-//            ERPExporterManager.exportPendingDocumentsForDebtAccount(debtAccount);
+//            ERPExporterManager.getInstance().exportPendingDocumentsForDebtAccount(debtAccount);
 //
 //            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 //            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);

@@ -50,7 +50,7 @@ public class ERPExportSingleDocumentsTask extends CronTask {
         }
 
         try {
-            final ERPExportOperation exportOperation = ERPExporterManager.exportSingleDocument(document);
+            final ERPExportOperation exportOperation = ERPExporterManager.getInstance().exportSingleDocument(document);
             
             if(exportOperation == null) {
                 return;

@@ -109,7 +109,7 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                 return result;
             }
 
-            final List<FinantialDocument> sortedDocuments = ERPExporterManager
+            final List<FinantialDocument> sortedDocuments = ERPExporterManager.getInstance()
                     .filterDocumentsToExport(finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream())
                     .stream()
                     .filter(x -> x.isSettlementNote() == exportSettlementNotes)
@@ -132,7 +132,7 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                         }
 
                         //Create a ExportOperation
-                        ERPExportOperation exportFinantialDocumentToIntegration = ERPExporterManager.exportSingleDocument(doc);
+                        ERPExportOperation exportFinantialDocumentToIntegration = ERPExporterManager.getInstance().exportSingleDocument(doc);
 
                         if (exportFinantialDocumentToIntegration != null) {
                             result.add(exportFinantialDocumentToIntegration);

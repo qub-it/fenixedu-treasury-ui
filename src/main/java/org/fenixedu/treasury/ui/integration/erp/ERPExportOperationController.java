@@ -253,7 +253,7 @@ public class ERPExportOperationController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(eRPExportOperation.getFinantialInstitution(), model);
             
-            final ERPExportOperation retryExportOperation = ERPExporterManager.retryExportToIntegration(eRPExportOperation);
+            final ERPExportOperation retryExportOperation = ERPExporterManager.getInstance().retryExportToIntegration(eRPExportOperation);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 

@@ -90,38 +90,15 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.treasury.ui.document.managePayments") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.document.managePayments",
         accessGroup = "treasuryFrontOffice")
-@RequestMapping(SettlementNoteController.CONTROLLER_URL)
+@RequestMapping(SettlementNoteBean.CONTROLLER_URL)
 public class SettlementNoteController extends TreasuryBaseController {
-    public static final String CONTROLLER_URL = "/treasury/document/managepayments/settlementnote";
-    private static final String SEARCH_URI = "/";
-    public static final String SEARCH_URL = CONTROLLER_URL + SEARCH_URI;
-    private static final String UPDATE_URI = "/update/";
-    public static final String UPDATE_URL = CONTROLLER_URL + UPDATE_URI;
-    private static final String CREATE_URI = "/create";
-    public static final String CREATE_URL = CONTROLLER_URL + CREATE_URI;
-    private static final String READ_URI = "/read/";
-    public static final String READ_URL = CONTROLLER_URL + READ_URI;
-    private static final String DELETE_URI = "/delete/";
-    public static final String DELETE_URL = CONTROLLER_URL + DELETE_URI;
-    private static final String CHOOSE_INVOICE_ENTRIES_URI = "/chooseInvoiceEntries/";
-    public static final String CHOOSE_INVOICE_ENTRIES_URL = CONTROLLER_URL + CHOOSE_INVOICE_ENTRIES_URI;
-    private static final String CALCULATE_INTEREST_URI = "/calculateInterest/";
-    public static final String CALCULATE_INTEREST_URL = CONTROLLER_URL + CALCULATE_INTEREST_URI;
-    private static final String CREATE_DEBIT_NOTE_URI = "/createDebitNote/";
-    public static final String CREATE_DEBIT_NOTE_URL = CONTROLLER_URL + CREATE_DEBIT_NOTE_URI;
-    private static final String INSERT_PAYMENT_URI = "/insertpayment/";
-    public static final String INSERT_PAYMENT_URL = CONTROLLER_URL + INSERT_PAYMENT_URI;
-    private static final String SUMMARY_URI = "/summary/";
-    public static final String SUMMARY_URL = CONTROLLER_URL + SUMMARY_URI;
-    private static final String TRANSACTIONS_SUMMARY_URI = "/transactions/summary/";
-    public static final String TRANSACTIONS_SUMMARY_URL = CONTROLLER_URL + TRANSACTIONS_SUMMARY_URI;
 
     public static final long SEARCH_SETTLEMENT_NOTE_LIST_LIMIT_SIZE = 100;
     public static final long SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD = 30;
 
     @RequestMapping
     public String home(Model model) {
-        return "forward:" + SEARCH_URL;
+        return "forward:" + SettlementNoteBean.SEARCH_URL;
     }
 
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
@@ -142,7 +119,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         settlementNote.delete(true);
     }
 
-    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}/{reimbursementNote}")
+    @RequestMapping(value = SettlementNoteBean.CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}/{reimbursementNote}")
     public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount,
             @PathVariable(value = "reimbursementNote") boolean reimbursementNote,
             @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model) {
@@ -154,7 +131,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
     }
 
-    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
     public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         BigDecimal debitSum = BigDecimal.ZERO;
         BigDecimal creditSum = BigDecimal.ZERO;
@@ -287,7 +264,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         return "treasury/document/managepayments/settlementnote/calculateInterest";
     }
 
-    @RequestMapping(value = CALCULATE_INTEREST_URI, method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.CALCULATE_INTEREST_URI, method = RequestMethod.POST)
     public String calculateInterest(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         try {
             assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
@@ -313,7 +290,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         return createDebitNote(bean, model);
     }
 
-    @RequestMapping(value = CREATE_DEBIT_NOTE_URI, method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.CREATE_DEBIT_NOTE_URI, method = RequestMethod.POST)
     public String createDebitNote(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         if (!bean.isAdvancePayment() && bean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
             return insertPayment(bean, model);
@@ -328,7 +305,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
     
     private static final String CONTINUE_TO_INSERT_PAYMENT_URI = "/continueToInsertPayment/";
-    public static final String CONTINUE_TO_INSERT_PAYMENT_URL = CONTROLLER_URL + CONTINUE_TO_INSERT_PAYMENT_URI;
+    public static final String CONTINUE_TO_INSERT_PAYMENT_URL = SettlementNoteBean.CONTROLLER_URL + CONTINUE_TO_INSERT_PAYMENT_URI;
     
     @RequestMapping(value = CONTINUE_TO_INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String continueToInsertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
@@ -336,7 +313,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         return "treasury/document/managepayments/settlementnote/insertPayment";
     }
     
-    @RequestMapping(value = INSERT_PAYMENT_URI, method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.INSERT_PAYMENT_URI, method = RequestMethod.POST)
     public String insertPayment(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
         assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
         BigDecimal debitSum = bean.isReimbursementNote() ? bean.getDebtAmountWithVat().negate() : bean.getDebtAmountWithVat();
@@ -376,14 +353,14 @@ public class SettlementNoteController extends TreasuryBaseController {
         return "treasury/document/managepayments/settlementnote/summary";
     }
 
-    @RequestMapping(value = SUMMARY_URI, method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.SUMMARY_URI, method = RequestMethod.POST)
     public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
             SettlementNote settlementNote = processSettlementNoteCreation(bean);
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
-            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
         }
@@ -409,7 +386,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         return settlementNote;
     }
 
-    @RequestMapping(value = SEARCH_URI)
+    @RequestMapping(value = SettlementNoteBean.SEARCH_URI)
     public String search(@RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
             @RequestParam(value = "documentnumberseries", required = false) DocumentNumberSeries documentNumberSeries,
             @RequestParam(value = "currency", required = false) Currency currency,
@@ -470,16 +447,16 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") SettlementNote settlementNote, Model model,
             RedirectAttributes redirectAttributes) {
-        return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+        return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = READ_URI + "{oid}")
+    @RequestMapping(value = SettlementNoteBean.READ_URI + "{oid}")
     public String read(@PathVariable("oid") SettlementNote settlementNote, Model model) {
         setSettlementNote(settlementNote, model);
         return "treasury/document/managepayments/settlementnote/read";
     }
 
-    @RequestMapping(value = DELETE_URI + "{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.DELETE_URI + "{oid}", method = RequestMethod.POST)
     public String delete(@PathVariable("oid") SettlementNote settlementNote, Model model, RedirectAttributes redirectAttributes) {
 
         setSettlementNote(settlementNote, model);
@@ -498,10 +475,10 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
-        return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
+        return redirect(SettlementNoteBean.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = SettlementNoteBean.UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") SettlementNote settlementNote, Model model) {
         model.addAttribute("SettlementNote_finantialDocumentType_options",
                 org.fenixedu.treasury.domain.document.FinantialDocumentType.findAll());
@@ -517,7 +494,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     //
-    @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") SettlementNote settlementNote,
             @RequestParam(value = "origindocumentnumber", required = false) java.lang.String originDocumentNumber,
             @RequestParam(value = "documentobservations", required = false) java.lang.String documentObservations, Model model,
@@ -530,7 +507,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             getSettlementNote(model).updateSettlementNote(originDocumentNumber, documentObservations);
 
-            return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
@@ -558,7 +535,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
-        return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
+        return redirect(SettlementNoteBean.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")
@@ -567,9 +544,9 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(settlementNote.getDebtAccount().getFinantialInstitution(), model);
             final String saftEncoding =
-                    ERPExporterManager.saftEncoding(settlementNote.getDebtAccount().getFinantialInstitution());
+                    ERPExporterManager.getInstance().saftEncoding(settlementNote.getDebtAccount().getFinantialInstitution());
 
-            final String output = ERPExporterManager.exportFinantialDocumentToXML(settlementNote);
+            final String output = ERPExporterManager.getInstance().exportFinantialDocumentToXML(settlementNote);
 
             response.setContentType("text/xml");
             response.setCharacterEncoding(saftEncoding);
@@ -584,7 +561,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             try {
-                response.sendRedirect(redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes));
+                response.sendRedirect(redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -601,10 +578,10 @@ public class SettlementNoteController extends TreasuryBaseController {
         } catch (ReportGenerationException rex) {
             addErrorMessage(rex.getLocalizedMessage(), model);
             addErrorMessage(rex.getCause().getLocalizedMessage(), model);
-            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
-            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         }
     }
 
@@ -623,16 +600,16 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
-        return redirect(SettlementNoteController.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
+        return redirect(SettlementNoteBean.READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
     }
 
-    @RequestMapping(value = TRANSACTIONS_SUMMARY_URI, method = RequestMethod.GET)
+    @RequestMapping(value = SettlementNoteBean.TRANSACTIONS_SUMMARY_URI, method = RequestMethod.GET)
     public String processSearchToTransactionsSummary(Model model) {
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/document/managepayments/settlementnote/transactionsSummary";
     }
 
-    @RequestMapping(value = TRANSACTIONS_SUMMARY_URI, method = RequestMethod.POST)
+    @RequestMapping(value = SettlementNoteBean.TRANSACTIONS_SUMMARY_URI, method = RequestMethod.POST)
     public String processSearchToTransactionsSummary(
             @RequestParam(value = "finantialInstitution", required = true) FinantialInstitution finantialInstitution,
             @RequestParam(value = "documentdatefrom",
@@ -772,7 +749,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             } catch (Exception ex) {
             }
 
-            final ERPExportOperation output = ERPExporterManager.exportSettlementNote(settlementNote);
+            final ERPExportOperation output = ERPExporterManager.getInstance().exportSettlementNote(settlementNote);
             if(output == null) {
                 addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
                 return read(settlementNote, model);
@@ -796,27 +773,27 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             if (!settlementNote.isDocumentToExport()) {
                 addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
-                return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+                return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
             }
 
             if (Strings.isNullOrEmpty(reason)) {
                 addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
-                return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+                return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
             }
 
             assertUserIsBackOfficeMember(model);
 
             settlementNote.clearDocumentToExport(reason);
 
-            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         }
     }
 
     private static final String _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI = "/downloadcertifieddocumentprint";
-    public static final String DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL = CONTROLLER_URL + _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI;
+    public static final String DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL = SettlementNoteBean.CONTROLLER_URL + _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI;
 
     @RequestMapping(value = _DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URI + "/{oid}", method = RequestMethod.GET)
     public String downloadcertifieddocumentprint(@PathVariable("oid") final SettlementNote settlementNote, final Model model,
@@ -824,7 +801,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         try {
 
-            final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(settlementNote);
+            final byte[] contents = ERPExporterManager.getInstance().downloadCertifiedDocumentPrint(settlementNote);
 
             response.setContentType("application/pdf");
             String filename = URLEncoder.encode(StringNormalizer.normalizePreservingCapitalizedLetters(
@@ -845,14 +822,14 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     private static final String _UPDATE_REIMBURSEMENT_STATE_URI = "/updatereimbursementstate";
-    public static final String UPDATE_REIMBURSEMENT_STATE_URL = CONTROLLER_URL + _UPDATE_REIMBURSEMENT_STATE_URI;
+    public static final String UPDATE_REIMBURSEMENT_STATE_URL = SettlementNoteBean.CONTROLLER_URL + _UPDATE_REIMBURSEMENT_STATE_URI;
 
     @RequestMapping(value = _UPDATE_REIMBURSEMENT_STATE_URI + "/{oid}", method = RequestMethod.POST)
     public String updatereimbursementstate(@PathVariable("oid") final SettlementNote settlementNote, final Model model,
             final RedirectAttributes redirectAttributes) {
         try {
-            ERPExporterManager.updateReimbursementState(settlementNote);
-            return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
+            ERPExporterManager.getInstance().updateReimbursementState(settlementNote);
+            return redirect(SettlementNoteBean.READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return read(settlementNote, model);

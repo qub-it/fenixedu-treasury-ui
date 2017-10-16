@@ -29,9 +29,9 @@ package org.fenixedu.treasury.services.integration.erp.dto;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import org.fenixedu.bennu.IBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
 
-public class InterestRequestValueOuptut implements IBean, Serializable {
+public class InterestRequestValueOuptut implements ITreasuryBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 

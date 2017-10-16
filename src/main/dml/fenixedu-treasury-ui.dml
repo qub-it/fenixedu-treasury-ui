@@ -1,0 +1,46 @@
+package org.fenixedu.treasury.domain;
+
+
+/* **************
+ * ACCESS CONTROL
+ * **************
+ */
+ 
+class accesscontrol.PersistentTreasuryFrontOfficeGroup extends .org.fenixedu.domainRoot.core.domain.groups.PersistentGroup {
+}
+
+class accesscontrol.PersistentTreasuryBackOfficeGroup extends .org.fenixedu.domainRoot.core.domain.groups.PersistentGroup {
+}
+
+class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.domainRoot.core.domain.groups.PersistentGroup {
+}
+
+	relation PersistentTreasuryFrontOfficeGroupBennu {
+	    accesscontrol.PersistentTreasuryFrontOfficeGroup playsRole persistentTreasuryFrontOfficeGroup {
+	        multiplicity 0..1;
+	    }
+	    
+		.pt.ist.fenixframework.DomainRoot playsRole bennuForPersistentTreasuryFrontOfficeGroup {
+	        multiplicity 0..1;
+	    }
+	}
+
+	relation PersistentTreasuryBackOfficeGroupBennu {
+	    accesscontrol.PersistentTreasuryBackOfficeGroup playsRole persistentTreasuryBackOfficeGroup {
+	        multiplicity 0..1;
+	    }
+	    
+		.pt.ist.fenixframework.DomainRoot playsRole bennuForPersistentTreasuryBackOfficeGroup {
+	        multiplicity 0..1;
+	    }
+	}
+	
+	relation PersistentTreasuryManagersGroupBennu {
+	    accesscontrol.PersistentTreasuryManagersGroup playsRole persistentTreasuryManagersGroup {
+	        multiplicity 0..1;
+	    }
+	    
+		.pt.ist.fenixframework.DomainRoot playsRole bennuForPersistentTreasuryManagersGroup {
+	        multiplicity 0..1;
+	    }
+	}

@@ -396,11 +396,11 @@ public class CreditNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         try {
             assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
-            final String saftEncoding = ERPExporterManager.saftEncoding(creditNote.getDebtAccount().getFinantialInstitution());
+            final String saftEncoding = ERPExporterManager.getInstance().saftEncoding(creditNote.getDebtAccount().getFinantialInstitution());
 
             creditNote.recalculateAmountValues();
 
-            final String output = ERPExporterManager.exportFinantialDocumentToXML(creditNote);
+            final String output = ERPExporterManager.getInstance().exportFinantialDocumentToXML(creditNote);
 
             response.setContentType("text/xml");
             response.setCharacterEncoding(saftEncoding);
@@ -434,7 +434,7 @@ public class CreditNoteController extends TreasuryBaseController {
             } catch (Exception ex) {
             }
 
-            final ERPExportOperation output = ERPExporterManager.exportSingleDocument(creditNote);
+            final ERPExportOperation output = ERPExporterManager.getInstance().exportSingleDocument(creditNote);
 
             if(output == null) {
                 addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
@@ -486,7 +486,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         try {
 
-            final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(creditNote);
+            final byte[] contents = ERPExporterManager.getInstance().downloadCertifiedDocumentPrint(creditNote);
 
             response.setContentType("application/pdf");
             String filename = URLEncoder.encode(StringNormalizer.normalizePreservingCapitalizedLetters(

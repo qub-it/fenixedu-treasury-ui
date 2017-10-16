@@ -47,6 +47,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementation;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
@@ -57,6 +59,8 @@ import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
+import org.fenixedu.treasury.ui.document.forwardpayments.implementations.PaylineController;
+import org.fenixedu.treasury.ui.document.forwardpayments.implementations.TPAVirtualController;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -278,8 +282,17 @@ public class ForwardPaymentController extends TreasuryBaseController {
     @RequestMapping(value = PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String processforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
             final HttpServletResponse response, final HttpSession session) {
-        return forwardPayment.getForwardPaymentConfiguration().getForwardPaymentController(forwardPayment)
-                .processforwardpayment(forwardPayment, model, response, session);
+        return forwardPaymentController(forwardPayment).processforwardpayment(forwardPayment, model, response, session);
+    }
+    
+    private IForwardPaymentController forwardPaymentController(final ForwardPayment forwardPayment) {
+    	if(forwardPayment.getForwardPaymentConfiguration().implementation() instanceof PaylineImplementation) {
+    		return new PaylineController();
+    	} else if(forwardPayment.getForwardPaymentConfiguration().implementation() instanceof TPAVirtualImplementation) {
+    		return new TPAVirtualController();
+    	} else {
+    		throw new RuntimeException("unknown implementation");
+    	}
     }
 
     @Atomic

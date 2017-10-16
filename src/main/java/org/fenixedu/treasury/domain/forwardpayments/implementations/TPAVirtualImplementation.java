@@ -71,7 +71,6 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
     public static final String EURO_CODE = "9782";
 
-    @Override
     public IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
         return new TPAVirtualController();
     }

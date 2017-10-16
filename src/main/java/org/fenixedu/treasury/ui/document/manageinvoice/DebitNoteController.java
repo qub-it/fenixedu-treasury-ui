@@ -478,8 +478,8 @@ public class DebitNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-            final String saftEncoding = ERPExporterManager.saftEncoding(debitNote.getDebtAccount().getFinantialInstitution());
-            final String output = ERPExporterManager.exportFinantialDocumentToXML(debitNote);
+            final String saftEncoding = ERPExporterManager.getInstance().saftEncoding(debitNote.getDebtAccount().getFinantialInstitution());
+            final String output = ERPExporterManager.getInstance().exportFinantialDocumentToXML(debitNote);
 
             response.setContentType("text/xml");
             response.setCharacterEncoding(saftEncoding);
@@ -617,7 +617,7 @@ public class DebitNoteController extends TreasuryBaseController {
             } catch (Exception ex) {
             }
 
-            final ERPExportOperation output = ERPExporterManager.exportSingleDocument(debitNote);
+            final ERPExportOperation output = ERPExporterManager.getInstance().exportSingleDocument(debitNote);
 
             if(output == null) {
                 addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
@@ -721,7 +721,7 @@ public class DebitNoteController extends TreasuryBaseController {
             final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
         try {
-            final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(debitNote);
+            final byte[] contents = ERPExporterManager.getInstance().downloadCertifiedDocumentPrint(debitNote);
 
             response.setContentType("application/pdf");
             String filename = URLEncoder.encode(StringNormalizer
