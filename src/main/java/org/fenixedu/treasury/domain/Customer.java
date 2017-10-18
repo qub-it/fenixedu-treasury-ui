@@ -154,7 +154,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
             if (findByFiscalInformation(getFiscalCountry(), getFiscalNumber()).filter(c -> c.isActive()).count() > 1) {
 
-                throw new TreasuryDomainException("error.Customer.customer.with.fiscal.information.exists");
+                throw new TreasuryDomainException("error.Customer.customer.with.fiscal.information.exists", getUiFiscalNumber());
             }
         }
 

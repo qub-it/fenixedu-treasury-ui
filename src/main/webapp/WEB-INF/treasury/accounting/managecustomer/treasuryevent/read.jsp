@@ -367,24 +367,24 @@ ${portal.toolkit()}
         <c:when test="${not empty allActiveDebitEntriesDataSet}">
         
         <script type="text/javascript">
-        function processAnnul(externalId) {
+        function processExclude(externalId) {
             url = '${pageContext.request.contextPath}<%=TreasuryEventController.ANNULDEBITENTRY_URL%>${debtAccount.externalId}/' + externalId;
-                            $("#annulForm").attr("action", url);
-                            $('#annulModal').modal('toggle')
+                            $("#excludeForm").attr("action", url);
+                            $('#excludeModal').modal('toggle')
                         }
         
-        function processRevert(externalId) {
+        function processInclude(externalId) {
             url = '${pageContext.request.contextPath}<%=TreasuryEventController.REVERTANNULDEBITENTRY_URL%>${debtAccount.externalId}/' + externalId;
-                            $("#revertForm").attr("action", url);
-                            $('#revertModal').modal('toggle')
+                            $("#includeForm").attr("action", url);
+                            $('#includeModal').modal('toggle')
                         }
         
         </script>
         
-    <div class="modal fade" id="annulModal">
+    <div class="modal fade" id="excludeModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="annulForm" action="" method="POST">
+                <form id="excludeForm" action="" method="POST">
                     <div class="modal-header">
                         <button type="button" class="close"
                             data-dismiss="modal" aria-label="Close">
@@ -395,10 +395,7 @@ ${portal.toolkit()}
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <p>
-                            <spring:message
-                                code="label.TreasuryEvent.annulDebitEntry.confirmRemove" />
-                        </p>
+                        <p><spring:message code="label.TreasuryEvent.removeDebitEntry.confirm" /></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default"
@@ -407,7 +404,7 @@ ${portal.toolkit()}
                         </button>
                         <button id="deleteButton" class="btn btn-danger"
                             type="submit">
-                            <spring:message code="label.TreasuryExemption.removeFromEvent" />
+                            <spring:message code="label.TreasuryEvent.excludeFromEvent" />
                         </button>
                     </div>
                 </form>
@@ -416,10 +413,10 @@ ${portal.toolkit()}
         </div>
         <!-- /.modal-dialog -->
     </div>
-    <div class="modal fade" id="revertModal">
+    <div class="modal fade" id="includeModal">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="revertForm" action="" method="POST">
+                <form id="includeForm" action="" method="POST">
                     <div class="modal-header">
                         <button type="button" class="close"
                             data-dismiss="modal" aria-label="Close">
@@ -430,10 +427,7 @@ ${portal.toolkit()}
                         </h4>
                     </div>
                     <div class="modal-body">
-                        <p>
-                            <spring:message
-                                code="label.TreasuryEvent.revertDebitEntry.confirmAnnul" />
-                        </p>
+                        <p><spring:message code="label.TreasuryEvent.revertDebitEntry.confirm" /></p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default"
@@ -442,7 +436,7 @@ ${portal.toolkit()}
                         </button>
                         <button id="deleteButton" class="btn btn-danger"
                             type="submit">
-                            <spring:message code="label.revert" />
+                            <spring:message code="label.TreasuryEvent.includeInEvent" />
                         </button>
                     </div>
                 </form>
@@ -504,7 +498,7 @@ ${portal.toolkit()}
                     </p>
 					<p>
 	                    <c:if test="${debitEntry.eventAnnuled}">
-	                        <span class="label label-danger"><spring:message code="label.TreasuryExemption.removedFromEvent" /></span>
+	                        <span class="label label-danger"><spring:message code="label.TreasuryExemption.excludedFromEvent" /></span>
 	                    </c:if>
                     </p>
                 </datatables:column>
@@ -530,20 +524,19 @@ ${portal.toolkit()}
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
                         <c:if test="${!debitEntry.eventAnnuled}">
-                            <a class="btn btn-default" data-toggle="modal" data-target="#annulModal" onclick="processAnnul('${treasuryEvent.externalId}/${debitEntry.externalId}')"
-                                	href="${pageContext.request.contextPath}<%= TreasuryEventController.ANNULDEBITENTRY_URL %>${treasuryEvent.externalId}/${debitEntry.externalId}">
-                                <span aria-hidden="true" class="glyphicon glyphicon-remove-circle" ></span>
-                                <spring:message code="label.TreasuryExemption.removeFromEvent" />
+                            <a class="btn btn-default" data-toggle="modal" data-target="#excludeModal" 
+                            	onclick="processExclude('${treasuryEvent.externalId}/${debitEntry.externalId}')" href="#">
+                                <span aria-hidden="true" class="glyphicon glyphicon-remove-circle" ></span>&nbsp;
+                                <spring:message code="label.TreasuryEvent.excludeFromEvent" />
                             </a>
                         </c:if>
                         <c:if test="${debitEntry.eventAnnuled && (empty debitEntry.finantialDocument || !debitEntry.finantialDocument.isAnnulled())}">
 
-						<a class="btn btn-default" data-toggle="modal" data-target="#revertModal"
-                    		onclick="processRevert('${treasuryEvent.externalId}/${debitEntry.externalId}')"
-                                href="${pageContext.request.contextPath}<%= TreasuryEventController.REVERTANNULDEBITENTRY_URL %>${treasuryEvent.externalId}/${debitEntry.externalId}">
-		                        <span aria-hidden="true" class="glyphicon glyphicon-retweet" ></span>&nbsp;
-                                <spring:message code="label.revert" />
-                        </a>
+							<a class="btn btn-default" data-toggle="modal" data-target="#includeModal"
+	                    		onclick="processInclude('${treasuryEvent.externalId}/${debitEntry.externalId}')" href="#">
+			                        <span aria-hidden="true" class="glyphicon glyphicon-retweet" ></span>&nbsp;
+	                                <spring:message code="label.TreasuryEvent.includeInEvent" />
+	                        </a>
                         </c:if>
                 </datatables:column>
             </datatables:table>
