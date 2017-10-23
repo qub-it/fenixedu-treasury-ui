@@ -145,6 +145,21 @@ ${portal.angularToolkit()}
 						value='<c:out value='${not empty param.name ? param.name : adhocCustomer.name }'/>' />
 				</div>
 			</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.AdhocCustomer.countryCode" />
+                </div>
+
+                <div class="col-sm-10">
+                    <ui-select id="adhocCustomer_countryCode" ng-model="$parent.object.countryCode" theme="bootstrap"> 
+                        <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices repeat="c.id as c in object.countryCodesDataSource| filter: $select.search">
+		                    <span ng-bind-html="c.text | highlight: $select.search"></span>
+                    	</ui-select-choices>
+                    </ui-select>
+                </div>
+            </div>
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.AdhocCustomer.fiscalNumber" />
@@ -207,21 +222,6 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-10">
                     <ui-select id="adhocCustomer_addressCountryCode" ng-model="$parent.object.addressCountryCode" theme="bootstrap"> 
-                        <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
-                        <ui-select-choices repeat="c.id as c in object.countryCodesDataSource| filter: $select.search">
-		                    <span ng-bind-html="c.text | highlight: $select.search"></span>
-                    	</ui-select-choices>
-                    </ui-select>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.AdhocCustomer.countryCode" />
-                </div>
-
-                <div class="col-sm-10">
-                    <ui-select id="adhocCustomer_countryCode" ng-model="$parent.object.countryCode" theme="bootstrap"> 
                         <ui-select-match allow-clear="true">{{$select.selected.text}}</ui-select-match>
                         <ui-select-choices repeat="c.id as c in object.countryCodesDataSource| filter: $select.search">
 		                    <span ng-bind-html="c.text | highlight: $select.search"></span>

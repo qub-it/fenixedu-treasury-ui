@@ -186,7 +186,7 @@ ${portal.toolkit()}
 								<span class="label label-warning"><spring:message code="warning.Customer.is.inactive.due.merge.or.fiscal.change" /></span>
 							</c:if>
 						</td>
-						<td><c:out value='${row.fiscalNumber}'/></td>
+						<td><c:out value='${row.uiFiscalNumber}'/></td>
 						<td><c:out value='${row.identificationNumber}'/></td>
 						
 						<td>
@@ -243,7 +243,7 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
-			{ data: 'fiscalnumber' },
+			{ data: 'uifiscalnumber' },
 			{ data: 'identificationnumber' },
 			{ data: 'actions',className:"all" }
 			

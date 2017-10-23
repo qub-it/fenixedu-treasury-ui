@@ -36,6 +36,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 
 import com.google.common.collect.Sets;
@@ -66,7 +67,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
 
     protected AdhocCustomer(final CustomerType customerType, final String fiscalNumber, final String name, final String address,
             final String districtSubdivision, final String zipCode, final String addressCountryCode, final String countryCode,
-            final String identificationNumber) {
+            final String identificationNumber, final List<FinantialInstitution> finantialInstitutions) {
         this();
         setCustomerType(customerType);
         setCode(getExternalId());
@@ -82,6 +83,8 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         if(!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
             throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
+        
+        registerFinantialInstitutions(finantialInstitutions);
         
         checkRules();
     }
@@ -213,9 +216,9 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     @Atomic
     public static AdhocCustomer create(final CustomerType customerType, final String fiscalNumber, final String name,
             final String address, final String districtSubdivision, final String zipCode, final String addressCountryCode,
-            final String countryCode, final String identificationNumber) {
+            final String countryCode, final String identificationNumber, final List<FinantialInstitution> finantialInstitutions) {
         return new AdhocCustomer(customerType, fiscalNumber, name, address, districtSubdivision, zipCode, addressCountryCode,
-                countryCode, identificationNumber);
+                countryCode, identificationNumber, finantialInstitutions);
     }
 
     public static Stream<AdhocCustomer> findAll() {

@@ -132,12 +132,15 @@ public class AdhocCustomerController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
+            if(bean.getFinantialInstitutions() == null || bean.getFinantialInstitutions().isEmpty()) {
+                throw new TreasuryDomainException("error.AdhocCustomer.specify.at.least.one.finantial.instituition");
+            }
+            
             Customer adhocCustomer = createAdhocCustomer(bean.getCustomerType(), bean.getName(), bean.getFiscalNumber(),
                     bean.getIdentificationNumber(), bean.getAddress(), bean.getDistrictSubdivision(), bean.getZipCode(),
-                    bean.getAddressCountryCode(), bean.getCountryCode());
-            adhocCustomer.registerFinantialInstitutions(bean.getFinantialInstitutions());
+                    bean.getAddressCountryCode(), bean.getCountryCode(), bean.getFinantialInstitutions());
+            
             setAdhocCustomer(adhocCustomer, model);
-
             return redirect(CustomerController.READ_URL + getAdhocCustomer(model).getExternalId(), model, redirectAttributes);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
@@ -145,12 +148,11 @@ public class AdhocCustomerController extends TreasuryBaseController {
         return _create(bean, model);
     }
 
-    @Atomic
     public Customer createAdhocCustomer(CustomerType customerType, String name, String fiscalNumber, String identificationNumber,
             final String address, final String districtSubdivision, final String zipCode, final String addressCountryCode,
-            final String countryCode) {
+            final String countryCode, List<FinantialInstitution> newFinantialInstitutions) {
         Customer adhocCustomer = AdhocCustomer.create(customerType, fiscalNumber, name, address, districtSubdivision, zipCode,
-                addressCountryCode, countryCode, identificationNumber);
+                addressCountryCode, countryCode, identificationNumber, newFinantialInstitutions);
         return adhocCustomer;
     }
 

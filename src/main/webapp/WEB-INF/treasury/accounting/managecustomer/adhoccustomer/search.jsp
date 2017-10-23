@@ -118,7 +118,7 @@ ${portal.toolkit()}
 "code" : "<c:out value='${searchResult.code}'/>",
 "name" : "<c:out value='${searchResult.name}'/>",
 "fiscalcountry" : "<c:out value='${searchResult.fiscalCountry}'/>",
-"fiscalnumber" : "<c:out value='${searchResult.fiscalNumber}'/>",
+"uifiscalnumber" : "<c:out value='${searchResult.uiFiscalNumber}'/>",
 "identificationnumber" : "<c:out value='${searchResult.identificationNumber}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
@@ -139,7 +139,7 @@ ${portal.toolkit()}
 			{ data: 'code' },
 			{ data: 'name' },
 			{ data: 'fiscalcountry' },
-			{ data: 'fiscalnumber' },
+			{ data: 'uifiscalnumber' },
 			{ data: 'identificationnumber' },
 			{ data: 'actions',className:"all" }
 			

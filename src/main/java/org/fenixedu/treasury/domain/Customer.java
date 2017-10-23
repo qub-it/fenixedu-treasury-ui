@@ -43,6 +43,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
@@ -152,9 +153,15 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         }
 
         if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
-            if (findByFiscalInformation(getFiscalCountry(), getFiscalNumber()).filter(c -> c.isActive()).count() > 1) {
+            final Set<Customer> customers = findByFiscalInformation(getFiscalCountry(), getFiscalNumber())
+                    .filter(c -> c.isActive()).collect(Collectors.<Customer> toSet());
+            
+            if (customers.size() > 1) {
+                final Customer self = this;
+                final Set<String> otherCustomers = customers.stream().filter(c -> c != self).map(c -> c.getName()).collect(Collectors.<String> toSet());
 
-                throw new TreasuryDomainException("error.Customer.customer.with.fiscal.information.exists", getUiFiscalNumber());
+                throw new TreasuryDomainException("error.Customer.customer.with.fiscal.information.exists", 
+                        Joiner.on(", ").join(otherCustomers));
             }
         }
 
@@ -172,7 +179,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
-    public static Stream<? extends Customer> findByFiscalInformation(final String fiscalCountryCode, final String fiscalNumber) {
+    private static Stream<? extends Customer> findByFiscalInformation(final String fiscalCountryCode, final String fiscalNumber) {
         if (Strings.isNullOrEmpty(fiscalCountryCode)) {
             throw new TreasuryDomainException("error.Customer.findByFiscalCountryAndNumber.fiscalCountryCode.required");
         }
@@ -183,7 +190,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
         return findAll().filter(c -> !Strings.isNullOrEmpty(c.getFiscalCountry())
                 && lowerCase(c.getFiscalCountry()).equals(lowerCase(fiscalCountryCode))
-                && !Strings.isNullOrEmpty(c.getFiscalNumber()) && lowerCase(c.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
+                && !Strings.isNullOrEmpty(c.getFiscalNumber()) 
+                && c.getFiscalNumber().equals(fiscalNumber));
     }
 
     public boolean matchesMultiFilter(String searchText) {
@@ -205,7 +213,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
         return Constants.matchNames(nameClear, searchFieldClear)
                 || getIdentificationNumber() != null && getIdentificationNumber().contains(searchFieldClear)
-                || getFiscalNumber() != null && getFiscalNumber().contains(searchFieldClear)
+                || getFiscalNumber() != null && getFiscalNumber().toLowerCase().contains(searchFieldClear)
                 || getCode() != null && getCode().contains(searchFieldClear)
                 || getBusinessIdentification() != null && getBusinessIdentification().contains(searchFieldClear);
     }

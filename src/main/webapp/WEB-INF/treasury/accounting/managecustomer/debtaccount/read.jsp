@@ -164,9 +164,11 @@ ${portal.angularToolkit()}
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a></li>
                 <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><span
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebitNote" /></a></li>
+
+               	<% if(debtAccount.getCustomer().isPersonCustomer()) { %>
                 <li class="dropdown-submenu"><a class="" href="#"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message
-                            code="label.event.accounting.manageCustomer.createDebt" />
-                </a>
+                            code="label.event.accounting.manageCustomer.createDebt" /></a>
+                
                     <ul class="dropdown-menu">
                         <li><a href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createregistration/${debtAccount.externalId}"> <span
                                 class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> <spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
@@ -203,7 +205,8 @@ ${portal.angularToolkit()}
                         
                         
                     </ul>
-                    </li>
+               </li>
+               <% } %>
                     
                     <li>
 						<a class="" href="${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}"><span
