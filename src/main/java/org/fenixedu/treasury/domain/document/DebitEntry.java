@@ -510,24 +510,18 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public boolean revertExemptionIfPossible(final TreasuryExemption treasuryExemption) {
-        // For all credit entries found that are not processed nor closed, delete
-        if (isProcessedInClosedDebitNote()) {
+        if(isAnnulled()) {
             return false;
         }
 
-        for (final CreditEntry creditEntry : treasuryExemption.getDebitEntry().getCreditEntriesSet()) {
-
-            if (!creditEntry.isFromExemption()) {
-                return false;
-            }
-
-            if (creditEntry.isProcessedInClosedDebitNote()) {
-                return false;
-            }
-
-            creditEntry.delete();
+        if (isProcessedInClosedDebitNote()) {
+            return false;
         }
-
+        
+        if(!treasuryExemption.getDebitEntry().getCreditEntriesSet().isEmpty()) {
+            return false;
+        }
+        
         setAmount(getAmount().add(getExemptedAmount()));
         setExemptedAmount(BigDecimal.ZERO);
 

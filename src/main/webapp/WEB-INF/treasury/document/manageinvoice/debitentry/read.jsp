@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
@@ -254,18 +255,27 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.finantialDocument" /></th>
-                        <td><c:if test="${not empty debitEntry.finantialDocument}">
+                        <td>
+                        	<c:if test="${not empty debitEntry.finantialDocument}">
                                 <c:out value='${debitEntry.finantialDocument.uiDocumentNumber}' />
-                            </c:if> <c:if test="${empty debitEntry.finantialDocument}">
-                                <span class="label label-warning"> <spring:message code="label.DebitEntry.debitentry.with.no.document" />
-                                </span> &nbsp;
+                                &nbsp;
+ 							</c:if>
+                            <c:if test="${empty debitEntry.finantialDocument}">
+                                <span class="label label-warning">
+                                	<spring:message code="label.DebitEntry.debitentry.with.no.document" />
+                                </span>&nbsp;
 <% 
                 if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
 %>
                                 <a class="btn btn-xs btn-primary" href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL%>?debitEntry=${debitEntry.externalId}"><span
                                     class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitEntry.create.debitNote" /></a>
 <%} %>                                    
-                            </c:if></td>
+                            </c:if>
+
+							<c:if test="${debitEntry.isAnnulled()}">
+                               	<span class="label label-danger"><spring:message code="label.annuled" /></span>
+                           	</c:if>
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.FinantialDocumentEntry.entryDate" /></th>
@@ -311,7 +321,25 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.exemptedAmount" /></th>
                         <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>
                     </tr>
-
+					
+					<c:if test="${(debitEntry.finantialDocument == null || !debitEntry.finantialDocument.annulled) && debitEntry.treasuryExemption != null}">
+	                    <tr>
+	                    	<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.treasuryExemption" /></th>
+	                    	<td><c:out value='${debitEntry.treasuryExemption.treasuryExemptionType.name.content}' /></td>
+						</tr>
+					</c:if>
+					
+					<c:if test="${debitEntry.treasuryEvent != null && !debitEntry.eventAnnuled}">
+	                    <tr>
+	                    	<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.event" /></th>
+	                    	<td>
+	                    		<a target="_blank" href="${pageContext.request.contextPath}<%= TreasuryEventController.READ_URL %>/${debitEntry.debtAccount.externalId}/${debitEntry.treasuryEvent.externalId}">
+	                    			<c:out value='${debitEntry.treasuryEvent.description.content}' />
+	                    		</a>
+	                    	</td>
+						</tr>
+					</c:if>
+					
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${debitEntry.getVersioningCreator()}' />] <joda:format value="${debitEntry.getVersioningCreationDate()}" style="SS" /></td>
@@ -372,12 +400,12 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
                             </td>
                         </tr>
                         <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.academicalActBlockingOff" /></th>
+                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.academicalActBlockingSuspension" /></th>
                             <td>
-								<c:if test="${debitEntry.academicalActBlockingSuspension}">
+								<c:if test="${not debitEntry.academicalActBlockingSuspension}">
 									<spring:message code="label.true" />
 								</c:if>
-								<c:if test="${not debitEntry.academicalActBlockingSuspension}">
+								<c:if test="${debitEntry.academicalActBlockingSuspension}">
 									<spring:message code="label.false" />
 								</c:if>
                             </td>

@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.util.Constants;
@@ -215,7 +216,13 @@ public class TreasuryEventController extends TreasuryBaseController {
 
         try {
             assertUserIsFrontOfficeMember(model);
-
+            
+            if(treasuryExemption.getDebitEntry().isAnnulled() 
+                    || treasuryExemption.getDebitEntry().getTreasuryEvent() == null
+                    || treasuryExemption.getDebitEntry().isEventAnnuled()) {
+                throw new TreasuryDomainException("error.TreasuryExemption.delete.impossible");
+            }
+            
             treasuryExemption.delete();
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);

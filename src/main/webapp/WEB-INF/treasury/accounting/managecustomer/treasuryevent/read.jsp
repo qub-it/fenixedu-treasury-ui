@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
+<%@page import="org.fenixedu.treasury.domain.document.DebitNote"%>
+<%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController"%>
 <%@page
     import="org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController"%>
 <%@page
@@ -225,7 +229,7 @@ ${portal.toolkit()}
 		<spring:message code="label.event.create" />
 	</a>
 </p>
-<c:if test="${not empty treasuryEvent.treasuryExemptionsSet}">
+<c:if test="${not empty treasuryEvent.activeTreasuryEvents}">
 
     <script type="text/javascript">
 		function processDelete(externalId) {
@@ -273,53 +277,41 @@ ${portal.toolkit()}
     </div>
     <!-- /.modal -->
 
-    <datatables:table id="exemptionsTable" row="exemption"
-        data="${treasuryEvent.treasuryExemptionsSet}"
+    <datatables:table id="exemptionsTable" row="exemption" data="${treasuryEvent.activeTreasuryEvents}"
         cssClass="table responsive table-bordered table-hover"
         cdn="false" cellspacing="2">
         <datatables:column cssStyle="width:15%">
             <datatables:columnHead>
-                <spring:message
-                    code="label.TreasuryExemption.treasuryExemptionType" />
+                <spring:message code="label.TreasuryExemption.treasuryExemptionType" />
             </datatables:columnHead>
-            <c:out
-                value="${exemption.treasuryExemptionType.name.content}" />
+            <c:out value="${exemption.treasuryExemptionType.name.content}" />
         </datatables:column>
         <datatables:column cssStyle="width:10%">
             <datatables:columnHead>
-                <spring:message
-                    code="label.TreasuryExemption.exemptByPercentage" />
-            </datatables:columnHead>
-            <p align=center>
-                <c:if test="${exemption.exemptByPercentage}">
-                    <spring:message code="label.yes" />
-                </c:if>
-
-                <c:if test="${not exemption.exemptByPercentage}">
-                    <spring:message code="label.no" />
-                </c:if>
-            </p>
-        </datatables:column>
-        <datatables:column cssStyle="width:10%">
-            <datatables:columnHead>
-                <spring:message
-                    code="label.TreasuryExemption.valueToExempt" />
+                <spring:message code="label.TreasuryExemption.valueToExempt" />
             </datatables:columnHead>
             <c:if test="${exemption.exemptByPercentage}">
                 <c:out value="${exemption.valueToExempt}" /> %
-		</c:if>
+			</c:if>
 
             <c:if test="${not exemption.exemptByPercentage}">
-                <c:out
-                    value="${debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}" />
+                <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}" />
             </c:if>
         </datatables:column>
-        <datatables:column cssStyle="width:30%">
+        <datatables:column cssStyle="width:40%">
             <datatables:columnHead>
                 <spring:message code="label.TreasuryExemption.debitEntry" />
             </datatables:columnHead>
             <p align=left>
-                <c:out value='${exemption.debitEntry.description}' />
+                <c:if test="${not empty exemption.debitEntry.finantialDocument}">
+	                [<a target="_blank" href="${pageContext.request.contextPath}<%= DebitNoteController.READ_URL %>/${exemption.debitEntry.finantialDocument.externalId}">
+						<c:out value='${exemption.debitEntry.finantialDocument.uiDocumentNumber}' />
+                	</a>]
+                	&nbsp;
+                </c:if>
+                <a target="_blank" href="${pageContext.request.contextPath}<%= DebitEntryController.READ_URL %>/${exemption.debitEntry.externalId}">
+               		<c:out value='${exemption.debitEntry.description}' />
+               	</a>
             </p>
         </datatables:column>
         <datatables:column cssStyle="width:25%">
@@ -463,13 +455,15 @@ ${portal.toolkit()}
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
                     <datatables:columnHead>
-                        <spring:message
-                            code="label.TreasuryEvent.allDebitEntries.documentNumber" />
+                        <spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" />
                     </datatables:columnHead>
-                    <c:out
-                        value="${debitEntry.finantialDocument.uiDocumentNumber}" />
-					<c:if test="${not empty debitEntry.finantialDocument && debitEntry.finantialDocument.isAnnulled()}">
-						<span class="label label-danger"><c:out value='${debitEntry.finantialDocument.state.descriptionI18N.content}' /></span>
+                    <c:if test="${not empty debitEntry.finantialDocument}">
+	                    <a target="_blank" href="${pageContext.request.contextPath}<%= DebitNoteController.READ_URL %>/${debitEntry.finantialDocument.externalId}">
+	                    	<c:out value="${debitEntry.finantialDocument.uiDocumentNumber}" />
+	                    </a>
+						<c:if test="${debitEntry.finantialDocument.isAnnulled()}">
+							<span class="label label-danger"><c:out value='${debitEntry.finantialDocument.state.descriptionI18N.content}' /></span>
+						</c:if>
 					</c:if>
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
@@ -491,7 +485,9 @@ ${portal.toolkit()}
                             code="label.TreasuryEvent.allDebitEntries.description" />
                     </datatables:columnHead>
                     <p>
-                        <c:out value="${debitEntry.description}" />
+                    	<a target="_blank" href="${pageContext.request.contextPath}<%= DebitEntryController.READ_URL %>/${debitEntry.externalId}">
+                        	<c:out value="${debitEntry.description}" />
+                        </a>
                     </p>
                     <p>
                     	<em><c:out value="${debitEntry.debtAccount.customer.uiFiscalNumber}" /></em>
@@ -597,12 +593,18 @@ ${portal.toolkit()}
                 cdn="false" cellspacing="2">
                 <datatables:column cssStyle="width:10%">
                     <datatables:columnHead>
-                        <spring:message
-                            code="label.TreasuryEvent.allDebitEntries.documentNumber" />
+                        <spring:message code="label.TreasuryEvent.allDebitEntries.documentNumber" />
                     </datatables:columnHead>
-                    <p><c:out value="${creditEntry.finantialDocument.uiDocumentNumber}" /></p>
-                    <c:if test="${not empty creditEntry.debitEntry && not empty creditEntry.debitEntry.finantialDocument }">
-	                    <p><em>[<c:out value="${creditEntry.debitEntry.finantialDocument.uiDocumentNumber}" />]</em></p>
+                    <p>
+	                    <a target="_blank"  href="${pageContext.request.contextPath}<%= CreditNoteController.READ_URL %>/${creditEntry.finantialDocument.externalId}">
+                    		<c:out value="${creditEntry.finantialDocument.uiDocumentNumber}" />
+                    	</a>
+                    </p>
+                    <c:if test="${not empty creditEntry.debitEntry && not empty creditEntry.debitEntry.finantialDocument}">
+	                    <p>[<a target="_blank" href="${pageContext.request.contextPath}<%= DebitNoteController.READ_URL %>/${creditEntry.debitEntry.finantialDocument.externalId}">
+		                    	<c:out value="${creditEntry.debitEntry.finantialDocument.uiDocumentNumber}" />
+		                    </a>]
+		                </p>
                     </c:if>
                 </datatables:column>
                 <datatables:column cssStyle="width:15%">

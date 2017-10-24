@@ -133,22 +133,23 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     }
 
     private void revertExemptionIfPossible() {
-        // TreasuryEvent is not charged. Do nothing...
-        if (!getTreasuryEvent().isChargedWithDebitEntry()) {
+        if(getDebitEntry().isAnnulled()) {
             return;
         }
-
-        if (!getDebitEntry().isProcessedInClosedDebitNote() || !getDebitEntry().isEventAnnuled()) {
-
-            if (!getDebitEntry().revertExemptionIfPossible(this)) {
-                throw new TreasuryDomainException(
-                        "error.TreasuryExemption.delete.impossible.due.to.processed.debit.or.credit.entry");
-            }
+        
+        if(getDebitEntry().isProcessedInClosedDebitNote()) {
+            throw new TreasuryDomainException("error.TreasuryExemption.delete.impossible.due.to.processed.debit.or.credit.entry");
+        }
+        
+        if (!getDebitEntry().revertExemptionIfPossible(this)) {
+            throw new TreasuryDomainException("error.TreasuryExemption.delete.impossible.due.to.processed.debit.or.credit.entry");
         }
     }
 
     private boolean isDeletable() {
-        return true;
+        return getDebitEntry().isAnnulled() || 
+                getDebitEntry().getFinantialDocument() == null || 
+                getDebitEntry().getFinantialDocument().isPreparing();
     }
 
     @Atomic

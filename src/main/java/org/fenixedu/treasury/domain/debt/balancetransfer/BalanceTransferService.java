@@ -246,7 +246,6 @@ public class BalanceTransferService {
                 TreasuryExemption.create(treasuryExemption.getTreasuryExemptionType(), debitEntry.getTreasuryEvent(),
                         treasuryExemption.getReason(), treasuryExemption.getValueToExempt(), newDebitEntry);
 
-                treasuryExemption.delete();
             }
 
             newDebitEntry.edit(newDebitEntry.getDescription(), newDebitEntry.getTreasuryEvent(), newDebitEntry.getDueDate(),

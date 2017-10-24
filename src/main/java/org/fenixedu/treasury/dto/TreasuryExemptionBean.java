@@ -34,8 +34,16 @@ public class TreasuryExemptionBean implements IBean, Serializable {
         this();
         this.treasuryEvent = treasuryEvent;
         this.setDebitEntries(DebitEntry.findActive(treasuryEvent)
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getDescription()))
+                .map(l -> new TupleDataSourceBean(l.getExternalId(), debitEntryDescription(l)))
                 .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList()));
+    }
+
+    private String debitEntryDescription(final DebitEntry debitEntry) {
+        if(debitEntry.getFinantialDocument() == null) {
+            return debitEntry.getDescription();
+        }
+        
+        return String.format("%s [%s]", debitEntry.getDescription(), debitEntry.getFinantialDocument().getUiDocumentNumber());
     }
 
     public List<TupleDataSourceBean> getTreasuryExemptionTypes() {

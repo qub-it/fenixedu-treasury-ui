@@ -245,11 +245,10 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
         final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
 
-        final Set<DebitEntry> unprocessedDebitEntries = Sets.newHashSet();
         while (DebitEntry.findActive(this).map(DebitEntry.class::cast).count() > 0) {
             final DebitEntry debitEntry = DebitEntry.findActive(this).map(DebitEntry.class::cast).findFirst().get();
 
-            if (Constants.isEqual(debitEntry.getAvailableAmountForCredit(), BigDecimal.ZERO)) {
+            if (debitEntry.isProcessedInClosedDebitNote() && Constants.isEqual(debitEntry.getAvailableAmountForCredit(), BigDecimal.ZERO)) {
                 debitEntry.annulOnEvent();
                 continue;
             }
@@ -316,9 +315,6 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
             debitEntry.annulOnEvent();
         }
 
-        while (!getTreasuryExemptionsSet().isEmpty()) {
-            getTreasuryExemptionsSet().iterator().next().delete();
-        }
     }
 
     public boolean isAbleToDeleteAllDebitEntries() {
@@ -326,6 +322,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public void invokeSettlementCallbacks() {
+    }
+    
+    public Set<TreasuryExemption> getActiveTreasuryEvents() {
+        return getTreasuryExemptionsSet().stream().filter(t -> !t.getDebitEntry().isEventAnnuled())
+                .collect(Collectors.<TreasuryExemption> toSet());
     }
     
     // @formatter: off

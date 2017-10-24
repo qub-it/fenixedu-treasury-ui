@@ -288,11 +288,6 @@ public class DebitNote extends DebitNote_Base {
                     debitEntry.annulOnEvent();
                 }
 
-                // Remove treasury exemption
-                if (debitEntry.getTreasuryExemption() != null) {
-                    debitEntry.getTreasuryExemption().delete();
-                }
-
                 for (final CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
                     debitEntry.closeCreditEntryIfPossible(reasonDescription, now, creditEntry);
                 }
@@ -305,19 +300,10 @@ public class DebitNote extends DebitNote_Base {
             }
 
             for (DebitEntry debitEntry : this.getDebitEntriesSet()) {
-                if (isPositive(debitEntry.getExemptedAmount())) {
-                    throw new TreasuryDomainException("error.DebitNote.annul.not.possible.remove.exemption.on.debit.entry",
-                            debitEntry.getDescription());
-                }
 
                 // Also remove from treasury event
                 if (debitEntry.getTreasuryEvent() != null) {
                     debitEntry.annulOnEvent();
-                }
-
-                // Remove treasury exemption
-                if (debitEntry.getTreasuryExemption() != null) {
-                    debitEntry.getTreasuryExemption().delete();
                 }
 
                 for (final MultipleEntriesPaymentCode paymentCode : debitEntry.getPaymentCodesSet()) {
