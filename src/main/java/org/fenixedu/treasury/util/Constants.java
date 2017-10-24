@@ -43,6 +43,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -197,6 +198,20 @@ public class Constants {
         }
         
         return true;
+    }
+    
+    public static String firstAndLastWords(final String value) {
+        if(Strings.isNullOrEmpty(value)) {
+            return value;
+        }
+        
+        final List<String> wordsList = Splitter.onPattern("\\s+").splitToList(value.trim());
+        
+        if(wordsList.size() == 1) {
+            return value;
+        }
+        
+        return wordsList.get(0) + " " + wordsList.get(wordsList.size() - 1);
     }
 
     // @formatter:off

@@ -147,16 +147,43 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-<th><spring:message code="label.FinantialDocument.documentNumber"/></th>
-<th><spring:message code="label.FinantialDocument.documentDate"/></th>
-<th><spring:message code="label.DebitNote.closeDate"/></th>
-<th><spring:message code="label.FinantialDocument.state"/></th>
-<%-- Operations Column --%>
+					<th><spring:message code="label.FinantialDocument.documentNumber"/></th>
+					<th><spring:message code="label.FinantialDocument.documentDate"/></th>
+					<th><spring:message code="label.DebitNote.closeDate"/></th>
+					<th><spring:message code="label.FinantialDocument.state"/></th>
+					<th><spring:message code="label.Customer.businessIdentificationStudent.short"/></th>
+					<th><spring:message code="label.Customer.name"/></th>
+					<%-- Operations Column --%>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
-				
+				<c:forEach items="${searchfinantialdocumentResultsDataSet}" var="f">
+					<tr>
+						<td>
+							<a target="blank" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/readfinantialdocument/${f.externalId}">
+								<c:out value="${f.uiDocumentNumber}"/>
+							</a>
+							<br/>
+							<em>(<c:out value="${f.state.descriptionI18N.content}"/>)</em>
+						</td>
+						<td><c:out value='${f.documentDate.toString("YYYY-MM-dd HH:mm:ss")}'/></td>
+						<td><c:out value='${f.closeDate.toString("YYYY-MM-dd")}'/></td>
+						<td>
+							<font size="0.3em">
+								<c:out value="${f.uiLastERPExportationErrorMessage}" escapeXml="false" />
+							</font>
+						</td>
+						<td><c:out value="${f.debtAccount.customer.businessIdentification}"/></td>
+						<td><c:out value="${f.debtAccount.customer.shortName}"/></td>
+						<td>
+							<a target="#" class="btn btn-default btn-xs" 
+								href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/view/${f.externalId}">
+									<spring:message code='label.view'/>
+							</a>
+						</td>
+					</tr>
+				</c:forEach>
 			</tbody>
 		</table>
 
@@ -185,22 +212,6 @@ ${portal.toolkit()}
 </c:choose>
 
 <script>
-	var searchfinantialdocumentDataSet = [
-			<c:forEach items="${searchfinantialdocumentResultsDataSet}" var="searchResult">
-				<%-- Field access / formatting  here CHANGE_ME --%>
-				{
-				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-				"documentnumber" : '<a target="blank" href="${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/readfinantialdocument/${searchResult.externalId}"><c:out value="${searchResult.uiDocumentNumber}"/></a>&nbsp<em>(<c:out value="${searchResult.state.descriptionI18N.content}"/>)</em>',
-				"documentdate" : "<c:out value='${searchResult.documentDate.toString("YYYY-MM-dd HH:mm:ss")}'/>",
-				"closedate" : "<c:out value='${searchResult.closeDate.toString("YYYY-MM-dd")}'/>",
-				"errorlog" : '<c:out value="${searchResult.uiLastERPExportationErrorMessage}" escapeXml="false" />',
-				"actions" :
-				" <a target=\"#\" class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/integration/erp/finantialdocument/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-                "" 
-			},
-            </c:forEach>
-    ];
-	
 	$(document).ready(function() {
 
 		<%-- Block for providing finantialInstitution options --%>
@@ -230,43 +241,43 @@ ${portal.toolkit()}
 	    <%-- End block for providing finantialDocumentType options --%>
 
 
-		var table = $('#searchfinantialdocumentTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'documentnumber' },
-			{ data: 'documentdate' },
-			{ data: 'closedate' },
-			{ data: 'errorlog' },
-			{ data: 'actions', className:"all" }
-			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//54
-		               { "width": "54px", "targets": 3 } 
-		             ],
-		"data" : searchfinantialdocumentDataSet,
-		//Documentation: https://datatables.net/reference/option/dom
-        //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-        //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-        //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
-        dom: '<"col-sm-5"l><"col-sm-3"f><"col-sm-3"B>rtip', //FilterBox = YES && ExportOptions = YES
-        buttons: [
-            'copyHtml5',
-            'excelHtml5',
-            'csvHtml5',
-            'pdfHtml5'
-        ],
-        "tableTools": {
-            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	
-        }
-		});
-		table.columns.adjust().draw();
+		var table = $('#searchfinantialdocumentTable').DataTable({
+				language : {
+					url : "${datatablesI18NUrl}",			
+				},
+	
+				"columnDefs": [
+				    { "width": "10%", "targets": 0 },
+				    { "width": "10%", "targets": 1 },
+				    { "width": "10%", "targets": 2 },
+				    { "width": "30%", "targets": 3 },
+				    { "width": "5%", "targets": 4 },
+				    { "width": "30%", "targets": 5 }
+				  ],
+
+				//Documentation: https://datatables.net/reference/option/dom
+		        //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+		        //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+		        //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+		        dom: '<"col-sm-5"l><"col-sm-3"f><"col-sm-3"B>rtip', //FilterBox = YES && ExportOptions = YES
+	
+		        buttons: [
+		            'copyHtml5',
+		            'excelHtml5',
+		            'csvHtml5',
+		            'pdfHtml5'
+		        ],
+	
+		        "tableTools": {
+		            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	
+		        }
+			});
 		
-		  $('#searchfinantialdocumentTable tbody').on( 'click', 'tr', function () {
-		        $(this).toggleClass('selected');
-		    } );
+			table.columns.adjust().draw();
+			
+			  $('#searchfinantialdocumentTable tbody').on( 'click', 'tr', function () {
+			        $(this).toggleClass('selected');
+		    });
 		  
 	}); 
 </script>

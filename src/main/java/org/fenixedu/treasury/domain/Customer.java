@@ -166,6 +166,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         }
 
     }
+    
+    public String getShortName() {
+        return Constants.firstAndLastWords(getName());
+    }
 
     public static Stream<? extends Customer> findAll() {
         return Bennu.getInstance().getCustomersSet().stream();
