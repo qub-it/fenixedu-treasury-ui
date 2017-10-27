@@ -36,6 +36,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 
@@ -117,7 +118,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Override
-    public void changeFiscalNumber(final String countryCode, final String fiscalNumber) {
+    public void changeFiscalNumber(final AdhocCustomerBean bean) {
         throw new RuntimeException("error.AdhocCustomer.changeFiscalNumber.not.supported");
     }
     

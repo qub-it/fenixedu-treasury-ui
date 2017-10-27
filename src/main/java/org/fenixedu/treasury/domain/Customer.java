@@ -39,6 +39,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
@@ -124,7 +125,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract Customer getActiveCustomer();
 
-    public abstract void changeFiscalNumber(final String countryCode, final String fiscalNumber);
+    public abstract void changeFiscalNumber(final AdhocCustomerBean bean);
     
     @Atomic
     public void delete() {

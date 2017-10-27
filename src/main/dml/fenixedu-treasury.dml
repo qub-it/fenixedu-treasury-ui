@@ -158,7 +158,40 @@ class Customer {
 }
 
 
-
+	class FiscalDataUpdateLog {
+		DateTime whenUpdated;
+		String responsibleUsername;
+		String oldFiscalCountry;
+		String oldFiscalNumber;
+		String updatedFiscalCountry;
+		String updatedFiscalNumber;
+		boolean changeFiscalNumberConfirmed;
+		boolean withFinantialDocumentsIntegratedInERP;
+		boolean customerInformationMaybeIntegratedWithSuccess;
+		boolean customerWithFinantialDocumentsIntegratedInPreviousERP;
+		
+	}
+	
+		relation FiscalDataUpdateLogBennu {
+			.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+				multiplicity 1..1;
+			}
+		
+			FiscalDataUpdateLog playsRole fiscalDataUpdateLogs {
+				multiplicity *;
+			}
+		}
+		
+		relation FiscalDataUpdateLogCustomer {
+			Customer playsRole customer {
+				multiplicity 1..1;
+			}
+			
+			FiscalDataUpdateLog playsRole fiscalDataUpdateLogs {
+				multiplicity *;
+			}
+		}
+		
 class AdhocCustomer extends Customer {
 	String code;
 	String fiscalNumber;
@@ -170,6 +203,7 @@ class AdhocCustomer extends Customer {
 	String addressCountryCode;
 	String countryCode;
 }
+
 
 class debt.DebtAccount {
 	boolean closed;

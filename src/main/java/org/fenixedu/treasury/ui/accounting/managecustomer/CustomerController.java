@@ -216,7 +216,7 @@ public class CustomerController extends TreasuryBaseController {
                 throw new TreasuryDomainException("message.Customer.changeFiscalNumber.confirmation");
             }
             
-            customer.changeFiscalNumber(bean.getCountryCode(), bean.getFiscalNumber());
+            customer.changeFiscalNumber(bean);
             
             return "forward:" + READ_URL + customer.getExternalId();
         } catch(final DomainException e) {
