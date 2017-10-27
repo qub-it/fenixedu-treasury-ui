@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -179,10 +180,8 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     private boolean isInvalidFiscalCode(final DebtAccount debtAccount) {
-        return !Strings.isNullOrEmpty(debtAccount.getCustomer().getFiscalCountry())
-                && Constants.isDefaultCountry(debtAccount.getCustomer().getFiscalCountry())
-                && !FiscalCodeValidation.isValidcontrib(debtAccount.getCustomer().getFiscalCountry(),
-                        debtAccount.getCustomer().getFiscalNumber());
+        Customer customer = debtAccount.getCustomer();
+        return !FiscalCodeValidation.isValidFiscalNumber(customer.getFiscalCountry(), customer.getFiscalNumber());
     }
 
     @RequestMapping(value = "/read/{oid}/createreimbursement")

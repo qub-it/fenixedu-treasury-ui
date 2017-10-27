@@ -61,6 +61,8 @@ public class AdhocCustomerBean implements IBean {
     private List<TupleDataSourceBean> customerTypesDataSource;
     private List<TupleDataSourceBean> countryCodesDataSource;
     
+    private boolean changeFiscalNumberConfirmed;
+    
     public String getCode() {
         return code;
     }
@@ -135,6 +137,14 @@ public class AdhocCustomerBean implements IBean {
 
     public void setCustomerType(CustomerType customerType) {
         this.customerType = customerType;
+    }
+    
+    public boolean isChangeFiscalNumberConfirmed() {
+        return changeFiscalNumberConfirmed;
+    }
+    
+    public void setChangeFiscalNumberConfirmed(final boolean value) {
+        changeFiscalNumberConfirmed = value;
     }
 
     public AdhocCustomerBean() {

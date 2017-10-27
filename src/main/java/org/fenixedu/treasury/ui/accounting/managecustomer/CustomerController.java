@@ -32,17 +32,23 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -57,6 +63,7 @@ import pt.ist.fenixframework.Atomic;
 @RequestMapping(CustomerController.CONTROLLER_URI)
 public class CustomerController extends TreasuryBaseController {
     public static final String CONTROLLER_URI = "/treasury/accounting/managecustomer/customer";
+    
     private static final String SEARCH_URI = "/";
     public static final String SEARCH_FULL_URI = CONTROLLER_URI + SEARCH_URI;
 
@@ -164,4 +171,59 @@ public class CustomerController extends TreasuryBaseController {
         return "treasury/accounting/managecustomer/customer/read";
     }
 
+    private static final String CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI = "/changefiscalnumberactionconfirm";
+    public static final String CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI;
+    
+    @RequestMapping(value = CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI + "/{oid}", method=RequestMethod.GET)
+    public String changefiscalnumberactionconfirm(@PathVariable("oid") final Customer customer, final Model model) {
+        model.addAttribute("customer", customer);
+
+        if(customer.isFiscalValidated() && customer.isFiscalCodeValid()) {
+            model.addAttribute("fiscalNumberValid", true);
+        }
+
+        return "treasury/accounting/managecustomer/customer/changefiscalnumberactionconfirm";
+    }
+    
+    
+    
+    private static final String CHANGE_FISCAL_NUMBER_FORM_URI = "/changefiscalnumberform";
+    public static final String CHANGE_FISCAL_NUMBER_FORM_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_FORM_URI;
+    
+    @RequestMapping(value = CHANGE_FISCAL_NUMBER_FORM_URI + "/{oid}", method=RequestMethod.POST)
+    public String changefiscalnumberform(@PathVariable("oid") final Customer customer, final Model model) {
+        final AdhocCustomerBean bean = new AdhocCustomerBean(customer);
+        
+        return _changefiscalnumberactionconfirm(customer, model, bean);
+    }
+    
+    private String _changefiscalnumberactionconfirm(final Customer customer, final Model model, final AdhocCustomerBean bean) {
+        model.addAttribute("customer", customer);
+        model.addAttribute("customerBeanJson", getBeanJson(bean));
+        
+        return "treasury/accounting/managecustomer/customer/changefiscalnumberform";
+    }
+    
+    private static final String CHANGE_FISCAL_NUMBER_URI = "/changefiscalnumber";
+    public static final String CHANGE_FISCAL_NUMBER_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_URI;
+    
+    @RequestMapping(value = CHANGE_FISCAL_NUMBER_URI + "/{oid}", method=RequestMethod.POST)
+    public String changefiscalnumber(@PathVariable("oid") final Customer customer, @RequestParam("bean") final AdhocCustomerBean bean, final Model model) {
+        
+        try {
+
+            if(!bean.isChangeFiscalNumberConfirmed()) {
+                throw new TreasuryDomainException("message.Customer.changeFiscalNumber.confirmation");
+            }
+            
+            customer.changeFiscalNumber(bean.getCountryCode(), bean.getFiscalNumber());
+            
+            return "forward:" + READ_URL + customer.getExternalId();
+        } catch(final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+            
+            return _changefiscalnumberactionconfirm(customer, model, bean);
+        }
+    }
+    
 }

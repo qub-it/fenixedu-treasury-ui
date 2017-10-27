@@ -1,3 +1,6 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -66,16 +69,27 @@ ${portal.toolkit()}
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-<%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/customer/"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp;
-        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}"><spring:message code="label.event.update" /></a>
 
-		&nbsp;
+
+
+<%-- NAVIGATION --%>
+<form>
+    <div class="well well-sm" style="display: inline-block">
+        <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+        &nbsp;
+        <a href="${pageContext.request.contextPath}<%= CustomerController.SEARCH_FULL_URI %>">
+            <spring:message code="label.back" />
+        </a>
+        &nbsp;|&nbsp;
+        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+        &nbsp;
+        <a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}">
+            <spring:message code="label.event.update" />
+        </a>
         
-</div>
+	</div>
+</form>
+
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">
 
@@ -190,15 +204,35 @@ ${portal.toolkit()}
 			                           		</c:if>
 			                           </td>
 			                           <td >
-			                               <div class="col-xs-3">
+			                               	<div class="col-xs-3">
 			                                   <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
-			                               </div> &nbsp;&nbsp;<a class="btn btn-primary btn-xs"
-			                               href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
-			                               <span class="glyphicon glyphicon-user" >&nbsp;</span><spring:message
-			                                       code="label.customer.read.showdebtaccount"></spring:message></a> <c:if test="${debtAccount.totalInDebt < 0 }">
+			                               	</div>
+			                               	&nbsp;&nbsp;
+			                               	<a class="btn btn-primary btn-xs"
+			                               		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
+			                               	<span class="glyphicon glyphicon-user" >&nbsp;</span>
+			                               	<spring:message code="label.customer.read.showdebtaccount"></spring:message>
+			                               	</a>
+			                               
+			                               	<c:if test="${debtAccount.customer.personCustomer}">
+											<c:if test="${!(debtAccount.customer.fiscalCodeValid && debtAccount.customer.fiscalValidated)}">
+											<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
+											&nbsp;
+											<a class="btn btn-primary btn-xs" 
+												href="${pageContext.request.contextPath}<%= CustomerController.CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URL %>/${debtAccount.customer.externalId}">
+												<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+												&nbsp;
+												<spring:message code="label.Customer.changeFiscalNumber" />
+											</a>
+											<% } %>
+											</c:if>
+											</c:if>
+			                                
+			                               <c:if test="${debtAccount.totalInDebt < 0 }">
 			                                   <span class="label label-primary"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
 			                                   </span>
-			                               </c:if> <c:if test="${debtAccount.closed}">
+			                               </c:if> 
+			                               <c:if test="${debtAccount.closed}">
 			                                   <span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span>
 			                               </c:if>
 			                           </td>
@@ -235,11 +269,26 @@ ${portal.toolkit()}
 				                                   <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
 				                               </div> &nbsp;&nbsp;
 				                               
-				                               <a class="btn btn-primary btn-xs"
-					                               href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
+				                               <a class="btn btn-primary btn-xs" 
+				                               		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
 				                               <span class="glyphicon glyphicon-user" >&nbsp;</span><spring:message
 				                                       code="label.customer.read.showdebtaccount"></spring:message>
-												</a> 
+												</a>
+												
+			                               		<c:if test="${debtAccount.customer.personCustomer}">
+												<c:if test="${!(debtAccount.customer.fiscalCodeValid && debtAccount.customer.fiscalValidated)}">
+												<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
+												&nbsp;
+												<a class="btn btn-primary btn-xs" 
+													href="${pageContext.request.contextPath}<%= CustomerController.CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URL %>/${debtAccount.customer.externalId}">
+													<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+													&nbsp;
+													<spring:message code="label.Customer.changeFiscalNumber" />
+												</a>
+												<% } %>
+												</c:if>
+												</c:if>
+												 
 												<c:if test="${debtAccount.totalInDebt < 0 }">
 				                                   <span class="label label-primary"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
 				                                   </span>

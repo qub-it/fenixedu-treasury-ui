@@ -117,6 +117,12 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Override
+    public void changeFiscalNumber(final String countryCode, final String fiscalNumber) {
+        throw new RuntimeException("error.AdhocCustomer.changeFiscalNumber.not.supported");
+    }
+    
+    
+    @Override
     public Set<? extends TreasuryEvent> getTreasuryEventsSet() {
         return Sets.newHashSet();
     }

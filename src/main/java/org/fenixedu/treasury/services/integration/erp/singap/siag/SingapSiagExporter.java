@@ -1677,4 +1677,19 @@ public class SingapSiagExporter implements IERPExporter {
         return WINDOWS_1252;
     }
 
+    @Override
+    public boolean isCustomerMaybeIntegratedWithSuccess(Customer customer) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public boolean isCustomerWithFinantialDocumentsIntegratedInPreviousERP(Customer customer) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
+    public boolean isCustomerWithFinantialDocumentsIntegratedInERP(final Customer customer) {
+        throw new RuntimeException("not implemented");
+    }
+    
 }

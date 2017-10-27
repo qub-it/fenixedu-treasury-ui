@@ -39,6 +39,7 @@ import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
@@ -123,6 +124,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract Customer getActiveCustomer();
 
+    public abstract void changeFiscalNumber(final String countryCode, final String fiscalNumber);
+    
     @Atomic
     public void delete() {
         if (!isDeletable()) {
@@ -261,6 +264,86 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         return FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber());
     }
 
+    public boolean isFiscalValidated() {
+        return FiscalCodeValidation.isValidationAppliedToFiscalCountry(getCountryCode());
+    }
+
+    public boolean isWithFinantialDocumentsIntegratedInERP() {
+        boolean checkedInAllFinantialInstitutions = true;
+        
+        for (DebtAccount debtAccount : getDebtAccountsSet()) {
+            final FinantialInstitution institution = debtAccount.getFinantialInstitution();
+
+            if(institution.getErpIntegrationConfiguration() == null) {
+                checkedInAllFinantialInstitutions = false;
+                continue;
+            }
+            
+            final IERPExternalService erpService = institution.getErpIntegrationConfiguration().getERPExternalServiceImplementation();
+            
+            if(erpService == null) {
+                checkedInAllFinantialInstitutions = false;
+            }
+            
+            if(erpService.getERPExporter().isCustomerWithFinantialDocumentsIntegratedInERP(this)) {
+                return true;
+            }
+        }
+        
+        return !checkedInAllFinantialInstitutions;
+    }
+
+    public boolean isCustomerInformationMaybeIntegratedWithSuccess() {
+        boolean checkedInAllFinantialInstitutions = true;
+
+        for (DebtAccount debtAccount : getDebtAccountsSet()) {
+            final FinantialInstitution institution = debtAccount.getFinantialInstitution();
+
+            if(institution.getErpIntegrationConfiguration() == null) {
+                checkedInAllFinantialInstitutions = false;
+                continue;
+            }
+            
+            final IERPExternalService erpService = institution.getErpIntegrationConfiguration().getERPExternalServiceImplementation();
+            
+            if(erpService == null) {
+                checkedInAllFinantialInstitutions = false;
+            }
+            
+            if(erpService.getERPExporter().isCustomerMaybeIntegratedWithSuccess(this)) {
+                return true;
+            }
+        }
+        
+        return !checkedInAllFinantialInstitutions;
+    }
+    
+    public boolean isCustomerWithFinantialDocumentsIntegratedInPreviousERP() {
+        boolean checkedInAllFinantialInstitutions = true;
+        
+        for (DebtAccount debtAccount : getDebtAccountsSet()) {
+            final FinantialInstitution institution = debtAccount.getFinantialInstitution();
+
+            if(institution.getErpIntegrationConfiguration() == null) {
+                checkedInAllFinantialInstitutions = false;
+                continue;
+            }
+            
+            final IERPExternalService erpService = institution.getErpIntegrationConfiguration().getERPExternalServiceImplementation();
+            
+            if(erpService == null) {
+                checkedInAllFinantialInstitutions = false;
+            }
+            
+            if(erpService.getERPExporter().isCustomerWithFinantialDocumentsIntegratedInPreviousERP(this)) {
+                throw new TreasuryDomainException("error.Customer.changeFiscalNumber.documents.integrated.in.previous.erp");
+            }
+        }
+        
+        return !checkedInAllFinantialInstitutions;
+    }
+    
+    
     public abstract Set<? extends TreasuryEvent> getTreasuryEventsSet();
 
     public abstract boolean isUiOtherRelatedCustomerActive();

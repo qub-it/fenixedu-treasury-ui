@@ -1921,4 +1921,104 @@ public class SAPExporter implements IERPExporter {
     public String saftEncoding() {
         return SAFT_PT_ENCODING;
     }
+    
+    private static final String SAP_CUSTOMER_ID_IN_LOG_PAT = "\\(SAP nº \\d+\\)";
+    
+    public boolean isCustomerMaybeIntegratedWithSuccess(final Customer customer) {
+        for (final DebtAccount debtAccount : customer.getDebtAccountsSet()) {
+            
+            for (final FinantialDocument finantialDocument : debtAccount.getFinantialDocumentsSet()) {
+                for (final ERPExportOperation exportOperation : finantialDocument.getErpExportOperationsSet()) {
+                    if(exportOperation.getIntegrationLog().matches(SAP_CUSTOMER_ID_IN_LOG_PAT)) {
+                        return true;
+                    }
+                }
+            }
+            
+            for (final InvoiceEntry invoiceEntry : debtAccount.getInvoiceEntrySet()) {
+                if(invoiceEntry.getFinantialDocument() == null) {
+                    continue;   
+                }
+                
+                for (final ERPExportOperation exportOperation : invoiceEntry.getFinantialDocument().getErpExportOperationsSet()) {
+                    if(exportOperation.getIntegrationLog().matches(SAP_CUSTOMER_ID_IN_LOG_PAT)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+
+    @Override
+    public boolean isCustomerWithFinantialDocumentsIntegratedInPreviousERP(final Customer customer) {
+        for (final DebtAccount debtAccount : customer.getDebtAccountsSet()) {
+            
+            for (final FinantialDocument finantialDocument : debtAccount.getFinantialDocumentsSet()) {
+                if(finantialDocument.isExportedInLegacyERP()) {
+                    return true;
+                }
+                
+            }
+            
+            for (InvoiceEntry invoiceEntry : debtAccount.getInvoiceEntrySet()) {
+                if(invoiceEntry.getFinantialDocument() == null) {
+                    continue;
+                }
+                
+                if(invoiceEntry.getFinantialDocument().isExportedInLegacyERP()) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public boolean isCustomerWithFinantialDocumentsIntegratedInERP(final Customer customer) {
+        for (final DebtAccount debtAccount : customer.getDebtAccountsSet()) {
+            
+            for (final FinantialDocument finantialDocument : debtAccount.getFinantialDocumentsSet()) {
+                
+                for (final ERPExportOperation erpExportOperation : finantialDocument.getErpExportOperationsSet()) {
+                    if(!erpExportOperation.getSuccess()) {
+                        continue;
+                    }
+                    
+                    if(!erpExportOperation.getExecutionDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)) {
+                       return true; 
+                    }
+                }
+                
+                if(!Strings.isNullOrEmpty(finantialDocument.getErpCertificateDocumentReference())) {
+                    return true;
+                }
+            }
+            
+            for (InvoiceEntry invoiceEntry : debtAccount.getInvoiceEntrySet()) {
+                if(invoiceEntry.getFinantialDocument() == null) {
+                    continue;
+                }
+                
+                final FinantialDocument finantialDocument = invoiceEntry.getFinantialDocument();
+                for (final ERPExportOperation erpExportOperation : finantialDocument.getErpExportOperationsSet()) {
+                    if(!erpExportOperation.getSuccess()) {
+                        continue;
+                    }
+                    
+                    if(!erpExportOperation.getExecutionDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)) {
+                       return true; 
+                    }
+                }
+                
+                if(!Strings.isNullOrEmpty(finantialDocument.getErpCertificateDocumentReference())) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 }

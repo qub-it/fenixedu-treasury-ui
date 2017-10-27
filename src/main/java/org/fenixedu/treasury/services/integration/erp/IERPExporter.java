@@ -2,6 +2,7 @@ package org.fenixedu.treasury.services.integration.erp;
 
 import java.util.List;
 
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.SettlementNote;
@@ -36,5 +37,11 @@ public interface IERPExporter {
     public ReimbursementStateBean checkReimbursementState(final SettlementNote reimbursementNote);
     
     public String saftEncoding();
+    
+    public boolean isCustomerMaybeIntegratedWithSuccess(final Customer customer);
+
+    public boolean isCustomerWithFinantialDocumentsIntegratedInPreviousERP(final Customer customer);
+    
+    public boolean isCustomerWithFinantialDocumentsIntegratedInERP(final Customer customer);
 
 }
