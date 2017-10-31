@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Comparator;
@@ -57,15 +56,11 @@ import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.springframework.util.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -619,6 +614,61 @@ public class DebitEntry extends DebitEntry_Base {
         return result;
     }
 
+    // @formatter:off
+    /* ********
+     * SERVICES
+     * ********
+     */
+    // @formatter:on
+    
+    public static DebitEntry copyDebitEntry(final DebitEntry debitEntryToCopy, final DebitNote debitNoteToAssociate) {
+        
+        
+        final Map<String, String> propertiesMap = Maps.newHashMap(debitEntryToCopy.getPropertiesMap() != null ? debitEntryToCopy.getPropertiesMap() : Maps.newHashMap());
+        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPIED_FROM_DEBIT_ENTRY_ID.getDescriptionI18N().getContent(Constants.DEFAULT_LANGUAGE), 
+                debitEntryToCopy.getExternalId());
+        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPY_DEBIT_ENTRY_RESPONSIBLE.getDescriptionI18N().getContent(Constants.DEFAULT_LANGUAGE), 
+                Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "");
+        
+        final DebitEntry result = DebitEntry.create(
+                Optional.ofNullable(debitNoteToAssociate), 
+                debitEntryToCopy.getDebtAccount(), 
+                debitEntryToCopy.getTreasuryEvent(), 
+                debitEntryToCopy.getVat(), 
+                debitEntryToCopy.getAmount().add(debitEntryToCopy.getExemptedAmount()), 
+                debitEntryToCopy.getDueDate(),
+                propertiesMap, 
+                debitEntryToCopy.getProduct(), 
+                debitEntryToCopy.getDescription(), 
+                debitEntryToCopy.getQuantity(), 
+                debitEntryToCopy.getInterestRate(), 
+                debitEntryToCopy.getEntryDateTime());
+        
+        
+        result.edit(result.getDescription(), result.getTreasuryEvent(), result.getDueDate(), 
+                debitEntryToCopy.getAcademicalActBlockingSuspension(), 
+                debitEntryToCopy.getBlockAcademicActsOnDebt());
+        
+        // We could copy eventAnnuled property, but in most cases we want to create an active debit entry
+        result.setEventAnnuled(false);
+        
+        // Interest relation must be done outside because the origin 
+        // debit entry of debitEntryToCopy will may be annuled
+        // result.setDebitEntry(debitEntryToCopy.getDebitEntry());
+        
+        result.setPayorDebtAccount(debitEntryToCopy.getPayorDebtAccount());
+        
+        if(debitEntryToCopy.getTreasuryExemption() != null) {
+            final TreasuryExemption treasuryExemptionToCopy = debitEntryToCopy.getTreasuryExemption();
+            TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(), 
+                    treasuryExemptionToCopy.getTreasuryEvent(), 
+                    treasuryExemptionToCopy.getReason(), 
+                    treasuryExemptionToCopy.getValueToExempt(), result);
+        }
+        
+        return result;
+    }
+    
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
     }

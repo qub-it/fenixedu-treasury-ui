@@ -27,7 +27,6 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.isPositive;
 import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 
 import java.math.BigDecimal;
@@ -157,9 +156,9 @@ public class DebitNote extends DebitNote_Base {
     }
 
     // @formatter:off
-    /* **********
-     * DEBIT NOTE
-     * **********
+    /* ********
+     * SERVICES
+     * ********
      */
     // @formatter:on
 
@@ -194,6 +193,29 @@ public class DebitNote extends DebitNote_Base {
         note.checkRules();
 
         return note;
+    }
+    
+    public static DebitNote copyDebitNote(final DebitNote debitNoteToCopy, final boolean copyDocumentDate, final boolean copyCloseDate) {
+        final DebitNote result = DebitNote.create(debitNoteToCopy.getDebtAccount(), 
+                debitNoteToCopy.getPayorDebtAccount(), 
+                debitNoteToCopy.getDocumentNumberSeries(),
+                copyDocumentDate ? debitNoteToCopy.getDocumentDate() : new DateTime(), 
+                        debitNoteToCopy.getDocumentDueDate(), debitNoteToCopy.getOriginDocumentNumber());
+        
+        if(copyCloseDate) {
+            result.setCloseDate(debitNoteToCopy.getCloseDate());
+            result.setExportedInLegacyERP(debitNoteToCopy.isExportedInLegacyERP());
+        }
+        
+        result.setAddress(debitNoteToCopy.getAddress());
+        result.setDocumentObservations(result.getDocumentObservations());
+        result.setLegacyERPCertificateDocumentReference(debitNoteToCopy.getLegacyERPCertificateDocumentReference());
+        
+        for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
+            DebitEntry.copyDebitEntry((DebitEntry) finantialDocumentEntry, result);
+        }
+        
+        return result;
     }
 
     @Atomic
@@ -408,6 +430,8 @@ public class DebitNote extends DebitNote_Base {
         return updatingDebitNote;
     }
 
+    // TODO: Debit entries are not copied well, it misses curricularCourse, evaluationSeason and 
+    // executionSemester
     private DebitNote anullAndCopyDebitNote(final String reason) {
         if (!isClosed()) {
             throw new TreasuryDomainException("error.DebitNote.anullAndCopyDebitNote.copy.only.on.closed.debit.note");
@@ -419,6 +443,7 @@ public class DebitNote extends DebitNote_Base {
         for (final FinantialDocumentEntry finantialDocumentEntry : getFinantialDocumentEntriesSet()) {
             final DebitEntry debitEntry = (DebitEntry) finantialDocumentEntry;
 
+            // TODO Use DebitEntry.copyDebitEntry service
             DebitEntry newDebitEntry = DebitEntry.create(Optional.of(newDebitNote), debitEntry.getDebtAccount(),
                     debitEntry.getTreasuryEvent(), debitEntry.getVat(),
                     debitEntry.getAmount().add(debitEntry.getExemptedAmount()), debitEntry.getDueDate(),

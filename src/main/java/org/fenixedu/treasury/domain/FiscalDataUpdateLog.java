@@ -62,7 +62,7 @@ public class FiscalDataUpdateLog extends FiscalDataUpdateLog_Base {
         if(Strings.isNullOrEmpty(getUpdatedFiscalNumber())) {
             throw new TreasuryDomainException("error.FiscalDataUpdateLog.updatedFiscalNumber.required");
         }
-
+        
     }
     
     public static FiscalDataUpdateLog create(final Customer customer, String oldFiscalCountry, String oldFiscalNumber,
@@ -70,7 +70,10 @@ public class FiscalDataUpdateLog extends FiscalDataUpdateLog_Base {
             boolean customerInformationMaybeIntegratedWithSuccess,
             boolean customerWithFinantialDocumentsIntegratedInPreviousERP) {
 
-        FiscalDataUpdateLog log = new FiscalDataUpdateLog();
+        final FiscalDataUpdateLog log = new FiscalDataUpdateLog(customer, oldFiscalCountry, oldFiscalNumber,
+                changeFiscalNumberConfirmed, withFinantialDocumentsIntegratedInERP,
+                customerInformationMaybeIntegratedWithSuccess,
+                customerWithFinantialDocumentsIntegratedInPreviousERP); 
 
         return log;
     }

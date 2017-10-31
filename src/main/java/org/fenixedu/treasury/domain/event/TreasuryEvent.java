@@ -27,9 +27,7 @@
  */
 package org.fenixedu.treasury.domain.event;
 
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,7 +38,6 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -52,20 +49,16 @@ import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import pt.ist.fenixframework.Atomic;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
     public static enum TreasuryEventKeys {
-        EXECUTION_YEAR, EXECUTION_SEMESTER, DEGREE_CODE;
+        EXECUTION_YEAR, EXECUTION_SEMESTER, DEGREE_CODE, COPIED_FROM_DEBIT_ENTRY_ID, COPY_DEBIT_ENTRY_RESPONSIBLE;
 
         public LocalizedString getDescriptionI18N() {
             return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + TreasuryEvent.class.getSimpleName() + "." + name());
@@ -226,6 +219,8 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     public abstract String getDegreeName();
 
     public abstract String getExecutionYearName();
+    
+    public abstract void copyDebitEntryInformation(final DebitEntry sourceDebitEntry, final DebitEntry copyDebitEntry);
 
     @Atomic
     public void delete() {

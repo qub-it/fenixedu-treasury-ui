@@ -187,9 +187,12 @@ ${portal.angularToolkit()}
 			<ol>
 				<li><spring:message code="message.Customer.changeFiscalNumber.validate.current.fiscal.data.invalid" /></li>
 				<li><spring:message code="message.Customer.changeFiscalNumber.check.customer.in.erp.short" /></li>
-				<li><spring:message code="message.Customer.changeFiscalNumber.may.have.certified.documents.in.erp.or.legacy.erp" />
 			</ol>
-
+			
+			<div class="alert alert-warning" role="alert">
+				<spring:message code="message.Customer.changeFiscalNumber.may.have.certified.documents.in.legacy.erp" />
+			</div>
+			
             <p>&nbsp;</p>
 
            	<p><spring:message code="message.Customer.changeFiscalNumber.after.validation.proceed" /></p>

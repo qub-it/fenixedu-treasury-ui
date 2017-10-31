@@ -34,7 +34,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         }
 
         for (final CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
-            if (!creditEntry.isFromExemption()) {
+            if (!creditEntry.getFinantialDocument().isAnnulled() && !creditEntry.isFromExemption()) {
                 throw new TreasuryDomainException("error.TreasuryExemption.debitEntry.with.credit.not.from.exemption");
             }
         }
