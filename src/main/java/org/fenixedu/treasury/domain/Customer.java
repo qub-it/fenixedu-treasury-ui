@@ -234,7 +234,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         return getDebtAccountsSet().stream().filter(x -> x.getFinantialInstitution().equals(institution)).findFirst()
                 .orElse(null);
     }
-
+    
     @Atomic
     public void registerFinantialInstitutions(List<FinantialInstitution> newFinantialInstitutions) {
 
@@ -252,11 +252,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             if (newFinantialInstitutions.contains(actualInst)) {
             } else {
                 DebtAccount account = getDebtAccountFor(actualInst);
-                if (account.isDeletable()) {
-                    account.delete();
-                } else {
-                    account.closeDebtAccount();
-                }
+                account.closeDebtAccount();
             }
         }
     }
@@ -267,6 +263,18 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public boolean isFiscalValidated() {
         return FiscalCodeValidation.isValidationAppliedToFiscalCountry(getCountryCode());
+    }
+    
+    public boolean isAbleToChangeFiscalNumber() {
+        if(isWithFinantialDocumentsIntegratedInERP()) {
+            return false;
+        }
+        
+        if(isFiscalValidated() && isFiscalCodeValid()) {
+            return false;
+        }
+        
+        return true;
     }
 
     public boolean isWithFinantialDocumentsIntegratedInERP() {

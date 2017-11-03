@@ -199,7 +199,7 @@ ${portal.toolkit()}
 			                           		<p><c:out value="${debtAccount.customer.uiFiscalNumber}" /></p>
 			                           		<c:if test="${debtAccount.customer.personCustomer}">
 			                           		<c:if test="${debtAccount.customer.fromPersonMerge}">
-				                           		<p>[<spring:message code="label.Customer.fromPersonMerge" />]</p>
+				                           		<p><small><em>[<spring:message code="label.Customer.fromPersonMerge" />]</em></small></p>
 			                           		</c:if>
 			                           		</c:if>
 			                           </td>
@@ -215,7 +215,7 @@ ${portal.toolkit()}
 			                               	</a>
 			                               
 			                               	<c:if test="${debtAccount.customer.personCustomer}">
-											<c:if test="${!(debtAccount.customer.fiscalCodeValid && debtAccount.customer.fiscalValidated)}">
+											<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
 											<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
 											&nbsp;
 											<a class="btn btn-primary btn-xs" 
@@ -258,9 +258,7 @@ ${portal.toolkit()}
 				                           		</p>
 				                           		<c:if test="${debtAccount.customer.personCustomer}">
 				                           		<c:if test="${debtAccount.customer.fromPersonMerge}">
-				                           		<p>
-						                           		<em>[<spring:message code="label.Customer.fromPersonMerge" />]</em>
-				                           		</p>
+				                           		<p><small><em>[<spring:message code="label.Customer.fromPersonMerge" />]</em></small></p>
 				                           		</c:if>
 				                           		</c:if>
 				                           </td>
@@ -276,7 +274,7 @@ ${portal.toolkit()}
 												</a>
 												
 			                               		<c:if test="${debtAccount.customer.personCustomer}">
-												<c:if test="${!(debtAccount.customer.fiscalCodeValid && debtAccount.customer.fiscalValidated)}">
+												<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
 												<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
 												&nbsp;
 												<a class="btn btn-primary btn-xs" 

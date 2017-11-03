@@ -120,6 +120,7 @@ public class BalanceTransferService {
                 regulationDebitEntry.getDescription(), now, false);
         SettlementEntry.create(creditEntry, settlementNote, creditOpenAmount, creditEntry.getDescription(), now, false);
 
+        settlementNote.markAsUsedInBalanceTransfer();
         settlementNote.closeDocument();
     }
 
@@ -200,6 +201,7 @@ public class BalanceTransferService {
                 }
             }
 
+            settlementNote.markAsUsedInBalanceTransfer();
             settlementNote.closeDocument();
         }
     }

@@ -139,6 +139,10 @@ public class SettlementNote extends SettlementNote_Base {
             }
         }
     }
+    
+    public void markAsUsedInBalanceTransfer() {
+        setUsedInBalanceTransfer(true);
+    }
 
     @Atomic
     public void edit(final FinantialDocumentType finantialDocumentType, final DebtAccount debtAccount,
@@ -220,6 +224,10 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         return currentStatus.isFinalStatus() && currentStatus.isRejectedStatus();
+    }
+    
+    public boolean isUsedInBalanceTransfer() {
+        return getUsedInBalanceTransfer();
     }
 
     @Override
@@ -441,6 +449,10 @@ public class SettlementNote extends SettlementNote_Base {
 
             if (getAdvancedPaymentCreditNote() != null && getAdvancedPaymentCreditNote().hasValidSettlementEntries()) {
                 throw new TreasuryDomainException("error.SettlementNote.cannot.anull.settlement.due.to.advanced.payment.settled");
+            }
+            
+            if(isUsedInBalanceTransfer()) {
+                throw new TreasuryDomainException("error.SettlementNote.cannot.anull.settlement.due.to.balance.transfer");
             }
 
             setState(FinantialDocumentStateType.ANNULED);

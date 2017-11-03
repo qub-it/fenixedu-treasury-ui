@@ -182,7 +182,7 @@ ${portal.angularToolkit()}
         <div class="panel-body">
          
          
-			<p><spring:message code="message.Customer.changeFiscalNumber.validation.suggestion" />:</p>
+			<p><spring:message code="message.Customer.changeFiscalNumber.validation.suggestion" /></p>
 			
 			<ol>
 				<li><spring:message code="message.Customer.changeFiscalNumber.validate.current.fiscal.data.invalid" /></li>

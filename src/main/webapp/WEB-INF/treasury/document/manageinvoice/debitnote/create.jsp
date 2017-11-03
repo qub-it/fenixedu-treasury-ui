@@ -219,7 +219,7 @@ $(document).ready(function() {
 		
 		$("#debitNote_debtAccount").select2({ data : debtAccount_options});
 	    
-	    $("#debitNote_debtAccount").select2().select2('val', '<c:out value='${param.debtaccount}'/>');
+	    $("#debitNote_debtAccount").select2().select2('val', '<c:out value='${param.debtaccount != null ? param.debtaccount : debitEntry.debtAccount.externalId }'/>');
 	
 		<%-- End block for providing debtAccount options --%>
 		<%-- Block for providing documentNumberSeries options --%>

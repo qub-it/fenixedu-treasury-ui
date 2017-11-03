@@ -176,6 +176,8 @@ public class CustomerController extends TreasuryBaseController {
     
     @RequestMapping(value = CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI + "/{oid}", method=RequestMethod.GET)
     public String changefiscalnumberactionconfirm(@PathVariable("oid") final Customer customer, final Model model) {
+        assertUserIsBackOfficeMember(model);
+        
         model.addAttribute("customer", customer);
 
         if(customer.isFiscalValidated() && customer.isFiscalCodeValid()) {
@@ -185,13 +187,13 @@ public class CustomerController extends TreasuryBaseController {
         return "treasury/accounting/managecustomer/customer/changefiscalnumberactionconfirm";
     }
     
-    
-    
     private static final String CHANGE_FISCAL_NUMBER_FORM_URI = "/changefiscalnumberform";
     public static final String CHANGE_FISCAL_NUMBER_FORM_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_FORM_URI;
     
     @RequestMapping(value = CHANGE_FISCAL_NUMBER_FORM_URI + "/{oid}", method=RequestMethod.POST)
     public String changefiscalnumberform(@PathVariable("oid") final Customer customer, final Model model) {
+        assertUserIsBackOfficeMember(model);
+
         final AdhocCustomerBean bean = new AdhocCustomerBean(customer);
         
         return _changefiscalnumberactionconfirm(customer, model, bean);
@@ -209,6 +211,7 @@ public class CustomerController extends TreasuryBaseController {
     
     @RequestMapping(value = CHANGE_FISCAL_NUMBER_URI + "/{oid}", method=RequestMethod.POST)
     public String changefiscalnumber(@PathVariable("oid") final Customer customer, @RequestParam("bean") final AdhocCustomerBean bean, final Model model) {
+        assertUserIsBackOfficeMember(model);
         
         try {
 

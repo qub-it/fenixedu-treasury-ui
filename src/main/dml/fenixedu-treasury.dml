@@ -296,6 +296,7 @@ class document.FinantialDocument {
 	   DateTime paymentDate;
 	   boolean advancePaymentSetByUser;
 	   String finantialTransactionReference;
+	   boolean usedInBalanceTransfer;
 	}
 
 class document.FinantialDocumentEntry {

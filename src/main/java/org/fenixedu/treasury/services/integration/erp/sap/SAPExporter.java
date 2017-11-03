@@ -1922,7 +1922,7 @@ public class SAPExporter implements IERPExporter {
         return SAFT_PT_ENCODING;
     }
     
-    private static final String SAP_CUSTOMER_ID_IN_LOG_PAT = "\\(SAP nº \\d+\\)";
+    private static final String SAP_CUSTOMER_ID_IN_LOG_PAT = "(?si).+clientes: \\(SAP n.? \\d+\\): \\[S\\].+";
     
     public boolean isCustomerMaybeIntegratedWithSuccess(final Customer customer) {
         for (final DebtAccount debtAccount : customer.getDebtAccountsSet()) {
@@ -1935,12 +1935,8 @@ public class SAPExporter implements IERPExporter {
                 }
             }
             
-            for (final InvoiceEntry invoiceEntry : debtAccount.getInvoiceEntrySet()) {
-                if(invoiceEntry.getFinantialDocument() == null) {
-                    continue;   
-                }
-                
-                for (final ERPExportOperation exportOperation : invoiceEntry.getFinantialDocument().getErpExportOperationsSet()) {
+            for (final Invoice invoice : debtAccount.getInvoiceSet()) {
+                for (final ERPExportOperation exportOperation : invoice.getErpExportOperationsSet()) {
                     if(exportOperation.getIntegrationLog().matches(SAP_CUSTOMER_ID_IN_LOG_PAT)) {
                         return true;
                     }
@@ -1962,12 +1958,9 @@ public class SAPExporter implements IERPExporter {
                 
             }
             
-            for (InvoiceEntry invoiceEntry : debtAccount.getInvoiceEntrySet()) {
-                if(invoiceEntry.getFinantialDocument() == null) {
-                    continue;
-                }
-                
-                if(invoiceEntry.getFinantialDocument().isExportedInLegacyERP()) {
+            for (Invoice invoice : debtAccount.getInvoiceSet()) {
+
+                if(invoice.isExportedInLegacyERP()) {
                     return true;
                 }
             }
@@ -1997,13 +1990,9 @@ public class SAPExporter implements IERPExporter {
                 }
             }
             
-            for (InvoiceEntry invoiceEntry : debtAccount.getInvoiceEntrySet()) {
-                if(invoiceEntry.getFinantialDocument() == null) {
-                    continue;
-                }
+            for (Invoice invoice : debtAccount.getInvoiceSet()) {
                 
-                final FinantialDocument finantialDocument = invoiceEntry.getFinantialDocument();
-                for (final ERPExportOperation erpExportOperation : finantialDocument.getErpExportOperationsSet()) {
+                for (final ERPExportOperation erpExportOperation : invoice.getErpExportOperationsSet()) {
                     if(!erpExportOperation.getSuccess()) {
                         continue;
                     }
@@ -2013,7 +2002,7 @@ public class SAPExporter implements IERPExporter {
                     }
                 }
                 
-                if(!Strings.isNullOrEmpty(finantialDocument.getErpCertificateDocumentReference())) {
+                if(!Strings.isNullOrEmpty(invoice.getErpCertificateDocumentReference())) {
                     return true;
                 }
             }

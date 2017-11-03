@@ -621,7 +621,7 @@ public class DebitEntry extends DebitEntry_Base {
      */
     // @formatter:on
     
-    public static DebitEntry copyDebitEntry(final DebitEntry debitEntryToCopy, final DebitNote debitNoteToAssociate) {
+    public static DebitEntry copyDebitEntry(final DebitEntry debitEntryToCopy, final DebitNote debitNoteToAssociate, final boolean applyExemption) {
         
         
         final Map<String, String> propertiesMap = Maps.newHashMap(debitEntryToCopy.getPropertiesMap() != null ? debitEntryToCopy.getPropertiesMap() : Maps.newHashMap());
@@ -658,7 +658,7 @@ public class DebitEntry extends DebitEntry_Base {
         
         result.setPayorDebtAccount(debitEntryToCopy.getPayorDebtAccount());
         
-        if(debitEntryToCopy.getTreasuryExemption() != null) {
+        if(applyExemption && debitEntryToCopy.getTreasuryExemption() != null) {
             final TreasuryExemption treasuryExemptionToCopy = debitEntryToCopy.getTreasuryExemption();
             TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(), 
                     treasuryExemptionToCopy.getTreasuryEvent(), 

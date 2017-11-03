@@ -32,6 +32,7 @@ import static org.fenixedu.treasury.util.Constants.rationalRatRate;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -195,7 +196,7 @@ public class DebitNote extends DebitNote_Base {
         return note;
     }
     
-    public static DebitNote copyDebitNote(final DebitNote debitNoteToCopy, final boolean copyDocumentDate, final boolean copyCloseDate) {
+    public static DebitNote copyDebitNote(final DebitNote debitNoteToCopy, final boolean copyDocumentDate, final boolean copyCloseDate, final boolean applyExemptions) {
         final DebitNote result = DebitNote.create(debitNoteToCopy.getDebtAccount(), 
                 debitNoteToCopy.getPayorDebtAccount(), 
                 debitNoteToCopy.getDocumentNumberSeries(),
@@ -210,9 +211,41 @@ public class DebitNote extends DebitNote_Base {
         result.setAddress(debitNoteToCopy.getAddress());
         result.setDocumentObservations(result.getDocumentObservations());
         result.setLegacyERPCertificateDocumentReference(debitNoteToCopy.getLegacyERPCertificateDocumentReference());
+
+        final Map<DebitEntry, DebitEntry> debitEntriesMap = Maps.newHashMap();
         
         for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
-            DebitEntry.copyDebitEntry((DebitEntry) finantialDocumentEntry, result);
+            final DebitEntry sourceDebitEntry = (DebitEntry) finantialDocumentEntry;
+            final boolean applyExemptionOnDebitEntry = 
+                    applyExemptions && (sourceDebitEntry.getTreasuryExemption() != null && Constants.isPositive(sourceDebitEntry.getExemptedAmount()));
+                    
+            final DebitEntry debitEntryCopy = DebitEntry.copyDebitEntry(sourceDebitEntry, result, applyExemptionOnDebitEntry);
+            
+            debitEntriesMap.put(sourceDebitEntry, debitEntryCopy);
+            
+        }
+        
+        if(applyExemptions) {
+            for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
+                final DebitEntry sourceDebitEntry = (DebitEntry) finantialDocumentEntry;
+                final boolean exemptionAppliedWithCreditNote = sourceDebitEntry.getTreasuryExemption() != null && !Constants.isPositive(sourceDebitEntry.getExemptedAmount());
+            
+                if(!exemptionAppliedWithCreditNote) {
+                    continue;
+                }
+                
+                if(result.isPreparing()) {
+                    result.closeDocument();
+                }
+            
+                final DebitEntry debitEntryCopy = debitEntriesMap.get(sourceDebitEntry);
+                
+                final TreasuryExemption treasuryExemptionToCopy = sourceDebitEntry.getTreasuryExemption();
+                TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(), 
+                        treasuryExemptionToCopy.getTreasuryEvent(), 
+                        treasuryExemptionToCopy.getReason(), 
+                        treasuryExemptionToCopy.getValueToExempt(), debitEntryCopy);
+            }
         }
         
         return result;
