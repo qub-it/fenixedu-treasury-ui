@@ -164,11 +164,12 @@ ${portal.angularToolkit()}
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a></li>
                 <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><span
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebitNote" /></a></li>
+				<% if(debtAccount.getCustomer().isPersonCustomer()) { %>
+                <li class="dropdown-submenu">
+                	<a class="" href="#"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+                		&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebt" />
+                	</a>
 
-               	<% if(debtAccount.getCustomer().isPersonCustomer()) { %>
-                <li class="dropdown-submenu"><a class="" href="#"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp; <spring:message
-                            code="label.event.accounting.manageCustomer.createDebt" /></a>
-                
                     <ul class="dropdown-menu">
                         <li><a href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createregistration/${debtAccount.externalId}"> <span
                                 class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> <spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
@@ -263,12 +264,25 @@ ${portal.angularToolkit()}
 			<% } %>
 			
 			<% if(TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) { %>
-            <li>
-            	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/search?customerId=${debtAccount.customer.externalId}">
-            		<span class="glyphicon glyphicon-upload" aria-hidden="true" target="_blank"></span>&nbsp;
-            		<spring:message code="label.ERPTuitionInfo.title" />
-               	</a>
-            </li>
+            <li class="dropdown-submenu">
+				<a class="" href="#"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+					&nbsp;<spring:message code="label.ERPTuitionInfo.title" />
+				</a>
+				<ul class="dropdown-menu">
+		            <li>
+		            	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/search?studentNumber=${debtAccount.customer.businessIdentification}&uiFiscalNumber=${debtAccount.customer.uiFiscalNumber}">
+		            		<span class="glyphicon glyphicon-list-alt" aria-hidden="true" target="_blank"></span>&nbsp;
+		            		<spring:message code="label.ERPTuitionInfo.search" />
+		               	</a>
+		            </li>
+					<li>
+						<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/create/${debtAccount.externalId}">
+		            		<span class="glyphicon glyphicon-upload" aria-hidden="true" target="_blank"></span>&nbsp;
+		            		<spring:message code="label.ERPTuitionInfo.create.title" />
+						</a>
+					</li>
+				</ul>
+			</li>
 			<% } %>
 
 			<% if(TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>
