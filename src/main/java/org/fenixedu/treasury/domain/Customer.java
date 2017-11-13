@@ -187,7 +187,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         return findAll().filter(i -> code.equalsIgnoreCase(i.getCode()));
     }
 
-    private static Stream<? extends Customer> findByFiscalInformation(final String fiscalCountryCode, final String fiscalNumber) {
+    public static Stream<? extends Customer> findByFiscalInformation(final String fiscalCountryCode, final String fiscalNumber) {
         if (Strings.isNullOrEmpty(fiscalCountryCode)) {
             throw new TreasuryDomainException("error.Customer.findByFiscalCountryAndNumber.fiscalCountryCode.required");
         }
@@ -285,13 +285,19 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
             if(institution.getErpIntegrationConfiguration() == null) {
                 checkedInAllFinantialInstitutions = false;
-                continue;
+                break;
+            }
+            
+            if(Strings.isNullOrEmpty(institution.getErpIntegrationConfiguration().getImplementationClassName())) {
+                checkedInAllFinantialInstitutions = false;
+                break;
             }
             
             final IERPExternalService erpService = institution.getErpIntegrationConfiguration().getERPExternalServiceImplementation();
             
             if(erpService == null) {
                 checkedInAllFinantialInstitutions = false;
+                break;
             }
             
             if(erpService.getERPExporter().isCustomerWithFinantialDocumentsIntegratedInERP(this)) {
@@ -310,13 +316,19 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
             if(institution.getErpIntegrationConfiguration() == null) {
                 checkedInAllFinantialInstitutions = false;
-                continue;
+                break;
+            }
+            
+            if(Strings.isNullOrEmpty(institution.getErpIntegrationConfiguration().getImplementationClassName())) {
+                checkedInAllFinantialInstitutions = false;
+                break;
             }
             
             final IERPExternalService erpService = institution.getErpIntegrationConfiguration().getERPExternalServiceImplementation();
             
             if(erpService == null) {
                 checkedInAllFinantialInstitutions = false;
+                break;
             }
             
             if(erpService.getERPExporter().isCustomerMaybeIntegratedWithSuccess(this)) {
@@ -338,10 +350,16 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
                 continue;
             }
             
+            if(Strings.isNullOrEmpty(institution.getErpIntegrationConfiguration().getImplementationClassName())) {
+                checkedInAllFinantialInstitutions = false;
+                break;
+            }
+            
             final IERPExternalService erpService = institution.getErpIntegrationConfiguration().getERPExternalServiceImplementation();
             
             if(erpService == null) {
                 checkedInAllFinantialInstitutions = false;
+                break;
             }
             
             if(erpService.getERPExporter().isCustomerWithFinantialDocumentsIntegratedInPreviousERP(this)) {
