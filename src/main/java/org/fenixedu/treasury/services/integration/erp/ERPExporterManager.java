@@ -10,8 +10,10 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
@@ -92,6 +94,15 @@ public class ERPExporterManager {
                 //remove the related documents from the original Set
                 sortedDocuments.remove(doc);
 
+                // Limit exportation of documents in which customer has invalid addresses
+                final Customer customer = doc.getDebtAccount().getCustomer();
+                final List<String> errorMessages = Lists.newArrayList();
+                if(!ERPCustomerFieldsBean.validateAddress(customer, errorMessages)) {
+                    if(!doc.getErpExportOperationsSet().isEmpty()) {
+                        continue;
+                    }
+                }
+                
                 result.add(
                         erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc)));
             }

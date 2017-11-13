@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
@@ -119,7 +121,7 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
             if (sortedDocuments.isEmpty() == false) {
 
                 if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
-                    while (sortedDocuments.isEmpty() == false) {
+                    while (!sortedDocuments.isEmpty()) {
                         FinantialDocument doc = sortedDocuments.iterator().next();
 
                         //remove the related documents from the original Set
@@ -128,9 +130,18 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                         count++;
 
                         if ((count % 100) == 0) {
-                            task.taskLog("Sended %d\n", count);
+                            task.taskLog("Read %d\n", count);
                         }
 
+                        // Limit exportation of documents in which customer has invalid addresses
+                        final Customer customer = doc.getDebtAccount().getCustomer();
+                        final List<String> errorMessages = Lists.newArrayList();
+                        if(!ERPCustomerFieldsBean.validateAddress(customer, errorMessages)) {
+                            if(!doc.getErpExportOperationsSet().isEmpty()) {
+                                continue;
+                            }
+                        }
+                        
                         //Create a ExportOperation
                         ERPExportOperation exportFinantialDocumentToIntegration = ERPExporterManager.exportSingleDocument(doc);
 
@@ -138,14 +149,6 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                             result.add(exportFinantialDocumentToIntegration);
                         }
                     }
-                } else {
-//                    final IERPExporter erpExporter = finantialInstitution.getErpIntegrationConfiguration()
-//                            .getERPExternalServiceImplementation().getERPExporter();
-//
-//                    ERPExportOperation exportFinantialDocumentToIntegration =
-//                            erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments);
-//
-//                    result.add(exportFinantialDocumentToIntegration);
                 }
             }
 
