@@ -266,6 +266,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     }
     
     public boolean isAbleToChangeFiscalNumber() {
+        if(!Strings.isNullOrEmpty(getErpCustomerId())) {
+            return false;
+        }
+        
         if(isWithFinantialDocumentsIntegratedInERP()) {
             return false;
         }
