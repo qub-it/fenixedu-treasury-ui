@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import javax.xml.ws.BindingProvider;
 
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -88,18 +89,88 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
         }
 
         for (final ZulfwscustomersReturn1S item : zulwsfaturacaoClientesOut.getCustomers().getItem()) {
+            String erpCustomerId = item.getCustomerIdSap();
+            String integrationStatus = item.getIntegrationStatus();
+            String returnMsg = item.getReturnMsg();
+            String fenixCustomerId = item.getCustomerId();
+            
             final String otherMessage = String.format("%s (SAP nº %s): [%s] %s",
                     Constants.bundle("label.SAPExternalService.customer.integration.result"),
-                    !Strings.isNullOrEmpty(item.getCustomerIdSap()) ? item.getCustomerIdSap() : "", item.getIntegrationStatus(),
-                    item.getReturnMsg());
+                    !Strings.isNullOrEmpty(erpCustomerId) ? erpCustomerId : "", integrationStatus,
+                    returnMsg);
 
             output.getOtherMessages().add(otherMessage);
+
+            if(S_KEY.equals(integrationStatus)) {
+                saveErpCustomerId(output, erpCustomerId, fenixCustomerId);
+            }
         }
 
         output.setSoapInboundMessage(loggingHandler.getInboundMessage());
         output.setSoapOutboundMessage(loggingHandler.getOutboundMessage());
 
         return output;
+    }
+
+    private void saveErpCustomerId(final DocumentsInformationOutput output, final String erpCustomerId, final String fenixCustomerId) {
+        if(Strings.isNullOrEmpty(fenixCustomerId)) {
+            final String message = String.format("%s %s",
+                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
+                    Constants.bundle("label.SAPExternalService.warning.customer.id.empty"));
+            
+            output.getOtherMessages().add(message);
+            return;
+        }
+        
+        if(Strings.isNullOrEmpty(erpCustomerId) || Strings.isNullOrEmpty(erpCustomerId.trim())) {
+            String message = String.format("%s %s",
+                Constants.bundle("label.SAPExternalService.customer.integration.result"),
+                Constants.bundle("label.SAPExternalService.warning.erp.customer.id.empty"));
+            
+            output.getOtherMessages().add(message);
+            return;
+        }
+        
+        Optional<? extends Customer> customerOptional = Customer.findByCode(fenixCustomerId).findAny();
+
+        if(!customerOptional.isPresent()) {
+            final String message = String.format("%s %s",
+                Constants.bundle("label.SAPExternalService.customer.integration.result"), 
+                Constants.bundle(("label.SAPExternalService.warning.customer.with.code.not.found"), fenixCustomerId));
+
+            output.getOtherMessages().add(message);
+            return;
+        }
+        
+        Customer customer = customerOptional.get();
+        
+        if(customer.getErpCustomerId() != null && customer.getErpCustomerId().equals(erpCustomerId)) {
+            final String message = String.format("%s %s",
+                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
+                    Constants.bundle("label.SAPExternalService.info.customer.with.erp.id.already.set", customer.getCode(), erpCustomerId));
+
+            output.getOtherMessages().add(message);
+            return;
+        } 
+        
+        if(customer.getErpCustomerId() != null && !customer.getErpCustomerId().equals(erpCustomerId)) {
+            final String message = String.format("%s %s",
+                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
+                    Constants.bundle("label.SAPExternalService.warning.erp.customer.id.not.equal", customer.getCode(), erpCustomerId, customer.getErpCustomerId()));
+
+            output.getOtherMessages().add(message);
+            return;
+        }
+        
+        if(customer.getErpCustomerId() == null) {
+            final String message = String.format("%s %s",
+                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
+                    Constants.bundle("label.SAPExternalService.info.customer.with.erp.id.set", customer.getCode(), erpCustomerId));
+
+            output.getOtherMessages().add(message);
+            
+            customer.setErpCustomerId(erpCustomerId);
+        }
     }
 
     private boolean isSomeDocAssociatedWithReimbursementFailed(final FinantialInstitution finantialInstitution,
