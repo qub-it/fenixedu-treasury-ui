@@ -6,7 +6,6 @@ import org.fenixedu.bennu.core.annotation.GroupOperator;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.CustomGroup;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryManagersGroup;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.util.Constants;
@@ -40,7 +39,7 @@ public class TreasuryManagersGroup extends CustomGroup {
 
     @Override
     public String getPresentationName() {
-        return BundleUtil.getString(Constants.BUNDLE, "label.TreasuryManagersGroup.description");
+        return Constants.bundle("label.TreasuryManagersGroup.description");
     }
 
     @Override

@@ -6,9 +6,7 @@ import org.fenixedu.bennu.core.annotation.GroupOperator;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.CustomGroup;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryFrontOfficeGroup;
-import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
@@ -41,7 +39,7 @@ public class TreasuryFrontOfficeGroup extends CustomGroup {
 
     @Override
     public String getPresentationName() {
-        return BundleUtil.getString(Constants.BUNDLE, "label.TreasuryFrontOfficeGroup.description");
+        return Constants.bundle("label.TreasuryFrontOfficeGroup.description");
     }
 
     @Override

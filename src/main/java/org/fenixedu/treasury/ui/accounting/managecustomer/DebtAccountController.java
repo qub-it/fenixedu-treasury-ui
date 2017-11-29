@@ -36,7 +36,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -297,14 +296,14 @@ public class DebtAccountController extends TreasuryBaseController {
 
         if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
             addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"),
+                    Constants.bundle("warning.GlobalInterestRate.no.interest.rate.for.current.year"),
                     model);
         }
 
         if (now.getMonthOfYear() == 12 && now.getDayOfMonth() >= 15) {
             if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
                 addWarningMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.next.year"),
+                        Constants.bundle("warning.GlobalInterestRate.no.interest.rate.for.next.year"),
                         model);
 
             }
@@ -321,10 +320,10 @@ public class DebtAccountController extends TreasuryBaseController {
 //            
 //            ERPExporterManager.getInstance().exportPendingDocumentsForDebtAccount(debtAccount);
 //
-//            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+//            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
 //            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error")
                     + ex.getLocalizedMessage(), model);
         }
         return read(debtAccount, model, redirectAttributes);

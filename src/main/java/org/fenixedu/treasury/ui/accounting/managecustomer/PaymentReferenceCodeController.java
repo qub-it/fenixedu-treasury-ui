@@ -1,6 +1,5 @@
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -102,7 +101,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                     model);
 
             final PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(bean);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+            addInfoMessage(Constants.bundle(
                     "label.document.managepayments.success.create.reference.code.selected.debit.entries"), model);
 
             return redirect(String.format(DebtAccountController.READ_URL + "/%s", debtAccount.getExternalId()), model,

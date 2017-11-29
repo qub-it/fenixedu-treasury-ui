@@ -34,8 +34,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -138,12 +136,12 @@ public class ForwardPaymentController extends TreasuryBaseController {
                 if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.debtAmount.equal.zero",
+                    addErrorMessage(Constants.bundle("error.DebitEntry.debtAmount.equal.zero",
                             Integer.toString(i + 1)), model);
                 } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.exceeded.openAmount",
+                    addErrorMessage(Constants.bundle("error.DebitEntry.exceeded.openAmount",
                             Integer.toString(i + 1)), model);
                 } else {
                     debitEntryBean.setNotValid(false);
@@ -161,23 +159,23 @@ public class ForwardPaymentController extends TreasuryBaseController {
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.positive.payment.value"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.positive.payment.value"), model);
         }
         if (!bean.isReimbursementNote() && creditSum.compareTo(debitSum) > 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.negative.payment.value"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.negative.payment.value"), model);
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
+            addErrorMessage(Constants.bundle("error.CreditEntry.no.creditEntries.selected"), model);
         }
         if (!bean.isReimbursementNote() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
+            addErrorMessage(Constants.bundle("error.DebiEntry.no.debitEntries.selected"), model);
         }
         if (bean.getDate().isAfter(new LocalDate())) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+            addErrorMessage(Constants.bundle("error.SettlementNote.date.is.after"), model);
         }
 
         if (error) {

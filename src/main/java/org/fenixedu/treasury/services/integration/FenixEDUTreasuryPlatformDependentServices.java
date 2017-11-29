@@ -3,10 +3,13 @@ package org.fenixedu.treasury.services.integration;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.bennu.io.domain.IGenericFile;
 import org.fenixedu.bennu.scheduler.TaskRunner;
@@ -17,7 +20,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
-import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceClientConfiguration;
@@ -73,6 +75,8 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         }
     }
 
+	/* File */
+    
 	@Override
 	public byte[] getFileContent(final IGenericFile genericFile) {
 		try {
@@ -140,7 +144,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 	}
 
 	@Override
-	public void createFile(final IGenericFile genericFile, final String displayName, final String fileName, final byte[] content) {
+	public void createFile(final IGenericFile genericFile, final String fileName, final String contentType, final byte[] content) {
 		try {
 			GenericFile file = null;
 			
@@ -163,19 +167,35 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 		
 	}
 
-	@Override
-	public String bundle(final String key, final String... args) {
-        return BundleUtil.getString(Constants.BUNDLE, key, args);
-	}
-
-	@Override
-	public LocalizedString bundleI18N(final String key, final String... args) {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);
-	}
-
+	/* User */
+	
 	@Override
 	public String getLoggedUsername() {
 		return Authenticate.getUser().getUsername();
+	}
+
+	/* Locales */
+	
+	@Override
+	public Set<Locale> availableLocales() {
+		return CoreConfiguration.supportedLocales();
+	}
+
+	/* Bundles */
+	
+	@Override
+	public String bundle(final String bundleName, final String key, final String... args) {
+        return BundleUtil.getString(bundleName, key, args);
+	}
+	
+	@Override
+	public String bundle(final Locale locale, final String bundleName, final String key, final String...args) {
+		return BundleUtil.getString(bundleName, locale, key, args);
+	}
+
+	@Override
+	public LocalizedString bundleI18N(final String bundleName, final String key, final String... args) {
+        return BundleUtil.getLocalizedString(bundleName, key, args);
 	}
 
 }

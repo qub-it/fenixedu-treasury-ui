@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -83,7 +82,7 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
             @RequestParam(value = "logdateto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate logDateTo,
             Model model, RedirectAttributes redirectAttributes) {
         if (!FenixFramework.isDomainObjectValid(domainObject)) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.read.object.oid.not.valid"), model);
+            addErrorMessage(Constants.bundle("error.read.object.oid.not.valid"), model);
         } else {
             setDomainObject(domainObject, model);
             setTreasuryOperationLogSet(

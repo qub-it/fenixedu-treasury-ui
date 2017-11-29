@@ -37,10 +37,8 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
-import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -119,12 +117,12 @@ public class DebitNoteController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             deleteDebitNote(debitNote);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(Constants.bundle("label.success.delete"), model);
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
     }
@@ -138,7 +136,7 @@ public class DebitNoteController extends TreasuryBaseController {
             setDebitNote(debitNote, model);
 
             if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
-                model.addAttribute("anullDebitNoteMessage", BundleUtil.getString(Constants.BUNDLE,
+                model.addAttribute("anullDebitNoteMessage", Constants.bundle(
                         "label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
             }
 
@@ -252,7 +250,7 @@ public class DebitNoteController extends TreasuryBaseController {
             }
             FinantialInstitution finantialInstitution = null;
             if (documentNumberSeries == null && debtAccount == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                addErrorMessage(Constants.bundle(
                         "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
                 return redirect(SEARCH_URL, model, redirectAttributes);
             }
@@ -261,8 +259,7 @@ public class DebitNoteController extends TreasuryBaseController {
             if (documentNumberSeries != null && debtAccount != null) {
                 if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
                         .equals(debtAccount.getFinantialInstitution().getCode())) {
-                    addErrorMessage(
-                            BundleUtil.getString(Constants.BUNDLE,
+                    addErrorMessage(Constants.bundle(
                                     "label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
                             model);
                     return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
@@ -297,7 +294,7 @@ public class DebitNoteController extends TreasuryBaseController {
                     model.addAttribute("DebitNote_documentNumberSeries_options", DocumentNumberSeries
                             .applyActiveSelectableAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
                 } else {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                    addErrorMessage(Constants.bundle(
                             "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
                     return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
                 }
@@ -333,9 +330,9 @@ public class DebitNoteController extends TreasuryBaseController {
             model.addAttribute("debitNote", debitNote);
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + de.getLocalizedMessage(), model);
         }
         return create(documentNumberSeries, debtAccount, debitEntry, model, redirectAttributes);
     }
@@ -390,9 +387,9 @@ public class DebitNoteController extends TreasuryBaseController {
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + de.getLocalizedMessage(), model);
         }
         
         return update(debitNote, model, redirectAttributes);
@@ -419,9 +416,9 @@ public class DebitNoteController extends TreasuryBaseController {
 
             addInfoMessage(Constants.bundle("label.document.manageinvoice.DebitNote.document.closed.sucess"), model);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + de.getLocalizedMessage(), model);
         }
         return redirect(DebitNoteController.READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
     }
@@ -446,12 +443,12 @@ public class DebitNoteController extends TreasuryBaseController {
             debitNote.anullDebitNoteWithCreditNote(anullReason, false);
 
             addInfoMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.DebitNote.document.anulled.sucess"),
+                    Constants.bundle("label.document.manageinvoice.DebitNote.document.anulled.sucess"),
                     model);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + de.getLocalizedMessage(), model);
         }
 
         return redirect(DebitNoteController.READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
@@ -534,7 +531,7 @@ public class DebitNoteController extends TreasuryBaseController {
             if (availableSeries.size() > 0) {
                 model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
             } else {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
+                addErrorMessage(Constants.bundle(
                         "label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
                 return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
@@ -543,10 +540,10 @@ public class DebitNoteController extends TreasuryBaseController {
             model.addAttribute("interestRateValues", allInterests);
 
             addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.warning.document.manageinvoice.calculateinterestvalue.line1"),
+                    Constants.bundle("label.warning.document.manageinvoice.calculateinterestvalue.line1"),
                     model);
             addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.warning.document.manageinvoice.calculateinterestvalue.line2"),
+                    Constants.bundle("label.warning.document.manageinvoice.calculateinterestvalue.line2"),
                     model);
             return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
         } catch (Exception ex) {
@@ -576,7 +573,7 @@ public class DebitNoteController extends TreasuryBaseController {
             DebitNote interestDebitNote =
                     createInterestDebitNoteForDebitNote(debitNote, paymentDate, documentNumberSeries, documentObservations);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+            addInfoMessage(Constants.bundle(
                     "info.document.manageinfoice.debitnote.success.calculate.interest.value"), model);
 
             return redirect(DebitNoteController.READ_URL + interestDebitNote.getExternalId(), model, redirectAttributes);

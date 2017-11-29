@@ -28,8 +28,6 @@ package org.fenixedu.treasury.ui.managetreasuryexemption;
 
 import java.math.BigDecimal;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -112,13 +110,13 @@ public class TreasuryExemptionController extends TreasuryBaseController {
             TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
                     bean.getValuetoexempt(), bean.getDebitEntry());
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            addInfoMessage(Constants.bundle("label.success.create"), model);
 
             return redirect(treasuryEventUrl(debtAccount, bean.getTreasuryEvent()), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         
         return create(debtAccount, bean.getTreasuryEvent(), model);

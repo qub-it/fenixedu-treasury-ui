@@ -28,14 +28,9 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -218,7 +213,7 @@ public class TreasuryEventController extends TreasuryBaseController {
 
             treasuryExemption.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(Constants.bundle("label.success.delete"), model);
         } catch (final DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return read(debtAccount, treasuryEvent, model);

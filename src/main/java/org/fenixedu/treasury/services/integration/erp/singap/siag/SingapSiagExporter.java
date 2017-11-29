@@ -54,7 +54,6 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -809,7 +808,7 @@ public class SingapSiagExporter implements IERPExporter {
                         product.getVatExemptionReason().getCode() + "-" + product.getVatExemptionReason().getName().getContent());
             } else {
                 // HACK : DEFAULT
-                line.setTaxExemptionReason(BundleUtil.getString(Constants.BUNDLE, "warning.ERPExporter.vat.exemption.unknown"));
+                line.setTaxExemptionReason(Constants.bundle("warning.ERPExporter.vat.exemption.unknown"));
             }
         }
 

@@ -26,7 +26,6 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsconfiguration;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsConfiguration;
@@ -39,8 +38,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.sibs.manageSibsConfiguration") <-- Use for duplicate controller name disambiguation
 @BennuSpringController(value = FinantialInstitutionController.class)
@@ -103,9 +100,9 @@ public class SibsConfigurationController extends TreasuryBaseController {
 
             return redirect(READ_URL + getSibsConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(sibsConfiguration, model);
     }

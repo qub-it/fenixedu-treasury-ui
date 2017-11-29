@@ -30,7 +30,6 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
@@ -96,7 +95,7 @@ public class CreditEntryController extends TreasuryBaseController {
         try {
             DebtAccount debtAccount = creditNote.getDebtAccount();
             if (creditNote != null && !creditNote.isPreparing()) {
-                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                addWarningMessage(Constants.bundle(
                         "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
                 redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
             }
@@ -138,7 +137,7 @@ public class CreditEntryController extends TreasuryBaseController {
 
                 }
             } else {
-                return new ResponseEntity<String>(BundleUtil.getString(Constants.BUNDLE, "label.Tariff.no.valid.fixed"),
+                return new ResponseEntity<String>(Constants.bundle("label.Tariff.no.valid.fixed"),
                         HttpStatus.BAD_REQUEST);
             }
             bean.setDescription(product.getName().getContent());
@@ -152,7 +151,7 @@ public class CreditEntryController extends TreasuryBaseController {
 
         try {
             if (bean.getFinantialDocument() != null && !bean.getFinantialDocument().isPreparing()) {
-                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                addWarningMessage(Constants.bundle(
                         "label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
                 redirect(CreditNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
             }
@@ -166,7 +165,7 @@ public class CreditEntryController extends TreasuryBaseController {
                     createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
                             bean.getProduct(), bean.getAmount(), bean.getFinantialDocument().getDocumentDueDate());
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            addInfoMessage(Constants.bundle("label.success.create"), model);
 
             setCreditEntry(creditEntry, model);
 
@@ -178,7 +177,7 @@ public class CreditEntryController extends TreasuryBaseController {
                         redirectAttributes);
             }
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + de.getLocalizedMessage(), model);
             this.setCreditEntryBean(bean, model);
         }
         return "treasury/document/manageinvoice/creditentry/create";
@@ -231,9 +230,9 @@ public class CreditEntryController extends TreasuryBaseController {
             return redirect(CreditNoteController.READ_URL + getCreditEntry(model).getFinantialDocument().getExternalId(), model,
                     redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + de.getLocalizedMessage(), model);
         }
         return update(creditEntry, model);
     }

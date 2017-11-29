@@ -39,7 +39,6 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -267,7 +266,7 @@ public class SingapSiagImporter implements IERPImporter {
                             //Already annulled
                         } else {
                             //The Settlement note must be annulled
-                            settlementNote.anullDocument(BundleUtil.getString(Constants.BUNDLE,
+                            settlementNote.anullDocument(Constants.bundle(
                                     "label.info.integration.erpimporter.annulled.by.integration") + " - ["
                                     + new DateTime().toString("YYYY-MM-dd HH:mm:ss") + "]", false);
                         }

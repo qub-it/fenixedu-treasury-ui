@@ -30,7 +30,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -87,7 +86,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         if (debitNote.getPaymentCodesSet().stream().anyMatch(pc -> pc.getPaymentReferenceCode().getState().isUsed())) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
+            addErrorMessage(Constants.bundle("label.paymentreferencecode.already.has.one"), model);
             return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
 
@@ -113,9 +112,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             this.setPaymentReferenceCodeBean(bean, model);
 
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
@@ -156,15 +155,15 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             }
 
             final PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(bean, payableAmount);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+            addInfoMessage(Constants.bundle(
                     "label.document.managepayments.success.create.reference.code.debitnote"), model);
 
             model.addAttribute("paymentReferenceCode", paymentReferenceCode);
             return redirect(DebitNoteController.READ_URL + bean.getDebitNote().getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         this.setPaymentReferenceCodeBean(bean, model);
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
@@ -271,9 +270,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
             return redirect(TreasuryOperationLogController.READ_URL + series.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         this.setPaymentReferenceCodeBean(bean, model);
         model.addAttribute("series", series);

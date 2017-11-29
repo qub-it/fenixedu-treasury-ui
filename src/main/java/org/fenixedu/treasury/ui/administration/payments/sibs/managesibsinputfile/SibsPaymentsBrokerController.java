@@ -3,11 +3,8 @@ package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfil
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
@@ -28,7 +25,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @BennuSpringController(value = SibsInputFileController.class)
@@ -96,9 +92,9 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
                 try {
                     ProcessResult result = importer.processSIBSPaymentFiles(sibsFile, paymentCodePool.getFinantialInstitution());
                     if (result.getErrorMessages().isEmpty()) {
-                        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.upload"), model);
+                        addInfoMessage(Constants.bundle("label.success.upload"), model);
                     } else {
-                        addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload"), model);
+                        addErrorMessage(Constants.bundle("label.error.upload"), model);
                     }
                     reportFile = result.getReportFile();
                     if (result.getReportFile() == null) {

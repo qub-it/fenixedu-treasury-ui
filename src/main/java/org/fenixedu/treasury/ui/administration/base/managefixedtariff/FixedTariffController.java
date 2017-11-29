@@ -30,7 +30,6 @@ import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -102,13 +101,13 @@ public class FixedTariffController extends TreasuryBaseController {
 
             deleteFixedTariff(fixedTariff);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(Constants.bundle("label.success.delete"), model);
             return redirect(ProductController.READ_URL + productId, model, redirectAttributes);
         } catch (DomainException ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(ProductController.READ_URL + productId, model, redirectAttributes);
     }
@@ -162,7 +161,7 @@ public class FixedTariffController extends TreasuryBaseController {
             setFixedTariff(fixedTariff, model);
             return redirect(FixedTariffController.READ_URL + getFixedTariff(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + tde.getLocalizedMessage(), model);
             this.setFixedTariffBean(bean, model);
         }
         return "treasury/administration/base/managefixedtariff/fixedtariff/create";
@@ -229,7 +228,7 @@ public class FixedTariffController extends TreasuryBaseController {
             return redirect(FixedTariffController.READ_URL + getFixedTariff(model).getExternalId(), model, redirectAttributes);
         } catch (Exception tde) {
             setFixedTariffBean(bean, model);
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
         }
         return "treasury/administration/base/managefixedtariff/fixedtariff/update";
     }

@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Currency;
@@ -343,7 +341,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         if (debitNote == null) {
             this.addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.creditnote.without.debitnote"), model);
+                    Constants.bundle("label.document.manageinvoice.creditnote.without.debitnote"), model);
         }
         return "treasury/document/manageinvoice/creditnote/create";
     }

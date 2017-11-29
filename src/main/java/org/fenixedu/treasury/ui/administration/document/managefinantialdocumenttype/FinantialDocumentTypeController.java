@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
@@ -138,14 +137,14 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
             deleteFinantialDocumentType(finantialDocumentType);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(Constants.bundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
 
         } catch (DomainException ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
 
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
@@ -177,10 +176,10 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
 
         } catch (DomainException de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + de.getLocalizedMessage(), model);
 
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.create") + de.getLocalizedMessage(), model);
         }
         return create(model);
     }
@@ -233,9 +232,9 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
             return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
 
         } catch (DomainException de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + de.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(Constants.bundle("label.error.update") + de.getLocalizedMessage(), model);
         }
         return update(finantialDocumentType, model);
     }
