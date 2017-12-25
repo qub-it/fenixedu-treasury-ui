@@ -298,16 +298,29 @@ public class ERPExporterManager {
     // @formatter:off
     public static List<FinantialDocument> filterDocumentsToExport(
             final Stream<? extends FinantialDocument> finantialDocumentsStream) {
-        return finantialDocumentsStream
+        
+        List<? extends FinantialDocument> tempList = finantialDocumentsStream
                 .filter(d -> d.isDocumentToExport())
                 .filter(d -> !d.isCreditNote())
                 .filter(d -> d.isAnnulled() || d.isClosed())
                 .filter(d -> d.isDocumentSeriesNumberSet())
                 .filter(x -> x.getCloseDate() != null)
                 .filter(x -> x.isDebitNote() || (x.isSettlementNote() && !x.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE)))
-                //.filter(x -> x.isDebitNote() || (x.isSettlementNote() && !((SettlementNote) x).isReimbursement()))
-                .sorted(COMPARE_BY_DOCUMENT_TYPE)
+                // TODO Anil Review comparator COMPARE_BY_DOCUMENT_TYPE which is buggy, for now do not sort
+                // .sorted(COMPARE_BY_DOCUMENT_TYPE)
                 .collect(Collectors.<FinantialDocument> toList());
+
+        final List<FinantialDocument> result = Lists.newArrayList();
+
+        // TODO: Put first debit notes and then settlement notes
+        result.addAll(tempList.stream().filter(d -> d.isDebitNote()).collect(Collectors.<FinantialDocument> toList()));
+        result.addAll(tempList.stream().filter(d -> d.isSettlementNote()).collect(Collectors.<FinantialDocument> toList()));
+        
+        if(tempList.size() != result.size()) {
+            throw new RuntimeException("error");
+        }
+        
+        return result;
     }
     // @formatter:on
 
