@@ -323,7 +323,7 @@ ${portal.toolkit()}
             </p>
         </datatables:column>
         <datatables:column cssStyle="width:10%">
-             <a class="btn btn-danger" href="#" data-toggle="modal" data-target="#deleteModal" onclick="processDelete('${exemption.externalId}')">
+             <a class="btn btn-danger" href="#" onclick="processDelete('${exemption.externalId}')">
                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp; 
 				<spring:message code="label.event.delete" />
 			</a>
