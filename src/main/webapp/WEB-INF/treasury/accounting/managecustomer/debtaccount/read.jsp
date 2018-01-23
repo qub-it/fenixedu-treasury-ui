@@ -263,7 +263,7 @@ ${portal.angularToolkit()}
             </li>
 			<% } %>
 			
-			<% if(TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) { %>
+			<% if(TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>
             <li class="dropdown-submenu">
 				<a class="" href="#"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 					&nbsp;<spring:message code="label.ERPTuitionInfo.title" />
