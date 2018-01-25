@@ -520,7 +520,7 @@ ${portal.toolkit()}
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
                         <c:if test="${!debitEntry.eventAnnuled}">
-                            <a class="btn btn-default" data-toggle="modal" data-target="#excludeModal" 
+                            <a class="btn btn-default" 
                             	onclick="processExclude('${treasuryEvent.externalId}/${debitEntry.externalId}')" href="#">
                                 <span aria-hidden="true" class="glyphicon glyphicon-remove-circle" ></span>&nbsp;
                                 <spring:message code="label.TreasuryEvent.excludeFromEvent" />
@@ -528,7 +528,7 @@ ${portal.toolkit()}
                         </c:if>
                         <c:if test="${debitEntry.eventAnnuled && (empty debitEntry.finantialDocument || !debitEntry.finantialDocument.isAnnulled())}">
 
-							<a class="btn btn-default" data-toggle="modal" data-target="#includeModal"
+							<a class="btn btn-default"
 	                    		onclick="processInclude('${treasuryEvent.externalId}/${debitEntry.externalId}')" href="#">
 			                        <span aria-hidden="true" class="glyphicon glyphicon-retweet" ></span>&nbsp;
 	                                <spring:message code="label.TreasuryEvent.includeInEvent" />
