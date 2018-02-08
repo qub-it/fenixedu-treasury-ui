@@ -152,6 +152,9 @@ ${portal.toolkit()}
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="debitNote_payorDebtAccount" class="js-example-basic-single" name="payordebtaccount">
                         <option value="">&nbsp;</option>
+						<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element">
+							<option value="${element.externalId}"><c:out value='${element.customer.uiFiscalNumber} - ${element.customer.name}'/></option>
+						</c:forEach>
                     </select>
                 </div>
             </div>
@@ -167,19 +170,8 @@ ${portal.toolkit()}
 $(document).ready(function() {
 	<%-- Block for providing payorDebtAccount options --%>
 	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	payorDebtAccount_options = [
-		<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element"> 
-			{
-				text : "<c:out value='${element.customer.uiFiscalNumber} - ${element.customer.name}'/>", 
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
 
-	$("#debitNote_payorDebtAccount").select2({
-		data : payorDebtAccount_options,
-	});
-
+	$("#debitNote_payorDebtAccount").select2();
     $("#debitNote_payorDebtAccount").select2().select2('val', '<c:out value='${not empty param.payordebtaccount ? param.payordebtaccount : debitNote.payorDebtAccount.externalId }'/>');
     <%-- End block for providing payorDebtAccount options --%>
 

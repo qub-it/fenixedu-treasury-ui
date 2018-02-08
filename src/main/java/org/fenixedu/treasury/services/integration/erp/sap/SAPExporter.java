@@ -1307,7 +1307,7 @@ public class SAPExporter implements IERPExporter {
             return countryCode;
         }
 
-// UL-IGOT-194
+// #UL-IGOT-194
 //        if("GR".equals(countryCode.toUpperCase())) {
 //            return "EL";
 //        }
