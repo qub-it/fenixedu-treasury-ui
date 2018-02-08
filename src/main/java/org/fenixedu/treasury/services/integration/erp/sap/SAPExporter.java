@@ -1306,10 +1306,11 @@ public class SAPExporter implements IERPExporter {
         if(Strings.isNullOrEmpty(countryCode)) {
             return countryCode;
         }
-        
-        if("GR".equals(countryCode.toUpperCase())) {
-            return "EL";
-        }
+
+// UL-IGOT-194
+//        if("GR".equals(countryCode.toUpperCase())) {
+//            return "EL";
+//        }
         
         return countryCode;
     }
