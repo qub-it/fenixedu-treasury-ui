@@ -15,6 +15,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessStateLog;
@@ -24,6 +25,8 @@ import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation.ReimbursementStateBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -31,6 +34,8 @@ import com.google.common.collect.Sets;
 import pt.ist.fenixframework.Atomic;
 
 public class ERPExporterManager {
+
+    private static Logger logger = LoggerFactory.getLogger(ERPExporterManager.class);
 
     private static final int WAIT_TRANSACTION_TO_FINISH_MS = 500;
 
@@ -112,6 +117,29 @@ public class ERPExporterManager {
 
         // return Lists.newArrayList(erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments));
         return Lists.newArrayList();
+    }
+    
+    public static List<ReimbursementProcessStateLog> updatePendingReimbursementNotes(final FinantialInstitution finantialInstitution) {
+        
+        final List<SettlementNote> settlementNotes = FinantialDocument.find(FinantialDocumentType.findForReimbursementNote())
+            .map(SettlementNote.class::cast)
+            .filter(s -> s.getDebtAccount().getFinantialInstitution() == finantialInstitution)
+            .filter(s -> !s.isDocumentToExport())
+            .filter(s -> s.isReimbursementPending())
+            .collect(Collectors.toList());
+        
+        for (final SettlementNote note : settlementNotes) {
+            
+            try {
+                ReimbursementProcessStateLog log = updateReimbursementState(note);
+                
+                logger.info("Reimbursement update %s => %s", note.getUiDocumentNumber(), log.getReimbursementProcessStatusType().getCode());
+            } catch(final Exception e) {
+                logger.error(e.getLocalizedMessage(), e);
+            }
+        }
+        
+        return null;
     }
 
     private static final int LIMIT = 200;
@@ -264,7 +292,7 @@ public class ERPExporterManager {
         return erpExporter.downloadCertifiedDocumentPrint(finantialDocument);
     }
 
-    public static void updateReimbursementState(final SettlementNote reimbursementNote) {
+    public static ReimbursementProcessStateLog updateReimbursementState(final SettlementNote reimbursementNote) {
         final FinantialInstitution finantialInstitution = reimbursementNote.getDebtAccount().getFinantialInstitution();
 
         final IERPExporter erpExporter =
@@ -287,12 +315,14 @@ public class ERPExporterManager {
             throw new TreasuryDomainException("error.ERPExporterManager.reimbursementStatus.unknown");
         }
 
-        ReimbursementProcessStateLog.create(reimbursementNote, reimbursementStateBean.getReimbursementProcessStatus(),
+        ReimbursementProcessStateLog stateLog = ReimbursementProcessStateLog.create(reimbursementNote, reimbursementStateBean.getReimbursementProcessStatus(),
                 UUID.randomUUID().toString(), reimbursementStateBean.getReimbursementStateDate(),
                 reimbursementStateBean.getExerciseYear());
 
         reimbursementNote.processReimbursementStateChange(reimbursementStateBean.getReimbursementProcessStatus(),
                 reimbursementStateBean.getExerciseYear(), reimbursementStateBean.getReimbursementStateDate());
+        
+        return stateLog;
     }
 
     // @formatter:off

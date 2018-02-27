@@ -38,6 +38,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -309,7 +310,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     public void clearDocumentToExport(final String reason) {
         if (getInstitutionForExportation() != null) {
             this.setInstitutionForExportation(null);
-            super.setClearDocumentToExportReason(reason);
+            
+            final String username = Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "unknown";
+            super.setClearDocumentToExportReason(String.format("%s - [%s] %s", reason, username, new DateTime().toString("YYYY-MM-dd HH:mm:ss")));
         }
     }
 
@@ -318,7 +321,9 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             final String erpCertificateDocumentReference) {
         if (getInstitutionForExportation() != null) {
             this.setInstitutionForExportation(null);
-            super.setClearDocumentToExportReason(reason);
+
+            final String username = Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "unknown";
+            super.setClearDocumentToExportReason(String.format("%s - [%s] %s", reason, username, new DateTime().toString("YYYY-MM-dd HH:mm:ss")));
 
             this.editERPCertificationData(erpCertificationDate, erpCertificateDocumentReference);
         }

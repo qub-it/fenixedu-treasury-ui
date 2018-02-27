@@ -121,32 +121,34 @@ ${portal.toolkit()}
         </h3>
     </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th scope="row" class="col-xs-3"><spring:message
-                        code="label.DebtAccount.finantialInstitution" /></th>
-                <td><c:out
-                        value='${debitNote.debtAccount.finantialInstitution.name}' /></td>
-            </tr>
-            <tr>
-                <th scope="row" class="col-xs-3"><spring:message
-                        code="label.DebtAccount.customer" /></th>
-                <td><c:out
-                        value='${debitNote.debtAccount.customer.businessIdentification} - ${debitNote.debtAccount.customer.name}' /></td>
-            </tr>
-            <tr>
-                <th scope="row" class="col-xs-3"><spring:message
-                        code="label.DebitNote.documentNumber" /></th>
-                <td><c:out value='${debitNote.uiDocumentNumber}' /></td>
-            </tr>
-            <tr>
-                <th scope="row" class="col-xs-3"><spring:message
-                        code="label.DebitNote.documentDate" /></th>
-                <td><joda:format value='${debitNote.documentDate}' style='SS'/></td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="panel-body">
+	    <table class="table">
+	        <tbody>
+	            <tr>
+	                <th scope="row" class="col-xs-3"><spring:message
+	                        code="label.DebtAccount.finantialInstitution" /></th>
+	                <td><c:out
+	                        value='${debitNote.debtAccount.finantialInstitution.name}' /></td>
+	            </tr>
+	            <tr>
+	                <th scope="row" class="col-xs-3"><spring:message
+	                        code="label.DebtAccount.customer" /></th>
+	                <td><c:out
+	                        value='${debitNote.debtAccount.customer.businessIdentification} - ${debitNote.debtAccount.customer.name}' /></td>
+	            </tr>
+	            <tr>
+	                <th scope="row" class="col-xs-3"><spring:message
+	                        code="label.DebitNote.documentNumber" /></th>
+	                <td><c:out value='${debitNote.uiDocumentNumber}' /></td>
+	            </tr>
+	            <tr>
+	                <th scope="row" class="col-xs-3"><spring:message
+	                        code="label.DebitNote.documentDate" /></th>
+	                <td><joda:format value='${debitNote.documentDate}' style='SS'/></td>
+	            </tr>
+	        </tbody>
+	    </table>
+	</div>
 </div>
 
 </br>
