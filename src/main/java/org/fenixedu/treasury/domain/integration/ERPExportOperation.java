@@ -91,6 +91,25 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
         return eRPExportOperation;
     }
+    
+    @Atomic
+    public static ERPExportOperation copy(final ERPExportOperation log) {
+        final byte[] data = log.getFile().getContent();
+        final String filename = log.getFile().getFilename();
+        final FinantialInstitution finantialInstitution = log.getFinantialInstitution();
+        final String erpOperationId = log.getErpOperationId();
+        final DateTime executionDate = log.getExecutionDate();
+        final boolean processed = log.getProcessed();
+        final boolean success = log.getSuccess();
+        final boolean corrected = log.getCorrected();
+        
+        final ERPExportOperation copy = create(data, filename, finantialInstitution, erpOperationId, executionDate, processed, success, corrected);
+        
+        copy.appendLog(log.getErrorLog(), log.getIntegrationLog(), log.getSoapInboundMessage(), log.getSoapOutboundMessage());
+        copy.getFinantialDocumentsSet().addAll(log.getFinantialDocumentsSet());
+        
+        return copy;
+    }
 
     public static Stream<ERPExportOperation> findAll() {
         Set<ERPExportOperation> results = new HashSet<ERPExportOperation>();

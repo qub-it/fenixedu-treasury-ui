@@ -82,12 +82,14 @@ public class ERPCustomerFieldsBean {
         final String fiscalNumber = customer.getFiscalNumber();
         final String name = customer.getName();
         final List<String> errorMessages = Lists.newArrayList();
+        
+        String zipCode = customer.getZipCode();
         if (!validateAddress(fiscalCountry, fiscalNumber, name, customer.getAddressCountryCode(), customer.getAddress(),
-                customer.getZipCode(), customer.getDistrictSubdivision(), errorMessages)) {
+                zipCode, customer.getDistrictSubdivision(), errorMessages)) {
             throw new TreasuryDomainException("error.ERPCustomerFieldsBean.invalid.address");
         }
-
-        convertAddress(bean, customer.getAddressCountryCode(), customer.getAddress(), customer.getZipCode(),
+        
+        convertAddress(bean, customer.getAddressCountryCode(), customer.getAddress(), zipCode,
                 customer.getDistrictSubdivision(), customer.getAddress());
 
         // CompanyName
@@ -145,57 +147,6 @@ public class ERPCustomerFieldsBean {
 
     public static ERPCustomerFieldsBean fillFromCreditNote(final CreditNote creditNote) {
         return fillFromCustomer(creditNote.getDebtAccount().getCustomer());
-
-//        Customer creditNoteCustomer = creditNote.getDebtAccount().getCustomer();
-//        if (creditNote.getDebitNote() == null) {
-//            return fillFromCustomer(creditNoteCustomer);
-//        }
-//
-//        final DebitNote debitNote = creditNote.getDebitNote();
-//
-//        final ERPCustomerFieldsBean bean = new ERPCustomerFieldsBean();
-//        bean.setCustomerId(debitNote.getCustomerId());
-//
-//        bean.setCustomerBusinessId(debitNote.getCustomerBusinessId());
-//        bean.setCustomerFiscalCountry(debitNote.getCustomerFiscalCountry());
-//        bean.setCustomerNationality(debitNote.getCustomerNationality());
-//        bean.setCustomerAccountId(debitNote.getCustomerAccountId());
-//
-//        if (!validateFiscalNumber(debitNote.getCustomerCountry(), debitNote.getCustomerFiscalNumber())) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.invalid.fiscal.number");
-//        }
-//
-//        if (!Strings.isNullOrEmpty(debitNote.getCustomerFiscalNumber())
-//                && debitNote.getCustomerFiscalNumber().length() > MAX_FISCAL_NUM) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.fiscalNumber.more.than.allowed",
-//                    String.valueOf(MAX_FISCAL_NUM));
-//        }
-//        bean.setCustomerFiscalNumber(debitNote.getCustomerFiscalNumber());
-//
-//        if (debitNote.getCustomerName().length() > MAX_NAME) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.customerName.more.than.allowed",
-//                    String.valueOf(MAX_NAME));
-//        }
-//        bean.setCustomerName(debitNote.getCustomerName());
-//
-//        bean.setCustomerContact(debitNote.getCustomerContact());
-//
-//        final String fiscalCountry = creditNoteCustomer.getFiscalCountry();
-//        final String fiscalNumber = creditNoteCustomer.getFiscalNumber();
-//        final String name = creditNoteCustomer.getName();
-//        final List<String> errorMessages = Lists.newArrayList();
-//        if (!validateAddress(fiscalCountry, fiscalNumber, name, creditNoteCustomer.getAddressCountryCode(),
-//                creditNoteCustomer.getAddress(), creditNoteCustomer.getZipCode(), creditNoteCustomer.getDistrictSubdivision(),
-//                errorMessages)) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.invalid.address");
-//        }
-//
-//        convertAddress(bean, creditNoteCustomer.getAddressCountryCode(), creditNoteCustomer.getAddress(),
-//                creditNoteCustomer.getZipCode(), creditNoteCustomer.getDistrictSubdivision(), creditNoteCustomer.getAddress());
-//
-//        bean.checkRules();
-//
-//        return bean;
     }
 
     public static ERPCustomerFieldsBean fillPayorFromCreditNote(final CreditNote creditNote) {
@@ -211,57 +162,6 @@ public class ERPCustomerFieldsBean {
         }
 
         return fillFromCustomer(payorCustomer);
-        
-//        final Customer creditPayorCustomer = creditNote.getPayorDebtAccount().getCustomer();
-//        if (creditNote.getDebitNote() == null) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean");
-//        }
-//
-//        final DebitNote debitNote = creditNote.getDebitNote();
-//
-//        final ERPCustomerFieldsBean bean = new ERPCustomerFieldsBean();
-//        bean.setCustomerId(debitNote.getPayorCustomerId());
-//
-//        bean.setCustomerBusinessId(debitNote.getPayorCustomerBusinessId());
-//        bean.setCustomerFiscalCountry(debitNote.getPayorCustomerFiscalCountry());
-//        bean.setCustomerNationality(debitNote.getPayorCustomerNationality());
-//        bean.setCustomerAccountId(debitNote.getPayorCustomerAccountId());
-//
-//        if (!validateFiscalNumber(debitNote.getPayorCustomerCountry(), debitNote.getPayorCustomerFiscalNumber())) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.invalid.fiscal.number");
-//        }
-//
-//        if (!Strings.isNullOrEmpty(debitNote.getPayorCustomerFiscalNumber())
-//                && debitNote.getPayorCustomerFiscalNumber().length() > MAX_FISCAL_NUM) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.payorFiscalNumber.more.than.allowed",
-//                    String.valueOf(MAX_FISCAL_NUM));
-//        }
-//        bean.setCustomerFiscalNumber(debitNote.getPayorCustomerFiscalNumber());
-//
-//        if (debitNote.getPayorCustomerName().length() > MAX_NAME) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.payorCustomerName.more.than.allowed",
-//                    String.valueOf(MAX_NAME));
-//        }
-//
-//        bean.setCustomerName(debitNote.getPayorCustomerName());
-//        bean.setCustomerContact(debitNote.getPayorCustomerContact());
-//
-//        final String fiscalCountry = creditNote.getPayorDebtAccount().getCustomer().getFiscalCountry();
-//        final String fiscalNumber = creditNote.getPayorDebtAccount().getCustomer().getFiscalNumber();
-//        final String name = creditNote.getPayorDebtAccount().getCustomer().getName();
-//        final List<String> errorMessages = Lists.newArrayList();
-//        if (!validateAddress(fiscalCountry, fiscalNumber, name, creditPayorCustomer.getAddressCountryCode(),
-//                creditPayorCustomer.getAddress(), creditPayorCustomer.getZipCode(), creditPayorCustomer.getDistrictSubdivision(),
-//                errorMessages)) {
-//            throw new TreasuryDomainException("error.ERPCustomerFieldsBean.invalid.payor.address");
-//        }
-//
-//        convertAddress(bean, debitNote.getPayorCustomerCountry(), debitNote.getPayorCustomerAddressDetail(),
-//                debitNote.getPayorCustomerZipCode(), debitNote.getPayorCustomerRegion(),
-//                debitNote.getPayorCustomerAddressDetail());
-//
-//        bean.checkRules();
-//        return bean;
     }
 
     private static void convertAddress(final ERPCustomerFieldsBean bean, final String country, final String addressDetail,
@@ -270,7 +170,7 @@ public class ERPCustomerFieldsBean {
         bean.setCustomerCountry(!Strings.isNullOrEmpty(country) ? country : MORADA_DESCONHECIDO);
         bean.setCustomerAddressDetail(!Strings.isNullOrEmpty(addressDetail) ? addressDetail : MORADA_DESCONHECIDO);
         bean.setCustomerCity(!Strings.isNullOrEmpty(zipCodeRegion) ? zipCodeRegion : MORADA_DESCONHECIDO);
-        bean.setCustomerZipCode(!Strings.isNullOrEmpty(zipCode) ? zipCode : MORADA_DESCONHECIDO);
+        bean.setCustomerZipCode(!Strings.isNullOrEmpty(zipCode) ? zipCode : null);
         bean.setCustomerRegion(!Strings.isNullOrEmpty(zipCodeRegion) ? zipCodeRegion : MORADA_DESCONHECIDO);
         bean.setCustomerStreetName(Splitter.fixedLength(MAX_STREET_NAME).splitToList(street).get(0));
     }
@@ -294,7 +194,7 @@ public class ERPCustomerFieldsBean {
                     fiscalNumber, name));
         }
 
-        if (Strings.isNullOrEmpty(zipCode)) {
+        if (Strings.isNullOrEmpty(zipCode) && "PT".equals(addressCountryCode.toUpperCase())) {
             errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.address.zipCode.not.filled", fiscalCountry,
                     fiscalNumber, name));
         }

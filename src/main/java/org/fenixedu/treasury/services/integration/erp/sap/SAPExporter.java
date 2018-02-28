@@ -1316,26 +1316,26 @@ public class SAPExporter implements IERPExporter {
     }
 
     public static AddressStructure convertAddressToSAFTAddress(final ERPCustomerFieldsBean customer) {
-        final AddressStructure companyAddress = new AddressStructure();
+        final AddressStructure address = new AddressStructure();
 
-        companyAddress.setCountry(
+        address.setCountry(
                 !Strings.isNullOrEmpty(customer.getCustomerCountry()) ? translateCountryCodeForExceptions(customer.getCustomerCountry()) : MORADA_DESCONHECIDO);
 
-        companyAddress.setAddressDetail(!Strings.isNullOrEmpty(customer.getCustomerAddressDetail()) ? customer
+        address.setAddressDetail(!Strings.isNullOrEmpty(customer.getCustomerAddressDetail()) ? customer
                 .getCustomerAddressDetail() : MORADA_DESCONHECIDO);
 
-        companyAddress.setCity(
+        address.setCity(
                 !Strings.isNullOrEmpty(customer.getCustomerRegion()) ? customer.getCustomerRegion() : MORADA_DESCONHECIDO);
 
-        companyAddress.setPostalCode(
-                !Strings.isNullOrEmpty(customer.getCustomerZipCode()) ? customer.getCustomerZipCode() : MORADA_DESCONHECIDO);
+        address.setPostalCode(
+                !Strings.isNullOrEmpty(customer.getCustomerZipCode()) ? customer.getCustomerZipCode() : "");
 
-        companyAddress.setRegion(
+        address.setRegion(
                 !Strings.isNullOrEmpty(customer.getCustomerRegion()) ? customer.getCustomerRegion() : MORADA_DESCONHECIDO);
 
-        companyAddress.setStreetName(customer.getCustomerStreetName());
+        address.setStreetName(customer.getCustomerStreetName());
 
-        return companyAddress;
+        return address;
     }
 
     public static org.fenixedu.treasury.generated.sources.saft.sap.Product convertProductToSAFTProduct(Product product) {
