@@ -194,7 +194,7 @@ public class ERPCustomerFieldsBean {
                     fiscalNumber, name));
         }
 
-        if (Strings.isNullOrEmpty(zipCode) && "PT".equals(addressCountryCode.toUpperCase())) {
+        if (Strings.isNullOrEmpty(zipCode) && (Strings.isNullOrEmpty(addressCountryCode) || "PT".equals(addressCountryCode.toUpperCase()))) {
             errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.address.zipCode.not.filled", fiscalCountry,
                     fiscalNumber, name));
         }
