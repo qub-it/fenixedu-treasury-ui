@@ -214,7 +214,6 @@ ${portal.toolkit()}
 			                               	<spring:message code="label.customer.read.showdebtaccount"></spring:message>
 			                               	</a>
 			                               
-			                               	<c:if test="${debtAccount.customer.personCustomer}">
 											<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
 											<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
 											&nbsp;
@@ -225,7 +224,6 @@ ${portal.toolkit()}
 												<spring:message code="label.Customer.changeFiscalNumber" />
 											</a>
 											<% } %>
-											</c:if>
 											</c:if>
 			                                
 			                               <c:if test="${debtAccount.totalInDebt < 0 }">

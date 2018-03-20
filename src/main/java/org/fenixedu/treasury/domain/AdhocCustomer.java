@@ -27,8 +27,12 @@
  */
 package org.fenixedu.treasury.domain;
 
+import static org.fenixedu.treasury.util.FiscalCodeValidation.isValidFiscalNumber;
+import static org.fenixedu.treasury.util.FiscalCodeValidation.isValidationAppliedToFiscalCountry;
+
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -40,6 +44,7 @@ import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
@@ -81,7 +86,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setCountryCode(countryCode);
         setIdentificationNumber(identificationNumber);
         
-        if(!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+        if(Constants.isDefaultCountry(getCountryCode()) && !FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
             throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
         
@@ -118,10 +123,88 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     @Override
+    @Atomic
     public void changeFiscalNumber(final AdhocCustomerBean bean) {
-        throw new RuntimeException("error.AdhocCustomer.changeFiscalNumber.not.supported");
+        if(!Strings.isNullOrEmpty(getErpCustomerId())) {
+            throw new TreasuryDomainException("warning.Customer.changeFiscalNumber.maybe.integrated.in.erp");
+        }
+        
+        final String oldFiscalCountry = getFiscalCountry();
+        final String oldFiscalNumber = getFiscalNumber();
+        final boolean changeFiscalNumberConfirmed = bean.isChangeFiscalNumberConfirmed();
+        final boolean withFinantialDocumentsIntegratedInERP = isWithFinantialDocumentsIntegratedInERP();
+        final boolean customerInformationMaybeIntegratedWithSuccess = isCustomerInformationMaybeIntegratedWithSuccess();
+        final boolean customerWithFinantialDocumentsIntegratedInPreviousERP = isCustomerWithFinantialDocumentsIntegratedInPreviousERP();
+        
+        if(!bean.isChangeFiscalNumberConfirmed()) {
+            throw new TreasuryDomainException("message.Customer.changeFiscalNumber.confirmation");
+        }
+        
+        final String countryCode = bean.getCountryCode();
+        final String fiscalNumber = bean.getFiscalNumber();
+        
+        if(Strings.isNullOrEmpty(countryCode)) {
+            throw new TreasuryDomainException("error.Customer.countryCode.required");
+        }
+        
+        if(Strings.isNullOrEmpty(fiscalNumber)) {
+            throw new TreasuryDomainException("error.Customer.fiscalNumber.required");
+        }
+        
+        // Check if fiscal information is different from current information
+        if(lowerCase(countryCode).equals(lowerCase(getCountryCode())) && fiscalNumber.equals(getFiscalNumber())) {
+            throw new TreasuryDomainException("error.Customer.already.with.fiscal.information");
+        }
+
+        if(isFiscalValidated() && isFiscalCodeValid()) {
+            throw new TreasuryDomainException("error.Customer.changeFiscalNumber.already.valid");
+        }
+        
+        if(customerInformationMaybeIntegratedWithSuccess) {
+            throw new TreasuryDomainException("warning.Customer.changeFiscalNumber.maybe.integrated.in.erp");
+        }
+        
+        if(withFinantialDocumentsIntegratedInERP) {
+            throw new TreasuryDomainException("error.Customer.changeFiscalNumber.documents.integrated.erp");
+        }
+        
+        if(Constants.isDefaultCountry(getCountryCode()) && !FiscalCodeValidation.isValidFiscalNumber(countryCode, fiscalNumber)) {
+            throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
+        }
+        
+        setCountryCode(countryCode);
+        setFiscalNumber(fiscalNumber);
+        
+        checkRules();
+
+        FiscalDataUpdateLog.create(this, oldFiscalCountry, oldFiscalNumber, 
+                changeFiscalNumberConfirmed, withFinantialDocumentsIntegratedInERP, customerInformationMaybeIntegratedWithSuccess, customerWithFinantialDocumentsIntegratedInPreviousERP);
     }
     
+    @Override
+    public boolean isFiscalCodeValid() {
+        return !Constants.isDefaultCountry(getCountryCode()) || isValidFiscalNumber(getCountryCode(), getFiscalNumber());
+    }
+
+    @Override
+    public boolean isFiscalValidated() {
+        return Constants.isDefaultCountry(getCountryCode());
+    }
+    
+    @Override
+    public boolean isAbleToChangeFiscalNumber() {
+        boolean result = super.isAbleToChangeFiscalNumber();
+        
+        if(!result) {
+            return result;
+        }
+        
+        if(FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+            return false;
+        }
+        
+        return true;
+    }
     
     @Override
     public Set<? extends TreasuryEvent> getTreasuryEventsSet() {

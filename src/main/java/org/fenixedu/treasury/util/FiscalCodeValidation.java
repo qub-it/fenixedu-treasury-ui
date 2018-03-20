@@ -7,7 +7,6 @@ import org.fenixedu.treasury.domain.Customer;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-import eu.europa.ec.taxud.tin.algorithm.TINAlgorithm;
 import eu.europa.ec.taxud.tin.algorithm.TINValid;
 
 public class FiscalCodeValidation {
@@ -21,21 +20,16 @@ public class FiscalCodeValidation {
         return VALIDATED_COUNTRIES.contains(countryCode.toUpperCase());
     }
     
-    
     public static boolean isValidFiscalNumber(final String countryCode, final String fiscalNumber) {
-        return FiscalCodeValidation.isValidcontrib(countryCode, fiscalNumber);
-    }
-
-    private static boolean isValidcontrib(final String countryCode, final String contrib) {
         if (Strings.isNullOrEmpty(countryCode)) {
             return false;
         }
 
-        if (Strings.isNullOrEmpty(contrib)) {
+        if (Strings.isNullOrEmpty(fiscalNumber)) {
             return false;
         }
 
-        if (!Constants.isDefaultCountry(countryCode) && Customer.DEFAULT_FISCAL_NUMBER.equals(contrib)) {
+        if (!Constants.isDefaultCountry(countryCode) && Customer.DEFAULT_FISCAL_NUMBER.equals(fiscalNumber)) {
             return false;
         }
         
@@ -45,18 +39,18 @@ public class FiscalCodeValidation {
             int i = 0;
             long checkDigit = 0;
 
-            if (contrib.length() == 9) {
-                int numericValue = Character.getNumericValue(contrib.charAt(0));
-                if (contrib.charAt(0) == '1' || contrib.charAt(0) == '2' || contrib.charAt(0) == '5' || contrib.charAt(0) == '6'
-                        || contrib.charAt(0) == '9') {
+            if (fiscalNumber.length() == 9) {
+                int numericValue = Character.getNumericValue(fiscalNumber.charAt(0));
+                if (fiscalNumber.charAt(0) == '1' || fiscalNumber.charAt(0) == '2' || fiscalNumber.charAt(0) == '5' || fiscalNumber.charAt(0) == '6'
+                        || fiscalNumber.charAt(0) == '9') {
                     checkDigit = numericValue * 9;
                     for (i = 2; i <= 8; i++) {
-                        checkDigit = checkDigit + (Character.getNumericValue(contrib.charAt(i - 1)) * (10 - i));
+                        checkDigit = checkDigit + (Character.getNumericValue(fiscalNumber.charAt(i - 1)) * (10 - i));
                     }
                     checkDigit = 11 - (checkDigit % 11);
                     if ((checkDigit >= 10))
                         checkDigit = 0;
-                    if ((checkDigit == Character.getNumericValue(contrib.charAt(8))))
+                    if ((checkDigit == Character.getNumericValue(fiscalNumber.charAt(8))))
                         functionReturnValue = true;
                 }
             }
@@ -65,12 +59,11 @@ public class FiscalCodeValidation {
         }
         
         if(VALIDATED_COUNTRIES.contains(countryCode.toUpperCase())) {
-            return TINValid.checkTIN(translateCountry(countryCode.toUpperCase()), contrib) == 0;
+            return TINValid.checkTIN(translateCountry(countryCode.toUpperCase()), fiscalNumber) == 0;
         }
 
         return true;
     }
-
 
     private static String translateCountry(String countryCode) {
         if("GB".equals(countryCode)) {
@@ -79,4 +72,5 @@ public class FiscalCodeValidation {
         
         return countryCode;
     }
+    
 }

@@ -181,7 +181,7 @@ public class DebtAccountController extends TreasuryBaseController {
 
     private boolean isInvalidFiscalCode(final DebtAccount debtAccount) {
         Customer customer = debtAccount.getCustomer();
-        return !FiscalCodeValidation.isValidFiscalNumber(customer.getFiscalCountry(), customer.getFiscalNumber());
+        return !customer.isFiscalCodeValid();
     }
 
     @RequestMapping(value = "/read/{oid}/createreimbursement")
