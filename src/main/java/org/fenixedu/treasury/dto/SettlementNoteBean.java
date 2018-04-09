@@ -14,8 +14,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.VatType;
@@ -37,7 +37,7 @@ import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
 
-public class SettlementNoteBean implements IBean, Serializable {
+public class SettlementNoteBean implements ITreasuryBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -59,9 +59,9 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     private List<PaymentEntryBean> paymentEntries;
 
-    private List<TupleDataSourceBean> paymentMethods;
+    private List<TreasuryTupleDataSourceBean> paymentMethods;
 
-    private List<TupleDataSourceBean> documentNumberSeries;
+    private List<TreasuryTupleDataSourceBean> documentNumberSeries;
 
     private List<String> settlementNoteStateUrls;
 
@@ -382,13 +382,13 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.paymentEntries = paymentEntries;
     }
 
-    public List<TupleDataSourceBean> getPaymentMethods() {
+    public List<TreasuryTupleDataSourceBean> getPaymentMethods() {
         return paymentMethods;
     }
 
     public void setPaymentMethods(List<PaymentMethod> paymentMethods) {
         this.paymentMethods = paymentMethods.stream().map(paymentMethod -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
+            TreasuryTupleDataSourceBean tuple = new TreasuryTupleDataSourceBean();
             tuple.setText(paymentMethod.getName().getContent());
             tuple.setId(paymentMethod.getExternalId());
             return tuple;
@@ -411,13 +411,13 @@ public class SettlementNoteBean implements IBean, Serializable {
         this.docNumSeries = docNumSeries;
     }
 
-    public List<TupleDataSourceBean> getDocumentNumberSeries() {
+    public List<TreasuryTupleDataSourceBean> getDocumentNumberSeries() {
         return documentNumberSeries;
     }
 
     public void setDocumentNumberSeries(List<DocumentNumberSeries> documentNumberSeries) {
         this.documentNumberSeries = documentNumberSeries.stream().map(docNumSeries -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
+            TreasuryTupleDataSourceBean tuple = new TreasuryTupleDataSourceBean();
             tuple.setText(docNumSeries.getSeries().getCode() + " - " + docNumSeries.getSeries().getName().getContent());
             tuple.setId(docNumSeries.getExternalId());
             return tuple;
@@ -484,7 +484,7 @@ public class SettlementNoteBean implements IBean, Serializable {
      */
     // @formatter:on
 
-    public class DebitEntryBean implements IBean, Serializable {
+    public class DebitEntryBean implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -560,7 +560,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
     }
 
-    public class CreditEntryBean implements IBean, Serializable {
+    public class CreditEntryBean implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -636,7 +636,7 @@ public class SettlementNoteBean implements IBean, Serializable {
         }
     }
 
-    public static class InterestEntryBean implements IBean, Serializable {
+    public static class InterestEntryBean implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -687,7 +687,7 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     }
 
-    public class PaymentEntryBean implements IBean, Serializable {
+    public class PaymentEntryBean implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -732,7 +732,7 @@ public class SettlementNoteBean implements IBean, Serializable {
 
     }
 
-    public class VatAmountBean implements IBean, Serializable {
+    public class VatAmountBean implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 

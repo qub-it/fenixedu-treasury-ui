@@ -33,11 +33,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.qubit.solution.fenixedu</groupId>
-			<artifactId>fenixedu-ulisboa-tools</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time-jsptags</artifactId>
 			<version>1.1.1</version>
@@ -186,6 +181,12 @@
 			<groupId>eu.europa.ec.taxud</groupId>
 			<artifactId>tin-algorithm</artifactId>
 			<version>5.2.2_PUBLIC</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fatboyindustrial.gson-jodatime-serialisers</groupId>
+            <artifactId>gson-jodatime-serialisers</artifactId>
+            <version>1.2.0</version>
         </dependency>
         
 	</dependencies>

@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.Customer;
@@ -240,22 +240,22 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/autocompletehelper", produces = "application/json;charset=UTF-8")
-    public @ResponseBody ResponseEntity<List<TupleDataSourceBean>> processReadToReadEvent(
+    public @ResponseBody ResponseEntity<List<TreasuryTupleDataSourceBean>> processReadToReadEvent(
             @RequestParam(value = "q", required = true) String searchField, Model model, RedirectAttributes redirectAttributes) {
         final String searchFieldDecoded = URLDecoder.decode(searchField).trim();
 
-        List<TupleDataSourceBean> bean = new ArrayList<TupleDataSourceBean>();
+        List<TreasuryTupleDataSourceBean> bean = new ArrayList<TreasuryTupleDataSourceBean>();
         List<DebtAccount> debtAccounts = DebtAccount.findAll().filter(x -> x.getCustomer().matchesMultiFilter(searchFieldDecoded))
                 .sorted((x, y) -> x.getCustomer().getName().compareToIgnoreCase(y.getCustomer().getName()))
                 .collect(Collectors.toList());
 
         for (DebtAccount debt : debtAccounts) {
-            bean.add(new TupleDataSourceBean(debt.getExternalId(),
+            bean.add(new TreasuryTupleDataSourceBean(debt.getExternalId(),
                     debt.getCustomer().getName() + " [" + debt.getFinantialInstitution().getCode() + "] (#"
                             + debt.getCustomer().getBusinessIdentification() + ") ("
                             + debt.getCustomer().getIdentificationNumber() + ")"));
         }
-        return new ResponseEntity<List<TupleDataSourceBean>>(bean, HttpStatus.OK);
+        return new ResponseEntity<List<TreasuryTupleDataSourceBean>>(bean, HttpStatus.OK);
     }
 
     private static final String _SEARCHOPENDEBTACCOUNTS_URI = "/searchopendebtaccounts";

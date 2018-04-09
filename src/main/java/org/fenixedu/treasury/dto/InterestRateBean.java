@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.fenixedu.bennu.IBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.Days;
@@ -13,11 +13,11 @@ import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
 
-public class InterestRateBean implements IBean, Serializable {
+public class InterestRateBean implements ITreasuryBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static class InterestInformationDetail implements IBean, Serializable {
+    public static class InterestInformationDetail implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -60,7 +60,7 @@ public class InterestRateBean implements IBean, Serializable {
         }
     }
 
-    public static class CreatedInterestEntry implements IBean, Serializable {
+    public static class CreatedInterestEntry implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
