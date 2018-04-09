@@ -113,18 +113,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         }
     }
 
-    @Atomic
     private PaymentReferenceCode createPaymentReferenceCode(final PaymentReferenceCodeBean bean) {
-        final PaymentReferenceCode paymentReferenceCode =
-                bean.getPaymentCodePool()
-                        .getReferenceCodeGenerator()
-                        .generateNewCodeFor(
-                                bean.getPaymentAmount(), bean.getBeginDate(), bean.getEndDate(),
-                                bean.getPaymentCodePool().getIsFixedAmount());
-
-        paymentReferenceCode.createPaymentTargetTo(Sets.newHashSet(bean.getSelectedDebitEntries()), bean.getPaymentAmount());
-
-        return paymentReferenceCode;
+        return PaymentReferenceCode.createPaymentReferenceCodeForMultipleDebitEntries(bean);
     }
 
     private String jspPage(final String page) {

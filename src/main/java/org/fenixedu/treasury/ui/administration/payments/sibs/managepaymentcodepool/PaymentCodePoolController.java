@@ -259,8 +259,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         try {
             assertUserIsManager(model);
 
-            updatePaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount,
-                    maxAmount, validFrom, validTo, active, useCheckDigit, documentNumberSeries, paymentMethod, model);
+            getPaymentCodePool(model).updatePaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount,
+                    maxAmount, validFrom, validTo, active, useCheckDigit, documentNumberSeries, paymentMethod);
 
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
@@ -271,17 +271,4 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         return update(paymentCodePool, model);
     }
 
-    @Atomic
-    public void updatePaymentCodePool(FinantialInstitution finantialInstitution, String name, String entityReferenceCode,
-            Long minReferenceCode, Long maxReferenceCode, BigDecimal minAmount, BigDecimal maxAmount, LocalDate validFrom,
-            LocalDate validTo, Boolean active, Boolean useCheckDigit, DocumentNumberSeries seriesToUseInPayments,
-            PaymentMethod paymentMethod, Model model) {
-
-        getPaymentCodePool(model).edit(name, active, seriesToUseInPayments, paymentMethod);
-        getPaymentCodePool(model).setNewValidPeriod(validFrom, validTo);
-        getPaymentCodePool(model).changeFinantialInstitution(finantialInstitution);
-        getPaymentCodePool(model).changePooltype(useCheckDigit);
-        getPaymentCodePool(model).changeReferenceCode(entityReferenceCode, minReferenceCode, maxReferenceCode);
-        getPaymentCodePool(model).changeAmount(minAmount, maxAmount);
-    }
 }

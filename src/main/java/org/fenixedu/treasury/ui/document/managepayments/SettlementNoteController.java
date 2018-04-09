@@ -243,19 +243,8 @@ public class SettlementNoteController extends TreasuryBaseController {
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
         }
 
-        bean.setInterestEntries(new ArrayList<InterestEntryBean>());
-        for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
-            if (debitEntryBean.isIncluded()
-                    && Constants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
-
-                //Calculate interest only if we are making a FullPayment
-                InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateUndebitedInterestValue(bean.getDate());
-                if (debitInterest.getInterestAmount().compareTo(BigDecimal.ZERO) != 0) {
-                    InterestEntryBean interestEntryBean = new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest);
-                    bean.getInterestEntries().add(interestEntryBean);
-                }
-            }
-        }
+        bean.calculateInterestDebitEntries();
+        
         if (bean.getInterestEntries().size() == 0) {
             return calculateInterest(bean, model);
         }
