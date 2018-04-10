@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.ui.document.forwardpayments;
 
+import static java.lang.String.format;
+
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -162,7 +164,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
     @RequestMapping(value = REGISTER_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.POST)
     public String registerPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            @RequestParam("justification") final String justification, final Model model) {
+            @RequestParam("justification") final String justification, final Model model, final RedirectAttributes redirectAttributes) {
         try {
             ForwardPaymentStatusBean paymentStatusBean =
                     forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
@@ -181,7 +183,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
         } catch (final Exception e) {
             e.printStackTrace();
             addErrorMessage(e.getLocalizedMessage(), model);
-            return String.format("redirect:%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId());
+            return redirect(format("%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId()), model, redirectAttributes);
         }
     }
 

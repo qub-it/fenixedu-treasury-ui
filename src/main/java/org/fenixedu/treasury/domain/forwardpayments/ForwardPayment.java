@@ -38,6 +38,7 @@ import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -171,6 +172,10 @@ public class ForwardPayment extends ForwardPayment_Base {
         if (isInPayedState()) {
             throw new TreasuryDomainException("error.ForwardPayment.already.payed");
         }
+        
+        if(getSettlementNote() != null) {
+            throw new TreasuryDomainException("error.ForwardPayment.with.settlement.note.already.associated");
+        }
 
         setTransactionId(transactionId);
         setAuthorizationId(authorizationNumber);
@@ -206,6 +211,10 @@ public class ForwardPayment extends ForwardPayment_Base {
                     continue;
                 }
 
+                if(!debitEntry.isInDebt()) {
+                    continue;
+                }
+                
                 if (debitEntry.getFinantialDocument() == null) {
                     final DebitNote debitNote = DebitNote.create(getDebtAccount(), debitNoteSeries, new DateTime());
                     debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
@@ -454,7 +463,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
                 if (reportBean != null) {
                     // @formatter:off
-                    logWriter.format("C\tPAYMENT REQUEST\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
+                    logWriter.format("C\tPAYMENT REQUEST\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", 
                             reportBean.executionDate,
                             reportBean.forwardPaymentExternalId, 
                             reportBean.forwardPaymentOrderNumber, 
@@ -464,11 +473,14 @@ public class ForwardPayment extends ForwardPayment_Base {
                             reportBean.nextStateDescription,
                             reportBean.paymentRegisteredWithSuccess, 
                             reportBean.settlementNote, 
+                            reportBean.advancedPaymentCreditNote, 
                             reportBean.paymentDate,
                             reportBean.paidAmount, 
+                            reportBean.advancedCreditAmount != null ? reportBean.advancedCreditAmount.toString() : "",
                             reportBean.transactionId,
                             reportBean.statusCode, 
-                            reportBean.statusMessage);
+                            reportBean.statusMessage,
+                            reportBean.remarks);
                     
                     reportBeans.add(reportBean);
                     // @formatter:on
@@ -508,11 +520,14 @@ public class ForwardPayment extends ForwardPayment_Base {
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.nextStateDescription"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.paymentRegisteredWithSuccess"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.settlementNote"),
+                                Constants.bundle("label.PostForwardPaymentReportBean.cell.advancedCreditSettlementNote"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.paymentDate"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.paidAmount"),
+                                Constants.bundle("label.PostForwardPaymentReportBean.cell.advancedCreditAmount"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.transactionId"),
                                 Constants.bundle("label.PostForwardPaymentReportBean.cell.statusCode"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.statusMessage") };
+                                Constants.bundle("label.PostForwardPaymentReportBean.cell.statusMessage"),
+                                Constants.bundle("label.PostForwardPaymentReportBean.cell.remarks")};
                     }
 
                     @Override
@@ -568,6 +583,24 @@ public class ForwardPayment extends ForwardPayment_Base {
 
     private static class PostForwardPaymentReportBean implements SpreadsheetRow {
 
+        private String executionDate;
+        private String forwardPaymentExternalId;
+        private String forwardPaymentOrderNumber;
+        private String forwardPaymentWhenOccured;
+        private String customerCode;
+        private String customerName;
+        private String previousStateDescription;
+        private String nextStateDescription;
+        private boolean paymentRegisteredWithSuccess;
+        private String settlementNote = "";
+        private String advancedPaymentCreditNote = "";
+        private String paymentDate = "";
+        private String paidAmount = "";
+        private BigDecimal advancedCreditAmount;
+        private String transactionId = "";
+        private String statusCode;
+        private String statusMessage;
+        private String remarks = "";
 
         private PostForwardPaymentReportBean(final ForwardPayment forwardPayment,
                 final PostProcessPaymentStatusBean postProcessPaymentStatusBean) {
@@ -588,27 +621,49 @@ public class ForwardPayment extends ForwardPayment_Base {
                         forwardPayment.getSettlementNote().getPaymentDate().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
                 this.paidAmount =  forwardPayment.getSettlementNote().getTotalPayedAmount().toString();
                 this.transactionId = forwardPayment.getTransactionId();
+                
+                if(forwardPayment.getSettlementNote().getAdvancedPaymentCreditNote() != null) {
+                    this.advancedPaymentCreditNote = forwardPayment.getSettlementNote().getAdvancedPaymentCreditNote().getUiDocumentNumber();
+                    this.advancedCreditAmount = forwardPayment.getSettlementNote().getAdvancedPaymentCreditNote().getTotalAmount();
+                }
+                
+                if(hasSettlementNotesOnSameDayForSameDebts(forwardPayment)) {
+                    remarks = Constants.bundle("warn.PostForwardPaymentsTask.settlement.notes.on.same.day.for.same.debts");
+                }
             }
 
             this.statusCode = postProcessPaymentStatusBean.getForwardPaymentStatusBean().getStatusCode();
             this.statusMessage = postProcessPaymentStatusBean.getForwardPaymentStatusBean().getStatusMessage();
+            
         }
 
-        private String executionDate;
-        private String forwardPaymentExternalId;
-        private String forwardPaymentOrderNumber;
-        private String forwardPaymentWhenOccured;
-        private String customerCode;
-        private String customerName;
-        private String previousStateDescription;
-        private String nextStateDescription;
-        private boolean paymentRegisteredWithSuccess;
-        private String settlementNote = "";
-        private String paymentDate = "";
-        private String paidAmount = "";
-        private String transactionId = "";
-        private String statusCode;
-        private String statusMessage;
+        private boolean hasSettlementNotesOnSameDayForSameDebts(final ForwardPayment forwardPayment) {
+            final LocalDate paymentDate = forwardPayment.getSettlementNote().getPaymentDate().toLocalDate();
+            
+            final Set<DebitEntry> forwardPaymentDebitEntriesSet = forwardPayment.getDebitEntriesSet();
+            
+            for (SettlementNote settlementNote : SettlementNote.findByDebtAccount(forwardPayment.getDebtAccount()).collect(Collectors.toSet())) {
+                if(settlementNote == forwardPayment.getSettlementNote()) {
+                    continue;
+                }
+                
+                if(settlementNote.isAnnulled()) {
+                    continue;
+                }
+                
+                if(!settlementNote.getPaymentDate().toLocalDate().isEqual(paymentDate)) {
+                    continue;
+                }
+                
+                for (final SettlementEntry settlementEntry : settlementNote.getSettlemetEntriesSet()) {
+                    if(forwardPaymentDebitEntriesSet.contains(settlementEntry.getInvoiceEntry())) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
 
         @Override
         public void writeCellValues(final Row row, final IErrorsLog errorsLog) {
@@ -624,12 +679,14 @@ public class ForwardPayment extends ForwardPayment_Base {
             row.createCell(i++).setCellValue(nextStateDescription);
             row.createCell(i++).setCellValue(Constants.bundle("label." + paymentRegisteredWithSuccess));
             row.createCell(i++).setCellValue(settlementNote);
+            row.createCell(i++).setCellValue(advancedPaymentCreditNote);
             row.createCell(i++).setCellValue(paymentDate);
             row.createCell(i++).setCellValue(paidAmount);
+            row.createCell(i++).setCellValue(advancedCreditAmount != null ? advancedCreditAmount.toString() : "");
             row.createCell(i++).setCellValue(transactionId);
             row.createCell(i++).setCellValue(statusCode);
             row.createCell(i++).setCellValue(statusMessage);
-
+            row.createCell(i++).setCellValue(remarks);
         }
 
     }    
