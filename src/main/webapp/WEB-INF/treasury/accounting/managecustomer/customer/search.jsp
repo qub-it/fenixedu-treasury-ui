@@ -81,7 +81,7 @@ ${portal.toolkit()}
 </c:if>
 
 <div class="panel panel-default">
-    <form method="get" class="form-horizontal">
+    <form method="get" class="form-horizontal" accept-charset="iso-8859-15">
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">

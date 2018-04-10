@@ -98,7 +98,26 @@ ${portal.toolkit()}
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="debitNote_documentNumberSeries" class="js-example-basic-single" name="documentnumberseries">
+						<c:forEach items="${DebitNote_documentNumberSeries_options}" var="element">
+							<c:if test="${element.series.defaultSeries}">
+								<option value="${element.externalId}" selected="selected"><c:out value='${element.series.code} - ${element.series.name.content}'/></option>
+							</c:if>
+							<c:if test="${not element.series.defaultSeries}">
+								<option value="${element.externalId}" ><c:out value='${element.series.code} - ${element.series.name.content}'/></option>
+							</c:if>
+						</c:forEach>
                     </select>
+                    <script type="text/javascript">
+                    	$(document).ready(function() {
+		            		$("#debitNote_documentNumberSeries").select2();
+		            	    
+                    	});
+                    </script>
+                    <c:if test="${param.documentnumberseries != null}">
+                    	$(document).ready(function() {
+		            	    $("#debitNote_documentNumberSeries").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
+                    	});
+                    </c:if>
                 </div>
             </div>
             <div class="form-group row">
@@ -175,6 +194,10 @@ ${portal.toolkit()}
                     <select id="debitNote_payorDebtAccount" class="js-example-basic-single" name="payordebtaccount">
                         <option value="">&nbsp;</option>
                         <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
+                        <option value="">&nbsp;</option>
+						<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element">
+							<option value="${element.externalId}"><c:out value='${element.customer.uiFiscalNumber} - ${element.customer.name}'/></option>
+						</c:forEach>
                     </select>
                 </div>
             </div>
@@ -192,16 +215,8 @@ $(document).ready(function() {
 
 		<%-- Block for providing payorDebtAccount options --%>
 		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		payorDebtAccount_options = [
-			<c:forEach items="${DebitNote_payorDebtAccount_options}" var="element"> 
-				{
-					text : "<c:out value='${element.customer.uiFiscalNumber} - ${element.customer.name}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
 		
-		$("#debitNote_payorDebtAccount").select2({ data : payorDebtAccount_options });
+		$("#debitNote_payorDebtAccount").select2();
 	    
 	    $("#debitNote_payorDebtAccount").select2().select2('val', '<c:out value='${param.payordebtaccount != null ? param.payordebtaccount : debitEntry.getPayorDebtAccount() != null ? debitEntry.getPayorDebtAccount().getExternalId() : "" }' />');
 	
@@ -220,28 +235,6 @@ $(document).ready(function() {
 		$("#debitNote_debtAccount").select2({ data : debtAccount_options});
 	    
 	    $("#debitNote_debtAccount").select2().select2('val', '<c:out value='${param.debtaccount != null ? param.debtaccount : debitEntry.debtAccount.externalId }'/>');
-	
-		<%-- End block for providing debtAccount options --%>
-		<%-- Block for providing documentNumberSeries options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		documentNumberSeries_options = [
-			<c:forEach items="${DebitNote_documentNumberSeries_options}" var="element"> 
-				{
-					text : "<c:out value='${element.series.code} - ${element.series.name.content}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#debitNote_documentNumberSeries").select2(
-			{
-				data : documentNumberSeries_options,
-			}	  
-	    );
-	    
-	    
-	    
-	    $("#debitNote_documentNumberSeries").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
 	
 		<%-- End block for providing documentNumberSeries options --%>
 		<%-- Block for providing currency options --%>
