@@ -32,8 +32,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -41,11 +41,11 @@ import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.util.Constants;
 
-public class PaymentReferenceCodeBean implements IBean {
+public class PaymentReferenceCodeBean implements ITreasuryBean {
 
     private DebitNote debitNote;
     private PaymentCodePool paymentCodePool;
-    private List<TupleDataSourceBean> paymentCodePoolDataSource;
+    private List<TreasuryTupleDataSourceBean> paymentCodePoolDataSource;
     private java.lang.String referenceCode;
     private org.joda.time.LocalDate beginDate;
     private org.joda.time.LocalDate endDate;
@@ -94,13 +94,13 @@ public class PaymentReferenceCodeBean implements IBean {
         paymentCodePool = value;
     }
 
-    public List<TupleDataSourceBean> getPaymentCodePoolDataSource() {
+    public List<TreasuryTupleDataSourceBean> getPaymentCodePoolDataSource() {
         return paymentCodePoolDataSource;
     }
 
     public void setPaymentCodePoolDataSource(List<PaymentCodePool> value) {
         this.paymentCodePoolDataSource = value.stream().map(x -> {
-            TupleDataSourceBean tuple = new TupleDataSourceBean();
+            TreasuryTupleDataSourceBean tuple = new TreasuryTupleDataSourceBean();
             tuple.setId(x.getExternalId());
             tuple.setText("[" + x.getEntityReferenceCode() + "] - " + x.getName());
             return tuple;

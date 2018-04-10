@@ -28,26 +28,26 @@ valueType java.math.BigDecimal as BigDecimalT
 
 valueType pt.ist.standards.geographic.Municipality as Municipality {
     externalizeWith {
-        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
+        String pt.ist.standards.geographic.TreasuryGeographicInfoLoader.externalizePlace();
     }
 
-    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
+    internalizeWith pt.ist.standards.geographic.TreasuryGeographicInfoLoader.internalizePlace();
 }
 
 valueType pt.ist.standards.geographic.District as District {
     externalizeWith {
-        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
+        String pt.ist.standards.geographic.TreasuryGeographicInfoLoader.externalizePlace();
     }
 
-    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
+    internalizeWith pt.ist.standards.geographic.TreasuryGeographicInfoLoader.internalizePlace();
 }
 
 valueType pt.ist.standards.geographic.Country as Country {
     externalizeWith {
-        String pt.ist.standards.geographic.GeographicInfoLoader.externalizePlace();
+        String pt.ist.standards.geographic.TreasuryGeographicInfoLoader.externalizePlace();
     }
 
-    internalizeWith pt.ist.standards.geographic.GeographicInfoLoader.internalizePlace();
+    internalizeWith pt.ist.standards.geographic.TreasuryGeographicInfoLoader.internalizePlace();
 }
 
 /************

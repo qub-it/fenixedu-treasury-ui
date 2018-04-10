@@ -8,6 +8,7 @@
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
+<%@page import="org.fenixedu.academictreasury.domain.customer.PersonCustomer" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -164,7 +165,7 @@ ${portal.angularToolkit()}
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebtEntry" /></a></li>
                 <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createdebitnote"><span
                         class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebitNote" /></a></li>
-				<% if(debtAccount.getCustomer().isPersonCustomer()) { %>
+				<% if(debtAccount.getCustomer().isPersonCustomer() && ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson().getStudent() != null) { %>
                 <li class="dropdown-submenu">
                 	<a class="" href="#"> <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
                 		&nbsp;<spring:message code="label.event.accounting.manageCustomer.createDebt" />

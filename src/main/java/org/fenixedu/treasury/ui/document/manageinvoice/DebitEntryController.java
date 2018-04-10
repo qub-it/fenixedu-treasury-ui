@@ -282,6 +282,10 @@ public class DebitEntryController extends TreasuryBaseController {
 
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             this.setDebitEntryBean(bean, model);
+
+            model.addAttribute("DebitEntry_event_options",
+                    TreasuryEvent.find(debtAccount.getCustomer()).collect(Collectors.<TreasuryEvent> toList()));
+
             return "treasury/document/manageinvoice/debitentry/create";
         }
     }
