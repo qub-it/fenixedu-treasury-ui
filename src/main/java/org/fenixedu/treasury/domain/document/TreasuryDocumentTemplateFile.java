@@ -34,6 +34,7 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class TreasuryDocumentTemplateFile extends TreasuryDocumentTemplateFile_Base {
 

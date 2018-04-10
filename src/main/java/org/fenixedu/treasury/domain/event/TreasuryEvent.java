@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
@@ -54,6 +53,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
@@ -70,7 +70,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
     protected TreasuryEvent() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final Product product, final LocalizedString description) {
@@ -230,7 +230,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
 
         setDebtAccount(null);
         setProduct(null);
-        setBennu(null);
+        setDomainRoot(null);
 
         super.deleteDomainObject();
     }
@@ -331,7 +331,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     // @formatter: on
 
     public static Stream<? extends TreasuryEvent> findAll() {
-        return Bennu.getInstance().getTreasuryEventsSet().stream();
+        return FenixFramework.getDomainRoot().getTreasuryEventsSet().stream();
     }
     
     public static Stream<? extends TreasuryEvent> find(final Customer customer) {

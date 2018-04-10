@@ -30,7 +30,6 @@ package org.fenixedu.treasury.domain;
 import java.util.Locale;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -38,12 +37,13 @@ import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class CustomerType extends CustomerType_Base {
 
     protected CustomerType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected CustomerType(final String code, final LocalizedString name) {
@@ -88,13 +88,13 @@ public class CustomerType extends CustomerType_Base {
             throw new TreasuryDomainException("error.CustomerType.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         deleteDomainObject();
     }
 
     public static Stream<CustomerType> findAll() {
-        return Bennu.getInstance().getCustomerTypesSet().stream();
+        return FenixFramework.getDomainRoot().getCustomerTypesSet().stream();
     }
 
     public static Stream<CustomerType> findByCode(final String code) {

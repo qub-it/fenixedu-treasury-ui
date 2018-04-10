@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -27,6 +26,7 @@ import org.joda.time.LocalDate;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_Base {
 
@@ -68,7 +68,7 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
 
     protected FinantialDocumentPaymentCode() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final FinantialDocument finantialDocument, final PaymentReferenceCode paymentReferenceCode,

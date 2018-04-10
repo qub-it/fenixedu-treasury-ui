@@ -7,13 +7,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class ERPExportOperation extends ERPExportOperation_Base {
 
@@ -113,7 +113,7 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
     public static Stream<ERPExportOperation> findAll() {
         Set<ERPExportOperation> results = new HashSet<ERPExportOperation>();
-        for (FinantialInstitution fi : Bennu.getInstance().getFinantialInstitutionsSet()) {
+        for (FinantialInstitution fi : FenixFramework.getDomainRoot().getFinantialInstitutionsSet()) {
             results.addAll(fi.getIntegrationOperationsSet().stream().filter(x -> x instanceof ERPExportOperation)
                     .map(ERPExportOperation.class::cast).collect(Collectors.toList()));
         }

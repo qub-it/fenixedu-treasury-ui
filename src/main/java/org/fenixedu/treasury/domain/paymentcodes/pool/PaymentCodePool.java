@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -51,6 +50,7 @@ import org.joda.time.LocalDate;
 import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class PaymentCodePool extends PaymentCodePool_Base {
 
@@ -189,7 +189,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             throw new TreasuryDomainException("error.PaymentCodePool.cannot.delete");
         }
 
-//		setBennu(null);
+//		setDomainRoot(null);
 
         deleteDomainObject();
     }
@@ -211,11 +211,11 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
     }
 
-    // TODO legidio, can we please change this to Bennu.getInstance().getFinantialInstitutionsSet().flatMap(x -> x.getPaymentCodePoolsSet().stream()) ?
+    // TODO legidio, can we please change this to FenixFramework.getDomainRoot().getFinantialInstitutionsSet().flatMap(x -> x.getPaymentCodePoolsSet().stream()) ?
     public static Stream<PaymentCodePool> findAll() {
         Set<PaymentCodePool> codes = new HashSet<PaymentCodePool>();
 
-        return Bennu.getInstance().getFinantialInstitutionsSet().stream().map(x -> x.getPaymentCodePoolsSet())
+        return FenixFramework.getDomainRoot().getFinantialInstitutionsSet().stream().map(x -> x.getPaymentCodePoolsSet())
                 .reduce(codes, (a, b) -> {
                     a.addAll(b);
                     return a;

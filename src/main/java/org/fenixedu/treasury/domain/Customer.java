@@ -35,7 +35,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -50,6 +49,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public abstract class Customer extends Customer_Base implements IFiscalContributor {
 
@@ -67,7 +67,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     protected Customer() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     public abstract String getCode();
@@ -134,7 +134,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         }
 
         setCustomerType(null);
-        setBennu(null);
+        setDomainRoot(null);
 
         deleteDomainObject();
     }
@@ -176,7 +176,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     }
 
     public static Stream<? extends Customer> findAll() {
-        return Bennu.getInstance().getCustomersSet().stream();
+        return FenixFramework.getDomainRoot().getCustomersSet().stream();
     }
 
     public static Stream<? extends Customer> find(final FinantialInstitution institution) {

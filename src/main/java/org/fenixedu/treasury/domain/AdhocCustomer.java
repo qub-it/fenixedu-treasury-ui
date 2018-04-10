@@ -28,15 +28,12 @@
 package org.fenixedu.treasury.domain;
 
 import static org.fenixedu.treasury.util.FiscalCodeValidation.isValidFiscalNumber;
-import static org.fenixedu.treasury.util.FiscalCodeValidation.isValidationAppliedToFiscalCountry;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -48,12 +45,13 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class AdhocCustomer extends AdhocCustomer_Base {
 
     protected AdhocCustomer() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     @Override
@@ -233,7 +231,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
             throw new TreasuryDomainException("error.AdhocCustomer.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setCustomerType(null);
 
         for (DebtAccount deb : getDebtAccountsSet()) {
@@ -312,7 +310,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     }
 
     public static Stream<AdhocCustomer> findAll() {
-        return Bennu.getInstance().getCustomersSet().stream().filter(x -> x instanceof AdhocCustomer)
+        return FenixFramework.getDomainRoot().getCustomersSet().stream().filter(x -> x instanceof AdhocCustomer)
                 .map(AdhocCustomer.class::cast);
     }
     

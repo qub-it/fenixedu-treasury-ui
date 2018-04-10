@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.integration;
 
 import java.util.Collection;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -39,12 +38,13 @@ import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServic
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceConfiguration;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class ERPConfiguration extends ERPConfiguration_Base {
 
     protected ERPConfiguration() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final Series paymentsIntegrationSeries, final FinantialInstitution finantialInstitution,
@@ -118,7 +118,7 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.ERPConfiguration.cannot.delete");
         }
-        setBennu(null);
+        setDomainRoot(null);
         setFinantialInstitution(null);
         setPaymentsIntegrationSeries(null);
         deleteDomainObject();

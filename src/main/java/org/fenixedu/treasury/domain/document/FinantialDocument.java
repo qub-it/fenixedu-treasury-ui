@@ -36,7 +36,6 @@ import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -54,6 +53,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Ordering;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public abstract class FinantialDocument extends FinantialDocument_Base {
 
@@ -88,7 +88,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
 
     protected FinantialDocument() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
         setState(FinantialDocumentStateType.PREPARING);
     }
 
@@ -356,7 +356,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             throw new TreasuryDomainException("error.FinantialDocument.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setDocumentNumberSeries(null);
         setCurrency(null);
         setDebtAccount(null);
@@ -481,7 +481,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     // @formatter:on
 
     public static Stream<? extends FinantialDocument> findAll() {
-        return Bennu.getInstance().getFinantialDocumentsSet().stream();
+        return FenixFramework.getDomainRoot().getFinantialDocumentsSet().stream();
     }
 
     public static Stream<? extends FinantialDocument> find(final FinantialDocumentType finantialDocumentType) {

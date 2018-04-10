@@ -33,7 +33,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -41,6 +40,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class Currency extends Currency_Base {
 
@@ -57,7 +57,7 @@ public class Currency extends Currency_Base {
 
     protected Currency() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected Currency(final String code, final LocalizedString name, final String isoCode, final String symbol) {
@@ -113,13 +113,13 @@ public class Currency extends Currency_Base {
             throw new TreasuryDomainException("error.Currency.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         deleteDomainObject();
     }
 
     public static Stream<Currency> findAll() {
-        return Bennu.getInstance().getCurrenciesSet().stream();
+        return FenixFramework.getDomainRoot().getCurrenciesSet().stream();
     }
 
     public static Currency findByCode(final String code) {

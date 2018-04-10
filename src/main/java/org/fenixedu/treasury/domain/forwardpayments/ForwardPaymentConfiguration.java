@@ -2,26 +2,20 @@ package org.fenixedu.treasury.domain.forwardpayments;
 
 import java.util.Optional;
 
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.PaymentMethod;
-import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementation;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentConfigurationBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Base {
 
     private ForwardPaymentConfiguration() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     private ForwardPaymentConfiguration(final FinantialInstitution finantialInstitution,

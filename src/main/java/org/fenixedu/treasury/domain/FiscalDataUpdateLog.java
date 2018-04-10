@@ -1,17 +1,18 @@
 package org.fenixedu.treasury.domain;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
 
+import pt.ist.fenixframework.FenixFramework;
+
 public class FiscalDataUpdateLog extends FiscalDataUpdateLog_Base {
 
     public FiscalDataUpdateLog() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     private FiscalDataUpdateLog(final Customer customer, String oldFiscalCountry, String oldFiscalNumber,
@@ -39,7 +40,7 @@ public class FiscalDataUpdateLog extends FiscalDataUpdateLog_Base {
 
     private void checkRules() {
         
-        if(getBennu() == null) {
+        if(getDomainRoot() == null) {
             throw new TreasuryDomainException("error.FiscalDataUpdateLog.bennu.required");
         }
         

@@ -15,7 +15,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.poi.ss.usermodel.Row;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.DomainRoot;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
@@ -61,7 +61,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
     private ForwardPayment() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     public ForwardPayment(final ForwardPaymentConfiguration forwardPaymentConfiguration, final DebtAccount debtAccount,
@@ -401,7 +401,7 @@ public class ForwardPayment extends ForwardPayment_Base {
     // @formatter: on
 
     public static Stream<ForwardPayment> findAll() {
-        return Bennu.getInstance().getForwardPaymentsSet().stream();
+        return FenixFramework.getDomainRoot().getForwardPaymentsSet().stream();
     }
     
     public static Stream<ForwardPayment> findAllByStateType(final ForwardPaymentStateType ... stateTypes) {
@@ -415,7 +415,7 @@ public class ForwardPayment extends ForwardPayment_Base {
     }
 
     private static Optional<ForwardPayment> lastForwardPayment() {
-        return Bennu.getInstance().getForwardPaymentsSet().stream().max(ORDER_COMPARATOR);
+        return FenixFramework.getDomainRoot().getForwardPaymentsSet().stream().max(ORDER_COMPARATOR);
     }
 
     

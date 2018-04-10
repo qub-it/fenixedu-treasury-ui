@@ -173,7 +173,7 @@ class Customer {
 	}
 	
 		relation FiscalDataUpdateLogBennu {
-			.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 				multiplicity 1..1;
 			}
 		
@@ -406,7 +406,7 @@ class exemption.TreasuryExemptionType {
 }
 
 relation TreasuryExemptionTypeBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -422,7 +422,7 @@ class exemption.TreasuryExemption {
 }
 
 	relation TreasuryExemptionBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -632,7 +632,7 @@ class paymentcodes.PaymentReferenceCode
             multiplicity *;
         }
     
-	    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	    .pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 	        multiplicity 1..1;
 	    }
     }
@@ -819,7 +819,7 @@ relation ConfigurationBennu {
         multiplicity *;
     }
     
-    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+    .pt.ist.fenixframework.DomainRoot playsRole domainRoot {
         multiplicity 1..1;
     }
 }
@@ -863,7 +863,7 @@ class settings.TreasurySettings {
 }
 
 relation TreasurySettingsBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -945,7 +945,7 @@ relation FinantialInstitutionCurrency{
 }
 
 relation FiscalCountryRegionBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -955,7 +955,7 @@ relation FiscalCountryRegionBennu {
 }
 
 relation CustomerTypeBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -976,7 +976,7 @@ relation CustomerCustomerType {
 
 
 relation VatTypeBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -986,7 +986,7 @@ relation VatTypeBennu {
 }
 
 relation VatBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1016,7 +1016,7 @@ relation VatFinantialInstitution {
 }
 
 relation VatExemptionReasonBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1037,7 +1037,7 @@ relation ProductVatExemptionReason {
 
 
 relation ProductGroupBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1047,7 +1047,7 @@ relation ProductGroupBennu {
 }
 
 relation ProductBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1067,7 +1067,7 @@ relation ProductProductGroup {
 }
 
 relation CurrencyBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1077,7 +1077,7 @@ relation CurrencyBennu {
 }
 
 relation PaymentMethodBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1087,7 +1087,7 @@ relation PaymentMethodBennu {
 }
 
 relation TreasuryOperationLogBennu {
-    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+    .pt.ist.fenixframework.DomainRoot playsRole domainRoot {
         multiplicity 1..1;
     }
 
@@ -1101,7 +1101,7 @@ relation TreasuryOperationLogBennu {
  * ----------*/
 
 relation FinantialInstitutionBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1121,7 +1121,7 @@ relation ProductFinantialInstitution {
 }
 
 relation FinantialEntityBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1141,7 +1141,7 @@ relation FinantialInstitutionFinantialEntity {
 }
 
 relation CustomerBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1151,7 +1151,7 @@ relation CustomerBennu {
 }
 
 relation DebtAccountBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1183,7 +1183,7 @@ relation DebtAccountFinantialInstitution {
 /* --- Document Template --- */
 
 relation TreasuryDocumentTemplateBennu {
-    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+    .pt.ist.fenixframework.DomainRoot playsRole domainRoot {
         multiplicity 1..1;
     }
     
@@ -1241,7 +1241,7 @@ relation TreasuryDocumentTemplateFileBennu {
 /* --- FinantialDocumentType --- */
 
 relation FinantialDocumentTypeBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1253,7 +1253,7 @@ relation FinantialDocumentTypeBennu {
 /* --- Series --- */
 
 relation SeriesBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1275,7 +1275,7 @@ relation SeriesFinantialInstitution {
 /* --- DocumentNumberSeries --- */
 
 relation DocumentNumberSeriesBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1307,7 +1307,7 @@ relation DocumentNumberSeriesFinantialDocumentType {
 /* --- TreasuryEvent --- */
 
 relation TreasuryEventBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 
@@ -1340,7 +1340,7 @@ relation TreasuryEventDebtAccount {
 /* --- FinantialDocument --- */
 
 relation FinantialDocumentBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 
@@ -1416,7 +1416,7 @@ relation CreditNoteDebitNote {
 /* --- FinantialDocumentEntry --- */
 
 relation FinantialDocumentEntryBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1572,7 +1572,7 @@ relation SettlementNoteAdvancedPaymentCreditNote{
 /* --- PaymentEntry --- */
 
 relation PaymentEntryBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1605,7 +1605,7 @@ relation PaymentEntryPaymentMode {
 /* --- ReimbursementEntry --- */
 
 relation ReimbursementEntryBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1644,7 +1644,7 @@ class document.reimbursement.ReimbursementProcessStatusType {
 }
 
 	relation ReimbursementProcessStatusTypeBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1671,7 +1671,7 @@ class document.reimbursement.ReimbursementProcessStateLog {
 }
 
 	relation ReimbursementProcessStateLogBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1715,7 +1715,7 @@ relation FinantialDocumentPendingForExportationFinantialInstitution {
 /* --- Tariff --- */
 
 relation TariffBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1755,7 +1755,7 @@ relation TariffFinantialEntity {
 }
 
 relation GlobalInterestRateBennu {
-    .org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+    .pt.ist.fenixframework.DomainRoot playsRole domainRoot {
         multiplicity 1..1;
     }
     
@@ -1768,7 +1768,7 @@ relation GlobalInterestRateBennu {
 /* --- InterestRate --- */
 
 relation InterestRateBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 		multiplicity 1..1;
 	}
 	
@@ -1868,7 +1868,7 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.bennu.
 	        multiplicity 0..1;
 	    }
 	    
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPersistentTreasuryFrontOfficeGroup {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPersistentTreasuryFrontOfficeGroup {
 	        multiplicity 0..1;
 	    }
 	}
@@ -1878,7 +1878,7 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.bennu.
 	        multiplicity 0..1;
 	    }
 	    
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPersistentTreasuryBackOfficeGroup {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPersistentTreasuryBackOfficeGroup {
 	        multiplicity 0..1;
 	    }
 	}
@@ -1888,7 +1888,7 @@ class accesscontrol.PersistentTreasuryManagersGroup extends .org.fenixedu.bennu.
 	        multiplicity 0..1;
 	    }
 	    
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPersistentTreasuryManagersGroup {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPersistentTreasuryManagersGroup {
 	        multiplicity 0..1;
 	    }
 	}
@@ -1920,7 +1920,7 @@ class forwardpayments.ForwardPaymentConfiguration {
 			multiplicity *;
 		}
 		
-		.org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot  playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	}
@@ -1999,7 +1999,7 @@ class forwardpayments.ForwardPayment {
 }
 
 	relation ForwardPaymentBennu {
-		.org.fenixedu.bennu.core.domain.Bennu  playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot  playsRole domainRoot {
 			multiplicity 1..1;
 		}
 
@@ -2060,7 +2060,7 @@ class forwardpayments.ForwardPaymentLog {
 }
 
 	relation ForwardPaymentLogBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 

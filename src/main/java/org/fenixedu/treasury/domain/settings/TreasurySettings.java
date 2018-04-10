@@ -2,17 +2,17 @@ package org.fenixedu.treasury.domain.settings;
 
 import java.util.Optional;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Product;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class TreasurySettings extends TreasurySettings_Base {
 
     protected TreasurySettings() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     @Atomic
@@ -23,7 +23,7 @@ public class TreasurySettings extends TreasurySettings_Base {
     }
 
     protected static Optional<TreasurySettings> findUnique() {
-        return Bennu.getInstance().getTreasurySettingsSet().stream().findFirst();
+        return FenixFramework.getDomainRoot().getTreasurySettingsSet().stream().findFirst();
     }
 
     @Atomic

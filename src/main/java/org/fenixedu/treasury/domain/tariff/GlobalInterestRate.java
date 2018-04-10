@@ -31,17 +31,17 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class GlobalInterestRate extends GlobalInterestRate_Base {
 
     protected GlobalInterestRate() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final int year, final LocalizedString description, final BigDecimal rate,
@@ -87,7 +87,7 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
             throw new TreasuryDomainException("error.GlobalInterestRate.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         deleteDomainObject();
     }
@@ -101,7 +101,7 @@ public class GlobalInterestRate extends GlobalInterestRate_Base {
     }
 
     public static Stream<GlobalInterestRate> findAll() {
-        return Bennu.getInstance().getGlobalInterestRatesSet().stream();
+        return FenixFramework.getDomainRoot().getGlobalInterestRatesSet().stream();
     }
 
     public static Stream<GlobalInterestRate> findByYear(final int year) {

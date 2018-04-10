@@ -4,10 +4,11 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
 import com.google.common.base.Strings;
+
+import pt.ist.fenixframework.FenixFramework;
 
 public class ReimbursementProcessStatusType extends ReimbursementProcessStatusType_Base {
 
@@ -25,7 +26,7 @@ public class ReimbursementProcessStatusType extends ReimbursementProcessStatusTy
 
     public ReimbursementProcessStatusType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected ReimbursementProcessStatusType(final String code, final String description, final int orderNumber,
@@ -43,7 +44,7 @@ public class ReimbursementProcessStatusType extends ReimbursementProcessStatusTy
 
     private void checkRules() {
 
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new TreasuryDomainException("error.ReimbursementProcessStatusType.bennu.required");
         }
 
@@ -93,7 +94,7 @@ public class ReimbursementProcessStatusType extends ReimbursementProcessStatusTy
     // @formatter:on
 
     public static Stream<ReimbursementProcessStatusType> findAll() {
-        return Bennu.getInstance().getReimbursementProcessStatusTypesSet().stream();
+        return FenixFramework.getDomainRoot().getReimbursementProcessStatusTypesSet().stream();
     }
 
     public static Stream<ReimbursementProcessStatusType> findByCode(final String code) {

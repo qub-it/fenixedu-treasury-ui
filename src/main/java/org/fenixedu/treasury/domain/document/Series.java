@@ -34,7 +34,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -43,6 +42,7 @@ import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class Series extends Series_Base {
 
@@ -72,7 +72,7 @@ public class Series extends Series_Base {
 
     protected Series() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected Series(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name,
@@ -187,7 +187,7 @@ public class Series extends Series_Base {
             throw new TreasuryDomainException("error.Series.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         for (DocumentNumberSeries ser : getDocumentNumberSeriesSet()) {
             removeDocumentNumberSeries(ser);
             ser.delete();
@@ -198,7 +198,7 @@ public class Series extends Series_Base {
     }
 
     public static Set<Series> findAll() {
-        return Bennu.getInstance().getSeriesSet();
+        return FenixFramework.getDomainRoot().getSeriesSet();
     }
 
     public static Set<Series> find(final FinantialInstitution finantialInstitution) {

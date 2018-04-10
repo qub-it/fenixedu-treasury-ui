@@ -11,7 +11,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.DomainRoot;
 import org.fenixedu.bennu.io.domain.FileSupport;
 import org.fenixedu.bennu.io.domain.LocalFileToDelete;
 import org.fenixedu.bennu.scheduler.CronTask;
@@ -41,11 +41,11 @@ public class DeleteFinantialIntegrationExportationLogsTask extends CronTask {
     @Override
     public void runTask() throws Exception {
 
-        taskLog("NUM FIN DOCS PENDING: %d\n", Bennu.getInstance().getFinantialInstitutionsSet().iterator().next()
+        taskLog("NUM FIN DOCS PENDING: %d\n", FenixFramework.getDomainRoot().getFinantialInstitutionsSet().iterator().next()
                 .getFinantialDocumentsPendingForExportationSet().size());
 
         ArrayList<FinantialDocument> domainObjects =
-                new ArrayList<FinantialDocument>(Bennu.getInstance().getFinantialDocumentsSet());
+                new ArrayList<FinantialDocument>(FenixFramework.getDomainRoot().getFinantialDocumentsSet());
 
         List<List<String>> workingBatches = breakIntoBatches(domainObjects, batchSize);
 

@@ -35,7 +35,9 @@ import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.DomainRoot;
+import pt.ist.fenixframework.FenixFramework;
+
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.balancetransfer.BalanceTransferService;
@@ -62,7 +64,7 @@ public class DebtAccount extends DebtAccount_Base {
 
     public DebtAccount() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected DebtAccount(final FinantialInstitution finantialInstitution, final Customer customer) {
@@ -109,7 +111,7 @@ public class DebtAccount extends DebtAccount_Base {
     // @formatter:on
 
     public static Stream<DebtAccount> findAll() {
-        return Bennu.getInstance().getDebtAccountsSet().stream();
+        return FenixFramework.getDomainRoot().getDebtAccountsSet().stream();
     }
 
     public static Stream<DebtAccount> find(final FinantialInstitution finantialInstitution) {
@@ -208,7 +210,7 @@ public class DebtAccount extends DebtAccount_Base {
             throw new TreasuryDomainException("error.DebtAccount.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setCustomer(null);
         setFinantialInstitution(null);
 

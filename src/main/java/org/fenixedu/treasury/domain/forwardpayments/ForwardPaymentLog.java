@@ -2,8 +2,9 @@ package org.fenixedu.treasury.domain.forwardpayments;
 
 import java.util.Comparator;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.joda.time.DateTime;
+
+import pt.ist.fenixframework.FenixFramework;
 
 public class ForwardPaymentLog extends ForwardPaymentLog_Base {
     
@@ -19,7 +20,7 @@ public class ForwardPaymentLog extends ForwardPaymentLog_Base {
     
     private ForwardPaymentLog() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     ForwardPaymentLog(final ForwardPayment forwardPayment, final ForwardPaymentStateType type, final DateTime whenOccured) {

@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.DomainRoot;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
@@ -123,7 +123,7 @@ public class FinantialInstitutionController extends TreasuryBaseController {
     }
 
     private List<FinantialInstitution> getSearchUniverseSearchFinantialInstitutionDataSet() {
-        return new ArrayList<FinantialInstitution>(Bennu.getInstance().getFinantialInstitutionsSet());
+        return new ArrayList<FinantialInstitution>(FinantialInstitution.findAll().collect(Collectors.toSet()));
     }
 
     private static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";

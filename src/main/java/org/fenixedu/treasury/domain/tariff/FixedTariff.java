@@ -31,7 +31,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -44,6 +43,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class FixedTariff extends FixedTariff_Base {
 
@@ -84,7 +84,7 @@ public class FixedTariff extends FixedTariff_Base {
 
     protected FixedTariff() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final Product product, final InterestRate interestRate, final FinantialEntity finantialEntity,
@@ -187,7 +187,7 @@ public class FixedTariff extends FixedTariff_Base {
 
     public static Stream<FixedTariff> findAll(FinantialInstitution institution) {
         Set<FixedTariff> result = new HashSet<FixedTariff>();
-        Bennu.getInstance().getFinantialInstitutionsSet()
+        FenixFramework.getDomainRoot().getFinantialInstitutionsSet()
                 .forEach(x -> x.getFinantialEntitiesSet().stream().forEach(y -> result.addAll(y.getFixedTariffSet())));
         return result.stream();
     }

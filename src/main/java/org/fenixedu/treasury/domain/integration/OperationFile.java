@@ -36,7 +36,7 @@ public class OperationFile extends OperationFile_Base {
 
     public OperationFile() {
         super();
-        // this.setBennu(Bennu.getInstance());
+        // this.setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     public OperationFile(String fileName, byte[] content) {

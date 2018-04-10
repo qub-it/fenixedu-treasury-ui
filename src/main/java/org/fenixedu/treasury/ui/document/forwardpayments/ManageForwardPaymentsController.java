@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.DomainRoot;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
@@ -58,7 +58,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             @RequestParam(value = "forwardPaymentStateType", required = false) final ForwardPaymentStateType type,
             final Model model) {
 
-        Stream<ForwardPayment> stream = Bennu.getInstance().getForwardPaymentsSet().stream();
+        Stream<ForwardPayment> stream = ForwardPayment.findAll();
 
         if (!Strings.isNullOrEmpty(orderNumber)) {
             stream = stream.filter(i -> orderNumber.trim().equals(String.valueOf(i.getOrderNumber())));

@@ -29,19 +29,19 @@ package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.util.Collection;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
+
+import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class SibsConfiguration extends SibsConfiguration_Base {
 
     protected SibsConfiguration() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final FinantialInstitution finantialInstitution, final String entityReferenceCode,
@@ -84,7 +84,7 @@ public class SibsConfiguration extends SibsConfiguration_Base {
     @Atomic
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
-        setBennu(null);
+        setDomainRoot(null);
         setFinantialInstitution(null);
         deleteDomainObject();
     }

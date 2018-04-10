@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
@@ -44,6 +43,7 @@ import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class FinantialEntity extends FinantialEntity_Base {
 
@@ -59,7 +59,7 @@ public class FinantialEntity extends FinantialEntity_Base {
 
     protected FinantialEntity() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected FinantialEntity(final FinantialInstitution finantialInstitution, final String code, final LocalizedString name) {
@@ -113,7 +113,7 @@ public class FinantialEntity extends FinantialEntity_Base {
             throw new TreasuryDomainException("error.FinantialEntity.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         this.setFinantialInstitution(null);
         for (Tariff t : this.getTariffSet()) {
             this.removeTariff(t);
@@ -137,7 +137,7 @@ public class FinantialEntity extends FinantialEntity_Base {
     }
 
     public static Stream<FinantialEntity> findAll() {
-        return Bennu.getInstance().getFinantialEntitiesSet().stream();
+        return FenixFramework.getDomainRoot().getFinantialEntitiesSet().stream();
     }
 
     public static Stream<FinantialEntity> find(final FinantialInstitution finantialInstitution) {

@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -39,12 +38,13 @@ import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class FiscalCountryRegion extends FiscalCountryRegion_Base {
 
     protected FiscalCountryRegion() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected FiscalCountryRegion(final String fiscalCode, final LocalizedString name) {
@@ -105,7 +105,7 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
             throw new TreasuryDomainException("error.FiscalCountryRegion.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         deleteDomainObject();
     }
@@ -117,7 +117,7 @@ public class FiscalCountryRegion extends FiscalCountryRegion_Base {
     // @formatter: on
 
     public static Stream<FiscalCountryRegion> findAll() {
-        return Bennu.getInstance().getFiscalCountryRegionsSet().stream();
+        return FenixFramework.getDomainRoot().getFiscalCountryRegionsSet().stream();
     }
 
     public static FiscalCountryRegion findByRegionCode(final String fiscalCode) {

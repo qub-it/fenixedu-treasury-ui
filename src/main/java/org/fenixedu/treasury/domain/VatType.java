@@ -31,7 +31,6 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -39,12 +38,13 @@ import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class VatType extends VatType_Base {
 
     protected VatType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected VatType(final String code, final LocalizedString name) {
@@ -86,7 +86,7 @@ public class VatType extends VatType_Base {
             throw new TreasuryDomainException("error.VatType.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         deleteDomainObject();
     }
@@ -113,7 +113,7 @@ public class VatType extends VatType_Base {
     }
 
     public static Stream<VatType> findAll() {
-        return Bennu.getInstance().getVatTypesSet().stream();
+        return FenixFramework.getDomainRoot().getVatTypesSet().stream();
     }
 
     public static VatType findByCode(final String code) {

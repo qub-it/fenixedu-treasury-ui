@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -43,6 +42,7 @@ import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 import pt.ist.standards.geographic.Country;
 import pt.ist.standards.geographic.District;
 import pt.ist.standards.geographic.Municipality;
@@ -51,7 +51,7 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
 
     protected FinantialInstitution() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected FinantialInstitution(final FiscalCountryRegion fiscalCountryRegion, final Currency currency, final String code,
@@ -146,7 +146,7 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
             throw new TreasuryDomainException("error.FinantialInstitution.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setCurrency(null);
         setCountry(null);
         setDistrict(null);
@@ -189,11 +189,11 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
     }
 
     public static Stream<FinantialInstitution> findAll() {
-        return Bennu.getInstance().getFinantialInstitutionsSet().stream();
+        return FenixFramework.getDomainRoot().getFinantialInstitutionsSet().stream();
     }
 
     public static Optional<FinantialInstitution> findUnique() {
-        final Set<FinantialInstitution> all = Bennu.getInstance().getFinantialInstitutionsSet();
+        final Set<FinantialInstitution> all = FenixFramework.getDomainRoot().getFinantialInstitutionsSet();
         return all.size() != 1 ? Optional.empty() : Optional.of(all.iterator().next());
     }
 

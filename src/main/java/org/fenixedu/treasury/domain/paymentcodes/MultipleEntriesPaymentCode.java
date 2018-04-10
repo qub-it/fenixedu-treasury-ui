@@ -2,14 +2,12 @@ package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -29,6 +27,7 @@ import org.joda.time.LocalDate;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base {
 
@@ -37,7 +36,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     protected MultipleEntriesPaymentCode(final Set<DebitEntry> debitNoteEntries, final PaymentReferenceCode paymentReferenceCode,
             final boolean valid) {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
         init(debitNoteEntries, paymentReferenceCode, valid);
     }
 

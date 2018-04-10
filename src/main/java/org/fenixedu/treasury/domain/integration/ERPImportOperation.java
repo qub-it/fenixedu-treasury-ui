@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -15,6 +14,7 @@ import org.joda.time.DateTime;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class ERPImportOperation extends ERPImportOperation_Base {
 
@@ -78,7 +78,7 @@ public class ERPImportOperation extends ERPImportOperation_Base {
 
     public static Stream<ERPImportOperation> findAll() {
         Set<ERPImportOperation> results = new HashSet<ERPImportOperation>();
-        for (FinantialInstitution fi : Bennu.getInstance().getFinantialInstitutionsSet()) {
+        for (FinantialInstitution fi : FenixFramework.getDomainRoot().getFinantialInstitutionsSet()) {
             results.addAll(fi.getIntegrationOperationsSet().stream().filter(x -> x instanceof ERPImportOperation)
                     .map(ERPImportOperation.class::cast).collect(Collectors.toList()));
         }

@@ -30,7 +30,6 @@ package org.fenixedu.treasury.domain.tariff;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -40,12 +39,13 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public abstract class Tariff extends Tariff_Base {
 
     protected Tariff() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     public abstract LocalizedString getUiTariffDescription();
@@ -175,7 +175,7 @@ public abstract class Tariff extends Tariff_Base {
             throw new TreasuryDomainException("error.Tariff.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setProduct(null);
         setFinantialEntity(null);
 
@@ -234,7 +234,7 @@ public abstract class Tariff extends Tariff_Base {
     // @formatter: on
 
     public static Stream<? extends Tariff> findAll() {
-        return Bennu.getInstance().getTariffsSet().stream();
+        return FenixFramework.getDomainRoot().getTariffsSet().stream();
     }
 
     public static Stream<? extends Tariff> find(final Product product) {

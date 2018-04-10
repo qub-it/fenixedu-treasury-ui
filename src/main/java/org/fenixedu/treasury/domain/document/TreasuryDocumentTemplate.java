@@ -29,7 +29,6 @@ package org.fenixedu.treasury.domain.document;
 
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -38,12 +37,13 @@ import com.qubit.terra.docs.core.IDocumentTemplate;
 import com.qubit.terra.docs.core.IDocumentTemplateVersion;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base implements IDocumentTemplate {
 
     protected TreasuryDocumentTemplate() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected TreasuryDocumentTemplate(final FinantialDocumentType finantialDocumentTypes,
@@ -91,7 +91,7 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base impl
             file.delete();
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setFinantialDocumentType(null);
         setFinantialEntity(null);
         deleteDomainObject();
@@ -131,7 +131,7 @@ public class TreasuryDocumentTemplate extends TreasuryDocumentTemplate_Base impl
     }
 
     public static Stream<TreasuryDocumentTemplate> findAll() {
-        return Bennu.getInstance().getTreasuryDocumentTemplatesSet().stream();
+        return FenixFramework.getDomainRoot().getTreasuryDocumentTemplatesSet().stream();
     }
 
     public static Stream<TreasuryDocumentTemplate> findByFinantialDocumentType(

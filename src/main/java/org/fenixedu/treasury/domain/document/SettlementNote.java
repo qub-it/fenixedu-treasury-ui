@@ -38,7 +38,6 @@ import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -56,12 +55,13 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class SettlementNote extends SettlementNote_Base {
 
     protected SettlementNote() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected SettlementNote(final DebtAccount debtAccount, final DocumentNumberSeries documentNumberSeries,
@@ -695,7 +695,7 @@ public class SettlementNote extends SettlementNote_Base {
     }
 
     public static Stream<SettlementNote> findAll() {
-        return Bennu.getInstance().getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
+        return FenixFramework.getDomainRoot().getFinantialDocumentsSet().stream().filter(x -> x instanceof SettlementNote)
                 .map(SettlementNote.class::cast);
     }
 

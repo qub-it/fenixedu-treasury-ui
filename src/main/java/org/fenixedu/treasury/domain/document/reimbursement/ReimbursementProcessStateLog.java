@@ -3,7 +3,6 @@ package org.fenixedu.treasury.domain.document.reimbursement;
 import java.util.Comparator;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
@@ -11,6 +10,7 @@ import org.joda.time.DateTime;
 import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class ReimbursementProcessStateLog extends ReimbursementProcessStateLog_Base {
 
@@ -26,7 +26,7 @@ public class ReimbursementProcessStateLog extends ReimbursementProcessStateLog_B
 
     public ReimbursementProcessStateLog() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected ReimbursementProcessStateLog(final SettlementNote settlementNote,
@@ -45,7 +45,7 @@ public class ReimbursementProcessStateLog extends ReimbursementProcessStateLog_B
 
     private void checkRules() {
 
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new TreasuryDomainException("error.ReimbursementProcessStateLog.bennu.required");
         }
 
@@ -70,7 +70,7 @@ public class ReimbursementProcessStateLog extends ReimbursementProcessStateLog_B
     // @formatter:off
     
     public static Stream<ReimbursementProcessStateLog> findAll() {
-        return Bennu.getInstance().getReimbursementProcessStateLogsSet().stream();
+        return FenixFramework.getDomainRoot().getReimbursementProcessStateLogsSet().stream();
     }
     
     public static Stream<ReimbursementProcessStateLog> find(final SettlementNote settlementNote) {

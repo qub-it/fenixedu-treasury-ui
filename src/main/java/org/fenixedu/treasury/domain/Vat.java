@@ -31,19 +31,19 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class Vat extends Vat_Base {
 
     protected Vat() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected Vat(final VatType vatType, final FinantialInstitution finantialInstitution, final BigDecimal taxRate,
@@ -114,7 +114,7 @@ public class Vat extends Vat_Base {
             throw new TreasuryDomainException("error.Vat.cannot.delete");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setVatType(null);
 
         setFinantialInstitution(null);
@@ -129,7 +129,7 @@ public class Vat extends Vat_Base {
     // @formatter: on
 
     public static Stream<Vat> findAll() {
-        return Bennu.getInstance().getVatsSet().stream();
+        return FenixFramework.getDomainRoot().getVatsSet().stream();
     }
 
     public static Stream<Vat> find(final VatType vatType) {
