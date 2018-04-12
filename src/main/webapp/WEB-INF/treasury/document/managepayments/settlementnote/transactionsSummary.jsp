@@ -106,16 +106,37 @@ ${portal.toolkit()}
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.SettlementNote.finantialInstitution" />
+                    <spring:message code="label.SettlementNote.finantialInstitution" />
                 </div>
 
                 <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="finantial_institutions"
-                        class="select2 col-sm-10"
-                        name="finantialInstitution" required>
+                    <select id="finantial_institutions" class="select2 col-sm-10" name="finantialInstitution" required>
+				      <c:forEach items="${finantial_institutions_options}" var="element">
+				      	<option value="${element.externalId}"><c:out value='${element.name}'/></option>
+				      </c:forEach>
                     </select>
+                    
+                    <script type="text/javascript">
+                    	$(document).ready(function() {
+                    	    $("#finantial_institutions").select2();
+                    	});
+                    </script>
+                    <c:if test="${finantial_institutions_options.size() == 1}">
+						<script type="text/javascript">	
+	                    	$(document).ready(function() {
+	                    	    $("#finantial_institutions").select2('val', '<c:out value='${finantial_institutions_options.iterator().next().externalId}' />');
+	                    	});
+                    	</script>
+                    </c:if>
+                    <c:if test="${param.finantialInstitution != null}">
+						<script type="text/javascript">	
+							$(document).ready(function() {
+							    $("#finantial_institutions").select2('val', '<c:out value='${param.finantialInstitution}'/>');	
+							});
+						</script>
+                    
+                    </c:if>
                 </div>
             </div>
             <div class="form-group row">
@@ -524,26 +545,4 @@ ${portal.toolkit()}
         </c:otherwise>
     </c:choose>
 </div>
-
-<script>	
-
-$(document).ready(function() {
-    var finantial_institutions_options = [
-      <c:forEach items="${finantial_institutions_options}" var="element"> 
-      {
-          text :"<c:out value='${element.name}'/>",  
-          id : "<c:out value='${element.externalId}'/>" 
-      },
-      </c:forEach>
-    ];
-    
-    $("#finantial_institutions").select2(
-        {
-            data : finantial_institutions_options,
-        }     
-    );
-    
-    $("#finantial_institutions").select2().select2('val', '<c:out value='${param.vattype}'/>');	
-}); 
-</script>
 

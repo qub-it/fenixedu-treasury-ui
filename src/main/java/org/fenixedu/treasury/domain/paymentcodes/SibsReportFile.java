@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
@@ -136,7 +138,7 @@ public class SibsReportFile extends SibsReportFile_Base {
 
             @Override
             public ExcelSheet[] getSheets() {
-                return new ExcelSheet[] { ExcelSheet.create(Constants.bundle("label.SibsReportFile.spreadsheet.name"),
+                return new ExcelSheet[] { ExcelSheet.create(treasuryBundle("label.SibsReportFile.spreadsheet.name"),
                         SibsSpreadsheetRowReportBean.SPREADSHEET_HEADERS, lines) };
             }
         }, null);

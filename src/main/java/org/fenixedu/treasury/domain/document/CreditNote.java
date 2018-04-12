@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -313,7 +315,7 @@ public class CreditNote extends CreditNote_Base {
             }
 
         } else {
-            throw new TreasuryDomainException(Constants.bundle("error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(treasuryBundle("error.FinantialDocumentState.invalid.state.change.request"));
         }
 
         checkRules();

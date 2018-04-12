@@ -173,7 +173,8 @@ ${portal.angularToolkit()}
 
                     <ul class="dropdown-menu">
                         <li><a href="${pageContext.request.contextPath}/academictreasury/othertuitiondebtcreation/tuitiondebtcreationbean/createregistration/${debtAccount.externalId}"> <span
-                                class="glyphicon glyphicon-bookmark" aria-hidden="true"></span> <spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
+                                class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+                                &nbsp;<spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
                         </a></li>
 
                         <li><a
@@ -301,17 +302,6 @@ ${portal.angularToolkit()}
     <%
         }
     %>
-    <%
-        if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
-    %>
-
- |&nbsp; <span class="glyphicon glyphicon-print" aria-hidden="true"></span> &nbsp; <a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/printpaymentplan">
-        <spring:message
-            code="label.event.accounting.manageCustomer.printpaymentplan" />
-    </a> &nbsp;
-    <%
-        }
-    %>
 
 </div>
 <c:if test="${not empty infoMessages}">
@@ -355,59 +345,57 @@ ${portal.angularToolkit()}
         </h3>
     </div>
     <div class="panel-body">
-        <form method="post" class="form-horizontal">
-            <table class="table">
-                <tbody>
-                    <c:if test='${ debtAccount.getClosed() }'>
-                        <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.closed" /></th>
-                            <td><span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span></td>
-                        </tr>
-                    </c:if>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
-                        <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
-                    </tr>
+          <table class="table">
+              <tbody>
+                  <c:if test='${ debtAccount.getClosed() }'>
+                      <tr>
+                          <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.closed" /></th>
+                          <td><span class="label label-warning"><spring:message code="warning.DebtAccount.is.closed" /></span></td>
+                      </tr>
+                  </c:if>
+                  <tr>
+                      <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
+                      <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
+                  </tr>
 
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
-                        <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
-                        <td><c:out value='${debtAccount.finantialInstitution.name}' /></td>
-                    </tr>
-                    <c:if test="${debtAccount.customer.personCustomer}">
-                   	<c:if test="${not empty debtAccount.customer.person.inactivePersonCustomers || debtAccount.customer.personForInactivePersonCustomer != null}">
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.globalBalance" /></th>
-                        <td>
-                        	<c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.customer.globalBalance)}" />
-                        </td>
-                   	</c:if>
-                   	</c:if>
-                    <tr>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
-                            <c:if test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
-                                    &nbsp;&nbsp; &nbsp;   (<spring:message code="label.DebtAccount.balanceWithoutInterests" />
-                                <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> )
-                                </c:if> <c:if test="${debtAccount.totalInDebt < 0 }">
-                                <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
-                                </span>
-                            </c:if></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /> <c:if
-                                test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
-                                <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
-                            </c:if></td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
+                  <tr>
+                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+                      <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
+                      <td><c:out value='${debtAccount.finantialInstitution.name}' /></td>
+                  </tr>
+                  <c:if test="${debtAccount.customer.personCustomer}">
+                 	<c:if test="${not empty debtAccount.customer.person.inactivePersonCustomers || debtAccount.customer.personForInactivePersonCustomer != null}">
+                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.globalBalance" /></th>
+                      <td>
+                      	<c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.customer.globalBalance)}" />
+                      </td>
+                 	</c:if>
+                 	</c:if>
+                  <tr>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
+                      <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
+                          <c:if test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
+                                  &nbsp;&nbsp; &nbsp;   (<spring:message code="label.DebtAccount.balanceWithoutInterests" />
+                              <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt)}" /> )
+                              </c:if> <c:if test="${debtAccount.totalInDebt < 0 }">
+                              <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
+                              </span>
+                          </c:if></td>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
+                      <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /> <c:if
+                              test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
+                              <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
+                          </c:if></td>
+                  </tr>
+              </tbody>
+          </table>
     </div>
 </div>
 

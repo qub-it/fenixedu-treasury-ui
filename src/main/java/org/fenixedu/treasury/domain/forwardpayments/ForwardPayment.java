@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.forwardpayments;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
@@ -268,7 +270,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
         if (org.fenixedu.treasury.util.Constants.isPositive(amountToConsume)) {
             getSettlementNote().createAdvancedPaymentCreditNote(amountToConsume,
-                    Constants.bundle("label.ForwardPayment.advancedpayment", String.valueOf(getOrderNumber())),
+                    treasuryBundle("label.ForwardPayment.advancedpayment", String.valueOf(getOrderNumber())),
                     String.valueOf(getOrderNumber()));
         }
 
@@ -504,30 +506,30 @@ public class ForwardPayment extends ForwardPayment_Base {
 
                     @Override
                     public String getName() {
-                        return Constants.bundle("label.PostForwardPaymentReportBean.sheet.name");
+                        return treasuryBundle("label.PostForwardPaymentReportBean.sheet.name");
                     }
 
                     @Override
                     public String[] getHeaders() {
                         return new String[] { 
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.executionDate"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.forwardPaymentExternalId"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.forwardPaymentOrderNumber"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.forwardPaymentWhenOccured"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.customerCode"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.customerName"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.previousStateDescription"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.nextStateDescription"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.paymentRegisteredWithSuccess"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.settlementNote"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.advancedCreditSettlementNote"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.paymentDate"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.paidAmount"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.advancedCreditAmount"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.transactionId"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.statusCode"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.statusMessage"),
-                                Constants.bundle("label.PostForwardPaymentReportBean.cell.remarks")};
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.executionDate"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentExternalId"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentOrderNumber"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentWhenOccured"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.customerCode"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.customerName"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.previousStateDescription"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.nextStateDescription"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.paymentRegisteredWithSuccess"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.settlementNote"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.advancedCreditSettlementNote"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.paymentDate"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.paidAmount"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.advancedCreditAmount"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.transactionId"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.statusCode"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.statusMessage"),
+                                treasuryBundle("label.PostForwardPaymentReportBean.cell.remarks")};
                     }
 
                     @Override
@@ -540,7 +542,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
         }, null);
 
-        final String filename = Constants.bundle("label.PostForwardPaymentsReportFile.filename",
+        final String filename = treasuryBundle("label.PostForwardPaymentsReportFile.filename",
                 postForwardPaymentsExecutionDate.toString("yyyy_MM_dd_HH_mm_ss"));
 
         PostForwardPaymentsReportFile.create(postForwardPaymentsExecutionDate, 
@@ -560,7 +562,7 @@ public class ForwardPayment extends ForwardPayment_Base {
                             final IForwardPaymentImplementation implementation =
                                     forwardPayment.getForwardPaymentConfiguration().implementation();
                             final String justification =
-                                    Constants.bundle("error.PostForwardPaymentsTask.post.payment.justification");
+                                    treasuryBundle("error.PostForwardPaymentsTask.post.payment.justification");
 
                             final PostProcessPaymentStatusBean postProcessPaymentStatusBean =
                                     implementation.postProcessPayment(forwardPayment, justification);
@@ -628,7 +630,7 @@ public class ForwardPayment extends ForwardPayment_Base {
                 }
                 
                 if(hasSettlementNotesOnSameDayForSameDebts(forwardPayment)) {
-                    remarks = Constants.bundle("warn.PostForwardPaymentsTask.settlement.notes.on.same.day.for.same.debts");
+                    remarks = treasuryBundle("warn.PostForwardPaymentsTask.settlement.notes.on.same.day.for.same.debts");
                 }
             }
 
@@ -677,7 +679,7 @@ public class ForwardPayment extends ForwardPayment_Base {
             row.createCell(i++).setCellValue(customerName);
             row.createCell(i++).setCellValue(previousStateDescription);
             row.createCell(i++).setCellValue(nextStateDescription);
-            row.createCell(i++).setCellValue(Constants.bundle("label." + paymentRegisteredWithSuccess));
+            row.createCell(i++).setCellValue(treasuryBundle("label." + paymentRegisteredWithSuccess));
             row.createCell(i++).setCellValue(settlementNote);
             row.createCell(i++).setCellValue(advancedPaymentCreditNote);
             row.createCell(i++).setCellValue(paymentDate);

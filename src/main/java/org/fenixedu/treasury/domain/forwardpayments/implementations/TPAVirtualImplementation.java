@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.forwardpayments.implementations;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -110,7 +112,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
             }
 
             forwardPayment.advanceToAuthenticatedState(responseMap.get(C016),
-                    Constants.bundle("label.TPAVirtualImplementation.authenticated"), json(requestMap), json(responseMap));
+                    treasuryBundle("label.TPAVirtualImplementation.authenticated"), json(requestMap), json(responseMap));
 
             resultCode = Integer.parseInt(responseMap.get(C016));
         }
@@ -126,7 +128,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
             }
 
             forwardPayment.advanceToAuthorizedState(String.valueOf(resultCode),
-                    Constants.bundle("label.TPAVirtualImplementation.authorized"), json(requestMap), json(responseMap));
+                    treasuryBundle("label.TPAVirtualImplementation.authorized"), json(requestMap), json(responseMap));
 
             final DateTime authorizationDate = authorizationSibsDate(responseMap);
             forwardPayment.setAuthorizationDate(authorizationDate);
@@ -161,7 +163,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
             final BigDecimal payedAmount = payedAmount(responseMap);
 
             forwardPayment.advanceToPayedState(String.valueOf(resultCode),
-                    Constants.bundle("label.TPAVirtualImplementation.payed"), payedAmount, transactionDate, transactionId, null,
+                    treasuryBundle("label.TPAVirtualImplementation.payed"), payedAmount, transactionDate, transactionId, null,
                     json(requestMap), json(responseMap), null);
 
             return true;
@@ -240,7 +242,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
         }
 
         if (sb.length() == 0) {
-            sb.append(Constants.bundle("label.TPAVirtualImplementation.error.not.available"));
+            sb.append(treasuryBundle("label.TPAVirtualImplementation.error.not.available"));
         }
 
         return sb.toString();
@@ -381,7 +383,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
         final DateTime transactionDate = paymentStatusBean.getAuthorizationDate();
         final BigDecimal payedAmount = paymentStatusBean.getPayedAmount();
 
-        forwardPayment.advanceToPayedState(String.valueOf(resultCode), Constants.bundle("label.TPAVirtualImplementation.payed"),
+        forwardPayment.advanceToPayedState(String.valueOf(resultCode), treasuryBundle("label.TPAVirtualImplementation.payed"),
                 payedAmount, transactionDate, transactionId, null, json(requestMap), json(responseMap), justification);
 
         return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, true);

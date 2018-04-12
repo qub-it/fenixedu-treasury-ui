@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.services.integration.erp;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -191,25 +193,25 @@ public class ERPIntegrationService extends BennuWebService {
 
         if (!optionalFinantialDocument.isPresent()) {
             throw new RuntimeException(
-                    Constants.bundle("error.ERPIntegrationService.debit.note.not.found", interestRequest.getDebitNoteNumber()));
+                    treasuryBundle("error.ERPIntegrationService.debit.note.not.found", interestRequest.getDebitNoteNumber()));
         }
 
         final FinantialDocument finantialDocument = optionalFinantialDocument.get();
 
         if (!finantialDocument.isDebitNote()) {
-            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.document.is.not.debit.note",
+            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.document.is.not.debit.note",
                     interestRequest.getDebitNoteNumber()));
         }
 
         if (!finantialDocument.getDebtAccount().getFinantialInstitution().getFiscalNumber()
                 .equals(interestRequest.getFinantialInstitutionFiscalNumber())) {
-            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.finantial.institution.fiscal.number.invalid",
+            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.finantial.institution.fiscal.number.invalid",
                     interestRequest.getFinantialInstitutionFiscalNumber()));
         }
 
         if (!finantialDocument.getDebtAccount().getCustomer().getCode().equals(interestRequest.getCustomerCode())) {
             throw new RuntimeException(
-                    Constants.bundle("error.ERPIntegrationService.customer.code.invalid", interestRequest.getCustomerCode()));
+                    treasuryBundle("error.ERPIntegrationService.customer.code.invalid", interestRequest.getCustomerCode()));
         }
 
         //2. Check if the lineNumber+DebitNoteNumber Amount is correct
@@ -217,7 +219,7 @@ public class ERPIntegrationService extends BennuWebService {
                 FinantialDocumentEntry.findUniqueByEntryOrder(finantialDocument, interestRequest.getLineNumber());
 
         if (!optionalDebitEntry.isPresent()) {
-            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.debit.entry.not.found",
+            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.not.found",
                     String.valueOf(interestRequest.getLineNumber() != null ? interestRequest.getLineNumber() : "null"),
                     finantialDocument.getUiDocumentNumber()));
         }
@@ -225,7 +227,7 @@ public class ERPIntegrationService extends BennuWebService {
         FinantialDocumentEntry finantialDocumentEntry = optionalDebitEntry.get();
 
         if (!(finantialDocumentEntry instanceof DebitEntry)) {
-            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.finantial.document.entry.is.not.debit.entry",
+            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.finantial.document.entry.is.not.debit.entry",
                     String.valueOf(finantialDocumentEntry.getEntryOrder()),
                     String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
         }
@@ -235,13 +237,13 @@ public class ERPIntegrationService extends BennuWebService {
         final BigDecimal amountInDebt = debitEntry.amountInDebt(interestRequest.convertPaymentDateToLocalDate());
 
         if (!Constants.isPositive(amountInDebt)) {
-            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.debit.entry.with.no.debt",
+            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.with.no.debt",
                     String.valueOf(finantialDocumentEntry.getEntryOrder()),
                     String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
         }
 
         if (!Constants.isEqual(amountInDebt, interestRequest.getAmount())) {
-            throw new RuntimeException(Constants.bundle("error.ERPIntegrationService.debit.entry.amount.is.not.equal",
+            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.amount.is.not.equal",
                     interestRequest.getAmount() != null ? interestRequest.getAmount().toString() : "null",
                     String.valueOf(finantialDocumentEntry.getEntryOrder()),
                     String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber()),

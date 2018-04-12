@@ -82,11 +82,6 @@ public class SeriesController extends TreasuryBaseController {
         model.addAttribute("series", series);
     }
 
-    @Atomic
-    public void deleteSeries(Series series) {
-        series.delete();
-    }
-
     @RequestMapping(value = "/search/view/{oid}")
     public String processSearchToViewAction(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
@@ -109,10 +104,13 @@ public class SeriesController extends TreasuryBaseController {
     public String delete(@PathVariable("oid") Series series, Model model, RedirectAttributes redirectAttributes) {
         setSeries(series, model);
         try {
-            super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
-            deleteSeries(series);
+            final FinantialInstitution finantialInstitution = series.getFinantialInstitution();
+            super.assertUserIsBackOfficeMember(finantialInstitution, model);
+
+            series.delete();
+            
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
-            return redirect(FinantialInstitutionController.READ_URL + series.getExternalId(), model, redirectAttributes);
+            return redirect(FinantialInstitutionController.READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {

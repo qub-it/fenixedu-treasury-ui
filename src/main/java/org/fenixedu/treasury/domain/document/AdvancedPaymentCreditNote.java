@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
+
 import java.math.BigDecimal;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -130,7 +132,7 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
             throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.vat.type.for.advanced.payment");
         }
         String lineDescription =
-                Constants.bundleI18N("label.AdvancedPaymentCreditNote.advanced.payment.description").getContent(Constants.DEFAULT_LANGUAGE)
+                treasuryBundleI18N("label.AdvancedPaymentCreditNote.advanced.payment.description").getContent(Constants.DEFAULT_LANGUAGE)
                         + description;
         CreditEntry entry = CreditEntry.create(note, lineDescription, advancedPaymentProduct, vat, availableAmount, documentDate,
                 null, BigDecimal.ONE);

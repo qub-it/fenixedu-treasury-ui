@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +97,7 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
             String fenixCustomerId = item.getCustomerId();
             
             final String otherMessage = String.format("%s (SAP nº %s): [%s] %s",
-                    Constants.bundle("label.SAPExternalService.customer.integration.result"),
+                    treasuryBundle("label.SAPExternalService.customer.integration.result"),
                     !Strings.isNullOrEmpty(erpCustomerId) ? erpCustomerId : "", integrationStatus,
                     returnMsg);
 
@@ -115,8 +117,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
     private void saveErpCustomerId(final DocumentsInformationOutput output, final String erpCustomerId, final String fenixCustomerId) {
         if(Strings.isNullOrEmpty(fenixCustomerId)) {
             final String message = String.format("%s %s",
-                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
-                    Constants.bundle("label.SAPExternalService.warning.customer.id.empty"));
+                    treasuryBundle("label.SAPExternalService.customer.integration.result"), 
+                    treasuryBundle("label.SAPExternalService.warning.customer.id.empty"));
             
             output.getOtherMessages().add(message);
             return;
@@ -124,8 +126,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
         
         if(Strings.isNullOrEmpty(erpCustomerId) || Strings.isNullOrEmpty(erpCustomerId.trim())) {
             String message = String.format("%s %s",
-                Constants.bundle("label.SAPExternalService.customer.integration.result"),
-                Constants.bundle("label.SAPExternalService.warning.erp.customer.id.empty"));
+                treasuryBundle("label.SAPExternalService.customer.integration.result"),
+                treasuryBundle("label.SAPExternalService.warning.erp.customer.id.empty"));
             
             output.getOtherMessages().add(message);
             return;
@@ -135,8 +137,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
 
         if(!customerOptional.isPresent()) {
             final String message = String.format("%s %s",
-                Constants.bundle("label.SAPExternalService.customer.integration.result"), 
-                Constants.bundle(("label.SAPExternalService.warning.customer.with.code.not.found"), fenixCustomerId));
+                treasuryBundle("label.SAPExternalService.customer.integration.result"), 
+                treasuryBundle(("label.SAPExternalService.warning.customer.with.code.not.found"), fenixCustomerId));
 
             output.getOtherMessages().add(message);
             return;
@@ -146,8 +148,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
         
         if(customer.getErpCustomerId() != null && customer.getErpCustomerId().equals(erpCustomerId)) {
             final String message = String.format("%s %s",
-                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
-                    Constants.bundle("label.SAPExternalService.info.customer.with.erp.id.already.set", customer.getCode(), erpCustomerId));
+                    treasuryBundle("label.SAPExternalService.customer.integration.result"), 
+                    treasuryBundle("label.SAPExternalService.info.customer.with.erp.id.already.set", customer.getCode(), erpCustomerId));
 
             output.getOtherMessages().add(message);
             return;
@@ -155,8 +157,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
         
         if(customer.getErpCustomerId() != null && !customer.getErpCustomerId().equals(erpCustomerId)) {
             final String message = String.format("%s %s",
-                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
-                    Constants.bundle("label.SAPExternalService.warning.erp.customer.id.not.equal", customer.getCode(), erpCustomerId, customer.getErpCustomerId()));
+                    treasuryBundle("label.SAPExternalService.customer.integration.result"), 
+                    treasuryBundle("label.SAPExternalService.warning.erp.customer.id.not.equal", customer.getCode(), erpCustomerId, customer.getErpCustomerId()));
 
             output.getOtherMessages().add(message);
             return;
@@ -164,8 +166,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
         
         if(customer.getErpCustomerId() == null) {
             final String message = String.format("%s %s",
-                    Constants.bundle("label.SAPExternalService.customer.integration.result"), 
-                    Constants.bundle("label.SAPExternalService.info.customer.with.erp.id.set", customer.getCode(), erpCustomerId));
+                    treasuryBundle("label.SAPExternalService.customer.integration.result"), 
+                    treasuryBundle("label.SAPExternalService.info.customer.with.erp.id.set", customer.getCode(), erpCustomerId));
 
             output.getOtherMessages().add(message);
             

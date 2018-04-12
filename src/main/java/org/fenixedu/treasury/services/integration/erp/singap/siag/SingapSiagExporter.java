@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.services.integration.erp.singap.siag;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -1296,7 +1298,7 @@ public class SingapSiagExporter implements IERPExporter {
         for (DocumentStatusWS documentStatus : integrationStatusFor) {
             if (documentStatus.isIntegratedWithSuccess()) {
                 String message =
-                        Constants.bundle("info.ERPExporter.sucess.integrating.document", documentStatus.getDocumentNumber());
+                        treasuryBundle("info.ERPExporter.sucess.integrating.document", documentStatus.getDocumentNumber());
                 FinantialDocument document = institution.getFinantialDocumentsPendingForExportationSet().stream()
                         .filter(x -> x.getUiDocumentNumber().equals(documentStatus.getDocumentNumber())).findFirst().orElse(null);
                 if (document != null) {
@@ -1315,19 +1317,19 @@ public class SingapSiagExporter implements IERPExporter {
         }
 
         if (erpIntegrationConfiguration.getActive() == false) {
-            logBean.appendErrorLog(Constants.bundle("info.ERPExporter.configuration.inactive"));
+            logBean.appendErrorLog(treasuryBundle("info.ERPExporter.configuration.inactive"));
             return false;
         }
         
         IERPExternalService service = erpIntegrationConfiguration.getERPExternalServiceImplementation();
-        logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.sending.inforation"));
+        logBean.appendIntegrationLog(treasuryBundle("info.ERPExporter.sending.inforation"));
         
         DocumentsInformationInput input = new DocumentsInformationInput();
         if (operationFile.getSize() <= erpIntegrationConfiguration.getMaxSizeBytesToExportOnline()) {
             input.setData(operationFile.getContent());
             DocumentsInformationOutput sendInfoOnlineResult = service.sendInfoOnline(institution, input);
             logBean.appendIntegrationLog(
-                    Constants.bundle("info.ERPExporter.sucess.sending.inforation.online", sendInfoOnlineResult.getRequestId()));
+                    treasuryBundle("info.ERPExporter.sucess.sending.inforation.online", sendInfoOnlineResult.getRequestId()));
 
             //if we have result in online situation, then check the information of integration STATUS
             for (DocumentStatusWS status : sendInfoOnlineResult.getDocumentStatus()) {
@@ -1337,21 +1339,21 @@ public class SingapSiagExporter implements IERPExporter {
                             FinantialDocument.findByUiDocumentNumber(institution, status.getDocumentNumber());
                     if (document != null) {
                         final String message =
-                                Constants.bundle("info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
+                                treasuryBundle("info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
                         logBean.appendIntegrationLog(message);
                         document.clearDocumentToExport(message);
                     } else {
                         success = false;
-                        logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                        logBean.appendIntegrationLog(treasuryBundle("info.ERPExporter.error.integrating.document",
                                 status.getDocumentNumber(), status.getErrorDescription()));
-                        logBean.appendErrorLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                        logBean.appendErrorLog(treasuryBundle("info.ERPExporter.error.integrating.document",
                                 status.getDocumentNumber(), status.getErrorDescription()));
                     }
                 } else {
                     success = false;
-                    logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                    logBean.appendIntegrationLog(treasuryBundle("info.ERPExporter.error.integrating.document",
                             status.getDocumentNumber(), status.getErrorDescription()));
-                    logBean.appendErrorLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                    logBean.appendErrorLog(treasuryBundle("info.ERPExporter.error.integrating.document",
                             status.getDocumentNumber(), status.getErrorDescription()));
 
                 }
@@ -1484,11 +1486,11 @@ public class SingapSiagExporter implements IERPExporter {
         ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         documents.forEach(document -> operation.addFinantialDocuments(document));
         try {
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.starting.finantialdocuments.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.starting.finantialdocuments.integration"));
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize = getAuditFilePreProcessOperator(institution);
 
             String xml = exportFinantialDocumentToXML(institution, documents, preProcessFunctionBeforeSerialize);
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.erp.xml.content.generated"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.erp.xml.content.generated"));
 
             OperationFile operationFile = writeContentToExportOperation(xml, operation);
 
@@ -1499,7 +1501,7 @@ public class SingapSiagExporter implements IERPExporter {
         } catch (Exception ex) {
             writeError(operation, logBean, ex);
         } finally {
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.finantialdocuments.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.finished.finantialdocuments.integration"));
             operation.appendLog(logBean.getErrorLog(), logBean.getIntegrationLog(), logBean.getSoapInboundMessage(),
                     logBean.getSoapOutboundMessage());
         }
@@ -1514,16 +1516,16 @@ public class SingapSiagExporter implements IERPExporter {
         final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
         final ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.starting.customers.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.starting.customers.integration"));
 
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize = getAuditFilePreProcessOperator(institution);
             String xml = exportCustomersToXML(institution, preProcessFunctionBeforeSerialize);
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.erp.xml.content.generated"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.erp.xml.content.generated"));
 
             final OperationFile operationFile = writeContentToExportOperation(xml, operation);
 
             boolean success = sendDocumentsInformationToIntegration(institution, operationFile, logBean);
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.customers.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.finished.customers.integration"));
 
             operation.setSuccess(success);
         } catch (Exception ex) {
@@ -1544,15 +1546,15 @@ public class SingapSiagExporter implements IERPExporter {
         final ERPExportOperation operation = createSaftExportOperation(null, institution, new DateTime());
         try {
             UnaryOperator<AuditFile> preProcessFunctionBeforeSerialize = getAuditFilePreProcessOperator(institution);
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.starting.products.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.starting.products.integration"));
 
             String xml = exportsProductsToXML(institution, preProcessFunctionBeforeSerialize);
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.erp.xml.content.generated"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.erp.xml.content.generated"));
 
             final OperationFile operationFile = writeContentToExportOperation(xml, operation);
 
             boolean success = sendDocumentsInformationToIntegration(institution, operationFile, logBean);
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.products.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.finished.products.integration"));
 
             operation.setSuccess(success);
         } catch (Exception ex) {
@@ -1572,7 +1574,7 @@ public class SingapSiagExporter implements IERPExporter {
             final ERPExportOperation operation = createSaftExportOperation(eRPExportOperation.getFile().getContent(),
                     eRPExportOperation.getFinantialInstitution(), new DateTime());
             try {
-                logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.starting.retry.integration"));
+                logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.starting.retry.integration"));
                 for (FinantialDocument document : eRPExportOperation.getFinantialDocumentsSet()) {
                     if (eRPExportOperation.getFinantialInstitution().getErpIntegrationConfiguration()
                             .isIntegratedDocumentsExportationEnabled() || document.isDocumentToExport()) {
@@ -1586,7 +1588,7 @@ public class SingapSiagExporter implements IERPExporter {
             } catch (Exception ex) {
                 writeError(operation, logBean, ex);
             } finally {
-                logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.retry.integration"));
+                logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.finished.retry.integration"));
                 operation.appendLog(logBean.getErrorLog(), logBean.getIntegrationLog(), logBean.getSoapInboundMessage(),
                         logBean.getSoapOutboundMessage());
             }
@@ -1599,7 +1601,7 @@ public class SingapSiagExporter implements IERPExporter {
                     exportFinantialDocumentToIntegration(eRPExportOperation.getFinantialInstitution(), allDocuments);
 
             final IntegrationOperationLogBean logBean = new IntegrationOperationLogBean();
-            logBean.appendIntegrationLog(Constants.bundle("label.ERPExporter.finished.retry.integration"));
+            logBean.appendIntegrationLog(treasuryBundle("label.ERPExporter.finished.retry.integration"));
             operation.appendLog("", logBean.getIntegrationLog(), "", "");
 
             return operation;
@@ -1634,7 +1636,7 @@ public class SingapSiagExporter implements IERPExporter {
             if (documentStatus.getDocumentNumber().equals(document.getUiDocumentNumber())
                     && documentStatus.isIntegratedWithSuccess()) {
                 final String message =
-                        Constants.bundle("info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
+                        treasuryBundle("info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
 
                 document.clearDocumentToExport(message);
             }

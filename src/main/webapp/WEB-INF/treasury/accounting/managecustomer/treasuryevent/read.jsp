@@ -295,7 +295,7 @@ ${portal.toolkit()}
 			</c:if>
 
             <c:if test="${not exemption.exemptByPercentage}">
-                <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}" />
+                <c:out value="${exemption.debitEntry.debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}" />
             </c:if>
         </datatables:column>
         <datatables:column cssStyle="width:40%">
@@ -505,7 +505,7 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <p align=right>
                         <c:out
-                            value="${debtAccount.finantialInstitution.currency.getValueFor(debitEntry.amountWithVat)}" />
+                            value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.amountWithVat)}" />
                     </p>
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
@@ -515,7 +515,7 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <p align=right>
                         <c:out
-                            value="${debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmountWithVat)}" />
+                            value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmountWithVat)}" />
                     </p>
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">

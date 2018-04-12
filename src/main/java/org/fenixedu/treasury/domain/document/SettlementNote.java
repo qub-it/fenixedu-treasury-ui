@@ -27,7 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.bundle;
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -311,7 +312,7 @@ public class SettlementNote extends SettlementNote_Base {
         }
 
         final String comments = String.format("%s [%s]",
-                Constants.bundleI18N("label.SettlementNote.advancedpayment").getContent(Constants.DEFAULT_LANGUAGE),
+                treasuryBundleI18N("label.SettlementNote.advancedpayment").getContent(Constants.DEFAULT_LANGUAGE),
                 getPaymentDate().toString(Constants.DATE_FORMAT));
 
         createAdvancedPaymentCreditNote(availableAmount, comments, getExternalId());
@@ -469,7 +470,7 @@ public class SettlementNote extends SettlementNote_Base {
 
             checkRules();
         } else {
-            throw new TreasuryDomainException(bundle("error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(treasuryBundle("error.FinantialDocumentState.invalid.state.change.request"));
         }
 
     }
@@ -558,10 +559,10 @@ public class SettlementNote extends SettlementNote_Base {
 
             if (!creditNote.isAdvancePayment()) {
                 creditNote.anullReimbursementCreditNoteAndCopy(
-                        Constants.bundle("error.SettlementNote.reimbursement.rejected.reason"));
+                        treasuryBundle("error.SettlementNote.reimbursement.rejected.reason"));
             }
 
-            anullDocument(Constants.bundle("label.ReimbursementProcessStatusType.annuled.reimbursement.by.annuled.process"),
+            anullDocument(treasuryBundle("label.ReimbursementProcessStatusType.annuled.reimbursement.by.annuled.process"),
                     false);
 
             markDocumentToExport();

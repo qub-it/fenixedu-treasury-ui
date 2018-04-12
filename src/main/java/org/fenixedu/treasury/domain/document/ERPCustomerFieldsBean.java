@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -185,42 +187,42 @@ public class ERPCustomerFieldsBean {
             final String addressCountryCode, final String address, final String zipCode, final String districtSubdivision,
             final List<String> errorMessages) {
         if (Strings.isNullOrEmpty(addressCountryCode)) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.address.countryCode.not.filled", fiscalCountry,
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.countryCode.not.filled", fiscalCountry,
                     fiscalNumber, name));
         }
 
         if (Strings.isNullOrEmpty(address)) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.address.address.not.filled", fiscalCountry,
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.address.not.filled", fiscalCountry,
                     fiscalNumber, name));
         }
 
         if (Strings.isNullOrEmpty(zipCode) && (Strings.isNullOrEmpty(addressCountryCode) || "PT".equals(addressCountryCode.toUpperCase()))) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.address.zipCode.not.filled", fiscalCountry,
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.zipCode.not.filled", fiscalCountry,
                     fiscalNumber, name));
         }
 
         if (Strings.isNullOrEmpty(districtSubdivision)) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.address.districtSubdivision.not.filled",
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.districtSubdivision.not.filled",
                     fiscalCountry, fiscalNumber, name));
         }
 
         if (!Strings.isNullOrEmpty(address) && address.length() > MAX_ADDRESS_DETAIL) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.addressDetail.more.than.allowed",
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.addressDetail.more.than.allowed",
                     String.valueOf(MAX_ADDRESS_DETAIL), address, fiscalCountry, fiscalNumber, name));
         }
 
         if (!Strings.isNullOrEmpty(districtSubdivision) && districtSubdivision.length() > MAX_CITY) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.city.more.than.allowed", String.valueOf(MAX_CITY),
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.city.more.than.allowed", String.valueOf(MAX_CITY),
                     districtSubdivision, fiscalCountry, fiscalNumber, name));
         }
 
         if (!Strings.isNullOrEmpty(zipCode) && zipCode.length() > MAX_ZIPCODE) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.zipCode.more.than.allowed",
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.zipCode.more.than.allowed",
                     String.valueOf(MAX_ZIPCODE), zipCode, fiscalCountry, fiscalNumber, name));
         }
 
         if (!Strings.isNullOrEmpty(districtSubdivision) && districtSubdivision.length() > MAX_REGION) {
-            errorMessages.add(Constants.bundle("error.ERPCustomerFieldsBean.region.more.than.allowed", String.valueOf(MAX_REGION),
+            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.region.more.than.allowed", String.valueOf(MAX_REGION),
                     districtSubdivision, fiscalCountry, fiscalNumber, name));
         }
 

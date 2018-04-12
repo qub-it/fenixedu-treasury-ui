@@ -1,6 +1,7 @@
 package org.fenixedu.treasury.ui.document.forwardpayments;
 
 import static java.lang.String.format;
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
 
 import java.util.Comparator;
 import java.util.List;
@@ -96,7 +97,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
                     .filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested())
                     .count() > MAX_PENDING_POSSIBLE_PAYMENTS) {
                 addErrorMessage(
-                        Constants.bundle("error.ManageForwardPayments.search.withPendingPlatformPayment.limited.narrow.search"),
+                        treasuryBundle("error.ManageForwardPayments.search.withPendingPlatformPayment.limited.narrow.search"),
                         model);
             } else {
                 stream = stream
@@ -170,7 +171,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
                     forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
 
             if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
-                addErrorMessage(Constants.bundle("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform"),
+                addErrorMessage(treasuryBundle("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform"),
                         model);
                 return String.format("redirect:%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId());
             }

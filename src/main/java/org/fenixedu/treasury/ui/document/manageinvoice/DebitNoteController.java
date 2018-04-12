@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -420,7 +422,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
             debitNote.closeDocument();
 
-            addInfoMessage(Constants.bundle("label.document.manageinvoice.DebitNote.document.closed.sucess"), model);
+            addInfoMessage(treasuryBundle("label.document.manageinvoice.DebitNote.document.closed.sucess"), model);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
@@ -623,15 +625,15 @@ public class DebitNoteController extends TreasuryBaseController {
             final ERPExportOperation output = ERPExporterManager.exportSingleDocument(debitNote);
 
             if (output == null) {
-                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                addInfoMessage(treasuryBundle("label.integration.erp.document.not.exported"), model);
                 setDebitNote(debitNote, model);
                 return read(debitNote, model, redirectAttributes);
             }
 
-            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
+            addInfoMessage(treasuryBundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
 
         setDebitNote(debitNote, model);
@@ -645,12 +647,12 @@ public class DebitNoteController extends TreasuryBaseController {
         try {
 
             if (!debitNote.isDocumentToExport()) {
-                addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
+                addErrorMessage(treasuryBundle("error.FinantialDocument.document.not.marked.to.export"), model);
                 return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
             if (Strings.isNullOrEmpty(reason)) {
-                addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
+                addErrorMessage(treasuryBundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
                 return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
@@ -675,7 +677,7 @@ public class DebitNoteController extends TreasuryBaseController {
             assertUserIsAllowToModifyInvoices(debitNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
             if (!debitNote.isPreparing() && !debitNote.isClosed()) {
-                addErrorMessage(Constants.bundle("error.DebitNote.updatePayorDebtAccount.not.preparing.nor.closed"), model);
+                addErrorMessage(treasuryBundle("error.DebitNote.updatePayorDebtAccount.not.preparing.nor.closed"), model);
                 return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
@@ -704,10 +706,10 @@ public class DebitNoteController extends TreasuryBaseController {
             final DebitNote newDebitNote = debitNote.updatePayorDebtAccount(payorDebtAccount);
 
             if (oldPayorDebtAccount != newDebitNote.getPayorDebtAccount()) {
-                addInfoMessage(Constants.bundle("label.DebitNote.update.payorDebtAccount.success"), model);
+                addInfoMessage(treasuryBundle("label.DebitNote.update.payorDebtAccount.success"), model);
                 return redirect(READ_URL + newDebitNote.getExternalId(), model, redirectAttributes);
             } else {
-                addErrorMessage(Constants.bundle("error.DebitNote.updatePayorDebtAccount.payor.not.changed"), model);
+                addErrorMessage(treasuryBundle("error.DebitNote.updatePayorDebtAccount.payor.not.changed"), model);
             }
         } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);

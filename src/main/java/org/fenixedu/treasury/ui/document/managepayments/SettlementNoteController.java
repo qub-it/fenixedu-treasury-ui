@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.document.managepayments;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -168,11 +170,11 @@ public class SettlementNoteController extends TreasuryBaseController {
                         || debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(Constants.bundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
+                    addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
                 } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(Constants.bundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
+                    addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
                 } else {
                     debitEntryBean.setNotValid(false);
                 }
@@ -193,13 +195,13 @@ public class SettlementNoteController extends TreasuryBaseController {
                         || creditEntryBean.getCreditAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
                     creditEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(Constants.bundle("error.CreditEntry.creditAmount.equal.zero", Integer.toString(i + 1)),
+                    addErrorMessage(treasuryBundle("error.CreditEntry.creditAmount.equal.zero", Integer.toString(i + 1)),
                             model);
                 } else if (creditEntryBean.getCreditAmountWithVat()
                         .compareTo(creditEntryBean.getCreditEntry().getOpenAmount()) > 0) {
                     creditEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(Constants.bundle("error.CreditEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
+                    addErrorMessage(treasuryBundle("error.CreditEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
                 } else {
                     creditEntryBean.setNotValid(false);
                 }
@@ -214,49 +216,49 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.positive.payment.value"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.positive.payment.value"), model);
         }
 
         if (!bean.isReimbursementNote() && creditSum.compareTo(debitSum) > 0) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.negative.payment.value"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.negative.payment.value"), model);
         }
 
         if (bean.isReimbursementNote() && creditSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(Constants.bundle("error.CreditEntry.no.creditEntries.selected"), model);
+            addErrorMessage(treasuryBundle("error.CreditEntry.no.creditEntries.selected"), model);
         }
 
         if (!bean.isReimbursementNote() && !bean.isAdvancePayment() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(Constants.bundle("error.DebiEntry.no.debitEntries.selected"), model);
+            addErrorMessage(treasuryBundle("error.DebiEntry.no.debitEntries.selected"), model);
         }
 
         if (bean.getDate().isAfter(new LocalDate())) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.date.is.after"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.date.is.after"), model);
         }
 
         if (bean.getDocNumSeries() == null) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.need.documentSeries"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.need.documentSeries"), model);
         }
 
         if (bean.getReferencedCustomers().size() > 1) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.referencedCustomers.only.one.allowed"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.referencedCustomers.only.one.allowed"), model);
         }
 
         if (!error && bean.isReimbursementNote() && bean.getCreditEntries().stream().filter(ce -> ce.isIncluded()).count() != 1) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.reimbursement.supports.only.one.settlement.entry"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.reimbursement.supports.only.one.settlement.entry"), model);
         }
 
         if (!bean.isReimbursementNote() && !bean.checkAdvancePaymentCreditsWithPaymentDate()) {
             final SettlementNote settlementNote = bean.getLastPaidAdvancedCreditSettlementNote().get();
 
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.advancedPaymentCredit.originSettlementNote.payment.date.after",
+            addErrorMessage(treasuryBundle("error.SettlementNote.advancedPaymentCredit.originSettlementNote.payment.date.after",
                     settlementNote.getAdvancedPaymentCreditNote().getUiDocumentNumber(),
                     settlementNote.getPaymentDate().toLocalDate().toString(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)), model);
         }
@@ -344,7 +346,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         if (bean.getPaymentEntries().size() > 1) {
             error = true;
-            addErrorMessage(Constants.bundle("error.SettlementNote.only.one.payment.method.is.supported"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.only.one.payment.method.is.supported"), model);
         }
 
         if (bean.getPaymentEntries().stream().anyMatch(peb -> Constants.isZero(peb.getPaymentAmount()))) {
@@ -358,12 +360,12 @@ public class SettlementNoteController extends TreasuryBaseController {
             error = true;
             final String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
-            addErrorMessage(Constants.bundle(errorMessage), model);
+            addErrorMessage(treasuryBundle(errorMessage), model);
         } else if (!bean.isAdvancePayment() && !Constants.isEqual(paymentSum, debitSum)) {
             error = true;
             final String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
-            addErrorMessage(Constants.bundle(errorMessage), model);
+            addErrorMessage(treasuryBundle(errorMessage), model);
         }
 
         if (error) {
@@ -564,7 +566,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                     + new DateTime().toString("YYYY-MM-dd HH:mm");
 
             settlementNote.anullDocument(anullReason, true);
-            addInfoMessage(Constants.bundle("label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
+            addInfoMessage(treasuryBundle("label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -628,7 +630,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             settlementNote.closeDocument();
 
-            addInfoMessage(Constants.bundle("label.document.manageinvoice.Settlement.document.closed.sucess"), model);
+            addInfoMessage(treasuryBundle("label.document.manageinvoice.Settlement.document.closed.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -784,14 +786,14 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             final ERPExportOperation output = ERPExporterManager.exportSettlementNote(settlementNote);
             if (output == null) {
-                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                addInfoMessage(treasuryBundle("label.integration.erp.document.not.exported"), model);
                 return read(settlementNote, model);
             }
 
-            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
+            addInfoMessage(treasuryBundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
 
         return read(settlementNote, model);
@@ -804,12 +806,12 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
 
             if (!settlementNote.isDocumentToExport()) {
-                addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
+                addErrorMessage(treasuryBundle("error.FinantialDocument.document.not.marked.to.export"), model);
                 return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
             }
 
             if (Strings.isNullOrEmpty(reason)) {
-                addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
+                addErrorMessage(treasuryBundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
                 return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
             }
 

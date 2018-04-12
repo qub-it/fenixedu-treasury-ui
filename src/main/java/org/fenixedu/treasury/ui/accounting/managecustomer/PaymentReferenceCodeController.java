@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -87,13 +89,13 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         try {
 
             if(bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty()) {
-                addErrorMessage(Constants.bundle("error.MultipleEntriesPaymentCode.select.at.least.one.debit.entry"), model);
+                addErrorMessage(treasuryBundle("error.MultipleEntriesPaymentCode.select.at.least.one.debit.entry"), model);
 
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
             
             if(bean.getPaymentCodePool() == null) {
-                addErrorMessage(Constants.bundle("error.MultipleEntriesPaymentCode.payment.code.pool.required"), model);
+                addErrorMessage(treasuryBundle("error.MultipleEntriesPaymentCode.payment.code.pool.required"), model);
                 
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }

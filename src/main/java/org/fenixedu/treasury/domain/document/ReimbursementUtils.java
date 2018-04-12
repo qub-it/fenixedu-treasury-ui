@@ -2,6 +2,7 @@ package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.Constants.divide;
 import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -95,7 +96,7 @@ public class ReimbursementUtils {
                 new LocalDate(), originalCreditNote.getUiDocumentNumber());
         final DebitEntry compensationDebitEntry = DebitEntry.create(Optional.of(compensationDebitNote), debtAccount, null, vat,
                 amountToReimburseWithoutVat, new LocalDate(), Maps.newHashMap(), originalCreditEntry.getProduct(),
-                Constants.bundle("label.ReimbursementUtils.compensation.debit.entry.description",
+                treasuryBundle("label.ReimbursementUtils.compensation.debit.entry.description",
                         originalCreditEntry.getDescription()),
                 BigDecimal.ONE, null, now);
 

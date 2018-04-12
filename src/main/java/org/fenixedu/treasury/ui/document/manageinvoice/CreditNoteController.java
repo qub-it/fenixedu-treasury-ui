@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.function.Predicate;
@@ -131,7 +133,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
             creditNote.closeDocument();
 
-            addInfoMessage(Constants.bundle("label.document.manageinvoice.CreditNote.document.closed.sucess"), model);
+            addInfoMessage(treasuryBundle("label.document.manageinvoice.CreditNote.document.closed.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -149,12 +151,12 @@ public class CreditNoteController extends TreasuryBaseController {
 
             // For now limit this functionality to managers
             if (!TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
-                addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.invoices"), model);
-                throw new SecurityException(Constants.bundle("error.authorization.not.allow.to.modify.invoices"));
+                addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.invoices"), model);
+                throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.invoices"));
             }
 
             anullCreditNote(creditNote, reason);
-            addInfoMessage(Constants.bundle("label.document.manageinvoice.CreditNote.document.anulled.sucess"), model);
+            addInfoMessage(treasuryBundle("label.document.manageinvoice.CreditNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -195,9 +197,9 @@ public class CreditNoteController extends TreasuryBaseController {
 
             return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(Constants.bundle("label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(creditNote, model);
     }
@@ -297,7 +299,7 @@ public class CreditNoteController extends TreasuryBaseController {
 //        DocumentNumberSeries documentNumberSeries = null;
         if (debtAccount == null && debitNote == null) {
             addErrorMessage(
-                    Constants.bundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                    treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
                     model);
             return redirectToReferrer(model, redirectAttributes);
         }
@@ -305,7 +307,7 @@ public class CreditNoteController extends TreasuryBaseController {
         if (debitNote != null && debtAccount != null) {
             if (!debitNote.getDebtAccount().equals(debtAccount)) {
                 addErrorMessage(
-                        Constants.bundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                        treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
                         model);
                 return redirectToReferrer(model, redirectAttributes);
             }
@@ -335,7 +337,7 @@ public class CreditNoteController extends TreasuryBaseController {
         if (availableSeries.size() > 0) {
             model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
         } else {
-            addErrorMessage(Constants.bundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"),
+            addErrorMessage(treasuryBundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"),
                     model);
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         }
@@ -362,7 +364,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         if (debtAccount == null && debitNote == null) {
             addErrorMessage(
-                    Constants.bundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                    treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
                     model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         }
@@ -374,7 +376,7 @@ public class CreditNoteController extends TreasuryBaseController {
         if (documentNumberSeries != null && debtAccount != null) {
             if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
                 addErrorMessage(
-                        Constants.bundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                        treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
                         model);
                 return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
             }
@@ -387,9 +389,9 @@ public class CreditNoteController extends TreasuryBaseController {
 
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(Constants.bundle("label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
 
         return create(debtAccount, debitNote, model, redirectAttributes);
@@ -441,14 +443,14 @@ public class CreditNoteController extends TreasuryBaseController {
             final ERPExportOperation output = ERPExporterManager.exportSingleDocument(creditNote);
 
             if (output == null) {
-                addInfoMessage(Constants.bundle("label.integration.erp.document.not.exported"), model);
+                addInfoMessage(treasuryBundle("label.integration.erp.document.not.exported"), model);
                 return read(creditNote, model);
             }
 
-            addInfoMessage(Constants.bundle("label.integration.erp.exportoperation.success"), model);
+            addInfoMessage(treasuryBundle("label.integration.erp.exportoperation.success"), model);
             return redirect(ERPExportOperationController.READ_URL + output.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(Constants.bundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
 
         return read(creditNote, model);
@@ -461,12 +463,12 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
 
             if (!creditNote.isDocumentToExport()) {
-                addErrorMessage(Constants.bundle("error.FinantialDocument.document.not.marked.to.export"), model);
+                addErrorMessage(treasuryBundle("error.FinantialDocument.document.not.marked.to.export"), model);
                 return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
             }
 
             if (Strings.isNullOrEmpty(reason)) {
-                addErrorMessage(Constants.bundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
+                addErrorMessage(treasuryBundle("error.FinantialDocument.clear.document.to.export.requires.reason"), model);
                 return redirect(READ_URL + creditNote.getExternalId(), model, redirectAttributes);
             }
 

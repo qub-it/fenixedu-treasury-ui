@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.debt.balancetransfer;
 
-import static org.fenixedu.treasury.util.Constants.bundle;
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
 import static org.fenixedu.treasury.util.Constants.isEqual;
 import static org.fenixedu.treasury.util.Constants.isGreaterOrEqualThan;
 import static org.fenixedu.treasury.util.Constants.isPositive;
@@ -255,7 +255,7 @@ public class BalanceTransferService {
 
         }
 
-        objectDebitNote.anullDebitNoteWithCreditNote(bundle("label.BalanceTransferService.annuled.reason"), false);
+        objectDebitNote.anullDebitNoteWithCreditNote(treasuryBundle("label.BalanceTransferService.annuled.reason"), false);
     }
 
 }

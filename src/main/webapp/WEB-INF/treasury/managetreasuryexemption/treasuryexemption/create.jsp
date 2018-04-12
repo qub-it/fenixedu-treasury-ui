@@ -226,7 +226,7 @@ ${portal.angularToolkit()}
                 </div>
                 <div class="input-group col-sm-4" style="padding-right: 15px; padding-left: 15px;">
                     <div class="input-group-addon">
-                        <c:out value="${debtAccount.finantialInstitution.currency.symbol}" />
+                    	<span>{{object.currencySymbol}}</span>
                     </div>
                     <input id="treasuryExemption_valueToExempt"
                         class="form-control"

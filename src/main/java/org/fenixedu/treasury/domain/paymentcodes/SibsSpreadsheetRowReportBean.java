@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.paymentcodes;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationLineDTO;
 import org.fenixedu.treasury.util.Constants;
@@ -10,18 +12,18 @@ public class SibsSpreadsheetRowReportBean implements SpreadsheetRow {
 
     // @formatter:off
     public static String[] SPREADSHEET_HEADERS = { 
-            Constants.bundle("label.SibsReportFile.whenProcessedBySibs"),
-            Constants.bundle("label.SibsReportFile.filename"),
-            Constants.bundle("label.SibsReportFile.transactionsTotalAmount"),
-            Constants.bundle("label.SibsReportFile.totalCost"),
-            Constants.bundle("label.SibsReportFile.fileVersion"),
-            Constants.bundle("label.SibsReportFile.sibsTransactionId"),
-            Constants.bundle("label.SibsReportFile.transactionTotalAmount"),
-            Constants.bundle("label.SibsReportFile.paymentCode"),
-            Constants.bundle("label.SibsReportFile.transactionWhenRegistered"),
-            Constants.bundle("label.SibsReportFile.studentNumber"),
-            Constants.bundle("label.SibsReportFile.personName"),
-            Constants.bundle("label.SibsReportFile.description")
+            treasuryBundle("label.SibsReportFile.whenProcessedBySibs"),
+            treasuryBundle("label.SibsReportFile.filename"),
+            treasuryBundle("label.SibsReportFile.transactionsTotalAmount"),
+            treasuryBundle("label.SibsReportFile.totalCost"),
+            treasuryBundle("label.SibsReportFile.fileVersion"),
+            treasuryBundle("label.SibsReportFile.sibsTransactionId"),
+            treasuryBundle("label.SibsReportFile.transactionTotalAmount"),
+            treasuryBundle("label.SibsReportFile.paymentCode"),
+            treasuryBundle("label.SibsReportFile.transactionWhenRegistered"),
+            treasuryBundle("label.SibsReportFile.studentNumber"),
+            treasuryBundle("label.SibsReportFile.personName"),
+            treasuryBundle("label.SibsReportFile.description")
             /* TODO: Appears to be empty. Check if it is needed
             ,
             Constants.bundle("label.SibsReportFile.transactionDescription"),
@@ -63,7 +65,7 @@ public class SibsSpreadsheetRowReportBean implements SpreadsheetRow {
             return;
         } catch (final Exception e) {
             e.printStackTrace();
-            row.createCell(i++).setCellValue(Constants.bundle("error.SibsSpreadsheetRowReportBean.report.generation.verify.line"));
+            row.createCell(i++).setCellValue(treasuryBundle("error.SibsSpreadsheetRowReportBean.report.generation.verify.line"));
         }
         
     }

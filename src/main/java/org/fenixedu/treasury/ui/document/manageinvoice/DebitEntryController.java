@@ -171,7 +171,9 @@ public class DebitEntryController extends TreasuryBaseController {
 
             DebitEntryBean bean = new DebitEntryBean();
 
-            bean.setProductDataSource(Product.findAllActive().collect(Collectors.toList()));
+            bean.setProductDataSource(Product.findAllActive().filter(p -> p.getFinantialInstitutionsSet().contains(debtAccount.getFinantialInstitution()))
+                    .collect(Collectors.toList()));
+            
             bean.setDebtAccount(debtAccount);
             bean.setFinantialDocument(debitNote);
             bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
@@ -204,8 +206,8 @@ public class DebitEntryController extends TreasuryBaseController {
     @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<String> createpostback(@RequestParam(value = "bean", required = true) DebitEntryBean bean,
             Model model) {
-
-        bean.refreshProductsDataSource();
+        
+        bean.refreshProductsDataSource(bean.getDebtAccount().getFinantialInstitution());
 
         Product product = bean.getProduct();
         if (product != null) {

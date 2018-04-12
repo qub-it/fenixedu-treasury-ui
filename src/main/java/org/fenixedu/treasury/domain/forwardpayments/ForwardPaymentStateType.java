@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.forwardpayments;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
+
 import java.util.Comparator;
 
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -52,6 +54,6 @@ public enum ForwardPaymentStateType {
     }
     
     public LocalizedString getLocalizedName() {
-        return Constants.bundleI18N(getClass().getSimpleName() + "." + name());
+        return treasuryBundleI18N(getClass().getSimpleName() + "." + name());
     }
 }

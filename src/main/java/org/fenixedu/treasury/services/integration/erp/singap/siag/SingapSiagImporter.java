@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.services.integration.erp.singap.siag;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.math.BigDecimal;
@@ -128,7 +130,7 @@ public class SingapSiagImporter implements IERPImporter {
             for (Payment payment : auditFile.getSourceDocuments().getPayments().getPayment()) {
                 DocumentStatusWS docStatus = new DocumentStatusWS();
                 logBean.appendIntegrationLog(
-                        Constants.bundle("info.ERPImporter.processing.payment", payment.getPaymentRefNo()));
+                        treasuryBundle("info.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                 SettlementNote note = null;
                 try {
                     note = processErpPayment(payment, eRPImportOperation, logBean);
@@ -161,9 +163,9 @@ public class SingapSiagImporter implements IERPImporter {
                             break;
                         }
                     }
-                    logBean.appendIntegrationLog(Constants.bundle(
+                    logBean.appendIntegrationLog(treasuryBundle(
                             "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
-                    logBean.appendErrorLog(Constants.bundle(
+                    logBean.appendErrorLog(treasuryBundle(
                             "error.ERPImporter.processing.payment", payment.getPaymentRefNo()));
                     docStatus.setDocumentNumber(payment.getPaymentRefNo());
                     docStatus.setErrorDescription("Error: " + ex.getLocalizedMessage());

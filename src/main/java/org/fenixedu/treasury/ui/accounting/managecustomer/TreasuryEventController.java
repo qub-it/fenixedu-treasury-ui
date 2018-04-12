@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -191,12 +193,12 @@ public class TreasuryEventController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(model);
 
             if (Strings.isNullOrEmpty(reason)) {
-                addErrorMessage(Constants.bundle("label.TreasuryEvent.annulAllDebitEntries.reason.required"), model);
+                addErrorMessage(treasuryBundle("label.TreasuryEvent.annulAllDebitEntries.reason.required"), model);
             }
 
             treasuryEvent.annulAllDebitEntries(reason);
 
-            addInfoMessage(Constants.bundle("label.TreasuryEvent.annulAllDebitEntries.success"), model);
+            addInfoMessage(treasuryBundle("label.TreasuryEvent.annulAllDebitEntries.success"), model);
 
         } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);

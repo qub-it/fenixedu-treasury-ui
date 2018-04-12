@@ -27,6 +27,8 @@
 
 package org.fenixedu.treasury.dto;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +36,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.Currency;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -124,7 +127,7 @@ public class DebitEntryBean implements ITreasuryBean {
     }
 
     public void setProductDataSource(List<Product> value) {
-        final String inactiveDescription = " " + Constants.bundle("label.DebitEntryBean.inactive.description");
+        final String inactiveDescription = " " + treasuryBundle("label.DebitEntryBean.inactive.description");
 
         this.productDataSource =
                 value.stream().sorted((x, y) -> x.getName().getContent().compareToIgnoreCase(y.getName().getContent())).map(x -> {
@@ -343,8 +346,9 @@ public class DebitEntryBean implements ITreasuryBean {
         }).collect(Collectors.toList());
     }
 
-    public void refreshProductsDataSource() {
-        setProductDataSource(isShowLegacyProducts() ? Product.findAllLegacy().collect(Collectors.toList()) : Product
-                .findAllActive().collect(Collectors.toList()));
+    public void refreshProductsDataSource(final FinantialInstitution finantialInstitution) {
+        setProductDataSource(isShowLegacyProducts() ? 
+                Product.findAllLegacy().filter(p -> p.getFinantialInstitutionsSet().contains(finantialInstitution)).collect(Collectors.toList()) : 
+                    Product.findAllActive().filter(p -> p.getFinantialInstitutionsSet().contains(finantialInstitution)).collect(Collectors.toList()));
     }
 }

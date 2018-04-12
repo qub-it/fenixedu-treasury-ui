@@ -131,19 +131,6 @@ ${portal.toolkit()}
                         required />
                 </div>
             </div>
-            <div class="form-group row" id="vatExemptionReasonId">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.Vat.vatExemptionReason" />
-                </div>
-
-                <div class="col-sm-10">
-                    <select id="vat_vatExemptionReason" 
-                        class="js-example-basic-single"
-                        name="vatExemptionReason">
-                        <option value="">&nbsp;</option>
-                    </select>
-                </div>
-            </div>            
             
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -178,15 +165,6 @@ ${portal.toolkit()}
 </form>
 
 <script>
-function checkValue(elem) {
-    if(elem.value != 0){
-        $('#vatExemptionReasonId').hide();
-        $("#vat_vatExemptionReason").select2().select2('val','');
-    } else {
-    	$('#vatExemptionReasonId').show();                      
-        $("#vat_vatExemptionReason").select2({ width: 'resolve' });
-    }
-};
 
 $(document).ready(function() {
 	<%-- Block for providing administrativeOffice options --%>
@@ -225,22 +203,5 @@ $(document).ready(function() {
 	
 // 	$("#vat_finantialInstitution").select2().select2('val','${param.finantialInstitution}');
 	
-	vatExemptionReason_options = [
-	                        		<c:forEach items="${vatExemptionReasonList}" var="element"> 
-	                        			{
-	                        				text : "<c:out value='${element.name.content}'/>",  
-	                        				id : "<c:out value='${element.externalId}'/>"
-	                        			},
-	                        		</c:forEach>
-	                        	];
-	                        	
-	                        	$("#vat_vatExemptionReason").select2(
-	                        		{
-	                        			data : vatExemptionReason_options,
-	                        		}	  
-	                            );
-	                        	
-	                        	$("#vat_vatExemptionReason").select2().select2('val','${not empty param.vatExemptionReason ? param.vatExemptionReason : vat.vatExemptionReason.externalId }');
-	checkValue({value : ${not empty param.taxrate ? param.taxrate : vat.taxRate }});
 	});
 </script>

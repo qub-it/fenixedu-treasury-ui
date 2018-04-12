@@ -138,6 +138,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
                     .multiply(bean.getTreasuryExemptionType().getDefaultExemptionPercentage().divide(BigDecimal.valueOf(100)));
             amount = bean.getDebitEntry().getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
             bean.setValuetoexempt(amount);
+            bean.setCurrencySymbol(bean.getDebitEntry().getDebtAccount().getFinantialInstitution().getCurrency().getSymbol());
         }
 
         setTreasuryExemptionBean(bean, model);

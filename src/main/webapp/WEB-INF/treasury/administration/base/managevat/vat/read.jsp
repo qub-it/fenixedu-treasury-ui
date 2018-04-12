@@ -125,10 +125,6 @@ ${portal.toolkit()}
 						<th scope="row" class="col-xs-3"><spring:message code="label.Vat.taxRate" /></th>
 						<td><c:out value='${vat.taxRate}' />%</td>
 					</tr>
-                    <tr>
-                    <th scope="row" class="col-xs-3"><spring:message code="label.Vat.vatExemptionReason" /></th>
-                        <td><c:out value='${vat.vatExemptionReason.name.content}' /></td>
-                    </tr>                    
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.Vat.beginDate" /></th>
 <%-- ACFSILVA 			<td><c:out value='${vat.beginDate.toString("yyyy-MM-dd")}' /></td> --%>

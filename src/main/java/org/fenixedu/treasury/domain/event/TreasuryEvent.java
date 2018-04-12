@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.event;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
@@ -79,6 +81,9 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     protected void checkRules() {
+        if(getDomainRoot() == null) {
+            throw new TreasuryDomainException("error.TreasuryEvent.bennu.required");
+        }
     }
 
     /* -----------------------------
@@ -238,7 +243,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     @Atomic
     public void annulAllDebitEntries(final String reason) {
 
-        final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
+        final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
 
         while (DebitEntry.findActive(this).map(DebitEntry.class::cast).count() > 0) {
             final DebitEntry debitEntry = DebitEntry.findActive(this).map(DebitEntry.class::cast).findFirst().get();

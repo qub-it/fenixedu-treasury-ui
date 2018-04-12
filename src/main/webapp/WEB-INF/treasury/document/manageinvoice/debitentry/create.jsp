@@ -118,56 +118,45 @@ ${portal.angularToolkit()}
     <input type="hidden" name="postback" value='${pageContext.request.contextPath}/treasury/document/manageinvoice/debitentry/createpostback' /> <input name="bean" type="hidden"
         value="{{ object }}" />
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">
-                <spring:message code="label.details" />
-            </h3>
-        </div>
+	<div class="panel panel-primary">
+	    <div class="panel-heading">
+	        <h3 class="panel-title">
+	            <spring:message code="label.Customer.customerDetails" />
+	        </h3>
+	    </div>
+	    <div class="panel-body">
+	          <table class="table">
+	              <tbody>
+	                  <tr>
+	                      <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
+	                      <td><c:out value='${debitEntryBean.debtAccount.customer.uiFiscalNumber}' /></td>
+	                  </tr>
+	
+	                  <tr>
+	                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+	                      <td><c:out value='${debitEntryBean.debtAccount.customer.businessIdentification}' /> - <c:out value='${debitEntryBean.debtAccount.customer.name}' /></td>
+	                  </tr>
+	                  <tr>
+	                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.finantialInstitution" /></th>
+	                      <td><c:out value='${debitEntryBean.debtAccount.finantialInstitution.name}' /></td>
+	                  </tr>
+	                  <tr>
+	                      <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.finantialDocument" /></th>
+	                      <td>
+		                        <c:if test="${not empty debitEntryBean.finantialDocument}">
+		                            <c:out value='${debitEntryBean.finantialDocument.uiDocumentNumber}' />
+		                        </c:if>
+		                        <c:if test="${empty debitEntryBean.finantialDocument}">
+		                            <spring:message code="label.DebitEntry.debitentry.with.no.document" />
+		                        </c:if>
+	                      </td>
+	                  </tr>
+	                  
+	              </tbody>
+	          </table>
+	    </div>
+	</div>
 
-        <div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebtAccount.finantialInstitution" />
-                </div>
-
-                <div class="col-sm-10">
-                    <div class="form-control">
-                        <c:out value="${debitEntryBean.debtAccount.finantialInstitution.name}" />
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebitNote.debtAccount" />
-                </div>
-
-                <div class="col-sm-10">
-                    <div class="form-control">
-                        <c:out value="${debitEntryBean.debtAccount.customer.businessIdentification} - ${debitEntryBean.debtAccount.customer.name}" />
-                    </div>
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebitEntry.finantialDocument" />
-                </div>
-
-                <div class="col-sm-10">
-                    <div class="form-control">
-                        <c:if test="${not empty debitEntryBean.finantialDocument}">
-                            <c:out value='${debitEntryBean.finantialDocument.uiDocumentNumber}' />
-                        </c:if>
-                        <c:if test="${empty debitEntryBean.finantialDocument}">
-                            <spring:message code="label.DebitEntry.debitentry.with.no.document" />
-                        </c:if>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
     <div class="panel panel-default">
         <div class="panel-body">
 

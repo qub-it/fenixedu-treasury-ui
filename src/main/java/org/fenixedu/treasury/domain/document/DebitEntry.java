@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -389,7 +390,7 @@ public class DebitEntry extends DebitEntry_Base {
 
             final DateTime now = new DateTime();
 
-            final String reason = Constants.bundle("label.TreasuryExemption.credit.entry.exemption.description", getDescription(),
+            final String reason = treasuryBundle("label.TreasuryExemption.credit.entry.exemption.description", getDescription(),
                     treasuryExemption.getTreasuryExemptionType().getName().getContent());
 
             final CreditEntry creditEntryFromExemption =

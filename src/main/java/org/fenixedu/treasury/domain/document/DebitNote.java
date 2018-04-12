@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -307,7 +308,7 @@ public class DebitNote extends DebitNote_Base {
     @Atomic
     public void anullDebitNoteWithCreditNote(String reason, boolean anullGeneratedInterests) {
 
-        final String reasonDescription = Constants.bundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
+        final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
 
         if (this.getFinantialDocumentEntriesSet().size() > 0 && this.isClosed()) {
 
@@ -448,7 +449,7 @@ public class DebitNote extends DebitNote_Base {
         }
 
         final DebitNote updatingDebitNote = isPreparing() ? this : anullAndCopyDebitNote(
-                Constants.bundle("label.DebitNote.updatePayorDebtAccount.anull.reason"));
+                treasuryBundle("label.DebitNote.updatePayorDebtAccount.anull.reason"));
 
         updatingDebitNote.setPayorDebtAccount(payorDebtAccount);
 

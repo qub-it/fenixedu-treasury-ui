@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.forwardpayments.implementations;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -218,7 +220,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
             final GetWebPaymentDetailsResponse response = getClient().getWebPaymentDetails(request);
             forwardPayment.reject(response.getResult().getCode(),
-                    Constants.bundle("label.PaylineImplementation.cancelled") + ": " + response.getResult().getLongMessage(),
+                    treasuryBundle("label.PaylineImplementation.cancelled") + ": " + response.getResult().getLongMessage(),
                     json(request), json(response));
 
             return false;

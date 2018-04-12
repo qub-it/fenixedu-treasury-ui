@@ -24,6 +24,7 @@ public class TreasuryExemptionBean implements ITreasuryBean, Serializable {
     private DebitEntry debitEntry;
     private BigDecimal valuetoexempt;
     private String reason;
+    private String currencySymbol;
 
     public TreasuryExemptionBean() {
         this.setTreasuryExemptionTypes(TreasuryExemptionType.findAll().sorted(TreasuryExemptionType.COMPARE_BY_NAME)
@@ -118,6 +119,14 @@ public class TreasuryExemptionBean implements ITreasuryBean, Serializable {
     
     public void setDebitEntry(DebitEntry debitEntry) {
         this.debitEntry = debitEntry;
+    }
+    
+    public String getCurrencySymbol() {
+        return currencySymbol;
+    }
+    
+    public void setCurrencySymbol(String currencySymbol) {
+        this.currencySymbol = currencySymbol;
     }
     
 }

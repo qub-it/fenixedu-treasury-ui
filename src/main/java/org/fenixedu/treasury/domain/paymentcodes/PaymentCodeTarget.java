@@ -1,5 +1,7 @@
 package org.fenixedu.treasury.domain.paymentcodes;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -194,7 +196,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         //if "availableAmount" still exists, then we must create a "pending Payment" or "CreditNote"
         if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
             settlementNote.createAdvancedPaymentCreditNote(availableAmount,
-                    Constants.bundle("label.PaymentCodeTarget.advancedpayment") + comments + "-"
+                    treasuryBundle("label.PaymentCodeTarget.advancedpayment") + comments + "-"
                             + sibsTransactionId,
                     sibsTransactionId);
         }

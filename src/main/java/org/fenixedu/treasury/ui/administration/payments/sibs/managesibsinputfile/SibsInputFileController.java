@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfile;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -243,9 +245,9 @@ public class SibsInputFileController extends TreasuryBaseController {
             try {
                 ProcessResult result = importer.processSIBSPaymentFiles(sibsInputFile);
                 if (result.getErrorMessages().isEmpty()) {
-                    addInfoMessage(Constants.bundle("label.success.upload"), model);
+                    addInfoMessage(treasuryBundle("label.success.upload"), model);
                 } else {
-                    addErrorMessage(Constants.bundle("label.error.upload"), model);
+                    addErrorMessage(treasuryBundle("label.error.upload"), model);
                 }
                 reportFile = result.getReportFile();
                 if (result.getReportFile() == null) {

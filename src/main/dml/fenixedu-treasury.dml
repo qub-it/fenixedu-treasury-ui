@@ -1826,6 +1826,16 @@ relation SibsReportFileBennu {
       
     }
 
+
+    relation SibsInputFileBennu {
+		  paymentcodes.SibsInputFile playsRole sibsInputFiles {
+		    multiplicity *;
+		  }
+      
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+    }
 	
 	relation SibsInputFileUser {
 	  paymentcodes.SibsInputFile playsRole sibsInputFiles {
@@ -1849,6 +1859,16 @@ relation SibsReportFileBennu {
       
     }
 
+    relation SibsOutputFileBennu {
+		  paymentcodes.SibsOutputFile playsRole sibsOutputFiles {
+		    multiplicity *;
+		  }
+      
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+    }
+	
 /* **************
  * ACCESS CONTROL
  * **************
