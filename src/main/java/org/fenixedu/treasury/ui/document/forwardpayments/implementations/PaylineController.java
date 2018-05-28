@@ -7,11 +7,11 @@ import javax.servlet.http.HttpSession;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.exceptions.ForwardPaymentAlreadyPayedException;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -82,6 +82,10 @@ public class PaylineController extends TreasuryBaseController implements IForwar
 
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
 
+        } catch(final ForwardPaymentAlreadyPayedException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+
+            return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

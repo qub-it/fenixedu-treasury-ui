@@ -29,6 +29,7 @@ import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.forwardpayments.exceptions.ForwardPaymentAlreadyPayedException;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PostProcessPaymentStatusBean;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
@@ -128,7 +129,7 @@ public class ForwardPayment extends ForwardPayment_Base {
         }
 
         if (isInPayedState()) {
-            throw new TreasuryDomainException("error.ForwardPayment.already.payed");
+            throw new ForwardPaymentAlreadyPayedException("error.ForwardPayment.already.payed");
         }
 
         setCurrentState(ForwardPaymentStateType.AUTHORIZED);
@@ -171,7 +172,7 @@ public class ForwardPayment extends ForwardPayment_Base {
         }
 
         if (isInPayedState()) {
-            throw new TreasuryDomainException("error.ForwardPayment.already.payed");
+            throw new ForwardPaymentAlreadyPayedException("error.ForwardPayment.already.payed");
         }
         
         if(getSettlementNote() != null) {
