@@ -109,6 +109,8 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
     public abstract BigDecimal getGlobalBalance();
 
+    public abstract Set<Customer> getAllCustomers();
+    
     public boolean isDeletable() {
         return false;
     }

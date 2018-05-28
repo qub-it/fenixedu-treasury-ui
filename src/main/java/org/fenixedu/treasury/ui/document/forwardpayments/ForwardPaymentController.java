@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.document.forwardpayments;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,15 +36,11 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import pt.ist.fenixframework.DomainRoot;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
-import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
@@ -58,7 +56,6 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.Constants;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -106,11 +103,21 @@ public class ForwardPaymentController extends TreasuryBaseController {
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
         assertUserIsAllowToModifySettlements(debtAccount.getFinantialInstitution(), model);
     }
+    
+    protected String redirectToDebtAccountUrl(final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+        return redirect(readDebtAccountUrl() + debtAccount.getExternalId(), model, redirectAttributes);
+    }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}", method = RequestMethod.GET)
     public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount,
-            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model) {
-        checkPermissions(debtAccount, model);
+            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
+        try {
+            checkPermissions(debtAccount, model);
+        } catch(SecurityException e) {
+            addErrorMessage(treasuryBundle("error.ForwardPaymentController.payment.not.accessible.for.debt.account"), model);
+            return redirectToDebtAccountUrl(debtAccount, model, redirectAttributes);
+        }
+        
         if (bean == null) {
             bean = new SettlementNoteBean(debtAccount, false, true);
         }
@@ -121,12 +128,17 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
-    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
         BigDecimal debitSum = BigDecimal.ZERO;
         BigDecimal creditSum = BigDecimal.ZERO;
         boolean error = false;
 
-        checkPermissions(bean.getDebtAccount(), model);
+        try {
+            checkPermissions(bean.getDebtAccount(), model);
+        } catch(SecurityException e) {
+            addErrorMessage(treasuryBundle("error.ForwardPaymentController.payment.not.accessible.for.debt.account"), model);
+            return redirectToDebtAccountUrl(bean.getDebtAccount(), model, redirectAttributes);
+        }
 
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
@@ -256,7 +268,12 @@ public class ForwardPaymentController extends TreasuryBaseController {
     public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            checkPermissions(bean.getDebtAccount(), model);
+            try {
+                checkPermissions(bean.getDebtAccount(), model);
+            } catch(SecurityException e) {
+                addErrorMessage(treasuryBundle("error.ForwardPaymentController.payment.not.accessible.for.debt.account"), model);
+                return redirectToDebtAccountUrl(bean.getDebtAccount(), model, redirectAttributes);
+            }
 
             final ForwardPayment forwardPayment = processForwardPaymentCreation(bean);
             return redirect(readProcessForwardPaymentUrl() + "/" + forwardPayment.getExternalId(), model, redirectAttributes);

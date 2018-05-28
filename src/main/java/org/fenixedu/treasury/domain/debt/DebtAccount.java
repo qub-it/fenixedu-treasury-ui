@@ -97,6 +97,17 @@ public class DebtAccount extends DebtAccount_Base {
 
         return getFinantialInstitution().getCurrency().getValueWithScale(amount);
     }
+    
+    public BigDecimal getTotalInDebtForAllDebtAccountsOfSameFinantialInstitution() {
+        BigDecimal result = BigDecimal.ZERO;
+        for (final Customer customer : getCustomer().getAllCustomers()) {
+            if(DebtAccount.findUnique(getFinantialInstitution(), customer).isPresent()) {
+                result = result.add(DebtAccount.findUnique(getFinantialInstitution(), customer).get().getTotalInDebt());
+            }
+        }
+        
+        return result;
+    }
 
     @Atomic
     public void transferBalance(final DebtAccount destinyDebtAccount) {
@@ -220,6 +231,18 @@ public class DebtAccount extends DebtAccount_Base {
 
     public BigDecimal calculatePendingInterestAmount() {
         return calculatePendingInterestAmount(new DateTime().toLocalDate());
+    }
+
+    public BigDecimal calculateTotalPendingInterestAmountForAllDebtAccountsOfSameFinantialInstitution() {
+        BigDecimal result = BigDecimal.ZERO;
+        
+        for (Customer customer : getCustomer().getAllCustomers()) {
+            if(DebtAccount.findUnique(getFinantialInstitution(), customer).isPresent()) {
+                result = result.add(DebtAccount.findUnique(getFinantialInstitution(), customer).get().calculatePendingInterestAmount());
+            }
+        }
+        
+        return result;
     }
 
     private BigDecimal calculatePendingInterestAmount(LocalDate whenToCalculate) {

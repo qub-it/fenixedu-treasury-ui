@@ -290,6 +290,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return globalBalance;
     }
 
+    @Override
+    public Set<Customer> getAllCustomers() {
+        return Sets.newHashSet(this);
+    }
+    
     // @formatter:off
     /* ********
      * SERVICES
