@@ -6,6 +6,8 @@
 	
 	<p><spring:message code="label.ForwardPaymentController.forwardPayment.payline.warning" /></p>
 	
+	<p><spring:message code="label.ForwardPaymentController.forwardPayment.3dsecure.warning" /></p>
+	
 	<p style="align:center">
 		<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/payline/redunicre_aviso_pagamento_${localeCode}.png" />
 	</p>
