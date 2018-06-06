@@ -1,3 +1,5 @@
+<%@page import="java.security.AccessControlContext"%>
+<%@page import="org.fenixedu.bennu.core.groups.Group"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
@@ -86,7 +88,14 @@ ${portal.toolkit()}
         <a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/adhoccustomer/update/${customer.externalId}">
             <spring:message code="label.event.update" />
         </a>
-        
+        <% if(Group.parse("#accountManagers").isMember( Authenticate.getUser() )) { %>
+            &nbsp;|&nbsp;              
+            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            &nbsp;
+            <a class="" href="#" data-toggle="modal" data-target="#deleteModal">
+                <spring:message code="label.event.delete" />
+            </a>        
+        <% } %>
 	</div>
 </form>
 

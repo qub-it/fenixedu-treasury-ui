@@ -1,15 +1,15 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
- * 
  *
- * 
+ *
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -111,7 +111,7 @@ public class DebtAccount extends DebtAccount_Base {
 
     @Atomic
     public void transferBalance(final DebtAccount destinyDebtAccount) {
-        (new BalanceTransferService(this, destinyDebtAccount)).transferBalance();
+        new BalanceTransferService(this, destinyDebtAccount).transferBalance();
     }
 
     // @formatter:off
@@ -212,7 +212,9 @@ public class DebtAccount extends DebtAccount_Base {
     }
 
     public boolean isDeletable() {
-        return this.getFinantialDocumentsSet().isEmpty() && getInvoiceEntrySet().isEmpty() && getInvoiceSet().isEmpty();
+        return this.getFinantialDocumentsSet().isEmpty() && getInvoiceEntrySet().isEmpty() && getInvoiceSet().isEmpty()
+                && getPayorDebitEntriesSet().isEmpty() && getForwardPaymentsSet().isEmpty()
+                && getPaymentCodeTargetsSet().isEmpty() && getTreasuryEventsSet().isEmpty();
     }
 
     @Atomic
@@ -226,7 +228,6 @@ public class DebtAccount extends DebtAccount_Base {
         setFinantialInstitution(null);
 
         deleteDomainObject();
-
     }
 
     public BigDecimal calculatePendingInterestAmount() {

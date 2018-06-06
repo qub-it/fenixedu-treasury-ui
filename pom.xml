@@ -17,7 +17,7 @@
 	<name>Treasury</name>
 
 	<properties>
-		<version.org.fenixedu.bennu>6.0.0-FORK</version.org.fenixedu.bennu>
+		<version.org.fenixedu.bennu>6.0.3-FORK</version.org.fenixedu.bennu>
 		<version.pt.ist.standards>1.1.0-SNAPSHOT</version.pt.ist.standards>
 	</properties>
 

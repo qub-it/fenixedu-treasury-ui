@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -34,7 +34,6 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -44,7 +43,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,7 +61,7 @@ import pt.ist.fenixframework.Atomic;
 @RequestMapping(CustomerController.CONTROLLER_URI)
 public class CustomerController extends TreasuryBaseController {
     public static final String CONTROLLER_URI = "/treasury/accounting/managecustomer/customer";
-    
+
     private static final String SEARCH_URI = "/";
     public static final String SEARCH_FULL_URI = CONTROLLER_URI + SEARCH_URI;
 
@@ -73,26 +71,26 @@ public class CustomerController extends TreasuryBaseController {
     public static final long SEARCH_LIMIT_SIZE = 75;
 
     @RequestMapping
-    public String home(Model model) {
+    public String home(final Model model) {
         return "forward:" + CONTROLLER_URI + SEARCH_URI;
     }
 
-    private Customer getCustomer(Model model) {
+    private Customer getCustomer(final Model model) {
         return (Customer) model.asMap().get("customer");
     }
 
-    private void setCustomer(Customer customer, Model model) {
+    private void setCustomer(final Customer customer, final Model model) {
         model.addAttribute("customer", customer);
     }
 
     @Atomic
-    public void deleteCustomer(Customer customer) {
+    public void deleteCustomer(final Customer customer) {
     }
 
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "finantialInstitution", required = false) FinantialInstitution institution,
-            @RequestParam(value = "customertype", required = false) CustomerType customerType,
-            @RequestParam(value = "customer", required = false) String customer, Model model) {
+    public String search(@RequestParam(value = "finantialInstitution", required = false) final FinantialInstitution institution,
+            @RequestParam(value = "customertype", required = false) final CustomerType customerType,
+            @RequestParam(value = "customer", required = false) final String customer, final Model model) {
 
         final List<Customer> result = filterSearch(institution, customerType, customer);
         model.addAttribute("limit_exceeded", result.size() > SEARCH_LIMIT_SIZE);
@@ -109,8 +107,8 @@ public class CustomerController extends TreasuryBaseController {
         return institution == null ? Customer.findAll() : Customer.find(institution);
     }
 
-    static private List<Customer> filterSearch(FinantialInstitution institution, CustomerType customerType,
-            String customerString) {
+    static private List<Customer> filterSearch(final FinantialInstitution institution, final CustomerType customerType,
+            final String customerString) {
 
         final List<Customer> result = Lists.newArrayList();
         // FIXME legidio, wish there was a way to test an empty Predicate
@@ -139,8 +137,8 @@ public class CustomerController extends TreasuryBaseController {
     public static final String SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
 
     @RequestMapping(value = SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") Customer customer, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String processSearchToViewAction(@PathVariable("oid") final Customer customer, final Model model,
+            final RedirectAttributes redirectAttributes) {
         return redirect(READ_URL + customer.getExternalId(), model, redirectAttributes);
     }
 
@@ -171,62 +169,84 @@ public class CustomerController extends TreasuryBaseController {
         return "treasury/accounting/managecustomer/customer/read";
     }
 
+    public static final String _DELETE_URI = "/delete/";
+
+    @RequestMapping(value = _DELETE_URI + "{oid}")
+    public String delete(@PathVariable("oid") final Customer customer, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            delete(customer);
+
+            return redirect(SEARCH_FULL_URI, model, redirectAttributes);
+        } catch (final DomainException e) {
+            addErrorMessage(e.getLocalizedMessage(), model);
+
+            return read(customer, model, redirectAttributes);
+        }
+    }
+
+    @Atomic
+    private void delete(final Customer customer) {
+        customer.delete();
+    }
+
     private static final String CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI = "/changefiscalnumberactionconfirm";
     public static final String CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI;
-    
-    @RequestMapping(value = CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI + "/{oid}", method=RequestMethod.GET)
+
+    @RequestMapping(value = CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URI + "/{oid}", method = RequestMethod.GET)
     public String changefiscalnumberactionconfirm(@PathVariable("oid") final Customer customer, final Model model) {
         assertUserIsBackOfficeMember(model);
-        
+
         model.addAttribute("customer", customer);
 
-        if(customer.isFiscalValidated() && customer.isFiscalCodeValid()) {
+        if (customer.isFiscalValidated() && customer.isFiscalCodeValid()) {
             model.addAttribute("fiscalNumberValid", true);
         }
 
         return "treasury/accounting/managecustomer/customer/changefiscalnumberactionconfirm";
     }
-    
+
     private static final String CHANGE_FISCAL_NUMBER_FORM_URI = "/changefiscalnumberform";
     public static final String CHANGE_FISCAL_NUMBER_FORM_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_FORM_URI;
-    
-    @RequestMapping(value = CHANGE_FISCAL_NUMBER_FORM_URI + "/{oid}", method=RequestMethod.POST)
+
+    @RequestMapping(value = CHANGE_FISCAL_NUMBER_FORM_URI + "/{oid}", method = RequestMethod.POST)
     public String changefiscalnumberform(@PathVariable("oid") final Customer customer, final Model model) {
         assertUserIsBackOfficeMember(model);
 
         final AdhocCustomerBean bean = new AdhocCustomerBean(customer);
-        
+
         return _changefiscalnumberactionconfirm(customer, model, bean);
     }
-    
+
     private String _changefiscalnumberactionconfirm(final Customer customer, final Model model, final AdhocCustomerBean bean) {
         model.addAttribute("customer", customer);
         model.addAttribute("customerBeanJson", getBeanJson(bean));
-        
+
         return "treasury/accounting/managecustomer/customer/changefiscalnumberform";
     }
-    
+
     private static final String CHANGE_FISCAL_NUMBER_URI = "/changefiscalnumber";
     public static final String CHANGE_FISCAL_NUMBER_URL = CONTROLLER_URI + CHANGE_FISCAL_NUMBER_URI;
-    
-    @RequestMapping(value = CHANGE_FISCAL_NUMBER_URI + "/{oid}", method=RequestMethod.POST)
-    public String changefiscalnumber(@PathVariable("oid") final Customer customer, @RequestParam("bean") final AdhocCustomerBean bean, final Model model) {
+
+    @RequestMapping(value = CHANGE_FISCAL_NUMBER_URI + "/{oid}", method = RequestMethod.POST)
+    public String changefiscalnumber(@PathVariable("oid") final Customer customer,
+            @RequestParam("bean") final AdhocCustomerBean bean, final Model model) {
         assertUserIsBackOfficeMember(model);
-        
+
         try {
 
-            if(!bean.isChangeFiscalNumberConfirmed()) {
+            if (!bean.isChangeFiscalNumberConfirmed()) {
                 throw new TreasuryDomainException("message.Customer.changeFiscalNumber.confirmation");
             }
-            
+
             customer.changeFiscalNumber(bean);
-            
+
             return "forward:" + READ_URL + customer.getExternalId();
-        } catch(final DomainException e) {
+        } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-            
+
             return _changefiscalnumberactionconfirm(customer, model, bean);
         }
     }
-    
+
 }
