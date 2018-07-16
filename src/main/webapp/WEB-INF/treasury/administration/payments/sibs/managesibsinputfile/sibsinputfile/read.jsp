@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
@@ -136,11 +137,22 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
         class=""
         href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/"><spring:message
-            code="label.event.back" /></a> &nbsp;|&nbsp; <span
+            code="label.event.back" /></a> 
+    &nbsp;|&nbsp;
+	
+    <%
+        if (TreasuryAccessControl.getInstance().isManager()) {
+    %>
+	            
+    <span
         class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
-        class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
-            code="label.event.delete" /></a> &nbsp;|&nbsp; 
-            
+        class="" href="#" data-toggle="modal" data-target="#deleteModal">
+        	<spring:message code="label.event.delete" /></a> 
+
+   &nbsp;|&nbsp; 
+    <%
+        }
+    %>
              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a
         class="" href="#" data-toggle="modal" data-target="#processModal"><spring:message
             code="label.event.process" /> </a>&nbsp;

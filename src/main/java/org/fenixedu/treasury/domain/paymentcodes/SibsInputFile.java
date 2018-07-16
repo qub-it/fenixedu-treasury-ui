@@ -85,6 +85,8 @@ public class SibsInputFile extends SibsInputFile_Base {
 
         setFinantialInstitution(null);
         setUploader(null);
+        setBennu(null);
+        
         super.delete();
     }
 

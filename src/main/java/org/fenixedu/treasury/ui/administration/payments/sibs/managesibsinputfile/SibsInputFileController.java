@@ -143,7 +143,7 @@ public class SibsInputFileController extends TreasuryBaseController {
 
         setSibsInputFile(sibsInputFile, model);
         try {
-            assertUserIsFrontOfficeMember(sibsInputFile.getFinantialInstitution(), model);
+            assertUserIsManager(model);
 
             deleteSibsInputFile(sibsInputFile);
 
