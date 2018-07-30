@@ -21,6 +21,20 @@ public class TreasurySettings extends TreasurySettings_Base {
         setInterestProduct(interestProduct);
         setAdvancePaymentProduct(advancePaymentProduct);
     }
+    
+    public boolean isRestrictPaymentMixingLegacyInvoices() {
+        return getRestrictPaymentMixingLegacyInvoices();
+    }
+    
+    @Atomic
+    public void restrictPaymentMixingLegacyInvoices() {
+        setRestrictPaymentMixingLegacyInvoices(true);
+    }
+    
+    @Atomic
+    public void allowPaymentMixingLegacyInvoices() {
+        setRestrictPaymentMixingLegacyInvoices(false);
+    }
 
     protected static Optional<TreasurySettings> findUnique() {
         return FenixFramework.getDomainRoot().getTreasurySettingsSet().stream().findFirst();

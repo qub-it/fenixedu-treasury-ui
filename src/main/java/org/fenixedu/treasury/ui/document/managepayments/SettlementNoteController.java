@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -51,6 +52,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.ReimbursementEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
@@ -86,6 +88,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
 
 import pt.ist.fenixframework.Atomic;
@@ -163,9 +166,13 @@ public class SettlementNoteController extends TreasuryBaseController {
         BigDecimal creditSum = BigDecimal.ZERO;
         boolean error = false;
         assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
+        
+        final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
+                invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
+                
                 if (debitEntryBean.getDebtAmountWithVat() == null
                         || debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
                     debitEntryBean.setNotValid(true);
@@ -191,6 +198,8 @@ public class SettlementNoteController extends TreasuryBaseController {
             final CreditEntryBean creditEntryBean = bean.getCreditEntries().get(i);
 
             if (creditEntryBean.isIncluded()) {
+                invoiceEntriesSet.add(creditEntryBean.getCreditEntry());
+                
                 if (creditEntryBean.getCreditAmountWithVat() == null
                         || creditEntryBean.getCreditAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
                     creditEntryBean.setNotValid(true);
@@ -261,6 +270,13 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(treasuryBundle("error.SettlementNote.advancedPaymentCredit.originSettlementNote.payment.date.after",
                     settlementNote.getAdvancedPaymentCreditNote().getUiDocumentNumber(),
                     settlementNote.getPaymentDate().toLocalDate().toString(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)), model);
+        }
+        
+        try {
+            SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(invoiceEntriesSet);
+        } catch(final TreasuryDomainException e) {
+            error = true;
+            addErrorMessage(e.getLocalizedMessage(), model);
         }
 
         if (error) {

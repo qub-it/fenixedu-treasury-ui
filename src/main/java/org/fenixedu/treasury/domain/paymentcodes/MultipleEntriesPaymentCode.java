@@ -20,6 +20,7 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -100,6 +101,8 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
         if(getReferencedCustomers().size() > 1) {
             throw new TreasuryDomainException("error.MultipleEntriesPaymentCode.referencedCustomers.only.one.allowed");
         }
+        
+        SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(getInvoiceEntriesSet());
     }
 
     @Override

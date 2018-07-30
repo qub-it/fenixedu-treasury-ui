@@ -30,6 +30,7 @@ package org.fenixedu.treasury.domain.document;
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -250,6 +251,14 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         return this.getState().equals(FinantialDocumentStateType.PREPARING);
     }
 
+    public Map<String, String> getPropertiesMap() {
+        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
+    }
+
+    public void editPropertiesMap(final Map<String, String> propertiesMap) {
+        setPropertiesJsonMap(Constants.propertiesMapToJson(propertiesMap));
+    }
+    
     @Atomic
     public final void closeDocument() {
         closeDocument(true);

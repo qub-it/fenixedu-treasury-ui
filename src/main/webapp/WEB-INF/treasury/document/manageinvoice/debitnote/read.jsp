@@ -766,7 +766,17 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
     </c:otherwise>
 </c:choose>
 
+<c:if test="${ not empty debitNote.propertiesMap }">
+    <table id="treasuryEventTableMap" class="table responsive table-bordered table-hover" width="100%">
 
+        <c:forEach var="property" items="${debitNote.propertiesMap}">
+            <tr>
+                <th><c:out value="${property.key}" /></th>
+                <td><c:out value="${property.value}" /></td>
+            </tr>
+        </c:forEach>
+    </table>
+</c:if>
 
 <script>
 	$(document).ready(function() {

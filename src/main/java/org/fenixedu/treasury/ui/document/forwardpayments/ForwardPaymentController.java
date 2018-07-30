@@ -41,6 +41,8 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
@@ -140,9 +142,12 @@ public class ForwardPaymentController extends TreasuryBaseController {
             return redirectToDebtAccountUrl(bean.getDebtAccount(), model, redirectAttributes);
         }
 
+        final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
+                invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
+
                 if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
@@ -186,6 +191,13 @@ public class ForwardPaymentController extends TreasuryBaseController {
         if (bean.getDate().isAfter(new LocalDate())) {
             error = true;
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+        }
+
+        try {
+            SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(invoiceEntriesSet);
+        } catch(final TreasuryDomainException e) {
+            error = true;
+            addErrorMessage(e.getLocalizedMessage(), model);
         }
 
         if (error) {

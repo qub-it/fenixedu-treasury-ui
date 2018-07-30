@@ -277,6 +277,7 @@ class document.FinantialDocument {
 	String legacyERPCertificateDocumentReference;
 	LocalDate erpCertificationDate;
 	String erpCertificateDocumentReference;
+	String propertiesJsonMap;
 }
 
 	class document.Invoice extends document.FinantialDocument {
@@ -305,6 +306,7 @@ class document.FinantialDocumentEntry {
 	BigDecimalT amount;
 	DateTime entryDateTime;
 	Integer entryOrder;
+	String propertiesJsonMap;
 }
 
 	class document.InvoiceEntry extends document.FinantialDocumentEntry {
@@ -318,7 +320,6 @@ class document.FinantialDocumentEntry {
 	class document.DebitEntry extends document.InvoiceEntry {
 			boolean eventAnnuled;
 			LocalDate dueDate;
-			String propertiesJsonMap;
 			BigDecimalT exemptedAmount;
 	
 			// This property has academic significance but  
@@ -860,6 +861,7 @@ relation ERPImportOperationFinantialDocument {
  * -----------------*/
 
 class settings.TreasurySettings {
+	boolean restrictPaymentMixingLegacyInvoices;
 }
 
 relation TreasurySettingsBennu {

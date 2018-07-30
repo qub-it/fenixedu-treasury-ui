@@ -314,10 +314,6 @@ public class DebitEntry extends DebitEntry_Base {
         return getDueDate().isBefore(when);
     }
 
-    public Map<String, String> getPropertiesMap() {
-        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
-    }
-
     @Atomic
     public DebitEntry createInterestRateDebitEntry(final InterestRateBean interest, final DateTime when,
             final Optional<DebitNote> debitNote) {

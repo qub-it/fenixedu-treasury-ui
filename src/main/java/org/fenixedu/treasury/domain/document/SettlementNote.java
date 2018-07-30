@@ -44,6 +44,7 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessStatusType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
@@ -115,7 +116,6 @@ public class SettlementNote extends SettlementNote_Base {
 
         if (getPaymentDate().isAfter(getDocumentDate())) {
             throw new TreasuryDomainException("error.SettlementNote.invalid.payment.date.after.document.date");
-
         }
 
         if (!getDocumentNumberSeries().getFinantialDocumentType().getType().equals(FinantialDocumentTypeEnum.SETTLEMENT_NOTE)
@@ -740,4 +740,28 @@ public class SettlementNote extends SettlementNote_Base {
         return findAll().filter(i -> state.equals(i.getState()));
     }
 
+    
+    public static void checkMixingOfInvoiceEntriesExportedInLegacyERP(final Set<InvoiceEntry> invoiceEntries) {
+        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            for (final InvoiceEntry invoiceEntry : invoiceEntries) {
+                // Ensure all debit entries has finantial document
+                if(invoiceEntry.getFinantialDocument() == null) {
+                    throw new TreasuryDomainException("error.SettlementNote.invoice.entry.without.finantial.document",
+                            invoiceEntry.getDescription());
+                }
+            }
+            
+            long exportedInLegacyERP = invoiceEntries.stream()
+                    .filter(e -> !e.isAnnulled())
+                    .filter(e -> e.getFinantialDocument().isExportedInLegacyERP()).count();
+            long notExportedInLegacyERP = invoiceEntries.stream()
+                    .filter(e -> !e.isAnnulled())
+                    .filter(e -> !e.getFinantialDocument().isExportedInLegacyERP()).count();
+            
+            if(exportedInLegacyERP > 0 && notExportedInLegacyERP > 0) {
+                throw new TreasuryDomainException("error.SettlementNote.debit.entry.mixed.exported.in.legacy.erp.not.allowed");
+            }
+        }
+    }
+    
 }

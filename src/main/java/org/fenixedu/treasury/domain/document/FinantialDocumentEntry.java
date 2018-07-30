@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.document;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -126,6 +127,14 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
 
     protected boolean isGreaterThan(final BigDecimal v1, final BigDecimal v2) {
         return v1.compareTo(v2) > 0;
+    }
+
+    public Map<String, String> getPropertiesMap() {
+        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
+    }
+
+    public void editPropertiesMap(final Map<String, String> propertiesMap) {
+        setPropertiesJsonMap(Constants.propertiesMapToJson(propertiesMap));
     }
 
     public static Stream<? extends FinantialDocumentEntry> findAll() {
