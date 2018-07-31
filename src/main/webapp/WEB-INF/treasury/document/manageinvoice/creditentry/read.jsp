@@ -166,6 +166,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.g
 </div>
 
 <c:if test="${ not empty creditEntry.propertiesMap }">
+	<p></p>
+	<p></p>
+
     <table id="treasuryEventTableMap" class="table responsive table-bordered table-hover" width="100%">
 
         <c:forEach var="property" items="${creditEntry.propertiesMap}">

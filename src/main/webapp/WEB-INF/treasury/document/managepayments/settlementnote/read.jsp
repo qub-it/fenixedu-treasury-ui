@@ -743,6 +743,9 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
 </c:choose>
 
 <c:if test="${ not empty settlementNote.propertiesMap }">
+	<p></p>
+	<p></p>
+
     <table id="treasuryEventTableMap" class="table responsive table-bordered table-hover" width="100%">
 
         <c:forEach var="property" items="${settlementNote.propertiesMap}">

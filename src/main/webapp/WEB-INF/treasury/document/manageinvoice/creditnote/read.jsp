@@ -555,6 +555,9 @@ if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
 
 
 <c:if test="${ not empty creditNote.propertiesMap }">
+	<p></p>
+	<p></p>
+
     <table id="treasuryEventTableMap" class="table responsive table-bordered table-hover" width="100%">
 
         <c:forEach var="property" items="${creditNote.propertiesMap}">
