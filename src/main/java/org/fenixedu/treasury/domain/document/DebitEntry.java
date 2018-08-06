@@ -610,6 +610,19 @@ public class DebitEntry extends DebitEntry_Base {
 
         return result;
     }
+    
+    public void editAmount(final BigDecimal amount) {
+        if(isProcessedInClosedDebitNote()) {
+            throw new TreasuryDomainException("error.DebitEntry.editAmount.cannot.edit.amount.due.to.closed.in.debit.note");
+        }
+        
+        if(isAnnulled()) {
+            throw new TreasuryDomainException("error.DebitEntry.editAmount.cannot.edit.amount.due.to.annuled.state");
+        }
+        
+        setAmount(amount);
+        recalculateAmountValues();
+    }
 
     // @formatter:off
     /* ********
