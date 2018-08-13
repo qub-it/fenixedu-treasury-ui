@@ -47,6 +47,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
@@ -246,6 +247,18 @@ public class ForwardPaymentController extends TreasuryBaseController {
             }
         }
 
+        try {
+            SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(bean.getIncludedInvoiceEntryBeans());
+        } catch(final TreasuryDomainException e) {
+            error = true;
+            addErrorMessage(e.getLocalizedMessage(), model);
+        }
+
+        if (error) {
+            setSettlementNoteBean(bean, model);
+            return jspPage("chooseInvoiceEntries");
+        }
+        
         model.addAttribute("paymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage",
                 hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage);
 

@@ -54,6 +54,7 @@ import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -479,6 +480,11 @@ public class DebitEntry extends DebitEntry_Base {
         SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, creditEntry.getOpenAmount(),
                 reason + ": " + creditEntry.getDebitEntry().getDescription(), now, false);
 
+        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && getFinantialDocument().isExportedInLegacyERP()) {
+            settlementNote.setExportedInLegacyERP(true);
+            settlementNote.setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+        }
+            
         settlementNote.closeDocument();
     }
 

@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.settings.TreasurySettings"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -165,7 +166,11 @@ ${portal.angularToolkit()}
                 <tbody>
                     <c:forEach items="${ settlementNoteBean.interestEntries}" var="interestEntryBean" varStatus="loop">
                         <tr>
+                        	<% if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
                             <td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+                            <% } else { %>
+                            <td></td>
+                            <% } %>
                             <td><spring:message code="label.InterestEntry.interest" />: &nbsp;<c:out value="${ interestEntryBean.debitEntry.description }" /></td>
                             <td>
                                 <p>

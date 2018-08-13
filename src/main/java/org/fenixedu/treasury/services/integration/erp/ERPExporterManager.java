@@ -22,6 +22,7 @@ import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessS
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation.ReimbursementStateBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
@@ -340,6 +341,14 @@ public class ERPExporterManager {
                 // .sorted(COMPARE_BY_DOCUMENT_TYPE)
                 .collect(Collectors.<FinantialDocument> toList());
 
+        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            // If there is restriction on mixing payments exported in legacy ERP, then filter documents exported in legacy ERP
+            tempList = tempList.stream()
+                    .filter(d -> !d.isExportedInLegacyERP())
+                    .filter(d -> !d.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE))
+                    .collect(Collectors.<FinantialDocument> toList());
+        }
+        
         final List<FinantialDocument> result = Lists.newArrayList();
 
         // TODO: Put first debit notes and then settlement notes

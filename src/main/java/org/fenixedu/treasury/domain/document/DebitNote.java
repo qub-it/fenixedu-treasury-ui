@@ -48,8 +48,10 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -394,8 +396,13 @@ public class DebitNote extends DebitNote_Base {
                 continue;
             }
 
-            entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCreditWithoutVat, null,
+            final CreditEntry creditEntry = entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCreditWithoutVat, null,
                     null);
+            
+            if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && isExportedInLegacyERP()) {
+                creditEntry.getFinantialDocument().setExportedInLegacyERP(true);
+                creditEntry.getFinantialDocument().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+            }
         }
 
         if (!createForInterestRateEntries) {
@@ -411,8 +418,13 @@ public class DebitNote extends DebitNote_Base {
                     continue;
                 }
 
-                interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(), documentObservations,
+                CreditEntry interestsCreditEntry = interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(), documentObservations,
                         amountForCreditWithoutVat, null, null);
+                
+                if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && interestEntry.getFinantialDocument() != null && interestEntry.getFinantialDocument().isExportedInLegacyERP()) {
+                    interestsCreditEntry.getFinantialDocument().setExportedInLegacyERP(true);
+                    interestsCreditEntry.getFinantialDocument().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+                }
             }
         }
     }

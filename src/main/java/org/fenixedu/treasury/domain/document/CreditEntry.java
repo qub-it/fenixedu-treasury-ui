@@ -40,6 +40,8 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -226,6 +228,11 @@ public class CreditEntry extends CreditEntry_Base {
                 remainingAmountWithoutVatDividedByQuantity, getEntryDateTime(), getDebitEntry(), getQuantity());
         newCreditEntry.setFromExemption(isFromExemption());
 
+        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && getFinantialDocument().isExportedInLegacyERP()) {
+            newCreditEntry.getFinantialDocument().setExportedInLegacyERP(true);
+            newCreditEntry.getFinantialDocument().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+        }
+        
         return newCreditEntry;
     }
 

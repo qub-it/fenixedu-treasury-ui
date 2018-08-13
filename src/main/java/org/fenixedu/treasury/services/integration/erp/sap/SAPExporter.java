@@ -83,6 +83,7 @@ import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.domain.integration.IntegrationOperationLogBean;
 import org.fenixedu.treasury.domain.integration.OperationFile;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.generated.sources.saft.sap.AddressStructure;
 import org.fenixedu.treasury.generated.sources.saft.sap.AddressStructurePT;
 import org.fenixedu.treasury.generated.sources.saft.sap.AuditFile;
@@ -1613,7 +1614,7 @@ public class SAPExporter implements IERPExporter {
     }
 
     private List<FinantialDocument> processCreditNoteSettlementsInclusion(List<FinantialDocument> documents) {
-        final List<FinantialDocument> result = Lists.newArrayList(documents);
+        List<FinantialDocument> result = Lists.newArrayList(documents);
 
         // Ensure settlement entries of credit entries include credits notes to export
 
@@ -1641,7 +1642,16 @@ public class SAPExporter implements IERPExporter {
                 }
             }
         }
-
+        
+        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            // If there is restriction on mixing payments exported in legacy ERP, 
+            // then filter documents exported in legacy ERP
+            result = result.stream()
+                    .filter(d -> !d.isExportedInLegacyERP())
+                    .filter(d -> !d.getCloseDate().isBefore(SAPExporter.ERP_INTEGRATION_START_DATE))
+                    .collect(Collectors.<FinantialDocument> toList());
+        }
+        
         return result;
     }
 

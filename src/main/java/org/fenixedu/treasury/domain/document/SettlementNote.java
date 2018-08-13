@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.services.integration.erp.sap.SAPExporter.ERP_INTEGRATION_START_DATE;
 import static org.fenixedu.treasury.util.Constants.treasuryBundle;
 import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
 
@@ -45,11 +46,13 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessStatusType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 
@@ -514,6 +517,31 @@ public class SettlementNote extends SettlementNote_Base {
 
         super.closeDocument(markDocumentToExport);
 
+        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            // Mark this settlement note if there is at least one invoice exported in legacy ERP
+            boolean atLeastOneInvoiceEntryExportedInLegacyERP = getSettlemetEntries()
+                .filter(s -> s.getInvoiceEntry().getFinantialDocument().isExportedInLegacyERP())
+                .count() > 0;
+                
+            if(atLeastOneInvoiceEntryExportedInLegacyERP) {
+                if(!isExportedInLegacyERP()) {
+                    setExportedInLegacyERP(true);
+                    setCloseDate(ERP_INTEGRATION_START_DATE.minusSeconds(1));
+                }
+                
+                getSettlemetEntries().forEach(s -> {
+                    if(s.getCloseDate() == null || !s.getCloseDate().isBefore(ERP_INTEGRATION_START_DATE.minusSeconds(1))) {
+                        s.setCloseDate(ERP_INTEGRATION_START_DATE.minusSeconds(1));
+                    }
+                });
+                
+                if(getAdvancedPaymentCreditNote() != null && !getAdvancedPaymentCreditNote().isExportedInLegacyERP() ) {
+                    getAdvancedPaymentCreditNote().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+                    getAdvancedPaymentCreditNote().setExportedInLegacyERP(true);
+                }
+            }
+        }
+        
         checkRules();
     }
 
@@ -739,29 +767,51 @@ public class SettlementNote extends SettlementNote_Base {
     public static Stream<SettlementNote> findByState(final FinantialDocumentStateType state) {
         return findAll().filter(i -> state.equals(i.getState()));
     }
-
     
     public static void checkMixingOfInvoiceEntriesExportedInLegacyERP(final Set<InvoiceEntry> invoiceEntries) {
-        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
-            for (final InvoiceEntry invoiceEntry : invoiceEntries) {
-                // Ensure all debit entries has finantial document
-                if(invoiceEntry.getFinantialDocument() == null) {
-                    throw new TreasuryDomainException("error.SettlementNote.invoice.entry.without.finantial.document",
-                            invoiceEntry.getDescription());
-                }
+        if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            return;
+        }
+        
+        // Find at least one that is exported in legacy ERP
+        final boolean atLeastOneExportedInLegacyERP = invoiceEntries.stream()
+                .filter(i -> i.getFinantialDocument() != null)
+                .filter(i -> i.getFinantialDocument().isExportedInLegacyERP())
+                .count() > 0;
+                
+                
+        if(atLeastOneExportedInLegacyERP) {
+            boolean notExportedInLegacyERP = invoiceEntries.stream()
+                    .anyMatch(i -> i.getFinantialDocument() == null || !i.getFinantialDocument().isExportedInLegacyERP());
+
+            if(notExportedInLegacyERP) {
+                throw new TreasuryDomainException("error.SettlementNote.debit.entry.mixed.exported.in.legacy.erp.not.allowed");
             }
+        }
             
-            long exportedInLegacyERP = invoiceEntries.stream()
-                    .filter(e -> !e.isAnnulled())
-                    .filter(e -> e.getFinantialDocument().isExportedInLegacyERP()).count();
-            long notExportedInLegacyERP = invoiceEntries.stream()
-                    .filter(e -> !e.isAnnulled())
-                    .filter(e -> !e.getFinantialDocument().isExportedInLegacyERP()).count();
+    }
+    
+    public static void checkMixingOfInvoiceEntriesExportedInLegacyERP(final List<ISettlementInvoiceEntryBean> invoiceEntryBeans) {
+        if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            return;
+        }
+        
+        // Find at least one that is exported in legacy ERP
+        final boolean atLeastOneExportedInLegacyERP = invoiceEntryBeans.stream()
+                .filter(i -> i.getInvoiceEntry() != null)
+                .filter(i -> i.getInvoiceEntry().getFinantialDocument() != null)
+                .filter(i -> i.getInvoiceEntry().getFinantialDocument().isExportedInLegacyERP())
+                .count() > 0;
+                
+        if(atLeastOneExportedInLegacyERP) {
+            // Ensure all debit entries has finantial documents and exported in legacy erp
+            boolean notExportedInLegacyERP = invoiceEntryBeans.stream()
+                    .anyMatch(i -> i.getInvoiceEntry() == null || i.getInvoiceEntry().getFinantialDocument() == null || !i.getInvoiceEntry().getFinantialDocument().isExportedInLegacyERP());
             
-            if(exportedInLegacyERP > 0 && notExportedInLegacyERP > 0) {
+            if(notExportedInLegacyERP) {
                 throw new TreasuryDomainException("error.SettlementNote.debit.entry.mixed.exported.in.legacy.erp.not.allowed");
             }
         }
     }
-    
+
 }

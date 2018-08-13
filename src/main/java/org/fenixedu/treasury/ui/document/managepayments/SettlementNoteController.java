@@ -59,6 +59,7 @@ import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
@@ -309,12 +310,15 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
 
+            SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(bean.getIncludedInvoiceEntryBeans());
+            
             for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
                 if (debitEntryBean.isIncluded() && debitEntryBean.getDebitEntry().getFinantialDocument() == null) {
                     setSettlementNoteBean(bean, model);
                     return "treasury/document/managepayments/settlementnote/createDebitNote";
                 }
             }
+            
             for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
                 if (interestEntryBean.isIncluded()) {
                     setSettlementNoteBean(bean, model);
@@ -322,9 +326,15 @@ public class SettlementNoteController extends TreasuryBaseController {
                 }
             }
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(tde.getLocalizedMessage(), model);
+
+            setSettlementNoteBean(bean, model);
+            return "treasury/document/managepayments/settlementnote/calculateInterest";
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(ex.getLocalizedMessage(), model);
+
+            setSettlementNoteBean(bean, model);
+            return "treasury/document/managepayments/settlementnote/calculateInterest";
         }
 
         return createDebitNote(bean, model);

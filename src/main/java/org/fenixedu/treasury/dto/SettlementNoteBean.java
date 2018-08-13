@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
+import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.VatType;
@@ -35,6 +38,7 @@ import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
 import org.joda.time.LocalDate;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class SettlementNoteBean implements ITreasuryBean, Serializable {
@@ -211,6 +215,31 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
         return lastAdvancedCreditSettlementNote;
     }
 
+    public List<ISettlementInvoiceEntryBean> getIncludedInvoiceEntryBeans() {
+        final List<ISettlementInvoiceEntryBean> invoiceEntriesList = Lists.newArrayList();
+        for (int i = 0; i < getDebitEntries().size(); i++) {
+            DebitEntryBean debitEntryBean = getDebitEntries().get(i);
+            if (debitEntryBean.isIncluded()) {
+                invoiceEntriesList.add(debitEntryBean);
+            }
+        }
+
+        for (int i = 0; i < getCreditEntries().size(); i++) {
+            final CreditEntryBean creditEntryBean = getCreditEntries().get(i);
+
+            if (creditEntryBean.isIncluded()) {
+                invoiceEntriesList.add(creditEntryBean);
+            }
+        }
+
+        for (InterestEntryBean interestEntryBean : getInterestEntries()) {
+            if (interestEntryBean.isIncluded()) {
+                invoiceEntriesList.add(interestEntryBean);
+            }
+        }
+        return invoiceEntriesList;
+    }
+    
     // @formatter:off
     /* *****************
      * GETTERS & SETTERS
@@ -484,7 +513,7 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
      */
     // @formatter:on
 
-    public class DebitEntryBean implements ITreasuryBean, Serializable {
+    public class DebitEntryBean implements ISettlementInvoiceEntryBean, ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -558,9 +587,14 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
         public void setNotValid(boolean notValid) {
             this.isNotValid = notValid;
         }
+        
+        @Override
+        public InvoiceEntry getInvoiceEntry() {
+            return debitEntry;
+        }
     }
 
-    public class CreditEntryBean implements ITreasuryBean, Serializable {
+    public class CreditEntryBean implements ISettlementInvoiceEntryBean, ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -634,9 +668,14 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
         public void setNotValid(boolean notValid) {
             this.isNotValid = notValid;
         }
+        
+        @Override
+        public InvoiceEntry getInvoiceEntry() {
+            return creditEntry;
+        }
     }
 
-    public static class InterestEntryBean implements ITreasuryBean, Serializable {
+    public static class InterestEntryBean implements ISettlementInvoiceEntryBean, ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -685,6 +724,11 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
             this.isIncluded = isIncluded;
         }
 
+        @Override
+        public InvoiceEntry getInvoiceEntry() {
+            return null;
+        }
+        
     }
 
     public class PaymentEntryBean implements ITreasuryBean, Serializable {
