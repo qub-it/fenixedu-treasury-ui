@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.settings.TreasurySettings"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -280,6 +281,15 @@ ${portal.angularToolkit()}
                         			</em>
                         	</c:if>
                         	</c:if>
+                        	<% if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
+	                        	<c:if test="${debitEntryBean.debitEntry.finantialDocument != null}">
+                        		<c:if test="${debitEntryBean.debitEntry.finantialDocument.exportedInLegacyERP}">
+                        		<p>
+                        			<span class="label label-warning"><spring:message code="label.DebitNote.exportedInLegacyERP" /></span>
+                        		</p>
+                        		</c:if>
+	                        	</c:if>
+                        	<% } %>
                         </td>
                         <td><c:out value="${ debitEntryBean.documentDueDate }" /></td>
                         <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" /></td>
@@ -360,6 +370,17 @@ ${portal.angularToolkit()}
 			                        			</em>
 			                        	</c:if>
 			                        	</c:if>
+
+			                        	<% if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
+				                        	<c:if test="${debitEntryBean.debitEntry.finantialDocument != null}">
+			                        		<c:if test="${debitEntryBean.debitEntry.finantialDocument.exportedInLegacyERP}">
+			                        		<p>
+			                        			<span class="label label-warning"><spring:message code="label.CreditNote.exportedInLegacyERP" /></span>
+			                        		</p>
+			                        		</c:if>
+				                        	</c:if>
+			                        	<% } %>
+
                                     </td>
                                     <td><c:out value="${ creditEntryBean.documentDueDate }" /></td>
                                     <td><c:out value="${ creditEntryBean.creditEntry.vat.taxRate }" /></td>

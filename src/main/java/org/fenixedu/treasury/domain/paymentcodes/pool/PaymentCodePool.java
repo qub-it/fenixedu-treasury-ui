@@ -344,7 +344,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             return Collections.EMPTY_LIST;
         } else {
             return this.getPaymentReferenceCodesSet().stream()
-                    .filter(x -> x.getState().equals(PaymentReferenceCodeStateType.ANNULLED) == false)
+                    .filter(x -> !x.isProcessed())
+                    .filter(x -> !x.isAnnulled())
                     .filter(x -> !x.getEndDate().isBefore(localDate)).collect(Collectors.toList());
         }
     }

@@ -122,6 +122,12 @@ ${portal.toolkit()}
                             <c:out value='${treasurySettings.advancePaymentProduct.code} - ${treasurySettings.advancePaymentProduct.name.content}'/>
                         </td> 
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.restrictPaymentMixingLegacyInvoices"/></th> 
+                        <td>
+                        	<spring:message code='label.${treasurySettings.restrictPaymentMixingLegacyInvoices}' />
+                        </td> 
+                    </tr>
 				</tbody>
 			</table>
 		</form>

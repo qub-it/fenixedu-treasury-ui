@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.settings.TreasurySettings"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -172,6 +173,15 @@ ${portal.angularToolkit()}
 	                        			</em>
 	                        	</c:if>
 	                        	</c:if>
+	                        	<% if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
+		                        	<c:if test="${debitEntry.finantialDocument != null}">
+	                        		<c:if test="${debitEntry.finantialDocument.exportedInLegacyERP}">
+	                        		<p>
+	                        			<span class="label label-warning"><spring:message code="label.DebitNote.exportedInLegacyERP" /></span>
+	                        		</p>
+	                        		</c:if>
+		                        	</c:if>
+	                        	<% } %>
 	                        </td>
 	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" /></td>
                         </tr>
