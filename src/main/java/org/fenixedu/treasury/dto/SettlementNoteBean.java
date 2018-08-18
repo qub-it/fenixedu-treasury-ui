@@ -240,6 +240,24 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
         return invoiceEntriesList;
     }
     
+    public boolean isIncludedLegacyERPInvoiceEntryBeans() {
+        for (ISettlementInvoiceEntryBean entryBean : getIncludedInvoiceEntryBeans()) {
+            if(entryBean.getInvoiceEntry() == null) {
+                continue;
+            }
+            
+            if(entryBean.getInvoiceEntry().getFinantialDocument() == null) {
+                continue;
+            }
+            
+            if(entryBean.getInvoiceEntry().getFinantialDocument().isExportedInLegacyERP()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     // @formatter:off
     /* *****************
      * GETTERS & SETTERS

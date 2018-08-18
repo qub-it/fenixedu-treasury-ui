@@ -372,8 +372,8 @@ ${portal.angularToolkit()}
 			                        	</c:if>
 
 			                        	<% if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
-				                        	<c:if test="${debitEntryBean.debitEntry.finantialDocument != null}">
-			                        		<c:if test="${debitEntryBean.debitEntry.finantialDocument.exportedInLegacyERP}">
+				                        	<c:if test="${creditEntryBean.creditEntry.finantialDocument != null}">
+			                        		<c:if test="${creditEntryBean.creditEntry.finantialDocument.exportedInLegacyERP}">
 			                        		<p>
 			                        			<span class="label label-warning"><spring:message code="label.CreditNote.exportedInLegacyERP" /></span>
 			                        		</p>

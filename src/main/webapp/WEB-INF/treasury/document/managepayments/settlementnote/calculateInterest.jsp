@@ -169,7 +169,14 @@ ${portal.angularToolkit()}
                         	<% if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
                             <td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
                             <% } else { %>
-                            <td></td>
+                            <c:choose>
+	                            <c:when test="${!settlementNoteBean.isIncludedLegacyERPInvoiceEntryBeans()}">
+		                            <td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+	                       		</c:when>
+	                       		<c:otherwise>
+		                            <td></td>
+	                       		</c:otherwise>
+                            </c:choose>
                             <% } %>
                             <td><spring:message code="label.InterestEntry.interest" />: &nbsp;<c:out value="${ interestEntryBean.debitEntry.description }" /></td>
                             <td>
