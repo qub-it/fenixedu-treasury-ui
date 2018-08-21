@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
@@ -85,7 +86,7 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
         }
 
         if (!canGenerateNewCode(forceGeneration)) {
-            throw new RuntimeException("Cannot generate new payment codes");
+            throw new TreasuryDomainException("error.SequentialPaymentCodeGenerator.generateNewCodeFor.cannot.generate.new.code");
         }
 
         final Long nextSequentialNumber = referenceCodePool.getAndIncrementNextReferenceCode();
