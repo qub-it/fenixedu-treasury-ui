@@ -376,6 +376,36 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         return !checkedInAllFinantialInstitutions;
     }
     
+    public String getUiCompleteAddress() {
+
+        final StringBuilder sb = new StringBuilder();
+        
+        if(!Strings.isNullOrEmpty(getAddress())) {
+            sb.append(getAddress()).append(", ");
+        }
+        
+        if(!Strings.isNullOrEmpty(getZipCode())) {
+            sb.append(getZipCode()).append(", ");
+        }
+        
+        if(!Strings.isNullOrEmpty(getDistrictSubdivision())) {
+            sb.append(getDistrictSubdivision()).append(", ");
+        }
+        
+        if(!Strings.isNullOrEmpty(getDistrict())) {
+            sb.append(getDistrict()).append(", ");
+        }
+        
+        if(!Strings.isNullOrEmpty(getAddressCountryCode())) {
+            sb.append(getAddressCountryCode()).append(", ");
+        }
+        
+        if(sb.length() > 0) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+        
+        return sb.toString();
+    }
     
     public abstract Set<? extends TreasuryEvent> getTreasuryEventsSet();
 

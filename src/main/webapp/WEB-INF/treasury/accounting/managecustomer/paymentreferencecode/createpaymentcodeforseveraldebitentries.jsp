@@ -245,7 +245,7 @@ ${portal.angularToolkit()}
 
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.cancel" />" />
-            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
+            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" onclick="this.disabled=false;" />
         </div>
     </div>
 

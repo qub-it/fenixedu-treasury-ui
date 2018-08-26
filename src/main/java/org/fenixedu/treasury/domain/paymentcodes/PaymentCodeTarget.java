@@ -13,6 +13,7 @@ import java.util.TreeSet;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -23,7 +24,9 @@ import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -41,7 +44,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         super();
     }
 
-    public abstract SettlementNote processPayment(final User person, final BigDecimal amountToPay, DateTime whenRegistered,
+    public abstract Set<SettlementNote> processPayment(final User person, final BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments);
 
     public abstract String getDescription();
@@ -63,8 +66,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         return false;
     }
 
-    @Atomic
-    protected SettlementNote internalProcessPayment(final User user, final BigDecimal amount, final DateTime whenRegistered,
+    
+    protected Set<SettlementNote> internalProcessPaymentInNormalPaymentMixingLegacyInvoices(final User user, final BigDecimal amount, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments, Set<InvoiceEntry> invoiceEntriesToPay) {
 
         final TreeSet<InvoiceEntry> sortedInvoiceEntriesToPay = Sets.newTreeSet(InvoiceEntry.COMPARE_BY_AMOUNT_AND_DUE_DATE);
@@ -216,7 +219,155 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         //######################################
         this.getPaymentReferenceCode().setState(PaymentReferenceCodeStateType.PROCESSED);
 
-        return settlementNote;
+        return Sets.newHashSet(settlementNote);
+    }
+
+    private Set<SettlementNote> internalProcessPaymentInRestrictedPaymentMixingLegacyInvoices(final User user, final BigDecimal amount,
+            final DateTime whenRegistered, final String sibsTransactionId, final String comments, final Set<InvoiceEntry> invoiceEntriesToPay) {
+        if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            throw new RuntimeException("invalid call");
+        }
+        
+        // Check if invoiceEntriesToPay have mixed invoice entries of certified in legacy erp and not
+        SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(invoiceEntriesToPay);
+        
+        // If all invoice entries are not exported in legacy ERP then invoke the internalProcessPaymentInNormalPaymentMixingLegacyInvoices
+        if(invoiceEntriesToPay.stream().allMatch(e -> e.getFinantialDocument() == null || !e.getFinantialDocument().isExportedInLegacyERP())) {
+            return internalProcessPaymentInNormalPaymentMixingLegacyInvoices(user, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
+        }
+        
+        final TreeSet<InvoiceEntry> sortedInvoiceEntriesToPay = Sets.newTreeSet(InvoiceEntry.COMPARE_BY_AMOUNT_AND_DUE_DATE);
+        sortedInvoiceEntriesToPay.addAll(invoiceEntriesToPay);
+
+        //Process the payment of pending invoiceEntries
+        //1. Find the InvoiceEntries
+        //2. Create the SEttlementEntries and the SEttlementNote
+        //2.1 create the "InterestRate entries"
+        //3. Close the SettlementNote
+        //4. If there is money for more, create a "pending" payment (CreditNote) in different settlement note for being used later
+        //6. Create a SibsTransactionDetail
+        BigDecimal availableAmount = amount;
+
+        final DebtAccount referenceDebtAccount = this.getDebtAccount();
+        final DocumentNumberSeries docNumberSeries = this.getDocumentSeriesForPayments();
+        final SettlementNote settlementNote =
+                SettlementNote.create(referenceDebtAccount, docNumberSeries, new DateTime(), whenRegistered, comments, null);
+
+        //######################################
+        //1. Find the InvoiceEntries
+        //2. Create the SEttlementEntries and the SEttlementNote
+        //######################################
+        
+        if(getReferencedCustomers().size() == 1) {
+            for (final InvoiceEntry entry : sortedInvoiceEntriesToPay) {
+                if (availableAmount.compareTo(BigDecimal.ZERO) <= 0) {
+                    break;
+                }
+    
+                BigDecimal amountToPay = entry.getOpenAmount();
+                if (amountToPay.compareTo(BigDecimal.ZERO) > 0) {
+                    if (entry.isDebitNoteEntry()) {
+                        DebitEntry debitEntry = (DebitEntry) entry;
+    
+                        if (debitEntry.getFinantialDocument().isPreparing()) {
+                            debitEntry.getFinantialDocument().closeDocument();
+                        }
+    
+                        //check if the amount to pay in the Debit Entry 
+                        if (amountToPay.compareTo(availableAmount) > 0) {
+                            amountToPay = availableAmount;
+                        }
+    
+                        if (debitEntry.getOpenAmount().equals(amountToPay)) {
+                            //######################################
+                            //2.1 create the "InterestRate entries"
+                            //######################################
+                            InterestRateBean calculateUndebitedInterestValue =
+                                    debitEntry.calculateUndebitedInterestValue(whenRegistered.toLocalDate());
+                            if (Constants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
+                                debitEntry.createInterestRateDebitEntry(
+                                        calculateUndebitedInterestValue, whenRegistered, Optional.<DebitNote> empty());
+                            }
+                        }
+    
+                        SettlementEntry.create(entry, settlementNote, amountToPay, entry.getDescription(), whenRegistered, true);
+    
+                        //Update the amount to Pay
+                        availableAmount = availableAmount.subtract(amountToPay);
+    
+                    } else if (entry.isCreditNoteEntry()) {
+                        SettlementEntry.create(entry, settlementNote, entry.getOpenAmount(), entry.getDescription(), whenRegistered, true);
+                        //update the amount to Pay
+                        availableAmount = availableAmount.add(amountToPay);
+                    }
+                } else {
+                    //Ignore since the "open amount" is ZERO
+                }
+            }
+        }
+
+        if (availableAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            availableAmount = BigDecimal.ZERO;
+        }
+        
+        //######################################
+        //3. Close the SettlementNote
+        //######################################
+
+        final Map<String, String> paymentEntryPropertiesMap = fillPaymentEntryPropertiesMap(sibsTransactionId);
+        
+        PaymentEntry.create(getPaymentReferenceCode().getPaymentCodePool().getPaymentMethod(),
+                settlementNote, amount.subtract(availableAmount), fillPaymentEntryMethodId(), paymentEntryPropertiesMap);
+        settlementNote.closeDocument();
+        
+        final Set<SettlementNote> result = Sets.newHashSet(settlementNote);
+        
+        //###########################################################################################
+        //4. If there is money for more, create a "pending" payment (CreditNote) for being used later
+        // which must be settled in different SettlementNote so the advancepayment can be integrated and
+        // use with new certified invoices
+        //###########################################################################################
+
+        //if "availableAmount" still exists, then we must create a "pending Payment" or "CreditNote"
+        if (availableAmount.compareTo(BigDecimal.ZERO) > 0) {
+            final SettlementNote advancedPaymentSettlementNote =
+                    SettlementNote.create(referenceDebtAccount, docNumberSeries, new DateTime(), whenRegistered, comments, null);
+
+            advancedPaymentSettlementNote.createAdvancedPaymentCreditNote(availableAmount,
+                    treasuryBundle("label.PaymentCodeTarget.advancedpayment") + comments + "-" + sibsTransactionId, 
+                    sibsTransactionId);
+
+            PaymentEntry.create(getPaymentReferenceCode().getPaymentCodePool().getPaymentMethod(),
+                    advancedPaymentSettlementNote, availableAmount, fillPaymentEntryMethodId(), paymentEntryPropertiesMap);
+            advancedPaymentSettlementNote.closeDocument();
+            
+            // Mark both documents as alread exported in legacy ERP
+            advancedPaymentSettlementNote.setExportedInLegacyERP(true);
+            advancedPaymentSettlementNote.setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+            advancedPaymentSettlementNote.getAdvancedPaymentCreditNote().setExportedInLegacyERP(true);
+            advancedPaymentSettlementNote.getAdvancedPaymentCreditNote().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+            
+            result.add(advancedPaymentSettlementNote);
+        }
+
+        //######################################
+        //5. Create a SibsTransactionDetail
+        //######################################
+        this.getPaymentReferenceCode().setState(PaymentReferenceCodeStateType.PROCESSED);
+
+        return result;
+
+    }
+    
+    @Atomic
+    protected Set<SettlementNote> internalProcessPayment(final User user, final BigDecimal amount, final DateTime whenRegistered,
+            final String sibsTransactionId, final String comments, Set<InvoiceEntry> invoiceEntriesToPay) {
+
+        if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
+            return internalProcessPaymentInNormalPaymentMixingLegacyInvoices(user, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
+        } else {
+            return internalProcessPaymentInRestrictedPaymentMixingLegacyInvoices(user, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
+        }
     }
 
     private String fillPaymentEntryMethodId() {

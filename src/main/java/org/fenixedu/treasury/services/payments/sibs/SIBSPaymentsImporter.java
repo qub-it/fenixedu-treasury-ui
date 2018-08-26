@@ -18,12 +18,16 @@
  */
 package org.fenixedu.treasury.services.payments.sibs;
 
+import static java.lang.String.join;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
@@ -168,18 +172,14 @@ public class SIBSPaymentsImporter {
             for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
 
                 try {
-                    final SettlementNote settlementNote =
+                    final Set<SettlementNote> settlementNoteSet =
                             processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(),
                                     inputFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
-                    if (settlementNote != null) {
+                    if (!settlementNoteSet.isEmpty()) {
                         processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
-                                + settlementNote.getUiDocumentNumber());
-//                        if (settlementNote.getAdvancedPaymentCreditNote() != null) {
-//                            processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
-//                                    settlementNote.getUiDocumentNumber());
-//                        }
+                                + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
                     }
 
                 } catch (Exception e) {
@@ -251,13 +251,13 @@ public class SIBSPaymentsImporter {
         for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
 
             try {
-                final SettlementNote settlementNote = processCode(detailLine, person, processResult, finantialInstitution,
+                final Set<SettlementNote> settlementNoteSet = processCode(detailLine, person, processResult, finantialInstitution,
                         sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
-                if (settlementNote != null) {
+                if (!settlementNoteSet.isEmpty()) {
                     processResult.addMessage(
                             detailLine.getCode() + " [" + finantialInstitution.getCurrency().getValueFor(detailLine.getAmount())
-                                    + "] => " + settlementNote.getUiDocumentNumber());
+                                    + "] => " + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
 //                    if (settlementNote.getAdvancedPaymentCreditNote() != null) {
 //                        processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
 //                                settlementNote.getUiDocumentNumber());
@@ -278,7 +278,7 @@ public class SIBSPaymentsImporter {
     }
 
     @Atomic
-    protected SettlementNote processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
+    protected Set<SettlementNote> processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
             FinantialInstitution finantialInstitution, final String sibsImportationFile, YearMonthDay whenProcessedBySibs,
             final SibsReportFile reportFile) throws Exception {
 
@@ -316,16 +316,14 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.referenced.multiple.payor.entities", codeToProcess.getReferenceCode());
         }
 
-        final SettlementNote settlementNote = codeToProcess.processPayment(person, detailLine.getAmount(),
+        final Set<SettlementNote> settlementNoteSet = codeToProcess.processPayment(person, detailLine.getAmount(),
                 detailLine.getWhenOccuredTransaction(), detailLine.getSibsTransactionId(), sibsImportationFile,
                 whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
 
-        if (settlementNote != null) {
-            //Add the new SettlementNote to the TargetPayment
-            codeToProcess.getTargetPayment().addSettlementNotes(settlementNote);
-        }
+        //Add the new SettlementNote to the TargetPayment
+        codeToProcess.getTargetPayment().getSettlementNotesSet().addAll(settlementNoteSet);
 
-        return settlementNote;
+        return settlementNoteSet;
     }
 
     /**

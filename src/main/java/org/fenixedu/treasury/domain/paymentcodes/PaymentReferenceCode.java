@@ -241,7 +241,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     @Atomic
-    public SettlementNote processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
+    public Set<SettlementNote> processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments, final DateTime whenProcessedBySibs, final SibsReportFile sibsReportFile) {
 
         if (!isNew() && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(),
@@ -249,7 +249,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             return null;
         }
 
-        SettlementNote note =
+        final Set<SettlementNote> noteSet =
                 this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
 
         final DebtAccount referenceDebtAccount = this.getTargetPayment().getDebtAccount();
@@ -260,13 +260,16 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         final String fiscalNumber = valueOrEmpty(referenceDebtAccount.getCustomer().getFiscalCountry()) + ":"
                 + valueOrEmpty(referenceDebtAccount.getCustomer().getFiscalNumber());
         final String customerName = referenceDebtAccount.getCustomer().getName();
-        final String settlementDocumentNumber = note.getUiDocumentNumber();
+        
+        for (SettlementNote settlementNote : noteSet) {
+            final String settlementDocumentNumber = settlementNote.getUiDocumentNumber();
+            
+            SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
+                    getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, debtAccountId, customerId,
+                    businessIdentification, fiscalNumber, customerName, settlementDocumentNumber);
+        }
 
-        SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
-                getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, debtAccountId, customerId,
-                businessIdentification, fiscalNumber, customerName, settlementDocumentNumber);
-
-        return note;
+        return noteSet;
 
     }
 

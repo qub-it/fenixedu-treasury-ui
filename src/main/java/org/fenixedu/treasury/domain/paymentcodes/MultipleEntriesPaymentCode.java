@@ -125,7 +125,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     }
 
     @Override
-    public SettlementNote processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
+    public Set<SettlementNote> processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments) {
         return internalProcessPayment(person, amountToPay, whenRegistered, sibsTransactionId, comments, getInvoiceEntriesSet());
     }

@@ -1,6 +1,8 @@
 package org.fenixedu.treasury.services.payments.sibs;
 
 import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
@@ -103,15 +105,23 @@ public class SIBSImportationLineDTO {
             return null;
         }
 
-        return getPaymentCode().getTargetPayment().getTargetPayorDescription();
+        if(getPaymentCode().getTargetPayment().getDebtAccount() == null) {
+            return "----";
+        }
+
+        return getPaymentCode().getTargetPayment().getDebtAccount().getCustomer().getName();
     }
 
     public String getStudentNumber() {
         if (!hasPaymentCode() || getPaymentCode().getTargetPayment() == null) {
             return null;
         }
+        
+        if(getPaymentCode().getTargetPayment().getDebtAccount() == null) {
+            return "----";
+        }
 
-        return getPaymentCode().getTargetPayment().getTargetPayorDescription();
+        return getPaymentCode().getTargetPayment().getDebtAccount().getCustomer().getBusinessIdentification();
     }
 
     public String getDescription() {
@@ -121,14 +131,14 @@ public class SIBSImportationLineDTO {
 
         StringBuilder sb = new StringBuilder();
         if (getPaymentCode().getTargetPayment().getSettlementNotesSet() != null) {
-            SettlementNote note =
+            final Set<SettlementNote> noteSet =
                     getPaymentCode().getTargetPayment().getSettlementNotesSet().stream()
-                            .filter(x -> x.getDocumentDate().equals(this.getTransactionWhenRegistered())).findFirst()
-                            .orElse(null);
-            if (note != null) {
-                sb.append("Nota de Pagamento: " + note.getUiDocumentNumber() + "\n");
+                            .filter(x -> x.getDocumentDate().equals(this.getTransactionWhenRegistered())).collect(Collectors.toSet());
+            if (!noteSet.isEmpty()) {
+                sb.append("Nota de Pagamento: " + String.join(", ", noteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())) + "\n");
             }
         }
+        
         sb.append(getPaymentCode().getTargetPayment().getDescription());
         return sb.toString();
     }

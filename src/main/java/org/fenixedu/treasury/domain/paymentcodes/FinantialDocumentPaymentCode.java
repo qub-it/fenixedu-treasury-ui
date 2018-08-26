@@ -33,7 +33,7 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     @Override
     // Check: The only invocation is PaymentReferenceCode::processPayment which is already Atomic
     // @Atomic
-    public SettlementNote processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
+    public Set<SettlementNote> processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments) {
 
         final Set<InvoiceEntry> invoiceEntriesToPay = getInvoiceEntries().stream()
