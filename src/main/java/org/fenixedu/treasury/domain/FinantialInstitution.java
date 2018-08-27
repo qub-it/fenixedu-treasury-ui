@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain;
 
+import static org.fenixedu.treasury.util.Constants.DEFAULT_LANGUAGE;
+
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -38,8 +40,11 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
+
+import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
@@ -231,8 +236,40 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
         return this.getVatsSet().stream().filter(x -> x.isActive(when) && x.getVatType().equals(vatType)).findFirst()
                 .orElse(null);
     }
+    
+    public String getUiCompleteAddress() {
+
+        final StringBuilder sb = new StringBuilder();
+        
+        if(!Strings.isNullOrEmpty(getAddress())) {
+            sb.append(getAddress()).append(", ");
+        }
+        
+        if(!Strings.isNullOrEmpty(getZipCode())) {
+            sb.append(getZipCode()).append(", ");
+        }
+
+        if(!Strings.isNullOrEmpty(getLocality())) {
+            sb.append(getLocality()).append(", ");
+        }
+
+        if(getMunicipality() != null) {
+            sb.append(getMunicipality().name).append(", ");
+        }
+        
+        if(getCountry() != null) {
+            sb.append(getCountry().alpha2).append(", ");
+        }
+        
+        if(sb.length() > 0) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+        
+        return sb.toString();
+    }
 
     public static Optional<FinantialInstitution> findUniqueByFiscalCode(String fiscalNumber) {
         return findAll().filter(x -> fiscalNumber.equals(x.getFiscalNumber())).findFirst();
     }
+    
 }
