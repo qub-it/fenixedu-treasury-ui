@@ -176,7 +176,7 @@ public class SIBSPaymentsImporter {
                             processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(),
                                     inputFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
-                    if (!settlementNoteSet.isEmpty()) {
+                    if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
                         processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
                                 + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
@@ -254,7 +254,7 @@ public class SIBSPaymentsImporter {
                 final Set<SettlementNote> settlementNoteSet = processCode(detailLine, person, processResult, finantialInstitution,
                         sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
-                if (!settlementNoteSet.isEmpty()) {
+                if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
                     processResult.addMessage(
                             detailLine.getCode() + " [" + finantialInstitution.getCurrency().getValueFor(detailLine.getAmount())
                                     + "] => " + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
@@ -321,8 +321,10 @@ public class SIBSPaymentsImporter {
                 whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
 
         //Add the new SettlementNote to the TargetPayment
-        codeToProcess.getTargetPayment().getSettlementNotesSet().addAll(settlementNoteSet);
-
+        if(settlementNoteSet != null) {
+            codeToProcess.getTargetPayment().getSettlementNotesSet().addAll(settlementNoteSet);
+        }
+        
         return settlementNoteSet;
     }
 
