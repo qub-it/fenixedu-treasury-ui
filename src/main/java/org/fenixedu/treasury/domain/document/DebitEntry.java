@@ -863,6 +863,10 @@ public class DebitEntry extends DebitEntry_Base {
         }
         return degreeCode;
     }
+    
+    public DebitNote getDebitNote() {
+        return (DebitNote) getFinantialDocument();
+    }
 
     @Atomic
     public void annulDebitEntry(final String reason) {

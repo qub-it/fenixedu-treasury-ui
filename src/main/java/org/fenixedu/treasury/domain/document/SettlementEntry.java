@@ -194,5 +194,10 @@ public class SettlementEntry extends SettlementEntry_Base {
             return "-";
         }
     }
+    
+    /* Avoid cast from FinantialDocument to SettlementNote */
+    public SettlementNote getSettlementNote() {
+        return (SettlementNote) getFinantialDocument();
+    }
 
 }

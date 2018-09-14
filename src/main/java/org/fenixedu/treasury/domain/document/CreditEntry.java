@@ -198,6 +198,10 @@ public class CreditEntry extends CreditEntry_Base {
     public BigDecimal getOpenAmountWithInterests() {
         return getOpenAmount();
     }
+    
+    public CreditNote getCreditNote() {
+        return (CreditNote) getFinantialDocument();
+    }
 
     public CreditEntry splitCreditEntry(final BigDecimal remainingAmount) {
         if (!Constants.isLessThan(remainingAmount, getOpenAmount())) {
