@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -419,6 +420,10 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
 
         return (fiscalCountry + " " + fiscalNumber).trim();
     }
+    
+    public abstract LocalizedString getIdentificationTypeDesignation();
+    
+    public abstract String getIdentificationTypeCode();
 
     protected static String lowerCase(final String value) {
         if (value == null) {

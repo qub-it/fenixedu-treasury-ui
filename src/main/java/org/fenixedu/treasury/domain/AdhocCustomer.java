@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -293,6 +294,16 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     @Override
     public Set<Customer> getAllCustomers() {
         return Sets.newHashSet(this);
+    }
+
+    @Override
+    public LocalizedString getIdentificationTypeDesignation() {
+        return null;
+    }
+    
+    @Override
+    public String getIdentificationTypeCode() {
+        return null;
     }
     
     // @formatter:off
