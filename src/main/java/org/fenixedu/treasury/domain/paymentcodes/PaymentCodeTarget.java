@@ -12,6 +12,7 @@ import java.util.TreeSet;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -393,6 +394,8 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
     protected abstract Set<InvoiceEntry> getInvoiceEntries();
 
     public abstract LocalDate getDueDate();
+    
+    public abstract Set<Product> getReferencedProducts();
 
     public Set<Customer> getReferencedCustomers() {
         final Set<Customer> result = Sets.newHashSet();

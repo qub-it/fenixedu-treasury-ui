@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -247,4 +248,11 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
 
         return result;
     }
+
+    @Override
+    public Set<Product> getReferencedProducts() {
+        return getFinantialDocument().getFinantialDocumentEntriesSet().stream().map(DebitEntry.class::cast)
+                .map(d -> d.getProduct()).collect(Collectors.toSet());
+    }
+
 }

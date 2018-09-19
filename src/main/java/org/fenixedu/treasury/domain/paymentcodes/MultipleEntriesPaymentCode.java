@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -97,11 +98,11 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
                         debitEntry.getDescription());
             }
         }
-        
-        if(getReferencedCustomers().size() > 1) {
+
+        if (getReferencedCustomers().size() > 1) {
             throw new TreasuryDomainException("error.MultipleEntriesPaymentCode.referencedCustomers.only.one.allowed");
         }
-        
+
         SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(getInvoiceEntriesSet());
     }
 
@@ -189,6 +190,11 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     public static MultipleEntriesPaymentCode create(final Set<DebitEntry> debitNoteEntries,
             final PaymentReferenceCode paymentReferenceCode, final boolean valid) {
         return new MultipleEntriesPaymentCode(debitNoteEntries, paymentReferenceCode, valid);
+    }
+
+    @Override
+    public Set<Product> getReferencedProducts() {
+        return getInvoiceEntries().stream().map(d -> d.getProduct()).collect(Collectors.toSet());
     }
 
     // @formatter: off
