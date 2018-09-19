@@ -40,6 +40,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
@@ -170,6 +171,18 @@ public class Constants {
         return new LocalDate(year, 1, 1);
     }
 
+    public static boolean isDateBetween(final LocalDate beginDate, final LocalDate endDate, final LocalDate when) {
+        return new Interval(beginDate.toDateTimeAtStartOfDay(),
+                endDate != null ? endDate.toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1) : INFINITY_DATE)
+                        .contains(when.toDateTimeAtStartOfDay());
+    }
+
+    public static boolean isDateBetween(final LocalDate beginDate, final LocalDate endDate, final DateTime when) {
+        return new Interval(beginDate.toDateTimeAtStartOfDay(),
+                endDate != null ? endDate.toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1) : INFINITY_DATE).contains(when);
+    }
+
+    
     // @formatter:off
     /****************
      * STRING UTILS *
