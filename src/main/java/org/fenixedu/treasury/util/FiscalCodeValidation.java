@@ -33,31 +33,6 @@ public class FiscalCodeValidation {
             return false;
         }
         
-        if(Constants.isDefaultCountry(countryCode)) {
-            boolean functionReturnValue = false;
-            functionReturnValue = false;
-            int i = 0;
-            long checkDigit = 0;
-
-            if (fiscalNumber.length() == 9) {
-                int numericValue = Character.getNumericValue(fiscalNumber.charAt(0));
-                if (fiscalNumber.charAt(0) == '1' || fiscalNumber.charAt(0) == '2' || fiscalNumber.charAt(0) == '5' || fiscalNumber.charAt(0) == '6'
-                        || fiscalNumber.charAt(0) == '9') {
-                    checkDigit = numericValue * 9;
-                    for (i = 2; i <= 8; i++) {
-                        checkDigit = checkDigit + (Character.getNumericValue(fiscalNumber.charAt(i - 1)) * (10 - i));
-                    }
-                    checkDigit = 11 - (checkDigit % 11);
-                    if ((checkDigit >= 10))
-                        checkDigit = 0;
-                    if ((checkDigit == Character.getNumericValue(fiscalNumber.charAt(8))))
-                        functionReturnValue = true;
-                }
-            }
-            
-            return functionReturnValue;
-        }
-        
         if(VALIDATED_COUNTRIES.contains(countryCode.toUpperCase())) {
             return TINValid.checkTIN(translateCountry(countryCode.toUpperCase()), fiscalNumber) == 0;
         }
