@@ -31,4 +31,19 @@ public class ForwardPaymentLog extends ForwardPaymentLog_Base {
         setOrderNumber(forwardPayment.getForwardPaymentLogsSet().size());
     }
     
+    public void delete() {
+        setForwardPayment(null);
+        setDomainRoot(null);
+
+        if(getRequestLogFile() != null) {
+            getRequestLogFile().delete();
+        }
+        
+        if(getResponseLogFile() != null) {
+            getResponseLogFile().delete();
+        }
+        
+        deleteDomainObject();
+    }
+    
 }

@@ -394,6 +394,24 @@ public class ForwardPayment extends ForwardPayment_Base {
     private ForwardPaymentLog log() {
         return new ForwardPaymentLog(this, getCurrentState(), getWhenOccured());
     }
+    
+    public void delete() {
+        
+        setDebtAccount(null);
+        setForwardPaymentConfiguration(null);
+        setSettlementNote(null);
+ 
+        setDomainRoot(null);
+        
+        getDebitEntriesSet().clear();
+        
+        while(!getForwardPaymentLogsSet().isEmpty()) {
+            getForwardPaymentLogsSet().iterator().next().delete();
+        }
+        
+        deleteDomainObject();
+        
+    }
 
     
     // @formatter: off
