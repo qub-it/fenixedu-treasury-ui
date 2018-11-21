@@ -789,6 +789,7 @@ class integration.ERPConfiguration extends integration.Configuration
     boolean integratedDocumentsExportationEnabled;
     String erpIdProcess;
     boolean creditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled;
+    boolean allowFiscalFixWithLegacyDocsExportedLegacyERP;
 }
 
 relation ERPConfigurationFinantialInstitution

@@ -263,6 +263,17 @@ ${portal.toolkit()}
                     		<spring:message code="label.${eRPConfiguration.creditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled}" />
                     	</td>
                     </tr>
+                    
+                    <tr>
+                    	<th scope="row" class="col-xs-3">
+                    		<spring:message code="label.ERPConfiguration.allowFiscalFixWithLegacyDocsExportedLegacyERP" />
+                    	</th>
+                    	<td>
+                    		<spring:message code="label.${eRPConfiguration.allowFiscalFixWithLegacyDocsExportedLegacyERP}" />
+                    	</td>
+                    </tr>
+                    
+                    
                 </tbody>
             </table>
         </form>

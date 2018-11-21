@@ -111,6 +111,10 @@ public class ERPConfiguration extends ERPConfiguration_Base {
         return getCreditsOfLegacyDebitWithoutLegacyInvoiceExportEnabled();
     }
 
+    public boolean isAllowFiscalFixWithLegacyDocsExportedLegacyERP() {
+        return getAllowFiscalFixWithLegacyDocsExportedLegacyERP();
+    }
+    
     @Atomic
     public void delete() {
         TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());

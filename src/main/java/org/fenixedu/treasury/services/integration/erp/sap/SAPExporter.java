@@ -1964,6 +1964,11 @@ public class SAPExporter implements IERPExporter {
     public boolean isCustomerWithFinantialDocumentsIntegratedInPreviousERP(final Customer customer) {
         for (final DebtAccount debtAccount : customer.getDebtAccountsSet()) {
             
+            if(debtAccount.getFinantialInstitution().getErpIntegrationConfiguration() != null && 
+                    debtAccount.getFinantialInstitution().getErpIntegrationConfiguration().isAllowFiscalFixWithLegacyDocsExportedLegacyERP()) {
+                continue;
+            }
+            
             for (final FinantialDocument finantialDocument : debtAccount.getFinantialDocumentsSet()) {
                 if(finantialDocument.isExportedInLegacyERP()) {
                     return true;
