@@ -470,15 +470,17 @@ public class DebitEntry extends DebitEntry_Base {
 
         creditEntry.getFinantialDocument().closeDocument();
 
+        final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
+        
         final SettlementNote settlementNote =
                 SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "", null);
         settlementNote.setDocumentObservations(
                 reason + " - [" + Authenticate.getUser().getUsername() + "] " + new DateTime().toString("YYYY-MM-dd HH:mm"));
 
         SettlementEntry.create(creditEntry, settlementNote, creditEntry.getOpenAmount(),
-                reason + ": " + creditEntry.getDescription(), now, false);
+                reasonDescription + ": " + creditEntry.getDescription(), now, false);
         SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, creditEntry.getOpenAmount(),
-                reason + ": " + creditEntry.getDebitEntry().getDescription(), now, false);
+                reasonDescription + ": " + creditEntry.getDebitEntry().getDescription(), now, false);
 
         if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && getFinantialDocument().isExportedInLegacyERP()) {
             settlementNote.setExportedInLegacyERP(true);

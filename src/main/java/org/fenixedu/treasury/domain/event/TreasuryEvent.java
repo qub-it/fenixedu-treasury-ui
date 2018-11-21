@@ -243,8 +243,6 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     @Atomic
     public void annulAllDebitEntries(final String reason) {
 
-        final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
-
         while (DebitEntry.findActive(this).map(DebitEntry.class::cast).count() > 0) {
             final DebitEntry debitEntry = DebitEntry.findActive(this).map(DebitEntry.class::cast).findFirst().get();
 
@@ -267,7 +265,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
             }
 
             if (!debitEntry.isProcessedInClosedDebitNote()) {
-                ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reasonDescription, false);
+                ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reason, false);
             }
 
             // ensure interest debit entries are closed in document entry
@@ -288,14 +286,14 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
                     }
 
                     if (!interestDebitEntry.isProcessedInClosedDebitNote()) {
-                        ((DebitNote) interestDebitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reasonDescription,
+                        ((DebitNote) interestDebitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reason,
                                 false);
                     }
                 }
             }
 
             if (debitEntry.isProcessedInClosedDebitNote()) {
-                ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reasonDescription, false);
+                ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(reason, false);
             }
 
             for (final DebitEntry otherDebitEntry : ((DebitNote) debitEntry.getFinantialDocument()).getDebitEntriesSet()) {

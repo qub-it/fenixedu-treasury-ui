@@ -310,8 +310,6 @@ public class DebitNote extends DebitNote_Base {
     @Atomic
     public void anullDebitNoteWithCreditNote(String reason, boolean anullGeneratedInterests) {
 
-        final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
-
         if (this.getFinantialDocumentEntriesSet().size() > 0 && this.isClosed()) {
 
             final DateTime now = new DateTime();
@@ -347,11 +345,17 @@ public class DebitNote extends DebitNote_Base {
                 }
 
                 for (final CreditEntry creditEntry : debitEntry.getCreditEntriesSet()) {
-                    debitEntry.closeCreditEntryIfPossible(reasonDescription, now, creditEntry);
+                    debitEntry.closeCreditEntryIfPossible(reason, now, creditEntry);
                 }
             }
 
-            this.setAnnulledReason(reason);
+            if (Authenticate.getUser() != null) {
+                setAnnulledReason(reason + " - [" + Authenticate.getUser().getUsername() + "]"
+                        + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
+            } else {
+                setAnnulledReason(reason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
+            }
+            
         } else if (isPreparing()) {
             if (!getCreditNoteSet().isEmpty()) {
                 throw new TreasuryDomainException("error.DebitNote.creditNote.not.empty");
