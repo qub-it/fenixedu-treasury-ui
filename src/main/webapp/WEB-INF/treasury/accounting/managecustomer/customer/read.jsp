@@ -184,6 +184,18 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.addressCountryCode" /></th>
                         <td><c:out value='${customer.addressCountryCode}' /></td>
                     </tr>
+                    
+                    <c:if test="${customer.isIbanDefined()}">
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.Customer.iban" /></th>
+                        <td>
+                        	<c:out value='${customer.iban}' />
+                        	&nbsp;
+                        	<em>(<spring:message code="label.Customer.iban.remarks" />)</em>
+                        </td>
+                    </tr>
+                    </c:if>
+                    
                 </tbody>
             </table>
 

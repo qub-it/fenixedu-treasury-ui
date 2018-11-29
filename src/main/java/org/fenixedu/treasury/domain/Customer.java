@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain;
 
+import static com.google.common.base.Strings.isNullOrEmpty;
+
 import java.math.BigDecimal;
 import java.text.Normalizer;
 import java.util.Comparator;
@@ -424,6 +426,12 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     public abstract LocalizedString getIdentificationTypeDesignation();
     
     public abstract String getIdentificationTypeCode();
+    
+    public abstract String getIban();
+    
+    public boolean isIbanDefined() {
+        return !isNullOrEmpty(getIban());
+    }
 
     protected static String lowerCase(final String value) {
         if (value == null) {

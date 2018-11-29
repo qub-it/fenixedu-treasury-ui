@@ -306,6 +306,11 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return null;
     }
     
+    @Override
+    public String getIban() {
+        return null;
+    }
+    
     // @formatter:off
     /* ********
      * SERVICES
