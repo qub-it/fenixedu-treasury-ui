@@ -105,6 +105,8 @@ public class SAPExternalService extends BennuWebServiceClient<ZULWSFATURACAOCLIE
 
             if(S_KEY.equals(integrationStatus)) {
                 saveErpCustomerId(output, erpCustomerId, fenixCustomerId);
+            } else {
+                output.getOtherErrorMessages().add(otherMessage);
             }
         }
 

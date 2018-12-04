@@ -39,6 +39,7 @@ public class DocumentsInformationOutput {
     private String soapInboundMessage;
 
     private List<String> otherMessages = Lists.newArrayList();
+    private List<String> otherErrorMessages = Lists.newArrayList();
     
     public DocumentsInformationOutput() {
         documentStatus = new ArrayList<DocumentStatusWS>();
@@ -82,6 +83,14 @@ public class DocumentsInformationOutput {
     
     public void setOtherMessages(List<String> otherMessages) {
         this.otherMessages = otherMessages;
+    }
+    
+    public List<String> getOtherErrorMessages() {
+        return otherErrorMessages;
+    }
+    
+    public void setOtherErrorMessages(List<String> otherErrorMessages) {
+        this.otherErrorMessages = otherErrorMessages;
     }
 
 }

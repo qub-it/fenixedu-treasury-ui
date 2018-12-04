@@ -1534,6 +1534,10 @@ public class SAPExporter implements IERPExporter {
             for (final String m : sendInfoOnlineResult.getOtherMessages()) {
                 logBean.appendIntegrationLog(m);
             }
+            
+            for(final String m : sendInfoOnlineResult.getOtherErrorMessages()) {
+                logBean.appendErrorLog(m);
+            }
 
             logBean.defineSoapInboundMessage(sendInfoOnlineResult.getSoapInboundMessage());
             logBean.defineSoapOutboundMessage(sendInfoOnlineResult.getSoapOutboundMessage());

@@ -68,7 +68,7 @@ public class CustomerController extends TreasuryBaseController {
     private static final String READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URI + READ_URI;
 
-    public static final long SEARCH_LIMIT_SIZE = 75;
+    public static final long SEARCH_LIMIT_SIZE = 500;
 
     @RequestMapping
     public String home(final Model model) {
