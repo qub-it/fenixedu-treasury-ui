@@ -304,6 +304,14 @@ ${portal.angularToolkit()}
 
 <jsp:include page="${logosPage}" /> 
 
+<c:if test="${forwardPaymentConfiguration.isReimbursementPolicyTextDefined()}">
+	<jsp:include page="${forwardPaymentConfiguration.reimbursementPolicyJspFile}" />
+</c:if>
+
+<c:if test="${forwardPaymentConfiguration.isPrivacyPolicyTextDefined()}">
+	<jsp:include page="${forwardPaymentConfiguration.privacyPolicyJspFile}" />
+</c:if>
+
 <script>
 	$(document).ready(function() {
 	});

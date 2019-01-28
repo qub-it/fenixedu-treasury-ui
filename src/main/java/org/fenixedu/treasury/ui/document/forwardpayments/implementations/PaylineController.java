@@ -32,6 +32,8 @@ public class PaylineController extends TreasuryBaseController implements IForwar
     @Override
     public String processforwardpayment(final ForwardPayment forwardPayment, final Model model,
             final HttpServletResponse response, final HttpSession session) {
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
+        
         try {
             final PaylineImplementation paylineImplementation =
                     (PaylineImplementation) forwardPayment.getForwardPaymentConfiguration().implementation();
@@ -40,8 +42,6 @@ public class PaylineController extends TreasuryBaseController implements IForwar
 
             if (!paylineSucess) {
                 return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
-//                model.addAttribute("forwardPayment", forwardPayment);
-//                return jspPage("paylineRequestInsuccess");
             }
 
             return "redirect:" + forwardPayment.getPaylineRedirectUrl();
@@ -64,6 +64,8 @@ public class PaylineController extends TreasuryBaseController implements IForwar
     public String returnforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
             @PathVariable("action") final String action, @PathVariable("urlChecksum") final String urlChecksum,
             @RequestParam final Map<String, String> responseData, final Model model, final HttpServletResponse response) {
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
+
         try {
 
             // verify url checksum

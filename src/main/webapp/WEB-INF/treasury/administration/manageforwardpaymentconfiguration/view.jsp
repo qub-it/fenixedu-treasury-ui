@@ -213,7 +213,17 @@ ${portal.toolkit()}
                         </td>
                     </tr>
                     </c:if>
-                    
+
+
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentConfiguration.reimbursementPolicyJspFile" /></th>
+                        <td><c:out value='${forwardPaymentConfiguration.reimbursementPolicyJspFile}' /></td>
+                    </tr>
+
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentConfiguration.privacyPolicyJspFile" /></th>
+                        <td><c:out value='${forwardPaymentConfiguration.privacyPolicyJspFile}' /></td>
+                    </tr>
 				</tbody>
 			</table>
 		</form>

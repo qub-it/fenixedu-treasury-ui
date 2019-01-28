@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.tpaReturnForwardPayment", accessGroup = "logged")
 @RequestMapping(TPAVirtualController.CONTROLLER_URL)
@@ -31,6 +29,7 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
     public String processforwardpayment(final ForwardPayment forwardPayment, final Model model,
             final HttpServletResponse response, final HttpSession session) {
 
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
         model.addAttribute("forwardPayment", forwardPayment);
         return jspPage("hostedPay");
     }
@@ -44,6 +43,8 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
             @RequestParam final Map<String, String> responseData, final Model model, final HttpServletResponse response) {
         TPAVirtualImplementation implementation =
                 (TPAVirtualImplementation) forwardPayment.getForwardPaymentConfiguration().implementation();
+
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
         try {
             boolean success = implementation.processPayment(forwardPayment, responseData);
 

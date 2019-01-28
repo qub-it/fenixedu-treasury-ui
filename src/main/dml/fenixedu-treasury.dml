@@ -1936,6 +1936,9 @@ class forwardpayments.ForwardPaymentConfiguration {
 	String paylineMerchantId;
 	String paylineMerchantAccessKey;
 	String paylineContractNumber;
+	String reimbursementPolicyJspFile;
+	String privacyPolicyJspFile;
+	
 }
 
 	relation ForwardPaymentConfigurationBennu {

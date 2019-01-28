@@ -264,6 +264,27 @@ ${portal.toolkit()}
 				</div>
 			</div>
 			
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.ForwardPaymentConfiguration.reimbursementPolicyJspFile" />
+				</div>
+
+				<div class="col-sm-10">
+					<input id="forwardpaymentconfiguration_reimbursementPolicyJspFile" class="form-control" type="text" name="reimbursementPolicyJspFile" value='<c:out value='${not empty param.reimbursementPolicyJspFile ? param.reimbursementPolicyJspFile : bean.reimbursementPolicyJspFile }'/>' />
+				</div>
+			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.ForwardPaymentConfiguration.privacyPolicyJspFile" />
+				</div>
+
+				<div class="col-sm-10">
+					<input id="forwardpaymentconfiguration_privacyPolicyJspFile" class="form-control" type="text" name="privacyPolicyJspFile" value='<c:out value='${not empty param.privacyPolicyJspFile ? param.privacyPolicyJspFile : bean.privacyPolicyJspFile }'/>' />
+				</div>
+			</div>
+			
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

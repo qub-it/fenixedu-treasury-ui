@@ -124,14 +124,23 @@ public class ForwardPaymentController extends TreasuryBaseController {
         if (bean == null) {
             bean = new SettlementNoteBean(debtAccount, false, true);
         }
-
+        
         setSettlementNoteBean(bean, model);
+
+        final ForwardPaymentConfiguration forwardPaymentConfiguration = ForwardPaymentConfiguration.find(debtAccount.getFinantialInstitution()).get();
+        model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
 
         return jspPage("chooseInvoiceEntries");
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
     public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
+
+        final DebtAccount debtAccount = bean.getDebtAccount();
+        final ForwardPaymentConfiguration forwardPaymentConfiguration = ForwardPaymentConfiguration.find(debtAccount.getFinantialInstitution()).get();
+        model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
+
+        
         BigDecimal debitSum = BigDecimal.ZERO;
         BigDecimal creditSum = BigDecimal.ZERO;
         boolean error = false;
@@ -140,7 +149,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
             checkPermissions(bean.getDebtAccount(), model);
         } catch(SecurityException e) {
             addErrorMessage(treasuryBundle("error.ForwardPaymentController.payment.not.accessible.for.debt.account"), model);
-            return redirectToDebtAccountUrl(bean.getDebtAccount(), model, redirectAttributes);
+            return redirectToDebtAccountUrl(debtAccount, model, redirectAttributes);
         }
 
         final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
@@ -258,7 +267,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
             setSettlementNoteBean(bean, model);
             return jspPage("chooseInvoiceEntries");
         }
-        
+
         model.addAttribute("paymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage",
                 hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage);
 
@@ -292,6 +301,11 @@ public class ForwardPaymentController extends TreasuryBaseController {
     @RequestMapping(value = SUMMARY_URI, method = RequestMethod.POST)
     public String summary(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
             RedirectAttributes redirectAttributes) {
+
+        final DebtAccount debtAccount = bean.getDebtAccount();
+        final ForwardPaymentConfiguration forwardPaymentConfiguration = ForwardPaymentConfiguration.find(debtAccount.getFinantialInstitution()).get();
+        model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
+
         try {
             try {
                 checkPermissions(bean.getDebtAccount(), model);
@@ -361,6 +375,9 @@ public class ForwardPaymentController extends TreasuryBaseController {
     @RequestMapping(value = FORWARD_PAYMENT_SUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
             final Model model) {
+        final ForwardPaymentConfiguration forwardPaymentConfiguration = forwardPayment.getForwardPaymentConfiguration();
+        
+        model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
         model.addAttribute("settlementNote", forwardPayment.getSettlementNote());
         model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().implementation().getLogosJspPage());
@@ -375,8 +392,11 @@ public class ForwardPaymentController extends TreasuryBaseController {
     @RequestMapping(value = FORWARD_PAYMENT_INSUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
             final Model model) {
+        final ForwardPaymentConfiguration forwardPaymentConfiguration = forwardPayment.getForwardPaymentConfiguration();
+
+        model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
-        model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().implementation().getLogosJspPage());
+        model.addAttribute("logosPage", forwardPaymentConfiguration.implementation().getLogosJspPage());
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
 
         return jspPage("paymentInsuccess");

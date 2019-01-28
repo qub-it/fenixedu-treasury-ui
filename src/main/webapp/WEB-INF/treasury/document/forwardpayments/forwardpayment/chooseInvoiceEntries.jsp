@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
@@ -157,6 +158,7 @@ ${portal.angularToolkit()}
 			</h3>
 		</div>
 		<div class="panel-body">
+		
 			<div class="alert alert-warning" role="alert">
 				<h5>
 					<spring:message code="label.ForwardPaymentController.debitEntries.choose" />
@@ -250,6 +252,15 @@ ${portal.angularToolkit()}
 </form>
 
 <jsp:include page="${logosPage}" />
+
+<c:if test="${forwardPaymentConfiguration.isReimbursementPolicyTextDefined()}">
+	<jsp:include page="${forwardPaymentConfiguration.reimbursementPolicyJspFile}" />
+</c:if>
+
+<c:if test="${forwardPaymentConfiguration.isPrivacyPolicyTextDefined()}">
+	<jsp:include page="${forwardPaymentConfiguration.privacyPolicyJspFile}" />
+</c:if>
+		
 
 <script>
 	$(document).ready(function() {

@@ -8,6 +8,8 @@ import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaym
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentConfigurationBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
@@ -42,7 +44,10 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
 
         setSeries(bean.getSeries());
         setPaymentMethod(bean.getPaymentMethod());
-
+        
+        setReimbursementPolicyJspFile(bean.getReimbursementPolicyJspFile());
+        setPrivacyPolicyJspFile(bean.getPrivacyPolicyJspFile());
+        
         checkRules();
     }
 
@@ -77,6 +82,9 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
         setSeries(bean.getSeries());
         setPaymentMethod(bean.getPaymentMethod());
 
+        setReimbursementPolicyJspFile(bean.getReimbursementPolicyJspFile());
+        setPrivacyPolicyJspFile(bean.getPrivacyPolicyJspFile());
+        
         checkRules();
     }
     
@@ -93,6 +101,14 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
 
     public boolean isActive() {
         return getActive();
+    }
+    
+    public boolean isReimbursementPolicyTextDefined() {
+        return !Strings.isNullOrEmpty(getReimbursementPolicyJspFile());
+    }
+    
+    public boolean isPrivacyPolicyTextDefined() {
+        return !Strings.isNullOrEmpty(getPrivacyPolicyJspFile());
     }
 
     public String formattedAmount(final ForwardPayment forwardPayment) {

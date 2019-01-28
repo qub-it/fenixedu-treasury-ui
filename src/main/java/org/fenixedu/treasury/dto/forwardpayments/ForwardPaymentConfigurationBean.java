@@ -25,6 +25,9 @@ public class ForwardPaymentConfigurationBean {
     private Series series;
     private PaymentMethod paymentMethod;
 
+    private String reimbursementPolicyJspFile;
+    private String privacyPolicyJspFile;
+    
     public ForwardPaymentConfigurationBean() {
     }
     
@@ -50,6 +53,9 @@ public class ForwardPaymentConfigurationBean {
             
             setSeries(configuration.getSeries());
             setPaymentMethod(configuration.getPaymentMethod());
+            
+            setReimbursementPolicyJspFile(configuration.getReimbursementPolicyJspFile());
+            setPrivacyPolicyJspFile(configuration.getPrivacyPolicyJspFile());
         }
     }
 
@@ -188,4 +194,20 @@ public class ForwardPaymentConfigurationBean {
         this.paymentMethod = paymentMethod;
     }
 
+    public String getReimbursementPolicyJspFile() {
+        return reimbursementPolicyJspFile;
+    }
+
+    public void setReimbursementPolicyJspFile(String reimbursementPolicyJspFile) {
+        this.reimbursementPolicyJspFile = reimbursementPolicyJspFile;
+    }
+
+    public String getPrivacyPolicyJspFile() {
+        return privacyPolicyJspFile;
+    }
+
+    public void setPrivacyPolicyJspFile(String privacyPolicyJspFile) {
+        this.privacyPolicyJspFile = privacyPolicyJspFile;
+    }
+    
 }
