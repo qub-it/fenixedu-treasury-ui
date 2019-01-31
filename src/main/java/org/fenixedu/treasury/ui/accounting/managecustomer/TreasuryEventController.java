@@ -26,7 +26,7 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,7 +45,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -227,7 +227,7 @@ public class TreasuryEventController extends TreasuryBaseController {
             
             treasuryExemption.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
         } catch (final DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return read(debtAccount, treasuryEvent, model);

@@ -35,7 +35,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -83,7 +83,7 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
             @RequestParam(value = "logdateto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate logDateTo,
             Model model, RedirectAttributes redirectAttributes) {
         if (!FenixFramework.isDomainObjectValid(domainObject)) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.read.object.oid.not.valid"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.read.object.oid.not.valid"), model);
         } else {
             setDomainObject(domainObject, model);
             setTreasuryOperationLogSet(filterSearch(domainObject.getExternalId(), null, logDateFrom, logDateTo), model);

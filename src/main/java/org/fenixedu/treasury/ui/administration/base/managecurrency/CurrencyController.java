@@ -36,7 +36,7 @@ import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -137,12 +137,12 @@ public class CurrencyController extends TreasuryBaseController {
             assertUserIsBackOfficeMember(model);
             deleteCurrency(currency);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + getCurrency(model).getExternalId(), model, redirectAttributes);
     }
@@ -164,9 +164,9 @@ public class CurrencyController extends TreasuryBaseController {
 
             return redirect(READ_URL + getCurrency(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
         }
         return create(model);
     }
@@ -195,9 +195,9 @@ public class CurrencyController extends TreasuryBaseController {
             updateCurrency(code, name, isoCode, symbol, model);
             return redirect(READ_URL + getCurrency(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
         }
         return update(currency, model);
     }

@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.services.integration.erp.sap;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -115,7 +115,7 @@ import org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplemen
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -477,7 +477,7 @@ public class SAPExporter implements IERPExporter {
             payment.setDocumentStatus(status);
 
             //Check if is Rehimbursement/Payment
-            if (Constants.isPositive(document.getTotalPayedAmount())) {
+            if (TreasuryConstants.isPositive(document.getTotalPayedAmount())) {
                 //PaymentMethods
                 for (PaymentEntry paymentEntry : document.getPaymentEntriesSet()) {
                     PaymentMethod method = new PaymentMethod();
@@ -492,7 +492,7 @@ public class SAPExporter implements IERPExporter {
                     payment.getPaymentMethod().add(method);
                 }
                 payment.setSettlementType(SAFTPTSettlementType.NL);
-            } else if (Constants.isPositive(document.getTotalReimbursementAmount())) {
+            } else if (TreasuryConstants.isPositive(document.getTotalReimbursementAmount())) {
                 //Reimbursments
                 for (ReimbursementEntry reimbursmentEntry : document.getReimbursementEntriesSet()) {
                     PaymentMethod method = new PaymentMethod();
@@ -965,8 +965,8 @@ public class SAPExporter implements IERPExporter {
          * a zero. Deve ser referido o preceito legal aplic?vel. . . . . . . . .
          * . Texto 60
          */
-        if (Constants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)
-                || (line.getTax().getTaxAmount() != null && Constants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO))) {
+        if (TreasuryConstants.isEqual(line.getTax().getTaxPercentage(), BigDecimal.ZERO)
+                || (line.getTax().getTaxAmount() != null && TreasuryConstants.isEqual(line.getTax().getTaxAmount(), BigDecimal.ZERO))) {
             if (product.getVatExemptionReason() != null) {
                 line.setTaxExemptionReason(
                         product.getVatExemptionReason().getCode() + "-" + product.getVatExemptionReason().getName().getContent());
@@ -983,7 +983,7 @@ public class SAPExporter implements IERPExporter {
 
         if (entry.getFinantialDocument().isExportedInLegacyERP()) {
             line.setUnitPrice(
-                    Constants.divide(SAPExporterUtils.openAmountAtDate(entry, ERP_INTEGRATION_START_DATE), entry.getQuantity()).setScale(2, RoundingMode.HALF_EVEN));
+                    TreasuryConstants.divide(SAPExporterUtils.openAmountAtDate(entry, ERP_INTEGRATION_START_DATE), entry.getQuantity()).setScale(2, RoundingMode.HALF_EVEN));
         }
 
         return line;

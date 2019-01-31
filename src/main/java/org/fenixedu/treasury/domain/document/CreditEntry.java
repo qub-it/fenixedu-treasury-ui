@@ -27,8 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.divide;
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.divide;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -42,7 +42,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -112,7 +112,7 @@ public class CreditEntry extends CreditEntry_Base {
         }
 
         if (this.getDebitEntry() != null) {
-            if (Constants.isGreaterThan(this.getDebitEntry().getTotalCreditedAmount(), this.getDebitEntry().getTotalAmount())) {
+            if (TreasuryConstants.isGreaterThan(this.getDebitEntry().getTotalCreditedAmount(), this.getDebitEntry().getTotalAmount())) {
                 throw new TreasuryDomainException("error.CreditEntry.reated.debit.entry.invalid.total.credited.amount");
             }
         }
@@ -204,7 +204,7 @@ public class CreditEntry extends CreditEntry_Base {
     }
 
     public CreditEntry splitCreditEntry(final BigDecimal remainingAmount) {
-        if (!Constants.isLessThan(remainingAmount, getOpenAmount())) {
+        if (!TreasuryConstants.isLessThan(remainingAmount, getOpenAmount())) {
             throw new TreasuryDomainException("error.CreditEntry.splitCreditEntry.remainingAmount.less.than.open.amount");
         }
 

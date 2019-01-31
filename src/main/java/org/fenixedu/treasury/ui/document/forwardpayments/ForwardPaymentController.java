@@ -26,7 +26,7 @@
  */
 package org.fenixedu.treasury.ui.document.forwardpayments;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -161,12 +161,12 @@ public class ForwardPaymentController extends TreasuryBaseController {
                 if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.debtAmount.equal.zero",
+                    addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitEntry.debtAmount.equal.zero",
                             Integer.toString(i + 1)), model);
                 } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.exceeded.openAmount",
+                    addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitEntry.exceeded.openAmount",
                             Integer.toString(i + 1)), model);
                 } else {
                     debitEntryBean.setNotValid(false);
@@ -184,23 +184,23 @@ public class ForwardPaymentController extends TreasuryBaseController {
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.positive.payment.value"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.positive.payment.value"), model);
         }
         if (!bean.isReimbursementNote() && creditSum.compareTo(debitSum) > 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.negative.payment.value"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.negative.payment.value"), model);
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
         }
         if (!bean.isReimbursementNote() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
         }
         if (bean.getDate().isAfter(new LocalDate())) {
             error = true;
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.date.is.after"), model);
         }
 
         try {
@@ -219,7 +219,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         List<DebitEntryBean> debitEntriesToIterate = Lists.newArrayList(bean.getDebitEntries());
         for (DebitEntryBean debitEntryBean : debitEntriesToIterate) {
             if (debitEntryBean.isIncluded()
-                    && Constants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
+                    && TreasuryConstants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
 
                 //Calculate interest only if we are making a FullPayment
                 InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateUndebitedInterestValue(bean.getDate());
@@ -233,7 +233,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         for (DebitEntryBean debitEntryBean : debitEntriesToIterate) {
             if (debitEntryBean.isIncluded()
-                    && Constants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
+                    && TreasuryConstants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
                 for (final DebitEntry interestDebitEntry : debitEntryBean.getDebitEntry().getInterestDebitEntriesSet()) {
                     if (interestDebitEntry.isInDebt()) {
                         final DebitEntryBean interestDebitEntryBean = bean.new DebitEntryBean(interestDebitEntry);

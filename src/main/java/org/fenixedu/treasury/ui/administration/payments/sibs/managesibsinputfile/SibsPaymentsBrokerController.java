@@ -20,7 +20,7 @@ import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPayme
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile.SibsReportFileController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -95,9 +95,9 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
                 try {
                     ProcessResult result = importer.processSIBSPaymentFiles(sibsFile, paymentCodePool.getFinantialInstitution());
                     if (result.getErrorMessages().isEmpty()) {
-                        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.upload"), model);
+                        addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.upload"), model);
                     } else {
-                        addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.upload"), model);
+                        addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.upload"), model);
                     }
                     reportFile = result.getReportFile();
                     if (result.getReportFile() == null) {
@@ -127,8 +127,8 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"), model);
+            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"));
         }
     }
 

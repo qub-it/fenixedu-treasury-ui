@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.forwardpayments;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -33,7 +33,7 @@ import org.fenixedu.treasury.domain.forwardpayments.exceptions.ForwardPaymentAlr
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PostProcessPaymentStatusBean;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
@@ -79,7 +79,7 @@ public class ForwardPayment extends ForwardPayment_Base {
 
         // Verify that all debitEntries have open amount greater than zero
         for (final DebitEntry debitEntry : debitEntriesSet) {
-            if (!Constants.isPositive(debitEntry.getOpenAmount())) {
+            if (!TreasuryConstants.isPositive(debitEntry.getOpenAmount())) {
                 throw new TreasuryDomainException("error.ForwardPayment.open.amount.debit.entry.not.positive");
             }
         }
@@ -226,7 +226,7 @@ public class ForwardPayment extends ForwardPayment_Base {
                     debitEntry.getFinantialDocument().closeDocument();
                 }
 
-                if (org.fenixedu.treasury.util.Constants.isGreaterThan(debitEntry.getOpenAmount(), amountToConsume)) {
+                if (org.fenixedu.treasury.util.TreasuryConstants.isGreaterThan(debitEntry.getOpenAmount(), amountToConsume)) {
                     break;
                 }
 
@@ -251,7 +251,7 @@ public class ForwardPayment extends ForwardPayment_Base {
                         continue;
                     }
                     
-                    if (org.fenixedu.treasury.util.Constants.isGreaterThan(interestDebitEntry.getOpenAmount(), amountToConsume)) {
+                    if (org.fenixedu.treasury.util.TreasuryConstants.isGreaterThan(interestDebitEntry.getOpenAmount(), amountToConsume)) {
                         break;
                     }
 
@@ -268,7 +268,7 @@ public class ForwardPayment extends ForwardPayment_Base {
             }
         }
 
-        if (org.fenixedu.treasury.util.Constants.isPositive(amountToConsume)) {
+        if (org.fenixedu.treasury.util.TreasuryConstants.isPositive(amountToConsume)) {
             getSettlementNote().createAdvancedPaymentCreditNote(amountToConsume,
                     treasuryBundle("label.ForwardPayment.advancedpayment", String.valueOf(getOrderNumber())),
                     String.valueOf(getOrderNumber()));
@@ -291,7 +291,7 @@ public class ForwardPayment extends ForwardPayment_Base {
         }
         
         if(getTransactionDate() != null) {
-            paymentEntryPropertiesMap.put("TransactionDate", getTransactionDate().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
+            paymentEntryPropertiesMap.put("TransactionDate", getTransactionDate().toString(TreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD));
         }
         
         if(!Strings.isNullOrEmpty(statusCode)) {
@@ -625,10 +625,10 @@ public class ForwardPayment extends ForwardPayment_Base {
 
         private PostForwardPaymentReportBean(final ForwardPayment forwardPayment,
                 final PostProcessPaymentStatusBean postProcessPaymentStatusBean) {
-            this.executionDate = new DateTime().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+            this.executionDate = new DateTime().toString(TreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
             this.forwardPaymentExternalId = forwardPayment.getExternalId();
             this.forwardPaymentOrderNumber = forwardPayment.getReferenceNumber();
-            this.forwardPaymentWhenOccured = forwardPayment.getWhenOccured().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+            this.forwardPaymentWhenOccured = forwardPayment.getWhenOccured().toString(TreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
             this.customerCode = forwardPayment.getDebtAccount().getCustomer().getBusinessIdentification();
             this.customerName = forwardPayment.getDebtAccount().getCustomer().getName();
             this.previousStateDescription = postProcessPaymentStatusBean.getPreviousState().getLocalizedName().getContent();
@@ -639,7 +639,7 @@ public class ForwardPayment extends ForwardPayment_Base {
             if (forwardPayment.getSettlementNote() != null) {
                 this.settlementNote = forwardPayment.getSettlementNote().getUiDocumentNumber();
                 this.paymentDate =
-                        forwardPayment.getSettlementNote().getPaymentDate().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+                        forwardPayment.getSettlementNote().getPaymentDate().toString(TreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
                 this.paidAmount =  forwardPayment.getSettlementNote().getTotalPayedAmount().toString();
                 this.transactionId = forwardPayment.getTransactionId();
                 

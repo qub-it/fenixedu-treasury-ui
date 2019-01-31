@@ -39,7 +39,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 
 public class PaymentReferenceCodeBean implements ITreasuryBean {
 
@@ -82,7 +82,7 @@ public class PaymentReferenceCodeBean implements ITreasuryBean {
     }
 
     public List<DebitEntry> getOpenDebitEntries() {
-        return DebitEntry.find(debtAccount).filter(x -> !x.isAnnulled() && Constants.isPositive(x.getOpenAmount()))
+        return DebitEntry.find(debtAccount).filter(x -> !x.isAnnulled() && TreasuryConstants.isPositive(x.getOpenAmount()))
                 .sorted(DebitEntry.COMPARE_BY_EXTERNAL_ID).collect(Collectors.<DebitEntry> toList());
     }
 

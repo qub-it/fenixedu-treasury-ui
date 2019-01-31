@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ import org.fenixedu.treasury.services.integration.erp.sap.ZulwsReembolsosOutput;
 import org.fenixedu.treasury.services.integration.erp.sap.ZulwsdocumentStatusWs1;
 import org.fenixedu.treasury.services.integration.erp.sap.ZulwsfaturacaoClientesIn;
 import org.fenixedu.treasury.services.integration.erp.sap.ZulwsfaturacaoClientesOut;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;

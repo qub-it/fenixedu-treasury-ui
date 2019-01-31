@@ -1,10 +1,10 @@
 package org.fenixedu.treasury.domain.paymentcodes;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationLineDTO;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 

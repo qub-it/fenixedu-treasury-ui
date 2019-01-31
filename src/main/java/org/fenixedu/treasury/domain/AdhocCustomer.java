@@ -39,7 +39,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 
 import com.google.common.base.Strings;
@@ -85,7 +85,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setCountryCode(countryCode);
         setIdentificationNumber(identificationNumber);
         
-        if(Constants.isDefaultCountry(getCountryCode()) && !FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+        if(TreasuryConstants.isDefaultCountry(getCountryCode()) && !FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
             throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
         
@@ -167,7 +167,7 @@ public class AdhocCustomer extends AdhocCustomer_Base {
             throw new TreasuryDomainException("error.Customer.changeFiscalNumber.documents.integrated.erp");
         }
         
-        if(Constants.isDefaultCountry(getCountryCode()) && !FiscalCodeValidation.isValidFiscalNumber(countryCode, fiscalNumber)) {
+        if(TreasuryConstants.isDefaultCountry(getCountryCode()) && !FiscalCodeValidation.isValidFiscalNumber(countryCode, fiscalNumber)) {
             throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
         
@@ -182,12 +182,12 @@ public class AdhocCustomer extends AdhocCustomer_Base {
     
     @Override
     public boolean isFiscalCodeValid() {
-        return !Constants.isDefaultCountry(getCountryCode()) || isValidFiscalNumber(getCountryCode(), getFiscalNumber());
+        return !TreasuryConstants.isDefaultCountry(getCountryCode()) || isValidFiscalNumber(getCountryCode(), getFiscalNumber());
     }
 
     @Override
     public boolean isFiscalValidated() {
-        return Constants.isDefaultCountry(getCountryCode());
+        return TreasuryConstants.isDefaultCountry(getCountryCode());
     }
     
     @Override

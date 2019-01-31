@@ -47,7 +47,7 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.administration.base.managelog.TreasuryOperationLogController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,7 +87,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         if (debitNote.getPaymentCodesSet().stream().anyMatch(pc -> pc.getPaymentReferenceCode().getState().isUsed())) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.paymentreferencecode.already.has.one"), model);
             return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
 
@@ -113,9 +113,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             this.setPaymentReferenceCodeBean(bean, model);
 
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
@@ -144,27 +144,27 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
             BigDecimal payableAmount = bean.getDebitNote().getOpenAmount();
 
-            if (!Constants.isEqual(bean.getPaymentAmount(), payableAmount)) {
+            if (!TreasuryConstants.isEqual(bean.getPaymentAmount(), payableAmount)) {
                 throw new TreasuryDomainException("error.PaymentReferenceCode.error.in.payment.amount.not.consistent");
             }
             if (bean.isUsePaymentAmountWithInterests()) {
                 payableAmount = bean.getDebitNote().getOpenAmount();
-                if (!Constants.isEqual(bean.getPaymentAmountWithInterst(), payableAmount)) {
+                if (!TreasuryConstants.isEqual(bean.getPaymentAmountWithInterst(), payableAmount)) {
                     throw new TreasuryDomainException(
                             "error.PaymentReferenceCode.error.in.payment.amount.with.interests.not.consistent");
                 }
             }
 
             final PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(bean, payableAmount);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                     "label.document.managepayments.success.create.reference.code.debitnote"), model);
 
             model.addAttribute("paymentReferenceCode", paymentReferenceCode);
             return redirect(DebitNoteController.READ_URL + bean.getDebitNote().getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         this.setPaymentReferenceCodeBean(bean, model);
         return "treasury/document/managepayments/paymentreferencecode/createpaymentcodeindebitnote";
@@ -239,7 +239,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                         if (document.isClosed()
                                 && (document.getPaymentCodesSet().isEmpty() || document.getPaymentCodesSet().stream()
                                         .allMatch(x -> x.getPaymentReferenceCode().isAnnulled()))) {
-                            if (Constants.isGreaterThan(document.getOpenAmount(),
+                            if (TreasuryConstants.isGreaterThan(document.getOpenAmount(),
                                     bean.getMinAmount().subtract(BigDecimal.valueOf(0.01)))) {
                                 PaymentReferenceCode newReferenceCode =
                                         bean.getPaymentCodePool()
@@ -271,9 +271,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
             return redirect(TreasuryOperationLogController.READ_URL + series.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         this.setPaymentReferenceCodeBean(bean, model);
         model.addAttribute("series", series);

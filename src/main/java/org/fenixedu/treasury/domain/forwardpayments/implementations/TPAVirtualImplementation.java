@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.forwardpayments.implementations;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
@@ -12,7 +12,7 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.fenixedu.treasury.ui.document.forwardpayments.implementations.TPAVirtualController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 

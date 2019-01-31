@@ -22,7 +22,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -72,7 +72,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
             }
 
             // Ensure debit entries have payable amount
-            if (!Constants.isGreaterThan(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
+            if (!TreasuryConstants.isGreaterThan(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
                 throw new TreasuryDomainException(
                         "error.MultipleEntriesPaymentCode.debit.entry.open.amount.must.be.greater.than.zero");
             }

@@ -27,9 +27,9 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.divide;
-import static org.fenixedu.treasury.util.Constants.isPositive;
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.divide;
+import static org.fenixedu.treasury.util.TreasuryConstants.isPositive;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -118,11 +118,11 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
 
         if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
             blockers.add(
-                    BundleUtil.getString(Constants.BUNDLE, "error.invoiceentry.cannot.be.deleted.document.is.not.preparing"));
+                    BundleUtil.getString(TreasuryConstants.BUNDLE, "error.invoiceentry.cannot.be.deleted.document.is.not.preparing"));
         }
 
         if (!getSettlementEntriesSet().isEmpty()) {
-            blockers.add(BundleUtil.getString(Constants.BUNDLE,
+            blockers.add(BundleUtil.getString(TreasuryConstants.BUNDLE,
                     "error.invoiceentry.cannot.be.deleted.settlemententries.is.not.empty"));
         }
 

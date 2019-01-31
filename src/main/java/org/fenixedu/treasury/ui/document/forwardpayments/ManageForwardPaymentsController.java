@@ -1,7 +1,7 @@
 package org.fenixedu.treasury.ui.document.forwardpayments;
 
 import static java.lang.String.format;
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,7 +16,7 @@ import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaym
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -75,7 +75,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
             if (!Strings.isNullOrEmpty(customerName)) {
                 stream = stream.filter(
-                        i -> Constants.stringNormalizedContains(i.getDebtAccount().getCustomer().getName(), customerName));
+                        i -> TreasuryConstants.stringNormalizedContains(i.getDebtAccount().getCustomer().getName(), customerName));
             }
 
             if (!Strings.isNullOrEmpty(customerBusinessId)) {

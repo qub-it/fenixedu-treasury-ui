@@ -26,7 +26,7 @@
  */
 package org.fenixedu.treasury.services.integration.erp;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -62,7 +62,7 @@ import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOu
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueOuptut;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -236,13 +236,13 @@ public class ERPIntegrationService extends BennuWebService {
 
         final BigDecimal amountInDebt = debitEntry.amountInDebt(interestRequest.convertPaymentDateToLocalDate());
 
-        if (!Constants.isPositive(amountInDebt)) {
+        if (!TreasuryConstants.isPositive(amountInDebt)) {
             throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.with.no.debt",
                     String.valueOf(finantialDocumentEntry.getEntryOrder()),
                     String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
         }
 
-        if (!Constants.isEqual(amountInDebt, interestRequest.getAmount())) {
+        if (!TreasuryConstants.isEqual(amountInDebt, interestRequest.getAmount())) {
             throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.amount.is.not.equal",
                     interestRequest.getAmount() != null ? interestRequest.getAmount().toString() : "null",
                     String.valueOf(finantialDocumentEntry.getEntryOrder()),
@@ -267,7 +267,7 @@ public class ERPIntegrationService extends BennuWebService {
         bean.setDescription(interestRateBean.getDescription());
 
         //If we have undebittedInterestDebit and we want to create, genererate debitEntries
-        if (Constants.isGreaterThan(undebittedInterestRateBean.getInterestAmount(), BigDecimal.ZERO)
+        if (TreasuryConstants.isGreaterThan(undebittedInterestRateBean.getInterestAmount(), BigDecimal.ZERO)
                 && interestRequest.getGenerateInterestDebitNote()) {
             processInterestEntries(debitEntry, undebittedInterestRateBean, interestRequest.convertPaymentDateToLocalDate());
         }
@@ -396,9 +396,9 @@ public class ERPIntegrationService extends BennuWebService {
         debitEntry.createInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(),
                 Optional.<DebitNote> ofNullable(interestDebitNote));
         String documentObservations =
-                BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
+                BundleUtil.getString(TreasuryConstants.BUNDLE, "info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
         documentObservations = documentObservations + " - "
-                + BundleUtil.getString(Constants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
+                + BundleUtil.getString(TreasuryConstants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
                 + paymentDate.toString("YYYY-MM-dd");
         interestDebitNote.setDocumentObservations(documentObservations);
         interestDebitNote.closeDocument();

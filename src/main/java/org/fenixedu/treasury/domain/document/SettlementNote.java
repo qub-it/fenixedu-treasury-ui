@@ -28,8 +28,8 @@
 package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.services.integration.erp.sap.SAPExporter.ERP_INTEGRATION_START_DATE;
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
-import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.PaymentEntryBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Maps;
@@ -106,7 +106,7 @@ public class SettlementNote extends SettlementNote_Base {
         if (this.getAdvancedPaymentCreditNote() != null) {
             result = result.add(this.getAdvancedPaymentCreditNote().getTotalAmount());
         }
-        if (Constants.isZero(this.getTotalReimbursementAmount())) {
+        if (TreasuryConstants.isZero(this.getTotalReimbursementAmount())) {
             return this.getTotalPayedAmount().subtract(result);
         } else {
             return this.getTotalReimbursementAmount().add(result);
@@ -310,13 +310,13 @@ public class SettlementNote extends SettlementNote_Base {
 
         final BigDecimal availableAmount = paymentSum.subtract(debitSum);
 
-        if (!Constants.isPositive(availableAmount)) {
+        if (!TreasuryConstants.isPositive(availableAmount)) {
             return;
         }
 
         final String comments = String.format("%s [%s]",
-                treasuryBundleI18N("label.SettlementNote.advancedpayment").getContent(Constants.DEFAULT_LANGUAGE),
-                getPaymentDate().toString(Constants.DATE_FORMAT));
+                treasuryBundleI18N("label.SettlementNote.advancedpayment").getContent(TreasuryConstants.DEFAULT_LANGUAGE),
+                getPaymentDate().toString(TreasuryConstants.DATE_FORMAT));
 
         createAdvancedPaymentCreditNote(availableAmount, comments, getExternalId());
     }
@@ -374,7 +374,7 @@ public class SettlementNote extends SettlementNote_Base {
                 }
 
                 if (!creditEntry.getFinantialDocument().isClosed()) {
-                    if (Constants.isLessThan(creditAmountWithVat, creditEntry.getOpenAmount())) {
+                    if (TreasuryConstants.isLessThan(creditAmountWithVat, creditEntry.getOpenAmount())) {
                         creditEntry.splitCreditEntry(creditEntry.getOpenAmount().subtract(creditAmountWithVat));
                     }
 
@@ -493,12 +493,12 @@ public class SettlementNote extends SettlementNote_Base {
 
         //Validate the settlement entries can be used, since multiple entries to the same settlement Note
         for (SettlementEntry settlementEntry : getSettlemetEntriesSet()) {
-            if (Constants.isGreaterThan(settlementEntry.getAmount(), settlementEntry.getInvoiceEntry().getOpenAmount())) {
+            if (TreasuryConstants.isGreaterThan(settlementEntry.getAmount(), settlementEntry.getInvoiceEntry().getOpenAmount())) {
                 throw new TreasuryDomainException("error.SettlementNote.invalid.settlement.entry.amount.for.invoice.entry");
             }
         }
 
-        if (!Constants.isZero(checkDiferenceInAmount())) {
+        if (!TreasuryConstants.isZero(checkDiferenceInAmount())) {
             throw new TreasuryDomainException("error.SettlementNote.invalid.amounts.in.settlement.note");
         }
 

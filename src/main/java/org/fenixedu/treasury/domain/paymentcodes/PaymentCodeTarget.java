@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.paymentcodes;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -132,7 +132,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                             //######################################
                             InterestRateBean calculateUndebitedInterestValue =
                                     debitEntry.calculateUndebitedInterestValue(whenRegistered.toLocalDate());
-                            if (Constants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
+                            if (TreasuryConstants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
                                 DebitEntry interestDebitEntry = debitEntry.createInterestRateDebitEntry(
                                         calculateUndebitedInterestValue, whenRegistered, Optional.<DebitNote> empty());
                                 interestRateEntries.add(interestDebitEntry);
@@ -285,7 +285,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
                             //######################################
                             InterestRateBean calculateUndebitedInterestValue =
                                     debitEntry.calculateUndebitedInterestValue(whenRegistered.toLocalDate());
-                            if (Constants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
+                            if (TreasuryConstants.isPositive(calculateUndebitedInterestValue.getInterestAmount())) {
                                 debitEntry.createInterestRateDebitEntry(
                                         calculateUndebitedInterestValue, whenRegistered, Optional.<DebitNote> empty());
                             }

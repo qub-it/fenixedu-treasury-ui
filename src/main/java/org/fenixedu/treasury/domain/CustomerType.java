@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -116,14 +116,14 @@ public class CustomerType extends CustomerType_Base {
         if (CustomerType.findAll().count() == 0) {
             CustomerType.create(
                     "CANDIDATE",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE,
                             "label.CustomerType.CANDIDATE")));
             CustomerType
                     .create("STUDENT",
-                            new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                            new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE,
                                     "label.CustomerType.STUDENT")));
             CustomerType.create("ADHOC",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.CustomerType.ADHOC")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.CustomerType.ADHOC")));
         }
     }
 

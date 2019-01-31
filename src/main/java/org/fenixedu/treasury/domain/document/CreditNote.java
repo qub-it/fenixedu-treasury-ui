@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
@@ -393,7 +393,7 @@ public class CreditNote extends CreditNote_Base {
 
         final CreditNote creditNote = create(debtAccount, numberSeries, documentDate, null, originNumber);
 
-        final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
+        final BigDecimal amountWithoutVat = TreasuryConstants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
         CreditEntry entry = CreditEntry.create(creditNote, entryDescription, product, transferVat, amountWithoutVat, documentDate,
                 null, BigDecimal.ONE);
 

@@ -51,7 +51,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-public class Constants {
+public class TreasuryConstants {
 
     private static final int SCALE = 20;
 
@@ -234,11 +234,11 @@ public class Constants {
     // @formatter:on
 
     public static String treasuryBundle(final String key, final String... args) {
-        return BundleUtil.getString(Constants.BUNDLE, key, args);
+        return BundleUtil.getString(TreasuryConstants.BUNDLE, key, args);
     }
 
     public static LocalizedString treasuryBundleI18N(final String key, final String... args) {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);
+        return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, key, args);
     }
 
     // @formatter:off

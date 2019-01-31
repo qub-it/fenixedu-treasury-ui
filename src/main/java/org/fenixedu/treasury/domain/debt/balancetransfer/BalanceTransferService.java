@@ -1,11 +1,11 @@
 package org.fenixedu.treasury.domain.debt.balancetransfer;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import static org.fenixedu.treasury.services.integration.erp.sap.SAPExporter.ERP_INTEGRATION_START_DATE;
-import static org.fenixedu.treasury.util.Constants.isEqual;
-import static org.fenixedu.treasury.util.Constants.isGreaterOrEqualThan;
-import static org.fenixedu.treasury.util.Constants.isPositive;
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.isEqual;
+import static org.fenixedu.treasury.util.TreasuryConstants.isGreaterOrEqualThan;
+import static org.fenixedu.treasury.util.TreasuryConstants.isPositive;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -30,7 +30,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Lists;
@@ -178,7 +178,7 @@ public class BalanceTransferService {
                         && isGreaterOrEqualThan(availableCreditAmount, openAmount)) {
 
                     final BigDecimal openAmountWithoutVat = debitEntry.getCurrency()
-                            .getValueWithScale(Constants.divide(openAmount, BigDecimal.ONE.add(rationalRatRate(debitEntry))));
+                            .getValueWithScale(TreasuryConstants.divide(openAmount, BigDecimal.ONE.add(rationalRatRate(debitEntry))));
                     final CreditEntry newCreditEntry = debitEntry.createCreditEntry(now, debitEntry.getDescription(), null,
                             openAmountWithoutVat, null, null);
 
@@ -237,7 +237,7 @@ public class BalanceTransferService {
 
     private DebitEntry createDestinyDebitEntry(final DebitNote destinyDebitNote, final DebitEntry debitEntry) {
         final BigDecimal openAmountWithoutVat =
-                Constants.divide(debitEntry.getOpenAmount(), BigDecimal.ONE.add(rationalRatRate(debitEntry)));
+                TreasuryConstants.divide(debitEntry.getOpenAmount(), BigDecimal.ONE.add(rationalRatRate(debitEntry)));
 
         final DebitEntry newDebitEntry = DebitEntry.create(Optional.of(destinyDebitNote), destinyDebtAccount,
                 debitEntry.getTreasuryEvent(), debitEntry.getVat(), openAmountWithoutVat, debitEntry.getDueDate(),

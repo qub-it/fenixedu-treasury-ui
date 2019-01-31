@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -233,20 +233,20 @@ public class FinantialDocumentType extends FinantialDocumentType_Base {
         if (FinantialDocumentType.findAll().count() == 0) {
             FinantialDocumentType.createForCreditNote(
                     "NA",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE,
                             "label.FinantialDocumentType.CreditNote")), "NA", true);
             FinantialDocumentType.createForDebitNote(
                     "ND",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE,
                             "label.FinantialDocumentType.DebitNote")), "ND", true);
             FinantialDocumentType.createForSettlementNote(
                     "NP",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE,
                             "label.FinantialDocumentType.SettlementNote")), "NP", true);
 
             FinantialDocumentType.createForReimbursementNote(
                     "NR",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE,
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE,
                             "label.FinantialDocumentType.ReimbursementNote")), "NR", true);
 
         }

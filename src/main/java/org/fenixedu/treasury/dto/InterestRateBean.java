@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.domain.tariff.InterestType;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.Days;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;

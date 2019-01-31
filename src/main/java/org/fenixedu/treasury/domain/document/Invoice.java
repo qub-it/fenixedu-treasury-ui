@@ -36,7 +36,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.collect.Sets;
@@ -175,7 +175,7 @@ public abstract class Invoice extends Invoice_Base {
     }
 
     public boolean isTotalSettledWithoutPaymentEntries() {
-        if (isAnnulled() || Constants.isPositive(getOpenAmount())) {
+        if (isAnnulled() || TreasuryConstants.isPositive(getOpenAmount())) {
             return false;
         }
 

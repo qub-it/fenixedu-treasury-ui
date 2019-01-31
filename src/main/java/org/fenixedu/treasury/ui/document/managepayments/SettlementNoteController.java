@@ -26,7 +26,7 @@
  */
 package org.fenixedu.treasury.ui.document.managepayments;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -72,7 +72,7 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
@@ -270,7 +270,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             error = true;
             addErrorMessage(treasuryBundle("error.SettlementNote.advancedPaymentCredit.originSettlementNote.payment.date.after",
                     settlementNote.getAdvancedPaymentCreditNote().getUiDocumentNumber(),
-                    settlementNote.getPaymentDate().toLocalDate().toString(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)), model);
+                    settlementNote.getPaymentDate().toLocalDate().toString(TreasuryConstants.STANDARD_DATE_FORMAT_YYYY_MM_DD)), model);
         }
         
         try {
@@ -288,11 +288,11 @@ public class SettlementNoteController extends TreasuryBaseController {
         bean.setInterestEntries(new ArrayList<InterestEntryBean>());
         for (DebitEntryBean debitEntryBean : bean.getDebitEntries()) {
             if (debitEntryBean.isIncluded()
-                    && Constants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
+                    && TreasuryConstants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
 
                 //Calculate interest only if we are making a FullPayment
                 InterestRateBean debitInterest = debitEntryBean.getDebitEntry().calculateUndebitedInterestValue(bean.getDate());
-                if (Constants.isPositive(debitInterest.getInterestAmount())) {
+                if (TreasuryConstants.isPositive(debitInterest.getInterestAmount())) {
                     InterestEntryBean interestEntryBean = new InterestEntryBean(debitEntryBean.getDebitEntry(), debitInterest);
                     bean.getInterestEntries().add(interestEntryBean);
                 }
@@ -375,19 +375,19 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(treasuryBundle("error.SettlementNote.only.one.payment.method.is.supported"), model);
         }
 
-        if (bean.getPaymentEntries().stream().anyMatch(peb -> Constants.isZero(peb.getPaymentAmount()))) {
+        if (bean.getPaymentEntries().stream().anyMatch(peb -> TreasuryConstants.isZero(peb.getPaymentAmount()))) {
             error = true;
             String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.reimbursement.equal.zero" : "error.SettlementNote.payment.equal.zero";
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, errorMessage), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, errorMessage), model);
         }
 
-        if (bean.isAdvancePayment() && Constants.isLessThan(paymentSum, debitSum)) {
+        if (bean.isAdvancePayment() && TreasuryConstants.isLessThan(paymentSum, debitSum)) {
             error = true;
             final String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
             addErrorMessage(treasuryBundle(errorMessage), model);
-        } else if (!bean.isAdvancePayment() && !Constants.isEqual(paymentSum, debitSum)) {
+        } else if (!bean.isAdvancePayment() && !TreasuryConstants.isEqual(paymentSum, debitSum)) {
             error = true;
             final String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.no.match.reimbursement.credit" : "error.SettlementNote.no.match.payment.debit";
@@ -409,7 +409,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
             SettlementNote settlementNote = processSettlementNoteCreation(bean);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.SettlementNote.create.success"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.SettlementNote.create.success"), model);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
@@ -528,12 +528,12 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             deleteSettlementNote(settlementNote);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
@@ -570,9 +570,9 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(settlementNote, model);
     }
@@ -679,7 +679,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                     required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
             Model model) {
         if (Days.daysBetween(documentDateFrom, documentDateTo).getDays() > SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.SettlementNote.day.limit.exceeded",
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.day.limit.exceeded",
                     String.valueOf(SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD)), model);
         } else {
             //TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
@@ -771,8 +771,8 @@ public class SettlementNoteController extends TreasuryBaseController {
     private List<SettlementEntry> getSettlementEntriesDataSet(List<SettlementNote> notes) {
         return notes.stream()
                 //Filter only settlement Entries where there was payments / rehimbursments
-                .filter(x -> Constants.isPositive(x.getTotalPayedAmount())
-                        || Constants.isPositive(x.getTotalReimbursementAmount()))
+                .filter(x -> TreasuryConstants.isPositive(x.getTotalPayedAmount())
+                        || TreasuryConstants.isPositive(x.getTotalReimbursementAmount()))
                 .map(note -> note.getSettlemetEntries().collect(Collectors.toList()))
                 .reduce(new ArrayList<SettlementEntry>(), (t, u) -> {
                     t.addAll(u);

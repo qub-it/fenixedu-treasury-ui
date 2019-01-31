@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
@@ -57,7 +57,7 @@ public class PaymentEntry extends PaymentEntry_Base {
         setSettlementNote(settlementNote);
         setPayedAmount(payedAmount);
         setPaymentMethodId(paymentMethodId);
-        setPropertiesJsonMap(Constants.propertiesMapToJson(propertiesMap));
+        setPropertiesJsonMap(TreasuryConstants.propertiesMapToJson(propertiesMap));
         
         
         checkRules();
@@ -101,7 +101,7 @@ public class PaymentEntry extends PaymentEntry_Base {
     }
 
     public Map<String, String> getPropertiesMap() {
-        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
+        return TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap());
     }
 
     public boolean isDeletable() {

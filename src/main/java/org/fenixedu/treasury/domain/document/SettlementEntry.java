@@ -36,7 +36,7 @@ import org.fenixedu.treasury.domain.bennu.signals.BennuSignalsServices;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -110,11 +110,11 @@ public class SettlementEntry extends SettlementEntry_Base {
         init(invoiceEntry, finantialDocument, amount, description, entryDateTime);
 
         if (invoiceEntry.isDebitNoteEntry()) {
-            if (Constants.isEqual(invoiceEntry.getOpenAmount(), amount) && createInterestIfNeeded) {
+            if (TreasuryConstants.isEqual(invoiceEntry.getOpenAmount(), amount) && createInterestIfNeeded) {
                 //Check if we need to create more interest for this debitEntry
                 DebitEntry debitEntry = (DebitEntry) invoiceEntry;
                 InterestRateBean undebitedInterestValue = debitEntry.calculateUndebitedInterestValue(entryDateTime.toLocalDate());
-                if (Constants.isPositive(undebitedInterestValue.getInterestAmount())) {
+                if (TreasuryConstants.isPositive(undebitedInterestValue.getInterestAmount())) {
                     debitEntry.createInterestRateDebitEntry(undebitedInterestValue, entryDateTime, Optional.<DebitNote> empty());
                 }
             }
@@ -144,11 +144,11 @@ public class SettlementEntry extends SettlementEntry_Base {
             throw new TreasuryDomainException("error.SettlementEntry.finantialDocument.not.settlement.note.type");
         }
 
-        if (getInvoiceEntry().isCreditNoteEntry() && !Constants.isEqual(getAmount(), getTotalAmount())) {
+        if (getInvoiceEntry().isCreditNoteEntry() && !TreasuryConstants.isEqual(getAmount(), getTotalAmount())) {
             throw new TreasuryDomainException("error.SettlementEntry.creditNoteEntry.total.amount.not.equal");
         }
         
-        if (!Constants.isPositive(getAmount())) {
+        if (!TreasuryConstants.isPositive(getAmount())) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.less.than.zero");
         }
     }

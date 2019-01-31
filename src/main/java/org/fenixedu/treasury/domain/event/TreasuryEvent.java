@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain.event;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -47,7 +47,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -63,7 +63,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         EXECUTION_YEAR, EXECUTION_SEMESTER, DEGREE_CODE, COPIED_FROM_DEBIT_ENTRY_ID, COPY_DEBIT_ENTRY_RESPONSIBLE;
 
         public LocalizedString getDescriptionI18N() {
-            return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + TreasuryEvent.class.getSimpleName() + "." + name());
+            return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, "label." + TreasuryEvent.class.getSimpleName() + "." + name());
         }
 
     }
@@ -122,7 +122,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         final BigDecimal result = s.map(d -> d.getTotalAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO)
                 .subtract(getCreditAmount(customer, product));
 
-        return Constants.isPositive(result) ? result : BigDecimal.ZERO;
+        return TreasuryConstants.isPositive(result) ? result : BigDecimal.ZERO;
     }
 
     public BigDecimal getInterestsAmountToPay() {
@@ -146,7 +146,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         final BigDecimal result = s.map(d -> d.getTotalAmount()).reduce((x, y) -> x.add(y)).orElse(BigDecimal.ZERO)
                 .subtract(getInterestsCreditAmount(product));
 
-        return Constants.isPositive(result) ? result : BigDecimal.ZERO;
+        return TreasuryConstants.isPositive(result) ? result : BigDecimal.ZERO;
 
     }
 
@@ -192,7 +192,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
             result = result.add(debitEntry.getOpenAmount());
         }
 
-        return Constants.isPositive(result) ? result : BigDecimal.ZERO;
+        return TreasuryConstants.isPositive(result) ? result : BigDecimal.ZERO;
     }
 
     public BigDecimal getExemptedAmount() {
@@ -206,7 +206,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
     }
 
     public Map<String, String> getPropertiesMap() {
-        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
+        return TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap());
     }
 
     public Set<Product> getPossibleProductsToExempt() {
@@ -246,7 +246,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         while (DebitEntry.findActive(this).map(DebitEntry.class::cast).count() > 0) {
             final DebitEntry debitEntry = DebitEntry.findActive(this).map(DebitEntry.class::cast).findFirst().get();
 
-            if (debitEntry.isProcessedInClosedDebitNote() && Constants.isEqual(debitEntry.getAvailableAmountForCredit(), BigDecimal.ZERO)) {
+            if (debitEntry.isProcessedInClosedDebitNote() && TreasuryConstants.isEqual(debitEntry.getAvailableAmountForCredit(), BigDecimal.ZERO)) {
                 debitEntry.annulOnEvent();
                 continue;
             }

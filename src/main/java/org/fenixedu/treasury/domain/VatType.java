@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -101,14 +101,14 @@ public class VatType extends VatType_Base {
 
         if (VatType.findAll().count() == 0) {
             VatType.create("RED",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.VatType.RED")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.VatType.RED")));
 
             VatType.create("INT",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.VatType.INT")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.VatType.INT")));
             VatType.create("NOR",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.VatType.NOR")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.VatType.NOR")));
             VatType.create("ISE",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.VatType.ISE")));
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.VatType.ISE")));
         }
     }
 

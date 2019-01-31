@@ -9,7 +9,7 @@ import org.fenixedu.bennu.core.groups.CustomGroup;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryManagersGroup;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Objects;
@@ -40,7 +40,7 @@ public class TreasuryManagersGroup extends CustomGroup {
 
     @Override
     public String getPresentationName() {
-        return BundleUtil.getString(Constants.BUNDLE, "label.TreasuryManagersGroup.description");
+        return BundleUtil.getString(TreasuryConstants.BUNDLE, "label.TreasuryManagersGroup.description");
     }
 
     @Override

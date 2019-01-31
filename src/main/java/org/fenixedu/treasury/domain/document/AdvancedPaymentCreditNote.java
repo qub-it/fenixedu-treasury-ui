@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
 
@@ -11,7 +11,7 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -80,7 +80,7 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
             }
         } else {
             throw new TreasuryDomainException(
-                    BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
+                    BundleUtil.getString(TreasuryConstants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
         }
 
         checkRules();
@@ -132,7 +132,7 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
             throw new TreasuryDomainException("error.AdvancedPaymentCreditNote.invalid.vat.type.for.advanced.payment");
         }
         String lineDescription =
-                treasuryBundleI18N("label.AdvancedPaymentCreditNote.advanced.payment.description").getContent(Constants.DEFAULT_LANGUAGE)
+                treasuryBundleI18N("label.AdvancedPaymentCreditNote.advanced.payment.description").getContent(TreasuryConstants.DEFAULT_LANGUAGE)
                         + description;
         CreditEntry entry = CreditEntry.create(note, lineDescription, advancedPaymentProduct, vat, availableAmount, documentDate,
                 null, BigDecimal.ONE);

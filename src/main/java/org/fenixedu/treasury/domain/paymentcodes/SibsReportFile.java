@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -37,7 +37,7 @@ import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.payments.sibs.SIBSImportationFileDTO;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
 import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
 import org.joda.time.DateTime;

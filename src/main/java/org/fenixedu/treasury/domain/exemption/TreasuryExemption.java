@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.exemption;
 
-import static org.fenixedu.treasury.util.Constants.isGreaterThan;
+import static org.fenixedu.treasury.util.TreasuryConstants.isGreaterThan;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -11,7 +11,7 @@ import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 
 import com.google.common.base.Strings;
 
@@ -70,7 +70,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
             throw new TreasuryDomainException("error.TreasuryExemption.valueToExempt.required");
         }
 
-        if (!Constants.isPositive(getValueToExempt())) {
+        if (!TreasuryConstants.isPositive(getValueToExempt())) {
             throw new TreasuryDomainException("error.TreasuryExemption.valueToExempt.positive.required");
         }
 
@@ -90,7 +90,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
             throw new TreasuryDomainException("error.TreasuryExemption.debit.entry.annuled.in.event");
         }
 
-        if (Constants.isGreaterThan(getValueToExempt(),
+        if (TreasuryConstants.isGreaterThan(getValueToExempt(),
                 getDebitEntry().getAmountWithVat().add(getDebitEntry().getExemptedAmount()))) {
             throw new TreasuryDomainException("error.TreasuryExemption.valueToExempt.higher.than.debitEntry");
         }
@@ -113,7 +113,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
         // calculate the amount to exempt
         final BigDecimal amountToExempt = getValueToExempt().subtract(exemptedAmount(getDebitEntry()));
 
-        if (!Constants.isPositive(amountToExempt)) {
+        if (!TreasuryConstants.isPositive(amountToExempt)) {
             return;
         }
 
@@ -205,7 +205,7 @@ public class TreasuryExemption extends TreasuryExemption_Base {
     @Atomic
     public static TreasuryExemption create(final TreasuryExemptionType treasuryExemptionType, final TreasuryEvent treasuryEvent,
             final String reason, final BigDecimal valueToExempt, final DebitEntry debitEntry) {
-        if(Constants.isGreaterThan(debitEntry.getQuantity(), BigDecimal.ONE)) {
+        if(TreasuryConstants.isGreaterThan(debitEntry.getQuantity(), BigDecimal.ONE)) {
             throw new TreasuryDomainException("error.TreasuryExemption.not.possible.to.exempt.debit.entry.with.more.than.one.in.quantity");
         }
         

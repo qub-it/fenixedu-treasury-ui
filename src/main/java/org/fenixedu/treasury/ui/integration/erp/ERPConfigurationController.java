@@ -36,7 +36,7 @@ import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -114,9 +114,9 @@ public class ERPConfigurationController extends TreasuryBaseController {
 
             return redirect(READ_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(eRPConfiguration, model);
     }
@@ -138,7 +138,7 @@ public class ERPConfigurationController extends TreasuryBaseController {
             final IERPExporter erpExporter = eRPConfiguration.getERPExternalServiceImplementation().getERPExporter();
 
             erpExporter.testExportToIntegration(eRPConfiguration.getFinantialInstitution());
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.sucess.erpconfiguration.test"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.sucess.erpconfiguration.test"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }

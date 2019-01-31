@@ -33,7 +33,7 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -102,13 +102,13 @@ public class FinantialEntityController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(finantialInstitution, model);
 
             deleteFinantialEntity(finantialEntity);
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
             return redirect(FinantialInstitutionController.READ_URL + finantialInstitution.getExternalId(), model,
                     redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
     }
@@ -134,9 +134,9 @@ public class FinantialEntityController extends TreasuryBaseController {
             model.addAttribute("finantialEntity", finantialEntity);
             return redirect(READ_URL + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(finantialInstitution, model);
     }
@@ -171,9 +171,9 @@ public class FinantialEntityController extends TreasuryBaseController {
             updateFinantialEntity(code, name, model);
             return redirect(READ_URL + getFinantialEntity(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(finantialEntity, model);
     }

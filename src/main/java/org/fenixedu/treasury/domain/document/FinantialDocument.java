@@ -45,7 +45,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -168,7 +168,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
         }
 
         if (!Strings.isNullOrEmpty(getOriginDocumentNumber())
-                && !Constants.isOriginDocumentNumberValid(getOriginDocumentNumber())) {
+                && !TreasuryConstants.isOriginDocumentNumberValid(getOriginDocumentNumber())) {
             throw new TreasuryDomainException("error.FinantialDocument.originDocumentNumber.invalid");
         }
 
@@ -252,11 +252,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
     }
 
     public Map<String, String> getPropertiesMap() {
-        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
+        return TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap());
     }
 
     public void editPropertiesMap(final Map<String, String> propertiesMap) {
-        setPropertiesJsonMap(Constants.propertiesMapToJson(propertiesMap));
+        setPropertiesJsonMap(TreasuryConstants.propertiesMapToJson(propertiesMap));
     }
     
     @Atomic
@@ -286,7 +286,7 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             }
         } else {
             throw new TreasuryDomainException(
-                    BundleUtil.getString(Constants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
+                    BundleUtil.getString(TreasuryConstants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
 
         }
 

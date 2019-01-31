@@ -29,7 +29,7 @@ public class FiscalCodeValidation {
             return false;
         }
 
-        if (!Constants.isDefaultCountry(countryCode) && Customer.DEFAULT_FISCAL_NUMBER.equals(fiscalNumber)) {
+        if (!TreasuryConstants.isDefaultCountry(countryCode) && Customer.DEFAULT_FISCAL_NUMBER.equals(fiscalNumber)) {
             return false;
         }
         

@@ -41,7 +41,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.FixedTariff;
 import org.fenixedu.treasury.domain.tariff.Tariff;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
 
@@ -202,7 +202,7 @@ public class Product extends Product_Base {
     }
 
     public static LocalizedString defaultUnitOfMeasure() {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, "label.unitOfMeasure.default");
+        return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, "label.unitOfMeasure.default");
     }
     
     public static Stream<Product> findAllLegacy() {

@@ -43,7 +43,7 @@ import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.YearMonthDay;
 
 import pt.ist.fenixframework.Atomic;
@@ -72,11 +72,11 @@ public class SIBSPaymentsImporter {
         private boolean processFailed = false;
 
         public void addMessage(String message, String... args) {
-            actionMessages.add(BundleUtil.getString(Constants.BUNDLE, message, args));
+            actionMessages.add(BundleUtil.getString(TreasuryConstants.BUNDLE, message, args));
         }
 
         public void addError(String message, String... args) {
-            errorMessages.add(BundleUtil.getString(Constants.BUNDLE, message, args));
+            errorMessages.add(BundleUtil.getString(TreasuryConstants.BUNDLE, message, args));
             reportFailure();
         }
 

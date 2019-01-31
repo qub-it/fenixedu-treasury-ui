@@ -1,6 +1,6 @@
 package org.fenixedu.treasury.domain.forwardpayments.implementations;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -31,7 +31,7 @@ import org.fenixedu.treasury.services.integration.forwardpayments.payline.WebPay
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.WebPaymentAPI_Service;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.fenixedu.treasury.ui.document.forwardpayments.implementations.PaylineController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

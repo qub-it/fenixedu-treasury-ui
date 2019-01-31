@@ -3,7 +3,7 @@ package org.fenixedu.treasury.domain.forwardpayments.exceptions;
 import javax.ws.rs.core.Response.Status;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 
 public class ForwardPaymentAlreadyPayedException extends TreasuryDomainException {
 

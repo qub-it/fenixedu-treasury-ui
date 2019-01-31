@@ -34,7 +34,7 @@ import java.util.stream.Stream;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -102,15 +102,15 @@ public class PaymentMethod extends PaymentMethod_Base {
     public static void initializePaymentMethod() {
         if (PaymentMethod.findAll().count() == 0) {
             PaymentMethod.create("NU",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.MON")), true);
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.PaymentMethod.MON")), true);
             PaymentMethod.create("TB",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.WTR")), true);
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.PaymentMethod.WTR")), true);
             PaymentMethod.create("MB",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.ELE")), true);
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.PaymentMethod.ELE")), true);
             PaymentMethod.create("CD",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CCR")), true);
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.PaymentMethod.CCR")), true);
             PaymentMethod.create("CH",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(Constants.BUNDLE, "label.PaymentMethod.CH")), true);
+                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.PaymentMethod.CH")), true);
         }
     }
 

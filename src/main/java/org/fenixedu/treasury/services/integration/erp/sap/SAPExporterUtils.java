@@ -1,7 +1,7 @@
 package org.fenixedu.treasury.services.integration.erp.sap;
 
-import static org.fenixedu.treasury.util.Constants.isPositive;
-import static org.fenixedu.treasury.util.Constants.divide;
+import static org.fenixedu.treasury.util.TreasuryConstants.isPositive;
+import static org.fenixedu.treasury.util.TreasuryConstants.divide;
 
 import java.math.BigDecimal;
 
@@ -10,7 +10,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 public class SAPExporterUtils {
@@ -54,7 +54,7 @@ public class SAPExporterUtils {
     public static BigDecimal netAmountAtDate(final Invoice invoice, final DateTime when) {
         BigDecimal amount = BigDecimal.ZERO;
         for (FinantialDocumentEntry entry : invoice.getFinantialDocumentEntriesSet()) {
-            if(!Constants.isPositive(entry.getTotalAmount())) {
+            if(!TreasuryConstants.isPositive(entry.getTotalAmount())) {
                 continue;
             }
             

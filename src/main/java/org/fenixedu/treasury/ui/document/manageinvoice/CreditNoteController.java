@@ -26,7 +26,7 @@
  */
 package org.fenixedu.treasury.ui.document.manageinvoice;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.net.URLEncoder;
 import java.util.List;
@@ -59,7 +59,7 @@ import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -348,7 +348,7 @@ public class CreditNoteController extends TreasuryBaseController {
 
         if (debitNote == null) {
             this.addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.document.manageinvoice.creditnote.without.debitnote"), model);
+                    BundleUtil.getString(TreasuryConstants.BUNDLE, "label.document.manageinvoice.creditnote.without.debitnote"), model);
         }
         return "treasury/document/manageinvoice/creditnote/create";
     }

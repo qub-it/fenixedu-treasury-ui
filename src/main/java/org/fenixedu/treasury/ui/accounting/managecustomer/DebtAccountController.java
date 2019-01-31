@@ -59,7 +59,7 @@ import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
@@ -296,14 +296,14 @@ public class DebtAccountController extends TreasuryBaseController {
 
         if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
             addWarningMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"),
+                    BundleUtil.getString(TreasuryConstants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"),
                     model);
         }
 
         if (now.getMonthOfYear() == 12 && now.getDayOfMonth() >= 15) {
             if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
                 addWarningMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.next.year"),
+                        BundleUtil.getString(TreasuryConstants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.next.year"),
                         model);
 
             }
@@ -323,7 +323,7 @@ public class DebtAccountController extends TreasuryBaseController {
 //            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 //            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.error")
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.integration.erp.exportoperation.error")
                     + ex.getLocalizedMessage(), model);
         }
         return read(debtAccount, model, redirectAttributes);

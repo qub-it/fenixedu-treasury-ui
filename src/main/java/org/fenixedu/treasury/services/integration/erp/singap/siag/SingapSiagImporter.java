@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.services.integration.erp.singap.siag;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -67,7 +67,7 @@ import org.fenixedu.treasury.services.integration.erp.IERPImporter;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOutput;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -269,7 +269,7 @@ public class SingapSiagImporter implements IERPImporter {
                             //Already annulled
                         } else {
                             //The Settlement note must be annulled
-                            settlementNote.anullDocument(BundleUtil.getString(Constants.BUNDLE,
+                            settlementNote.anullDocument(BundleUtil.getString(TreasuryConstants.BUNDLE,
                                     "label.info.integration.erpimporter.annulled.by.integration") + " - ["
                                     + new DateTime().toString("YYYY-MM-dd HH:mm:ss") + "]", false);
                         }

@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain;
 
-import static org.fenixedu.treasury.util.Constants.DEFAULT_LANGUAGE;
+import static org.fenixedu.treasury.util.TreasuryConstants.DEFAULT_LANGUAGE;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -40,7 +40,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 import org.joda.time.DateTime;
 

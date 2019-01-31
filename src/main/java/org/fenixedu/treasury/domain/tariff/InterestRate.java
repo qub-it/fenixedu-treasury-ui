@@ -37,7 +37,7 @@ import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Days;
@@ -192,7 +192,7 @@ public class InterestRate extends InterestRate_Base {
             }
             
             for(LocalDate a = startDate.plusYears(1), b = entry.getKey(); a.getYear() < b.getYear();) {
-                result.put(Constants.firstDayInYear(a.getYear()), sortedMap.get(startDate));
+                result.put(TreasuryConstants.firstDayInYear(a.getYear()), sortedMap.get(startDate));
                 a = a.plusYears(1);
             }
             
@@ -232,10 +232,10 @@ public class InterestRate extends InterestRate_Base {
 
             final LocalDate endDate = entry.getKey();
             final int numberOfMonths = Months.monthsBetween(startDate, endDate).getMonths();
-            final BigDecimal amountByRate = Constants.divide(getRate(), Constants.HUNDRED_PERCENT).multiply(amountInDebt);
+            final BigDecimal amountByRate = TreasuryConstants.divide(getRate(), TreasuryConstants.HUNDRED_PERCENT).multiply(amountInDebt);
             final BigDecimal partialInterestAmount = amountByRate.multiply(new BigDecimal(numberOfMonths));
 
-            if (Constants.isPositive(partialInterestAmount)) {
+            if (TreasuryConstants.isPositive(partialInterestAmount)) {
                 result.addDetail(partialInterestAmount, startDate, endDate, amountByRate, amountInDebt);
             }
 
@@ -297,8 +297,8 @@ public class InterestRate extends InterestRate_Base {
             if (startDate.getYear() != endDate.getYear()) {
                 boolean reachedMaxDays = false;
 
-                int firstYearDays = Days.daysBetween(startDate, Constants.lastDayInYear(startDate.getYear())).getDays() + 1;
-                int secondYearDays = Days.daysBetween(Constants.firstDayInYear(endDate.getYear()), endDate).getDays() + 1;
+                int firstYearDays = Days.daysBetween(startDate, TreasuryConstants.lastDayInYear(startDate.getYear())).getDays() + 1;
+                int secondYearDays = Days.daysBetween(TreasuryConstants.firstDayInYear(endDate.getYear()), endDate).getDays() + 1;
 
                 {
                     if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + firstYearDays >= getMaximumDaysToApplyPenalty()) {
@@ -307,18 +307,18 @@ public class InterestRate extends InterestRate_Base {
                     }
 
                     final BigDecimal amountPerDay =
-                            Constants.divide(amountInDebt, new BigDecimal(Constants.numberOfDaysInYear(startDate.getYear())));
+                            TreasuryConstants.divide(amountInDebt, new BigDecimal(TreasuryConstants.numberOfDaysInYear(startDate.getYear())));
 
                     final BigDecimal rate = interestRate(startDate.getYear());
 
                     partialInterestAmount =
-                            Constants.divide(rate, Constants.HUNDRED_PERCENT).multiply(amountPerDay)
+                            TreasuryConstants.divide(rate, TreasuryConstants.HUNDRED_PERCENT).multiply(amountPerDay)
                                     .multiply(new BigDecimal(firstYearDays));
 
                     numberOfDays += firstYearDays;
 
-                    if (Constants.isPositive(partialInterestAmount)) {
-                        result.addDetail(partialInterestAmount, startDate, Constants.lastDayInYear(startDate.getYear()),
+                    if (TreasuryConstants.isPositive(partialInterestAmount)) {
+                        result.addDetail(partialInterestAmount, startDate, TreasuryConstants.lastDayInYear(startDate.getYear()),
                                 amountPerDay, amountInDebt);
                     }
                 }
@@ -331,16 +331,16 @@ public class InterestRate extends InterestRate_Base {
                     }
 
                     final BigDecimal amountPerDay =
-                            Constants.divide(amountInDebt, new BigDecimal(Constants.numberOfDaysInYear(endDate.getYear())));
+                            TreasuryConstants.divide(amountInDebt, new BigDecimal(TreasuryConstants.numberOfDaysInYear(endDate.getYear())));
 
                     final BigDecimal rate = interestRate(endDate.getYear());
 
                     final BigDecimal secondInterestAmount =
-                            Constants.divide(rate, Constants.HUNDRED_PERCENT).multiply(amountPerDay)
+                            TreasuryConstants.divide(rate, TreasuryConstants.HUNDRED_PERCENT).multiply(amountPerDay)
                                     .multiply(new BigDecimal(secondYearDays));
 
-                    if (Constants.isPositive(partialInterestAmount)) {
-                        result.addDetail(secondInterestAmount, Constants.firstDayInYear(endDate.getYear()), endDate,
+                    if (TreasuryConstants.isPositive(partialInterestAmount)) {
+                        result.addDetail(secondInterestAmount, TreasuryConstants.firstDayInYear(endDate.getYear()), endDate,
                                 amountPerDay, amountInDebt);
                     }
 
@@ -357,14 +357,14 @@ public class InterestRate extends InterestRate_Base {
                 }
 
                 final BigDecimal amountPerDay =
-                        Constants.divide(amountInDebt, new BigDecimal(Constants.numberOfDaysInYear(startDate.getYear())));
+                        TreasuryConstants.divide(amountInDebt, new BigDecimal(TreasuryConstants.numberOfDaysInYear(startDate.getYear())));
 
                 final BigDecimal rate = interestRate(startDate.getYear());
                 partialInterestAmount =
-                        Constants.divide(rate, Constants.HUNDRED_PERCENT).multiply(amountPerDay)
+                        TreasuryConstants.divide(rate, TreasuryConstants.HUNDRED_PERCENT).multiply(amountPerDay)
                                 .multiply(new BigDecimal(numberOfDays));
 
-                if (Constants.isPositive(partialInterestAmount)) {
+                if (TreasuryConstants.isPositive(partialInterestAmount)) {
                     result.addDetail(partialInterestAmount, startDate, endDate, amountPerDay, amountInDebt);
                 }
             }

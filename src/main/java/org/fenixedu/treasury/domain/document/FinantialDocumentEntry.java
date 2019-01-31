@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -80,7 +80,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
             throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.required");
         }
 
-        if (Constants.isNegative(getAmount())) {
+        if (TreasuryConstants.isNegative(getAmount())) {
             throw new TreasuryDomainException("error.FinantialDocumentEntry.amount.less.than.zero");
         }
     }
@@ -93,7 +93,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
         if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
-            blockers.add(BundleUtil.getString(Constants.BUNDLE,
+            blockers.add(BundleUtil.getString(TreasuryConstants.BUNDLE,
                     "error.finantialdocumententry.cannot.be.deleted.document.is.not.preparing"));
         }
     }
@@ -130,11 +130,11 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
     }
 
     public Map<String, String> getPropertiesMap() {
-        return Constants.propertiesJsonToMap(getPropertiesJsonMap());
+        return TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap());
     }
 
     public void editPropertiesMap(final Map<String, String> propertiesMap) {
-        setPropertiesJsonMap(Constants.propertiesMapToJson(propertiesMap));
+        setPropertiesJsonMap(TreasuryConstants.propertiesMapToJson(propertiesMap));
     }
 
     public static Stream<? extends FinantialDocumentEntry> findAll() {

@@ -26,7 +26,7 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfile;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -50,7 +50,7 @@ import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPayme
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile.SibsReportFileController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -147,12 +147,12 @@ public class SibsInputFileController extends TreasuryBaseController {
 
             deleteSibsInputFile(sibsInputFile);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
@@ -178,16 +178,16 @@ public class SibsInputFileController extends TreasuryBaseController {
             SibsInputFile sibsInputFile = createSibsInputFile(whenProcessedBySibs, documentSibsInputFile);
 
             if (sibsInputFile.getWhenProcessedBySibs().compareTo(whenProcessedBySibs) != 0) {
-                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                addWarningMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                         "warning.SibsInputFileController.whenprocessedbysibs.different.in.file", sibsInputFile
                                 .getWhenProcessedBySibs().toString()), model);
             }
             model.addAttribute("sibsInputFile", sibsInputFile);
             return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(model);
     }
@@ -324,9 +324,9 @@ public class SibsInputFileController extends TreasuryBaseController {
 
             return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(sibsInputFile, model);
     }

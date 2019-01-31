@@ -27,8 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -52,7 +52,7 @@ import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -116,7 +116,7 @@ public class DebitNote extends DebitNote_Base {
     @Override
     public BigDecimal getOpenAmountWithInterests() {
         if (this.getState().isPreparing() || this.getState().isClosed()) {
-            if (Constants.isEqual(getOpenAmount(), BigDecimal.ZERO)) {
+            if (TreasuryConstants.isEqual(getOpenAmount(), BigDecimal.ZERO)) {
                 return BigDecimal.ZERO;
             } else {
                 return getDebtAccount().getFinantialInstitution().getCurrency()
@@ -220,7 +220,7 @@ public class DebitNote extends DebitNote_Base {
         for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
             final DebitEntry sourceDebitEntry = (DebitEntry) finantialDocumentEntry;
             final boolean applyExemptionOnDebitEntry = 
-                    applyExemptions && (sourceDebitEntry.getTreasuryExemption() != null && Constants.isPositive(sourceDebitEntry.getExemptedAmount()));
+                    applyExemptions && (sourceDebitEntry.getTreasuryExemption() != null && TreasuryConstants.isPositive(sourceDebitEntry.getExemptedAmount()));
                     
             final DebitEntry debitEntryCopy = DebitEntry.copyDebitEntry(sourceDebitEntry, result, applyExemptionOnDebitEntry);
             
@@ -231,7 +231,7 @@ public class DebitNote extends DebitNote_Base {
         if(applyExemptions) {
             for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
                 final DebitEntry sourceDebitEntry = (DebitEntry) finantialDocumentEntry;
-                final boolean exemptionAppliedWithCreditNote = sourceDebitEntry.getTreasuryExemption() != null && !Constants.isPositive(sourceDebitEntry.getExemptedAmount());
+                final boolean exemptionAppliedWithCreditNote = sourceDebitEntry.getTreasuryExemption() != null && !TreasuryConstants.isPositive(sourceDebitEntry.getExemptedAmount());
             
                 if(!exemptionAppliedWithCreditNote) {
                     continue;
@@ -394,9 +394,9 @@ public class DebitNote extends DebitNote_Base {
         for (DebitEntry entry : this.getDebitEntriesSet()) {
             //Get the amount for credit without tax, and considering the credit quantity FOR ONE
             final BigDecimal amountForCreditWithoutVat = entry.getCurrency().getValueWithScale(
-                    Constants.divide(entry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(entry))));
+                    TreasuryConstants.divide(entry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(entry))));
 
-            if (Constants.isZero(amountForCreditWithoutVat) && entry.getTreasuryExemption() != null) {
+            if (TreasuryConstants.isZero(amountForCreditWithoutVat) && entry.getTreasuryExemption() != null) {
                 continue;
             }
 
@@ -415,10 +415,10 @@ public class DebitNote extends DebitNote_Base {
 
         for (final DebitEntry debitEntry : this.getDebitEntriesSet()) {
             for (DebitEntry interestEntry : debitEntry.getInterestDebitEntriesSet()) {
-                final BigDecimal amountForCreditWithoutVat = interestEntry.getCurrency().getValueWithScale(Constants
+                final BigDecimal amountForCreditWithoutVat = interestEntry.getCurrency().getValueWithScale(TreasuryConstants
                         .divide(interestEntry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(interestEntry))));
 
-                if (Constants.isZero(amountForCreditWithoutVat) && interestEntry.getTreasuryExemption() != null) {
+                if (TreasuryConstants.isZero(amountForCreditWithoutVat) && interestEntry.getTreasuryExemption() != null) {
                     continue;
                 }
 
@@ -521,15 +521,15 @@ public class DebitNote extends DebitNote_Base {
         DebitNote interestDebitNote = DebitNote.create(debitNote.getDebtAccount(), documentNumberSeries, documentDate);
         for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
             InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
-            if (Constants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
+            if (TreasuryConstants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
                 entry.createInterestRateDebitEntry(calculateUndebitedInterestValue, documentDate,
                         Optional.<DebitNote> of(interestDebitNote));
             }
         }
 
-        if (Constants.isEqual(interestDebitNote.getTotalAmount(), BigDecimal.ZERO)) {
+        if (TreasuryConstants.isEqual(interestDebitNote.getTotalAmount(), BigDecimal.ZERO)) {
             interestDebitNote.delete(true);
-            throw new TreasuryDomainException(BundleUtil.getString(Constants.BUNDLE, "error.DebitNote.no.interest.to.generate"));
+            throw new TreasuryDomainException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitNote.no.interest.to.generate"));
         }
         return interestDebitNote;
     }
@@ -550,7 +550,7 @@ public class DebitNote extends DebitNote_Base {
         final DebitNote debitNote = DebitNote.create(debtAccount, payorDebtAccount, numberSeries, new DateTime(),
                 new DateTime().toLocalDate(), originNumber);
 
-        final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
+        final BigDecimal amountWithoutVat = TreasuryConstants.divide(amountWithVat, BigDecimal.ONE.add(transferVat.getTaxRate()));
         return DebitEntry.create(Optional.of(debitNote), debtAccount, null, transferVat, amountWithoutVat, dueDate,
                 Maps.newHashMap(), product, entryDescription, BigDecimal.ONE, interestRate, entryDate);
     }

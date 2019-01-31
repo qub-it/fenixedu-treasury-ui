@@ -50,7 +50,7 @@ import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
@@ -137,7 +137,7 @@ public class DebitEntryController extends TreasuryBaseController {
             //call the Atomic delete function
             deleteDebitEntry(debitEntry);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
             if (note != null) {
                 return redirect(DebitNoteController.READ_URL + note.getExternalId(), model, redirectAttributes);
             } else {
@@ -145,7 +145,7 @@ public class DebitEntryController extends TreasuryBaseController {
             }
         } catch (DomainException ex) {
             //Add error messages to the list
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         if (note != null) {
@@ -164,7 +164,7 @@ public class DebitEntryController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
             if (debitNote != null && !debitNote.isPreparing()) {
-                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                addWarningMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                         "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
                 redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
@@ -190,7 +190,7 @@ public class DebitEntryController extends TreasuryBaseController {
                     TreasuryEvent.find(debtAccount.getCustomer()).collect(Collectors.<TreasuryEvent> toList()));
 
             if (debitNote == null) {
-                addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+                addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                         "label.document.manageInvoice.createDebitEntry.entry.with.no.document"), model);
             }
 
@@ -250,7 +250,7 @@ public class DebitEntryController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
             if (bean.getFinantialDocument() != null && !bean.getFinantialDocument().isPreparing()) {
-                addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+                addWarningMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                         "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
                 redirect(DebitNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
             }
@@ -259,7 +259,7 @@ public class DebitEntryController extends TreasuryBaseController {
                     bean.getProduct(), bean.getAmount(), bean.getDueDate(), bean.getEntryDate(),
                     bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate());
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.create"), model);
 
             //Success Validation
             //Add the bean to be used in the View
@@ -282,7 +282,7 @@ public class DebitEntryController extends TreasuryBaseController {
              * addErrorMessage(BundleUtil.getString(TreasurySpringConfiguration.BUNDLE, "label.error.create") + de.getLocalizedMessage(),model);
              * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
 
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
             this.setDebitEntryBean(bean, model);
 
             model.addAttribute("DebitEntry_event_options",
@@ -371,7 +371,7 @@ public class DebitEntryController extends TreasuryBaseController {
         setDebitEntry(debitEntry, model);
 
         if (!debitEntry.equals(bean.getDebitEntry())) {
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+            addWarningMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                     "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
             redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
 
@@ -413,7 +413,7 @@ public class DebitEntryController extends TreasuryBaseController {
             * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
             */
 
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
             setDebitEntryBean(bean, model);
             setDebitEntry(debitEntry, model);
             return "treasury/document/manageinvoice/debitentry/update";
@@ -493,7 +493,7 @@ public class DebitEntryController extends TreasuryBaseController {
             @RequestParam("debitEntrys") List<DebitEntry> debitEntries, Model model, RedirectAttributes redirectAttributes) {
 
         if (debitNote != null && !debitNote.isPreparing()) {
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+            addWarningMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                     "label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
             redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
@@ -501,10 +501,10 @@ public class DebitEntryController extends TreasuryBaseController {
             assertUserIsAllowToModifyInvoices(debitNote.getDebtAccount().getFinantialInstitution(), model);
             debitNote.addDebitNoteEntries(debitEntries);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
 
-        addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.update"), model);
+        addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.update"), model);
         return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
     }
 
@@ -516,14 +516,14 @@ public class DebitEntryController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(debitEntry.getDebtAccount().getFinantialInstitution(), model);
             if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
-                addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+                addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                         "label.error.document.manageinvoice.debitentry.sucess.remove.debitentry"), model);
                 FinantialDocument debitNote = debitEntry.getFinantialDocument();
                 removeFromDocument(debitEntry);
                 return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
-            addWarningMessage(BundleUtil.getString(Constants.BUNDLE,
+            addWarningMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
                     "label.error.document.manageinvoice.debitentry.invalid.state.remove.debitentry"), model);
             return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {

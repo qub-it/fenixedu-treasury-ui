@@ -1,11 +1,11 @@
 package org.fenixedu.treasury.domain.forwardpayments;
 
-import static org.fenixedu.treasury.util.Constants.treasuryBundleI18N;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.util.Comparator;
 
 import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 
 public enum ForwardPaymentStateType {
     

@@ -27,8 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.Constants.rationalRatRate;
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -55,7 +55,7 @@ import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -158,7 +158,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         getInterestDebitEntriesSet().stream().forEach(ide -> ide.checkForDeletionBlockers(blockers));
         if (!getCreditEntriesSet().isEmpty()) {
-            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.DebitEntry.cannot.delete.has.creditentries"));
+            blockers.add(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitEntry.cannot.delete.has.creditentries"));
         }
 
     }
@@ -200,7 +200,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         setTreasuryEvent(treasuryEvent);
         setDueDate(dueDate);
-        setPropertiesJsonMap(Constants.propertiesMapToJson(propertiesMap));
+        setPropertiesJsonMap(TreasuryConstants.propertiesMapToJson(propertiesMap));
         setExemptedAmount(BigDecimal.ZERO);
         setInterestRate(interestRate);
 
@@ -308,7 +308,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public boolean isInDebt() {
-        return Constants.isPositive(getOpenAmount());
+        return TreasuryConstants.isPositive(getOpenAmount());
     }
 
     public boolean isDueDateExpired(final LocalDate when) {
@@ -336,7 +336,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         DebitEntry interestEntry =
                 _create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
-                        Constants.propertiesJsonToMap(getPropertiesJsonMap()), product, entryDescription, BigDecimal.ONE, null, when);
+                        TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap()), product, entryDescription, BigDecimal.ONE, null, when);
 
         addInterestDebitEntries(interestEntry);
 
@@ -377,7 +377,7 @@ public class DebitEntry extends DebitEntry_Base {
             throw new RuntimeException("error.DebitEntry.is.event.annuled.cannot.be.exempted");
         }
 
-        final BigDecimal amountWithoutVat = Constants.divide(amountWithVat, BigDecimal.ONE.add(rationalRatRate(this)));
+        final BigDecimal amountWithoutVat = TreasuryConstants.divide(amountWithVat, BigDecimal.ONE.add(rationalRatRate(this)));
 
         if (isProcessedInClosedDebitNote()) {
             // If there is at least one credit entry then skip...
@@ -397,7 +397,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         } else {
             BigDecimal originalAmount = getAmount();
-            if (Constants.isPositive(getExemptedAmount())) {
+            if (TreasuryConstants.isPositive(getExemptedAmount())) {
                 originalAmount = originalAmount.add(getExemptedAmount());
                 setExemptedAmount(BigDecimal.ZERO);
             }
@@ -438,7 +438,7 @@ public class DebitEntry extends DebitEntry_Base {
             creditNote.setDocumentObservations(documentObservations);
         }
 
-        if (!Constants.isPositive(amountForCreditWithoutVat)) {
+        if (!TreasuryConstants.isPositive(amountForCreditWithoutVat)) {
             throw new TreasuryDomainException("error.DebitEntry.createCreditEntry.amountForCredit.not.positive");
         }
 
@@ -459,11 +459,11 @@ public class DebitEntry extends DebitEntry_Base {
             return;
         }
 
-        if (!Constants.isPositive(getOpenAmount())) {
+        if (!TreasuryConstants.isPositive(getOpenAmount())) {
             return;
         }
 
-        if (Constants.isLessThan(getOpenAmount(), creditEntry.getOpenAmount())) {
+        if (TreasuryConstants.isLessThan(getOpenAmount(), creditEntry.getOpenAmount())) {
             // split credit entry
             creditEntry.splitCreditEntry(creditEntry.getOpenAmount().subtract(getOpenAmount()));
         }
@@ -643,9 +643,9 @@ public class DebitEntry extends DebitEntry_Base {
         
         
         final Map<String, String> propertiesMap = Maps.newHashMap(debitEntryToCopy.getPropertiesMap() != null ? debitEntryToCopy.getPropertiesMap() : Maps.newHashMap());
-        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPIED_FROM_DEBIT_ENTRY_ID.getDescriptionI18N().getContent(Constants.DEFAULT_LANGUAGE), 
+        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPIED_FROM_DEBIT_ENTRY_ID.getDescriptionI18N().getContent(TreasuryConstants.DEFAULT_LANGUAGE), 
                 debitEntryToCopy.getExternalId());
-        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPY_DEBIT_ENTRY_RESPONSIBLE.getDescriptionI18N().getContent(Constants.DEFAULT_LANGUAGE), 
+        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPY_DEBIT_ENTRY_RESPONSIBLE.getDescriptionI18N().getContent(TreasuryConstants.DEFAULT_LANGUAGE), 
                 Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "");
         
         final DebitEntry result = DebitEntry.create(
@@ -816,7 +816,7 @@ public class DebitEntry extends DebitEntry_Base {
             return BigDecimal.ZERO;
         }
 
-        if (Constants.isEqual(getOpenAmount(), BigDecimal.ZERO)) {
+        if (TreasuryConstants.isEqual(getOpenAmount(), BigDecimal.ZERO)) {
             return getOpenAmount();
         } else {
             return getOpenAmount().add(getPendingInterestAmount());

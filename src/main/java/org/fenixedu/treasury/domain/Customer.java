@@ -43,7 +43,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
@@ -161,7 +161,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
             throw new TreasuryDomainException("error.Customer.code.maxlenght");
         }
 
-        if (!Constants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
+        if (!TreasuryConstants.isDefaultCountry(getFiscalCountry()) || !DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())) {
             final Set<Customer> customers = findByFiscalInformation(getFiscalCountry(), getFiscalNumber())
                     .filter(c -> c.isActive()).collect(Collectors.<Customer> toSet());
             
@@ -177,7 +177,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
     }
     
     public String getShortName() {
-        return Constants.firstAndLastWords(getName());
+        return TreasuryConstants.firstAndLastWords(getName());
     }
 
     public static Stream<? extends Customer> findAll() {
@@ -224,7 +224,7 @@ public abstract class Customer extends Customer_Base implements IFiscalContribut
         final String nameClear =
                 Normalizer.normalize(getName().toLowerCase(), Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
 
-        return Constants.matchNames(nameClear, searchFieldClear)
+        return TreasuryConstants.matchNames(nameClear, searchFieldClear)
                 || getIdentificationNumber() != null && getIdentificationNumber().contains(searchFieldClear)
                 || getFiscalNumber() != null && getFiscalNumber().toLowerCase().contains(searchFieldClear)
                 || getCode() != null && getCode().contains(searchFieldClear)

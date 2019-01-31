@@ -9,7 +9,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -56,11 +56,11 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
                 //    continue;
                 //}
 
-                if (Constants.isGreaterThan(amount, paymentReferenceCode.getMaxAmount())) {
+                if (TreasuryConstants.isGreaterThan(amount, paymentReferenceCode.getMaxAmount())) {
                     continue;
                 }
 
-                if (Constants.isLessThan(amount, paymentReferenceCode.getMinAmount())) {
+                if (TreasuryConstants.isLessThan(amount, paymentReferenceCode.getMinAmount())) {
                     continue;
                 }
 
@@ -105,7 +105,7 @@ public class SequentialPaymentCodeGenerator extends PaymentCodeGenerator {
             maxAmount = amount;
         } else {
             //Correct max amount if needed
-            if (Constants.isGreaterThan(amount, maxAmount)) {
+            if (TreasuryConstants.isGreaterThan(amount, maxAmount)) {
                 maxAmount = amount;
             }
         }

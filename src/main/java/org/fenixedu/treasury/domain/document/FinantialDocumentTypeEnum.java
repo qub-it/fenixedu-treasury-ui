@@ -29,14 +29,14 @@ package org.fenixedu.treasury.domain.document;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 
 public enum FinantialDocumentTypeEnum {
 
     DEBIT_NOTE, CREDIT_NOTE, SETTLEMENT_NOTE, REIMBURSEMENT_NOTE;
 
     public LocalizedString getDescriptionI18N() {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, getClass().getSimpleName() + "." + name());
+        return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, getClass().getSimpleName() + "." + name());
     }
     
     public boolean isDebitNote() {
