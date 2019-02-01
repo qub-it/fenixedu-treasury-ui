@@ -28,6 +28,7 @@
 package org.fenixedu.treasury.domain.event;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -63,7 +64,7 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         EXECUTION_YEAR, EXECUTION_SEMESTER, DEGREE_CODE, COPIED_FROM_DEBIT_ENTRY_ID, COPY_DEBIT_ENTRY_RESPONSIBLE;
 
         public LocalizedString getDescriptionI18N() {
-            return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, "label." + TreasuryEvent.class.getSimpleName() + "." + name());
+            return treasuryBundleI18N("label." + TreasuryEvent.class.getSimpleName() + "." + name());
         }
 
     }

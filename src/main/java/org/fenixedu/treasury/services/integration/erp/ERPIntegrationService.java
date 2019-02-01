@@ -395,10 +395,9 @@ public class ERPIntegrationService extends BennuWebService {
 
         debitEntry.createInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(),
                 Optional.<DebitNote> ofNullable(interestDebitNote));
-        String documentObservations =
-                BundleUtil.getString(TreasuryConstants.BUNDLE, "info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
+        String documentObservations = treasuryBundle("info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
         documentObservations = documentObservations + " - "
-                + BundleUtil.getString(TreasuryConstants.BUNDLE, "info.ERPIntegrationService.interest.rate.payment.date")
+                + treasuryBundle("info.ERPIntegrationService.interest.rate.payment.date")
                 + paymentDate.toString("YYYY-MM-dd");
         interestDebitNote.setDocumentObservations(documentObservations);
         interestDebitNote.closeDocument();

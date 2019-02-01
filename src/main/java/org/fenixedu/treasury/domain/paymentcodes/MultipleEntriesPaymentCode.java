@@ -126,9 +126,9 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     }
 
     @Override
-    public Set<SettlementNote> processPayment(final User person, final BigDecimal amountToPay, final DateTime whenRegistered,
+    public Set<SettlementNote> processPayment(final String username, final BigDecimal amountToPay, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments) {
-        return internalProcessPayment(person, amountToPay, whenRegistered, sibsTransactionId, comments, getInvoiceEntriesSet());
+        return internalProcessPayment(username, amountToPay, whenRegistered, sibsTransactionId, comments, getInvoiceEntriesSet());
     }
 
     public TreeSet<DebitEntry> getOrderedInvoiceEntries() {

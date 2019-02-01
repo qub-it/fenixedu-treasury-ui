@@ -104,8 +104,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                     model);
 
             final PaymentReferenceCode paymentReferenceCode = createPaymentReferenceCode(bean);
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
-                    "label.document.managepayments.success.create.reference.code.selected.debit.entries"), model);
+            addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"), model);
 
             return redirect(String.format(DebtAccountController.READ_URL + "/%s", debtAccount.getExternalId()), model,
                     redirectAttributes);

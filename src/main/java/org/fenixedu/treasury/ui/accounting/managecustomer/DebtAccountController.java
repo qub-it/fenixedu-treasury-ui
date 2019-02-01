@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.accounting.managecustomer;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -295,16 +297,12 @@ public class DebtAccountController extends TreasuryBaseController {
         LocalDate now = new LocalDate();
 
         if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
-            addWarningMessage(
-                    BundleUtil.getString(TreasuryConstants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.current.year"),
-                    model);
+            addWarningMessage(treasuryBundle("warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
         }
 
         if (now.getMonthOfYear() == 12 && now.getDayOfMonth() >= 15) {
             if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
-                addWarningMessage(
-                        BundleUtil.getString(TreasuryConstants.BUNDLE, "warning.GlobalInterestRate.no.interest.rate.for.next.year"),
-                        model);
+                addWarningMessage(treasuryBundle("warning.GlobalInterestRate.no.interest.rate.for.next.year"), model);
 
             }
         }
@@ -323,8 +321,7 @@ public class DebtAccountController extends TreasuryBaseController {
 //            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
 //            return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.integration.erp.exportoperation.error")
-                    + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.integration.erp.exportoperation.error") + ex.getLocalizedMessage(), model);
         }
         return read(debtAccount, model, redirectAttributes);
     }

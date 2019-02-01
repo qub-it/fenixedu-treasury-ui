@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -114,9 +116,9 @@ public class ERPConfigurationController extends TreasuryBaseController {
 
             return redirect(READ_URL + getERPConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(eRPConfiguration, model);
     }
@@ -138,7 +140,7 @@ public class ERPConfigurationController extends TreasuryBaseController {
             final IERPExporter erpExporter = eRPConfiguration.getERPExternalServiceImplementation().getERPExporter();
 
             erpExporter.testExportToIntegration(eRPConfiguration.getFinantialInstitution());
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.sucess.erpconfiguration.test"), model);
+            addInfoMessage(treasuryBundle("label.sucess.erpconfiguration.test"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }

@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.integration.erp;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Predicate;
@@ -210,12 +212,12 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
             deleteERPExportOperation(eRPExportOperation);
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return redirect(READ_URL + getERPExportOperation(model).getExternalId(), model, redirectAttributes);
@@ -232,10 +234,10 @@ public class ERPExportOperationController extends TreasuryBaseController {
             for (ERPExportOperation operation : eRPExportOperations) {
                 deleteERPExportOperation(operation);
             }
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(SEARCH_URL, model, redirectAttributes);
     }
@@ -271,13 +273,13 @@ public class ERPExportOperationController extends TreasuryBaseController {
 
             final ERPExportOperation retryExportOperation = ERPExporterManager.retryExportToIntegration(eRPExportOperation);
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.integration.erp.exportoperation.success"), model);
+            addInfoMessage(treasuryBundle("label.integration.erp.exportoperation.success"), model);
 
             return redirect(READ_URL + retryExportOperation.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + eRPExportOperation.getExternalId(), model, redirectAttributes);
     }

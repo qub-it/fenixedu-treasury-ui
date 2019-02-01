@@ -51,6 +51,7 @@ import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
@@ -348,10 +349,11 @@ public class DebitNote extends DebitNote_Base {
                     debitEntry.closeCreditEntryIfPossible(reason, now, creditEntry);
                 }
             }
+            
+            final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
-            if (Authenticate.getUser() != null) {
-                setAnnulledReason(reason + " - [" + Authenticate.getUser().getUsername() + "]"
-                        + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
+            if (!Strings.isNullOrEmpty(loggedUsername)) {
+                setAnnulledReason(reason + " - [" + loggedUsername + "]" + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             } else {
                 setAnnulledReason(reason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             }
@@ -377,9 +379,10 @@ public class DebitNote extends DebitNote_Base {
 
             this.setState(FinantialDocumentStateType.ANNULED);
 
-            if (Authenticate.getUser() != null) {
-                setAnnulledReason(reason + " - [" + Authenticate.getUser().getUsername() + "]"
-                        + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
+            final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+
+            if (!Strings.isNullOrEmpty(loggedUsername)) {
+                setAnnulledReason(reason + " - [" + loggedUsername + "]" + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             } else {
                 setAnnulledReason(reason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             }
@@ -529,7 +532,7 @@ public class DebitNote extends DebitNote_Base {
 
         if (TreasuryConstants.isEqual(interestDebitNote.getTotalAmount(), BigDecimal.ZERO)) {
             interestDebitNote.delete(true);
-            throw new TreasuryDomainException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitNote.no.interest.to.generate"));
+            throw new TreasuryDomainException(treasuryBundle("error.DebitNote.no.interest.to.generate"));
         }
         return interestDebitNote;
     }

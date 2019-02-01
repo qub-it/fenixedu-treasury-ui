@@ -1,12 +1,12 @@
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsinputfile;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -15,19 +15,17 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter;
+import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.services.payments.sibs.SibsPaymentsBrokerService;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
-import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile.SibsReportFileController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @BennuSpringController(value = SibsInputFileController.class)
@@ -95,9 +93,9 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
                 try {
                     ProcessResult result = importer.processSIBSPaymentFiles(sibsFile, paymentCodePool.getFinantialInstitution());
                     if (result.getErrorMessages().isEmpty()) {
-                        addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.upload"), model);
+                        addInfoMessage(treasuryBundle("label.success.upload"), model);
                     } else {
-                        addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.upload"), model);
+                        addErrorMessage(treasuryBundle("label.error.upload"), model);
                     }
                     reportFile = result.getReportFile();
                     if (result.getReportFile() == null) {
@@ -127,8 +125,8 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.frontoffice"));
         }
     }
 

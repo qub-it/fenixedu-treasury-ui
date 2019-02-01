@@ -161,13 +161,11 @@ public class ForwardPaymentController extends TreasuryBaseController {
                 if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitEntry.debtAmount.equal.zero",
-                            Integer.toString(i + 1)), model);
+                    addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
                 } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
-                    addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebitEntry.exceeded.openAmount",
-                            Integer.toString(i + 1)), model);
+                    addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
                 } else {
                     debitEntryBean.setNotValid(false);
                 }
@@ -184,23 +182,23 @@ public class ForwardPaymentController extends TreasuryBaseController {
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.positive.payment.value"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.positive.payment.value"), model);
         }
         if (!bean.isReimbursementNote() && creditSum.compareTo(debitSum) > 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.negative.payment.value"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.negative.payment.value"), model);
         }
         if (bean.isReimbursementNote() && creditSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.CreditEntry.no.creditEntries.selected"), model);
+            addErrorMessage(treasuryBundle("error.CreditEntry.no.creditEntries.selected"), model);
         }
         if (!bean.isReimbursementNote() && debitSum.compareTo(BigDecimal.ZERO) == 0) {
             error = true;
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.DebiEntry.no.debitEntries.selected"), model);
+            addErrorMessage(treasuryBundle("error.DebiEntry.no.debitEntries.selected"), model);
         }
         if (bean.getDate().isAfter(new LocalDate())) {
             error = true;
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.date.is.after"), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.date.is.after"), model);
         }
 
         try {

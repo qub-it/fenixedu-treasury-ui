@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
@@ -93,8 +95,7 @@ public abstract class FinantialDocumentEntry extends FinantialDocumentEntry_Base
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
         if (getFinantialDocument() != null && !getFinantialDocument().isPreparing()) {
-            blockers.add(BundleUtil.getString(TreasuryConstants.BUNDLE,
-                    "error.finantialdocumententry.cannot.be.deleted.document.is.not.preparing"));
+            blockers.add(treasuryBundle("error.finantialdocumententry.cannot.be.deleted.document.is.not.preparing"));
         }
     }
 

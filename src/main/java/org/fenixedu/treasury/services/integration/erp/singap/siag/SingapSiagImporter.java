@@ -269,7 +269,7 @@ public class SingapSiagImporter implements IERPImporter {
                             //Already annulled
                         } else {
                             //The Settlement note must be annulled
-                            settlementNote.anullDocument(BundleUtil.getString(TreasuryConstants.BUNDLE,
+                            settlementNote.anullDocument(treasuryBundle(
                                     "label.info.integration.erpimporter.annulled.by.integration") + " - ["
                                     + new DateTime().toString("YYYY-MM-dd HH:mm:ss") + "]", false);
                         }

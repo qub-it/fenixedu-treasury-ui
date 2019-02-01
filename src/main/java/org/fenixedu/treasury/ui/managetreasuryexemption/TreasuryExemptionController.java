@@ -26,10 +26,10 @@
  */
 package org.fenixedu.treasury.ui.managetreasuryexemption;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.math.BigDecimal;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -39,7 +39,6 @@ import org.fenixedu.treasury.dto.TreasuryExemptionBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -112,13 +111,13 @@ public class TreasuryExemptionController extends TreasuryBaseController {
             TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
                     bean.getValuetoexempt(), bean.getDebitEntry());
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.create"), model);
+            addInfoMessage(treasuryBundle("label.success.create"), model);
 
             return redirect(treasuryEventUrl(debtAccount, bean.getTreasuryEvent()), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         
         return create(debtAccount, bean.getTreasuryEvent(), model);

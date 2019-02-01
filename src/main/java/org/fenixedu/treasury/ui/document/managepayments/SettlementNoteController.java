@@ -65,6 +65,7 @@ import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
@@ -379,7 +380,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             error = true;
             String errorMessage = bean
                     .isReimbursementNote() ? "error.SettlementNote.reimbursement.equal.zero" : "error.SettlementNote.payment.equal.zero";
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, errorMessage), model);
+            addErrorMessage(treasuryBundle(errorMessage), model);
         }
 
         if (bean.isAdvancePayment() && TreasuryConstants.isLessThan(paymentSum, debitSum)) {
@@ -409,7 +410,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
             SettlementNote settlementNote = processSettlementNoteCreation(bean);
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.SettlementNote.create.success"), model);
+            addInfoMessage(treasuryBundle("label.SettlementNote.create.success"), model);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
@@ -528,12 +529,12 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             deleteSettlementNote(settlementNote);
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
@@ -570,9 +571,9 @@ public class SettlementNoteController extends TreasuryBaseController {
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(settlementNote, model);
     }
@@ -580,6 +581,8 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
     public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote,
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
         setSettlementNote(settlementNote, model);
 
         try {
@@ -588,8 +591,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             }
 
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
-            anullReason = anullReason + " - [" + Authenticate.getUser().getUsername() + "] "
-                    + new DateTime().toString("YYYY-MM-dd HH:mm");
+            anullReason = anullReason + " - [" + loggedUsername + "] " + new DateTime().toString("YYYY-MM-dd HH:mm");
 
             settlementNote.anullDocument(anullReason, true);
             addInfoMessage(treasuryBundle("label.document.managepayments.SettlementNote.document.anulled.sucess"), model);
@@ -679,8 +681,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                     required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
             Model model) {
         if (Days.daysBetween(documentDateFrom, documentDateTo).getDays() > SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.SettlementNote.day.limit.exceeded",
-                    String.valueOf(SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD)), model);
+            addErrorMessage(treasuryBundle("error.SettlementNote.day.limit.exceeded", String.valueOf(SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD)), model);
         } else {
             //TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
             List<SettlementNote> notes =

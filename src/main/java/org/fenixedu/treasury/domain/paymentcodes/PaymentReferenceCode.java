@@ -241,7 +241,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     @Atomic
-    public Set<SettlementNote> processPayment(User responsibleUser, BigDecimal amountToPay, DateTime whenRegistered,
+    public Set<SettlementNote> processPayment(final String responsibleUsername, BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments, final DateTime whenProcessedBySibs, final SibsReportFile sibsReportFile) {
 
         if (!isNew() && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(),
@@ -250,7 +250,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         }
 
         final Set<SettlementNote> noteSet =
-                this.getTargetPayment().processPayment(responsibleUser, amountToPay, whenRegistered, sibsTransactionId, comments);
+                this.getTargetPayment().processPayment(responsibleUsername, amountToPay, whenRegistered, sibsTransactionId, comments);
 
         final DebtAccount referenceDebtAccount = this.getTargetPayment().getDebtAccount();
 

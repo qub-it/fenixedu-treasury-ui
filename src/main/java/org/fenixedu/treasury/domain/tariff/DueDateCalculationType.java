@@ -27,9 +27,9 @@
  */
 package org.fenixedu.treasury.domain.tariff;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
+
 import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.util.TreasuryConstants;
 
 public enum DueDateCalculationType {
     NO_DUE_DATE, FIXED_DATE, DAYS_AFTER_CREATION, BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION;
@@ -51,6 +51,6 @@ public enum DueDateCalculationType {
     }
 
     public LocalizedString getDescriptionI18N() {
-        return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, getClass().getSimpleName() + "." + name());
+        return treasuryBundleI18N(getClass().getSimpleName() + "." + name());
     }
 }

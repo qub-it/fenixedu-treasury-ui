@@ -54,6 +54,7 @@ import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.dto.InterestRateBean;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
@@ -470,12 +471,14 @@ public class DebitEntry extends DebitEntry_Base {
 
         creditEntry.getFinantialDocument().closeDocument();
 
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
         final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
         
         final SettlementNote settlementNote =
                 SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "", null);
         settlementNote.setDocumentObservations(
-                reason + " - [" + Authenticate.getUser().getUsername() + "] " + new DateTime().toString("YYYY-MM-dd HH:mm"));
+                reason + " - [" + loggedUsername + "] " + new DateTime().toString("YYYY-MM-dd HH:mm"));
 
         SettlementEntry.create(creditEntry, settlementNote, creditEntry.getOpenAmount(),
                 reasonDescription + ": " + creditEntry.getDescription(), now, false);

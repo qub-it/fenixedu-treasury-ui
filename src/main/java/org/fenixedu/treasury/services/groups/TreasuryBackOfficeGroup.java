@@ -1,15 +1,15 @@
 package org.fenixedu.treasury.services.groups;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.annotation.GroupOperator;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.CustomGroup;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryBackOfficeGroup;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Objects;
@@ -31,7 +31,7 @@ public class TreasuryBackOfficeGroup extends CustomGroup {
 
     @Override
     public String getPresentationName() {
-        return BundleUtil.getString(TreasuryConstants.BUNDLE, "label.TreasuryBackOfficeGroup.description");
+        return treasuryBundle("label.TreasuryBackOfficeGroup.description");
     }
 
     @Override

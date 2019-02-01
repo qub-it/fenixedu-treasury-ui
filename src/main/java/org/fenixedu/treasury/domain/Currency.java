@@ -27,16 +27,16 @@
  */
 package org.fenixedu.treasury.domain;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.LocalizedStringUtil;
 
 import pt.ist.fenixframework.Atomic;
@@ -49,9 +49,7 @@ public class Currency extends Currency_Base {
     @Atomic
     public static void initializeCurrency() {
         if (Currency.findAll().count() == 0) {
-            Currency.create("EUR",
-                    new LocalizedString(Locale.getDefault(), BundleUtil.getString(TreasuryConstants.BUNDLE, "label.Currency.EUR")),
-                    BundleUtil.getString(TreasuryConstants.BUNDLE, "label.Currency.EUR"), "€");
+            Currency.create("EUR", treasuryBundleI18N("label.Currency.EUR"), treasuryBundle("label.Currency.EUR"), "€");
         }
     }
 

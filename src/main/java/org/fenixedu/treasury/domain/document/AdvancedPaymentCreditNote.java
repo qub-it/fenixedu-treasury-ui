@@ -1,5 +1,6 @@
 package org.fenixedu.treasury.domain.document;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
@@ -11,8 +12,11 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
+
+import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -72,15 +76,15 @@ public class AdvancedPaymentCreditNote extends AdvancedPaymentCreditNote_Base {
 
             setState(FinantialDocumentStateType.ANNULED);
 
-            if (Authenticate.getUser() != null) {
-                setAnnulledReason(reason + " - [" + Authenticate.getUser().getUsername() + "]"
-                        + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
+            final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+            
+            if (!Strings.isNullOrEmpty(loggedUsername)) {
+                setAnnulledReason(reason + " - [" + loggedUsername + "]" + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             } else {
                 setAnnulledReason(reason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             }
         } else {
-            throw new TreasuryDomainException(
-                    BundleUtil.getString(TreasuryConstants.BUNDLE, "error.FinantialDocumentState.invalid.state.change.request"));
+            throw new TreasuryDomainException(treasuryBundle("error.FinantialDocumentState.invalid.state.change.request"));
         }
 
         checkRules();

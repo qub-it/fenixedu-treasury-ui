@@ -26,11 +26,12 @@
  */
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -38,7 +39,6 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -48,9 +48,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
+
+import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.administration.document.manageDocumentNumberSeries") <-- Use for duplicate controller name disambiguation
 @BennuSpringController(value = FinantialInstitutionController.class)
@@ -138,12 +138,12 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             String seriesExternalId = documentNumberSeries.getSeries().getExternalId();
             deleteDocumentNumberSeries(documentNumberSeries);
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SeriesController.READ_URL + seriesExternalId, model, redirectAttributes);
         } catch (TreasuryDomainException ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
     }
@@ -157,7 +157,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
                     FinantialDocumentType.findAll().collect(Collectors.toList()));
             return "treasury/administration/managefinantialinstitution/documentnumberseries/create";
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         return redirect(SeriesController.READ_URL + series.getExternalId(), model, redirectAttributes);
     }
@@ -174,11 +174,11 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             model.addAttribute("documentNumberSeries", documentNumberSeries);
             return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + tde.getLocalizedMessage(), model);
             return create(series, model, redirectAttributes);
         } catch (Exception de) {
             //TODOJN - how to handle generic exception
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + de.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
             return create(series, model, redirectAttributes);
         }
     }
@@ -233,9 +233,7 @@ public class DocumentNumberSeriesController extends TreasuryBaseController {
             }
             return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
         } catch (Exception de) {
-            addErrorMessage(
-                    BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.close.preparing.documents") + de.getLocalizedMessage(),
-                    model);
+            addErrorMessage(treasuryBundle("label.error.close.preparing.documents") + de.getLocalizedMessage(), model);
             return redirect(READ_URL + getDocumentNumberSeries(model).getExternalId(), model, redirectAttributes);
         }
     }

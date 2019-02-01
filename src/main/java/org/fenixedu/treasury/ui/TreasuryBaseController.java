@@ -27,6 +27,8 @@
  */
 package org.fenixedu.treasury.ui;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,8 +78,8 @@ public class TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.manager"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.manager"));
+            addErrorMessage(treasuryBundle("error.authorization.not.manager"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.manager"));
         }
     }
 
@@ -85,8 +87,8 @@ public class TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.backoffice"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.backoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.backoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.backoffice"));
         }
     }
 
@@ -94,8 +96,8 @@ public class TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.frontoffice"));
         }
     }
 
@@ -103,8 +105,8 @@ public class TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.backoffice"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.backoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.backoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.backoffice"));
         }
     }
 
@@ -112,9 +114,8 @@ public class TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.allow.to.modify.settlements"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE,
-                    "error.authorization.not.allow.to.modify.settlements"));
+            addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
         }
     }
 
@@ -122,9 +123,8 @@ public class TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.allow.to.modify.invoices"), model);
-            throw new SecurityException(
-                    BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.allow.to.modify.invoices"));
+            addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.invoices"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.invoices"));
         }
     }
 

@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsconfiguration;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -103,9 +105,9 @@ public class SibsConfigurationController extends TreasuryBaseController {
 
             return redirect(READ_URL + getSibsConfiguration(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(sibsConfiguration, model);
     }

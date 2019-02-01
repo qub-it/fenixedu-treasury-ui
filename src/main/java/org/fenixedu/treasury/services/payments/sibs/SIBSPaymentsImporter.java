@@ -19,6 +19,7 @@
 package org.fenixedu.treasury.services.payments.sibs;
 
 import static java.lang.String.join;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
 import org.fenixedu.treasury.util.TreasuryConstants;
@@ -72,11 +74,11 @@ public class SIBSPaymentsImporter {
         private boolean processFailed = false;
 
         public void addMessage(String message, String... args) {
-            actionMessages.add(BundleUtil.getString(TreasuryConstants.BUNDLE, message, args));
+            actionMessages.add(treasuryBundle(message, args));
         }
 
         public void addError(String message, String... args) {
-            errorMessages.add(BundleUtil.getString(TreasuryConstants.BUNDLE, message, args));
+            errorMessages.add(treasuryBundle(message, args));
             reportFailure();
         }
 
@@ -143,7 +145,9 @@ public class SIBSPaymentsImporter {
         InputStream fileInputStream = null;
         try {
             fileInputStream = inputFile.getStream();
-            final User person = Authenticate.getUser();
+            
+            final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+            
             final SibsIncommingPaymentFile sibsFile = SibsIncommingPaymentFile.parse(inputFile.getFilename(), fileInputStream);
 
             processResult.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
@@ -173,7 +177,7 @@ public class SIBSPaymentsImporter {
 
                 try {
                     final Set<SettlementNote> settlementNoteSet =
-                            processCode(detailLine, person, processResult, inputFile.getFinantialInstitution(),
+                            processCode(detailLine, loggedUsername, processResult, inputFile.getFinantialInstitution(),
                                     inputFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                     if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
@@ -224,6 +228,7 @@ public class SIBSPaymentsImporter {
 
     private void processFile(SibsIncommingPaymentFile sibsFile, final FinantialInstitution finantialInstitution,
             ProcessResult processResult) {
+        final String responsibleUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
         final User person = Authenticate.getUser();
 
         processResult.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
@@ -251,7 +256,7 @@ public class SIBSPaymentsImporter {
         for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
 
             try {
-                final Set<SettlementNote> settlementNoteSet = processCode(detailLine, person, processResult, finantialInstitution,
+                final Set<SettlementNote> settlementNoteSet = processCode(detailLine, responsibleUsername, processResult, finantialInstitution,
                         sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                 if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
@@ -278,7 +283,7 @@ public class SIBSPaymentsImporter {
     }
 
     @Atomic
-    protected Set<SettlementNote> processCode(SibsIncommingPaymentFileDetailLine detailLine, User person, ProcessResult result,
+    protected Set<SettlementNote> processCode(SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername, ProcessResult result,
             FinantialInstitution finantialInstitution, final String sibsImportationFile, YearMonthDay whenProcessedBySibs,
             final SibsReportFile reportFile) throws Exception {
 
@@ -316,7 +321,7 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.referenced.multiple.payor.entities", codeToProcess.getReferenceCode());
         }
 
-        final Set<SettlementNote> settlementNoteSet = codeToProcess.processPayment(person, detailLine.getAmount(),
+        final Set<SettlementNote> settlementNoteSet = codeToProcess.processPayment(responsibleUsername, detailLine.getAmount(),
                 detailLine.getWhenOccuredTransaction(), detailLine.getSibsTransactionId(), sibsImportationFile,
                 whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
 

@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.administration.base.manageproduct;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -126,12 +128,12 @@ public class ProductController extends TreasuryBaseController {
 
             deleteProduct(product);
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (DomainException ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
     }
@@ -216,9 +218,9 @@ public class ProductController extends TreasuryBaseController {
 
             return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + de.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
         }
         return update(product, model);
     }
@@ -230,12 +232,10 @@ public class ProductController extends TreasuryBaseController {
 
             int deletedCount = Product.deleteOrphanProducts();
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE,
-                    "label.info.administration.base.manageproduct.product.deleteorphanproducts") + deletedCount, model);
+            addInfoMessage(treasuryBundle("label.info.administration.base.manageproduct.product.deleteorphanproducts") + deletedCount, model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (Exception de) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.deleteorphanproducts") + de.getLocalizedMessage(),
-                    model);
+            addErrorMessage(treasuryBundle("label.error.deleteorphanproducts") + de.getLocalizedMessage(), model);
         }
         return redirect(SEARCH_URL, model, redirectAttributes);
     }

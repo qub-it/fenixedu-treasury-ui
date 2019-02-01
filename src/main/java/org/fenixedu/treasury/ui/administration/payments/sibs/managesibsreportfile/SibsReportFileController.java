@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsreportfile;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -139,12 +141,12 @@ public class SibsReportFileController extends TreasuryBaseController {
 
             deleteSibsReportFile(sibsReportFile);
 
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + tex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return redirect(READ_URL + getSibsReportFile(model).getExternalId(), model, redirectAttributes);

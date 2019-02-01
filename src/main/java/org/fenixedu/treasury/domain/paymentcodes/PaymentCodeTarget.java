@@ -45,7 +45,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         super();
     }
 
-    public abstract Set<SettlementNote> processPayment(final User person, final BigDecimal amountToPay, DateTime whenRegistered,
+    public abstract Set<SettlementNote> processPayment(final String username, final BigDecimal amountToPay, DateTime whenRegistered,
             String sibsTransactionId, String comments);
 
     public abstract String getDescription();
@@ -68,7 +68,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
     }
 
     
-    protected Set<SettlementNote> internalProcessPaymentInNormalPaymentMixingLegacyInvoices(final User user, final BigDecimal amount, final DateTime whenRegistered,
+    protected Set<SettlementNote> internalProcessPaymentInNormalPaymentMixingLegacyInvoices(final String username, final BigDecimal amount, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments, Set<InvoiceEntry> invoiceEntriesToPay) {
 
         final TreeSet<InvoiceEntry> sortedInvoiceEntriesToPay = Sets.newTreeSet(InvoiceEntry.COMPARE_BY_AMOUNT_AND_DUE_DATE);
@@ -223,7 +223,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         return Sets.newHashSet(settlementNote);
     }
 
-    private Set<SettlementNote> internalProcessPaymentInRestrictedPaymentMixingLegacyInvoices(final User user, final BigDecimal amount,
+    private Set<SettlementNote> internalProcessPaymentInRestrictedPaymentMixingLegacyInvoices(final String username, final BigDecimal amount,
             final DateTime whenRegistered, final String sibsTransactionId, final String comments, final Set<InvoiceEntry> invoiceEntriesToPay) {
         if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
             throw new RuntimeException("invalid call");
@@ -234,7 +234,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
         
         // If all invoice entries are not exported in legacy ERP then invoke the internalProcessPaymentInNormalPaymentMixingLegacyInvoices
         if(invoiceEntriesToPay.stream().allMatch(e -> e.getFinantialDocument() == null || !e.getFinantialDocument().isExportedInLegacyERP())) {
-            return internalProcessPaymentInNormalPaymentMixingLegacyInvoices(user, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
+            return internalProcessPaymentInNormalPaymentMixingLegacyInvoices(username, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
         }
         
         final TreeSet<InvoiceEntry> sortedInvoiceEntriesToPay = Sets.newTreeSet(InvoiceEntry.COMPARE_BY_AMOUNT_AND_DUE_DATE);
@@ -361,13 +361,13 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base {
     }
     
     @Atomic
-    protected Set<SettlementNote> internalProcessPayment(final User user, final BigDecimal amount, final DateTime whenRegistered,
+    protected Set<SettlementNote> internalProcessPayment(final String username, final BigDecimal amount, final DateTime whenRegistered,
             final String sibsTransactionId, final String comments, Set<InvoiceEntry> invoiceEntriesToPay) {
 
         if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
-            return internalProcessPaymentInNormalPaymentMixingLegacyInvoices(user, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
+            return internalProcessPaymentInNormalPaymentMixingLegacyInvoices(username, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
         } else {
-            return internalProcessPaymentInRestrictedPaymentMixingLegacyInvoices(user, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
+            return internalProcessPaymentInRestrictedPaymentMixingLegacyInvoices(username, amount, whenRegistered, sibsTransactionId, comments, invoiceEntriesToPay);
         }
     }
 

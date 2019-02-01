@@ -26,6 +26,8 @@
  */
 package org.fenixedu.treasury.ui.administration.managefinantialinstitution;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -109,12 +111,12 @@ public class SeriesController extends TreasuryBaseController {
 
             series.delete();
             
-            addInfoMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.success.delete"), model);
+            addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(FinantialInstitutionController.READ_URL + finantialInstitution.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
@@ -143,9 +145,9 @@ public class SeriesController extends TreasuryBaseController {
             model.addAttribute("series", series);
             return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(finantialInstitution, model);
     }
@@ -179,7 +181,7 @@ public class SeriesController extends TreasuryBaseController {
             super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
             return "treasury/administration/managefinantialinstitution/series/update";
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return redirect(READ_URL + series.getExternalId(), model, redirectAttributes);
     }
@@ -201,9 +203,9 @@ public class SeriesController extends TreasuryBaseController {
             updateSeries(code, name, externSeries, certificated, legacy, active, selectable, model);
             return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(series, model, redirectAttributes);
     }
