@@ -8,13 +8,12 @@ import org.fenixedu.bennu.core.annotation.GroupOperator;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.domain.groups.PersistentGroup;
 import org.fenixedu.bennu.core.groups.CustomGroup;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.accesscontrol.PersistentTreasuryFrontOfficeGroup;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
 
 @GroupOperator("treasuryFrontOffice")
 public class TreasuryFrontOfficeGroup extends CustomGroup {
@@ -33,7 +32,16 @@ public class TreasuryFrontOfficeGroup extends CustomGroup {
 
     @Override
     public Stream<User> getMembers() {
-        return TreasuryAccessControlAPI.getFrontOfficeMembers().stream();
+        final java.util.Set<User> result = Sets.newHashSet();
+        for (final String username : TreasuryAccessControlAPI.getFrontOfficeMemberUsernames()) {
+            final User user = User.findByUsername(username);
+            
+            if(user != null) {
+                result.add(user);
+            }
+        }
+        
+        return result.stream();
     }
 
     @Override

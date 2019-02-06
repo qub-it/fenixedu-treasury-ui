@@ -1,11 +1,11 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.academictreasury.domain.customer.PersonCustomer" %>
@@ -66,10 +66,8 @@ ${portal.angularToolkit()}
 </div>
 
 <%
-    DebtAccount debtAccount = (DebtAccount) request
-					.getAttribute("debtAccount");
-			FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount
-					.getFinantialInstitution();
+    DebtAccount debtAccount = (DebtAccount) request.getAttribute("debtAccount");
+	FinantialInstitution finantialInstitution = (FinantialInstitution) debtAccount.getFinantialInstitution();
 %>
 
 <div class="modal fade" id="transferBalanceModal">
@@ -122,8 +120,7 @@ ${portal.angularToolkit()}
     &nbsp;
 
     <%
-        if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(
-    					Authenticate.getUser(), finantialInstitution)) {
+        if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
     %>
     <div class="btn-group">
         <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -152,7 +149,7 @@ ${portal.angularToolkit()}
     %>
     <c:if test='${not debtAccount.getClosed()}'>
         <%
-            if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution) && debtAccount.getCustomer().isActive()) {
+            if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution) && debtAccount.getCustomer().isActive()) {
         %>
         <div class="btn-group">
             <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -226,7 +223,7 @@ ${portal.angularToolkit()}
      |&nbsp;
      </c:if>
     <%
-        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+        if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
     %>
 
     <div class="btn-group">
@@ -265,7 +262,7 @@ ${portal.angularToolkit()}
             </li>
 			<% } %>
 			
-			<% if(TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>
+			<% if(TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
             <li class="dropdown-submenu">
 				<a class="" href="#"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 					&nbsp;<spring:message code="label.ERPTuitionInfo.title" />
@@ -287,7 +284,7 @@ ${portal.angularToolkit()}
 			</li>
 			<% } %>
 
-			<% if(TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>
+			<% if(TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
 			<c:if test="${not debtAccount.customer.active}">
             <li>
             	<a href="#" data-toggle="modal" data-target="#transferBalanceModal">

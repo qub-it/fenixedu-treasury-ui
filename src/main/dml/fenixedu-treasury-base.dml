@@ -688,7 +688,8 @@ class paymentcodes.PaymentReferenceCode
 	}
 	
 	class paymentcodes.SibsInputFile extends .org.fenixedu.bennu.io.domain.GenericFile {
-	DateTime whenProcessedBySibs;
+		DateTime whenProcessedBySibs;
+		String uploaderUsername;
 	}
 
 
@@ -1846,7 +1847,7 @@ relation SibsReportFileBennu {
 	  }
 	  
 	  .org.fenixedu.bennu.core.domain.User playsRole uploader {
-	    multiplicity 1..1;
+	    multiplicity 0..1;
 	  }
 	  
 	}

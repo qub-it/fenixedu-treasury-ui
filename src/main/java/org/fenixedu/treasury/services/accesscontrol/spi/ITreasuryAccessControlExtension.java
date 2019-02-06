@@ -1,30 +1,64 @@
 package org.fenixedu.treasury.services.accesscontrol.spi;
 
-import java.util.Set;
+import java.util.Collection;
 
-import org.fenixedu.bennu.core.domain.User;
+import org.apache.poi.ss.formula.functions.T;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.event.TreasuryEvent;
 
-public interface ITreasuryAccessControlExtension {
+import com.google.common.reflect.TypeToken;
 
-    public boolean isFrontOfficeMember(final User user);
+public interface ITreasuryAccessControlExtension<T> {
 
-    public boolean isFrontOfficeMember(final User user, final FinantialInstitution finantialInstitution);
+    default public boolean isFrontOfficeMember(final String username) {
+        return false;
+    }
+
+    default public boolean isFrontOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        return false;
+    }
     
-    public boolean isBackOfficeMember(final User user);
+    default public boolean isFrontOfficeMemberWithinContext(final String username, final T context) {
+        return false;
+    }
 
-    public boolean isBackOfficeMember(final User user, final FinantialInstitution finantialInstitution);
+    default public boolean isBackOfficeMember(final String username) {
+        return false;
+    }
 
-    public boolean isBackOfficeMember(final User user, final FinantialEntity finantialEntity);
+    default public boolean isBackOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        return false;
+    }
 
-    public Set<User> getFrontOfficeMembers();
+    default public boolean isBackOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        return false;
+    }
+    
+    default public boolean isBackOfficeMemberWithinContext(final String username, final T context) {
+        return false;
+    }
 
-    public Set<User> getBackOfficeMembers();
+    default public boolean isManager(final String username) {
+        return false;
+    }
+    
+    default public boolean isAllowToModifySettlements(final String username, final FinantialInstitution finantialInstitution) {
+        return false;
+    }
 
-    public boolean isAllowToModifySettlements(final User user, final FinantialInstitution finantialInstitution);
+    default public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
+        return false;
+    }
+    
+    default public boolean isContextObjectApplied(final Object context) {
+        final TypeToken<T> typeToken = new TypeToken<T>(getClass()){};
+        return context.getClass().isAssignableFrom(typeToken.getRawType());
+    }
 
-    public boolean isAllowToModifyInvoices(final User user, final FinantialInstitution finantialInstitution);
+    public java.util.Set<String> getFrontOfficeMemberUsernames();
+
+    public java.util.Set<String> getBackOfficeMemberUsernames();
+
+    public java.util.Set<String> getTreasuryManagerMemberUsernames();
 
 }

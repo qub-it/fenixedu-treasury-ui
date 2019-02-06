@@ -35,7 +35,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.adapters.CountryAdapter;
 import org.fenixedu.treasury.adapters.DistrictAdapter;
 import org.fenixedu.treasury.adapters.DomainObjectAdapter;
@@ -45,6 +44,8 @@ import org.fenixedu.treasury.ui.converters.BeanConverterService;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.converters.CountryConverterService;
 import org.fenixedu.treasury.ui.converters.DistrictConverterService;
 import org.fenixedu.treasury.ui.converters.MunicipalityConverterService;
@@ -75,7 +76,9 @@ import pt.ist.standards.geographic.Municipality;
 public class TreasuryBaseController {
 
     protected void assertUserIsManager(Model model) {
-        if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isManager(loggedUsername)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.manager"), model);
@@ -84,7 +87,9 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsBackOfficeMember(Model model) {
-        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.backoffice"), model);
@@ -93,7 +98,9 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsFrontOfficeMember(Model model) {
-        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser())) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);
@@ -102,7 +109,9 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsBackOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, finantialInstitution)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.backoffice"), model);
@@ -111,7 +120,9 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsAllowToModifySettlements(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isAllowToModifySettlements(loggedUsername, finantialInstitution)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
@@ -120,7 +131,9 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsAllowToModifyInvoices(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isAllowToModifyInvoices(loggedUsername, finantialInstitution)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.invoices"), model);
@@ -129,11 +142,13 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsFrontOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername, finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(TreasuryConstants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.frontoffice"));
         }
     }
 

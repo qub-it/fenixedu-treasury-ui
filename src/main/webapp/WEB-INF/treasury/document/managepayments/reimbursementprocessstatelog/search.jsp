@@ -1,7 +1,6 @@
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.SettlementNote"%>
@@ -37,10 +36,9 @@ ${portal.toolkit()}
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <%
-        SettlementNote settlementNote= (SettlementNote) request
-                        .getAttribute("settlementNote");
-FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNote.getDebtAccount().getFinantialInstitution();
-    %>
+	SettlementNote settlementNote= (SettlementNote) request.getAttribute("settlementNote");
+	FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNote.getDebtAccount().getFinantialInstitution();
+%>
 
 <%-- TITLE --%>
 <div class="page-header">

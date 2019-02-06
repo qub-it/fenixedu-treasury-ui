@@ -1,4 +1,5 @@
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="java.util.Collection"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -35,15 +36,14 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message
-            code="label.administration.manageFinantialInstitution.searchFinantialInstitution" />
+        <spring:message code="label.administration.manageFinantialInstitution.searchFinantialInstitution" />
         <small></small>
     </h1>
 </div>
 <%-- NAVIGATION --%>
-    <%
-                if (TreasuryAccessControl.getInstance().isManager()) {
-    %>
+<%
+if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
+%>
 <div class="well well-sm" style="display: inline-block">
 
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
@@ -92,12 +92,9 @@ ${portal.toolkit()}
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
-                    <th><spring:message
-                            code="label.FinantialInstitution.code" /></th>
-                    <th><spring:message
-                            code="label.FinantialInstitution.fiscalNumber" /></th>
-                    <th><spring:message
-                            code="label.FinantialInstitution.name" /></th>                    
+                    <th><spring:message code="label.FinantialInstitution.code" /></th>
+                    <th><spring:message code="label.FinantialInstitution.fiscalNumber" /></th>
+                    <th><spring:message code="label.FinantialInstitution.name" /></th>                    
                     <th><%-- Operations Column --%></th>
                 </tr>
             </thead>

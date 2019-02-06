@@ -1,9 +1,9 @@
 
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.administration.forwardpayments.ManageForwardPaymentConfigurationController"%>
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.TreasuryDocumentTemplateController"%>
 <%@page import="org.fenixedu.treasury.domain.document.TreasuryDocumentTemplateFile"%>
 <%@page import="org.fenixedu.treasury.domain.document.FinantialDocumentTypeEnum"%>
@@ -124,10 +124,8 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/"><spring:message code="label.event.back" /></a> &nbsp;
     <%
-        FinantialInstitution finantialInstitution = (FinantialInstitution) request
-    					.getAttribute("finantialInstitution");
-    			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-    					finantialInstitution)) {
+        FinantialInstitution finantialInstitution = (FinantialInstitution) request.getAttribute("finantialInstitution");
+    	if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
     %>
     |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;| &nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
@@ -305,8 +303,7 @@ ${portal.toolkit()}
 </h2>
 
 <%
-    if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-					finantialInstitution)) {
+    if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span> &nbsp; <a class=""
@@ -346,8 +343,7 @@ ${portal.toolkit()}
 </h2>
 
 <%
-    if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-					finantialInstitution)) {
+    if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
 <div class="well well-sm" style="display: inline-block">
@@ -440,8 +436,7 @@ ${portal.toolkit()}
                                     <tr>
                                         <td>
                                             <%
-                                                if (TreasuryAccessControl.getInstance()
-                                            									.isBackOfficeMember(finantialInstitution)) {
+                                                if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
                                             %> <c:if test="${ empty documentTemplate }">
                                                 <a class="btn btn-default btn-xs"
                                                     href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/treasurydocumenttemplate/create?finantialdocumenttypeid=${ type.externalId }&finantialentityid=${entity.externalId}"><spring:message
@@ -506,8 +501,7 @@ var searchseriesDataSet = [
                           <c:if test="${not searchResult.externSeries}">
                               "<spring:message code='label.false' />"
                           </c:if>,
-                          <%if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-						finantialInstitution)) {%>
+                          <%if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {%>
         "defaultSeries" :<c:if test="${searchResult.defaultSeries}">
                 "<spring:message code='label.true' />"
                           </c:if>

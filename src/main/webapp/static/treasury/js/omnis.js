@@ -184,4 +184,6 @@ function createDataTables(tableid, showsearchbox, showtools,pagination, pagecont
 	$('#' + tableid +' tbody').on('click', 'tr', function() {
 		$(this).toggleClass('selected');
 	});
+	
+	return table;
 }

@@ -1,7 +1,8 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="java.security.AccessControlContext"%>
 <%@page import="org.fenixedu.bennu.core.groups.Group"%>
 <%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -236,7 +237,7 @@ ${portal.toolkit()}
 			                               	</a>
 			                               
 											<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
-											<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
+											<% if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>        
 											&nbsp;
 											<a class="btn btn-primary btn-xs" 
 												href="${pageContext.request.contextPath}<%= CustomerController.CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URL %>/${debtAccount.customer.externalId}">
@@ -294,7 +295,7 @@ ${portal.toolkit()}
 												
 			                               		<c:if test="${debtAccount.customer.personCustomer}">
 												<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
-												<% if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) { %>        
+												<% if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>        
 												&nbsp;
 												<a class="btn btn-primary btn-xs" 
 													href="${pageContext.request.contextPath}<%= CustomerController.CHANGE_FISCAL_NUMBER_ACTION_CONFIRM_URL %>/${debtAccount.customer.externalId}">

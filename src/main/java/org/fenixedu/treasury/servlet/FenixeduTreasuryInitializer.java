@@ -4,6 +4,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.accesscontrol.spi.TreasuryUIAccessControlExtension;
 import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.TreasuryBootstrapUtil;
@@ -14,6 +16,7 @@ public class FenixeduTreasuryInitializer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent event) {
         TreasuryPlataformDependentServicesFactory.registerImplementation(new FenixEDUTreasuryPlatformDependentServices());
+        TreasuryAccessControlAPI.registerExtension(new TreasuryUIAccessControlExtension());
 
         TreasuryBootstrapUtil.InitializeDomain();
     }

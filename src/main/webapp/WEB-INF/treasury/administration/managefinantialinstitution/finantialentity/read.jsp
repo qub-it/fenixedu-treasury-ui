@@ -1,4 +1,5 @@
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialEntity"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -75,12 +76,9 @@ ${portal.toolkit()}
             code="label.event.back" /></a> &nbsp;
 
     <%
-        FinantialEntity finantialEntity = (FinantialEntity) request
-    					.getAttribute("finantialEntity");
-    			FinantialInstitution finantialInstitution = finantialEntity
-    					.getFinantialInstitution();
-    			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-    					finantialInstitution)) {
+        FinantialEntity finantialEntity = (FinantialEntity) request.getAttribute("finantialEntity");
+  		FinantialInstitution finantialInstitution = finantialEntity.getFinantialInstitution();
+    	if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
     %>
     |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
             code="label.event.delete" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""

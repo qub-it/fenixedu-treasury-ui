@@ -2,138 +2,141 @@ package org.fenixedu.treasury.domain.accesscontrol;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.services.accesscontrol.spi.ITreasuryAccessControlExtension;
+import org.fenixedu.treasury.services.integration.ITreasuryPlatformDependentServices;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class TreasuryAccessControl {
 
-    private static final String TREASURY_MANAGERS = "treasuryManagers";
-
-    private static final String TREASURY_BACK_OFFICE = "treasuryBackOffice";
-
-    private static final String TREASURY_FRONT_OFFICE = "treasuryFrontOffice";
-
     private static TreasuryAccessControl _instance = null;
 
-    private final List<ITreasuryAccessControlExtension> extensions = Collections.synchronizedList(Lists.newArrayList());
+    private List<ITreasuryAccessControlExtension> extensions = Collections.synchronizedList(Lists.newArrayList());
 
     private TreasuryAccessControl() {
     }
 
     public boolean isFrontOfficeMember() {
-        return isFrontOfficeMember(Authenticate.getUser());
+        final ITreasuryPlatformDependentServices services = TreasuryPlataformDependentServicesFactory.implementation();
+        
+        return isFrontOfficeMember(services.getLoggedUsername());
     }
 
     public boolean isBackOfficeMember() {
-        return isBackOfficeMember(Authenticate.getUser());
+        final ITreasuryPlatformDependentServices services = TreasuryPlataformDependentServicesFactory.implementation();
+
+        return isBackOfficeMember(services.getLoggedUsername());
     }
 
-    public boolean isFrontOfficeMember(final FinantialInstitution finantialInstitution) {
-        return isFrontOfficeMember(Authenticate.getUser(), finantialInstitution);
+    public boolean isFrontOfficeMember(FinantialInstitution finantialInstitution) {
+        final ITreasuryPlatformDependentServices services = TreasuryPlataformDependentServicesFactory.implementation();
+
+        return isFrontOfficeMember(services.getLoggedUsername(), finantialInstitution);
     }
 
-    public boolean isBackOfficeMember(final FinantialInstitution finantialInstitution) {
-        return isBackOfficeMember(Authenticate.getUser(), finantialInstitution);
+    public boolean isBackOfficeMember(FinantialInstitution finantialInstitution) {
+        final ITreasuryPlatformDependentServices services = TreasuryPlataformDependentServicesFactory.implementation();
+
+        return isBackOfficeMember(services.getLoggedUsername(), finantialInstitution);
     }
 
     public boolean isManager() {
-        return isManager(Authenticate.getUser());
+        final ITreasuryPlatformDependentServices services = TreasuryPlataformDependentServicesFactory.implementation();
+
+        return isManager(services.getLoggedUsername());
     }
 
-    public boolean isFrontOfficeMember(final User user) {
+    public boolean isFrontOfficeMember(final String username) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isFrontOfficeMember(user)) {
+            if (iTreasuryAccessControlExtension.isFrontOfficeMember(username)) {
                 return true;
             }
         }
 
-        return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
+        return false;
     }
 
-    public boolean isFrontOfficeMember(final User user, final FinantialInstitution finantialInstitution) {
+    public boolean isFrontOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isFrontOfficeMember(user, finantialInstitution)) {
+            if (iTreasuryAccessControlExtension.isFrontOfficeMember(username, finantialInstitution)) {
                 return true;
             }
         }
 
-        return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
+        return false;
     }
 
-    public boolean isBackOfficeMember(final User user) {
+    public <T> boolean isFrontOfficeMemberWithinContext(final String username, final T context) {
+        for (ITreasuryAccessControlExtension<T> iTreasuryAccessControlExtension : extensions) {
+            if(!iTreasuryAccessControlExtension.isContextObjectApplied(context)) {
+                continue;
+            }
+            
+            if (iTreasuryAccessControlExtension.isFrontOfficeMemberWithinContext(username, context)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public boolean isBackOfficeMember(final String username) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isBackOfficeMember(user)) {
+            if (iTreasuryAccessControlExtension.isBackOfficeMember(username)) {
                 return true;
             }
         }
 
-        return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
+        return false;
     }
 
-    public boolean isBackOfficeMember(final User user, final FinantialInstitution finantialInstitution) {
+    public boolean isBackOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isBackOfficeMember(user, finantialInstitution)) {
+            if (iTreasuryAccessControlExtension.isBackOfficeMember(username, finantialInstitution)) {
                 return true;
             }
         }
 
-        return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
+        return false;
     }
 
-    public boolean isBackOfficeMember(final User user, final FinantialEntity finantialEntity) {
+    public boolean isBackOfficeMember(final String username, final FinantialEntity finantialEntity) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isBackOfficeMember(user, finantialEntity)) {
+            if (iTreasuryAccessControlExtension.isBackOfficeMember(username, finantialEntity)) {
                 return true;
             }
         }
 
-        return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
+        return false;
+    }
+    
+    public <T> boolean isBackOfficeMemberWithinContext(final String username, final T context) {
+        for (ITreasuryAccessControlExtension<T> iTreasuryAccessControlExtension : extensions) {
+            if(!iTreasuryAccessControlExtension.isContextObjectApplied(context)) {
+                continue;
+            }
+            
+            if (iTreasuryAccessControlExtension.isBackOfficeMemberWithinContext(username, context)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
-    public boolean isManager(final User user) {
-        return getOrCreateDynamicGroup(TREASURY_MANAGERS).isMember(user);
-    }
-
-    public Set<User> getFrontOfficeMembers() {
-        final Set<User> result = Sets.newHashSet();
-
+    public boolean isManager(final String username) {
         for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            result.addAll(iTreasuryAccessControlExtension.getFrontOfficeMembers());
+            if (iTreasuryAccessControlExtension.isManager(username)) {
+                return true;
+            }
         }
 
-        result.addAll(getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).getMembers().collect(Collectors.toSet()));
-
-        return result;
-    }
-
-    public Set<User> getBackOfficeMembers() {
-        final Set<User> result = Sets.newHashSet();
-
-        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            result.addAll(iTreasuryAccessControlExtension.getBackOfficeMembers());
-        }
-
-        result.addAll(getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).getMembers().collect(Collectors.toSet()));
-
-        return result;
-    }
-
-    public Set<User> getTreasuryManagerMembers() {
-        final Set<User> result = Sets.newHashSet();
-
-        result.addAll(getOrCreateDynamicGroup(TREASURY_MANAGERS).getMembers().collect(Collectors.toSet()));
-
-        return result;
+        return false;
     }
 
     public void registerExtension(final ITreasuryAccessControlExtension extension) {
@@ -144,6 +147,57 @@ public class TreasuryAccessControl {
         extensions.add(extension);
     }
 
+    public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            if (iTreasuryAccessControlExtension.isAllowToModifyInvoices(username, finantialInstitution)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isAllowToModifySettlements(final String username, final FinantialInstitution finantialInstitution) {
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            if (iTreasuryAccessControlExtension.isAllowToModifySettlements(username, finantialInstitution)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    
+    public java.util.Set<String> getFrontOfficeMemberUsernames() {
+        final java.util.Set<String> result = Sets.newHashSet();
+
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            result.addAll(iTreasuryAccessControlExtension.getFrontOfficeMemberUsernames());
+        }
+        
+        return result;
+    }
+
+    public java.util.Set<String> getBackOfficeMemberUsernames() {
+        final java.util.Set<String> result = Sets.newHashSet();
+
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            result.addAll(iTreasuryAccessControlExtension.getBackOfficeMemberUsernames());
+        }
+        
+        return result;
+    }
+
+    public java.util.Set<String> getTreasuryManagerMemberUsernames() {
+        final java.util.Set<String> result = Sets.newHashSet();
+
+        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
+            result.addAll(iTreasuryAccessControlExtension.getTreasuryManagerMemberUsernames());
+        }
+        
+        return result;
+    }
+    
     public synchronized static TreasuryAccessControl getInstance() {
         if (_instance == null) {
             _instance = new TreasuryAccessControl();
@@ -152,47 +206,5 @@ public class TreasuryAccessControl {
         return _instance;
     }
 
-    private DynamicGroup getOrCreateDynamicGroup(final String dynamicGroupName) {
-        final DynamicGroup dynamicGroup = DynamicGroup.get(dynamicGroupName);
-
-        if (!dynamicGroup.isDefined()) {
-            User manager = User.findByUsername("manager");
-            if (manager != null) {
-                dynamicGroup.mutator().grant(manager);
-            } else {
-                dynamicGroup.toPersistentGroup();
-            }
-        }
-
-        return dynamicGroup;
-    }
-
-    public boolean isAllowToModifyInvoices(final User user, final FinantialInstitution finantialInstitution) {
-        boolean result = getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
-        if (result == true) {
-            return result;
-        }
-        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isAllowToModifyInvoices(user, finantialInstitution) == false) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean isAllowToModifySettlements(final User user, final FinantialInstitution finantialInstitution) {
-        boolean result = getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
-        if (result == true) {
-            return result;
-        }
-        for (ITreasuryAccessControlExtension iTreasuryAccessControlExtension : extensions) {
-            if (iTreasuryAccessControlExtension.isAllowToModifySettlements(user, finantialInstitution) == false) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
+    
 }

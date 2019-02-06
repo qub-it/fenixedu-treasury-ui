@@ -50,16 +50,16 @@ public class SibsInputFile extends SibsInputFile_Base {
     }
 
     protected SibsInputFile(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
-            String filename, byte[] content, User uploader) {
+            String filename, byte[] content, final String uploader) {
         this();
         init(finantialInstitution, whenProcessedBySIBS, displayName, filename, content, uploader);
     }
 
     protected void init(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
-            String filename, byte[] content, User uploader) {
+            String filename, byte[] content, final String uploader) {
         super.init(displayName, filename, content);
         setWhenProcessedBySibs(whenProcessedBySIBS);
-        setUploader(uploader);
+        setUploaderUsername(uploader);
         setFinantialInstitution(finantialInstitution);
         checkRules();
     }
@@ -92,7 +92,7 @@ public class SibsInputFile extends SibsInputFile_Base {
 
     @Atomic
     public static SibsInputFile create(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS,
-            String displayName, String filename, byte[] content, User uploader) {
+            String displayName, String filename, byte[] content, final String uploader) {
         return new SibsInputFile(finantialInstitution, whenProcessedBySIBS, displayName, filename, content, uploader);
 
     }
@@ -113,4 +113,9 @@ public class SibsInputFile extends SibsInputFile_Base {
     public boolean isAccessible(User arg0) {
         return true;
     }
+    
+    public boolean isAccessible(final String username) {
+        return true;
+    }
+    
 }

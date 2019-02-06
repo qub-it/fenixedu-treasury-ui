@@ -1,5 +1,5 @@
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.CreditEntry"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -40,10 +40,9 @@ ${portal.toolkit()}
     </h1>
 </div>
 <%
-        CreditEntry creditEntry = (CreditEntry) request
-                        .getAttribute("creditEntry");
-FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.getDebtAccount().getFinantialInstitution();
-    %>
+	CreditEntry creditEntry = (CreditEntry) request.getAttribute("creditEntry");
+	FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.getDebtAccount().getFinantialInstitution();
+%>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
@@ -57,7 +56,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) creditEntry.g
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>  
     <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
         |&nbsp;

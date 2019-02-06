@@ -1,5 +1,5 @@
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
-
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -103,7 +103,7 @@ ${portal.toolkit()}
 
 
 <%
-    if (TreasuryAccessControl.getInstance().isManager()) {
+    if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
 %>
 
     &nbsp;|&nbsp;<span class="glyphicon glyphicon-pencil"
@@ -279,127 +279,7 @@ ${portal.toolkit()}
     </div>
 </div>
 
-<p></p>
-<h2>
-    <spring:message code="label.PaymentCodePool.paymentReferenceCodes" />
-</h2>
-
-<%-- NAVIGATION --%>
-<%-- <c:if test="${debitNote.isPreparing()}"> --%>
-
-<!--     <div class="well well-sm" style="display: inline-block"> -->
-<!--         <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a -->
-<%--             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addentry"><spring:message --%>
-<%--                 code="label.event.document.manageInvoice.addEntry" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" --%>
-<%--             href="${pageContext.request.contextPath}/treasury/document/manageinvoice/debitnote/read/${debitNote.externalId}/addpendingentries"><spring:message --%>
-<%--                 code="label.event.document.manageInvoice.addPendingEntries" /></a> --%>
-<!--     </div> -->
-<%-- </c:if> --%>
-<c:choose>
-    <c:when test="${not empty paymentCodePool.paymentReferenceCodesSet}">
-        <datatables:table id="referenceCodes" row="referenceCode"
-            data="${ paymentCodePool.paymentReferenceCodesSet}"
-            cssClass="table responsive table-bordered table-hover"
-            cdn="false" cellspacing="2">
-            <datatables:column cssStyle="width:10%">
-                <datatables:columnHead>
-                    <spring:message
-                        code="label.PaymentReferenceCode.referenceCode" />
-                </datatables:columnHead>
-                <c:out value="${referenceCode.formattedCode}" />
-            </datatables:column>
-            <datatables:column>
-                <datatables:columnHead>
-                    <spring:message
-                        code="label.PaymentReferenceCode.description" />
-                </datatables:columnHead>
-                <c:out value="${referenceCode.description}" />
-            </datatables:column>
-            <datatables:column>
-                <datatables:columnHead>
-                    <spring:message
-                        code="label.PaymentReferenceCode.state" />
-                </datatables:columnHead>
-                <c:if test="${referenceCode.state=='USED'}">
-                    <span class="label label-primary">
-                </c:if>
-                <c:if test="${referenceCode.state=='ANNULLED'}">
-                    <span class="label label-danger">
-                </c:if>
-                <c:if test="${referenceCode.state=='UNUSED'}">
-                    <span class="label label-default">
-                </c:if>
-                <c:if test="${referenceCode.state=='PROCESSED'}">
-                    <span class="label label-success">
-                </c:if>  
-                <c:out value="${referenceCode.state.descriptionI18N.content}" />
-                </span>
-            </datatables:column>
-			
-			<datatables:column>
-                <datatables:columnHead>
-                    <spring:message code="label.PaymentReferenceCode.client.name" />
-                </datatables:columnHead>
-                				
- 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.debtAccount != null}">
-					<c:out value="${referenceCode.targetPayment.debtAccount.customer.name}" />
- 				</c:if>
-			</datatables:column>
-
-			<datatables:column>
-                <datatables:columnHead>
-                    <spring:message code="label.PaymentReferenceCode.client.vatNumber" />
-                </datatables:columnHead>
-				
- 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.debtAccount != null}">
-					<c:out value="${referenceCode.targetPayment.debtAccount.customer.fiscalNumber}" />
-				</c:if>
-			</datatables:column>
-
-			<datatables:column>
-                <datatables:columnHead>
-                    <spring:message code="label.PaymentReferenceCode.client.businessNumber" />
-                </datatables:columnHead>
-		
- 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.debtAccount != null}">
-					<c:out value="${referenceCode.targetPayment.debtAccount.customer.businessIdentification}" />
-				</c:if>
-			</datatables:column>
-
-            <datatables:column cssStyle="width:10%">
-                <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${referenceCode.externalId}">
-<!--                     <button type="submit" class="btn btn-default btn-xs"> -->
-                        <spring:message code="label.view" />
-<!--                     </button> -->
-                </a>
-            </datatables:column>
-        </datatables:table>
-        <script>
-									createDataTables(
-											'referenceCodes',
-											false,
-											false,
-											true,
-											"${pageContext.request.contextPath}",
-											"${datatablesI18NUrl}");
-		</script>
-    </c:when>
-    <c:otherwise>
-        <div class="alert alert-warning" role="alert">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span>
-                <spring:message code="label.noResultsFound" />
-            </p>
-        </div>
-
-    </c:otherwise>
-</c:choose>
-
-
-
 <script>
 	$(document).ready(function() {
-
 	});
 </script>

@@ -153,8 +153,8 @@ public class FinantialEntity extends FinantialEntity_Base {
         return findAll().filter(fe -> LocalizedStringUtil.isEqualToAnyLocaleIgnoreCase(fe.getName(), name));
     }
 
-    public static Stream<FinantialEntity> findWithBackOfficeAccessFor(final User user) {
-        return findAll().filter(l -> TreasuryAccessControlAPI.isBackOfficeMember(user, l));
+    public static Stream<FinantialEntity> findWithBackOfficeAccessFor(final String username) {
+        return findAll().filter(l -> TreasuryAccessControlAPI.isBackOfficeMember(username, l));
     }
 
     @Atomic

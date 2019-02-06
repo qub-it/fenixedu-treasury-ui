@@ -1,9 +1,9 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.ReimbursementProcessStateLogController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.SettlementNote"%>
 <%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
@@ -38,12 +38,11 @@ ${portal.toolkit()}
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <%
-        SettlementNote settlementNote= (SettlementNote) request
-                        .getAttribute("settlementNote");
+        SettlementNote settlementNote= (SettlementNote) request.getAttribute("settlementNote");
 FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNote.getDebtAccount().getFinantialInstitution();
     %>
     <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+                if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %> 
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">
@@ -134,7 +133,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
     </h1>
 </div>
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %> 
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
@@ -173,7 +172,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
 <!-- /.modal -->
 
 <% 
-	if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
 <div class="modal fade" id="clearDocumentToExport">
@@ -227,7 +226,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifySettlements(Authenticate.getUser(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>             
             |&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message
@@ -288,7 +287,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
                 </li>
                 
 <% 
-	if (settlementNote.isDocumentToExport() && TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+	if (settlementNote.isDocumentToExport() && TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
                 <li>
                 	<a href="#" data-toggle="modal" data-target="#clearDocumentToExport">
@@ -660,10 +659,8 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
         </datatables:column>
     </datatables:table>
     <script>
-					createDataTables('advancedPaymentEntries', false, false,
-							false, "${pageContext.request.contextPath}",
-							"${datatablesI18NUrl}");
-				</script>
+		createDataTables('advancedPaymentEntries', false, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
+	</script>
 </c:if>
 
 <p></p>

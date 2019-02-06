@@ -93,41 +93,6 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
-
-
-<!-- <div class="panel panel-default"> -->
-<!-- <form method="get" class="form-horizontal"> -->
-<!-- <div class="panel-body"> -->
-<!-- <div class="form-group row"> -->
-<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.whenProcessedBySibs"/></div>  --%>
-
-<!-- <div class="col-sm-4"> -->
-<!-- 	<input id="sibsReportFile_whenProcessedBySibs" class="form-control" type="text" name="whenprocessedbysibs"  bennu-datetime  -->
-<%-- 	value = '<c:out value='${not empty param.whenprocessedbysibs ? param.whenprocessedbysibs : sibsReportFile.whenProcessedBySibs }'/>' /> --%>
-<!-- </div> -->
-<!-- </div>		 -->
-<!-- <div class="form-group row"> -->
-<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.transactionsTotalAmount"/></div>  --%>
-
-<!-- <div class="col-sm-10"> -->
-<%-- 	<input id="sibsReportFile_transactionsTotalAmount" class="form-control" type="text" name="transactionstotalamount"  value='<c:out value='${not empty param.transactionstotalamount ? param.transactionstotalamount : sibsReportFile.transactionsTotalAmount }'/>' /> --%>
-<!-- </div>	 -->
-<!-- </div>		 -->
-<!-- <div class="form-group row"> -->
-<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsReportFile.totalCost"/></div>  --%>
-
-<!-- <div class="col-sm-10"> -->
-<%-- 	<input id="sibsReportFile_totalCost" class="form-control" type="text" name="totalcost"  value='<c:out value='${not empty param.totalcost ? param.totalcost : sibsReportFile.totalCost }'/>' /> --%>
-<!-- </div>	 -->
-<!-- </div>		 -->
-<!-- </div> -->
-<!-- <div class="panel-footer"> -->
-<%-- 	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/> --%>
-<!-- </div> -->
-<!-- </form> -->
-<!-- </div> -->
-
-
 <c:choose>
     <c:when test="${not empty searchsibsreportfileResultsDataSet}">
         <table id="searchsibsreportfileTable"
@@ -224,6 +189,8 @@ ${portal.toolkit()}
             "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	
         }
 		});
+		
+		table.order([0, 'desc']);
 		table.columns.adjust().draw();
 		
 		  $('#searchsibsreportfileTable tbody').on( 'click', 'tr', function () {

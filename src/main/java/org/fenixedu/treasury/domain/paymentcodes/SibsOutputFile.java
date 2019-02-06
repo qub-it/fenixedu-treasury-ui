@@ -162,6 +162,10 @@ public class SibsOutputFile extends SibsOutputFile_Base {
     public boolean isAccessible(User arg0) {
         return true;
     }
+    
+    public boolean isAccessible(final String username) {
+        return true;
+    }
 
     protected void init(final FinantialInstitution finantialInstitution, final java.lang.String errorLog,
             final java.lang.String infoLog, final java.lang.String printedPaymentCodes) {

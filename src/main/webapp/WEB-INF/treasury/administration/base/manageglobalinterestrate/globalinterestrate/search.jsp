@@ -152,14 +152,16 @@ ${portal.toolkit()}
                 </datatables:column>
             </datatables:table>
             <script>
-													createDataTables(
-															'allsearchglobalinterestrateResultsTable',
-															true,
-															false,
-															true,
-															"${pageContext.request.contextPath}",
-															"${datatablesI18NUrl}");
-												</script>
+				var table = createDataTables(
+						'allsearchglobalinterestrateResultsTable',
+						true,
+						false,
+						true,
+						"${pageContext.request.contextPath}",
+						"${datatablesI18NUrl}");
+				
+				table.order([0, "desc"]).draw();
+			</script>
         </c:when>
         <c:otherwise>
             <div class="alert alert-warning" role="alert">

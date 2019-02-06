@@ -1,4 +1,5 @@
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
@@ -141,7 +142,7 @@ ${portal.toolkit()}
     &nbsp;|&nbsp;
 	
     <%
-        if (TreasuryAccessControl.getInstance().isManager()) {
+        if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
     %>
 	            
     <span
@@ -212,10 +213,9 @@ ${portal.toolkit()}
                         </td>
                     </tr>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message
-                                code="label.SibsInputFile.uploader" /></th>
-                        <td><c:out
-                                value='${sibsInputFile.uploader.name}' />
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SibsInputFile.uploader" /></th>
+                        <td>
+                        	<c:out value='${sibsInputFile.uploaderUsername}' />
                         </td>
                     </tr>
                     <tr>
@@ -223,23 +223,9 @@ ${portal.toolkit()}
                                 code="label.SibsInputFile.file" /></th>
                         <td><a
                             href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/read/download/${sibsInputFile.externalId}">
-                                <c:out                              
-                                    value="${sibsInputFile.filename }" />
+                                <c:out value="${sibsInputFile.filename}" />
                         </a></td>
                     </tr>
-<!--                     <tr> -->
-<%--                         <th scope="row" class="col-xs-3"><spring:message --%>
-<%--                                 code="label.SibsInputFile.transactionsTotalAmount" /></th> --%>
-<%--                         <td><c:out --%>
-<%--                                 value='${sibsInputFile.transactionsTotalAmount}' /> --%>
-<!--                         </td> -->
-<!--                     </tr> -->
-<!--                     <tr> -->
-<%--                         <th scope="row" class="col-xs-3"><spring:message --%>
-<%--                                 code="label.SibsInputFile.totalCost" /></th> --%>
-<%--                         <td><c:out --%>
-<%--                                 value='${sibsInputFile.totalCost}' /></td> --%>
-<!--                     </tr> -->
                 </tbody>
             </table>
         </form>

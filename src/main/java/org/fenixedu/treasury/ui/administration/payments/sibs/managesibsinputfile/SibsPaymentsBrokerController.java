@@ -14,6 +14,8 @@ import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
 import org.fenixedu.treasury.services.payments.sibs.SibsPaymentsBrokerService;
@@ -121,8 +123,10 @@ public class SibsPaymentsBrokerController extends TreasuryBaseController {
         return JSP_PATH + "/" + page;
     }
 
-    protected void assertUserIsFrontOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+    protected void assertUserIsFrontOfficeMember(final FinantialInstitution finantialInstitution, Model model) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+
+        if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername, finantialInstitution)) {
             return;
         } else {
             addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);

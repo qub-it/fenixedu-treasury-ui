@@ -1,5 +1,6 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.joda.time.DateTime"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.DocumentNumberSeries"%>
 <%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
@@ -123,12 +124,9 @@ ${portal.toolkit()}
             code="label.event.back" />
     </a> &nbsp;
     <%
-        DocumentNumberSeries dns = (DocumentNumberSeries) request
-    					.getAttribute("documentNumberSeries");
-    			FinantialInstitution finantialInstitution = dns.getSeries()
-    					.getFinantialInstitution();
-    			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-    					finantialInstitution)) {
+        DocumentNumberSeries dns = (DocumentNumberSeries) request.getAttribute("documentNumberSeries");
+ 			FinantialInstitution finantialInstitution = dns.getSeries().getFinantialInstitution();
+ 			if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
     %>
 
     |&nbsp; <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> &nbsp; <a class="" href="#" data-toggle="modal" data-target="#deleteModal"> <spring:message

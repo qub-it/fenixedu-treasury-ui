@@ -1,7 +1,7 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.DebitEntry"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
@@ -50,7 +50,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
 %>
     
 <% 
-	if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>  
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
@@ -178,7 +178,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debitEntry.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+   if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>          
  
     <c:if test="${empty debitEntry.finantialDocument}">
@@ -265,7 +265,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitEntry.ge
                                 	<spring:message code="label.DebitEntry.debitentry.with.no.document" />
                                 </span>&nbsp;
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
                                 <a class="btn btn-xs btn-primary" href="${pageContext.request.contextPath}<%=DebitNoteController.CREATE_URL%>?debitEntry=${debitEntry.externalId}"><span
                                     class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<spring:message code="label.DebitEntry.create.debitNote" /></a>

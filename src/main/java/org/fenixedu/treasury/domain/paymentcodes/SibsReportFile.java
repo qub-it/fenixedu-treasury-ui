@@ -121,6 +121,10 @@ public class SibsReportFile extends SibsReportFile_Base {
     public boolean isAccessible(User arg0) {
         return true;
     }
+    
+    public boolean isAccessible(final String username) {
+        return true;
+    }
 
     @Atomic
     public static SibsReportFile create(final DateTime whenProcessedBySibs, final BigDecimal transactionsTotalAmount,

@@ -1,5 +1,6 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.PaymentReferenceCodeController"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.Series"%>
 <%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
@@ -159,11 +160,8 @@ ${portal.toolkit()}
 
     <%
         Series series = (Series) request.getAttribute("series");
-    			FinantialInstitution finantialInstitution = series
-    					.getFinantialInstitution();
-    			if (TreasuryAccessControl.getInstance().isBackOfficeMember(
-    					finantialInstitution)
-    					 ) {
+  		FinantialInstitution finantialInstitution = series.getFinantialInstitution();
+  		if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
     %>
 
 
@@ -290,7 +288,7 @@ ${portal.toolkit()}
 </h3>
 
 <%
-    if (TreasuryAccessControl.getInstance().isBackOfficeMember(finantialInstitution)) {
+    if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
 <div class="well well-sm" style="display: inline-block">
@@ -322,10 +320,8 @@ ${portal.toolkit()}
                             href="${pageContext.request.contextPath}<%=DocumentNumberSeriesController.READ_URL%>${documentNumberSeries.externalId}"> <spring:message
                                     code='label.view' />
                         </a> <%
-     if (TreasuryAccessControl.getInstance()
- 								.isBackOfficeMember(finantialInstitution)
- 								|| TreasuryAccessControl.getInstance()
- 										.isManager()) {
+                        String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+     if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, finantialInstitution) || TreasuryAccessControlAPI.isManager(loggedUsername)) {
  %> <a class="btn btn-default btn-xs btn-warning" href="#" onClick="javascript:processDelete('${documentNumberSeries.externalId}')"> <spring:message code='label.delete' />
                         </a> <%
      }
@@ -351,37 +347,34 @@ ${portal.toolkit()}
 
 <script>
 	$(document)
-			.ready(
-					function() {
+			.ready(function() {
 
-						var table = $('#documentNumberSeriesTable')
-								.DataTable(
-										{
-											language : {
-												url : "${datatablesI18NUrl}",
-											},
-											//CHANGE_ME adjust the actions column width if needed
-											"columnDefs" : [
-											//54
-											{
-												"width" : "120px",
-												"targets" : 2
-											} ],
-											//Documentation: https://datatables.net/reference/option/dom
-											//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-											//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-											//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-											//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
-											"tableTools" : {
-												"sSwfPath" : "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
-											}
-										});
+						var table = $('#documentNumberSeriesTable').DataTable({
+							language : {
+								url : "${datatablesI18NUrl}",
+							},
+							//CHANGE_ME adjust the actions column width if needed
+							"columnDefs" : [
+							//54
+							{
+								"width" : "120px",
+								"targets" : 2
+							} ],
+							//Documentation: https://datatables.net/reference/option/dom
+							//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+							//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+							//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+							//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+							"tableTools" : {
+								"sSwfPath" : "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
+							}
+						});
+						
 						table.columns.adjust().draw();
 
-						$('#documentNumberSeriesTable tbody').on('click', 'tr',
-								function() {
-									$(this).toggleClass('selected');
-								});
+						$('#documentNumberSeriesTable tbody').on('click', 'tr', function() {
+							$(this).toggleClass('selected');
+						});
 
 					});
 </script>

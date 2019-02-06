@@ -1,7 +1,7 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPayment"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -167,7 +167,7 @@ ${portal.toolkit()}
                     </tr>
                     
 <%
-	if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
+if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
 %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.forwardPaymentSuccessUrl" /></th>
@@ -178,7 +178,7 @@ ${portal.toolkit()}
                         <td><c:out value='${forwardPayment.forwardPaymentInsuccessUrl}' /></td>
                     </tr>
 <%
-	}
+}
 %>
 					<tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.debitEntries" /></th>

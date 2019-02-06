@@ -120,41 +120,6 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
-
-
-<!-- <div class="panel panel-default"> -->
-<!-- <form method="get" class="form-horizontal"> -->
-<!-- <div class="panel-body"> -->
-<!-- <div class="form-group row"> -->
-<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsInputFile.whenProcessedBySibs"/></div>  --%>
-
-<!-- <div class="col-sm-4"> -->
-<!--    <input id="sibsInputFile_whenProcessedBySibs" class="form-control" type="text" name="whenprocessedbysibs"  bennu-datetime  -->
-<%--    value = '<c:out value='${not empty param.whenprocessedbysibs ? param.whenprocessedbysibs : sibsInputFile.whenProcessedBySibs }'/>' /> --%>
-<!-- </div> -->
-<!-- </div>      -->
-<!-- <div class="form-group row"> -->
-<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsInputFile.transactionsTotalAmount"/></div>  --%>
-
-<!-- <div class="col-sm-10"> -->
-<%--    <input id="sibsInputFile_transactionsTotalAmount" class="form-control" type="text" name="transactionstotalamount"  value='<c:out value='${not empty param.transactionstotalamount ? param.transactionstotalamount : sibsInputFile.transactionsTotalAmount }'/>' /> --%>
-<!-- </div>  -->
-<!-- </div>      -->
-<!-- <div class="form-group row"> -->
-<%-- <div class="col-sm-2 control-label"><spring:message code="label.SibsInputFile.totalCost"/></div>  --%>
-
-<!-- <div class="col-sm-10"> -->
-<%--    <input id="sibsInputFile_totalCost" class="form-control" type="text" name="totalcost"  value='<c:out value='${not empty param.totalcost ? param.totalcost : sibsInputFile.totalCost }'/>' /> --%>
-<!-- </div>  -->
-<!-- </div>      -->
-<!-- </div> -->
-<!-- <div class="panel-footer"> -->
-<%--    <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/> --%>
-<!-- </div> -->
-<!-- </form> -->
-<!-- </div> -->
-
-
 <c:choose>
     <c:when test="${not empty searchsibsinputfileResultsDataSet}">
         <table id="searchsibsinputfileTable"
@@ -199,7 +164,7 @@ ${portal.toolkit()}
                 "DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
                 "whencreated" : "<c:out value='${searchResult.versioningCreationDate.toString("YYYY-MM-dd HH:mm:ss")}'/>",
                 "whenprocessedbysibs" : "<c:out value='${searchResult.whenProcessedBySibs.toString("YYYY-MM-dd HH:mm:ss")}'/>",
-"uploader" : "<c:out value='${searchResult.uploader.name}'/>",
+"uploader" : "<c:out value='${searchResult.uploaderUsername}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
                 "" 
@@ -243,11 +208,13 @@ ${portal.toolkit()}
             "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"            
         }
         });
+        
+        table.order([0, 'desc']);
         table.columns.adjust().draw();
         
-          $('#searchsibsinputfileTable tbody').on( 'click', 'tr', function () {
-                $(this).toggleClass('selected');
-            } );
+        $('#searchsibsinputfileTable tbody').on( 'click', 'tr', function () {
+	        $(this).toggleClass('selected');
+        } );
           
     }); 
 </script>

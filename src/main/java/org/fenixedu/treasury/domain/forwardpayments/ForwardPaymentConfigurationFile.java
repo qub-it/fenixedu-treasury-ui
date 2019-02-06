@@ -2,7 +2,7 @@ package org.fenixedu.treasury.domain.forwardpayments;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 
 public class ForwardPaymentConfigurationFile extends ForwardPaymentConfigurationFile_Base {
     
@@ -13,8 +13,13 @@ public class ForwardPaymentConfigurationFile extends ForwardPaymentConfiguration
     
     @Override
     public boolean isAccessible(User arg0) {
-        return TreasuryAccessControl.getInstance().isManager(arg0);
+        return isAccessible(arg0.getUsername());
     }
+    
+    public boolean isAccessible(final String username) {
+        return TreasuryAccessControlAPI.isManager(username);
+    }
+    
 
     public static ForwardPaymentConfigurationFile create(final String filename, final byte[] contents) {
         final ForwardPaymentConfigurationFile file = new ForwardPaymentConfigurationFile();
@@ -29,4 +34,5 @@ public class ForwardPaymentConfigurationFile extends ForwardPaymentConfiguration
         setBennu(null);
         super.delete();
     }
+    
 }

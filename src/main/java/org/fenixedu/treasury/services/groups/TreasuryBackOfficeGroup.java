@@ -13,6 +13,7 @@ import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Sets;
 
 @GroupOperator("treasuryBackOffice")
 public class TreasuryBackOfficeGroup extends CustomGroup {
@@ -36,7 +37,16 @@ public class TreasuryBackOfficeGroup extends CustomGroup {
 
     @Override
     public Stream<User> getMembers() {
-        return TreasuryAccessControlAPI.getBackOfficeMembers().stream();
+        final java.util.Set<User> result = Sets.newHashSet();
+        for (final String username : TreasuryAccessControlAPI.getBackOfficeMemberUsernames()) {
+            final User user = User.findByUsername(username);
+            
+            if(user != null) {
+                result.add(user);
+            }
+        }
+        
+        return result.stream();
     }
 
     @Override

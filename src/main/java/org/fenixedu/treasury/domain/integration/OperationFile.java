@@ -45,8 +45,11 @@ public class OperationFile extends OperationFile_Base {
     }
 
     @Override
-    // TODO: Implement
     public boolean isAccessible(User arg0) {
+        throw new RuntimeException("not implemented");
+    }
+    
+    public boolean isAccessible(final String username) {
         throw new RuntimeException("not implemented");
     }
 

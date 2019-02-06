@@ -1,7 +1,7 @@
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
-<%@page import="org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.DebitNote"%>
 <%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
@@ -39,10 +39,10 @@
 ${portal.toolkit()}
 
 <%
-        DebitNote debitNote = (DebitNote) request
-                        .getAttribute("debitNote");
-FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.getDebtAccount().getFinantialInstitution();
-    %>
+	DebitNote debitNote = (DebitNote) request.getAttribute("debitNote");
+	FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.getDebtAccount().getFinantialInstitution();
+%>
+
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
@@ -52,7 +52,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 </div>
 
 <% 
-                if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isFrontOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
 <div class="modal fade" id="closeModal">
@@ -143,7 +143,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 %>
 
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
 <div class="modal fade" id="deleteModal">
@@ -234,7 +234,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
 <%} %>
 
 <% 
-	if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
 <div class="modal fade" id="clearDocumentToExport">
@@ -289,7 +289,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) debitNote.get
                 code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" />
         </a> 
 <% 
-if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>        
             <div class="btn-group">
                 <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -421,7 +421,7 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
                     </li>
 
 <% 
-	if (debitNote.isDocumentToExport() && TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
+	if (debitNote.isDocumentToExport() && TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
                     <li>
                     	<a href="#" data-toggle="modal" data-target="#clearDocumentToExport">
@@ -682,7 +682,7 @@ if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.get
 </h2>
 
 <% 
-                if (TreasuryAccessControl.getInstance().isAllowToModifyInvoices(Authenticate.getUser(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>  
 <%-- NAVIGATION --%>
 <c:if test="${debitNote.isPreparing()}">
