@@ -175,6 +175,10 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 
     @Override
     public String getLoggedUsername() {
+        if(Authenticate.getUser() == null) {
+            return null;
+        }
+        
         return Authenticate.getUser().getUsername();
     }
 
@@ -204,6 +208,25 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 
     @Override
     public <T> String versioningCreatorUsername(T obj) {
+        return readVersioningCreatorUsername(obj);
+    }
+    
+    @Override
+    public <T> DateTime versioningCreationDate(T obj) {
+        return readVersioningCreationDate(obj);
+    }
+    
+    @Override
+    public <T> String versioningUpdatorUsername(T obj) {
+        return readVersioningUpdatorUsername(obj);
+    }
+    
+    @Override
+    public <T> DateTime versioningUpdateDate(T obj) {
+        return readVersioningUpdateDate(obj);
+    }
+    
+    public static <T> String readVersioningCreatorUsername(T obj) {
         try {
             String username = (String) PropertyUtils.getProperty(obj, "versioningCreator");
 
@@ -213,8 +236,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         }
     }
 
-    @Override
-    public <T> DateTime versioningCreationDate(T obj) {
+    public static <T> DateTime readVersioningCreationDate(T obj) {
         try {
             DateTime creationDate = (DateTime) PropertyUtils.getProperty(obj, "versioningCreationDate");
 
@@ -224,8 +246,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         }
     }
 
-    @Override
-    public <T> String versioningUpdatorUsername(T obj) {
+    public static <T> String readVersioningUpdatorUsername(T obj) {
         try {
             Object versioningUpdatedBy = PropertyUtils.getProperty(obj, "versioningUpdatedBy");
 
@@ -239,8 +260,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         }
     }
 
-    @Override
-    public <T> DateTime versioningUpdateDate(T obj) {
+    public static <T> DateTime readVersioningUpdateDate(T obj) {
         try {
             Object versioningUpdateDate = PropertyUtils.getProperty(obj, "versioningUpdateDate");
 
