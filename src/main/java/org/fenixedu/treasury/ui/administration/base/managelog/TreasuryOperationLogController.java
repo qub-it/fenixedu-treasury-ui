@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -99,16 +100,13 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
     private List<TreasuryOperationLog> filterSearch(String oid, String type, LocalDate from, LocalDate to) {
         return getSearchUniverse().filter(log -> oid == null || log.getDomainOid().equals(oid))
                 .filter(log -> type == null || log.getType().equals(type))
-                .filter(log -> from == null
-                        || TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(log).toLocalDate()
-                                .isAfter(from)
-                        || TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(log).toLocalDate()
-                                .isEqual(from))
-                .filter(log -> to == null
-                        || TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(log).toLocalDate()
-                                .isBefore(to)
-                        || TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(log).toLocalDate()
-                                .isEqual(to))
+                .filter(log -> {
+                    final LocalDate creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(log).toLocalDate();
+                    return from == null || !creationDate.isBefore(from);
+                }).filter(log -> {
+                    LocalDate creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(log).toLocalDate();
+                    return to == null || !creationDate.isAfter(to);
+                })
                 .sorted(TreasuryOperationLog.COMPARATOR_BY_CREATION_DATE).limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList());
     }
 }
