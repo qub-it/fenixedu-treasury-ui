@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
@@ -19,7 +20,8 @@ public class ReimbursementProcessStateLog extends ReimbursementProcessStateLog_B
 
                 @Override
                 public int compare(final ReimbursementProcessStateLog o1, final ReimbursementProcessStateLog o2) {
-                    int c = o1.getVersioningCreationDate().compareTo(o2.getVersioningCreationDate());
+                    int c = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1)
+                            .compareTo(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2));
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }
             };
@@ -68,20 +70,21 @@ public class ReimbursementProcessStateLog extends ReimbursementProcessStateLog_B
      * ********
      */
     // @formatter:off
-    
+
     public static Stream<ReimbursementProcessStateLog> findAll() {
         return FenixFramework.getDomainRoot().getReimbursementProcessStateLogsSet().stream();
     }
-    
+
     public static Stream<ReimbursementProcessStateLog> find(final SettlementNote settlementNote) {
         return settlementNote.getReimbursementProcessStateLogsSet().stream();
     }
-    
+
     @Atomic
-    public static ReimbursementProcessStateLog create(final SettlementNote settlementNote, final ReimbursementProcessStatusType reimbursementProcessStatusType, final String statusId,
-            final DateTime statusDate, final String remarks) {
-        
+    public static ReimbursementProcessStateLog create(final SettlementNote settlementNote,
+            final ReimbursementProcessStatusType reimbursementProcessStatusType, final String statusId, final DateTime statusDate,
+            final String remarks) {
+
         return new ReimbursementProcessStateLog(settlementNote, reimbursementProcessStatusType, statusId, statusDate, remarks);
     }
-    
+
 }

@@ -469,7 +469,7 @@ public class SingapSiagExporter implements IERPExporter {
                 payment.setSettlementType(SAFTPTSettlementType.NN);
             }
 
-            payment.setSourceID(document.getVersioningCreator());
+            payment.setSourceID(TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(document));
 
             // DocumentTotals
             SourceDocuments.Payments.Payment.DocumentTotals docTotals = new SourceDocuments.Payments.Payment.DocumentTotals();

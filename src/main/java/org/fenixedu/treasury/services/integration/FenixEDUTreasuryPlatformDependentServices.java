@@ -23,8 +23,6 @@ import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
 import org.joda.time.DateTime;
 
-import com.qubit.solution.fenixedu.bennu.versioning.domain.UpdateEntity;
-import com.qubit.solution.fenixedu.bennu.versioning.domain.UpdateTimestamp;
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceClientConfiguration;
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceConfiguration;
 

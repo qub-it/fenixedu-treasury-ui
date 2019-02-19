@@ -433,7 +433,8 @@ public class SAPExporter implements IERPExporter {
                             .getFinantialTransactionReference() : "");
 
             //OriginDocumentNumber
-            payment.setSourceID(!Strings.isNullOrEmpty(document.getVersioningCreator()) ? document.getVersioningCreator() : " ");
+            String creator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(document);
+            payment.setSourceID(!Strings.isNullOrEmpty(creator) ? creator : " ");
 
             // CustomerID
             payment.setCustomerID(document.getDebtAccount().getCustomer().getCode());
@@ -815,8 +816,9 @@ public class SAPExporter implements IERPExporter {
             workDocument.setPeriod(document.getDocumentDate().getMonthOfYear());
 
             // SourceID
+            String creator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(document);
             workDocument
-                    .setSourceID(!Strings.isNullOrEmpty(document.getVersioningCreator()) ? document.getVersioningCreator() : "");
+                    .setSourceID(!Strings.isNullOrEmpty(creator) ? creator : "");
 
         } catch (DatatypeConfigurationException e) {
 

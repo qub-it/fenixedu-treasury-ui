@@ -35,14 +35,13 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsOutputFile;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -85,8 +84,10 @@ public class SibsOutputFileController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate whencreated, Model model) {
+    public String search(
+            @RequestParam(value = "whenprocessedbysibs",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate whencreated,
+            Model model) {
         List<SibsOutputFile> searchsibsoutputfileResultsDataSet = filterSearchSibsOutputFile(whencreated);
 
         model.addAttribute("searchsibsoutputfileResultsDataSet", searchsibsoutputfileResultsDataSet);
@@ -99,10 +100,9 @@ public class SibsOutputFileController extends TreasuryBaseController {
 
     private List<SibsOutputFile> filterSearchSibsOutputFile(org.joda.time.LocalDate whencreated) {
 
-        return getSearchUniverseSearchSibsOutputFileDataSet().filter(
-                sibsOutputFile -> whencreated == null
-                        || whencreated.equals(sibsOutputFile.getVersioningCreationDate().toLocalDate())).collect(
-                Collectors.toList());
+        return getSearchUniverseSearchSibsOutputFileDataSet().filter(sibsOutputFile -> whencreated == null || whencreated.equals(
+                TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(sibsOutputFile).toLocalDate()))
+                .collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -182,12 +182,15 @@ public class SibsOutputFileController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "lastsuccessfulexportation", required = true) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime lastSuccessfulExportation, @RequestParam(
-            value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution, Model model,
+    public String create(
+            @RequestParam(value = "lastsuccessfulexportation",
+                    required = true) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime lastSuccessfulExportation,
+            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution, Model model,
             RedirectAttributes redirectAttributes) {
-        if (finantialInstitution.getSibsConfiguration() == null || finantialInstitution.getSibsConfiguration().isValid() == false) {
-            addErrorMessage(treasuryBundle("error.administration.payments.sibs.managesibsoutputfile.sibsconfiguration.invalid"), model);
+        if (finantialInstitution.getSibsConfiguration() == null
+                || finantialInstitution.getSibsConfiguration().isValid() == false) {
+            addErrorMessage(treasuryBundle("error.administration.payments.sibs.managesibsoutputfile.sibsconfiguration.invalid"),
+                    model);
             return create(model);
         }
 

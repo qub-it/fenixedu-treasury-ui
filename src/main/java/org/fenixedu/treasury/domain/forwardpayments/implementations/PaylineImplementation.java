@@ -17,6 +17,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
+import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Address;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Buyer;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Details;
@@ -126,7 +128,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         order.setRef(String.valueOf(forwardPayment.getOrderNumber()));
         order.setAmount(getFormattedAmount(forwardPayment));
         order.setCurrency(EURO_CURRENCY);
-        order.setDate(forwardPayment.getVersioningCreationDate().toString("dd/MM/yyyy HH:mm"));
+        order.setDate(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(forwardPayment).toString("dd/MM/yyyy HH:mm"));
         order.setCountry(PT);
 
         // fillOrderDetails(forwardPayment, order);

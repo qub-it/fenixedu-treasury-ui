@@ -10,6 +10,8 @@ import java.util.stream.Stream;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -22,7 +24,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
                 @Override
                 public int compare(final ERPExportOperation o1, final ERPExportOperation o2) {
-                    int c = Comparator.comparing(IntegrationOperation::getVersioningCreationDate).compare(o1, o2);
+                    int c = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1)
+                            .compareTo(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2));
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }
             };
@@ -91,7 +94,7 @@ public class ERPExportOperation extends ERPExportOperation_Base {
 
         return eRPExportOperation;
     }
-    
+
     @Atomic
     public static ERPExportOperation copy(final ERPExportOperation log) {
         final byte[] data = log.getFile().getContent();
@@ -102,12 +105,13 @@ public class ERPExportOperation extends ERPExportOperation_Base {
         final boolean processed = log.getProcessed();
         final boolean success = log.getSuccess();
         final boolean corrected = log.getCorrected();
-        
-        final ERPExportOperation copy = create(data, filename, finantialInstitution, erpOperationId, executionDate, processed, success, corrected);
-        
+
+        final ERPExportOperation copy =
+                create(data, filename, finantialInstitution, erpOperationId, executionDate, processed, success, corrected);
+
         copy.appendLog(log.getErrorLog(), log.getIntegrationLog(), log.getSoapInboundMessage(), log.getSoapOutboundMessage());
         copy.getFinantialDocumentsSet().addAll(log.getFinantialDocumentsSet());
-        
+
         return copy;
     }
 

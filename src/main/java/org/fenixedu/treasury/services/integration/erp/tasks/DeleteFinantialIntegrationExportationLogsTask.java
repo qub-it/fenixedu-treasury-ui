@@ -11,14 +11,13 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import pt.ist.fenixframework.DomainRoot;
 import org.fenixedu.bennu.io.domain.FileSupport;
 import org.fenixedu.bennu.io.domain.LocalFileToDelete;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
-import org.fenixedu.bennu.scheduler.custom.CustomTask;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -126,7 +125,8 @@ public class DeleteFinantialIntegrationExportationLogsTask extends CronTask {
 
                     @Override
                     public Object call() throws Exception {
-                        List<LocalFileToDelete> arrayList = new ArrayList<>(org.fenixedu.bennu.io.domain.FileSupportUtils.retrieveDeleteSet(FileSupport.getInstance()));
+                        List<LocalFileToDelete> arrayList = new ArrayList<>(
+                                org.fenixedu.bennu.io.domain.FileSupportUtils.retrieveDeleteSet(FileSupport.getInstance()));
                         int totalSize = arrayList.size();
                         shouldRespawn = totalSize > numberOfLocalFilesToDeletePerTx;
                         if (shouldRespawn) {
@@ -236,9 +236,13 @@ public class DeleteFinantialIntegrationExportationLogsTask extends CronTask {
             return false;
         }
 
-        List<ERPExportOperation> logs = new ArrayList<ERPExportOperation>(doc.getErpExportOperationsSet().stream()
-                .sorted(Comparator.comparing(ERPExportOperation::getVersioningCreationDate).reversed())
-                .collect(Collectors.toList()));
+        Comparator<ERPExportOperation> comparator = (o1, o2) -> {
+            DateTime o1CreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1);
+            DateTime o2CreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2);
+            return o1CreationDate.compareTo(o2CreationDate);
+        };
+        List<ERPExportOperation> logs = new ArrayList<ERPExportOperation>(
+                doc.getErpExportOperationsSet().stream().sorted(comparator.reversed()).collect(Collectors.toList()));
 
         if (logs.size() > 1) {
             TreeSet<ERPExportOperation> exportationByDateSet = new TreeSet<ERPExportOperation>(localDateComparator());
@@ -272,7 +276,9 @@ public class DeleteFinantialIntegrationExportationLogsTask extends CronTask {
 
             @Override
             public int compare(final ERPExportOperation o1, final ERPExportOperation o2) {
-                return o1.getVersioningCreationDate().toLocalDate().compareTo(o2.getVersioningCreationDate().toLocalDate());
+                DateTime o1CreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1);
+                DateTime o2CreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2);
+                return o1CreationDate.toLocalDate().compareTo(o2CreationDate.toLocalDate());
             }
 
         };
