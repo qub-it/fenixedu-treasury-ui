@@ -1,5 +1,9 @@
 package org.fenixedu.treasury.services.payments.sibs.incomming;
 
+import static java.lang.String.format;
+import static org.fenixedu.treasury.util.TreasuryConstants.DATE_FORMAT_YYYY_MM_DD;
+
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.scheduler.CronTask;
@@ -10,6 +14,7 @@ import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.services.payments.sibs.SibsPaymentsBrokerService;
 import org.joda.time.LocalDate;
 
@@ -18,6 +23,15 @@ public class ProcessSibsPaymentsFromBroker extends CronTask {
 
     @Override
     public void runTask() throws Exception {
+        final LocalDate now = new LocalDate();
+        
+        importFromBroker(now.minusDays(3), now.minusDays(3));
+        
+        importFromBroker(now.minusDays(2), now);
+    }
+
+    private void importFromBroker(final LocalDate fromDate, final LocalDate toDate) throws IOException {
+        taskLog(format("[%s - %s] Processing...\n", fromDate.toString(DATE_FORMAT_YYYY_MM_DD), toDate.toString(DATE_FORMAT_YYYY_MM_DD)));
         
         for(final FinantialInstitution finantialInstitution : FinantialInstitution.findAll().collect(Collectors.toSet())) {
             
@@ -31,10 +45,8 @@ public class ProcessSibsPaymentsFromBroker extends CronTask {
                         continue;
                     }
                     
-                    LocalDate now = new LocalDate();
-                    
                     final SibsIncommingPaymentFile sibsFile =
-                            SibsPaymentsBrokerService.readPaymentsFromBroker(paymentCodePool.getFinantialInstitution(), now.minusDays(1), now,
+                            SibsPaymentsBrokerService.readPaymentsFromBroker(paymentCodePool.getFinantialInstitution(), fromDate, toDate,
                                     true, true);
                     
                     if(sibsFile.getDetailLines().isEmpty()) {
@@ -51,7 +63,7 @@ public class ProcessSibsPaymentsFromBroker extends CronTask {
                     }
                 } catch(final TreasuryDomainException e) {
                     if(SibsPaymentsBrokerService.ERROR_SIBS_PAYMENTS_BROKER_SERVICE_NO_PAYMENTS_TO_IMPORT.equals(e.getMessage())) {
-                        taskLog("No payments to register");
+                        taskLog(format("[%s - %s] No payments to register\n", fromDate.toString(DATE_FORMAT_YYYY_MM_DD), toDate.toString(DATE_FORMAT_YYYY_MM_DD)));
                         continue;
                     }
                     
@@ -59,5 +71,7 @@ public class ProcessSibsPaymentsFromBroker extends CronTask {
                 }
             }
         }
+        
+        taskLog(format("[%s - %s] Finished.\n", fromDate.toString(DATE_FORMAT_YYYY_MM_DD), toDate.toString(DATE_FORMAT_YYYY_MM_DD)));
     }
 }
