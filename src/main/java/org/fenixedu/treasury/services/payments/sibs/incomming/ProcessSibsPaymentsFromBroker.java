@@ -25,9 +25,11 @@ public class ProcessSibsPaymentsFromBroker extends CronTask {
     public void runTask() throws Exception {
         final LocalDate now = new LocalDate();
         
-        importFromBroker(now.minusDays(3), now.minusDays(3));
+        for(int i = 3; i > 0; i--) {
+            importFromBroker(now.minusDays(i * 3), now.minusDays((i * 3) - 2));
+        }
         
-        importFromBroker(now.minusDays(2), now);
+        importFromBroker(now, now);
     }
 
     private void importFromBroker(final LocalDate fromDate, final LocalDate toDate) throws IOException {
