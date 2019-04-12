@@ -178,13 +178,7 @@
             <artifactId>gson-jodatime-serialisers</artifactId>
             <version>1.2.0</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15</artifactId>
-            <version>1.46</version>
-        </dependency>
-        
+         
 	</dependencies>
 
 	<pluginRepositories>
