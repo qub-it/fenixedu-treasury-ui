@@ -215,6 +215,49 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
         return lastAdvancedCreditSettlementNote;
     }
 
+    public BigDecimal getTotalAmountToPay() {
+        BigDecimal totalAmount = BigDecimal.ZERO;
+        
+        for (final DebitEntryBean debitEntryBean : getDebitEntries()) {
+            if(!debitEntryBean.isIncluded()) {
+                continue;
+            }
+            
+            if(isReimbursementNote()) {
+                totalAmount = totalAmount.subtract(debitEntryBean.getDebtAmountWithVat());
+            } else {
+                totalAmount = totalAmount.add(debitEntryBean.getDebtAmountWithVat());
+            }
+        }
+        
+        for (InterestEntryBean interestEntryBean : getInterestEntries()) {
+            if(!interestEntryBean.isIncluded()) {
+                continue;
+            }
+            
+            if(isReimbursementNote()) {
+                totalAmount = totalAmount.subtract(interestEntryBean.getInterest().getInterestAmount());
+            } else {
+                totalAmount = totalAmount.add(interestEntryBean.getInterest().getInterestAmount());
+            }
+        }
+        
+        for (CreditEntryBean creditEntryBean : getCreditEntries()) {
+            if(!creditEntryBean.isIncluded()) {
+                continue;
+            }
+            
+            if(isReimbursementNote()) {
+                totalAmount = totalAmount.add(creditEntryBean.getCreditAmountWithVat());
+            } else {
+                totalAmount = totalAmount.subtract(creditEntryBean.getCreditAmountWithVat());
+            }
+        }
+        
+        return totalAmount;
+    }
+    
+    
     public List<ISettlementInvoiceEntryBean> getIncludedInvoiceEntryBeans() {
         final List<ISettlementInvoiceEntryBean> invoiceEntriesList = Lists.newArrayList();
         for (int i = 0; i < getDebitEntries().size(); i++) {
