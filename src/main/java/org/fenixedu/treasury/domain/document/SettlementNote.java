@@ -56,6 +56,7 @@ import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -720,6 +721,21 @@ public class SettlementNote extends SettlementNote_Base {
         SettlementNote settlementNote = new SettlementNote(debtAccount, documentNumberSeries, documentDate, paymentDate,
                 originDocumentNumber, finantialTransactionReference);
 
+        return settlementNote;
+    }
+
+    @Atomic
+    public static SettlementNote createSettlementNote(SettlementNoteBean bean) {
+        DateTime documentDate = new DateTime();
+
+        SettlementNote settlementNote = SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate,
+                bean.getDate().toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber(),
+                !Strings.isNullOrEmpty(bean.getFinantialTransactionReference()) ? bean.getFinantialTransactionReferenceYear()
+                        + "/" + bean.getFinantialTransactionReference() : "");
+
+        settlementNote.processSettlementNoteCreation(bean);
+        settlementNote.closeDocument();
+        
         return settlementNote;
     }
 

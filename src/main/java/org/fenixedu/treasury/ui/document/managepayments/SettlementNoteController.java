@@ -410,7 +410,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
-            SettlementNote settlementNote = processSettlementNoteCreation(bean);
+            SettlementNote settlementNote = SettlementNote.createSettlementNote(bean);
             addInfoMessage(treasuryBundle("label.SettlementNote.create.success"), model);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
@@ -418,21 +418,6 @@ public class SettlementNoteController extends TreasuryBaseController {
         }
         setSettlementNoteBean(bean, model);
         return "treasury/document/managepayments/settlementnote/summary";
-    }
-
-    @Atomic
-    public SettlementNote processSettlementNoteCreation(SettlementNoteBean bean) {
-        DateTime documentDate = new DateTime();
-        if (bean.getDocNumSeries().getSeries().getCertificated() == false) {
-            documentDate = bean.getDate().toDateTimeAtStartOfDay();
-        }
-        SettlementNote settlementNote = SettlementNote.create(bean.getDebtAccount(), bean.getDocNumSeries(), documentDate,
-                bean.getDate().toDateTimeAtStartOfDay(), bean.getOriginDocumentNumber(),
-                !Strings.isNullOrEmpty(bean.getFinantialTransactionReference()) ? bean.getFinantialTransactionReferenceYear()
-                        + "/" + bean.getFinantialTransactionReference() : "");
-        settlementNote.processSettlementNoteCreation(bean);
-        settlementNote.closeDocument();
-        return settlementNote;
     }
 
     @RequestMapping(value = SEARCH_URI)
