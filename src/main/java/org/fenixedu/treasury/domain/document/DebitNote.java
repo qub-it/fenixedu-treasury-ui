@@ -199,59 +199,58 @@ public class DebitNote extends DebitNote_Base {
 
         return note;
     }
-    
-    public static DebitNote copyDebitNote(final DebitNote debitNoteToCopy, final boolean copyDocumentDate, final boolean copyCloseDate, final boolean applyExemptions) {
-        final DebitNote result = DebitNote.create(debitNoteToCopy.getDebtAccount(), 
-                debitNoteToCopy.getPayorDebtAccount(), 
-                debitNoteToCopy.getDocumentNumberSeries(),
-                copyDocumentDate ? debitNoteToCopy.getDocumentDate() : new DateTime(), 
-                        debitNoteToCopy.getDocumentDueDate(), debitNoteToCopy.getOriginDocumentNumber());
-        
-        if(copyCloseDate) {
+
+    public static DebitNote copyDebitNote(final DebitNote debitNoteToCopy, final boolean copyDocumentDate,
+            final boolean copyCloseDate, final boolean applyExemptions) {
+        final DebitNote result = DebitNote.create(debitNoteToCopy.getDebtAccount(), debitNoteToCopy.getPayorDebtAccount(),
+                debitNoteToCopy.getDocumentNumberSeries(), copyDocumentDate ? debitNoteToCopy.getDocumentDate() : new DateTime(),
+                debitNoteToCopy.getDocumentDueDate(), debitNoteToCopy.getOriginDocumentNumber());
+
+        if (copyCloseDate) {
             result.setCloseDate(debitNoteToCopy.getCloseDate());
             result.setExportedInLegacyERP(debitNoteToCopy.isExportedInLegacyERP());
         }
-        
+
         result.setAddress(debitNoteToCopy.getAddress());
         result.setDocumentObservations(result.getDocumentObservations());
         result.setLegacyERPCertificateDocumentReference(debitNoteToCopy.getLegacyERPCertificateDocumentReference());
 
         final Map<DebitEntry, DebitEntry> debitEntriesMap = Maps.newHashMap();
-        
+
         for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
             final DebitEntry sourceDebitEntry = (DebitEntry) finantialDocumentEntry;
-            final boolean applyExemptionOnDebitEntry = 
-                    applyExemptions && (sourceDebitEntry.getTreasuryExemption() != null && TreasuryConstants.isPositive(sourceDebitEntry.getExemptedAmount()));
-                    
+            final boolean applyExemptionOnDebitEntry = applyExemptions && (sourceDebitEntry.getTreasuryExemption() != null
+                    && TreasuryConstants.isPositive(sourceDebitEntry.getExemptedAmount()));
+
             final DebitEntry debitEntryCopy = DebitEntry.copyDebitEntry(sourceDebitEntry, result, applyExemptionOnDebitEntry);
-            
+
             debitEntriesMap.put(sourceDebitEntry, debitEntryCopy);
-            
+
         }
-        
-        if(applyExemptions) {
+
+        if (applyExemptions) {
             for (final FinantialDocumentEntry finantialDocumentEntry : debitNoteToCopy.getFinantialDocumentEntriesSet()) {
                 final DebitEntry sourceDebitEntry = (DebitEntry) finantialDocumentEntry;
-                final boolean exemptionAppliedWithCreditNote = sourceDebitEntry.getTreasuryExemption() != null && !TreasuryConstants.isPositive(sourceDebitEntry.getExemptedAmount());
-            
-                if(!exemptionAppliedWithCreditNote) {
+                final boolean exemptionAppliedWithCreditNote = sourceDebitEntry.getTreasuryExemption() != null
+                        && !TreasuryConstants.isPositive(sourceDebitEntry.getExemptedAmount());
+
+                if (!exemptionAppliedWithCreditNote) {
                     continue;
                 }
-                
-                if(result.isPreparing()) {
+
+                if (result.isPreparing()) {
                     result.closeDocument();
                 }
-            
+
                 final DebitEntry debitEntryCopy = debitEntriesMap.get(sourceDebitEntry);
-                
+
                 final TreasuryExemption treasuryExemptionToCopy = sourceDebitEntry.getTreasuryExemption();
-                TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(), 
-                        treasuryExemptionToCopy.getTreasuryEvent(), 
-                        treasuryExemptionToCopy.getReason(), 
+                TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(),
+                        treasuryExemptionToCopy.getTreasuryEvent(), treasuryExemptionToCopy.getReason(),
                         treasuryExemptionToCopy.getValueToExempt(), debitEntryCopy);
             }
         }
-        
+
         return result;
     }
 
@@ -349,7 +348,7 @@ public class DebitNote extends DebitNote_Base {
                     debitEntry.closeCreditEntryIfPossible(reason, now, creditEntry);
                 }
             }
-            
+
             final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
             if (!Strings.isNullOrEmpty(loggedUsername)) {
@@ -357,7 +356,7 @@ public class DebitNote extends DebitNote_Base {
             } else {
                 setAnnulledReason(reason + " - " + new DateTime().toString("YYYY-MM-dd HH:mm:ss"));
             }
-            
+
         } else if (isPreparing()) {
             if (!getCreditNoteSet().isEmpty()) {
                 throw new TreasuryDomainException("error.DebitNote.creditNote.not.empty");
@@ -403,10 +402,10 @@ public class DebitNote extends DebitNote_Base {
                 continue;
             }
 
-            final CreditEntry creditEntry = entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations, amountForCreditWithoutVat, null,
-                    null);
-            
-            if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && isExportedInLegacyERP()) {
+            final CreditEntry creditEntry = entry.createCreditEntry(documentDate, entry.getDescription(), documentObservations,
+                    amountForCreditWithoutVat, null, null);
+
+            if (TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && isExportedInLegacyERP()) {
                 creditEntry.getFinantialDocument().setExportedInLegacyERP(true);
                 creditEntry.getFinantialDocument().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
             }
@@ -425,12 +424,15 @@ public class DebitNote extends DebitNote_Base {
                     continue;
                 }
 
-                CreditEntry interestsCreditEntry = interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(), documentObservations,
-                        amountForCreditWithoutVat, null, null);
-                
-                if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && interestEntry.getFinantialDocument() != null && interestEntry.getFinantialDocument().isExportedInLegacyERP()) {
+                CreditEntry interestsCreditEntry = interestEntry.createCreditEntry(documentDate, interestEntry.getDescription(),
+                        documentObservations, amountForCreditWithoutVat, null, null);
+
+                if (TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()
+                        && interestEntry.getFinantialDocument() != null
+                        && interestEntry.getFinantialDocument().isExportedInLegacyERP()) {
                     interestsCreditEntry.getFinantialDocument().setExportedInLegacyERP(true);
-                    interestsCreditEntry.getFinantialDocument().setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
+                    interestsCreditEntry.getFinantialDocument()
+                            .setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
                 }
             }
         }
@@ -516,6 +518,22 @@ public class DebitNote extends DebitNote_Base {
         anullDebitNoteWithCreditNote(reason, false);
 
         return newDebitNote;
+    }
+
+    @Atomic
+    public static DebitNote createInterestDebitNoteForDebitNote(final DebitNote debitNote,
+            final DocumentNumberSeries documentNumberSeries, final LocalDate paymentDate, final String documentObservations) {
+        DebitNote interestDebitNote;
+        if (documentNumberSeries.getSeries().getCertificated()) {
+            interestDebitNote =
+                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries, new DateTime(), paymentDate);
+        } else {
+            interestDebitNote = DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
+                    paymentDate.toDateTimeAtStartOfDay(), paymentDate);
+        }
+        interestDebitNote.setDocumentObservations(documentObservations);
+
+        return interestDebitNote;
     }
 
     public static DebitNote createInterestDebitNoteForDebitNote(DebitNote debitNote, DocumentNumberSeries documentNumberSeries,

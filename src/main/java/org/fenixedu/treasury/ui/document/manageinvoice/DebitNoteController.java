@@ -570,7 +570,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.DebitNote.invalid.series.for.interest.debit.note.creation");
             }
             DebitNote interestDebitNote =
-                    createInterestDebitNoteForDebitNote(debitNote, paymentDate, documentNumberSeries, documentObservations);
+                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries, paymentDate, documentObservations);
 
             addInfoMessage(treasuryBundle("info.document.manageinfoice.debitnote.success.calculate.interest.value"), model);
 
@@ -580,21 +580,6 @@ public class DebitNoteController extends TreasuryBaseController {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
         }
-    }
-
-    @Atomic
-    private DebitNote createInterestDebitNoteForDebitNote(DebitNote debitNote, LocalDate paymentDate,
-            DocumentNumberSeries documentNumberSeries, String documentObservations) {
-        DebitNote interestDebitNote;
-        if (documentNumberSeries.getSeries().getCertificated()) {
-            interestDebitNote =
-                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries, new DateTime(), paymentDate);
-        } else {
-            interestDebitNote = DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
-                    paymentDate.toDateTimeAtStartOfDay(), paymentDate);
-        }
-        interestDebitNote.setDocumentObservations(documentObservations);
-        return interestDebitNote;
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationonline")
