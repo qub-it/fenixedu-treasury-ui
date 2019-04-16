@@ -102,7 +102,14 @@ public class FinantialInstitution extends FinantialInstitution_Base implements I
 
 //        IFiscalContributor.findByFiscalNumber(getFiscalNumber());
     }
-
+    
+    @Atomic
+    public void editContacts(final String email, final String telephoneContact, final String webAddress) {
+        setEmail(email);
+        setTelephoneContact(telephoneContact);
+        setWebAddress(webAddress);
+    }
+    
     public String getComercialRegistrationCode() {
         return this.getFiscalNumber() + " " + this.getAddress();
     }

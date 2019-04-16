@@ -36,6 +36,16 @@ import pt.ist.fenixframework.Atomic;
 
 public class ERPExporterManager {
 
+    private static ERPExporterManager _INSTANCE = null;
+
+    public static final ERPExporterManager getInstance() {
+        if (_INSTANCE == null) {
+            _INSTANCE = new ERPExporterManager();
+        }
+
+        return _INSTANCE;
+    }
+
     private static Logger logger = LoggerFactory.getLogger(ERPExporterManager.class);
 
     private static final int WAIT_TRANSACTION_TO_FINISH_MS = 500;
@@ -103,12 +113,12 @@ public class ERPExporterManager {
                 // Limit exportation of documents in which customer has invalid addresses
                 final Customer customer = doc.getDebtAccount().getCustomer();
                 final List<String> errorMessages = Lists.newArrayList();
-                if(!ERPCustomerFieldsBean.validateAddress(customer, errorMessages)) {
-                    if(!doc.getErpExportOperationsSet().isEmpty()) {
+                if (!ERPCustomerFieldsBean.validateAddress(customer, errorMessages)) {
+                    if (!doc.getErpExportOperationsSet().isEmpty()) {
                         continue;
                     }
                 }
-                
+
                 result.add(
                         erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc)));
             }
@@ -119,32 +129,31 @@ public class ERPExporterManager {
         // return Lists.newArrayList(erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, sortedDocuments));
         return Lists.newArrayList();
     }
-    
-    public static List<ReimbursementProcessStateLog> updatePendingReimbursementNotes(final FinantialInstitution finantialInstitution) {
-        
+
+    public static List<ReimbursementProcessStateLog> updatePendingReimbursementNotes(
+            final FinantialInstitution finantialInstitution) {
+
         final List<SettlementNote> settlementNotes = FinantialDocument.find(FinantialDocumentType.findForReimbursementNote())
-            .map(SettlementNote.class::cast)
-            .filter(s -> s.getDebtAccount().getFinantialInstitution() == finantialInstitution)
-            .filter(s -> !s.isDocumentToExport())
-            .filter(s -> s.isReimbursementPending())
-            .collect(Collectors.toList());
-        
+                .map(SettlementNote.class::cast).filter(s -> s.getDebtAccount().getFinantialInstitution() == finantialInstitution)
+                .filter(s -> !s.isDocumentToExport()).filter(s -> s.isReimbursementPending()).collect(Collectors.toList());
+
         for (final SettlementNote note : settlementNotes) {
-            
+
             try {
                 ReimbursementProcessStateLog log = updateReimbursementState(note);
-                
-                logger.info("Reimbursement update %s => %s", note.getUiDocumentNumber(), log.getReimbursementProcessStatusType().getCode());
-            } catch(final Exception e) {
+
+                logger.info("Reimbursement update %s => %s", note.getUiDocumentNumber(),
+                        log.getReimbursementProcessStatusType().getCode());
+            } catch (final Exception e) {
                 logger.error(e.getLocalizedMessage(), e);
             }
         }
-        
+
         return null;
     }
 
     private static final int LIMIT = 200;
-    
+
     public static List<ERPExportOperation> exportPendingDocumentsForDebtAccount(final DebtAccount debtAccount) {
         final FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
 
@@ -159,7 +168,7 @@ public class ERPExporterManager {
 
         if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
             final List<ERPExportOperation> result = Lists.newArrayList();
-            
+
             int i = 0;
             while (!sortedDocuments.isEmpty()) {
                 final FinantialDocument doc = sortedDocuments.iterator().next();
@@ -169,9 +178,9 @@ public class ERPExporterManager {
 
                 result.add(
                         erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc)));
-                
+
                 /* For now limit to 200 finantial documents */
-                if(++i >= LIMIT) {
+                if (++i >= LIMIT) {
                     System.out.println("ERPExporterManager: Limit " + LIMIT + " finantial documents.");
                     break;
                 }
@@ -227,19 +236,19 @@ public class ERPExporterManager {
 
     public static ERPExportOperation exportSettlementNote(final SettlementNote settlementNote) {
         List<FinantialDocument> documentsToExport = filterDocumentsToExport(Collections.singletonList(settlementNote).stream());
-        
+
         if (documentsToExport.isEmpty()) {
             return null;
         }
 
         for (final SettlementEntry settlementEntry : settlementNote.getSettlemetEntriesSet()) {
-            if(settlementEntry.getInvoiceEntry().isDebitNoteEntry()) {
+            if (settlementEntry.getInvoiceEntry().isDebitNoteEntry()) {
                 documentsToExport.add(settlementEntry.getInvoiceEntry().getFinantialDocument());
             }
         }
-        
+
         documentsToExport = filterDocumentsToExport(documentsToExport.stream());
-        
+
         final FinantialInstitution finantialInstitution = settlementNote.getDebtAccount().getFinantialInstitution();
         final ERPConfiguration erpIntegrationConfiguration = finantialInstitution.getErpIntegrationConfiguration();
 
@@ -248,15 +257,16 @@ public class ERPExporterManager {
         if (finantialInstitution.getErpIntegrationConfiguration().getExportOnlyRelatedDocumentsPerExport()) {
 
             ERPExportOperation settlementExportOperation = null;
-            
+
             while (!documentsToExport.isEmpty()) {
                 final FinantialDocument doc = documentsToExport.iterator().next();
 
                 //remove the related documents from the original Set
                 documentsToExport.remove(doc);
 
-                ERPExportOperation exportOperation = erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc));
-                if(settlementNote == doc) {
+                ERPExportOperation exportOperation =
+                        erpExporter.exportFinantialDocumentToIntegration(finantialInstitution, Collections.singletonList(doc));
+                if (settlementNote == doc) {
                     settlementExportOperation = exportOperation;
                 }
             }
@@ -275,7 +285,8 @@ public class ERPExporterManager {
     }
 
     public static ERPExportOperation retryExportToIntegration(final ERPExportOperation eRPExportOperation) {
-        final List<FinantialDocument> documentsToExport = filterDocumentsToExport(eRPExportOperation.getFinantialDocumentsSet().stream());
+        final List<FinantialDocument> documentsToExport =
+                filterDocumentsToExport(eRPExportOperation.getFinantialDocumentsSet().stream());
 
         return exportSingleDocument(documentsToExport.iterator().next());
     }
@@ -315,18 +326,19 @@ public class ERPExporterManager {
         if (reimbursementStateBean.getReimbursementProcessStatus() == null) {
             throw new TreasuryDomainException("error.ERPExporterManager.reimbursementStatus.unknown");
         }
-        
-        if(reimbursementStateBean.getReimbursementProcessStatus().isRejectedStatus()) {
-            throw new TreasuryDomainException("error.ERPExporterManager.reimbursementStatus.rejected.please.check.rejection.and.contact.support.if.needed");
+
+        if (reimbursementStateBean.getReimbursementProcessStatus().isRejectedStatus()) {
+            throw new TreasuryDomainException(
+                    "error.ERPExporterManager.reimbursementStatus.rejected.please.check.rejection.and.contact.support.if.needed");
         }
 
-        ReimbursementProcessStateLog stateLog = ReimbursementProcessStateLog.create(reimbursementNote, reimbursementStateBean.getReimbursementProcessStatus(),
-                UUID.randomUUID().toString(), reimbursementStateBean.getReimbursementStateDate(),
-                reimbursementStateBean.getExerciseYear());
+        ReimbursementProcessStateLog stateLog = ReimbursementProcessStateLog.create(reimbursementNote,
+                reimbursementStateBean.getReimbursementProcessStatus(), UUID.randomUUID().toString(),
+                reimbursementStateBean.getReimbursementStateDate(), reimbursementStateBean.getExerciseYear());
 
         reimbursementNote.processReimbursementStateChange(reimbursementStateBean.getReimbursementProcessStatus(),
                 reimbursementStateBean.getExerciseYear(), reimbursementStateBean.getReimbursementStateDate());
-        
+
         return stateLog;
     }
 
