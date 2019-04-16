@@ -181,6 +181,22 @@ public class Series extends Series_Base {
         return getFinantialInstitution().getRegulationSeries() == this;
     }
 
+    public boolean isActive() {
+        return super.getActive();
+    }
+
+    public boolean isExternSeries() {
+        return super.getExternSeries();
+    }
+
+    public boolean isCertificated() {
+        return super.getCertificated();
+    }
+
+    public boolean isLegacy() {
+        return super.getLegacy();
+    }
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {

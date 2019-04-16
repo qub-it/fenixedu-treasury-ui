@@ -93,6 +93,10 @@ public class TreasuryExemptionType extends TreasuryExemptionType_Base {
         return getTreasuryExemptionsSet().isEmpty();
     }
 
+    public boolean isActive() {
+        return super.getActive();
+    }
+
     @Atomic
     public void delete() {
         if (!isDeletable()) {
