@@ -48,8 +48,6 @@ public abstract class Tariff extends Tariff_Base {
         setDomainRoot(FenixFramework.getDomainRoot());
     }
 
-    public abstract LocalizedString getUiTariffDescription();
-
     protected void init(final FinantialEntity finantialEntity, final Product product, final DateTime beginDate,
             final DateTime endDate, final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
             final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,

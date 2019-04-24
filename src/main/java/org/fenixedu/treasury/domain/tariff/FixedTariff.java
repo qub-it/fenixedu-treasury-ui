@@ -237,13 +237,6 @@ public class FixedTariff extends FixedTariff_Base {
         return findAll(institution).filter(i -> applyInterests == i.getApplyInterests());
     }
 
-    @Override
-    public LocalizedString getUiTariffDescription() {
-        // TODO Anil: Build localized string for all locales supported by application
-        return new LocalizedString(I18N.getLocale(), this.getFinantialEntity().getFinantialInstitution().getCurrency()
-                .getValueFor(this.getAmount().setScale(3)));
-    }
-
     public LocalDate calculateDueDate(DebitNote finantialDocument) {
         if (this.getDueDateCalculationType().equals(DueDateCalculationType.DAYS_AFTER_CREATION)) {
             if (finantialDocument != null) {
