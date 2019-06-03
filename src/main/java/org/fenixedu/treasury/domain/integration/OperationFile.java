@@ -27,6 +27,11 @@
  */
 package org.fenixedu.treasury.domain.integration;
 
+import static java.util.stream.Stream.concat;
+
+import java.util.stream.Stream;
+
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 
@@ -36,19 +41,21 @@ public class OperationFile extends OperationFile_Base {
 
     public OperationFile() {
         super();
-        // this.setDomainRoot(FenixFramework.getDomainRoot());
+        setBennu(Bennu.getInstance());
     }
 
     public OperationFile(String fileName, byte[] content) {
         this();
         this.init(fileName, fileName, content);
+
+        OperationFileDomainObject.createFromOperationFile(this);
     }
 
     @Override
     public boolean isAccessible(User arg0) {
         throw new RuntimeException("not implemented");
     }
-    
+
     public boolean isAccessible(final String username) {
         throw new RuntimeException("not implemented");
     }
@@ -64,6 +71,8 @@ public class OperationFile extends OperationFile_Base {
     @Atomic
     public void edit() {
         checkRules();
+
+        OperationFileDomainObject.findUniqueByOperationFile(this).get().edit();
     }
 
     public boolean isDeletable() {
@@ -77,8 +86,11 @@ public class OperationFile extends OperationFile_Base {
             throw new TreasuryDomainException("error.OperationFile.cannot.delete");
         }
 
+        this.setBennu(null);
         this.setLogIntegrationOperation(null);
         this.setIntegrationOperation(null);
+
+        OperationFileDomainObject.findUniqueByOperationFile(this).get().delete();
 
         super.delete();
     }
@@ -88,6 +100,9 @@ public class OperationFile extends OperationFile_Base {
         OperationFile operationFile = new OperationFile();
         operationFile.init(fileName, fileName, bytes);
         operationFile.setIntegrationOperation(operation);
+
+        OperationFileDomainObject.createFromOperationFile(operationFile);
+
         return operationFile;
     }
 
@@ -96,7 +111,14 @@ public class OperationFile extends OperationFile_Base {
         OperationFile operationFile = new OperationFile();
         operationFile.init(fileName, fileName, bytes);
         operationFile.setLogIntegrationOperation(operation);
+
+        OperationFileDomainObject.createFromOperationFile(operationFile);
+
         return operationFile;
+    }
+
+    public static Stream<OperationFile> findAll() {
+        return Bennu.getInstance().getOperationFilesSet().stream();
     }
 
 }

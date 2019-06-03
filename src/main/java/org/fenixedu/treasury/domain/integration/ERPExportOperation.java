@@ -37,6 +37,8 @@ public class ERPExportOperation extends ERPExportOperation_Base {
     protected void init(final OperationFile file, final FinantialInstitution finantialInstitution, final String erpOperationId,
             final DateTime executionDate, final boolean processed, final boolean success, final boolean corrected) {
         setFile(file);
+        setFileDomainObject(OperationFileDomainObject.findUniqueByOperationFile(file).get());
+
         setFinantialInstitution(finantialInstitution);
         setErpOperationId(erpOperationId);
         setExecutionDate(executionDate);

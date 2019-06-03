@@ -56,6 +56,8 @@ public class SibsInputFile extends SibsInputFile_Base {
             String filename, byte[] content, final String uploader) {
         this();
         init(finantialInstitution, whenProcessedBySIBS, displayName, filename, content, uploader);
+        
+        SibsInputFileDomainObject.createFromSibsInputFile(this);
     }
 
     protected void init(FinantialInstitution finantialInstitution, DateTime whenProcessedBySIBS, String displayName,
@@ -87,8 +89,9 @@ public class SibsInputFile extends SibsInputFile_Base {
         }
 
         setFinantialInstitution(null);
-        setUploader(null);
         setBennu(null);
+        
+        SibsInputFileDomainObject.findUniqueBySibsInputFile(this).get().delete();
         
         super.delete();
     }
@@ -141,10 +144,6 @@ public class SibsInputFile extends SibsInputFile_Base {
             result.addAll(finantialInstitution.getSibsInputFilesSet());
         }
         return result.stream();
-    }
-
-    public static Stream<SibsInputFile> findByUploader(final User uploader) {
-        return uploader.getSibsInputFilesSet().stream();
     }
 
     @Override

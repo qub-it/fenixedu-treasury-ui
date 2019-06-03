@@ -266,9 +266,11 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         for (SettlementNote settlementNote : noteSet) {
             final String settlementDocumentNumber = settlementNote.getUiDocumentNumber();
             
-            SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
+            SibsTransactionDetail transactionDetail = SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
                     getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, debtAccountId, customerId,
                     businessIdentification, fiscalNumber, customerName, settlementDocumentNumber);
+            
+            transactionDetail.setSibsReportDomainObject(SibsReportFileDomainObject.findUniqueBySibsReportFile(sibsReportFile).get());
         }
 
         return noteSet;
