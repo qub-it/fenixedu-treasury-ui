@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.integration;
 
 import static java.util.stream.Stream.concat;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -90,8 +91,12 @@ public class OperationFile extends OperationFile_Base {
         this.setLogIntegrationOperation(null);
         this.setIntegrationOperation(null);
 
-        OperationFileDomainObject.findUniqueByOperationFile(this).get().delete();
-
+        Optional<OperationFileDomainObject> domainObjectOptional = OperationFileDomainObject.findUniqueByOperationFile(this);
+        
+        if(domainObjectOptional.isPresent()) {
+            domainObjectOptional.get().delete();
+        }
+        
         super.delete();
     }
 
