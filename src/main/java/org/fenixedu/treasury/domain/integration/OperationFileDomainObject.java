@@ -137,7 +137,7 @@ public class OperationFileDomainObject extends OperationFileDomainObject_Base im
     }
     
     public static Optional<OperationFileDomainObject> findUniqueByOperationFile(final OperationFile file) {
-        return findAll().filter(o -> o.getTreasuryFile() == file).findFirst();
+        return file.getOperationFileDomainObjectSet().stream().filter(o -> o.getTreasuryFile() == file).findFirst();
     }
     
 }

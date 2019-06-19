@@ -348,7 +348,7 @@ class TreasuryFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 			multiplicity 1..1;
 		}
  		
-		integration.OperationFileDomainObject playsRole {
+		integration.OperationFileDomainObject playsRole operationFileDomainObject {
 			multiplicity *;
 		}
  	}
