@@ -1,3 +1,6 @@
+- Refactor: Save clear document to export datetime
+- Refactor: In settlement annulment and in the case of ERP certification date is not, use if possible clear document to export date
+
 2.2.3 (05-07-2019)
 - Refactor: Use ERP certificate date to check if settement note can be conditionally annuled
 

@@ -92,19 +92,21 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
             return false;
         }
         
-        final LocalDate erpCertificationDate = settlementNote.getErpCertificationDate();
+        LocalDate annulmentControlDate = settlementNote.getErpCertificationDate();
         
-        if(erpCertificationDate == null) {
+        if(annulmentControlDate == null) {
             if(settlementNote.isExportedInLegacyERP()) {
                 return false;
             } else if(settlementNote.isDocumentToExport()) {
                 return true;
+            } else if(settlementNote.getClearDocumentToExportDate() != null) {
+                annulmentControlDate = settlementNote.getClearDocumentToExportDate().toLocalDate();
             } else {
                 return false;
             }
         }
         
-        final int year = erpCertificationDate.getYear();
+        final int year = annulmentControlDate.getYear();
         
         if(!FiscalYear.findUnique(finantialInstitution, year).isPresent()) {
             return false;

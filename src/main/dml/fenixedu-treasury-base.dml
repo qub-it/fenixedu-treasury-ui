@@ -299,6 +299,7 @@ class document.FinantialDocument {
 	String annulledReason;
 	String documentObservations;
 	String clearDocumentToExportReason;
+	DateTime clearDocumentToExportDate;
 	DateTime closeDate;
 	boolean exportedInLegacyERP;
 	String legacyERPCertificateDocumentReference;

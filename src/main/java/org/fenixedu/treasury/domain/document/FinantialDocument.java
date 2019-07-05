@@ -321,7 +321,11 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.setInstitutionForExportation(null);
             
             final String username = Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "unknown";
-            super.setClearDocumentToExportReason(String.format("%s - [%s] %s", reason, username, new DateTime().toString("YYYY-MM-dd HH:mm:ss")));
+            final DateTime now = new DateTime();
+
+            super.setClearDocumentToExportReason(String.format("%s - [%s] %s", reason, username, now.toString("YYYY-MM-dd HH:mm:ss")));
+            super.setClearDocumentToExportDate(now);
+            
         }
     }
 
@@ -332,7 +336,10 @@ public abstract class FinantialDocument extends FinantialDocument_Base {
             this.setInstitutionForExportation(null);
 
             final String username = Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "unknown";
-            super.setClearDocumentToExportReason(String.format("%s - [%s] %s", reason, username, new DateTime().toString("YYYY-MM-dd HH:mm:ss")));
+            final DateTime now = new DateTime();
+
+            super.setClearDocumentToExportReason(String.format("%s - [%s] %s", reason, username, now.toString("YYYY-MM-dd HH:mm:ss")));
+            super.setClearDocumentToExportDate(now);
 
             this.editERPCertificationData(erpCertificationDate, erpCertificateDocumentReference);
         }
