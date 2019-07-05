@@ -16,6 +16,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlExtension {
 
@@ -91,7 +92,19 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
             return false;
         }
         
-        final int year = settlementNote.getDocumentDate().getYear();
+        final LocalDate erpCertificationDate = settlementNote.getErpCertificationDate();
+        
+        if(erpCertificationDate == null) {
+            if(settlementNote.isExportedInLegacyERP()) {
+                return false;
+            } else if(settlementNote.isDocumentToExport()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        final int year = erpCertificationDate.getYear();
         
         if(!FiscalYear.findUnique(finantialInstitution, year).isPresent()) {
             return false;

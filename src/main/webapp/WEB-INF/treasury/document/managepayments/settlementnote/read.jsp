@@ -533,6 +533,14 @@ if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDepende
                         <td><spring:message code="label.${settlementNote.exportedInLegacyERP}" /></td>
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.erpCertificationDate" /></th>
+                        <td><joda:format value="${settlementNote.erpCertificationDate}" style="S-" /></td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.erpCertificateDocumentReference" /></th>
+                        <td><c:out value='${settlementNote.erpCertificateDocumentReference}' /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${settlementNote.getVersioningCreator()}' />] <joda:format value="${settlementNote.getVersioningCreationDate()}" style="SS" /></td>
                     </tr>
