@@ -171,7 +171,7 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.SibsOutputFile.file" /></th>
                         <td><a
                             href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsoutputfile/sibsoutputfile/read/download/${sibsOutputFile.externalId}">
-                                <c:out value="${sibsOutputFile.filename }" />
+                                <c:out value="${sibsOutputFile.getFilename() }" />
                         </a></td>
                     </tr>
                      <tr>
