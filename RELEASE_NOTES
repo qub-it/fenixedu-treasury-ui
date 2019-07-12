@@ -1,3 +1,5 @@
+- Refactor: Rename treasury domain file entities to their original class name
+
 2.2.4 (05-07-2019)
 - Refactor: Save clear document to export datetime
 - Refactor: In settlement annulment and in the case of ERP certification date is not, use if possible clear document to export date
