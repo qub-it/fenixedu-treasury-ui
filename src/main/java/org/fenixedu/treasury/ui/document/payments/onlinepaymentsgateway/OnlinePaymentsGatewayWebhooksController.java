@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @SpringFunctionality(title="label.OnlinePaymentsGatewayWebhooksController.title", app=TreasuryController.class)
 @RequestMapping(OnlinePaymentsGatewayWebhooksController.CONTROLLER_URL)
@@ -25,7 +26,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
     public static final String NOTIFICATION_URL = CONTROLLER_URL + NOTIFICATION_URI;
     
     @RequestMapping(path=NOTIFICATION_URI, method=RequestMethod.POST)
-    public void notify(final HttpServletRequest request, final HttpServletResponse response) {
+    @ResponseBody
+    public String notify(final HttpServletRequest request, final HttpServletResponse response) {
         
         try {
 
@@ -36,6 +38,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
+        return null;
     }
     
 }
