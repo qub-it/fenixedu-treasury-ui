@@ -72,7 +72,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         throw new RuntimeException("not applied");
     }
 
-    public String getReturnURL(final ForwardPayment forwardPayment, final String returnControllerURL) {
+    private String getReturnURL(final ForwardPayment forwardPayment, final String returnControllerURL) {
         return String.format("%s%s/%s/%s/%s", forwardPayment.getForwardPaymentConfiguration().getReturnURL(), returnControllerURL,
                 forwardPayment.getExternalId(), ACTION_RETURN_URL, forwardPayment.getReturnForwardPaymentUrlChecksum());
     }
@@ -113,7 +113,10 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     @Atomic
     public boolean doWebPayment(final ForwardPayment forwardPayment, final String returnControllerURL,
             final HttpSession session) {
-
+        if(!forwardPayment.getForwardPaymentConfiguration().isActive()) {
+            throw new TreasuryDomainException("error.ForwardPaymentConfiguration.not.active");
+        }
+        
         saveReturnUrlChecksum(forwardPayment, returnControllerURL, session);
 
         final Payment paymentDetails = new Payment();
@@ -255,6 +258,10 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
     @Override
     public ForwardPaymentStatusBean paymentStatus(ForwardPayment forwardPayment) {
+        if(!forwardPayment.getForwardPaymentConfiguration().isActive()) {
+            throw new TreasuryDomainException("error.ForwardPaymentConfiguration.not.active");
+        }
+        
         final GetWebPaymentDetailsRequest request = new GetWebPaymentDetailsRequest();
         request.setToken(forwardPayment.getPaylineToken());
 
@@ -387,6 +394,11 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
                 paymentStatusBean.getResponseBody(), justification);
 
         return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, true);
+    }
+
+    @Override
+    public String getImplementationCode() {
+        return "PAYLINE";
     }
 
 }

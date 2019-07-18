@@ -67,7 +67,8 @@ public class PaymentReferenceCodeBean implements ITreasuryBean {
         useCustomPaymentAmount = false;
     }
 
-    public PaymentReferenceCodeBean(final DebtAccount debtAccount) {
+    public PaymentReferenceCodeBean(final PaymentCodePool paymentCodePool, final DebtAccount debtAccount) {
+        this.paymentCodePool = paymentCodePool;
         this.debtAccount = debtAccount;
 
         List<PaymentCodePool> activePools = debtAccount.getFinantialInstitution().getPaymentCodePoolsSet().stream()

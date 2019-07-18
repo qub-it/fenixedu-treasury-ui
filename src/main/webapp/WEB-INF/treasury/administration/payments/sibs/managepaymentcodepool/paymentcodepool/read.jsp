@@ -273,6 +273,16 @@ ${portal.toolkit()}
                             </c:if>
                         </td>
                     </tr>
+
+                    <tr>
+                        <th scope="row" class="col-xs-3">
+                        	<spring:message code="label.PaymentCodePool.paymentCodeGeneratorInstance" />
+                        </th>
+                    	<td>
+                    		<c:out value="${paymentCodePool.paymentCodeGeneratorInstance.name}" />
+                    	</td>
+                    </tr>
+                    
                 </tbody>
             </table>
         </form>
