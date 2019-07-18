@@ -1,3 +1,4 @@
+2.4.1 (18-07-2019)
 - Bug Fix: Set HTTP method of OPPWA Webhook endpoint to POST
 
 2.4.0 (18-07-2019)
