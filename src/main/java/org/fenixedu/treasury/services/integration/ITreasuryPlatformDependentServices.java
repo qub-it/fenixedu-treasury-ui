@@ -35,7 +35,26 @@ public interface ITreasuryPlatformDependentServices {
 			final byte[] content);
 
 	public void deleteFile(final IGenericFile genericFile);
+	
+    /* File */
 
+	public byte[] getFileContent(String fileId);
+
+    public long getFileSize(String fileId);
+
+    public String getFilename(String fileId);
+
+    public InputStream getFileStream(String fileId);
+
+    public DateTime getFileCreationDate(String fileId);
+
+    public String getFileContentType(String fileId);
+
+    public String createFile(final String fileName, final String contentType,
+            final byte[] content);
+
+    public void deleteFile(String fileId);
+	
 	/* User */
 
 	public String getLoggedUsername();

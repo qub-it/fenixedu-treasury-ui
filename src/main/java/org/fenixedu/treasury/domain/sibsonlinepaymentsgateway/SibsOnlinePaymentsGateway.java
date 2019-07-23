@@ -142,12 +142,24 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         final SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean(getSibsEntityId(), getBearerToken(),
                 getSibsEndpointUrl(), getPaymentCodePool().getEntityReferenceCode(),
                 getPaymentCodePool().getFinantialInstitution().getCurrency().getIsoCode(),
-                SibsEnvironmentMode.TEST_MODE_EXTERNAL);
+                translateEnviromentMode());
 
         final SIBSOnlinePaymentsGatewayService gatewayService =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);
 
         return gatewayService;
+    }
+
+    private SibsEnvironmentMode translateEnviromentMode() {
+        if(getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.PRODUCTION) {
+            return SibsEnvironmentMode.PRODUCTION;
+        } else if(getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.TEST_MODE_EXTERNAL) {
+            return SibsEnvironmentMode.TEST_MODE_EXTERNAL;
+        } else if(getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.TEST_MODE_INTERNAL) {
+            return SibsEnvironmentMode.TEST_MODE_INTERNAL;
+        }
+
+        throw new RuntimeException("SibsOnlinePaymentsGateway.translateEnviromentMode() unkown environment mode");
     }
 
     /* ************/

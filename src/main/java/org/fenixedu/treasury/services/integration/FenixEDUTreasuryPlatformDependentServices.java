@@ -276,4 +276,44 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 
     }
 
+    @Override
+    public byte[] getFileContent(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.getFileContent(String): not supported");
+    }
+
+    @Override
+    public long getFileSize(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.getFileSize(String): not supported");
+    }
+
+    @Override
+    public String getFilename(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.getFilename(String): not supported");
+    }
+
+    @Override
+    public InputStream getFileStream(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.getFileStream(String): not supported");
+    }
+
+    @Override
+    public DateTime getFileCreationDate(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.getFileCreationDate(String): not supported");
+    }
+
+    @Override
+    public String getFileContentType(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.getFileContentType(String): not supported");
+    }
+
+    @Override
+    public String createFile(String fileName, String contentType, byte[] content) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.createFile(): not supported");
+    }
+
+    @Override
+    public void deleteFile(String fileId) {
+        throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.deleteFile(String): not supported");
+    }
+
 }

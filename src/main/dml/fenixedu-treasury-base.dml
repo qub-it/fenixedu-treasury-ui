@@ -7,15 +7,7 @@ enum org.fenixedu.treasury.domain.tariff.DueDateCalculationType                 
 enum org.fenixedu.treasury.domain.tariff.InterestType                                               as InterestType; 
 enum org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType						as PaymentReferenceCodeStateType;
 enum org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType                           as ForwardPaymentStateType;
-//enum org.fenixedu.treasury.domain.accesscontrol.TreasuryOperationType                             as TreasuryOperationType;
-//enum org.fenixedu.treasury.domain.accesscontrol.TreasuryOperationType.Scope                       as TreasuryOperationTypeScope;
-
-//valueType org.fenixedu.treasury.domain.accesscontrol.rules.TreasuryAccessOperation as TreasuryAccessOperation {
-//    externalizeWith {
-//        String exportAsString();
-//    }
-//    internalizeWith importFromString();
-//}
+enum org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayEnviromentMode	as SibsOnlinePaymentsGatewayEnviromentMode;
 
 external class .org.fenixedu.bennu.io.domain.GenericFile;
 
@@ -2196,6 +2188,7 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway {
 	String bearerToken;
 	String merchantTransactionIdPrefix;
 	long merchantTransactionIdCounter;
+	SibsOnlinePaymentsGatewayEnviromentMode enviromentMode;
 }
 
 	relation SibsOnlinePaymentsGatewayDomainRoot {
@@ -2244,20 +2237,21 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 
 	DateTime requestSendDate;
 	DateTime requestReceiveDate;
-	// Convert to file	
-	String requestPayload;
+	
+	String requestPayloadFileId;
+	String responsePayloadFileId;
 
-	// Convert to file	
-	String responsePayload;
-
-	boolean exceptionOccured;	
-	// Convert to file
-	String exceptionLog;
+	boolean exceptionOccured;
+	String exceptionLogFileId;
 	
 	boolean operationSuccess;
 	boolean transactionPaid;
 	
 	String forwardPaymentOrderNumber;
+	
+	String notificationInitializationVector;
+	String notificationAuthTag;
+	String notificationEncryptedPayloadFileId;
 }
 
 	relation SibsOnlinePaymentsGatewayLogDomainRoot {
@@ -2272,7 +2266,7 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 
 	relation SibsOnlinePaymentsGatewayLogGateway {
 		sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway playsRole sibsOnlinePaymentsGateway {
-			multiplicity 1..1;
+			multiplicity 0..1;
 		}
 	
 		sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog playsRole sibsOnlinePaymentsGatewayLogs {
@@ -2282,7 +2276,7 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 
 	relation SibsOnlinePaymentsGatewayLogDebtAccount {
 		debt.DebtAccount playsRole debtAccount {
-			multiplicity 1..1;
+			multiplicity 0..1;
 		}
 	
 		sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog playsRole sibsOnlinePaymentsGatewayLogs {

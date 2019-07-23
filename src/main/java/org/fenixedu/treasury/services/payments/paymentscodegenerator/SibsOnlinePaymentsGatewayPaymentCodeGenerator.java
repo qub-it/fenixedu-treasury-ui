@@ -85,12 +85,10 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
         } catch (final Exception e) {
             final boolean isOnlinePaymentsGatewayException = e instanceof OnlinePaymentsGatewayCommunicationException;
 
-            final String exceptionLog = String.format("%s\n%s", e.getLocalizedMessage(), ExceptionUtils.getFullStackTrace(e));
-
             FenixFramework.atomic(() -> {
 
                 log.logRequestReceiveDateAndData(null, false, false);
-                log.markExceptionOccuredAndSaveLog(exceptionLog);
+                log.markExceptionOccuredAndSaveLog(e);
 
                 if (isOnlinePaymentsGatewayException) {
                     log.saveRequestAndResponsePayload(((OnlinePaymentsGatewayCommunicationException) e).getRequestLog(),
@@ -99,9 +97,10 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
             });
 
             throw new TreasuryDomainException(e,
-                    isOnlinePaymentsGatewayException ? "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.gateway.communication" : "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.unknown");
+                    isOnlinePaymentsGatewayException ? 
+                            "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.gateway.communication" : 
+                                "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.unknown");
         }
-
     }
 
     @Atomic(mode = TxMode.WRITE)

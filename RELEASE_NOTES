@@ -1,3 +1,6 @@
+- Refactor: Control SIBS enviroment mode for integration by configuration
+- Refactor: Log SIBS notification (webhook) messages
+
 2.4.1 (18-07-2019)
 - Bug Fix: Set HTTP method of OPPWA Webhook endpoint to POST
 
