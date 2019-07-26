@@ -119,4 +119,9 @@ public class SequentialPaymentWithCheckDigitCodeGenerator implements IPaymentCod
         return paymentReferenceCode;
     }
 
+    @Override
+    public boolean isSibsMerchantTransactionAndReferenceIdRequired() {
+        return false;
+    }
+
 }

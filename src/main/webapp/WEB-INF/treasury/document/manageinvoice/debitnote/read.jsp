@@ -338,15 +338,6 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
 	            </li>
             </c:if>
 
-	        <c:if test="${!debitNote.documentNumberSeries.series.regulationSeries and debitNote.isClosed()}">
-	            <li>
-		            <a class="" href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/create?debitnote=${debitNote.externalId}">
-		            	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-		            	<spring:message code="label.event.document.manageInvoice.createCreditNote" />
-		            </a>
-	            </li>
-			</c:if>        
-			    
             <c:if test="${debitNote.isClosed()}">
                 <li>
                     <a class="" href="#" data-toggle="modal" data-target="#calculateInterestValueModal"> 

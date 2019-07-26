@@ -564,9 +564,10 @@ class paymentcodes.PaymentReferenceCode
        PaymentReferenceCodeStateType state;
        BigDecimalT maxAmount;
        BigDecimalT minAmount;
-       BigDecimalT payableAmount; 
+       BigDecimalT payableAmount;
+       String sibsMerchantTransactionId;
+       String sibsReferenceId;
 }
-
 
 class paymentcodes.pool.PaymentCodePool  {
 	String name;
@@ -735,6 +736,16 @@ class paymentcodes.pool.PaymentCodeGeneratorInstance {
 		String customerName; 
 		String settlementDocumentNumber;
     }
+    
+    	relation SibsTransactionDetailDomainRoot {
+		    .pt.ist.fenixframework.DomainRoot playsRole domainRoot {
+		        multiplicity 0..1;
+		    }
+		
+    		paymentcodes.SibsTransactionDetail playsRole sibsTransactionDetail {
+				multiplicity *;
+    		}
+    	}
 
 	class paymentcodes.SibsReportFile /* implements IGenericFile */ {
 		String fileId;
@@ -2186,6 +2197,7 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway {
 	String sibsEntityId;
 	String sibsEndpointUrl;
 	String bearerToken;
+	String aesKey;
 	String merchantTransactionIdPrefix;
 	long merchantTransactionIdCounter;
 	SibsOnlinePaymentsGatewayEnviromentMode enviromentMode;
@@ -2229,7 +2241,9 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 	String merchantTransactionId;
 	String transactionId;
 	String paymentCode;
+
 	BigDecimalT amount;
+	DateTime paymentDate;
 
 	String customerFiscalNumber;
 	String customerName;
@@ -2247,11 +2261,17 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 	boolean operationSuccess;
 	boolean transactionPaid;
 	
+	String operationResultCode;
+	String operationResultDescription;
+	
 	String forwardPaymentOrderNumber;
 	
 	String notificationInitializationVector;
 	String notificationAuthTag;
 	String notificationEncryptedPayloadFileId;
+	
+	boolean sibsTransactionDuplicated;
+	String settlementNoteNumbers;
 }
 
 	relation SibsOnlinePaymentsGatewayLogDomainRoot {

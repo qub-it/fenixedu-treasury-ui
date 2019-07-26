@@ -14,6 +14,7 @@ import org.fenixedu.onlinepaymentsgateway.api.PrepareCheckoutInputBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSInitializeServiceBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.NotificationBean;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsEnvironmentMode;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
@@ -137,12 +138,22 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         
         return requestResult;
     }
+    
+    public PaymentStateBean handleWebhookNotificationRequest(final String initializationVector, final String authTag, final String encryptedPayload) throws Exception {
+        SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
+        
+        PaymentStateBean notificationBean = gatewayService.handleNotificationRequest(initializationVector, authTag, encryptedPayload);
+        
+        return notificationBean;
+    }
 
     private SIBSOnlinePaymentsGatewayService gatewayService() {
         final SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean(getSibsEntityId(), getBearerToken(),
                 getSibsEndpointUrl(), getPaymentCodePool().getEntityReferenceCode(),
                 getPaymentCodePool().getFinantialInstitution().getCurrency().getIsoCode(),
                 translateEnviromentMode());
+        
+        initializeServiceBean.setAesKey(getAesKey());
 
         final SIBSOnlinePaymentsGatewayService gatewayService =
                 OnlinePaymentServiceFactory.createSIBSOnlinePaymentGatewayService(initializeServiceBean);

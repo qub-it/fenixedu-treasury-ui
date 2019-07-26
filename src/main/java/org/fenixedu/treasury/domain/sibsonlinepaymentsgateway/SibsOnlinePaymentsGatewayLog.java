@@ -1,8 +1,13 @@
 package org.fenixedu.treasury.domain.sibsonlinepaymentsgateway;
 
+import java.math.BigDecimal;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.fenixedu.treasury.domain.TreasuryFile;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.services.integration.ITreasuryPlatformDependentServices;
@@ -54,16 +59,18 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayLog.domainRoot.required");
         }
 
-        if (getSibsOnlinePaymentsGateway() == null) {
-            throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayLog.sibsOnlinePaymentsGateway.required");
-        }
-
         if (Strings.isNullOrEmpty(getOperationCode())) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayLog.operationCode.required");
         }
-        
-        if(getDebtAccount() == null) {
-            throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayLog.debtAccount.required");
+
+        if(REQUEST_PAYMENT_CODE.equals(getOperationCode())) {
+            if (getSibsOnlinePaymentsGateway() == null) {
+                throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayLog.sibsOnlinePaymentsGateway.required");
+            }
+
+            if(getDebtAccount() == null) {
+                throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayLog.debtAccount.required");
+            }
         }
     }
 
@@ -72,11 +79,13 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
     }
 
     public void logRequestReceiveDateAndData(final String transactionId, final boolean operationSuccess,
-            final boolean transactionPaid) {
+            final boolean transactionPaid, final String operationResultCode, final String operationResultDescription) {
         setRequestReceiveDate(new DateTime());
         setTransactionId(transactionId);
         setOperationSuccess(operationSuccess);
         setTransactionPaid(transactionPaid);
+        setOperationResultCode(operationResultCode);
+        setOperationResultDescription(operationResultDescription);
     }
     
     public static final String OCTECT_STREAM_CONTENT_TYPE = "application/octet-stream";
@@ -84,15 +93,19 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
     public void saveRequestAndResponsePayload(final String requestPayload, final String responsePayload) {
         final ITreasuryPlatformDependentServices implementation = TreasuryPlataformDependentServicesFactory.implementation();
         
-        final String requestPayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-requestPayload-%s", 
-                getExternalId()), OCTECT_STREAM_CONTENT_TYPE, requestPayload.getBytes());
-        
-        setRequestPayloadFileId(requestPayloadFileId);
+        if(requestPayload != null) {
+            final String requestPayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-requestPayload-%s", 
+                    getExternalId()), OCTECT_STREAM_CONTENT_TYPE, requestPayload.getBytes());
+            
+            setRequestPayloadFileId(requestPayloadFileId);
+        }
 
-        final String responsePayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-responsePayload-%s", 
-                getExternalId()), OCTECT_STREAM_CONTENT_TYPE, requestPayload.getBytes());
-        
-        setResponsePayloadFileId(responsePayloadFileId);
+        if(responsePayload != null) {
+            final String responsePayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-responsePayload-%s", 
+                    getExternalId()), OCTECT_STREAM_CONTENT_TYPE, requestPayload.getBytes());
+            
+            setResponsePayloadFileId(responsePayloadFileId);
+        }
     }
 
     public void markExceptionOccuredAndSaveLog(final Exception e) {
@@ -131,6 +144,29 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
         }
         
     }
+
+    public void associateSibsOnlinePaymentGatewayAndDebtAccount(final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway,
+            final DebtAccount debtAccount) {
+        setSibsOnlinePaymentsGateway(sibsOnlinePaymentsGateway);
+        setDebtAccount(debtAccount);
+    }
+
+    public void savePaymentInfo(BigDecimal amount, DateTime paymentDate) {
+        setAmount(amount);
+        setPaymentDate(paymentDate);
+    }
+
+    public void markAsDuplicatedTransaction() {
+        setSibsTransactionDuplicated(true);
+    }
+
+    public void markSettlementNotesCreated(Set<SettlementNote> settlementNotes) {
+        final String settlementNotesNumber = String.join(";", settlementNotes.stream()
+                .map(SettlementNote::getUiDocumentNumber).collect(Collectors.toSet()));
+        
+        setSettlementNoteNumbers(settlementNotesNumber);
+    }
+
 
     /* ******** */
     /* SERVICES */

@@ -1,3 +1,6 @@
+- Refactor: Remove debit note read screen funcionality to create loose credit notes 
+- Refactor: SIBS OPPWA: Set DomainRoot to SIBSTransactionDetail, save more log on webhook notification
+
 2.4.2 (23-07-2019)
 - Refactor: Control SIBS enviroment mode for integration by configuration
 - Refactor: Log SIBS notification (webhook) messages

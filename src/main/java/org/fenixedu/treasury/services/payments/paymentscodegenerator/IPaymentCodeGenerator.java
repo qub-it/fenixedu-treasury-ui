@@ -18,5 +18,7 @@ public interface IPaymentCodeGenerator {
     public PaymentCodePool getReferenceCodePool();
 
     public PaymentReferenceCode createPaymentReferenceCode(final DebtAccount debtAccount, PaymentReferenceCodeBean bean);
+
+    public boolean isSibsMerchantTransactionAndReferenceIdRequired();
     
 }

@@ -27,6 +27,7 @@
  */
 package org.fenixedu.treasury.domain.paymentcodes.pool;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashSet;
@@ -193,7 +194,11 @@ public class PaymentCodePool extends PaymentCodePool_Base {
 
         deleteDomainObject();
     }
-
+    
+    public IPaymentCodeGenerator getPaymentCodeGenerator() {
+        return getPaymentCodeGeneratorInstance().getPaymentCodeGenerator(this);
+    }
+    
     @Atomic
     public static PaymentCodePool create(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,

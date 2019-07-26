@@ -2,7 +2,9 @@ package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -10,11 +12,13 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class SibsTransactionDetail extends SibsTransactionDetail_Base {
 
     protected SibsTransactionDetail() {
         super();
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected void init(final SibsReportFile sibsReport, final String comments, final DateTime whenProcessed,
@@ -41,81 +45,15 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
     }
 
     private void checkRules() {
-        //
-        //CHANGE_ME add more busines validations
-        //
-        if (getSibsReport() == null) {
-            throw new TreasuryDomainException("error.SibsTransactionDetail.sibsReport.required");
+        if(getDomainRoot() == null) {
+            throw new TreasuryDomainException("error.SibsTransactionDetail.domainRoot.required");
         }
-
-        //CHANGE_ME In order to validate UNIQUE restrictions
-        //if (findBySibsReport(getSibsReport().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.sibsReport.duplicated");
-        //} 
-        //if (findByComments(getComments().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.comments.duplicated");
-        //} 
-        //if (findByWhenProcessed(getWhenProcessed().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.whenProcessed.duplicated");
-        //} 
-        //if (findByWhenRegistered(getWhenRegistered().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.whenRegistered.duplicated");
-        //} 
-        //if (findByAmountPayed(getAmountPayed().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.amountPayed.duplicated");
-        //} 
-        //if (findBySibsEntityReferenceCode(getSibsEntityReferenceCode().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.sibsEntityReferenceCode.duplicated");
-        //} 
-        //if (findBySibsPaymentReferenceCode(getSibsPaymentReferenceCode().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.sibsPaymentReferenceCode.duplicated");
-        //} 
-        //if (findBySibsTransactionId(getSibsTransactionId().count()>1)
-        //{
-        //  throw new TreasuryDomainException("error.SibsTransactionDetail.sibsTransactionId.duplicated");
-        //} 
-    }
-
-    @Atomic
-    public void edit(final SibsReportFile sibsReport, final String comments, final DateTime whenProcessed,
-            final DateTime whenRegistered, final java.math.BigDecimal amountPayed, final String sibsEntityReferenceCode,
-            final String sibsPaymentReferenceCode, final String sibsTransactionId, final String debtAccountId,
-            final String customerId, final String businessIdentification, final String fiscalNumber, final String customerName,
-            final String settlementDocumentNumber) {
-        setSibsReport(sibsReport);
-        setComments(comments);
-        setWhenProcessed(whenProcessed);
-        setWhenRegistered(whenRegistered);
-        setAmountPayed(amountPayed);
-        setSibsEntityReferenceCode(sibsEntityReferenceCode);
-        setSibsPaymentReferenceCode(sibsPaymentReferenceCode);
-        setSibsTransactionId(sibsTransactionId);
-        setDebtAccountId(debtAccountId);
-        setCustomerId(customerId);
-        setBusinessIdentification(businessIdentification);
-        setFiscalNumber(fiscalNumber);
-        setCustomerName(customerName);
-        setSettlementDocumentNumber(settlementDocumentNumber);
-
-        checkRules();
+        
     }
 
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         super.checkForDeletionBlockers(blockers);
-
-        //add more logical tests for checking deletion rules
-        //if (getXPTORelation() != null)
-        //{
-        //    blockers.add(BundleUtil.getString(Bundle.APPLICATION, "error.SibsTransactionDetail.cannot.be.deleted"));
-        //}
     }
 
     @Atomic
@@ -147,12 +85,15 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
 
     public static Stream<SibsTransactionDetail> findAll() {
 
-        List<SibsTransactionDetail> allDetails = new ArrayList<SibsTransactionDetail>();
+        Set<SibsTransactionDetail> result = new HashSet<>();
         List<SibsReportFile> reports = SibsReportFile.findAll().collect(Collectors.toList());
         for (SibsReportFile report : reports) {
-            allDetails.addAll(report.getSibsTransactionsSet());
+            result.addAll(report.getSibsTransactionsSet());
         }
-        return allDetails.stream();
+        
+        result.addAll(FenixFramework.getDomainRoot().getSibsTransactionDetailSet());
+        
+        return result.stream();
     }
 
     public static Stream<SibsTransactionDetail> findBySibsReport(final SibsReportFile sibsReport) {

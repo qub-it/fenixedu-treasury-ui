@@ -29,6 +29,7 @@ package org.fenixedu.treasury.domain.paymentcodes;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,7 +64,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     protected void init(final String referenceCode, final LocalDate beginDate, final LocalDate endDate,
-            final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal minAmount, BigDecimal maxAmount) {
+            final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal minAmount, BigDecimal maxAmount,
+            final String sibsMerchantTransactionId, final String sibsReferenceId) {
         setReferenceCode(Strings.padStart(referenceCode, LENGTH_REFERENCE_CODE, '0'));
         setBeginDate(beginDate);
         setEndDate(endDate);
@@ -71,6 +73,9 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         setPaymentCodePool(pool);
         setMinAmount(minAmount);
         setMaxAmount(maxAmount);
+        setSibsMerchantTransactionId(sibsMerchantTransactionId);
+        setSibsReferenceId(sibsReferenceId);
+
         checkRules();
     }
 
@@ -92,6 +97,29 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 this.getPaymentCodePool().getFinantialInstitution()).count() > 1) {
             throw new TreasuryDomainException("error.PaymentReferenceCode.referenceCode.duplicated");
         }
+
+        if (getPaymentCodePool().getPaymentCodeGenerator().isSibsMerchantTransactionAndReferenceIdRequired()
+                && StringUtils.isEmpty(getSibsMerchantTransactionId())) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.sibsMerchantTransactionId.required");
+        }
+
+        if (getPaymentCodePool().getPaymentCodeGenerator().isSibsMerchantTransactionAndReferenceIdRequired()
+                && StringUtils.isEmpty(getSibsReferenceId())) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.sibsReferenceId.required");
+        }
+
+        if (!StringUtils.isEmpty(getSibsMerchantTransactionId())) {
+            if (findBySibsMerchantTransactionId(getSibsMerchantTransactionId()).count() > 1) {
+                throw new TreasuryDomainException("error.PaymentReferenceCode.sibsMerchantTransaction.found.duplicated");
+            }
+        }
+
+        if (!StringUtils.isEmpty(getSibsReferenceId())) {
+            if (findBySibsReferenceId(getSibsReferenceId()).count() > 1) {
+                throw new TreasuryDomainException("error.PaymentReferenceCode.sibsReferenceId.found.duplicated");
+            }
+        }
+
     }
 
     @Atomic
@@ -122,8 +150,18 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     @Atomic
     public static PaymentReferenceCode create(final String referenceCode, final LocalDate beginDate, final LocalDate endDate,
             final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal minAmount, BigDecimal maxAmount) {
+
         PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
-        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, minAmount, maxAmount);
+        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, minAmount, maxAmount, null, null);
+        return paymentReferenceCode;
+    }
+
+    public static PaymentReferenceCode createForSibsOnlinePaymentGateway(final String referenceCode, final LocalDate beginDate,
+            final LocalDate endDate, final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal amount,
+            final String sibsMerchantTransactionId, final String sibsReferenceCode) {
+        PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
+        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, amount, amount, sibsMerchantTransactionId, sibsReferenceCode);
+
         return paymentReferenceCode;
     }
 
@@ -165,6 +203,24 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             final org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType state,
             FinantialInstitution finantialInstitution) {
         return find(finantialInstitution).filter(i -> state.equals(i.getState()));
+    }
+
+    public static Stream<PaymentReferenceCode> findBySibsReferenceId(final String sibsReferenceId) {
+        return findAll().filter(p -> !StringUtils.isEmpty(p.getSibsReferenceId()))
+                .filter(p -> sibsReferenceId.equals(p.getSibsReferenceId()));
+    }
+
+    public static Optional<PaymentReferenceCode> findUniqueBySibsReferenceId(final String sibsReferenceId) {
+        return findBySibsReferenceId(sibsReferenceId).findFirst();
+    }
+
+    public static Stream<PaymentReferenceCode> findBySibsMerchantTransactionId(final String sibsMerchantTransactionId) {
+        return findAll().filter(p -> !StringUtils.isEmpty(p.getSibsMerchantTransactionId()))
+                .filter(p -> sibsMerchantTransactionId.equals(p.getSibsMerchantTransactionId()));
+    }
+
+    public static Optional<PaymentReferenceCode> findUniqueBySibsMerchantTransactionId(final String sibsMerchantTransactionId) {
+        return findBySibsMerchantTransactionId(sibsMerchantTransactionId).findFirst();
     }
 
     public String getFormattedCode() {
@@ -252,8 +308,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             return null;
         }
 
-        final Set<SettlementNote> noteSet =
-                this.getTargetPayment().processPayment(responsibleUsername, amountToPay, whenRegistered, sibsTransactionId, comments);
+        final Set<SettlementNote> noteSet = this.getTargetPayment().processPayment(responsibleUsername, amountToPay,
+                whenRegistered, sibsTransactionId, comments);
 
         final DebtAccount referenceDebtAccount = this.getTargetPayment().getDebtAccount();
 
@@ -263,14 +319,15 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         final String fiscalNumber = valueOrEmpty(referenceDebtAccount.getCustomer().getFiscalCountry()) + ":"
                 + valueOrEmpty(referenceDebtAccount.getCustomer().getFiscalNumber());
         final String customerName = referenceDebtAccount.getCustomer().getName();
-        
+
         for (SettlementNote settlementNote : noteSet) {
             final String settlementDocumentNumber = settlementNote.getUiDocumentNumber();
-            
-            SibsTransactionDetail transactionDetail = SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
-                    getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, debtAccountId, customerId,
-                    businessIdentification, fiscalNumber, customerName, settlementDocumentNumber);
-            
+
+            SibsTransactionDetail transactionDetail =
+                    SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
+                            getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, debtAccountId,
+                            customerId, businessIdentification, fiscalNumber, customerName, settlementDocumentNumber);
+
         }
 
         return noteSet;
@@ -353,23 +410,21 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
         return value;
     }
-    
-    @Atomic(mode=TxMode.READ)
-    public static PaymentReferenceCode createPaymentReferenceCodeForMultipleDebitEntries(final DebtAccount debtAccount, final PaymentReferenceCodeBean bean) {
+
+    @Atomic(mode = TxMode.READ)
+    public static PaymentReferenceCode createPaymentReferenceCodeForMultipleDebitEntries(final DebtAccount debtAccount,
+            final PaymentReferenceCodeBean bean) {
         BigDecimal amount = BigDecimal.ZERO;
-        for(DebitEntry entry : bean.getSelectedDebitEntries()) {
+        for (DebitEntry entry : bean.getSelectedDebitEntries()) {
             amount = amount.add(entry.getOpenAmount());
         }
-        
+
         bean.setPaymentAmount(amount);
 
         final PaymentReferenceCode paymentReferenceCode =
-                bean.getPaymentCodePool()
-                        .getReferenceCodeGenerator().createPaymentReferenceCode(debtAccount, bean);
+                bean.getPaymentCodePool().getReferenceCodeGenerator().createPaymentReferenceCode(debtAccount, bean);
 
         return paymentReferenceCode;
     }
 
-    
-    
 }

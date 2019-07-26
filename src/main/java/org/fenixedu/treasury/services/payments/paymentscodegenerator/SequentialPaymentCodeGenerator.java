@@ -136,4 +136,9 @@ public class SequentialPaymentCodeGenerator implements IPaymentCodeGenerator {
         return paymentReferenceCode;
     }
 
+    @Override
+    public boolean isSibsMerchantTransactionAndReferenceIdRequired() {
+        return false;
+    }
+
 }
