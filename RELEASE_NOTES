@@ -1,3 +1,9 @@
+- Refactor: Deprecate fiscal country code. Instead use address country with fiscal number
+- Refactor: Save and use address compound in Customer fields
+- Refactor: Add region to Cutomer's fiscal address
+- Refactor: In ERP integration fill missing address fields with "Desconhecido", the only address required field is country code
+- Improvement: Validate zip code for AdhocCustomer portuguese address
+
 2.4.3 (26-07-2019)
 - Refactor: Remove debit note read screen funcionality to create loose credit notes 
 - Refactor: SIBS OPPWA: Set DomainRoot to SIBSTransactionDetail, save more log on webhook notification
