@@ -1,3 +1,9 @@
+i- Refactor: Comparators in some entities
+- Refactor: Method to create credit entry for debit entry
+- Refactor: Move service method to create forward payment, from controller to domain entity
+- Refactor: Logic of including all selected interest debit entries is in bean, instead in controller
+- Refactor: Default product unit description
+
 3.2.1 (05-08-2019)
 - Refactor: Do not save created payment reference codes in SibsOutputFile entry
 - Bug Fix: Print creation datetime of SibsOutputFile
