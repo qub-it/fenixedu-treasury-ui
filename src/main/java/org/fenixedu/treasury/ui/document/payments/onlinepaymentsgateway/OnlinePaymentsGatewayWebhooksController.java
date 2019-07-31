@@ -94,6 +94,11 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             final String sibsMerchantTransactionId = bean.getMerchantTransactionId();
             final String sibsReferenceId = bean.getReferencedId();
 
+            FenixFramework.atomic(() -> {
+                log.saveMerchantTransactionId(sibsMerchantTransactionId);
+                log.saveReferenceId(sibsReferenceId);
+            });
+            
             // Find payment code
             final Optional<PaymentReferenceCode> referenceCodeOptional =
                     PaymentReferenceCode.findUniqueBySibsReferenceId(sibsReferenceId);

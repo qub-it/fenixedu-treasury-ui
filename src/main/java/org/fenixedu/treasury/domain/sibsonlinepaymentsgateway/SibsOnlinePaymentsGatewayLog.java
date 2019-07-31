@@ -128,6 +128,10 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
     public void saveMerchantTransactionId(final String merchantTransactionId) {
         setMerchantTransactionId(merchantTransactionId);
     }
+    
+    public void saveReferenceId(final String referenceId) {
+        setReferenceId(referenceId);
+    }
 
     public void saveWebhookNotificationData(final String notificationInitializationVector, final String notificationAuthenticationTag,
             final String notificationEncryptedPayload) {

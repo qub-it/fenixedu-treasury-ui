@@ -771,7 +771,7 @@ class paymentcodes.pool.PaymentCodeGeneratorInstance {
 		
         relation SibsTransactionDetailSibsReportFile  {
             paymentcodes.SibsReportFile playsRole sibsReport {
-                multiplicity 1..1;
+                multiplicity 0..1;
             }
             
             paymentcodes.SibsTransactionDetail playsRole sibsTransactions {
@@ -2242,6 +2242,7 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 	String merchantTransactionId;
 	String transactionId;
 	String paymentCode;
+	String referenceId;
 
 	BigDecimalT amount;
 	DateTime paymentDate;
