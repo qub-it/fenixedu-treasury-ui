@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FileUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
+import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.SettlementNote;
@@ -52,14 +53,14 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
         try {
 
-//            String notificationInitializationVector = SIBSOnlinePaymentsGatewayService.notificationInitializationVector(request);
-//            String notificationAuthenticationTag = SIBSOnlinePaymentsGatewayService.notificationAuthenticationTag(request);
-//            String notificationEncryptedPayload = SIBSOnlinePaymentsGatewayService.notificationEncryptedPayload(request);
+            String notificationInitializationVector = SIBSOnlinePaymentsGatewayService.notificationInitializationVector(request);
+            String notificationAuthenticationTag = SIBSOnlinePaymentsGatewayService.notificationAuthenticationTag(request);
+            String notificationEncryptedPayload = SIBSOnlinePaymentsGatewayService.notificationEncryptedPayload(request);
 
-            final String notificationInitializationVector = "7C6899AD9068313EB66AB7E4";
-            final String notificationAuthenticationTag = "FC43634E2923BE55D2B9E3D29E75F4D5";
-            final String notificationEncryptedPayload = FileUtils
-                    .readFileToString(new java.io.File("/home/anilmamede/Downloads/SIBS_WEBHOOK_NOTIFICATIONS/file1.txt"));
+//            final String notificationInitializationVector = "7C6899AD9068313EB66AB7E4";
+//            final String notificationAuthenticationTag = "FC43634E2923BE55D2B9E3D29E75F4D5";
+//            final String notificationEncryptedPayload = FileUtils
+//                    .readFileToString(new java.io.File("/home/anilmamede/Downloads/SIBS_WEBHOOK_NOTIFICATIONS/file1.txt"));
 
             FenixFramework.atomic(() -> {
                 log.saveWebhookNotificationData(notificationInitializationVector, notificationAuthenticationTag,

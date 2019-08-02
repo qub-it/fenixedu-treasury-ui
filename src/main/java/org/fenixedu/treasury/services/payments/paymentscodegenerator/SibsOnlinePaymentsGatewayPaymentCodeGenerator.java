@@ -48,6 +48,10 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
 
     private PaymentReferenceCode generateNewCodeFor(final DebtAccount debtAccount, final BigDecimal amount, LocalDate validFrom,
             LocalDate validTo) {
+        if(!Boolean.TRUE.equals(this.paymentCodePool.getActive())) {
+            throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.paymentCodePool.not.active");
+        }
+        
         final SibsOnlinePaymentsGateway sibsGateway = this.paymentCodePool.getSibsOnlinePaymentsGateway();
         final String merchantTransactionId = sibsGateway.generateNewMerchantTransactionId();
 

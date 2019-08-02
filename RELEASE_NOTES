@@ -1,3 +1,6 @@
+- Bug fix: Generate SIBS reference with OPPWA only if payment code pool is active
+- Bug fix: Read OPPWA webhook notification from request instead of file
+
 3.1.0 (31-07-2019)
 - New Fixture: SIBS OPPWA payment notifications and settlement note creation via webhooks
 
