@@ -48,10 +48,10 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
 
     private PaymentReferenceCode generateNewCodeFor(final DebtAccount debtAccount, final BigDecimal amount, LocalDate validFrom,
             LocalDate validTo) {
-        if(!Boolean.TRUE.equals(this.paymentCodePool.getActive())) {
+        if (!Boolean.TRUE.equals(this.paymentCodePool.getActive())) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.paymentCodePool.not.active");
         }
-        
+
         final SibsOnlinePaymentsGateway sibsGateway = this.paymentCodePool.getSibsOnlinePaymentsGateway();
         final String merchantTransactionId = sibsGateway.generateNewMerchantTransactionId();
 
@@ -104,8 +104,15 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
                 }
             });
 
-            throw new TreasuryDomainException(e,
-                    isOnlinePaymentsGatewayException ? "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.gateway.communication" : "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.unknown");
+            if (e instanceof TreasuryDomainException) {
+                throw (TreasuryDomainException) e;
+            } else {
+                String message =
+                        isOnlinePaymentsGatewayException ? "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.gateway.communication" : "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.unknown";
+
+                throw new TreasuryDomainException(e, message);
+            }
+
         }
     }
 
