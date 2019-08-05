@@ -75,7 +75,6 @@ public class SibsOutputFile extends SibsOutputFile_Base implements IGenericFile 
             addCalculatedPaymentCodesFromEvent(sibsOutgoingPaymentFile, referenceCode, errorsBuilder);
         }
 
-        this.setPrintedPaymentCodes(sibsOutgoingPaymentFile.getAssociatedPaymentCodes().exportAsString());
         invalidateOldPaymentCodes(sibsOutgoingPaymentFile, finantialInstiution, errorsBuilder);
 
         return sibsOutgoingPaymentFile.render();
@@ -241,8 +240,4 @@ public class SibsOutputFile extends SibsOutputFile_Base implements IGenericFile 
         return findAll().filter(i -> infoLog.equalsIgnoreCase(i.getInfoLog()));
     }
 
-    public static Stream<SibsOutputFile> findByPrintedPaymentCodes(final java.lang.String printedPaymentCodes) {
-        return findAll().filter(i -> printedPaymentCodes.equalsIgnoreCase(i.getPrintedPaymentCodes()));
-    }
-    
 }
