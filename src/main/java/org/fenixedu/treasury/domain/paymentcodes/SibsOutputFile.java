@@ -95,14 +95,18 @@ public class SibsOutputFile extends SibsOutputFile_Base implements IGenericFile 
             FinantialInstitution finantialInstitution, StringBuilder errorsBuilder) {
         Set<PaymentReferenceCode> result = new HashSet<PaymentReferenceCode>();
         for (PaymentCodePool pool : finantialInstitution.getPaymentCodePoolsSet()) {
-            List<PaymentReferenceCode> paymentCodesToExport = pool.getAnnulledPaymentCodesToExport(new LocalDate());
+            if(!pool.getInvalidateAnnuledCodesInSibsOutputFiles()) {
+                continue;
+            }
+            
+            final List<PaymentReferenceCode> paymentCodesToExport = pool.getAnnulledPaymentCodesToExport(new LocalDate());
+            for (PaymentReferenceCode oldCode : paymentCodesToExport) {
+                sibsOutgoingPaymentFile.addLine(oldCode.getReferenceCode(), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.01),
+                        new DateTime().minusDays(5).toLocalDate(), new DateTime().minusDays(5).toLocalDate());
+            }
+
             result.addAll(paymentCodesToExport);
         }
-        for (PaymentReferenceCode oldCode : result) {
-            sibsOutgoingPaymentFile.addLine(oldCode.getReferenceCode(), BigDecimal.valueOf(0.01), BigDecimal.valueOf(0.01),
-                    new DateTime().minusDays(5).toLocalDate(), new DateTime().minusDays(5).toLocalDate());
-        }
-
     }
 
     protected void addPaymentCode(final SibsOutgoingPaymentFile file, final PaymentReferenceCode paymentCode,
