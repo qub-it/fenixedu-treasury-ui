@@ -480,7 +480,7 @@ public class DebitEntry extends DebitEntry_Base {
 
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
         
-        final String reasonDescription = treasuryBundle("label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
+        final String reasonDescription = treasuryBundle(TreasuryConstants.DEFAULT_LANGUAGE, "label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
         
         final SettlementNote settlementNote =
                 SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "", null);

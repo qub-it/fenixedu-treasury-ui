@@ -260,6 +260,10 @@ public class TreasuryConstants {
     public static String treasuryBundle(final String key, final String... args) {
         return BundleUtil.getString(TreasuryConstants.BUNDLE, key, args);
     }
+    
+    public static String treasuryBundle(final Locale locale, final String key, final String... args) {
+        return BundleUtil.getString(TreasuryConstants.BUNDLE, locale, key, args);
+    }
 
     public static LocalizedString treasuryBundleI18N(final String key, final String... args) {
         return BundleUtil.getLocalizedString(TreasuryConstants.BUNDLE, key, args);
