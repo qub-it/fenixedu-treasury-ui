@@ -73,6 +73,14 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
             }
         }
     }
+    
+    public boolean isExceptionOccured() {
+        return super.getExceptionOccured();
+    }
+    
+    public boolean isOperationSuccess() {
+        return super.getOperationSuccess();
+    }
 
     public void logRequestSendDate() {
         setRequestSendDate(new DateTime());
@@ -94,15 +102,15 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
         final ITreasuryPlatformDependentServices implementation = TreasuryPlataformDependentServicesFactory.implementation();
         
         if(requestPayload != null) {
-            final String requestPayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-requestPayload-%s", 
+            final String requestPayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-requestPayload-%s.txt", 
                     getExternalId()), OCTECT_STREAM_CONTENT_TYPE, requestPayload.getBytes());
             
             setRequestPayloadFileId(requestPayloadFileId);
         }
 
         if(responsePayload != null) {
-            final String responsePayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-responsePayload-%s", 
-                    getExternalId()), OCTECT_STREAM_CONTENT_TYPE, requestPayload.getBytes());
+            final String responsePayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-responsePayload-%s.txt", 
+                    getExternalId()), OCTECT_STREAM_CONTENT_TYPE, responsePayload.getBytes());
             
             setResponsePayloadFileId(responsePayloadFileId);
         }
@@ -115,7 +123,7 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
 
         setExceptionOccured(true);
 
-        final String exceptionLogFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-responsePayload-%s", 
+        final String exceptionLogFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-exception-%s.txt", 
                 getExternalId()), OCTECT_STREAM_CONTENT_TYPE, exceptionLog.getBytes());
         
         setExceptionLogFileId(exceptionLogFileId);
@@ -141,7 +149,7 @@ public class SibsOnlinePaymentsGatewayLog extends SibsOnlinePaymentsGatewayLog_B
         setNotificationAuthTag(notificationAuthenticationTag);
         
         if(notificationEncryptedPayload != null) {
-            final String notificationEncryptedPayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-notificationEncryptedPayload-%s", 
+            final String notificationEncryptedPayloadFileId = implementation.createFile(String.format("sibsOnlinePaymentsGatewayLog-notificationEncryptedPayload-%s.txt", 
                     getExternalId()), OCTECT_STREAM_CONTENT_TYPE, notificationEncryptedPayload.getBytes());
             
             setNotificationEncryptedPayloadFileId(notificationEncryptedPayloadFileId);

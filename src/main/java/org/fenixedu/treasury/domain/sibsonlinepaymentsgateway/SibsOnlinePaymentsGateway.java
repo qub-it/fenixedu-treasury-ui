@@ -14,13 +14,11 @@ import org.fenixedu.onlinepaymentsgateway.api.PrepareCheckoutInputBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSInitializeServiceBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
-import org.fenixedu.onlinepaymentsgateway.sibs.sdk.NotificationBean;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsEnvironmentMode;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
 
@@ -35,15 +33,17 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         setDomainRoot(FenixFramework.getDomainRoot());
     }
 
-    protected SibsOnlinePaymentsGateway(PaymentCodePool paymentCodePool, String sibsEntityId, String sibsEndpointUrl,
-            String merchantTransactionIdPrefix, final String bearerToken) {
+    protected SibsOnlinePaymentsGateway(PaymentCodePool paymentCodePool, ForwardPaymentConfiguration forwardPaymentConfiguration,
+            String sibsEntityId, String sibsEndpointUrl, String merchantTransactionIdPrefix, final String bearerToken, final String aesKey) {
         this();
 
         setPaymentCodePool(paymentCodePool);
+        setForwardPaymentConfiguration(forwardPaymentConfiguration);
         setSibsEntityId(sibsEntityId);
         setSibsEndpointUrl(sibsEndpointUrl);
         setMerchantTransactionIdPrefix(merchantTransactionIdPrefix);
         setBearerToken(bearerToken);
+        setAesKey(aesKey);
 
         checkRules();
     }
@@ -52,6 +52,18 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
 
         if (getDomainRoot() == null) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.domainRoot.required");
+        }
+
+        if (getPaymentCodePool() == null) {
+            throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.paymentCodePool.required");
+        }
+
+        if (getForwardPaymentConfiguration() == null) {
+            throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.forwardPaymentConfiguration.required");
+        }
+        
+        if(getPaymentCodePool().getFinantialInstitution() != getForwardPaymentConfiguration().getFinantialInstitution()) {
+            throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.pool.and.forward.configuration.not.from.same.finantial.institution");
         }
 
         if (Strings.isNullOrEmpty(getSibsEntityId())) {
@@ -65,6 +77,13 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         if (Strings.isNullOrEmpty(getMerchantTransactionIdPrefix())) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.merchantTransactionIdPrefix.required");
         }
+    }
+
+    @Atomic
+    public void edit(final String sibsEndpointUrl, final String bearerToken, final String aesKey) {
+        setSibsEndpointUrl(sibsEndpointUrl);
+        setBearerToken(bearerToken);
+        setAesKey(aesKey);
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -125,34 +144,36 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     }
 
     @Atomic(mode = TxMode.READ)
-    public MbCheckoutResultBean generateMBPaymentReference(final BigDecimal amount, final DateTime validFrom, final DateTime validTo, final String merchantTransactionId) throws OnlinePaymentsGatewayCommunicationException {
+    public MbCheckoutResultBean generateMBPaymentReference(final BigDecimal amount, final DateTime validFrom,
+            final DateTime validTo, final String merchantTransactionId) throws OnlinePaymentsGatewayCommunicationException {
         final SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
-        
-        final MbPrepareCheckoutInputBean inputBean = new MbPrepareCheckoutInputBean(amount, merchantTransactionId,
-                validFrom, validTo);
-        
+
+        final MbPrepareCheckoutInputBean inputBean =
+                new MbPrepareCheckoutInputBean(amount, merchantTransactionId, validFrom, validTo);
+
         // Customer data will not be sent due to GDPR
         final CustomerDataInputBean customerInputBean = null;
 
         final MbCheckoutResultBean requestResult = gatewayService.generateMBPaymentReference(inputBean, customerInputBean);
-        
+
         return requestResult;
     }
-    
-    public PaymentStateBean handleWebhookNotificationRequest(final String initializationVector, final String authTag, final String encryptedPayload) throws Exception {
+
+    public PaymentStateBean handleWebhookNotificationRequest(final String initializationVector, final String authTag,
+            final String encryptedPayload) throws Exception {
         SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
-        
-        PaymentStateBean notificationBean = gatewayService.handleNotificationRequest(initializationVector, authTag, encryptedPayload);
-        
+
+        PaymentStateBean notificationBean =
+                gatewayService.handleNotificationRequest(initializationVector, authTag, encryptedPayload);
+
         return notificationBean;
     }
 
     private SIBSOnlinePaymentsGatewayService gatewayService() {
         final SIBSInitializeServiceBean initializeServiceBean = new SIBSInitializeServiceBean(getSibsEntityId(), getBearerToken(),
                 getSibsEndpointUrl(), getPaymentCodePool().getEntityReferenceCode(),
-                getPaymentCodePool().getFinantialInstitution().getCurrency().getIsoCode(),
-                translateEnviromentMode());
-        
+                getPaymentCodePool().getFinantialInstitution().getCurrency().getIsoCode(), translateEnviromentMode());
+
         initializeServiceBean.setAesKey(getAesKey());
 
         final SIBSOnlinePaymentsGatewayService gatewayService =
@@ -162,11 +183,11 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     }
 
     private SibsEnvironmentMode translateEnviromentMode() {
-        if(getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.PRODUCTION) {
+        if (getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.PRODUCTION) {
             return SibsEnvironmentMode.PRODUCTION;
-        } else if(getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.TEST_MODE_EXTERNAL) {
+        } else if (getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.TEST_MODE_EXTERNAL) {
             return SibsEnvironmentMode.TEST_MODE_EXTERNAL;
-        } else if(getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.TEST_MODE_INTERNAL) {
+        } else if (getEnviromentMode() == SibsOnlinePaymentsGatewayEnviromentMode.TEST_MODE_INTERNAL) {
             return SibsEnvironmentMode.TEST_MODE_INTERNAL;
         }
 
@@ -177,9 +198,11 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     /* * SERVICES */
     /* ************/
 
-    public static SibsOnlinePaymentsGateway create(final PaymentCodePool paymentCodePool, final String sibsEntityId,
-            final String sibsEndpointUrl, final String merchantIdPrefix, final String bearerToken) {
-        return new SibsOnlinePaymentsGateway(paymentCodePool, sibsEntityId, sibsEndpointUrl, merchantIdPrefix, bearerToken);
+    public static SibsOnlinePaymentsGateway create(final PaymentCodePool paymentCodePool,
+            final ForwardPaymentConfiguration forwardPaymentConfiguration, final String sibsEntityId,
+            final String sibsEndpointUrl, final String merchantIdPrefix, final String bearerToken, final String aesKey) {
+        return new SibsOnlinePaymentsGateway(paymentCodePool, forwardPaymentConfiguration, sibsEntityId, sibsEndpointUrl,
+                merchantIdPrefix, bearerToken, aesKey);
     }
 
     public static Stream<SibsOnlinePaymentsGateway> findAll() {

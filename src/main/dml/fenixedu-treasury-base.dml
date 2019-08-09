@@ -2267,8 +2267,6 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 	String operationResultCode;
 	String operationResultDescription;
 	
-	String forwardPaymentOrderNumber;
-	
 	String notificationInitializationVector;
 	String notificationAuthTag;
 	String notificationEncryptedPayloadFileId;

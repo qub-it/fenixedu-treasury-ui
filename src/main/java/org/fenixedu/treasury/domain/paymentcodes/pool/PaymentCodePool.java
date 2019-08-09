@@ -63,17 +63,17 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final FinantialInstitution finantialInstitution, DocumentNumberSeries seriesToUseInPayments,
-            PaymentMethod paymentMethod) {
+            PaymentMethod paymentMethod, final PaymentCodeGeneratorInstance paymentCodeGeneratorInstance) {
         this();
         init(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount, validFrom, validTo, active,
-                useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
+                useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod, paymentCodeGeneratorInstance);
     }
 
     protected void init(final String name, final String entityReferenceCode, final Long minReferenceCode,
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final FinantialInstitution finantialInstitution, DocumentNumberSeries seriesToUseInPayments,
-            PaymentMethod paymentMethod) {
+            PaymentMethod paymentMethod, PaymentCodeGeneratorInstance paymentCodeGeneratorInstance) {
         setName(name);
         setEntityReferenceCode(entityReferenceCode);
         setNextReferenceCode(minReferenceCode);
@@ -89,6 +89,8 @@ public class PaymentCodePool extends PaymentCodePool_Base {
         setFinantialInstitution(finantialInstitution);
         setPaymentMethod(paymentMethod);
         setDocumentSeriesForPayments(seriesToUseInPayments);
+        setPaymentCodeGeneratorInstance(paymentCodeGeneratorInstance);
+        
         checkRules();
     }
 
@@ -164,6 +166,10 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                     "error.PaymentCodePool.documentNumberSeriesForPayments.invalid.finantialInstitution");
         }
 
+        if(getPaymentCodeGeneratorInstance() == null) {
+            throw new TreasuryDomainException(
+                    "error.PaymentCodePool.documentNumberSeriesForPayments.invalid.paymentCodeGeneratorInstance");
+        }
     }
 
     public boolean isGenerateReferenceCodeOnDemand() {
@@ -204,7 +210,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
             final Long maxReferenceCode, final BigDecimal minAmount, final BigDecimal maxAmount, final LocalDate validFrom,
             final LocalDate validTo, final Boolean active, final Boolean useCheckDigit,
             final FinantialInstitution finantialInstitution, DocumentNumberSeries seriesToUseInPayments,
-            PaymentMethod paymentMethod) {
+            PaymentMethod paymentMethod, final PaymentCodeGeneratorInstance paymentCodeGeneratorInstance) {
 
         if (finantialInstitution.getSibsConfiguration() == null || finantialInstitution.getSibsConfiguration() == null
                 && !entityReferenceCode.equals(finantialInstitution.getSibsConfiguration().getEntityReferenceCode())) {
@@ -212,7 +218,7 @@ public class PaymentCodePool extends PaymentCodePool_Base {
                     "error.administration.payments.sibs.managepaymentcodepool.invalid.entity.reference.code.from.finantial.institution");
         }
         return new PaymentCodePool(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount, validFrom,
-                validTo, active, useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod);
+                validTo, active, useCheckDigit, finantialInstitution, seriesToUseInPayments, paymentMethod, paymentCodeGeneratorInstance);
 
     }
 

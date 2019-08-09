@@ -40,6 +40,7 @@ import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodeGeneratorInstance;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -168,6 +169,9 @@ public class PaymentCodePoolController extends TreasuryBaseController {
                         .filter(x -> x.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
                         .filter(x -> x.getSeries().getActive()).collect(Collectors.toList()));
 
+        model.addAttribute("PaymentCodePool_paymentCodeGeneratorInstance_options", 
+                PaymentCodeGeneratorInstance.findAll().collect(Collectors.toSet()));
+        
         model.addAttribute("PaymentCodePool_paymentMethod_options", PaymentMethod.findAll().collect(Collectors.toList()));
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/create";
     }
@@ -185,14 +189,16 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "active", required = false) Boolean active, @RequestParam(value = "usecheckdigit",
                     required = false) Boolean useCheckDigit,
             @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
-                    value = "paymentmethod") PaymentMethod paymentMethod, Model model, RedirectAttributes redirectAttributes) {
+                    value = "paymentmethod") PaymentMethod paymentMethod, 
+            @RequestParam(value = "paymentcodegeneratorinstance") PaymentCodeGeneratorInstance paymentCodeGeneratorInstance,
+            Model model, RedirectAttributes redirectAttributes) {
 
         try {
             assertUserIsManager(model);
 
             PaymentCodePool paymentCodePool =
-                    createPaymentCodePool(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode,
-                            minAmount, maxAmount, validFrom, validTo, active, useCheckDigit, documentNumberSeries, paymentMethod);
+                    PaymentCodePool.create(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
+                            validFrom, validTo, active, useCheckDigit, finantialInstitution, documentNumberSeries, paymentMethod, paymentCodeGeneratorInstance);
 
             model.addAttribute("paymentCodePool", paymentCodePool);
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
@@ -203,19 +209,6 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         }
 
         return create(model);
-    }
-
-    @Atomic
-    public PaymentCodePool createPaymentCodePool(org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
-            String name, String entityReferenceCode, Long minReferenceCode, Long maxReferenceCode, BigDecimal minAmount,
-            BigDecimal maxAmount, LocalDate validFrom, LocalDate validTo, Boolean active, Boolean useCheckDigit,
-            DocumentNumberSeries documentNumberSeries, PaymentMethod paymentMethod) {
-
-        PaymentCodePool paymentCodePool =
-                PaymentCodePool.create(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                        validFrom, validTo, active, useCheckDigit, finantialInstitution, documentNumberSeries, paymentMethod);
-
-        return paymentCodePool;
     }
 
     private static final String _UPDATE_URI = "/update/";

@@ -227,7 +227,21 @@ ${portal.toolkit()}
                 </div>
             </div>
 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.PaymentCodePool.paymentCodeGeneratorInstance" />
+                </div>
 
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select class="js-example-basic-single" name="paymentcodegeneratorinstance">
+	                        <option value=""></option>
+                    	<c:forEach items="${PaymentCodePool_paymentCodeGeneratorInstance_options}" var="o">
+	                        <option value="${o.externalId}">${o.name}</option>
+                    	</c:forEach>
+                    </select>
+                </div>
+            </div>
 
         </div>
         <div class="panel-footer">
