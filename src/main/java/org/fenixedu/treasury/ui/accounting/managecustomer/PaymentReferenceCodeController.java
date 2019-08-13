@@ -98,6 +98,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(bean.getSelectedDebitEntries().iterator().next().getDebtAccount().getFinantialInstitution(),
                     model);
 
+            bean.setUsePaymentAmountWithInterests(false);
             PaymentReferenceCode.createPaymentReferenceCodeForMultipleDebitEntries(debtAccount, bean);
 
             addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"), model);

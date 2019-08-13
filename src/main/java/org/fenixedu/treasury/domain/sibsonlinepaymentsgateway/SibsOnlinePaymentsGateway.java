@@ -8,6 +8,8 @@ import org.fenixedu.onlinepaymentsgateway.api.CheckoutResultBean;
 import org.fenixedu.onlinepaymentsgateway.api.CustomerDataInputBean;
 import org.fenixedu.onlinepaymentsgateway.api.MbCheckoutResultBean;
 import org.fenixedu.onlinepaymentsgateway.api.MbPrepareCheckoutInputBean;
+import org.fenixedu.onlinepaymentsgateway.api.MbWayCheckoutResultBean;
+import org.fenixedu.onlinepaymentsgateway.api.MbWayPrepareCheckoutInputBean;
 import org.fenixedu.onlinepaymentsgateway.api.OnlinePaymentServiceFactory;
 import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.onlinepaymentsgateway.api.PrepareCheckoutInputBean;
@@ -34,7 +36,8 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     }
 
     protected SibsOnlinePaymentsGateway(PaymentCodePool paymentCodePool, ForwardPaymentConfiguration forwardPaymentConfiguration,
-            String sibsEntityId, String sibsEndpointUrl, String merchantTransactionIdPrefix, final String bearerToken, final String aesKey) {
+            String sibsEntityId, String sibsEndpointUrl, String merchantTransactionIdPrefix, final String bearerToken,
+            final String aesKey) {
         this();
 
         setPaymentCodePool(paymentCodePool);
@@ -61,9 +64,10 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         if (getForwardPaymentConfiguration() == null) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.forwardPaymentConfiguration.required");
         }
-        
-        if(getPaymentCodePool().getFinantialInstitution() != getForwardPaymentConfiguration().getFinantialInstitution()) {
-            throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.pool.and.forward.configuration.not.from.same.finantial.institution");
+
+        if (getPaymentCodePool().getFinantialInstitution() != getForwardPaymentConfiguration().getFinantialInstitution()) {
+            throw new TreasuryDomainException(
+                    "error.SibsOnlinePaymentsGateway.pool.and.forward.configuration.not.from.same.finantial.institution");
         }
 
         if (Strings.isNullOrEmpty(getSibsEntityId())) {
@@ -157,6 +161,21 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         final MbCheckoutResultBean requestResult = gatewayService.generateMBPaymentReference(inputBean, customerInputBean);
 
         return requestResult;
+    }
+
+    public MbWayCheckoutResultBean generateMbwayReference(final BigDecimal amount, final String merchantTransactionId,
+            final String phoneNumber) throws OnlinePaymentsGatewayCommunicationException {
+        final SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
+
+        MbWayPrepareCheckoutInputBean inputBean = new MbWayPrepareCheckoutInputBean(amount, merchantTransactionId, phoneNumber);
+
+        inputBean.setAmount(amount);
+        inputBean.setMerchantTransactionId(merchantTransactionId);
+        inputBean.setPhoneNumber(phoneNumber);
+
+        MbWayCheckoutResultBean mbwayCheckoutResult = gatewayService.generateMbWayPayment(inputBean, null);
+
+        return mbwayCheckoutResult;
     }
 
     public PaymentStateBean handleWebhookNotificationRequest(final String initializationVector, final String authTag,

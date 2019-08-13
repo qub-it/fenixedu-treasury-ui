@@ -158,9 +158,9 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     public static PaymentReferenceCode createForSibsOnlinePaymentGateway(final String referenceCode, final LocalDate beginDate,
             final LocalDate endDate, final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal amount,
-            final String sibsMerchantTransactionId, final String sibsReferenceCode) {
+            final String sibsMerchantTransactionId, final String sibsReferenceId) {
         PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
-        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, amount, amount, sibsMerchantTransactionId, sibsReferenceCode);
+        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, amount, amount, sibsMerchantTransactionId, sibsReferenceId);
 
         return paymentReferenceCode;
     }
@@ -416,7 +416,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             final PaymentReferenceCodeBean bean) {
         BigDecimal amount = BigDecimal.ZERO;
         for (DebitEntry entry : bean.getSelectedDebitEntries()) {
-            amount = amount.add(entry.getOpenAmount());
+            amount = amount.add(bean.isUsePaymentAmountWithInterests() ? entry.getOpenAmountWithInterests() : entry.getOpenAmount());
         }
 
         bean.setPaymentAmount(amount);

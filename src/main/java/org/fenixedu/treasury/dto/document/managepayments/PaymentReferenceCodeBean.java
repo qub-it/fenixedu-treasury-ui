@@ -172,14 +172,6 @@ public class PaymentReferenceCodeBean implements ITreasuryBean {
         this.usePaymentAmountWithInterests = usePaymentAmountWithInterests;
     }
 
-    public java.math.BigDecimal getPaymentAmountWithInterst() {
-        return paymentAmountWithInterst;
-    }
-
-    public void setPaymentAmountWithInterst(java.math.BigDecimal paymentAmountWithInterst) {
-        this.paymentAmountWithInterst = paymentAmountWithInterst;
-    }
-
     public boolean isPoolWithFixedAmount() {
         return isPoolWithFixedAmount;
     }
