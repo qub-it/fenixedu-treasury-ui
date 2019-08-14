@@ -17,6 +17,8 @@ import org.fenixedu.onlinepaymentsgateway.api.SIBSInitializeServiceBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsEnvironmentMode;
+import org.fenixedu.treasury.domain.PaymentMethod;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
@@ -35,9 +37,10 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         setDomainRoot(FenixFramework.getDomainRoot());
     }
 
-    protected SibsOnlinePaymentsGateway(PaymentCodePool paymentCodePool, ForwardPaymentConfiguration forwardPaymentConfiguration,
-            String sibsEntityId, String sibsEndpointUrl, String merchantTransactionIdPrefix, final String bearerToken,
-            final String aesKey) {
+    protected SibsOnlinePaymentsGateway(final PaymentCodePool paymentCodePool,
+            final ForwardPaymentConfiguration forwardPaymentConfiguration, final String sibsEntityId,
+            final String sibsEndpointUrl, final String merchantTransactionIdPrefix, final String bearerToken, final String aesKey,
+            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries) {
         this();
 
         setPaymentCodePool(paymentCodePool);
@@ -47,6 +50,9 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         setMerchantTransactionIdPrefix(merchantTransactionIdPrefix);
         setBearerToken(bearerToken);
         setAesKey(aesKey);
+
+        setMbwayPaymentMethod(mbwayPaymentMethod);
+        setMbwayDocumentSeries(mbwayDocumentSeries);
 
         checkRules();
     }
@@ -81,13 +87,25 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         if (Strings.isNullOrEmpty(getMerchantTransactionIdPrefix())) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.merchantTransactionIdPrefix.required");
         }
+        
+        if(getMbwayPaymentMethod() == null) {
+            throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.mbwayPaymentMethod.required");
+        }
+        
+        if(getMbwayDocumentSeries() == null) {
+            throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.mbwayDocumentSeries.required");
+        }
     }
 
     @Atomic
-    public void edit(final String sibsEndpointUrl, final String bearerToken, final String aesKey) {
+    public void edit(final String sibsEndpointUrl, final String bearerToken, final String aesKey,
+            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries) {
         setSibsEndpointUrl(sibsEndpointUrl);
         setBearerToken(bearerToken);
         setAesKey(aesKey);
+        
+        setMbwayPaymentMethod(mbwayPaymentMethod);
+        setMbwayDocumentSeries(mbwayDocumentSeries);
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -219,9 +237,10 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
 
     public static SibsOnlinePaymentsGateway create(final PaymentCodePool paymentCodePool,
             final ForwardPaymentConfiguration forwardPaymentConfiguration, final String sibsEntityId,
-            final String sibsEndpointUrl, final String merchantIdPrefix, final String bearerToken, final String aesKey) {
+            final String sibsEndpointUrl, final String merchantIdPrefix, final String bearerToken, final String aesKey,
+            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries) {
         return new SibsOnlinePaymentsGateway(paymentCodePool, forwardPaymentConfiguration, sibsEntityId, sibsEndpointUrl,
-                merchantIdPrefix, bearerToken, aesKey);
+                merchantIdPrefix, bearerToken, aesKey, mbwayPaymentMethod, mbwayDocumentSeries);
     }
 
     public static Stream<SibsOnlinePaymentsGateway> findAll() {

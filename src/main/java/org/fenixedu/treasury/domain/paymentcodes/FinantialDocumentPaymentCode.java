@@ -218,12 +218,12 @@ public class FinantialDocumentPaymentCode extends FinantialDocumentPaymentCode_B
     }
 
     @Override
-    protected DocumentNumberSeries getDocumentSeriesForPayments() {
+    public DocumentNumberSeries getDocumentSeriesForPayments() {
         return this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments();
     }
 
     @Override
-    protected DocumentNumberSeries getDocumentSeriesInterestDebits() {
+    public DocumentNumberSeries getDocumentSeriesInterestDebits() {
         return DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
                 this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments().getSeries());
     }

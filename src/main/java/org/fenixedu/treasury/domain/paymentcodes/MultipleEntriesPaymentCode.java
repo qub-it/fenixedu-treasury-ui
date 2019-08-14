@@ -112,7 +112,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     }
 
     @Override
-    protected DocumentNumberSeries getDocumentSeriesForPayments() {
+    public DocumentNumberSeries getDocumentSeriesForPayments() {
         return this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments();
     }
 
@@ -139,7 +139,7 @@ public class MultipleEntriesPaymentCode extends MultipleEntriesPaymentCode_Base 
     }
 
     @Override
-    protected DocumentNumberSeries getDocumentSeriesInterestDebits() {
+    public DocumentNumberSeries getDocumentSeriesInterestDebits() {
         return DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
                 this.getPaymentReferenceCode().getPaymentCodePool().getDocumentSeriesForPayments().getSeries());
     }

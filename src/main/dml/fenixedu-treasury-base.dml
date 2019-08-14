@@ -2234,7 +2234,27 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway {
 			multiplicity 0..1;
 		}
 	}
+	
+	relation SibsOnlinePaymentsGatewayMbwayPaymentMethod {
+		sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway playsRole {
+			multiplicity *;
+		}
+	
+		PaymentMethod playsRole mbwayPaymentMethod {
+			multiplicity 1..1;
+		}
+	}
 
+	relation SibsOnlinePaymentsGatewayMbwayDocumentNumberSeries {
+		sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway playsRole {
+			multiplicity *;
+		}
+	
+		document.DocumentNumberSeries playsRole mbwayDocumentSeries {
+			multiplicity 1..1;
+		}
+	}
+	
 class sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog {
 	String operationCode;
 	DateTime creationDate;
@@ -2370,13 +2390,23 @@ class sibsonlinepaymentsgateway.MbwayTransaction {
 			multiplicity *;
 		}
 	}
+	
+	relation MbwayTransactionMbwayPaymentRequest {
+		sibsonlinepaymentsgateway.MbwayPaymentRequest playsRole mbwayPaymentRequest {
+			multiplicity 1..1;
+		}
+		
+		sibsonlinepaymentsgateway.MbwayTransaction playsRole mbwayTransactions {
+			multiplicity *;
+		}
+	}
 
 	relation MbwayPaymentTransactionSettlementNote {
 		sibsonlinepaymentsgateway.MbwayTransaction playsRole mbwayPaymentTransaction {
 			multiplicity 0..1;
 		}
 		
-        document.SettlementNote playsRole settlementNote {
-            multiplicity 0..1;
+        document.SettlementNote playsRole settlementNotes {
+            multiplicity *;
         }
 	}
