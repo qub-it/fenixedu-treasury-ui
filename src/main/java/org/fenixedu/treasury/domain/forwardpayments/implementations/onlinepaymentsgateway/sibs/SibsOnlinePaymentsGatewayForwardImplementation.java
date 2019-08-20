@@ -40,7 +40,7 @@ public class SibsOnlinePaymentsGatewayForwardImplementation implements IForwardP
 
     @Override
     public String getPaymentURL(ForwardPayment forwardPayment) {
-        throw new RuntimeException("not applied");
+        return forwardPayment.getForwardPaymentConfiguration().getPaymentURL() + "/paymentWidgets.js?checkoutId=" + forwardPayment.getSibsCheckoutId();
     }
 
     @Override

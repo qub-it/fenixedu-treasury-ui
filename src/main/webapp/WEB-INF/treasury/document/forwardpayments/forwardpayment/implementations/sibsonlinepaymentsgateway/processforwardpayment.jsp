@@ -123,7 +123,7 @@ ${portal.angularToolkit()}
 	</p>
 </div>
 
-<script src="https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=${checkoutId}"></script>
+<script src="${paymentScriptUrl}"></script>
 
 <form action="${shopperResultUrl}" class="paymentWidgets" data-brands="${paymentBrands}">
 </form>

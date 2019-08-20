@@ -95,6 +95,13 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
             throw new TreasuryDomainException("error.MbwayPaymentRequest.sibsReferenceId.required");
         }
 
+        if(findBySibsMerchantTransactionId(getSibsMerchantTransactionId()).count() > 1) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.sibsMerchantTransactionId.not.unique");
+        }
+        
+        if(findBySibsReferenceId(getSibsReferenceId()).count() > 1) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.sibsReferenceId.not.unique");
+        }
     }
 
     @Override
@@ -268,9 +275,23 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
     public static Stream<MbwayPaymentRequest> findAll() {
         return FenixFramework.getDomainRoot().getMbwayPaymentRequestsSet().stream();
     }
-
-    public static Optional<MbwayPaymentRequest> findUniqueBySibsReferenceId(final String sibsReferenceId) {
-        return findAll().filter(r -> sibsReferenceId.equals(r.getSibsReferenceId())).findFirst();
+    
+    public static Stream<MbwayPaymentRequest> findBySibsMerchantTransactionId(final String sibsMerchantTransactionId) {
+        return findAll().filter(r -> r.getSibsMerchantTransactionId().equals(sibsMerchantTransactionId));
+    }
+    
+    public static Stream<MbwayPaymentRequest> findBySibsReferenceId(final String sibsReferenceId) {
+        return findAll().filter(r -> r.getSibsReferenceId().equals(sibsReferenceId));
     }
 
+    public static Optional<MbwayPaymentRequest> findUniqueBySibsReferenceId(final String sibsReferenceId) {
+        return findBySibsReferenceId(sibsReferenceId).findFirst();
+    }
+    
+    public static Optional<MbwayPaymentRequest> findUniqueBySibsMerchantTransactionId(final String sibsMerchantTransactionId) {
+        return findBySibsMerchantTransactionId(sibsMerchantTransactionId).findFirst();
+    }
+
+    
+    
 }

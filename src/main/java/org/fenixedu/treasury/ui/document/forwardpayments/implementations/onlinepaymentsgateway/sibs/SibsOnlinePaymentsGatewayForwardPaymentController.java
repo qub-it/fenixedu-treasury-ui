@@ -48,6 +48,7 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController implements IForwa
                 return format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
             }
             
+            model.addAttribute("paymentScriptUrl", impl.getPaymentURL(forwardPayment));
             model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
             model.addAttribute("debtAccount", forwardPayment.getDebtAccount());
             model.addAttribute("checkoutId", forwardPayment.getSibsCheckoutId());

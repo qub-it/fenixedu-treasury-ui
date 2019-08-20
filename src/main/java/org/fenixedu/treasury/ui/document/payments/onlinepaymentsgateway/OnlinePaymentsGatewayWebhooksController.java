@@ -12,6 +12,7 @@ import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
+import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -81,16 +82,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             if (!"PAYMENT".equals(bean.getNotificationType())) {
                 // Not payment, ignore
                 response.setStatus(HttpServletResponse.SC_OK);
-            }
-
-            if (!"RC".equals(bean.getPaymentType())) {
-                // Not payment with receipt
-                response.setStatus(HttpServletResponse.SC_OK);
-            }
-
-            if (!bean.isPaid()) {
-                throw new TreasuryDomainException(
-                        "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
+                return;
             }
 
             FenixFramework.atomic(() -> {
@@ -103,15 +95,38 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                     PaymentReferenceCode.findUniqueBySibsReferenceId(bean.getReferencedId());
 
             final Optional<MbwayPaymentRequest> mbwayPaymentRequestOptional =
-                    MbwayPaymentRequest.findUniqueBySibsReferenceId(bean.getReferencedId());
+                    MbwayPaymentRequest.findUniqueBySibsMerchantTransactionId(bean.getMerchantTransactionId());
 
             if (referenceCodeOptional.isPresent()) {
+                if (PaymentType.PA.name().equals(bean.getPaymentType())) {
+                    // Payment reference code pre authorization (creation of reference code)
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                } else if(!PaymentType.RC.name().equals(bean.getPaymentType())) {
+                    throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.payment.reference.code");
+                }
+
+                if (!bean.isPaid()) {
+                    throw new TreasuryDomainException(
+                            "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
+                }
+                
                 final PaymentReferenceCode paymentReferenceCode = referenceCodeOptional.get();
 
                 processPaymentReferenceCodeTransaction(log, bean, paymentReferenceCode);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
-                final MbwayPaymentRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
 
+                if(!PaymentType.DB.name().equals(bean.getPaymentType())) {
+                    throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
+                }
+                
+                if (!bean.isPaid()) {
+                    throw new TreasuryDomainException(
+                            "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
+                }
+
+                final MbwayPaymentRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
+                
                 processMbwayTransaction(log, bean, mbwayPaymentRequest);
             } else {
                 throw new TreasuryDomainException(
@@ -182,7 +197,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
     }
 
     private void processPaymentReferenceCodeTransaction(final SibsOnlinePaymentsGatewayLog log, PaymentStateBean bean,
-            final PaymentReferenceCode paymentReferenceCode) {
+            final PaymentReferenceCode paymentReferenceCode) {        
         if (!bean.getMerchantTransactionId().equals(paymentReferenceCode.getSibsMerchantTransactionId())) {
             throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.merchantTransactionId.not.equal");
         }

@@ -301,21 +301,6 @@ public class DebitEntryController extends TreasuryBaseController {
             org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, LocalDate dueDate, DateTime entryDateTime,
             final TreasuryEvent treasuryEvent, boolean applyInterests, final FixedTariffInterestRateBean interestRateBean) {
 
-        // @formatter: off
-
-        /*
-         * Modify the creation code here if you do not want to create
-         * the object with the default constructor and use the setter
-         * for each field
-         * 
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Create service" in DomainObject
-        //DebitEntry debitEntry = debitEntry.create(fields_to_create);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
         Optional<Vat> activeVat =
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
