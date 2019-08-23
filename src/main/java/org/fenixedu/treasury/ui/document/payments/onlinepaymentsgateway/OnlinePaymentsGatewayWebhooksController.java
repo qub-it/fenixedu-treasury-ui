@@ -91,8 +91,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             });
 
             // Find payment code
-            final Optional<PaymentReferenceCode> referenceCodeOptional =
-                    PaymentReferenceCode.findUniqueBySibsReferenceId(bean.getReferencedId());
+            final Optional<PaymentReferenceCode> referenceCodeOptional = bean.getReferencedId() != null ? 
+                    PaymentReferenceCode.findUniqueBySibsReferenceId(bean.getReferencedId()) : Optional.empty();
 
             final Optional<MbwayPaymentRequest> mbwayPaymentRequestOptional =
                     MbwayPaymentRequest.findUniqueBySibsMerchantTransactionId(bean.getMerchantTransactionId());
@@ -127,7 +127,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
                 final MbwayPaymentRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
                 
-                processMbwayTransaction(log, bean, mbwayPaymentRequest);
+                mbwayPaymentRequest.processMbwayTransaction(log, bean);
             } else {
                 throw new TreasuryDomainException(
                         "error.OnlinePaymentsGatewayWebhooksController.notificationBean.paymentReferenceCode.not.found.by.referenceId");
@@ -151,48 +151,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             logger.error(e.getLocalizedMessage(), e);
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private void processMbwayTransaction(final SibsOnlinePaymentsGatewayLog log, PaymentStateBean bean,
-            final MbwayPaymentRequest mbwayPaymentRequest) {
-        if (!bean.getMerchantTransactionId().equals(mbwayPaymentRequest.getSibsMerchantTransactionId())) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.merchantTransactionId.not.equal");
-        }
-
-        FenixFramework.atomic(() -> {
-            final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway = mbwayPaymentRequest.getSibsOnlinePaymentsGateway();
-            final DebtAccount debtAccount = mbwayPaymentRequest.getDebtAccount();
-
-            log.associateSibsOnlinePaymentGatewayAndDebtAccount(sibsOnlinePaymentsGateway, debtAccount);
-        });
-
-        final BigDecimal amount = bean.getAmount();
-        final DateTime paymentDate = bean.getPaymentDate();
-
-        FenixFramework.atomic(() -> {
-            log.savePaymentInfo(amount, paymentDate);
-        });
-
-        if (amount == null || !TreasuryConstants.isPositive(amount)) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.amount");
-        }
-
-        if (paymentDate == null) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.payment.date");
-        }
-
-        if (MbwayTransaction.isTransactionProcessingDuplicate(bean.getTransactionId())) {
-            FenixFramework.atomic(() -> {
-                log.markAsDuplicatedTransaction();
-            });
-        } else {
-            final Set<SettlementNote> settlementNotes = mbwayPaymentRequest.processPayment("unknown", amount, paymentDate,
-                    bean.getTransactionId(), bean.getMerchantTransactionId());
-
-            FenixFramework.atomic(() -> {
-                log.markSettlementNotesCreated(settlementNotes);
-            });
         }
     }
 

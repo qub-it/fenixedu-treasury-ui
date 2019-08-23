@@ -169,12 +169,7 @@ public class SibsOnlinePaymentsGatewayForwardImplementation implements IForwardP
 
         try {
             
-            PaymentStateBean paymentStateBean;
-            if(!Strings.isNullOrEmpty(forwardPayment.getSibsTransactionId())) {
-                paymentStateBean = gateway.getPaymentStatusBySibsTransactionId(forwardPayment.getSibsTransactionId());
-            } else {
-                paymentStateBean = gateway.getPaymentStatusBySibsMerchantId(forwardPayment.getSibsMerchantTransactionId());
-            }
+            final PaymentStateBean paymentStateBean = gateway.getPaymentStatusBySibsTransactionId(forwardPayment.getSibsTransactionId());
 
             final String requestLog = paymentStateBean.getRequestLog();
             final String responseLog = paymentStateBean.getResponseLog();

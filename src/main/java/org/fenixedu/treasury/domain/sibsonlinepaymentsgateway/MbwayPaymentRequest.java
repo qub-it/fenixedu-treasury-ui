@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.onlinepaymentsgateway.api.MbWayCheckoutResultBean;
+import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.IPaymentProcessorForInvoiceEntries;
@@ -22,6 +23,7 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
@@ -134,7 +136,7 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
     }
 
     @Atomic
-    public Set<SettlementNote> processPayment(final String username, final BigDecimal amount, final DateTime paymentDate,
+    private Set<SettlementNote> processPayment(final String username, final BigDecimal amount, final DateTime paymentDate,
             final String sibsTransactionId, final String comments) {
 
         if (!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) {
@@ -145,7 +147,54 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
                     comments, getInvoiceEntriesSet());
         }
     }
+    
+    @Atomic(mode=TxMode.READ)
+    public void processMbwayTransaction(final SibsOnlinePaymentsGatewayLog log, PaymentStateBean bean) {
+        if (!bean.getMerchantTransactionId().equals(getSibsMerchantTransactionId())) {
+            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.merchantTransactionId.not.equal");
+        }
 
+        FenixFramework.atomic(() -> {
+            final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway = getSibsOnlinePaymentsGateway();
+            final DebtAccount debtAccount = getDebtAccount();
+
+            log.associateSibsOnlinePaymentGatewayAndDebtAccount(sibsOnlinePaymentsGateway, debtAccount);
+        });
+
+        final BigDecimal amount = bean.getAmount();
+        final DateTime paymentDate = bean.getPaymentDate();
+
+        FenixFramework.atomic(() -> {
+            log.savePaymentInfo(amount, paymentDate);
+        });
+
+        if (amount == null || !TreasuryConstants.isPositive(amount)) {
+            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.amount");
+        }
+
+        if (paymentDate == null) {
+            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.payment.date");
+        }
+
+        if (MbwayTransaction.isTransactionProcessingDuplicate(bean.getTransactionId())) {
+            FenixFramework.atomic(() -> {
+                log.markAsDuplicatedTransaction();
+            });
+        } else {
+
+            FenixFramework.atomic(() -> {
+                final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+                
+                final Set<SettlementNote> settlementNotes = processPayment(StringUtils.isNotEmpty(loggedUsername) ? loggedUsername : "unknown", amount, paymentDate,
+                        bean.getTransactionId(), bean.getMerchantTransactionId());
+                MbwayTransaction.create(this, bean.getTransactionId(), amount, paymentDate, settlementNotes);
+
+                log.markSettlementNotesCreated(settlementNotes);
+            });
+        }
+    }
+
+    
     @Override
     public DocumentNumberSeries getDocumentSeriesForPayments() {
         return getSibsOnlinePaymentsGateway().getMbwayDocumentSeries();

@@ -1,6 +1,7 @@
 package org.fenixedu.treasury.domain.sibsonlinepaymentsgateway;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -143,11 +144,11 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     }
 
     @Atomic(mode = TxMode.READ)
-    public PaymentStateBean getPaymentStatusBySibsMerchantId(final String merchantId)
+    public List<PaymentStateBean> getPaymentTransactionsReportListByMerchantId(final String merchantId)
             throws OnlinePaymentsGatewayCommunicationException {
         final SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
 
-        return gatewayService.getPaymentTransactionReportByMerchantId(merchantId);
+        return gatewayService.getPaymentTransactionsReportListByMerchantId(merchantId);
     }
 
     @Atomic(mode = TxMode.READ)
