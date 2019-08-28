@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -43,7 +44,11 @@ import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway;
+import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -52,6 +57,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 public class PaymentReferenceCode extends PaymentReferenceCode_Base {
@@ -160,7 +166,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             final LocalDate endDate, final PaymentReferenceCodeStateType state, PaymentCodePool pool, BigDecimal amount,
             final String sibsMerchantTransactionId, final String sibsReferenceId) {
         PaymentReferenceCode paymentReferenceCode = new PaymentReferenceCode();
-        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, amount, amount, sibsMerchantTransactionId, sibsReferenceId);
+        paymentReferenceCode.init(referenceCode, beginDate, endDate, state, pool, amount, amount, sibsMerchantTransactionId,
+                sibsReferenceId);
 
         return paymentReferenceCode;
     }
@@ -300,16 +307,16 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
     }
 
     @Atomic
-    public Set<SettlementNote> processPayment(final String responsibleUsername, BigDecimal amountToPay, DateTime whenRegistered,
+    public Set<SettlementNote> processPayment(final String responsibleUsername, BigDecimal amountToPay, DateTime paymentDate,
             String sibsTransactionId, String comments, final DateTime whenProcessedBySibs, final SibsReportFile sibsReportFile) {
 
         if (!isNew() && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(),
-                this.getPaymentCodePool().getEntityReferenceCode(), whenRegistered)) {
+                this.getPaymentCodePool().getEntityReferenceCode(), paymentDate)) {
             return null;
         }
 
-        final Set<SettlementNote> noteSet = this.getTargetPayment().processPayment(responsibleUsername, amountToPay,
-                whenRegistered, sibsTransactionId, comments);
+        final Set<SettlementNote> noteSet = this.getTargetPayment().processPayment(responsibleUsername, amountToPay, paymentDate,
+                sibsTransactionId, comments);
 
         final DebtAccount referenceDebtAccount = this.getTargetPayment().getDebtAccount();
 
@@ -324,7 +331,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             final String settlementDocumentNumber = settlementNote.getUiDocumentNumber();
 
             SibsTransactionDetail transactionDetail =
-                    SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, whenRegistered, amountToPay,
+                    SibsTransactionDetail.create(sibsReportFile, comments, whenProcessedBySibs, paymentDate, amountToPay,
                             getPaymentCodePool().getEntityReferenceCode(), getReferenceCode(), sibsTransactionId, debtAccountId,
                             customerId, businessIdentification, fiscalNumber, customerName, settlementDocumentNumber);
 
@@ -332,6 +339,54 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
         return noteSet;
 
+    }
+
+    @Atomic(mode = TxMode.READ)
+    public void processPaymentReferenceCodeTransaction(final SibsOnlinePaymentsGatewayLog log, PaymentStateBean bean) {
+        if (!bean.getMerchantTransactionId().equals(getSibsMerchantTransactionId())) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.processPaymentReferenceCodeTransaction.merchantTransactionId.not.equal");
+        }
+
+        FenixFramework.atomic(() -> {
+            final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway = getPaymentCodePool().getSibsOnlinePaymentsGateway();
+            final DebtAccount debtAccount = getTargetPayment().getDebtAccount();
+
+            log.associateSibsOnlinePaymentGatewayAndDebtAccount(sibsOnlinePaymentsGateway, debtAccount);
+            log.setPaymentCode(getReferenceCode());
+        });
+
+        final BigDecimal amount = bean.getAmount();
+        final DateTime paymentDate = bean.getPaymentDate();
+
+        FenixFramework.atomic(() -> {
+            log.savePaymentInfo(amount, paymentDate);
+        });
+
+        if (amount == null || !TreasuryConstants.isPositive(amount)) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.processPaymentReferenceCodeTransaction.invalid.amount");
+        }
+
+        if (paymentDate == null) {
+            throw new TreasuryDomainException("error.PaymentReferenceCode.processPaymentReferenceCodeTransaction.invalid.payment.date");
+        }
+
+        if (SibsTransactionDetail.isReferenceProcessingDuplicate(getReferenceCode(),
+                getPaymentCodePool().getEntityReferenceCode(), paymentDate)) {
+            FenixFramework.atomic(() -> {
+                log.markAsDuplicatedTransaction();
+            });
+
+        } else {
+            final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+
+            final Set<SettlementNote> settlementNotes =
+                    processPayment(StringUtils.isNotEmpty(loggedUsername) ? loggedUsername : "unknown", amount, paymentDate,
+                            bean.getTransactionId(), bean.getMerchantTransactionId(), new DateTime(), null);
+            
+            FenixFramework.atomic(() -> {
+                log.markSettlementNotesCreated(settlementNotes);
+            });
+        }
     }
 
     public String getDescription() {
@@ -416,7 +471,8 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
             final PaymentReferenceCodeBean bean) {
         BigDecimal amount = BigDecimal.ZERO;
         for (DebitEntry entry : bean.getSelectedDebitEntries()) {
-            amount = amount.add(bean.isUsePaymentAmountWithInterests() ? entry.getOpenAmountWithInterests() : entry.getOpenAmount());
+            amount = amount
+                    .add(bean.isUsePaymentAmountWithInterests() ? entry.getOpenAmountWithInterests() : entry.getOpenAmount());
         }
 
         bean.setPaymentAmount(amount);

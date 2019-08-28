@@ -113,7 +113,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 
                 final PaymentReferenceCode paymentReferenceCode = referenceCodeOptional.get();
 
-                processPaymentReferenceCodeTransaction(log, bean, paymentReferenceCode);
+                paymentReferenceCode.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
 
                 if(!PaymentType.DB.name().equals(bean.getPaymentType())) {
@@ -151,51 +151,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             logger.error(e.getLocalizedMessage(), e);
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private void processPaymentReferenceCodeTransaction(final SibsOnlinePaymentsGatewayLog log, PaymentStateBean bean,
-            final PaymentReferenceCode paymentReferenceCode) {        
-        if (!bean.getMerchantTransactionId().equals(paymentReferenceCode.getSibsMerchantTransactionId())) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.merchantTransactionId.not.equal");
-        }
-
-        FenixFramework.atomic(() -> {
-            final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway =
-                    paymentReferenceCode.getPaymentCodePool().getSibsOnlinePaymentsGateway();
-            final DebtAccount debtAccount = paymentReferenceCode.getTargetPayment().getDebtAccount();
-
-            log.associateSibsOnlinePaymentGatewayAndDebtAccount(sibsOnlinePaymentsGateway, debtAccount);
-            log.setPaymentCode(paymentReferenceCode.getReferenceCode());
-        });
-
-        final BigDecimal amount = bean.getAmount();
-        final DateTime paymentDate = bean.getPaymentDate();
-
-        FenixFramework.atomic(() -> {
-            log.savePaymentInfo(amount, paymentDate);
-        });
-
-        if (amount == null || !TreasuryConstants.isPositive(amount)) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.amount");
-        }
-
-        if (paymentDate == null) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.payment.date");
-        }
-
-        if (SibsTransactionDetail.isReferenceProcessingDuplicate(paymentReferenceCode.getReferenceCode(),
-                paymentReferenceCode.getPaymentCodePool().getEntityReferenceCode(), paymentDate)) {
-            FenixFramework.atomic(() -> {
-                log.markAsDuplicatedTransaction();
-            });
-
-        } else {
-            final Set<SettlementNote> settlementNotes = paymentReferenceCode.processPayment("unknown", amount, paymentDate,
-                    bean.getTransactionId(), bean.getMerchantTransactionId(), new DateTime(), null);
-            FenixFramework.atomic(() -> {
-                log.markSettlementNotesCreated(settlementNotes);
-            });
         }
     }
 

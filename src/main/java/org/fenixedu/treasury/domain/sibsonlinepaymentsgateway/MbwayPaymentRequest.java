@@ -151,7 +151,7 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
     @Atomic(mode=TxMode.READ)
     public void processMbwayTransaction(final SibsOnlinePaymentsGatewayLog log, PaymentStateBean bean) {
         if (!bean.getMerchantTransactionId().equals(getSibsMerchantTransactionId())) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.merchantTransactionId.not.equal");
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.processMbwayTransaction.merchantTransactionId.not.equal");
         }
 
         FenixFramework.atomic(() -> {
@@ -169,11 +169,11 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
         });
 
         if (amount == null || !TreasuryConstants.isPositive(amount)) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.amount");
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.processMbwayTransaction.invalid.amount");
         }
 
         if (paymentDate == null) {
-            throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.invalid.payment.date");
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.processMbwayTransaction.invalid.payment.date");
         }
 
         if (MbwayTransaction.isTransactionProcessingDuplicate(bean.getTransactionId())) {

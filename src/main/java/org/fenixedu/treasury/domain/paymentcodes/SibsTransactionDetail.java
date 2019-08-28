@@ -65,13 +65,13 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
 
     @Atomic
     public static SibsTransactionDetail create(final SibsReportFile sibsReport, final String comments,
-            final DateTime whenProcessed, final DateTime whenRegistered, final java.math.BigDecimal amountPayed,
+            final DateTime whenProcessed, final DateTime paymentDate, final java.math.BigDecimal amountPayed,
             final String sibsEntityReferenceCode, final String sibsPaymentReferenceCode, final String sibsTransactionId,
             final String debtAccountId, final String customerId, final String businessIdentification, final String fiscalNumber,
             final String customerName, final String settlementDocumentNumber) {
         SibsTransactionDetail sibsTransactionDetail = new SibsTransactionDetail();
 
-        sibsTransactionDetail.init(sibsReport, comments, whenProcessed, whenRegistered, amountPayed, sibsEntityReferenceCode,
+        sibsTransactionDetail.init(sibsReport, comments, whenProcessed, paymentDate, amountPayed, sibsEntityReferenceCode,
                 sibsPaymentReferenceCode, sibsTransactionId, debtAccountId, customerId, businessIdentification, fiscalNumber,
                 customerName, settlementDocumentNumber);
         return sibsTransactionDetail;
@@ -127,7 +127,7 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
     public static Stream<SibsTransactionDetail> findBySibsTransactionId(final String sibsTransactionId) {
         return findAll().filter(i -> sibsTransactionId.equalsIgnoreCase(i.getSibsTransactionId()));
     }
-
+    
     public static Stream<SibsTransactionDetail> findBySibsEntityAndReferenceCode(final String sibsEntityReferenceCode,
             final String sibsPaymentReferenceCode) {
         return findBySibsEntityReferenceCode(sibsEntityReferenceCode)
@@ -140,5 +140,9 @@ public class SibsTransactionDetail extends SibsTransactionDetail_Base {
         return findAll().anyMatch(x -> x.getSibsEntityReferenceCode().equals(entityReferenceCode)
                 && x.getSibsPaymentReferenceCode().equals(referenceCode) && x.getWhenRegistered().equals(whenRegistered));
     }
-
+    
+    public static boolean isSibsOppwaReferenceProcessingDuplicate(final String sibsTransactionId) {
+        return findBySibsTransactionId(sibsTransactionId).count() > 0;
+    }
+    
 }
