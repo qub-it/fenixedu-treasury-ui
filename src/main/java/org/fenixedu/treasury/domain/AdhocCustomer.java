@@ -318,6 +318,25 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         return null;
     }
     
+    public boolean isAddressValid() {
+        boolean valid = true;
+        
+        valid &= !Strings.isNullOrEmpty(this.getAddressCountryCode());
+        valid &= !Strings.isNullOrEmpty(this.getAddress());
+        valid &= !Strings.isNullOrEmpty(this.getDistrictSubdivision());
+        
+        if(isDefaultCountry(this.getAddressCountryCode())) {
+            valid &= !Strings.isNullOrEmpty(this.getZipCode());
+            valid &= !Strings.isNullOrEmpty(this.getRegion());
+        }
+        
+        if(isDefaultCountry(this.getAddressCountryCode()) && !Strings.isNullOrEmpty(this.getZipCode())) {
+            valid &= this.getZipCode().matches("\\d{4}-\\d{3}");
+        }
+        
+        return valid;
+    }
+    
     // @formatter:off
     /* ********
      * SERVICES

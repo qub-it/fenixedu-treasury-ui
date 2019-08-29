@@ -1,6 +1,5 @@
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
-<%@page import="org.fenixedu.treasury.ui.document.managepayments.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.Series"%>
 <%@page import="org.fenixedu.treasury.ui.administration.managefinantialinstitution.DocumentNumberSeriesController"%>
@@ -170,8 +169,6 @@ ${portal.toolkit()}
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/series/update/${series.externalId}"><spring:message
             code="label.event.update" /></a> &nbsp;|&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a a class="" href="#" data-toggle="modal" data-target="#createdebitnoteforpendingdebitentriesModal"><spring:message
             code="label.event.administration.managefinantialinstitution.series.createdebitnoteforpendingdebitentries" /></a> &nbsp;
-            |&nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.CREATEPAYMENTCODEINSERIES_URL %>?series=${series.externalId}" ><spring:message
-            code="label.event.administration.managefinantialinstitution.series.createpaymentreferencecode" /></a> &nbsp;
             
     <%
         }

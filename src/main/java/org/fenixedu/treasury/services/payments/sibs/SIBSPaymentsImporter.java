@@ -145,9 +145,9 @@ public class SIBSPaymentsImporter {
         InputStream fileInputStream = null;
         try {
             fileInputStream = inputFile.getStream();
-            
+
             final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-            
+
             final SibsIncommingPaymentFile sibsFile = SibsIncommingPaymentFile.parse(inputFile.getFilename(), fileInputStream);
 
             processResult.addMessage("label.manager.SIBS.linesFound", String.valueOf(sibsFile.getDetailLines().size()));
@@ -183,7 +183,8 @@ public class SIBSPaymentsImporter {
                     if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
                         processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
-                                + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
+                                + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber())
+                                        .collect(Collectors.toSet())));
                     }
 
                 } catch (Exception e) {
@@ -256,13 +257,14 @@ public class SIBSPaymentsImporter {
         for (final SibsIncommingPaymentFileDetailLine detailLine : sibsFile.getDetailLines()) {
 
             try {
-                final Set<SettlementNote> settlementNoteSet = processCode(detailLine, responsibleUsername, processResult, finantialInstitution,
-                        sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
+                final Set<SettlementNote> settlementNoteSet =
+                        processCode(detailLine, responsibleUsername, processResult, finantialInstitution,
+                                sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                 if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
-                    processResult.addMessage(
-                            detailLine.getCode() + " [" + finantialInstitution.getCurrency().getValueFor(detailLine.getAmount())
-                                    + "] => " + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
+                    processResult.addMessage(detailLine.getCode() + " ["
+                            + finantialInstitution.getCurrency().getValueFor(detailLine.getAmount()) + "] => " + join(", ",
+                                    settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
 //                    if (settlementNote.getAdvancedPaymentCreditNote() != null) {
 //                        processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
 //                                settlementNote.getUiDocumentNumber());
@@ -283,9 +285,9 @@ public class SIBSPaymentsImporter {
     }
 
     @Atomic
-    protected Set<SettlementNote> processCode(SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername, ProcessResult result,
-            FinantialInstitution finantialInstitution, final String sibsImportationFile, YearMonthDay whenProcessedBySibs,
-            final SibsReportFile reportFile) throws Exception {
+    protected Set<SettlementNote> processCode(SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername,
+            ProcessResult result, FinantialInstitution finantialInstitution, final String sibsImportationFile,
+            YearMonthDay whenProcessedBySibs, final SibsReportFile reportFile) throws Exception {
 
         final PaymentReferenceCode paymentCode = getPaymentCode(detailLine.getCode(), finantialInstitution);
 
@@ -311,13 +313,13 @@ public class SIBSPaymentsImporter {
                 }
             }
         }
-        
-        if(codeToProcess.getTargetPayment() == null) {
+
+        if (codeToProcess.getTargetPayment() == null) {
             result.addMessage("error.manager.SIBS.code.exists.but.not.attributed.to.any.target", detailLine.getCode());
             return null;
         }
-        
-        if(codeToProcess.getTargetPayment().getReferencedCustomers().size() > 1) {
+
+        if (codeToProcess.getTargetPayment().getReferencedCustomers().size() > 1) {
             result.addMessage("warning.manager.SIBS.referenced.multiple.payor.entities", codeToProcess.getReferenceCode());
         }
 
@@ -326,10 +328,10 @@ public class SIBSPaymentsImporter {
                 whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
 
         //Add the new SettlementNote to the TargetPayment
-        if(settlementNoteSet != null) {
+        if (settlementNoteSet != null) {
             codeToProcess.getTargetPayment().getSettlementNotesSet().addAll(settlementNoteSet);
         }
-        
+
         return settlementNoteSet;
     }
 
@@ -348,8 +350,7 @@ public class SIBSPaymentsImporter {
      */
     private PaymentReferenceCode getPaymentCode(final String code, FinantialInstitution finantialInstitution) {
 
-        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution)
-                .filter(x -> x.getPaymentCodePool().getActive() == true).findFirst().orElse(null);
+        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
     }
 
 }
