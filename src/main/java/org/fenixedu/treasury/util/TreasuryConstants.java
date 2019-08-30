@@ -168,7 +168,7 @@ public class TreasuryConstants {
         return a.divide(b, SCALE, RoundingMode.HALF_EVEN);
     }
 
-    public static BigDecimal rationalRatRate(final InvoiceEntry entry) {
+    public static BigDecimal rationalVatRate(final InvoiceEntry entry) {
         return divide(entry.getVatRate(), BigDecimal.valueOf(100));
     }
     

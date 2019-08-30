@@ -28,7 +28,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.divide;
-import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalVatRate;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -215,7 +215,7 @@ public class CreditEntry extends CreditEntry_Base {
         final Currency currency = getDebtAccount().getFinantialInstitution().getCurrency();
 
         final BigDecimal remainingAmountWithoutVatDividedByQuantity = currency
-                .getValueWithScale(divide(divide(remainingAmount, BigDecimal.ONE.add(rationalRatRate(this))), getQuantity()));
+                .getValueWithScale(divide(divide(remainingAmount, BigDecimal.ONE.add(rationalVatRate(this))), getQuantity()));
 
         final CreditNote newCreditNote = CreditNote.create(this.getDebtAccount(),
                 getFinantialDocument().getDocumentNumberSeries(), getFinantialDocument().getDocumentDate(),
@@ -223,7 +223,7 @@ public class CreditEntry extends CreditEntry_Base {
         newCreditNote.setDocumentObservations(getFinantialDocument().getDocumentObservations());
 
         final BigDecimal newOpenAmountWithoutVatDividedByQuantity =
-                divide(divide(getOpenAmount(), BigDecimal.ONE.add(rationalRatRate(this))), getQuantity());
+                divide(divide(getOpenAmount(), BigDecimal.ONE.add(rationalVatRate(this))), getQuantity());
 
         setAmount(newOpenAmountWithoutVatDividedByQuantity.subtract(remainingAmountWithoutVatDividedByQuantity));
         recalculateAmountValues();

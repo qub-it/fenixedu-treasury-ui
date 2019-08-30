@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalVatRate;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
@@ -200,6 +200,19 @@ public class DebitNote extends DebitNote_Base {
         return note;
     }
 
+    @Atomic
+    public static DebitNote createDebitNoteForDebitEntry(DebitEntry debitEntry, DebtAccount payorDebtAccount, 
+            DocumentNumberSeries documentNumberSeries, DateTime documentDate, LocalDate documentDueDate,
+            String originDocumentNumber, String documentObservations) {
+        final DebitNote debitNote = DebitNote.create(debitEntry.getDebtAccount(), payorDebtAccount, documentNumberSeries,
+                documentDate, documentDueDate, originDocumentNumber);
+        debitNote.setDocumentObservations(documentObservations);
+        
+        debitEntry.setFinantialDocument(debitNote);
+        
+        return debitNote;
+    }
+    
     public static DebitNote copyDebitNote(final DebitNote debitNoteToCopy, final boolean copyDocumentDate,
             final boolean copyCloseDate, final boolean applyExemptions) {
         final DebitNote result = DebitNote.create(debitNoteToCopy.getDebtAccount(), debitNoteToCopy.getPayorDebtAccount(),
@@ -396,7 +409,7 @@ public class DebitNote extends DebitNote_Base {
         for (DebitEntry entry : this.getDebitEntriesSet()) {
             //Get the amount for credit without tax, and considering the credit quantity FOR ONE
             final BigDecimal amountForCreditWithoutVat = entry.getCurrency().getValueWithScale(
-                    TreasuryConstants.divide(entry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(entry))));
+                    TreasuryConstants.divide(entry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalVatRate(entry))));
 
             if (TreasuryConstants.isZero(amountForCreditWithoutVat) && entry.getTreasuryExemption() != null) {
                 continue;
@@ -418,7 +431,7 @@ public class DebitNote extends DebitNote_Base {
         for (final DebitEntry debitEntry : this.getDebitEntriesSet()) {
             for (DebitEntry interestEntry : debitEntry.getInterestDebitEntriesSet()) {
                 final BigDecimal amountForCreditWithoutVat = interestEntry.getCurrency().getValueWithScale(TreasuryConstants
-                        .divide(interestEntry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(interestEntry))));
+                        .divide(interestEntry.getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalVatRate(interestEntry))));
 
                 if (TreasuryConstants.isZero(amountForCreditWithoutVat) && interestEntry.getTreasuryExemption() != null) {
                     continue;

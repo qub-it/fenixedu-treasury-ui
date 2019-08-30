@@ -320,14 +320,13 @@ public class DebitNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
-            DebitNote debitNote = createDebitNote(payorDebtAccount, debtAccount, documentNumberSeries, documentDate,
-                    documentDueDate, originDocumentNumber, documentObservations);
-
+            
             if (debitEntry != null && debitEntry.getFinantialDocument() == null) {
-                addDebitEntryToDebitNote(debitEntry, debitNote);
+                DebitNote.createDebitNoteForDebitEntry(debitEntry, payorDebtAccount, documentNumberSeries, documentDate.toDateTimeAtStartOfDay(),
+                        documentDueDate, originDocumentNumber, documentObservations);
             }
 
-            model.addAttribute("debitNote", debitNote);
+            model.addAttribute("debitNote", debitEntry.getFinantialDocument());
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(treasuryBundle("label.error.create") + tde.getLocalizedMessage(), model);
@@ -335,22 +334,6 @@ public class DebitNoteController extends TreasuryBaseController {
             addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
         }
         return create(documentNumberSeries, debtAccount, debitEntry, model, redirectAttributes);
-    }
-
-    @Atomic
-    private void addDebitEntryToDebitNote(DebitEntry debitEntry, DebitNote debitNote) {
-        debitEntry.setFinantialDocument(debitNote);
-    }
-
-    @Atomic
-    public DebitNote createDebitNote(DebtAccount payorDebtAccount, DebtAccount debtAccount,
-            DocumentNumberSeries documentNumberSeries, LocalDate documentDate, LocalDate documentDueDate,
-            String originDocumentNumber, String documentObservations) {
-        DebitNote debitNote = DebitNote.create(debtAccount, payorDebtAccount, documentNumberSeries,
-                documentDate.toDateTimeAtCurrentTime(), documentDueDate, originDocumentNumber);
-        debitNote.setDocumentObservations(documentObservations);
-
-        return debitNote;
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)

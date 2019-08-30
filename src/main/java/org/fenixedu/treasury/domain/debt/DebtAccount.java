@@ -139,6 +139,23 @@ public class DebtAccount extends DebtAccount_Base {
     }
     
     @Atomic
+    public void transferBalanceForActiveDebtAccount() {
+        if (getCustomer().isActive()) {
+            throw new TreasuryDomainException("error.DebtAccount.transfer.from.must.not.be.active");
+        }
+
+
+        Optional<DebtAccount> activeDebtAccount =
+                DebtAccount.findUnique(getFinantialInstitution(), getCustomer().getActiveCustomer());
+
+        if (!activeDebtAccount.isPresent()) {
+            throw new TreasuryDomainException("error.DebtAccount.active.debt.account.not.found");
+        }
+
+        transferBalance(activeDebtAccount.get());
+    }
+    
+    @Atomic
     public void transferBalance(final DebtAccount destinyDebtAccount) {
         new BalanceTransferService(this, destinyDebtAccount).transferBalance();
     }

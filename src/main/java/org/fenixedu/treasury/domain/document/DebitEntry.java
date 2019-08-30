@@ -27,7 +27,7 @@
  */
 package org.fenixedu.treasury.domain.document;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalVatRate;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
@@ -38,6 +38,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -239,9 +243,9 @@ public class DebitEntry extends DebitEntry_Base {
 
         InterestRateBean calculateInterest = getInterestRate().calculateInterest(amountInDebtMap(whenToCalculate),
                 createdInterestEntriesMap(), getDueDate(), whenToCalculate);
-        
+
         calculateInterest.setDescription(treasuryBundle("label.InterestRateBean.interest.designation", getDescription()));
-        
+
         return calculateInterest;
     }
 
@@ -302,7 +306,7 @@ public class DebitEntry extends DebitEntry_Base {
     public boolean isEventAnnuled() {
         return isAnnulled() || getEventAnnuled();
     }
-    
+
     public boolean isIncludedInEvent() {
         return !isEventAnnuled();
     }
@@ -342,9 +346,9 @@ public class DebitEntry extends DebitEntry_Base {
             entryDescription = product.getName().getContent() + "-" + this.getDescription();
         }
 
-        DebitEntry interestEntry =
-                _create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(), when.toLocalDate(),
-                        TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap()), product, entryDescription, BigDecimal.ONE, null, when);
+        DebitEntry interestEntry = _create(debitNote, getDebtAccount(), getTreasuryEvent(), vat, interest.getInterestAmount(),
+                when.toLocalDate(), TreasuryConstants.propertiesJsonToMap(getPropertiesJsonMap()), product, entryDescription,
+                BigDecimal.ONE, null, when);
 
         addInterestDebitEntries(interestEntry);
 
@@ -385,7 +389,7 @@ public class DebitEntry extends DebitEntry_Base {
             throw new RuntimeException("error.DebitEntry.is.event.annuled.cannot.be.exempted");
         }
 
-        final BigDecimal amountWithoutVat = TreasuryConstants.divide(amountWithVat, BigDecimal.ONE.add(rationalRatRate(this)));
+        final BigDecimal amountWithoutVat = TreasuryConstants.divide(amountWithVat, BigDecimal.ONE.add(rationalVatRate(this)));
 
         if (isProcessedInClosedDebitNote()) {
             // If there is at least one credit entry then skip...
@@ -479,24 +483,35 @@ public class DebitEntry extends DebitEntry_Base {
         creditEntry.getFinantialDocument().closeDocument();
 
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
-        final String reasonDescription = treasuryBundle(TreasuryConstants.DEFAULT_LANGUAGE, "label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
-        
+
+        final String reasonDescription =
+                treasuryBundle(TreasuryConstants.DEFAULT_LANGUAGE, "label.TreasuryEvent.credit.by.annulAllDebitEntries.reason");
+
         final SettlementNote settlementNote =
                 SettlementNote.create(this.getDebtAccount(), documentNumberSeriesSettlementNote, now, now, "", null);
-        settlementNote.setDocumentObservations(
-                reason + " - [" + loggedUsername + "] " + new DateTime().toString("YYYY-MM-dd HH:mm"));
+        settlementNote
+                .setDocumentObservations(reason + " - [" + loggedUsername + "] " + new DateTime().toString("YYYY-MM-dd HH:mm"));
 
         SettlementEntry.create(creditEntry, settlementNote, creditEntry.getOpenAmount(),
                 reasonDescription + ": " + creditEntry.getDescription(), now, false);
-        SettlementEntry.create(creditEntry.getDebitEntry(), settlementNote, creditEntry.getOpenAmount(),
-                reasonDescription + ": " + creditEntry.getDebitEntry().getDescription(), now, false);
+        SettlementEntry.create(this, settlementNote, creditEntry.getOpenAmount(),
+                reasonDescription + ": " + getDescription(), now, false);
 
-        if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && getFinantialDocument().isExportedInLegacyERP()) {
+        if (TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() &&
+                getFinantialDocument().isExportedInLegacyERP() != creditEntry.getFinantialDocument().isExportedInLegacyERP()) {
+            throw new TreasuryDomainException("error.DebitEntry.closeCreditEntryIfPossible.exportedInLegacyERP.not.same");
+        }
+        
+        if(((Invoice) getFinantialDocument()).getPayorDebtAccount() != ((Invoice) getFinantialDocument()).getPayorDebtAccount()) {
+            throw new TreasuryDomainException("error.DebitEntry.closeCreditEntryIfPossible.payorDebtAccount.not.same");
+        }
+        
+        if (TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()
+                && getFinantialDocument().isExportedInLegacyERP()) {
             settlementNote.setExportedInLegacyERP(true);
             settlementNote.setCloseDate(SAPExporter.ERP_INTEGRATION_START_DATE.minusSeconds(1));
         }
-            
+
         settlementNote.closeDocument();
     }
 
@@ -520,18 +535,18 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public boolean revertExemptionIfPossible(final TreasuryExemption treasuryExemption) {
-        if(isAnnulled()) {
+        if (isAnnulled()) {
             return false;
         }
 
         if (isProcessedInClosedDebitNote()) {
             return false;
         }
-        
-        if(!treasuryExemption.getDebitEntry().getCreditEntriesSet().isEmpty()) {
+
+        if (!treasuryExemption.getDebitEntry().getCreditEntriesSet().isEmpty()) {
             return false;
         }
-        
+
         setAmount(getAmount().add(getExemptedAmount()));
         setExemptedAmount(BigDecimal.ZERO);
 
@@ -574,7 +589,7 @@ public class DebitEntry extends DebitEntry_Base {
     }
 
     public BigDecimal getExemptedAmountWithVat() {
-        return getExemptedAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this)));
+        return getExemptedAmount().multiply(BigDecimal.ONE.add(rationalVatRate(this)));
     }
 
     /**
@@ -628,16 +643,16 @@ public class DebitEntry extends DebitEntry_Base {
 
         return result;
     }
-    
+
     public void editAmount(final BigDecimal amount) {
-        if(isProcessedInClosedDebitNote()) {
+        if (isProcessedInClosedDebitNote()) {
             throw new TreasuryDomainException("error.DebitEntry.editAmount.cannot.edit.amount.due.to.closed.in.debit.note");
         }
-        
-        if(isAnnulled()) {
+
+        if (isAnnulled()) {
             throw new TreasuryDomainException("error.DebitEntry.editAmount.cannot.edit.amount.due.to.annuled.state");
         }
-        
+
         setAmount(amount);
         recalculateAmountValues();
     }
@@ -648,55 +663,47 @@ public class DebitEntry extends DebitEntry_Base {
      * ********
      */
     // @formatter:on
-    
-    public static DebitEntry copyDebitEntry(final DebitEntry debitEntryToCopy, final DebitNote debitNoteToAssociate, final boolean applyExemption) {
-        
-        
-        final Map<String, String> propertiesMap = Maps.newHashMap(debitEntryToCopy.getPropertiesMap() != null ? debitEntryToCopy.getPropertiesMap() : Maps.newHashMap());
-        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPIED_FROM_DEBIT_ENTRY_ID.getDescriptionI18N().getContent(TreasuryConstants.DEFAULT_LANGUAGE), 
-                debitEntryToCopy.getExternalId());
-        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPY_DEBIT_ENTRY_RESPONSIBLE.getDescriptionI18N().getContent(TreasuryConstants.DEFAULT_LANGUAGE), 
+
+    public static DebitEntry copyDebitEntry(final DebitEntry debitEntryToCopy, final DebitNote debitNoteToAssociate,
+            final boolean applyExemption) {
+
+        final Map<String, String> propertiesMap = Maps.newHashMap(
+                debitEntryToCopy.getPropertiesMap() != null ? debitEntryToCopy.getPropertiesMap() : Maps.newHashMap());
+        propertiesMap.put(TreasuryEvent.TreasuryEventKeys.COPIED_FROM_DEBIT_ENTRY_ID.getDescriptionI18N()
+                .getContent(TreasuryConstants.DEFAULT_LANGUAGE), debitEntryToCopy.getExternalId());
+        propertiesMap.put(
+                TreasuryEvent.TreasuryEventKeys.COPY_DEBIT_ENTRY_RESPONSIBLE.getDescriptionI18N()
+                        .getContent(TreasuryConstants.DEFAULT_LANGUAGE),
                 Authenticate.getUser() != null ? Authenticate.getUser().getUsername() : "");
-        
-        final DebitEntry result = DebitEntry.create(
-                Optional.ofNullable(debitNoteToAssociate), 
-                debitEntryToCopy.getDebtAccount(), 
-                debitEntryToCopy.getTreasuryEvent(), 
-                debitEntryToCopy.getVat(), 
-                debitEntryToCopy.getAmount().add(debitEntryToCopy.getExemptedAmount()), 
-                debitEntryToCopy.getDueDate(),
-                propertiesMap, 
-                debitEntryToCopy.getProduct(), 
-                debitEntryToCopy.getDescription(), 
-                debitEntryToCopy.getQuantity(), 
-                debitEntryToCopy.getInterestRate(), 
-                debitEntryToCopy.getEntryDateTime());
-        
-        
-        result.edit(result.getDescription(), result.getTreasuryEvent(), result.getDueDate(), 
-                debitEntryToCopy.getAcademicalActBlockingSuspension(), 
-                debitEntryToCopy.getBlockAcademicActsOnDebt());
-        
+
+        final DebitEntry result = DebitEntry.create(Optional.ofNullable(debitNoteToAssociate), debitEntryToCopy.getDebtAccount(),
+                debitEntryToCopy.getTreasuryEvent(), debitEntryToCopy.getVat(),
+                debitEntryToCopy.getAmount().add(debitEntryToCopy.getExemptedAmount()), debitEntryToCopy.getDueDate(),
+                propertiesMap, debitEntryToCopy.getProduct(), debitEntryToCopy.getDescription(), debitEntryToCopy.getQuantity(),
+                debitEntryToCopy.getInterestRate(), debitEntryToCopy.getEntryDateTime());
+
+        result.edit(result.getDescription(), result.getTreasuryEvent(), result.getDueDate(),
+                debitEntryToCopy.getAcademicalActBlockingSuspension(), debitEntryToCopy.getBlockAcademicActsOnDebt());
+
         // We could copy eventAnnuled property, but in most cases we want to create an active debit entry
         result.setEventAnnuled(false);
-        
+
         // Interest relation must be done outside because the origin 
         // debit entry of debitEntryToCopy will may be annuled
         // result.setDebitEntry(debitEntryToCopy.getDebitEntry());
-        
+
         result.setPayorDebtAccount(debitEntryToCopy.getPayorDebtAccount());
-        
-        if(applyExemption && debitEntryToCopy.getTreasuryExemption() != null) {
+
+        if (applyExemption && debitEntryToCopy.getTreasuryExemption() != null) {
             final TreasuryExemption treasuryExemptionToCopy = debitEntryToCopy.getTreasuryExemption();
-            TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(), 
-                    treasuryExemptionToCopy.getTreasuryEvent(), 
-                    treasuryExemptionToCopy.getReason(), 
+            TreasuryExemption.create(treasuryExemptionToCopy.getTreasuryExemptionType(),
+                    treasuryExemptionToCopy.getTreasuryEvent(), treasuryExemptionToCopy.getReason(),
                     treasuryExemptionToCopy.getValueToExempt(), result);
         }
-        
+
         return result;
     }
-    
+
     public static Stream<? extends DebitEntry> findAll() {
         return FinantialDocumentEntry.findAll().filter(f -> f instanceof DebitEntry).map(DebitEntry.class::cast);
     }
@@ -875,7 +882,7 @@ public class DebitEntry extends DebitEntry_Base {
         }
         return degreeCode;
     }
-    
+
     public DebitNote getDebitNote() {
         return (DebitNote) getFinantialDocument();
     }
@@ -902,10 +909,10 @@ public class DebitEntry extends DebitEntry_Base {
 
         debitNote.anullDebitNoteWithCreditNote(reason, false);
     }
-    
+
     @Atomic
-    public void creditDebitEntry(final String reason) {
-        
+    public void creditDebitEntry(final BigDecimal amountToCreditWithVat, final String reason) {
+
         if (isAnnulled()) {
             throw new TreasuryDomainException("error.DebitEntry.cannot.credit.is.already.annuled");
         }
@@ -918,17 +925,56 @@ public class DebitEntry extends DebitEntry_Base {
             throw new TreasuryDomainException("error.DebitEntry.credit.debit.entry.requires.reason");
         }
 
-        final BigDecimal amountForCreditWithoutVat = TreasuryConstants.divide(getAvailableAmountForCredit(), BigDecimal.ONE.add(rationalRatRate(this)));;
-        
-        createCreditEntry(new DateTime(), getDescription(), null, amountForCreditWithoutVat, null, null);
-        
-        final DebitNote debitNote = DebitNote.create(getDebtAccount(), DocumentNumberSeries
-                .findUniqueDefault(FinantialDocumentType.findForDebitNote(), getDebtAccount().getFinantialInstitution()).get(),
-                new DateTime());
+        if (!TreasuryConstants.isPositive(amountToCreditWithVat)) {
+            throw new TreasuryDomainException("error.DebitEntry.credit.debit.entry.amountToCreditWithVat.must.be.positive");
+        }
 
-        setFinantialDocument(debitNote);
+        if (!TreasuryConstants.isLessOrEqualThan(amountToCreditWithVat, getAvailableAmountForCredit())) {
+            throw new TreasuryDomainException(
+                    "error.DebitEntry.credit.debit.entry.amountToCreditWithVat.must.be.less.or.equal.than.amountAvailableForCredit");
+        }
 
-        debitNote.anullDebitNoteWithCreditNote(reason, false);
-        
+        final BigDecimal amountForCreditWithoutVat =
+                TreasuryConstants.divide(amountToCreditWithVat, BigDecimal.ONE.add(rationalVatRate(this)));;
+
+        final DateTime now = new DateTime();
+        final CreditEntry creditEntry = createCreditEntry(now, getDescription(), null, amountForCreditWithoutVat, null, null);
+
+        // Close creditEntry with debitEntry if it is possible
+        closeCreditEntryIfPossible(reason, now, creditEntry);
+
+        // With the remaining credit amount, close with other debit entries of same debit note
+        final Supplier<Boolean> openCreditEntriesExistsFunc =
+                () -> getCreditEntriesSet().stream().filter(c -> TreasuryConstants.isPositive(c.getOpenAmount())).count() > 0;
+        final Supplier<Boolean> openDebitEntriesExistsFunc = () -> getDebitNote().getDebitEntriesSet().stream()
+                .filter(d -> TreasuryConstants.isPositive(d.getOpenAmount())).count() > 0;
+
+        while (openCreditEntriesExistsFunc.get() && openDebitEntriesExistsFunc.get()) {
+            final CreditEntry openCreditEntry =
+                    getCreditEntriesSet().stream().filter(c -> TreasuryConstants.isPositive(c.getOpenAmount())).findFirst().get();
+
+            // Find debit entry with open amount equal or higher than the open credit 
+            DebitEntry openDebitEntry = getDebitNote().getDebitEntriesSet().stream()
+                    .filter(d -> TreasuryConstants.isPositive(d.getOpenAmount()))
+                    .filter(d -> TreasuryConstants.isGreaterOrEqualThan(d.getOpenAmount(), openCreditEntry.getOpenAmount()))
+                    .findFirst().orElse(null);
+
+            if (openDebitEntry == null) {
+                openDebitEntry = getDebitNote().getDebitEntriesSet().stream()
+                        .filter(d -> TreasuryConstants.isPositive(d.getOpenAmount())).findFirst().orElse(null);
+            }
+
+            openDebitEntry.closeCreditEntryIfPossible(reason, now, openCreditEntry);
+        }
     }
+    
+    @Atomic
+    public void removeFromDocument() {
+        if(getFinantialDocument() == null || !getFinantialDocument().isPreparing()) {
+            throw new TreasuryDomainException("error.DebitEntry.removeFromDocument.invalid.state");
+        }
+        
+        setFinantialDocument(null);
+    }
+    
 }

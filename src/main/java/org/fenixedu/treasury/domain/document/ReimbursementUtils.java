@@ -1,7 +1,7 @@
 package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.divide;
-import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalVatRate;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
@@ -90,7 +90,7 @@ public class ReimbursementUtils {
 
         final Vat vat = originalCreditEntry.getVat();
         final BigDecimal amountToReimburseWithoutVat =
-                divide(amountToReimburseWithVat, BigDecimal.ONE.add(rationalRatRate(originalCreditEntry)));
+                divide(amountToReimburseWithVat, BigDecimal.ONE.add(rationalVatRate(originalCreditEntry)));
 
         final DebitNote compensationDebitNote = DebitNote.create(debtAccount, payorDebtAccount, debitNumberSeries, now,
                 new LocalDate(), originalCreditNote.getUiDocumentNumber());

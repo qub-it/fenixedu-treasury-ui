@@ -29,7 +29,7 @@ package org.fenixedu.treasury.domain.document;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.divide;
 import static org.fenixedu.treasury.util.TreasuryConstants.isPositive;
-import static org.fenixedu.treasury.util.TreasuryConstants.rationalRatRate;
+import static org.fenixedu.treasury.util.TreasuryConstants.rationalVatRate;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
@@ -223,9 +223,9 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
     protected boolean checkAmountValues() {
         if (getNetAmount() != null && getVatAmount() != null && getAmountWithVat() != null) {
             BigDecimal netAmount = getCurrency().getValueWithScale(getQuantity().multiply(getAmount()));
-            BigDecimal vatAmount = getCurrency().getValueWithScale(getNetAmount().multiply(rationalRatRate(this)));
+            BigDecimal vatAmount = getCurrency().getValueWithScale(getNetAmount().multiply(rationalVatRate(this)));
             BigDecimal amountWithVat =
-                    getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this))));
+                    getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(rationalVatRate(this))));
 
             //Compare the re-calculated values with the original ones
             return netAmount.compareTo(getNetAmount()) == 0 && vatAmount.compareTo(getVatAmount()) == 0
@@ -240,8 +240,8 @@ public abstract class InvoiceEntry extends InvoiceEntry_Base {
             this.setVatRate(super.getVat().getTaxRate());
         }
         setNetAmount(getCurrency().getValueWithScale(getQuantity().multiply(getAmount())));
-        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(rationalRatRate(this))));
-        setAmountWithVat(getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(rationalRatRate(this)))));
+        setVatAmount(getCurrency().getValueWithScale(getNetAmount().multiply(rationalVatRate(this))));
+        setAmountWithVat(getCurrency().getValueWithScale(getNetAmount().multiply(BigDecimal.ONE.add(rationalVatRate(this)))));
     }
 
     public static Stream<? extends InvoiceEntry> findAll() {

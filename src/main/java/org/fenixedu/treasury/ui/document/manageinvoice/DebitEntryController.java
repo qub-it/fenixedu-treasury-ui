@@ -501,7 +501,8 @@ public class DebitEntryController extends TreasuryBaseController {
             if (debitEntry.getFinantialDocument() != null && debitEntry.getFinantialDocument().isPreparing()) {
                 addInfoMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.sucess.remove.debitentry"), model);
                 FinantialDocument debitNote = debitEntry.getFinantialDocument();
-                removeFromDocument(debitEntry);
+                debitEntry.removeFromDocument();
+                
                 return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
@@ -538,8 +539,4 @@ public class DebitEntryController extends TreasuryBaseController {
         return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
     }
 
-    @Atomic
-    private void removeFromDocument(DebitEntry debitEntry) {
-        debitEntry.setFinantialDocument(null);
-    }
 }
