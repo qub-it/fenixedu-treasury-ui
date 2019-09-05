@@ -2,6 +2,7 @@ package org.fenixedu.treasury.domain.sibsonlinepaymentsgateway;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.StringUtils;
@@ -109,17 +110,8 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         setMbwayDocumentSeries(mbwayDocumentSeries);
     }
 
-    @Atomic(mode = TxMode.WRITE)
     public String generateNewMerchantTransactionId() {
-        final long value = incrementAndGetMerchantTransactionIdCounter();
-
-        return String.format("%s-%s-%s", getMerchantTransactionIdPrefix(), StringUtils.leftPad(String.valueOf(value), 9, '0'),
-                DateTime.now().toString("yyyyMMddHHmmss"));
-    }
-
-    private long incrementAndGetMerchantTransactionIdCounter() {
-        setMerchantTransactionIdCounter(getMerchantTransactionIdCounter() + 1);
-        return getMerchantTransactionIdCounter();
+        return UUID.randomUUID().toString().replace("-", "");
     }
 
     @Atomic(mode = TxMode.READ)

@@ -113,19 +113,6 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 && StringUtils.isEmpty(getSibsReferenceId())) {
             throw new TreasuryDomainException("error.PaymentReferenceCode.sibsReferenceId.required");
         }
-
-        if (!StringUtils.isEmpty(getSibsMerchantTransactionId())) {
-            if (findBySibsMerchantTransactionId(getSibsMerchantTransactionId()).count() > 1) {
-                throw new TreasuryDomainException("error.PaymentReferenceCode.sibsMerchantTransaction.found.duplicated");
-            }
-        }
-
-        if (!StringUtils.isEmpty(getSibsReferenceId())) {
-            if (findBySibsReferenceId(getSibsReferenceId()).count() > 1) {
-                throw new TreasuryDomainException("error.PaymentReferenceCode.sibsReferenceId.found.duplicated");
-            }
-        }
-
     }
 
     @Atomic
@@ -182,7 +169,7 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
         return result.stream();
     }
 
-    private static Stream<PaymentReferenceCode> findByReferenceCode(String entityReferenceCode, String referenceCode,
+    public static Stream<PaymentReferenceCode> findByReferenceCode(String entityReferenceCode, String referenceCode,
             FinantialInstitution finantialInstitution) {
         return findByReferenceCode(referenceCode, finantialInstitution)
                 .filter(x -> x.getPaymentCodePool().getEntityReferenceCode().equals(entityReferenceCode));

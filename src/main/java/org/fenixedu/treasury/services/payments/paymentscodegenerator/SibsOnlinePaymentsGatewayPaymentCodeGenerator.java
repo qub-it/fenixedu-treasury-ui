@@ -1,11 +1,15 @@
 package org.fenixedu.treasury.services.payments.paymentscodegenerator;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.fenixedu.onlinepaymentsgateway.api.MbCheckoutResultBean;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
@@ -37,17 +41,13 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
         final BigDecimal paymentAmount = bean.getPaymentAmount();
 
         final PaymentReferenceCode paymentReferenceCode = generateNewCodeFor(debtAccount, paymentAmount, new LocalDate(),
-                new LocalDate().plusMonths(1) /* bean.getEndDate()*/);
-
-        FenixFramework.atomic(() -> {
-            paymentReferenceCode.createPaymentTargetTo(Sets.newHashSet(bean.getSelectedDebitEntries()), paymentAmount);
-        });
+                new LocalDate().plusYears(1), Sets.newHashSet(bean.getSelectedDebitEntries()));
 
         return paymentReferenceCode;
     }
 
     private PaymentReferenceCode generateNewCodeFor(final DebtAccount debtAccount, final BigDecimal amount, LocalDate validFrom,
-            LocalDate validTo) {
+            LocalDate validTo, Set<DebitEntry> selectedDebitEntries) {
         if (!Boolean.TRUE.equals(this.paymentCodePool.getActive())) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.paymentCodePool.not.active");
         }
@@ -87,9 +87,26 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
                 throw new TreasuryDomainException(
                         "error.SibsOnlinePaymentsGatewayPaymentCodeGenerator.generateNewCodeFor.reference.not.empty");
             }
+            
+            if (PaymentReferenceCode.findByReferenceCode(this.paymentCodePool.getEntityReferenceCode(), paymentCode,
+                    this.paymentCodePool.getFinantialInstitution()).count() >= 1) {
+                throw new TreasuryDomainException("error.PaymentReferenceCode.referenceCode.duplicated");
+            }
 
+            if (!StringUtils.isEmpty(merchantTransactionId)) {
+                if (PaymentReferenceCode.findBySibsMerchantTransactionId(merchantTransactionId).count() >= 1) {
+                    throw new TreasuryDomainException("error.PaymentReferenceCode.sibsMerchantTransaction.found.duplicated");
+                }
+            }
+
+            if (!StringUtils.isEmpty(sibsReferenceId)) {
+                if (PaymentReferenceCode.findBySibsReferenceId(sibsReferenceId).count() >= 1) {
+                    throw new TreasuryDomainException("error.PaymentReferenceCode.sibsReferenceId.found.duplicated");
+                }
+            }
+            
             return createPaymentReferenceCode(amount, validFrom, validTo, log, paymentCode, merchantTransactionId,
-                    sibsReferenceId);
+                    sibsReferenceId, selectedDebitEntries);
         } catch (final Exception e) {
             final boolean isOnlinePaymentsGatewayException = e instanceof OnlinePaymentsGatewayCommunicationException;
 
@@ -119,11 +136,14 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
     @Atomic(mode = TxMode.WRITE)
     private PaymentReferenceCode createPaymentReferenceCode(final BigDecimal amount, final LocalDate validFrom,
             final LocalDate validTo, final SibsOnlinePaymentsGatewayLog log, final String paymentCode,
-            final String sibsMerchantTransactionId, final String sibsReferenceId) throws Exception {
+            final String sibsMerchantTransactionId, final String sibsReferenceId, final Set<DebitEntry> selectedDebitEntries) throws Exception {
         log.savePaymentCode(paymentCode);
 
-        return PaymentReferenceCode.createForSibsOnlinePaymentGateway(paymentCode, validFrom, validTo,
+        PaymentReferenceCode paymentReferenceCode = PaymentReferenceCode.createForSibsOnlinePaymentGateway(paymentCode, validFrom, validTo,
                 PaymentReferenceCodeStateType.USED, this.paymentCodePool, amount, sibsMerchantTransactionId, sibsReferenceId);
+
+        paymentReferenceCode.createPaymentTargetTo(selectedDebitEntries, amount);
+        return paymentReferenceCode;
     }
 
     @Atomic(mode = TxMode.WRITE)
