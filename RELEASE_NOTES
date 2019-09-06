@@ -1,3 +1,4 @@
+4.3.0 (06-09-2019)
 - Refactor: Move business methods from controllers to domain entities 
 - Bug Fix: When credit debitEntry with some creditEntry, create settlement for called debitEntry instead of debitEntry origin of creditEntry
 - New Fixture: Credit debit entries with variable amount
