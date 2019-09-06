@@ -82,8 +82,6 @@ ${portal.toolkit()}
     |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a class="" href="#" data-toggle="modal" data-target="#anullModal"><spring:message
                 code="label.annull" /></a>
     </c:if>
-    <!--&nbsp;|&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/update/${paymentReferenceCode.externalId}"  ><spring:message code="label.event.update" /></a>
-&nbsp; -->
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -217,7 +215,22 @@ ${portal.toolkit()}
                                 </c:if></td>
                         </tr>
                     </c:if>
-
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.versioningCreationDate" /></th>
+                        <td>
+                        	[<c:out value='${paymentReferenceCode.versioningCreator}' />]
+                        	<c:out value='${paymentReferenceCode.versioningCreationDate.toString("dd-MM-yyyy HH:mm")}' />
+                        </td>
+                    </tr>
+                    <c:if test='${not empty paymentReferenceCode.targetPayment}'>
+                    	<tr>
+	                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.targetPayment.versioningCreationDate" /></th>
+	                        <td>
+	                        	[<c:out value='${paymentReferenceCode.targetPayment.versioningCreator}' />]
+	                        	<c:out value='${paymentReferenceCode.targetPayment.versioningCreationDate.toString("dd-MM-yyyy HH:mm")}' />
+	                        </td>
+                    	</tr>
+                    </c:if>
                 </tbody>
             </table>
         </form>
