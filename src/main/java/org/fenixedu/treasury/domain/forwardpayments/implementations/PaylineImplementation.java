@@ -4,6 +4,9 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 import javax.xml.ws.BindingProvider;
@@ -113,10 +116,10 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     @Atomic
     public boolean doWebPayment(final ForwardPayment forwardPayment, final String returnControllerURL,
             final HttpSession session) {
-        if(!forwardPayment.getForwardPaymentConfiguration().isActive()) {
+        if (!forwardPayment.getForwardPaymentConfiguration().isActive()) {
             throw new TreasuryDomainException("error.ForwardPaymentConfiguration.not.active");
         }
-        
+
         saveReturnUrlChecksum(forwardPayment, returnControllerURL, session);
 
         final Payment paymentDetails = new Payment();
@@ -131,7 +134,8 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         order.setRef(String.valueOf(forwardPayment.getOrderNumber()));
         order.setAmount(getFormattedAmount(forwardPayment));
         order.setCurrency(EURO_CURRENCY);
-        order.setDate(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(forwardPayment).toString("dd/MM/yyyy HH:mm"));
+        order.setDate(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(forwardPayment)
+                .toString("dd/MM/yyyy HH:mm"));
         order.setCountry(PT);
 
         // fillOrderDetails(forwardPayment, order);
@@ -148,13 +152,13 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
         if (!Strings.isNullOrEmpty(customer.getPhoneNumber())) {
             String phone = customer.getPhoneNumber().replaceAll("[^\\d]", "");
-            
-            if(phone.length() > PAYLINE_MAX_PHONE_SIZE) {
+
+            if (phone.length() > PAYLINE_MAX_PHONE_SIZE) {
                 phone = phone.substring(0, PAYLINE_MAX_PHONE_SIZE);
             }
-            
+
             buyerDetails.setMobilePhone(phone);
-            
+
         }
 
         // fillAddress(customer, buyerDetails);
@@ -165,7 +169,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         request.setOrder(order);
         request.setReturnURL(getReturnURL(forwardPayment, returnControllerURL));
         request.setCancelURL(getCancelURL(forwardPayment, returnControllerURL));
-        
+
         final String languageToUse = "en".equals(I18N.getLocale().getLanguage()) ? LANG_EN : LANG_PT;
         request.setLanguageCode(languageToUse);
 
@@ -258,10 +262,10 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
     @Override
     public ForwardPaymentStatusBean paymentStatus(ForwardPayment forwardPayment) {
-        if(!forwardPayment.getForwardPaymentConfiguration().isActive()) {
+        if (!forwardPayment.getForwardPaymentConfiguration().isActive()) {
             throw new TreasuryDomainException("error.ForwardPaymentConfiguration.not.active");
         }
-        
+
         final GetWebPaymentDetailsRequest request = new GetWebPaymentDetailsRequest();
         request.setToken(forwardPayment.getPaylineToken());
 
@@ -345,7 +349,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     public String getLogosJspPage() {
         return "implementations/payline/logos.jsp";
     }
-    
+
     @Override
     public String getWarningBeforeRedirectionJspPage() {
         return "implementations/payline/warning.jsp";
@@ -353,7 +357,9 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
     @Override
     @Atomic
-    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
+    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification,
+            final Optional<String> specificTransactionId) {
+        
         final ForwardPaymentStateType previousState = forwardPayment.getCurrentState();
 
         final ForwardPaymentStatusBean paymentStatusBean =
@@ -363,31 +369,31 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
             throw new TreasuryDomainException("error.ManageForwardPayments.forwardPayment.not.created.nor.requested",
                     String.valueOf(forwardPayment.getOrderNumber()));
         }
-        
 
         if (Strings.isNullOrEmpty(justification)) {
             throw new TreasuryDomainException("label.ManageForwardPayments.postProcessPayment.justification.required");
         }
 
-        if(Lists.newArrayList(ForwardPaymentStateType.CREATED, ForwardPaymentStateType.REQUESTED).contains(paymentStatusBean.getStateType())) {
+        if (Lists.newArrayList(ForwardPaymentStateType.CREATED, ForwardPaymentStateType.REQUESTED)
+                .contains(paymentStatusBean.getStateType())) {
             // Do nothing
             return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, false);
         }
 
         final boolean success = TRANSACTION_APPROVED_CODE.equals(paymentStatusBean.getStatusCode());
 
-        if(!paymentStatusBean.isInvocationSuccess()) {
-            throw new TreasuryDomainException("error.ManageForwardPayments.postProcessPayment.invocation.unsucessful", 
+        if (!paymentStatusBean.isInvocationSuccess()) {
+            throw new TreasuryDomainException("error.ManageForwardPayments.postProcessPayment.invocation.unsucessful",
                     String.valueOf(forwardPayment.getOrderNumber()));
         }
-        
+
         if (!success) {
-            forwardPayment.reject(paymentStatusBean.getStatusCode(), paymentStatusBean.getStatusMessage(), 
+            forwardPayment.reject(paymentStatusBean.getStatusCode(), paymentStatusBean.getStatusMessage(),
                     paymentStatusBean.getRequestBody(), paymentStatusBean.getResponseBody());
 
             return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, false);
         }
-        
+
         forwardPayment.advanceToPayedState(paymentStatusBean.getStatusCode(), paymentStatusBean.getStatusMessage(),
                 paymentStatusBean.getPayedAmount(), paymentStatusBean.getTransactionDate(), paymentStatusBean.getTransactionId(),
                 paymentStatusBean.getAuthorizationNumber(), paymentStatusBean.getRequestBody(),
@@ -399,6 +405,11 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     @Override
     public String getImplementationCode() {
         return "PAYLINE";
+    }
+
+    @Override
+    public List<ForwardPaymentStatusBean> verifyPaymentStatus(ForwardPayment forwardPayment) {
+        return Collections.singletonList(paymentStatus(forwardPayment));
     }
 
 }

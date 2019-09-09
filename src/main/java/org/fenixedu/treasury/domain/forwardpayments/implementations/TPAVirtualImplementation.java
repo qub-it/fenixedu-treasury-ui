@@ -3,8 +3,11 @@ package org.fenixedu.treasury.domain.forwardpayments.implementations;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
@@ -80,10 +83,10 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
     @Atomic(mode = TxMode.WRITE)
     public boolean processPayment(final ForwardPayment forwardPayment, Map<String, String> responseMap) {
-        if(!forwardPayment.getForwardPaymentConfiguration().isActive()) {
+        if (!forwardPayment.getForwardPaymentConfiguration().isActive()) {
             throw new TreasuryDomainException("error.ForwardPaymentConfiguration.not.active");
         }
-        
+
         LinkedHashMap<String, String> requestMap = null;
 
         if (!isAuthenticationResponseMessage(responseMap)) {
@@ -166,9 +169,8 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
             final DateTime transactionDate = forwardPayment.getAuthorizationDate();
             final BigDecimal payedAmount = payedAmount(responseMap);
 
-            forwardPayment.advanceToPayedState(String.valueOf(resultCode),
-                    treasuryBundle("label.TPAVirtualImplementation.payed"), payedAmount, transactionDate, transactionId, null,
-                    json(requestMap), json(responseMap), null);
+            forwardPayment.advanceToPayedState(String.valueOf(resultCode), treasuryBundle("label.TPAVirtualImplementation.payed"),
+                    payedAmount, transactionDate, transactionId, null, json(requestMap), json(responseMap), null);
 
             return true;
         }
@@ -180,10 +182,10 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
     @Override
     public ForwardPaymentStatusBean paymentStatus(final ForwardPayment forwardPayment) {
-        if(!forwardPayment.getForwardPaymentConfiguration().isActive()) {
+        if (!forwardPayment.getForwardPaymentConfiguration().isActive()) {
             throw new TreasuryDomainException("error.ForwardPaymentConfiguration.not.active");
         }
-        
+
         final LinkedHashMap<String, String> requestMap = Maps.newLinkedHashMap();
         final TPAInvocationUtil tpa = new TPAInvocationUtil(forwardPayment);
         final Map<String, String> responseMap = tpa.postPaymentStatus(requestMap);
@@ -353,11 +355,12 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
 
     @Override
     @Atomic
-    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification) {
-        if(true) {
+    public PostProcessPaymentStatusBean postProcessPayment(final ForwardPayment forwardPayment, final String justification,
+            final Optional<String> specificTransactionId) {
+        if (true) {
             throw new TreasuryDomainException("label.ManageForwardPayments.postProcessPayment.not.supported.yet");
         }
-        
+
         final ForwardPaymentStateType previousState = forwardPayment.getCurrentState();
         final ForwardPaymentStatusBean paymentStatusBean =
                 forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
@@ -377,7 +380,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
         if (!isPaymentStatusSuccess(responseMap)) {
             final String responseCode = responseCode(responseMap);
             forwardPayment.reject(responseCode, errorMessage(responseMap), json(requestMap), json(responseMap));
-            
+
             return new PostProcessPaymentStatusBean(paymentStatusBean, previousState, false);
         }
 
@@ -400,6 +403,11 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
     @Override
     public String getImplementationCode() {
         return "TPAVIRTUAL";
+    }
+
+    @Override
+    public List<ForwardPaymentStatusBean> verifyPaymentStatus(ForwardPayment forwardPayment) {
+        return Collections.singletonList(paymentStatus(forwardPayment));
     }
 
 }

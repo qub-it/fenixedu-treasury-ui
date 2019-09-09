@@ -631,7 +631,7 @@ public class ForwardPayment extends ForwardPayment_Base {
                                     treasuryBundle("error.PostForwardPaymentsTask.post.payment.justification");
 
                             final PostProcessPaymentStatusBean postProcessPaymentStatusBean =
-                                    implementation.postProcessPayment(forwardPayment, justification);
+                                    implementation.postProcessPayment(forwardPayment, justification, Optional.empty());
 
                             return new PostForwardPaymentReportBean(forwardPayment, postProcessPaymentStatusBean);
                         }

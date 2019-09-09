@@ -5,13 +5,13 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import pt.ist.fenixframework.DomainRoot;
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentLog;
@@ -25,7 +25,6 @@ import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -152,11 +151,11 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             final RedirectAttributes redirectAttributes) {
 
         try {
-            ForwardPaymentStatusBean paymentStatusBean =
-                    forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
+            List<ForwardPaymentStatusBean> paymentStatusBeanList =
+                    forwardPayment.getForwardPaymentConfiguration().implementation().verifyPaymentStatus(forwardPayment);
 
             model.addAttribute("forwardPayment", forwardPayment);
-            model.addAttribute("paymentStatusBean", paymentStatusBean);
+            model.addAttribute("paymentStatusBeanList", paymentStatusBeanList);
 
             return jspPage(VERIFY_FORWARD_PAYMENT_URI);
         } catch (final Exception e) {
@@ -170,7 +169,9 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
     @RequestMapping(value = REGISTER_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.POST)
     public String registerPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            @RequestParam("justification") final String justification, final Model model, final RedirectAttributes redirectAttributes) {
+            @RequestParam("justification") final String justification, 
+            @RequestParam("transactionId") final String transactionId,
+            final Model model, final RedirectAttributes redirectAttributes) {
         try {
             ForwardPaymentStatusBean paymentStatusBean =
                     forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
@@ -183,7 +184,12 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
             final IForwardPaymentImplementation implementation = forwardPayment.getForwardPaymentConfiguration().implementation();
 
-            implementation.postProcessPayment(forwardPayment, justification);
+            Optional<String> optionalTransactionId = Optional.empty();
+            if(StringUtils.isNotEmpty(transactionId)) {
+                optionalTransactionId = Optional.of(transactionId);
+            }
+
+            implementation.postProcessPayment(forwardPayment, justification, optionalTransactionId);
 
             return String.format("redirect:%s/%s", VIEW_URL, forwardPayment.getExternalId());
         } catch (final Exception e) {
