@@ -1,3 +1,4 @@
+4.3.1 (09-09-2019)
 - Improvement: Run task ProcessSibsPaymentsFromBroker to register SIBS payments from broker in read transaction
 
 4.3.0 (06-09-2019)
