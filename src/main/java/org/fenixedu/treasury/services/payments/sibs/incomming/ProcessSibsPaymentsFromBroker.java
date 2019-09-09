@@ -18,7 +18,9 @@ import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.services.payments.sibs.SibsPaymentsBrokerService;
 import org.joda.time.LocalDate;
 
-@Task(englishTitle = "Process SIBS payments from broker", readOnly = false)
+import pt.ist.fenixframework.FenixFramework;
+
+@Task(englishTitle = "Process SIBS payments from broker", readOnly = true)
 public class ProcessSibsPaymentsFromBroker extends CronTask {
 
     @Override
