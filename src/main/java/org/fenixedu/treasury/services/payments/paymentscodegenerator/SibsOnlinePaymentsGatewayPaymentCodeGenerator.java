@@ -105,21 +105,12 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
                 }
             }
             
-            return createPaymentReferenceCode(amount, validFrom, validTo, log, paymentCode, merchantTransactionId,
+            return createPaymentReferenceCodeInstance(amount, validFrom, validTo, log, paymentCode, merchantTransactionId,
                     sibsReferenceId, selectedDebitEntries);
         } catch (final Exception e) {
             final boolean isOnlinePaymentsGatewayException = e instanceof OnlinePaymentsGatewayCommunicationException;
 
-            FenixFramework.atomic(() -> {
-
-                log.logRequestReceiveDateAndData(null, false, false, null, null);
-                log.markExceptionOccuredAndSaveLog(e);
-
-                if (isOnlinePaymentsGatewayException) {
-                    log.saveRequestAndResponsePayload(((OnlinePaymentsGatewayCommunicationException) e).getRequestLog(),
-                            ((OnlinePaymentsGatewayCommunicationException) e).getResponseLog());
-                }
-            });
+            saveExceptionLog(log, e, isOnlinePaymentsGatewayException);
 
             if (e instanceof TreasuryDomainException) {
                 throw (TreasuryDomainException) e;
@@ -134,7 +125,19 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private PaymentReferenceCode createPaymentReferenceCode(final BigDecimal amount, final LocalDate validFrom,
+    private void saveExceptionLog(final SibsOnlinePaymentsGatewayLog log, final Exception e,
+            final boolean isOnlinePaymentsGatewayException) {
+        log.logRequestReceiveDateAndData(null, false, false, null, null);
+        log.markExceptionOccuredAndSaveLog(e);
+
+        if (isOnlinePaymentsGatewayException) {
+            log.saveRequestAndResponsePayload(((OnlinePaymentsGatewayCommunicationException) e).getRequestLog(),
+                    ((OnlinePaymentsGatewayCommunicationException) e).getResponseLog());
+        }
+    }
+
+    @Atomic(mode = TxMode.WRITE)
+    private PaymentReferenceCode createPaymentReferenceCodeInstance(final BigDecimal amount, final LocalDate validFrom,
             final LocalDate validTo, final SibsOnlinePaymentsGatewayLog log, final String paymentCode,
             final String sibsMerchantTransactionId, final String sibsReferenceId, final Set<DebitEntry> selectedDebitEntries) throws Exception {
         log.savePaymentCode(paymentCode);

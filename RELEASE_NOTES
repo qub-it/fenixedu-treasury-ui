@@ -1,4 +1,6 @@
 - Improvement: Support for multiple ForwardPayment transactions to report for post payment processing.
+- Bug Fix: Find payment reference code by sibsEntityCode and payment code, instead of payment code only. This bug fix is necessary to support multiple pools with different sibsEntityCodes
+- Refactor: Write payloads in SIBS OPPWA logs in method annotated with Atomic(WRITE) instead of using FenixFramework.atomic
 
 4.3.1 (09-09-2019)
 - Improvement: Run task ProcessSibsPaymentsFromBroker to register SIBS payments from broker in read transaction

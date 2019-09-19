@@ -42,6 +42,7 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCodeStateType;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFile;
 import org.fenixedu.treasury.services.payments.sibs.incomming.SibsIncommingPaymentFileDetailLine;
@@ -123,12 +124,6 @@ public class SIBSPaymentsImporter {
         }
     }
 
-//    private PaymentReferenceCode getPaymentReferenceCode(final FinantialInstitution finantialInstitution, final String code,
-//            ProcessResult result) {
-//
-//        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
-//    }
-
     protected String getMessage(Exception ex) {
         String message = ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage();
 
@@ -177,13 +172,14 @@ public class SIBSPaymentsImporter {
 
                 try {
                     final Set<SettlementNote> settlementNoteSet =
-                            processCode(detailLine, loggedUsername, processResult, inputFile.getFinantialInstitution(),
+                            processCode(sibsFile.getHeader().getEntityCode(),
+                                        detailLine, loggedUsername, processResult, inputFile.getFinantialInstitution(),
                                     inputFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                     if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
                         processResult.addMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
-                                + join(", ", settlementNoteSet.stream().map(s -> s.getUiDocumentNumber())
+                                + join(", ", settlementNoteSet.stream().map(s -> settlementNoteDescription(s))
                                         .collect(Collectors.toSet())));
                     }
 
@@ -258,17 +254,15 @@ public class SIBSPaymentsImporter {
 
             try {
                 final Set<SettlementNote> settlementNoteSet =
-                        processCode(detailLine, responsibleUsername, processResult, finantialInstitution,
+                        processCode(
+                                sibsFile.getHeader().getEntityCode(),
+                                detailLine, responsibleUsername, processResult, finantialInstitution,
                                 sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                 if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
                     processResult.addMessage(detailLine.getCode() + " ["
                             + finantialInstitution.getCurrency().getValueFor(detailLine.getAmount()) + "] => " + join(", ",
-                                    settlementNoteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())));
-//                    if (settlementNote.getAdvancedPaymentCreditNote() != null) {
-//                        processResult.addMessage("label.manager.SIBS.advancedPayment.registered",
-//                                settlementNote.getUiDocumentNumber());
-//                    }
+                                    settlementNoteSet.stream().map(s -> settlementNoteDescription(s)).collect(Collectors.toSet())));
                 }
 
             } catch (Exception e) {
@@ -284,15 +278,23 @@ public class SIBSPaymentsImporter {
         processResult.addMessage("label.manager.SIBS.done");
     }
 
+    private String settlementNoteDescription(SettlementNote s) {
+        if(s.getAdvancedPaymentCreditNote() != null) {
+            return String.format("%s (%s)", s.getUiDocumentNumber(), s.getAdvancedPaymentCreditNote().getUiDocumentNumber());
+        } else {
+            return s.getUiDocumentNumber();
+        }
+    }
+
     @Atomic
-    protected Set<SettlementNote> processCode(SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername,
+    protected Set<SettlementNote> processCode(final String sibsEntityCode, SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername,
             ProcessResult result, FinantialInstitution finantialInstitution, final String sibsImportationFile,
             YearMonthDay whenProcessedBySibs, final SibsReportFile reportFile) throws Exception {
 
-        final PaymentReferenceCode paymentCode = getPaymentCode(detailLine.getCode(), finantialInstitution);
+        final PaymentReferenceCode paymentCode = getPaymentCode(sibsEntityCode, detailLine.getCode(), finantialInstitution);
 
         if (paymentCode == null) {
-            result.addMessage("error.manager.SIBS.codeNotFound", detailLine.getCode());
+            result.addMessage("error.manager.SIBS.codeNotFound", sibsEntityCode, detailLine.getCode());
             return null;
         }
 
@@ -345,12 +347,12 @@ public class SIBSPaymentsImporter {
         return codeToProcess;
     }
 
-    /**
-     * Copied from head
-     */
-    private PaymentReferenceCode getPaymentCode(final String code, FinantialInstitution finantialInstitution) {
-
-        return PaymentReferenceCode.findByReferenceCode(code, finantialInstitution).findFirst().orElse(null);
+    public static PaymentReferenceCode getPaymentCode(final String sibsEntityCode, final String code, FinantialInstitution finantialInstitution) {
+        return PaymentCodePool.findByEntityCode(sibsEntityCode)
+            .filter(pool -> pool.getFinantialInstitution() == finantialInstitution)
+            .flatMap(pool -> pool.getPaymentReferenceCodesSet().stream())
+            .filter(i -> code.equalsIgnoreCase(i.getReferenceCode()))
+            .findFirst().orElse(null);
     }
 
 }

@@ -20,7 +20,8 @@ public class SIBSImportationLineDTO {
     public SIBSImportationLineDTO(final SIBSImportationFileDTO sibsImportationFileDTO,
             final SibsIncommingPaymentFileDetailLine line) {
         this.line = line;
-        this.paymentCode = PaymentReferenceCode.readByCode(line.getCode(), sibsImportationFileDTO.getFinantialInstitution());
+        this.paymentCode = SIBSPaymentsImporter.getPaymentCode(sibsImportationFileDTO.getSibsEntityCode(), line.getCode(),
+                sibsImportationFileDTO.getFinantialInstitution());
         if (paymentCode != null) {
             this.report = paymentCode.getReportOnDate(getTransactionWhenRegistered());
         }
@@ -105,7 +106,7 @@ public class SIBSImportationLineDTO {
             return null;
         }
 
-        if(getPaymentCode().getTargetPayment().getDebtAccount() == null) {
+        if (getPaymentCode().getTargetPayment().getDebtAccount() == null) {
             return "----";
         }
 
@@ -116,8 +117,8 @@ public class SIBSImportationLineDTO {
         if (!hasPaymentCode() || getPaymentCode().getTargetPayment() == null) {
             return null;
         }
-        
-        if(getPaymentCode().getTargetPayment().getDebtAccount() == null) {
+
+        if (getPaymentCode().getTargetPayment().getDebtAccount() == null) {
             return "----";
         }
 
@@ -131,14 +132,15 @@ public class SIBSImportationLineDTO {
 
         StringBuilder sb = new StringBuilder();
         if (getPaymentCode().getTargetPayment().getSettlementNotesSet() != null) {
-            final Set<SettlementNote> noteSet =
-                    getPaymentCode().getTargetPayment().getSettlementNotesSet().stream()
-                            .filter(x -> x.getDocumentDate().equals(this.getTransactionWhenRegistered())).collect(Collectors.toSet());
+            final Set<SettlementNote> noteSet = getPaymentCode().getTargetPayment().getSettlementNotesSet().stream()
+                    .filter(x -> x.getDocumentDate().equals(this.getTransactionWhenRegistered())).collect(Collectors.toSet());
             if (!noteSet.isEmpty()) {
-                sb.append("Nota de Pagamento: " + String.join(", ", noteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet())) + "\n");
+                sb.append("Nota de Pagamento: "
+                        + String.join(", ", noteSet.stream().map(s -> s.getUiDocumentNumber()).collect(Collectors.toSet()))
+                        + "\n");
             }
         }
-        
+
         sb.append(getPaymentCode().getTargetPayment().getDescription());
         return sb.toString();
     }

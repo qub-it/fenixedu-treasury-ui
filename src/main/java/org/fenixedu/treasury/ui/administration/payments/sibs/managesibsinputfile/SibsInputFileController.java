@@ -206,6 +206,18 @@ public class SibsInputFileController extends TreasuryBaseController {
             String entityCode = file.getHeader().getEntityCode();
 
             pool = PaymentCodePool.findByEntityCode(entityCode).findFirst().orElse(null);
+
+            if (pool == null) {
+                throw new TreasuryDomainException(
+                        "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile.poolNull", entityCode);
+            }
+            
+            SibsInputFile sibsInputFile =
+                    SibsInputFile.create(pool.getFinantialInstitution(), whenProcessedBySibs, documentSibsInputFile.getName(),
+                            documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile), 
+                            TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername());
+            
+            return sibsInputFile;
         } catch (IOException e) {
             throw new TreasuryDomainException(
                     "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile",
@@ -215,19 +227,6 @@ public class SibsInputFileController extends TreasuryBaseController {
                     "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile",
                     ex.getLocalizedMessage());
         }
-
-        if (pool == null) {
-            throw new TreasuryDomainException(
-                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile.poolNull");
-        }
-
-        SibsInputFile sibsInputFile =
-                SibsInputFile.create(pool.getFinantialInstitution(), whenProcessedBySibs, documentSibsInputFile.getName(),
-                        documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile), 
-                        TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername());
-        
-        return sibsInputFile;
-
     }
 
     private static final String _PROCESS_URI = "/read/process/";

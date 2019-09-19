@@ -16,6 +16,7 @@ public class SIBSImportationFileDTO {
     protected BigDecimal transactionsTotalAmount;
     protected BigDecimal totalCost;
     protected Integer fileVersion;
+    private String sibsEntityCode;
     private FinantialInstitution finantialInstitution;
 
     protected List<SIBSImportationLineDTO> lines;
@@ -27,6 +28,7 @@ public class SIBSImportationFileDTO {
         setTransactionsTotalAmount(sibsIncomingPaymentFile.getFooter().getTransactionsTotalAmount());
         setTotalCost(sibsIncomingPaymentFile.getFooter().getTotalCost());
         setFileVersion(sibsIncomingPaymentFile.getHeader().getVersion());
+        setSibsEntityCode(sibsIncomingPaymentFile.getHeader().getEntityCode());
         setFinantialInstitution(finantialInstitution);
 
         setLines(generateLines(sibsIncomingPaymentFile));
@@ -89,6 +91,14 @@ public class SIBSImportationFileDTO {
         this.fileVersion = fileVersion;
     }
 
+    public String getSibsEntityCode() {
+        return sibsEntityCode;
+    }
+    
+    public void setSibsEntityCode(String sibsEntityId) {
+        this.sibsEntityCode = sibsEntityId;
+    }
+    
     public FinantialInstitution getFinantialInstitution() {
         return finantialInstitution;
     }

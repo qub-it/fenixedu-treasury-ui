@@ -125,7 +125,7 @@ public class SibsInputFile extends SibsInputFile_Base implements IGenericFile {
 
             if (pool == null) {
                 throw new TreasuryDomainException(
-                        "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile.poolNull");
+                        "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile.poolNull", entityCode);
             }
 
             final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
