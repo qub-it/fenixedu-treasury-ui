@@ -205,6 +205,17 @@ public class ERPCustomerFieldsBean {
         bean.setCustomerRegion(region);
         bean.setCustomerStreetName(Splitter.fixedLength(MAX_STREET_NAME).splitToList(street).get(0));
     }
+    
+    public static boolean validateAddress(final Invoice invoice, final List<String> errorMessages) {
+        boolean validAddress = ERPCustomerFieldsBean.validateAddress(invoice.getDebtAccount().getCustomer(), errorMessages);
+
+        if (invoice.isForPayorDebtAccount()) {
+            validAddress =
+                    ERPCustomerFieldsBean.validateAddress(invoice.getPayorDebtAccount().getCustomer(), errorMessages);
+        }
+
+        return validAddress;
+    }
 
     public static boolean validateAddress(final Customer customer, final List<String> errorMessages) {
 
@@ -233,26 +244,6 @@ public class ERPCustomerFieldsBean {
             errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.fiscal.country.not.equals.to.address",
                     addressCountryCode, fiscalCountry, fiscalCountry, fiscalNumber, name));
         }
-
-//        if (isNullOrEmpty(address)) {
-//            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.address.not.filled", fiscalCountry,
-//                    fiscalNumber, name));
-//        }
-//
-//        if (isNullOrEmpty(zipCode) && isSameCountryCode(DEFAULT_COUNTRY, addressCountryCode)) {
-//            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.zipCode.not.filled", fiscalCountry,
-//                    fiscalNumber, name));
-//        }
-//
-//        if (isNullOrEmpty(districtSubdivision)) {
-//            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.districtSubdivision.not.filled",
-//                    fiscalCountry, fiscalNumber, name));
-//        }
-//        
-//        if(isNullOrEmpty(region)) {
-//            errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.address.region.not.filled",
-//                    fiscalCountry, fiscalNumber, name));
-//        }
 
         if (!isNullOrEmpty(address) && address.length() > MAX_ADDRESS_DETAIL) {
             errorMessages.add(treasuryBundle("error.ERPCustomerFieldsBean.addressDetail.more.than.allowed",
