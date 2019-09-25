@@ -163,6 +163,10 @@ public class ProductController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
+            if(vatType != null && "ISE".equals(vatType.getCode()) && vatExemptionReason == null) {
+                throw new TreasuryDomainException("error.Product.vatExemptionReason.required");
+            }
+            
             Product product = createProduct(productGroup, code, name, unitOfMeasure, active, legacy, tuitionInstallmentOrder,
                     vatType, finantialInstitutions, vatExemptionReason);
 
@@ -213,6 +217,10 @@ public class ProductController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
+            if(vatType != null && "ISE".equals(vatType.getCode()) && vatExemptionReason == null) {
+                throw new TreasuryDomainException("error.Product.vatExemptionReason.required");
+            }
+            
             updateProduct(productGroup, code, name, unitOfMeasure, active, legacy, tuitionInstallmentOrder, finantialInstitutions, vatType,
                     vatExemptionReason, model);
 
