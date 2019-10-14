@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.onlinepaymentsgateway.sibs.SibsOnlinePaymentsGatewayForwardImplementation;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
@@ -39,6 +40,14 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController implements IForwa
             final HttpServletResponse response, final HttpSession session) {
 
         try {
+            if(forwardPayment.getCurrentState() != null && forwardPayment.getCurrentState().isRejected()) {
+                throw new TreasuryDomainException("error.ForwardPayment.not.in.active.state");
+            }
+            
+            if(forwardPayment.getCurrentState() != null && forwardPayment.getCurrentState().isPayed()) {
+                throw new TreasuryDomainException("error.ForwardPayment.not.in.active.state");
+            }
+            
             final SibsOnlinePaymentsGatewayForwardImplementation impl =
                     (SibsOnlinePaymentsGatewayForwardImplementation) forwardPayment.getForwardPaymentConfiguration().implementation();
             

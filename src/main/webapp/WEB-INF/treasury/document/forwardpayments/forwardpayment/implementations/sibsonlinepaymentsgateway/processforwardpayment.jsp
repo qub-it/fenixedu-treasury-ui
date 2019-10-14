@@ -55,7 +55,7 @@ ${portal.angularToolkit()}
             <p>&nbsp;</p>
 			<p>
 				<strong><spring:message code="label.DebtAccount.customer" />:</strong>
-				<c:out value="${debtAccount.customer.businessIdentification} - ${settlementNoteBean.debtAccount.customer.name}" />
+				<c:out value="${debtAccount.customer.businessIdentification} - ${debtAccount.customer.name}" />
 			</p>
 			<p>
 				<strong><spring:message code="label.Customer.fiscalNumber" />:</strong>
