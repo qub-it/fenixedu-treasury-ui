@@ -1,3 +1,5 @@
+- Bug Fix: Reply with http status 200 when receiving SIBS OPPWA webhook notification of type "PA"
+
 4.4.1 (14-10-2019)
 - Bug Fix: Fix presentation issues and check if forwardPayment is in valid state when checking out payment
 

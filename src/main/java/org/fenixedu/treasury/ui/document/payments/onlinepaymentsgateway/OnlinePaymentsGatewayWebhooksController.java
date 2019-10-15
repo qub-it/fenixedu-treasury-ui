@@ -90,6 +90,17 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 log.saveReferenceId(bean.getReferencedId());
             });
 
+            if (PaymentType.PA.name().equals(bean.getPaymentType())) {
+                // Sibs reference code request
+                final Optional<PaymentReferenceCode> referenceCodeOptional = bean.getTransactionId() != null ? 
+                        PaymentReferenceCode.findUniqueBySibsReferenceId(bean.getTransactionId()) : Optional.empty();
+                if (referenceCodeOptional.isPresent()) {
+                    // Payment reference code pre authorization (creation of reference code)
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                }
+            }
+            
             // Find payment code
             final Optional<PaymentReferenceCode> referenceCodeOptional = bean.getReferencedId() != null ? 
                     PaymentReferenceCode.findUniqueBySibsReferenceId(bean.getReferencedId()) : Optional.empty();
@@ -98,11 +109,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                     MbwayPaymentRequest.findUniqueBySibsMerchantTransactionId(bean.getMerchantTransactionId());
 
             if (referenceCodeOptional.isPresent()) {
-                if (PaymentType.PA.name().equals(bean.getPaymentType())) {
-                    // Payment reference code pre authorization (creation of reference code)
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    return;
-                } else if(!PaymentType.RC.name().equals(bean.getPaymentType())) {
+                if(!PaymentType.RC.name().equals(bean.getPaymentType())) {
                     throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.payment.reference.code");
                 }
 
