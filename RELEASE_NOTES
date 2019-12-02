@@ -1,3 +1,4 @@
+4.5.0 (02-12-2019)
 - Improvement: Display more information about finantial institution in forward payment pages
 - Improvement: Specify forward payment logo jsp file dynamically for SIBS OPPWA integration
 - Bug Fix: Reply with http status 200 when receiving SIBS OPPWA webhook notification of type "PA"
