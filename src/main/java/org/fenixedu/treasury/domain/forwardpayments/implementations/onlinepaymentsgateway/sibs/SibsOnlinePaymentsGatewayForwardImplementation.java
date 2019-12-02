@@ -15,6 +15,7 @@ import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsResultCodeType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PostProcessPaymentStatusBean;
@@ -56,9 +57,8 @@ public class SibsOnlinePaymentsGatewayForwardImplementation implements IForwardP
     }
 
     @Override
-    public String getLogosJspPage() {
-        // TODO Auto-generated method stub
-        return null;
+    public String getLogosJspPage(final ForwardPaymentConfiguration forwardPaymentConfiguration) {
+        return forwardPaymentConfiguration.getLogosJspPageFile();
     }
 
     @Override

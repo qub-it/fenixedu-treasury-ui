@@ -1925,6 +1925,7 @@ class forwardpayments.ForwardPaymentConfiguration {
 	String paylineContractNumber;
 	String reimbursementPolicyJspFile;
 	String privacyPolicyJspFile;
+	String logosJspPageFile;
 	
 }
 

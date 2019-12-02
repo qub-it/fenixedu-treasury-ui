@@ -285,6 +285,16 @@ ${portal.toolkit()}
 				</div>
 			</div>
 			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.ForwardPaymentConfiguration.logosJspPageFile" />
+				</div>
+
+				<div class="col-sm-10">
+					<input id="forwardpaymentconfiguration_logosJspPageFile" class="form-control" type="text" name="logosJspPageFile" value='<c:out value='${not empty param.logosJspPageFile ? param.logosJspPageFile : bean.logosJspPageFile }'/>' />
+				</div>
+			</div>
+			
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

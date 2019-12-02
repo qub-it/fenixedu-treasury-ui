@@ -46,12 +46,25 @@ ${portal.angularToolkit()}
 				<c:out value="${debtAccount.finantialInstitution.name}" />
 			</p>
 			<p>
+				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.fiscalNumber}" />
+			</p>
+			<p>
 				<strong><spring:message code="label.DebtAccount.finantialInstitution.address" />:</strong>
 				<c:out value="${debtAccount.finantialInstitution.address}" />,&nbsp;
 				<c:out value="${debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
 				<c:out value="${debtAccount.finantialInstitution.locality}" />,&nbsp;
 				<pf:placeName place="${debtAccount.finantialInstitution.country}" />
 			</p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.telephoneContact}" />
+			</p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.email}" />
+			</p>
+			
             <p>&nbsp;</p>
 			<p>
 				<strong><spring:message code="label.DebtAccount.customer" />:</strong>
@@ -123,7 +136,13 @@ ${portal.angularToolkit()}
 	</p>
 </div>
 
-<script src="${paymentScriptUrl}"></script>
+<script>
+    var wpwlOptions = {
+        style: "card",
+        paymentTarget: '_top'
+    }
+</script>
+<script async src="${paymentScriptUrl}"></script>
 
 <form action="${shopperResultUrl}" class="paymentWidgets" data-brands="${paymentBrands}">
 </form>

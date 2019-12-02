@@ -26,6 +26,7 @@ public class ForwardPaymentConfigurationBean {
 
     private String reimbursementPolicyJspFile;
     private String privacyPolicyJspFile;
+    private String logosJspPageFile;
     
     public ForwardPaymentConfigurationBean() {
     }
@@ -51,6 +52,7 @@ public class ForwardPaymentConfigurationBean {
         
         setReimbursementPolicyJspFile(configuration.getReimbursementPolicyJspFile());
         setPrivacyPolicyJspFile(configuration.getPrivacyPolicyJspFile());
+        setLogosJspPageFile(configuration.getLogosJspPageFile());
     }
 
     // @formatter:off
@@ -204,4 +206,11 @@ public class ForwardPaymentConfigurationBean {
         this.privacyPolicyJspFile = privacyPolicyJspFile;
     }
     
+    public String getLogosJspPageFile() {
+        return logosJspPageFile;
+    }
+    
+    public void setLogosJspPageFile(String logosJspPageFile) {
+        this.logosJspPageFile = logosJspPageFile;
+    }
 }

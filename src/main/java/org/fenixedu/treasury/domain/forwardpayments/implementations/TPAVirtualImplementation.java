@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
@@ -344,7 +345,7 @@ public class TPAVirtualImplementation implements IForwardPaymentImplementation {
     }
 
     @Override
-    public String getLogosJspPage() {
+    public String getLogosJspPage(final ForwardPaymentConfiguration forwardPaymentConfiguration) {
         return "implementations/tpavirtual/logos.jsp";
     }
 

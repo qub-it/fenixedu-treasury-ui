@@ -63,6 +63,10 @@ ${portal.angularToolkit()}
                 <strong><spring:message code="label.DebtAccount.finantialInstitution" />:</strong>
                 <c:out value="${forwardPayment.debtAccount.finantialInstitution.name}" />
             </p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.fiscalNumber}" />
+			</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
 				<c:out value="${forwardPayment.debtAccount.finantialInstitution.address}" />,&nbsp;
@@ -70,6 +74,15 @@ ${portal.angularToolkit()}
 				<c:out value="${forwardPayment.debtAccount.finantialInstitution.locality}" />,&nbsp;
 				<pf:placeName place="${forwardPayment.debtAccount.finantialInstitution.country}" />
             </p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.telephoneContact}" />
+			</p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.email}" />
+			</p>
+
             <p>&nbsp;</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.customer" />: </strong>

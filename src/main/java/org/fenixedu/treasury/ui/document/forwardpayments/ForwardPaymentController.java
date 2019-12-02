@@ -86,12 +86,13 @@ public class ForwardPaymentController extends TreasuryBaseController {
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment";
 
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
-        final IForwardPaymentImplementation implementation = ForwardPaymentConfiguration
-                .findUniqueActive(bean.getDebtAccount().getFinantialInstitution()).get().implementation();
+        final ForwardPaymentConfiguration activeForwardPaymentConfiguration = ForwardPaymentConfiguration
+                .findUniqueActive(bean.getDebtAccount().getFinantialInstitution()).get();
+        final IForwardPaymentImplementation implementation = activeForwardPaymentConfiguration.implementation();
 
         model.addAttribute("settlementNoteBeanJson", getBeanJson(bean));
         model.addAttribute("settlementNoteBean", bean);
-        model.addAttribute("logosPage", implementation.getLogosJspPage());
+        model.addAttribute("logosPage", implementation.getLogosJspPage(activeForwardPaymentConfiguration));
         model.addAttribute("warningBeforeRedirectionPage", implementation.getWarningBeforeRedirectionJspPage());
         model.addAttribute("localeCode", I18N.getLocale().getLanguage());
         model.addAttribute("chooseInvoiceEntriesUrl", readChooseInvoiceEntriesUrl());
@@ -348,7 +349,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
         model.addAttribute("settlementNote", forwardPayment.getSettlementNote());
-        model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().implementation().getLogosJspPage());
+        model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().implementation().getLogosJspPage(forwardPayment.getForwardPaymentConfiguration()));
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
         model.addAttribute("printSettlementNoteUrl", readPrintSettlementNoteUrl());
         return jspPage("paymentSuccess");
@@ -364,7 +365,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
-        model.addAttribute("logosPage", forwardPaymentConfiguration.implementation().getLogosJspPage());
+        model.addAttribute("logosPage", forwardPaymentConfiguration.implementation().getLogosJspPage(forwardPaymentConfiguration));
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
 
         return jspPage("paymentInsuccess");

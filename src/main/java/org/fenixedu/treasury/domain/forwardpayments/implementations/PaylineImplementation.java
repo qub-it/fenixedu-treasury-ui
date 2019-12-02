@@ -18,6 +18,7 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
@@ -346,7 +347,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
     }
 
     @Override
-    public String getLogosJspPage() {
+    public String getLogosJspPage(final ForwardPaymentConfiguration forwardPaymentConfiguration) {
         return "implementations/payline/logos.jsp";
     }
 

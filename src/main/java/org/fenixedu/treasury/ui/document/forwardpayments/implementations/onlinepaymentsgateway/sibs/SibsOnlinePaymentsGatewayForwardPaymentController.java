@@ -63,6 +63,7 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController implements IForwa
             model.addAttribute("checkoutId", forwardPayment.getSibsCheckoutId());
             model.addAttribute("shopperResultUrl", impl.getReturnURL(forwardPayment));
             model.addAttribute("paymentBrands", bean.getSibsOnlinePaymentBrands());
+            model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().getLogosJspPageFile());
             
             return jspPage(PROCESS_FORWARD_PAYMENT_URI);
             

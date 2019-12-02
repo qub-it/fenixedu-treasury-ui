@@ -231,6 +231,11 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentConfiguration.privacyPolicyJspFile" /></th>
                         <td><c:out value='${forwardPaymentConfiguration.privacyPolicyJspFile}' /></td>
                     </tr>
+                    
+                    <tr>
+                    	<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentConfiguration.logosJspPageFile" /></th>
+                    	<td><c:out value='${forwardPaymentConfiguration.logosJspPageFile}' /></td>
+                    </tr>
 				</tbody>
 			</table>
 		</form>

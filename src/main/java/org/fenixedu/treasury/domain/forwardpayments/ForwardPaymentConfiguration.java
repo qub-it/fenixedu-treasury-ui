@@ -52,6 +52,7 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
         
         setReimbursementPolicyJspFile(bean.getReimbursementPolicyJspFile());
         setPrivacyPolicyJspFile(bean.getPrivacyPolicyJspFile());
+        setLogosJspPageFile(bean.getLogosJspPageFile());
         
         checkRules();
     }
@@ -89,6 +90,7 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
 
         setReimbursementPolicyJspFile(bean.getReimbursementPolicyJspFile());
         setPrivacyPolicyJspFile(bean.getPrivacyPolicyJspFile());
+        setLogosJspPageFile(bean.getLogosJspPageFile());
         
         checkRules();
     }
@@ -110,7 +112,7 @@ public class ForwardPaymentConfiguration extends ForwardPaymentConfiguration_Bas
     }
     
     public boolean isLogosPageDefined() {
-        return !Strings.isNullOrEmpty(implementation().getLogosJspPage());
+        return !Strings.isNullOrEmpty(implementation().getLogosJspPage(this));
     }
     
     public boolean isReimbursementPolicyTextDefined() {

@@ -74,6 +74,10 @@ ${portal.toolkit()}
                 <strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>
                 <c:out value="${settlementNote.debtAccount.finantialInstitution.name}" />
             </p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.fiscalNumber}" />
+			</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
 				<c:out value="${settlementNote.debtAccount.finantialInstitution.address}" />,&nbsp;
@@ -81,6 +85,15 @@ ${portal.toolkit()}
 				<c:out value="${settlementNote.debtAccount.finantialInstitution.locality}" />,&nbsp;
 				<pf:placeName place="${settlementNote.debtAccount.finantialInstitution.country}" />
             </p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.telephoneContact}" />
+			</p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
+				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.email}" />
+			</p>
+
             <p>&nbsp;</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.customer" />: </strong>

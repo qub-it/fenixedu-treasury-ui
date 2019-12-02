@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 
@@ -15,7 +16,7 @@ public interface IForwardPaymentImplementation {
 
     public String getFormattedAmount(final ForwardPayment forwardPayment);
 
-    public String getLogosJspPage();
+    public String getLogosJspPage(final ForwardPaymentConfiguration forwardPaymentConfiguration);
 
     public String getWarningBeforeRedirectionJspPage();
 
