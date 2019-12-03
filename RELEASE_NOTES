@@ -1,3 +1,5 @@
+- Bug Fix: In displaying information about finantial institution in forward payment pages
+
 4.5.0 (02-12-2019)
 - Improvement: Display more information about finantial institution in forward payment pages
 - Improvement: Specify forward payment logo jsp file dynamically for SIBS OPPWA integration

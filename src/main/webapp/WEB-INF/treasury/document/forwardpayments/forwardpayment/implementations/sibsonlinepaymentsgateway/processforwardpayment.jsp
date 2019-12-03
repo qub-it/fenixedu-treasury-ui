@@ -47,7 +47,7 @@ ${portal.angularToolkit()}
 			</p>
 			<p>
 				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
-				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.fiscalNumber}" />
+				<c:out value="${debtAccount.finantialInstitution.fiscalNumber}" />
 			</p>
 			<p>
 				<strong><spring:message code="label.DebtAccount.finantialInstitution.address" />:</strong>
@@ -58,11 +58,11 @@ ${portal.angularToolkit()}
 			</p>
 			<p>
 				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
-				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.telephoneContact}" />
+				<c:out value="${debtAccount.finantialInstitution.telephoneContact}" />
 			</p>
 			<p>
 				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
-				<c:out value="${settlementNoteBean.debtAccount.finantialInstitution.email}" />
+				<c:out value="${debtAccount.finantialInstitution.email}" />
 			</p>
 			
             <p>&nbsp;</p>
