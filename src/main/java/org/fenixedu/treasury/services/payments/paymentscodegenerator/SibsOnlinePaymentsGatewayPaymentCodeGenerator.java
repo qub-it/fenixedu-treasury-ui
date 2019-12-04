@@ -41,7 +41,8 @@ public class SibsOnlinePaymentsGatewayPaymentCodeGenerator implements IPaymentCo
         final BigDecimal paymentAmount = bean.getPaymentAmount();
 
         final PaymentReferenceCode paymentReferenceCode = generateNewCodeFor(debtAccount, paymentAmount, new LocalDate(),
-                new LocalDate().plusYears(1), Sets.newHashSet(bean.getSelectedDebitEntries()));
+                new LocalDate().plusMonths(paymentCodePool.getSibsOnlinePaymentsGateway().getNumberOfMonthsToExpirePaymentReferenceCode()), 
+                Sets.newHashSet(bean.getSelectedDebitEntries()));
 
         return paymentReferenceCode;
     }

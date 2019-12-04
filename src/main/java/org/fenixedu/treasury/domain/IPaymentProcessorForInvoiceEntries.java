@@ -15,6 +15,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
@@ -325,6 +326,20 @@ public interface IPaymentProcessorForInvoiceEntries {
 
         return result;
 
+    }
+    
+    public static Set<Customer> getReferencedCustomers(final Set<InvoiceEntry> invoiceEntrySet) {
+        final Set<Customer> result = Sets.newHashSet();
+        for (final InvoiceEntry entry : invoiceEntrySet) {
+            if (entry.getFinantialDocument() != null && ((Invoice) entry.getFinantialDocument()).isForPayorDebtAccount()) {
+                result.add(((Invoice) entry.getFinantialDocument()).getPayorDebtAccount().getCustomer());
+                continue;
+            }
+
+            result.add(entry.getDebtAccount().getCustomer());
+        }
+
+        return result;
     }
     
 }

@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.MbwayPaymentRequestController"%>
+<%@page import="org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway"%>
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
@@ -133,10 +135,23 @@ ${portal.angularToolkit()}
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createPayment" /></a></li>
 			
-			<% if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) { %>
+			<%
+						    if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) {
+						%>
 			
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/forwardpayment"><span
                     class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.forwardPayment" /></a></li>
+
+			<%
+			    }
+			%>
+			
+			<%
+						    if(SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
+						%>
+			
+            <li><a class="" href="${pageContext.request.contextPath}<%= MbwayPaymentRequestController.CREATE_URL %>/${debtAccount.externalId}"><span
+                    class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.mbwayPaymentRequest" /></a></li>
 
 			<% } %>
 			

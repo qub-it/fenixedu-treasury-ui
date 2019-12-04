@@ -2204,6 +2204,8 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway {
 	String merchantTransactionIdPrefix;
 	long merchantTransactionIdCounter;
 	SibsOnlinePaymentsGatewayEnviromentMode enviromentMode;
+	Boolean mbwayActive;
+	int numberOfMonthsToExpirePaymentReferenceCode;
 }
 
 	relation SibsOnlinePaymentsGatewayDomainRoot {

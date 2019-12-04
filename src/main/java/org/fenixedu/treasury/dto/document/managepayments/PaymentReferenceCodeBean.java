@@ -62,6 +62,10 @@ public class PaymentReferenceCodeBean implements ITreasuryBean {
     private DebtAccount debtAccount;
     private List<DebitEntry> selectedDebitEntries;
 
+    // MbwayPaymentRequest
+    private String phoneNumberCountryPrefix;
+    private String phoneNumber;
+    
     public PaymentReferenceCodeBean() {
         usePaymentAmountWithInterests = false;
         useCustomPaymentAmount = false;
@@ -70,16 +74,18 @@ public class PaymentReferenceCodeBean implements ITreasuryBean {
     public PaymentReferenceCodeBean(final PaymentCodePool paymentCodePool, final DebtAccount debtAccount) {
         this.paymentCodePool = paymentCodePool;
         this.debtAccount = debtAccount;
+        this.usePaymentAmountWithInterests = false;
+        this.useCustomPaymentAmount = false;
 
         List<PaymentCodePool> activePools = debtAccount.getFinantialInstitution().getPaymentCodePoolsSet().stream()
                 .filter(x -> Boolean.TRUE.equals(x.getActive())).collect(Collectors.toList());
         setPaymentCodePoolDataSource(activePools);
-
     }
 
     public void updateAmountOnSelectedDebitEntries() {
         this.paymentAmount =
-                this.selectedDebitEntries.stream().map(e -> e.getOpenAmount()).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+                this.selectedDebitEntries.stream().map(e -> isUsePaymentAmountWithInterests() ? e.getOpenAmountWithInterests() : e.getOpenAmount())
+                .reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
     }
 
     public List<DebitEntry> getOpenDebitEntries() {
@@ -204,4 +210,20 @@ public class PaymentReferenceCodeBean implements ITreasuryBean {
         this.selectedDebitEntries = selectedDebitEntries;
     }
 
+    public String getPhoneNumberCountryPrefix() {
+        return this.phoneNumberCountryPrefix;
+    };
+    
+    public void setPhoneNumberCountryPrefix(String phoneNumberCountryPrefix) {
+        this.phoneNumberCountryPrefix = phoneNumberCountryPrefix;
+    }
+    
+    public String getPhoneNumber() {
+        return this.phoneNumber;
+    }
+    
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+    
 }

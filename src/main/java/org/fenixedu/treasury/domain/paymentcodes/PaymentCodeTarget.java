@@ -130,17 +130,7 @@ public abstract class PaymentCodeTarget extends PaymentCodeTarget_Base implement
     public abstract Set<Product> getReferencedProducts();
 
     public Set<Customer> getReferencedCustomers() {
-        final Set<Customer> result = Sets.newHashSet();
-        for (final InvoiceEntry entry : getInvoiceEntries()) {
-            if (entry.getFinantialDocument() != null && ((Invoice) entry.getFinantialDocument()).isForPayorDebtAccount()) {
-                result.add(((Invoice) entry.getFinantialDocument()).getPayorDebtAccount().getCustomer());
-                continue;
-            }
-
-            result.add(entry.getDebtAccount().getCustomer());
-        }
-
-        return result;
+        return IPaymentProcessorForInvoiceEntries.getReferencedCustomers(getInvoiceEntries());
     }
 
     @Override

@@ -1,5 +1,5 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.MbwayPaymentRequestController"%>
 <%@page import="org.fenixedu.treasury.domain.settings.TreasurySettings"%>
-<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -36,7 +36,7 @@ ${portal.angularToolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message code="label.document.managePayments.createPaymentCodeForSeveralDebitEntries" />
+        <spring:message code="label.document.managePayments.createMbwayPaymentRequest" />
         <small></small>
     </h1>
 </div>
@@ -44,7 +44,7 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>/${debtAccount.externalId}"><spring:message
+        href="${pageContext.request.contextPath}${debtAccountUrl}"><spring:message
             code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -83,10 +83,10 @@ ${portal.angularToolkit()}
 
 <script>
 	angular
-.module('angularAppPaymentReferenceCode',
+.module('angularApp',
 		[ 'ngSanitize', 'ui.select', 'bennuToolkit' ])
 .controller(
-		'PaymentReferenceCodeController',
+		'angularController',
 		[
 				'$scope',
 				function($scope) {
@@ -126,10 +126,54 @@ ${portal.angularToolkit()}
 				} ]);
 </script>
 
-<form name='form' method="post" class="form-horizontal" ng-app="angularAppPaymentReferenceCode" ng-controller="PaymentReferenceCodeController"
-    action='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}'>
+<div class="page-header">
+    <div>
+        <div class="well well-sm">
+            <p>
+                <strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>
+                <c:out value="${debtAccount.finantialInstitution.name}" />
+            </p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
+				<c:out value="${debtAccount.finantialInstitution.fiscalNumber}" />
+			</p>
+            <p>
+                <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
+				<c:out value="${debtAccount.finantialInstitution.address}" />,&nbsp;
+				<c:out value="${debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
+				<c:out value="${debtAccount.finantialInstitution.locality}" />,&nbsp;
+				<pf:placeName place="${debtAccount.finantialInstitution.country}" />
+            </p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
+				<c:out value="${debtAccount.finantialInstitution.telephoneContact}" />
+			</p>
+			<p>
+				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
+				<c:out value="${debtAccount.finantialInstitution.email}" />
+			</p>
 
-    <input type="hidden" name="postback" value='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL %>/${debtAccount.externalId}' />
+            <p>&nbsp;</p>
+            <p>
+                <strong><spring:message code="label.DebtAccount.customer" />: </strong>
+               	<c:out value='${debtAccount.customer.businessIdentification} - ${debtAccount.customer.name}' />
+            </p>
+            <p>
+                <strong><spring:message code="label.Customer.fiscalNumber" />: </strong>
+                <c:out value='${debtAccount.customer.uiFiscalNumber}' />
+            </p>
+            <p>
+            	<strong><spring:message code="label.Customer.address" />: </strong>
+            	<c:out value='${debtAccount.customer.address}' />
+            </p>
+        </div>
+    </div>
+</div>
+
+<form name='form' method="post" class="form-horizontal" ng-app="angularApp" ng-controller="angularController"
+    action='${pageContext.request.contextPath}${createUrl}/${debtAccount.externalId}'>
+
+    <input type="hidden" name="postback" value='${pageContext.request.contextPath}${createPostbackUrl}/${debtAccount.externalId}' />
     <input name="bean" type="hidden" value="{{ object }}" />
 
     <div class="panel panel-default">
@@ -148,10 +192,12 @@ ${portal.angularToolkit()}
                         <th class="col-sm-2"><spring:message code="label.DebitEntry.documentNumber" /></th>
                         <th><spring:message code="label.DebitEntry.description" /></th>
                         <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.amountToPayWithInterests" /></th>
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach items="${bean.openDebitEntries}" var="debitEntry" varStatus="loop">
+                    	<c:if test="${not debitEntry.exportedInERPAndInRestrictedPaymentMixingLegacyInvoices}">
 						<tr>
 	                        <td>
 	                        	<input class="form-control" name="${debitEntry.externalId}" 
@@ -173,18 +219,11 @@ ${portal.angularToolkit()}
 	                        			</em>
 	                        	</c:if>
 	                        	</c:if>
-	                        	<% if(TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
-		                        	<c:if test="${debitEntry.finantialDocument != null}">
-	                        		<c:if test="${debitEntry.finantialDocument.exportedInLegacyERP}">
-	                        		<p>
-	                        			<span class="label label-warning"><spring:message code="label.DebitNote.exportedInLegacyERP" /></span>
-	                        		</p>
-	                        		</c:if>
-		                        	</c:if>
-	                        	<% } %>
 	                        </td>
 	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" /></td>
+	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmountWithInterests) }" /></td>
                         </tr>
+                        </c:if>
                     </c:forEach>
                 </tbody>
             </table>
@@ -193,51 +232,28 @@ ${portal.angularToolkit()}
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.finantialInstitution" />
-                </div>
-
-                <div class="col-sm-10">
-                    <input class="col-sm-12" type="text" value="<c:out value='${debtAccount.finantialInstitution.name}'/>" disabled />
-                </div>
-            </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.DebtAccount.customer" />
-                </div>
-
-                <div class="col-sm-10">
-                    <input class="col-sm-12" type="text"
-                        value="<c:out value='${debtAccount.customer.businessIdentification} - ${debtAccount.customer.name}'/>"
-                        disabled />
-                </div>
-            </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.paymentCodePool" />
-                </div>
-
-                <div class="col-sm-10">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <ui-select id="paymentReferenceCode_paymentCodePool" name="paymentcodepool" on-select="onPoolChange($item, $model)" ng-model="$parent.object.paymentCodePool"
-                        theme="bootstrap" ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match> <ui-select-choices
-                        repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search"> <span
-                        ng-bind-html="paymentCodePool.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
-                </div>
-            </div>
-
-            <div class="form-group row" ng-show=" object.usePaymentAmountWithInterests == false ">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentReferenceCode.payableAmount" />
+                    <spring:message code="label.MbwayPaymentRequest.payableAmount" />
                 </div>
                 <div class="col-sm-10">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <c:out value="${debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
-                        <input  class="" type="text" ng-model="object.paymentAmount" ng-readonly="object.useCustomPaymentAmount == false" />
+                        <input  class="" type="text" ng-model="object.paymentAmount" ng-readonly="true" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.MbwayPaymentRequest.phoneNumber.input" />
+                </div>
+                <div class="col-sm-10">
+                    <div class="input-group">
+                        <input  class="" type="text" ng-model="object.phoneNumberCountryPrefix" size="3" style="text-align: right;" required /> -
+                        <input  class="" type="text" ng-model="object.phoneNumber" size="9" style="text-align: right;" required />
                     </div>
                 </div>
             </div>
@@ -250,6 +266,9 @@ ${portal.angularToolkit()}
 
 </form>
 
+<div style="text-align:center;">
+	<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/netcaixa/mb.png" />
+</div>
 <script>
 	$(document).ready(function() {
 

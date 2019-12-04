@@ -514,6 +514,11 @@ public class DebitEntry extends DebitEntry_Base {
 
         settlementNote.closeDocument();
     }
+    
+    public boolean isExportedInERPAndInRestrictedPaymentMixingLegacyInvoices() {
+        return TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices() && getFinantialDocument() != null &&
+                getFinantialDocument().isExportedInLegacyERP();
+    }
 
     public BigDecimal amountInDebt(final LocalDate paymentDate) {
         final Set<SettlementEntry> entries = new TreeSet<SettlementEntry>(SettlementEntry.COMPARATOR_BY_ENTRY_DATE_TIME);

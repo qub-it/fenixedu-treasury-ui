@@ -15,9 +15,10 @@ import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.IPaymentProcessorForInvoiceEntries;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -26,8 +27,6 @@ import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
-
-import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -104,6 +103,8 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
         if(findBySibsReferenceId(getSibsReferenceId()).count() > 1) {
             throw new TreasuryDomainException("error.MbwayPaymentRequest.sibsReferenceId.not.unique");
         }
+        
+        checkParametersAreValid(getDebtAccount(), getInvoiceEntriesSet());
     }
 
     @Override
@@ -216,17 +217,7 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
 
     @Override
     public Set<Customer> getReferencedCustomers() {
-        final Set<Customer> result = Sets.newHashSet();
-        for (final InvoiceEntry entry : getInvoiceEntriesSet()) {
-            if (entry.getFinantialDocument() != null && ((Invoice) entry.getFinantialDocument()).isForPayorDebtAccount()) {
-                result.add(((Invoice) entry.getFinantialDocument()).getPayorDebtAccount().getCustomer());
-                continue;
-            }
-
-            result.add(entry.getDebtAccount().getCustomer());
-        }
-
-        return result;
+        return IPaymentProcessorForInvoiceEntries.getReferencedCustomers(getInvoiceEntriesSet());
     }
 
     @Override
@@ -245,8 +236,32 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
 
     @Atomic(mode = TxMode.READ)
     public static MbwayPaymentRequest create(final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway,
-            final DebtAccount debtAccount, final Set<InvoiceEntry> invoiceEntries, final String phoneNumber) {
+            final DebtAccount debtAccount, final Set<InvoiceEntry> invoiceEntries, final String countryPrefix, final String localPhoneNumber) {
 
+        if (!SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.not.active");
+        }
+
+        checkParametersAreValid(debtAccount, invoiceEntries);
+        
+        if(StringUtils.isEmpty(countryPrefix)) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.phone.number.countryPrefix.required");
+        }
+        
+        if(StringUtils.isEmpty(localPhoneNumber)) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.phone.number.required");
+        }
+        
+        if(!countryPrefix.matches("\\d+")) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.phone.number.countryPrefix.number.format.required");
+        }
+        
+        if(!localPhoneNumber.matches("\\d+")) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.phone.number.format.required");
+        }
+        
+        final String phoneNumber = String.format("%s#%s", countryPrefix, localPhoneNumber);
+        
         if (!Boolean.TRUE.equals(sibsOnlinePaymentsGateway.getForwardPaymentConfiguration().isActive())) {
             throw new TreasuryDomainException("error.MbwayPaymentRequest.forwardPaymentConfiguration.not.active");
         }
@@ -307,6 +322,29 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
         }
     }
 
+    private static void checkParametersAreValid(final DebtAccount debtAccount, final Set<InvoiceEntry> invoiceEntries) {
+        for (final InvoiceEntry invoiceEntry : invoiceEntries) {
+            final DebitEntry debitEntry = (DebitEntry) invoiceEntry;
+
+            // Ensure all debit entries are the same debt account
+            if (debitEntry.getDebtAccount() != debtAccount) {
+                throw new TreasuryDomainException("error.MbwayPaymentRequest.debit.entry.not.same.debt.account");
+            }
+
+            // Ensure debit entries have payable amount
+            if (!TreasuryConstants.isGreaterThan(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
+                throw new TreasuryDomainException(
+                        "error.MbwayPaymentRequest.debit.entry.open.amount.must.be.greater.than.zero");
+            }
+        }
+
+        if (IPaymentProcessorForInvoiceEntries.getReferencedCustomers(invoiceEntries).size() > 1) {
+            throw new TreasuryDomainException("error.MbwayPaymentRequest.referencedCustomers.only.one.allowed");
+        }
+
+        SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(invoiceEntries);        
+    }
+
     @Atomic(mode = TxMode.WRITE)
     private static MbwayPaymentRequest createMbwayPaymentRequest(final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway,
             final DebtAccount debtAccount, final Set<InvoiceEntry> invoiceEntries, final String phoneNumber,
@@ -321,6 +359,10 @@ public class MbwayPaymentRequest extends MbwayPaymentRequest_Base implements IPa
         return SibsOnlinePaymentsGatewayLog.createLogForRequestPaymentCode(sibsGateway, debtAccount);
     }
 
+    // ############
+    // # SERVICES #
+    // ############
+    
     public static Stream<MbwayPaymentRequest> findAll() {
         return FenixFramework.getDomainRoot().getMbwayPaymentRequestsSet().stream();
     }

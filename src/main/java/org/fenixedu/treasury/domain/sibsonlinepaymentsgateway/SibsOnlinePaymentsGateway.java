@@ -2,6 +2,7 @@ package org.fenixedu.treasury.domain.sibsonlinepaymentsgateway;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -19,6 +20,7 @@ import org.fenixedu.onlinepaymentsgateway.api.SIBSInitializeServiceBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsEnvironmentMode;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -34,6 +36,8 @@ import pt.ist.fenixframework.FenixFramework;
 
 public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
 
+    private static final int DEFAULT_NUM_MONTHS_PAYMENT_REFERENCE_CODE_EXPIRATION = 12;
+
     public SibsOnlinePaymentsGateway() {
         super();
         setDomainRoot(FenixFramework.getDomainRoot());
@@ -42,7 +46,7 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     protected SibsOnlinePaymentsGateway(final PaymentCodePool paymentCodePool,
             final ForwardPaymentConfiguration forwardPaymentConfiguration, final String sibsEntityId,
             final String sibsEndpointUrl, final String merchantTransactionIdPrefix, final String bearerToken, final String aesKey,
-            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries) {
+            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries, final boolean mbwayActive) {
         this();
 
         setPaymentCodePool(paymentCodePool);
@@ -55,6 +59,8 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
 
         setMbwayPaymentMethod(mbwayPaymentMethod);
         setMbwayDocumentSeries(mbwayDocumentSeries);
+        setMbwayActive(mbwayActive);
+        setNumberOfMonthsToExpirePaymentReferenceCode(DEFAULT_NUM_MONTHS_PAYMENT_REFERENCE_CODE_EXPIRATION);
 
         checkRules();
     }
@@ -89,25 +95,28 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         if (Strings.isNullOrEmpty(getMerchantTransactionIdPrefix())) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.merchantTransactionIdPrefix.required");
         }
-        
-        if(getMbwayPaymentMethod() == null) {
+
+        if (getMbwayPaymentMethod() == null) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.mbwayPaymentMethod.required");
         }
-        
-        if(getMbwayDocumentSeries() == null) {
+
+        if (getMbwayDocumentSeries() == null) {
             throw new TreasuryDomainException("error.SibsOnlinePaymentsGateway.mbwayDocumentSeries.required");
         }
     }
 
     @Atomic
     public void edit(final String sibsEndpointUrl, final String bearerToken, final String aesKey,
-            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries) {
+            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries, final boolean mbwayActive,
+            final int numberOfMonthsToExpirePaymentReferenceCode) {
         setSibsEndpointUrl(sibsEndpointUrl);
         setBearerToken(bearerToken);
         setAesKey(aesKey);
-        
+
         setMbwayPaymentMethod(mbwayPaymentMethod);
         setMbwayDocumentSeries(mbwayDocumentSeries);
+        setMbwayActive(mbwayActive);
+        setNumberOfMonthsToExpirePaymentReferenceCode(numberOfMonthsToExpirePaymentReferenceCode);
     }
 
     public String generateNewMerchantTransactionId() {
@@ -231,9 +240,9 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     public static SibsOnlinePaymentsGateway create(final PaymentCodePool paymentCodePool,
             final ForwardPaymentConfiguration forwardPaymentConfiguration, final String sibsEntityId,
             final String sibsEndpointUrl, final String merchantIdPrefix, final String bearerToken, final String aesKey,
-            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries) {
+            final PaymentMethod mbwayPaymentMethod, final DocumentNumberSeries mbwayDocumentSeries, final boolean mbwayActive) {
         return new SibsOnlinePaymentsGateway(paymentCodePool, forwardPaymentConfiguration, sibsEntityId, sibsEndpointUrl,
-                merchantIdPrefix, bearerToken, aesKey, mbwayPaymentMethod, mbwayDocumentSeries);
+                merchantIdPrefix, bearerToken, aesKey, mbwayPaymentMethod, mbwayDocumentSeries, mbwayActive);
     }
 
     public static Stream<SibsOnlinePaymentsGateway> findAll() {
@@ -242,6 +251,13 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
 
     public static Stream<SibsOnlinePaymentsGateway> findByMerchantIdPrefix(final String merchantIdPrefix) {
         return findAll().filter(e -> merchantIdPrefix.toLowerCase().equals(e.getMerchantTransactionIdPrefix().toLowerCase()));
+    }
+
+    public static boolean isMbwayServiceActive(final FinantialInstitution finantialInstitution) {
+        Optional<ForwardPaymentConfiguration> optional = ForwardPaymentConfiguration.findUniqueActive(finantialInstitution);
+
+        return optional.isPresent() && optional.get().getSibsOnlinePaymentsGateway() != null
+                && Boolean.TRUE.equals(optional.get().getSibsOnlinePaymentsGateway().getMbwayActive());
     }
 
 }
