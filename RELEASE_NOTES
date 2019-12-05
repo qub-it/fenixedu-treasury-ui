@@ -1,3 +1,5 @@
+- Improvement: Respond with success for webhook activation message from SIBS OPPWA
+
 4.6.0 (04-12-2019)
 - New Fixture: MBWay payment interface
 

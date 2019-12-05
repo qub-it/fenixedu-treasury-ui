@@ -1,37 +1,33 @@
 package org.fenixedu.treasury.ui.document.payments.onlinepaymentsgateway;
 
-import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.MbwayPaymentRequest;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.MbwayTransaction;
 import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway;
 import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
-import org.fenixedu.treasury.util.TreasuryConstants;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -41,7 +37,7 @@ import pt.ist.fenixframework.FenixFramework;
 @RequestMapping(OnlinePaymentsGatewayWebhooksController.CONTROLLER_URL)
 public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseController {
 
-    private static final Logger logger = LoggerFactory.getLogger(ForwardPaymentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(OnlinePaymentsGatewayWebhooksController.class);
 
     public static final String CONTROLLER_URL = "/treasury/document/payments/onlinepaymentsgateway";
 
@@ -64,6 +60,13 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 log.saveWebhookNotificationData(notificationInitializationVector, notificationAuthenticationTag,
                         notificationEncryptedPayload);
             });
+            
+            
+            if(isTestPayloadForWebhookActivation(notificationInitializationVector, notificationAuthenticationTag,
+                    notificationEncryptedPayload)) {
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
 
             PaymentStateBean bean = SibsOnlinePaymentsGateway.findAll().iterator().next().handleWebhookNotificationRequest(
                     notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
@@ -158,6 +161,33 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             logger.error(e.getLocalizedMessage(), e);
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private boolean isTestPayloadForWebhookActivation(final String notificationInitializationVector, final String notificationAuthenticationTag, final String notificationEncryptedPayload) {
+        try {
+            
+            String aesKey = SibsOnlinePaymentsGateway.findAll().iterator().next().getAesKey();
+            
+            Decryption notification =
+                    new Decryption(aesKey, notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
+
+            String decryptedPayload = notification.decryptPayload();
+
+            ObjectMapper mapper = new ObjectMapper();
+            
+            Map<String, String> map = mapper.readValue(decryptedPayload, new TypeReference<Map<String, String>>(){});
+            
+            if(map.containsKey("type") && map.containsKey("action")) {
+                String typeValue = map.get("type");
+                String actionValue = map.get("action");
+                
+                return "test".equals(typeValue) && "webhook activation".equals(actionValue);
+            }
+            
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 
