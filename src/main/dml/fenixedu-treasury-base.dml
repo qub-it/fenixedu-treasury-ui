@@ -2206,6 +2206,7 @@ class sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway {
 	SibsOnlinePaymentsGatewayEnviromentMode enviromentMode;
 	Boolean mbwayActive;
 	int numberOfMonthsToExpirePaymentReferenceCode;
+	boolean sendBillingDataInOnlinePayment;
 }
 
 	relation SibsOnlinePaymentsGatewayDomainRoot {

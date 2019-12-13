@@ -84,7 +84,7 @@ public class SibsOnlinePaymentsGatewayForwardImplementation implements IForwardP
 
         try {
             final CheckoutResultBean checkoutBean =
-                    gateway.prepareCheckout(merchantTransactionId, forwardPayment.getAmount(), getReturnURL(forwardPayment));
+                    gateway.prepareCheckout(forwardPayment.getDebtAccount(), merchantTransactionId, forwardPayment.getAmount(), getReturnURL(forwardPayment));
 
             final ForwardPaymentStateType type = translateForwardPaymentStateType(checkoutBean.getOperationResultType(), false);
             final ForwardPaymentStatusBean result = new ForwardPaymentStatusBean(checkoutBean.isOperationSuccess(), type,

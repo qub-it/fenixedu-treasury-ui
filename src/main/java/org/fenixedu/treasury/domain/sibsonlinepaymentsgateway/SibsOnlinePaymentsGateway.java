@@ -22,6 +22,7 @@ import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommun
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.SibsEnvironmentMode;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
@@ -118,6 +119,10 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         setMbwayActive(mbwayActive);
         setNumberOfMonthsToExpirePaymentReferenceCode(numberOfMonthsToExpirePaymentReferenceCode);
     }
+    
+    public boolean isSendBillingDataInOnlinePayment() {
+        return getSendBillingDataInOnlinePayment();
+    }
 
     public String generateNewMerchantTransactionId() {
         return UUID.randomUUID().toString().replace("-", "");
@@ -153,18 +158,37 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
     }
 
     @Atomic(mode = TxMode.READ)
-    public CheckoutResultBean prepareCheckout(final String merchantTransactionId, final BigDecimal amount, final String returnUrl)
+    public CheckoutResultBean prepareCheckout(final DebtAccount debtAccount, final String merchantTransactionId, 
+            final BigDecimal amount, final String returnUrl)
             throws OnlinePaymentsGatewayCommunicationException {
         final SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
 
         final PrepareCheckoutInputBean bean = new PrepareCheckoutInputBean(amount, merchantTransactionId, returnUrl,
                 new DateTime(), new DateTime().plusDays(7));
-
+        
+        if(isSendBillingDataInOnlinePayment()) {
+            bean.fillBillingData(
+                    /* debtAccount.getCustomer().getName() */ null, 
+                    debtAccount.getCustomer().getAddressCountryCode(), 
+                    billingCity(debtAccount), 
+                    debtAccount.getCustomer().getAddress(), 
+                    debtAccount.getCustomer().getZipCode(), 
+                    debtAccount.getCustomer().getEmail());
+        }
+        
         bean.setUseCreditCard(true);
 
         CheckoutResultBean resultBean = gatewayService.prepareOnlinePaymentCheckout(bean);
 
         return resultBean;
+    }
+
+    private String billingCity(DebtAccount debtAccount) {
+        if(!StringUtils.isEmpty(debtAccount.getCustomer().getDistrictSubdivision())) {
+            return debtAccount.getCustomer().getDistrictSubdivision();
+        }
+        
+        return debtAccount.getCustomer().getRegion();
     }
 
     @Atomic(mode = TxMode.READ)

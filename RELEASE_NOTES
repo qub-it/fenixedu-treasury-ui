@@ -1,3 +1,5 @@
+- Improvement: Send billing data for SIBS OPPWA in online payment request
+
 4.6.1 (05-12-2019)
 - Improvement: Respond with success for webhook activation message from SIBS OPPWA
 
