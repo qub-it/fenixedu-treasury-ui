@@ -86,7 +86,6 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         setZipCode(zipCode);
 
         setAddressCountryCode(addressCountryCode.toUpperCase());
-        setCountryCode(addressCountryCode.toUpperCase());
         
         setIdentificationNumber(identificationNumber);
         
@@ -177,7 +176,6 @@ public class AdhocCustomer extends AdhocCustomer_Base {
         }
         
         setAddressCountryCode(addressCountryCode);
-        setCountryCode(addressCountryCode);
         setFiscalNumber(fiscalNumber);
 
         setAddress(bean.getAddress());

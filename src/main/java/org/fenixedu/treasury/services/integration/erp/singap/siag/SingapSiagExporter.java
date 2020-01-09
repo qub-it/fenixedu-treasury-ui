@@ -1111,7 +1111,7 @@ public class SingapSiagExporter implements IERPExporter {
         // c.setBillingAddress(convertToSAFTAddressStructure(addresses.get(0)));
         // } else {
         // PhysicalAddress addr = new PhysicalAddress();
-        c.setBillingAddress(convertAddressToSAFTAddress(customer.getCountryCode(), customer.getAddress(), customer.getZipCode(),
+        c.setBillingAddress(convertAddressToSAFTAddress(customer.getAddressCountryCode(), customer.getAddress(), customer.getZipCode(),
                 customer.getDistrictSubdivision(), customer.getAddress()));
                 // }
 

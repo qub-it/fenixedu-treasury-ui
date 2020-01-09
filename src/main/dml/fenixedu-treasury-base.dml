@@ -194,7 +194,6 @@ class AdhocCustomer extends Customer {
 	String fiscalNumber;
 	String identificationNumber;
 	String name;
-	String countryCode;
 }
 
 

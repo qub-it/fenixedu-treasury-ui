@@ -13,6 +13,7 @@ import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommun
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.MbwayPaymentRequest;
 import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway;
@@ -139,8 +140,15 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 
                 mbwayPaymentRequest.processMbwayTransaction(log, bean);
             } else {
-                throw new TreasuryDomainException(
-                        "error.OnlinePaymentsGatewayWebhooksController.notificationBean.paymentReferenceCode.not.found.by.referenceId");
+                final boolean isForwardPayment = ForwardPayment.findAll()
+                    .filter(p -> p.getSibsMerchantTransactionId() != null)
+                    .filter(p -> p.getSibsMerchantTransactionId().equals(bean.getMerchantTransactionId()))
+                    .findFirst().isPresent();
+                
+                if(!isForwardPayment) {
+                    throw new TreasuryDomainException(
+                            "error.OnlinePaymentsGatewayWebhooksController.notificationBean.paymentReferenceCode.not.found.by.referenceId");
+                }
             }
             
             response.setStatus(HttpServletResponse.SC_OK);

@@ -320,7 +320,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
         final Address address = new Address();
         address.setStreet1(customer.getAddress());
         address.setZipCode(customer.getZipCode());
-        address.setCountry(customer.getCountryCode());
+        address.setCountry(customer.getAddressCountryCode());
         buyerDetails.setShippingAdress(address);
     }
 

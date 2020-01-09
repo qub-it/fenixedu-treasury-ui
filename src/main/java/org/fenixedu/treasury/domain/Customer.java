@@ -86,9 +86,6 @@ public abstract class Customer extends Customer_Base {
 
     public abstract String getIdentificationNumber();
 
-    @Deprecated
-    public abstract String getCountryCode();
-
     public abstract String getNationalityCountryCode();
 
     public abstract String getFiscalCountry();
@@ -158,10 +155,6 @@ public abstract class Customer extends Customer_Base {
             throw new TreasuryDomainException("error.Customer.addressCountryCode.required");
         }
 
-        if(!getAddressCountryCode().equals(getCountryCode())) {
-            throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
-        }
-        
         if(getCustomerType() == null) {
             throw new TreasuryDomainException("error.Customer.customerType.required");
         }
@@ -268,11 +261,11 @@ public abstract class Customer extends Customer_Base {
     }
 
     public boolean isFiscalCodeValid() {
-        return FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber());
+        return FiscalCodeValidation.isValidFiscalNumber(getAddressCountryCode(), getFiscalNumber());
     }
 
     public boolean isFiscalValidated() {
-        return FiscalCodeValidation.isValidationAppliedToFiscalCountry(getCountryCode());
+        return FiscalCodeValidation.isValidationAppliedToFiscalCountry(getAddressCountryCode());
     }
     
     public boolean isAbleToChangeFiscalNumber() {
