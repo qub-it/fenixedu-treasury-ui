@@ -1,3 +1,4 @@
+4.6.4 (27-01-2020)
 - Bug Fix: Display correct amount of selected tuition debt, in checkout of an online payment
 - Bug Fix: Fix interest debit entries settlement, in processing the forward payment
 - Refactor: Check in settlement note that an invoice entry is referenced only once by an settlement entry.
