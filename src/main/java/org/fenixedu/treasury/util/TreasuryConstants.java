@@ -63,7 +63,9 @@ public class TreasuryConstants {
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
 
     public static final BigDecimal DEFAULT_QUANTITY = BigDecimal.ONE;
-
+    
+    @Deprecated
+    // TODO: Replace with a solution provided by the platform
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
     public static final String DEFAULT_COUNTRY = "PT";
 

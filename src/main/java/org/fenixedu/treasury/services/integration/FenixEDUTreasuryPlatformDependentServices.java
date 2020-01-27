@@ -186,6 +186,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     /* Locales */
 
     @Override
+    public Locale defaultLocale() {
+        return new Locale(CoreConfiguration.getConfiguration().defaultLocale());
+    }
+    
+    @Override
     public Set<Locale> availableLocales() {
         return CoreConfiguration.supportedLocales();
     }

@@ -61,6 +61,9 @@ public interface ITreasuryPlatformDependentServices {
 
 	/* Locales */
 
+	// TODO: provide the default locale of the platform
+	public Locale defaultLocale();
+	
 	public Set<Locale> availableLocales();
 
 	/* Bundles */

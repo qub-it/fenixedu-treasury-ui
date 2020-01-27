@@ -340,10 +340,13 @@ public class SettlementNoteBean implements ITreasuryBean, Serializable {
             if (debitEntryBean.isIncluded()
                     && TreasuryConstants.isEqual(debitEntryBean.getDebitEntry().getOpenAmount(), debitEntryBean.getDebtAmount())) {
                 for (final DebitEntry interestDebitEntry : debitEntryBean.getDebitEntry().getInterestDebitEntriesSet()) {
+                    if(getDebitEntries().stream().filter(e -> e.isIncluded).filter(e -> e.getDebitEntry() == interestDebitEntry).findAny().isPresent()) {
+                        continue;
+                    }
+                    
                     if (interestDebitEntry.isInDebt()) {
                         final DebitEntryBean interestDebitEntryBean = new DebitEntryBean(interestDebitEntry);
                         interestDebitEntryBean.setIncluded(true);
-                        debitEntryBean.setDebtAmount(interestDebitEntry.getOpenAmount());
                         getDebitEntries().add(interestDebitEntryBean);
                     }
                 }

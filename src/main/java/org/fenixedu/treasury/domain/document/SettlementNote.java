@@ -33,7 +33,11 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.Optional;
 import java.util.Set;
 import java.util.SortedSet;
@@ -140,6 +144,21 @@ public class SettlementNote extends SettlementNote_Base {
 
                 if (!settlementEntry.getInvoiceEntry().getFinantialDocument().isClosed()) {
                     throw new TreasuryDomainException("error.SettlementNote.settlement.entry.for.credit.entry.not.closed");
+                }
+            }
+        }
+        
+        // Ensure the settlement entries do not settle the same invoice entry twice or more
+        {
+            final Map<InvoiceEntry, LongAdder> map = new HashMap<>();
+            getSettlemetEntriesSet().forEach(se -> {
+                map.putIfAbsent(se.getInvoiceEntry(), new LongAdder());
+                map.get(se.getInvoiceEntry()).increment();
+            });
+            
+            for (Entry<InvoiceEntry, LongAdder> entry : map.entrySet()) {
+                if(entry.getValue().intValue() > 1) {
+                    throw new TreasuryDomainException("error.SettlementNote.checkRules.invoiceEntries.not.unique");
                 }
             }
         }

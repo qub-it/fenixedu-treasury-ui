@@ -212,6 +212,8 @@ public class ForwardPayment extends ForwardPayment_Base {
                 paymentEntryPropertiesMap);
 
         if (referencedCustomers(orderedEntries).size() == 1) {
+            final Set<DebitEntry> settledDebitEntries = new HashSet<>();
+            
             for (final DebitEntry debitEntry : orderedEntries) {
 
                 if (debitEntry.isAnnulled()) {
@@ -253,6 +255,12 @@ public class ForwardPayment extends ForwardPayment_Base {
                     }
 
                     if (!interestDebitEntry.isInDebt()) {
+                        continue;
+                    }
+                    
+                    if(getSettlementNote().getSettlemetEntriesSet().stream()
+                            .filter(se -> se.getInvoiceEntry() == interestDebitEntry).findAny().isPresent()) {
+                        // Already settled above, which is interest debit entries created in the past
                         continue;
                     }
 

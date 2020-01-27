@@ -225,6 +225,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         setSettlementNoteBean(bean, model);
 
         boolean hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage = false;
+        /*
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
             DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
@@ -232,6 +233,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
                         hasForwardPaymentInStateOfPostPaymentAndPayedOnPlatform(debitEntryBean.getDebitEntry());
             }
         }
+        */
 
         try {
             SettlementNote.checkMixingOfInvoiceEntriesExportedInLegacyERP(bean.getIncludedInvoiceEntryBeans());
