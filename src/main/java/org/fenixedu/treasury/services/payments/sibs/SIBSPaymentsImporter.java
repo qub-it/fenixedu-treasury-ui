@@ -286,19 +286,16 @@ public class SIBSPaymentsImporter {
         }
     }
 
-    @Atomic
     protected Set<SettlementNote> processCode(final String sibsEntityCode, SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername,
             ProcessResult result, FinantialInstitution finantialInstitution, final String sibsImportationFile,
             YearMonthDay whenProcessedBySibs, final SibsReportFile reportFile) throws Exception {
 
-        final PaymentReferenceCode paymentCode = getPaymentCode(sibsEntityCode, detailLine.getCode(), finantialInstitution);
+        final PaymentReferenceCode codeToProcess = getPaymentCode(sibsEntityCode, detailLine.getCode(), finantialInstitution);
 
-        if (paymentCode == null) {
+        if (codeToProcess == null) {
             result.addMessage("error.manager.SIBS.codeNotFound", sibsEntityCode, detailLine.getCode());
             return null;
         }
-
-        final PaymentReferenceCode codeToProcess = getPaymentCodeToProcess(paymentCode, result);
 
         if (codeToProcess.getState() == PaymentReferenceCodeStateType.ANNULLED) {
             result.addMessage("warning.manager.SIBS.anulledCode", codeToProcess.getReferenceCode());
@@ -325,6 +322,16 @@ public class SIBSPaymentsImporter {
             result.addMessage("warning.manager.SIBS.referenced.multiple.payor.entities", codeToProcess.getReferenceCode());
         }
 
+        final Set<SettlementNote> settlementNoteSet =
+                createSettlementNoteForPaymentReferenceCode(detailLine, responsibleUsername, sibsImportationFile, whenProcessedBySibs, reportFile, codeToProcess);
+
+        return settlementNoteSet;
+    }
+
+    @Atomic
+    private Set<SettlementNote> createSettlementNoteForPaymentReferenceCode(SibsIncommingPaymentFileDetailLine detailLine, final String responsibleUsername,
+            final String sibsImportationFile, YearMonthDay whenProcessedBySibs, final SibsReportFile reportFile,
+            final PaymentReferenceCode codeToProcess) {
         final Set<SettlementNote> settlementNoteSet = codeToProcess.processPayment(responsibleUsername, detailLine.getAmount(),
                 detailLine.getWhenOccuredTransaction(), detailLine.getSibsTransactionId(), sibsImportationFile,
                 whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
@@ -333,18 +340,7 @@ public class SIBSPaymentsImporter {
         if (settlementNoteSet != null) {
             codeToProcess.getTargetPayment().getSettlementNotesSet().addAll(settlementNoteSet);
         }
-
         return settlementNoteSet;
-    }
-
-    /**
-     * Copied from head
-     */
-    private PaymentReferenceCode getPaymentCodeToProcess(final PaymentReferenceCode paymentCode, ProcessResult result) {
-
-        final PaymentReferenceCode codeToProcess;
-        codeToProcess = paymentCode;
-        return codeToProcess;
     }
 
     public static PaymentReferenceCode getPaymentCode(final String sibsEntityCode, final String code, FinantialInstitution finantialInstitution) {
