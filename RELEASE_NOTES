@@ -1,4 +1,5 @@
 - Bug Fix: Fix angular bug in create settlement note creation interface
+- Improvement: Remove date interval restriction in settlement transactions summary
 
 4.6.5 (30-01-2020)
 - Refactor: Remove deprecated sibs payments broker task, which was moved to another module.

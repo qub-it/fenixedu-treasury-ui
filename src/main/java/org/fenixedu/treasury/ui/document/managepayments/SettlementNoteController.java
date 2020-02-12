@@ -681,20 +681,17 @@ public class SettlementNoteController extends TreasuryBaseController {
             @RequestParam(value = "documentdateto",
                     required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
             Model model) {
-        if (Days.daysBetween(documentDateFrom, documentDateTo).getDays() > SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD) {
-            addErrorMessage(treasuryBundle("error.SettlementNote.day.limit.exceeded",
-                    String.valueOf(SEARCH_SETTLEMENT_ENTRY_LIMIT_DAYS_PERIOD)), model);
-        } else {
-            //TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
-            List<SettlementNote> notes =
-                    filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo, false);
-            model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
-            model.addAttribute("advancedPaymentEntriesDataSet", getAdvancedPaymentEntriesDataSet(notes));
-            model.addAttribute("advancedPaymentTotal", getAdvancedPaymentTotal(notes));
-            model.addAttribute("finantialInstitution", finantialInstitution);
 
-            populateSummaryTransactions(model, notes, documentDateFrom, documentDateTo);
-        }
+        //TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
+        List<SettlementNote> notes =
+                filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo, false);
+        model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
+        model.addAttribute("advancedPaymentEntriesDataSet", getAdvancedPaymentEntriesDataSet(notes));
+        model.addAttribute("advancedPaymentTotal", getAdvancedPaymentTotal(notes));
+        model.addAttribute("finantialInstitution", finantialInstitution);
+
+        populateSummaryTransactions(model, notes, documentDateFrom, documentDateTo);
+
         model.addAttribute("finantial_institutions_options", FinantialInstitution.findAll().collect(Collectors.toList()));
         return "treasury/document/managepayments/settlementnote/transactionsSummary";
     }
