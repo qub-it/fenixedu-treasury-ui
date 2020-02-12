@@ -327,7 +327,11 @@ public abstract class TreasuryEvent extends TreasuryEvent_Base {
         return getTreasuryExemptionsSet().stream().filter(t -> !t.getDebitEntry().isEventAnnuled())
                 .collect(Collectors.<TreasuryExemption> toSet());
     }
-    
+
+    public void editPropertiesMap(final Map<String, String> propertiesMap) {
+        super.setPropertiesJsonMap(TreasuryConstants.propertiesMapToJson(propertiesMap));
+    }
+
     // @formatter: off
     /************
      * SERVICES *

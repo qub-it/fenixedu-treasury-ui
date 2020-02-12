@@ -1,3 +1,5 @@
+- Bug Fix: Fix angular bug in create settlement note creation interface
+
 4.6.5 (30-01-2020)
 - Refactor: Remove deprecated sibs payments broker task, which was moved to another module.
 - Improvement: Check payment reference code business constraints in read transaction and process the payment in write transaction, to improve performance

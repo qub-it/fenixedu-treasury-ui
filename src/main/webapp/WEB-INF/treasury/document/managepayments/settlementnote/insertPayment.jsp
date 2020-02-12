@@ -161,8 +161,7 @@ ${portal.angularToolkit()}
 					[
 							'$scope',
 							function($scope) {
-								$scope.object = angular
-										.fromJson('${settlementNoteBeanJson}');
+								$scope.object = ${settlementNoteBeanJson};
 								if ($scope.object.previousStates[$scope.object.previousStates.length - 1] != 3) {
 									$scope.object.previousStates.push(3);
 								}
