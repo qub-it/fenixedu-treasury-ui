@@ -1,3 +1,5 @@
+- Bug Fix: Avoid translation of SIBS payment entry importation log
+
 4.6.6 (12-02-2020)
 - Bug Fix: Fix angular bug in create settlement note creation interface
 - Improvement: Remove date interval restriction in settlement transactions summary

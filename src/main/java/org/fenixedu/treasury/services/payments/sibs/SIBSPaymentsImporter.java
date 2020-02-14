@@ -74,6 +74,10 @@ public class SIBSPaymentsImporter {
 //        private final TreasuryBaseController baseController;
         private boolean processFailed = false;
 
+        public void addStringMessage(String stringMessage) {
+            actionMessages.add(stringMessage);
+        }
+        
         public void addMessage(String message, String... args) {
             actionMessages.add(treasuryBundle(message, args));
         }
@@ -260,7 +264,7 @@ public class SIBSPaymentsImporter {
                                 sibsFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                 if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
-                    processResult.addMessage(detailLine.getCode() + " ["
+                    processResult.addStringMessage(detailLine.getCode() + " ["
                             + finantialInstitution.getCurrency().getValueFor(detailLine.getAmount()) + "] => " + join(", ",
                                     settlementNoteSet.stream().map(s -> settlementNoteDescription(s)).collect(Collectors.toSet())));
                 }
