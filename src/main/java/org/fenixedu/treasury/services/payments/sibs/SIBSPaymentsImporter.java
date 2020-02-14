@@ -181,7 +181,7 @@ public class SIBSPaymentsImporter {
                                     inputFile.getFilename().replace("\\.inp", ""), sibsFile.getWhenProcessedBySibs(), reportFile);
 
                     if (settlementNoteSet != null && !settlementNoteSet.isEmpty()) {
-                        processResult.addMessage(detailLine.getCode() + " ["
+                        processResult.addStringMessage(detailLine.getCode() + " ["
                                 + inputFile.getFinantialInstitution().getCurrency().getValueFor(detailLine.getAmount()) + "] => "
                                 + join(", ", settlementNoteSet.stream().map(s -> settlementNoteDescription(s))
                                         .collect(Collectors.toSet())));
