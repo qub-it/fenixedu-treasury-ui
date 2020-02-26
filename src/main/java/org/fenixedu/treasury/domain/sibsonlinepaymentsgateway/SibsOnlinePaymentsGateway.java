@@ -159,7 +159,8 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
 
     @Atomic(mode = TxMode.READ)
     public CheckoutResultBean prepareCheckout(final DebtAccount debtAccount, final String merchantTransactionId, 
-            final BigDecimal amount, final String returnUrl)
+            final BigDecimal amount, final String returnUrl,
+            final SibsBillingAddressBean billingAddressBean)
             throws OnlinePaymentsGatewayCommunicationException {
         final SIBSOnlinePaymentsGatewayService gatewayService = gatewayService();
 
@@ -167,13 +168,15 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
                 new DateTime(), new DateTime().plusDays(7));
         
         if(isSendBillingDataInOnlinePayment()) {
+            String customerEmail = debtAccount.getCustomer().getEmail();
+            
             bean.fillBillingData(
                     /* debtAccount.getCustomer().getName() */ null, 
-                    debtAccount.getCustomer().getAddressCountryCode(), 
-                    billingCity(debtAccount), 
-                    debtAccount.getCustomer().getAddress(), 
-                    debtAccount.getCustomer().getZipCode(), 
-                    debtAccount.getCustomer().getEmail());
+                    billingAddressBean.getAddressCountryCode(), 
+                    billingAddressBean.getCity(), 
+                    billingAddressBean.getAddress(), 
+                    billingAddressBean.getZipCode(), 
+                    customerEmail);
         }
         
         bean.setUseCreditCard(true);
@@ -181,14 +184,6 @@ public class SibsOnlinePaymentsGateway extends SibsOnlinePaymentsGateway_Base {
         CheckoutResultBean resultBean = gatewayService.prepareOnlinePaymentCheckout(bean);
 
         return resultBean;
-    }
-
-    private String billingCity(DebtAccount debtAccount) {
-        if(!StringUtils.isEmpty(debtAccount.getCustomer().getDistrictSubdivision())) {
-            return debtAccount.getCustomer().getDistrictSubdivision();
-        }
-        
-        return debtAccount.getCustomer().getRegion();
     }
 
     @Atomic(mode = TxMode.READ)

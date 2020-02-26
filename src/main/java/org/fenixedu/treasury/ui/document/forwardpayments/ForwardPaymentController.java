@@ -328,6 +328,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     public String processforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
             final HttpServletResponse response, final HttpSession session) {
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
+        session.setAttribute("debtAccountUrl", readDebtAccountUrl());
         return forwardPayment.getForwardPaymentConfiguration().getForwardPaymentController(forwardPayment)
                 .processforwardpayment(forwardPayment, model, response, session);
     }

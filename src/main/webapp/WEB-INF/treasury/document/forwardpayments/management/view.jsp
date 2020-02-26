@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.implementations.onlinepaymentsgateway.sibs.SibsOnlinePaymentsGatewayForwardImplementation"%>
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
@@ -151,21 +150,24 @@ ${portal.toolkit()}
 	}
 %>
 
-<c:set var="onlinePaymentsGateway" value="<%= SibsOnlinePaymentsGatewayForwardImplementation.ONLINE_PAYMENTS_GATEWAY %>" />
-<c:if test='${forwardPayment.forwardPaymentConfiguration.getImplementationCode() eq onlinePaymentsGateway}'>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsCheckoutId" /></th>
-                        <td><c:out value='${forwardPayment.sibsCheckoutId}' /></td>
-                    </tr>                    
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsTransactionId" /></th>
-                        <td><c:out value='${forwardPayment.sibsTransactionId}' /></td>
-                    </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsMerchantTransactionId" /></th>
-                        <td><c:out value='${forwardPayment.sibsMerchantTransactionId}' /></td>
-                    </tr>
-</c:if>
+					<c:if test='${not empty forwardPayment.sibsCheckoutId}'>
+	                    <tr>
+	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsCheckoutId" /></th>
+	                        <td><c:out value='${forwardPayment.sibsCheckoutId}' /></td>
+	                    </tr>             
+					</c:if>
+					<c:if test='${not empty forwardPayment.sibsTransactionId}'>
+	                    <tr>
+	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsTransactionId" /></th>
+	                        <td><c:out value='${forwardPayment.sibsTransactionId}' /></td>
+	                    </tr>
+					</c:if>
+					<c:if test='${not empty forwardPayment.sibsMerchantTransactionId}'>
+	                    <tr>
+	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsMerchantTransactionId" /></th>
+	                        <td><c:out value='${forwardPayment.sibsMerchantTransactionId}' /></td>
+	                    </tr>
+					</c:if>
 					<tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.debitEntries" /></th>
                         <td>

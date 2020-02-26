@@ -1,3 +1,5 @@
+- Improvement: In payment with credit card with SIBS OPPWA, select one of the registered addresses to send to SIBS
+
 4.6.7 (17-02-2020)
 - Bug Fix: Avoid translation of SIBS payment entry importation log
 
