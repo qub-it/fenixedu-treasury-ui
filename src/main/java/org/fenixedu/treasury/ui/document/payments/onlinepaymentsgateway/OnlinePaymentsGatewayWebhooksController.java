@@ -79,8 +79,9 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             });
 
             if (!bean.isOperationSuccess()) {
-                throw new TreasuryDomainException(
-                        "error.OnlinePaymentsGatewayWebhooksController.notificationBean.operation.insuccess");
+                // Operation with insucess, return ok just to not retry the transaction
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
             }
 
             if (!"PAYMENT".equals(bean.getNotificationType())) {
