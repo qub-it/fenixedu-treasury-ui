@@ -1,3 +1,5 @@
+- Improvement: Check SIBS OPPWA duplicate transaction with SIBS transaction id, besides the combination of sibsEntityCode+paymentCode+paymentDate
+
 4.6.9 (28-02-2020)
 - Improvement: For SIBS OPPWA notifications with insucess operation, return HTTP 200 in order for SIBS to not resend the notification again
 

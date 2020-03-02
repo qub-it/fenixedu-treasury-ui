@@ -338,7 +338,7 @@ public class SIBSPaymentsImporter {
             final PaymentReferenceCode codeToProcess) {
         final Set<SettlementNote> settlementNoteSet = codeToProcess.processPayment(responsibleUsername, detailLine.getAmount(),
                 detailLine.getWhenOccuredTransaction(), detailLine.getSibsTransactionId(), sibsImportationFile,
-                whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile);
+                whenProcessedBySibs.toLocalDate().toDateTimeAtStartOfDay(), reportFile, false);
 
         //Add the new SettlementNote to the TargetPayment
         if (settlementNoteSet != null) {

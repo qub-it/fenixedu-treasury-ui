@@ -295,13 +295,20 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
 
     @Atomic
     public Set<SettlementNote> processPayment(final String responsibleUsername, BigDecimal amountToPay, DateTime paymentDate,
-            String sibsTransactionId, String comments, final DateTime whenProcessedBySibs, final SibsReportFile sibsReportFile) {
+            String sibsTransactionId, String comments, final DateTime whenProcessedBySibs, final SibsReportFile sibsReportFile,
+            final boolean checkSibsTransactionIdDuplication) {
 
         if (!isNew() && SibsTransactionDetail.isReferenceProcessingDuplicate(this.getReferenceCode(),
                 this.getPaymentCodePool().getEntityReferenceCode(), paymentDate)) {
             return null;
         }
 
+        if(checkSibsTransactionIdDuplication) {
+            if(SibsTransactionDetail.isSibsOppwaReferenceProcessingDuplicate(sibsTransactionId)) {
+                throw new RuntimeException("Duplicate transaction id: " + sibsTransactionId);
+            }
+        }
+        
         final Set<SettlementNote> noteSet = this.getTargetPayment().processPayment(responsibleUsername, amountToPay, paymentDate,
                 sibsTransactionId, comments);
 
@@ -363,12 +370,16 @@ public class PaymentReferenceCode extends PaymentReferenceCode_Base {
                 log.markAsDuplicatedTransaction();
             });
 
+        } else if(SibsTransactionDetail.isSibsOppwaReferenceProcessingDuplicate(bean.getTransactionId())) {
+            FenixFramework.atomic(() -> {
+                log.markAsDuplicatedTransaction();
+            });
         } else {
             final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
             final Set<SettlementNote> settlementNotes =
                     processPayment(StringUtils.isNotEmpty(loggedUsername) ? loggedUsername : "unknown", amount, paymentDate,
-                            bean.getTransactionId(), bean.getMerchantTransactionId(), new DateTime(), null);
+                            bean.getTransactionId(), bean.getMerchantTransactionId(), new DateTime(), null, true);
             
             FenixFramework.atomic(() -> {
                 log.markSettlementNotesCreated(settlementNotes);
