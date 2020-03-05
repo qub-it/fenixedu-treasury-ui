@@ -34,7 +34,9 @@ public class FiscalCodeValidation {
         }
         
         if(VALIDATED_COUNTRIES.contains(countryCode.toUpperCase())) {
-            return TINValid.checkTIN(translateCountry(countryCode.toUpperCase()), fiscalNumber) == 0;
+            int checkTIN = TINValid.checkTIN(translateCountry(countryCode.toUpperCase()), fiscalNumber);
+            
+            return checkTIN == 0 || checkTIN == 2;
         }
 
         return true;
