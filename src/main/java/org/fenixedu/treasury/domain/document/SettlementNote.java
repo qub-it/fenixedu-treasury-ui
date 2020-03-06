@@ -33,6 +33,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundleI18N;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -708,6 +709,15 @@ public class SettlementNote extends SettlementNote_Base {
                 result.add(invoice.getDebtAccount().getCustomer());
             }
         }
+
+        if(getAdvancedPaymentCreditNote() != null) {
+            if (getAdvancedPaymentCreditNote().isForPayorDebtAccount()) {
+                result.add(getAdvancedPaymentCreditNote().getPayorDebtAccount().getCustomer());
+            } else {
+                result.add(getAdvancedPaymentCreditNote().getDebtAccount().getCustomer());
+            }
+        }
+        
 
         return result;
     }
