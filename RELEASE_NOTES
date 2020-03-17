@@ -1,3 +1,4 @@
+4.6.11 (17-03-2020)
 - Bug Fix: Include referenced customers in settlement those of advance payment credit
 - Bug Fix: Validate VAT numbers with TIN with the check code result is 2, which means does not have syntax validation which may be valid
 - Refactor: Upgrade parent artifact id version
