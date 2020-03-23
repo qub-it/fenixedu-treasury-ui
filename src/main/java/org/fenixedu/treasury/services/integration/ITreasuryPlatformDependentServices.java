@@ -84,5 +84,8 @@ public interface ITreasuryPlatformDependentServices {
     public <T> String versioningUpdatorUsername(final T obj);
     
     public <T> DateTime versioningUpdateDate(final T obj);
-	
+
+    /* ERP Integration */
+    public void scheduleDocumentForExportation(final FinantialDocument finantialDocument);
+
 }

@@ -20,6 +20,7 @@ import org.fenixedu.treasury.domain.TreasuryFile;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
 import org.joda.time.DateTime;
@@ -321,4 +322,31 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         throw new RuntimeException("FenixEDUTreasuryPlatformDependentServices.deleteFile(String): not supported");
     }
 
+    /* ERP Integration */
+    public void scheduleDocumentForExportation(final FinantialDocument finantialDocument) {
+        final List<FinantialDocument> documentsToExport =
+                ERPExporterManager.filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
+
+        if (documentsToExport.isEmpty()) {
+            return;
+        }
+
+        final String externalId = documentsToExport.iterator().next().getExternalId();
+
+        new Thread() {
+
+            @Override
+            @Atomic
+            public void run() {
+                try {
+                    Thread.sleep(WAIT_TRANSACTION_TO_FINISH_MS);
+                } catch (InterruptedException e) {
+                }
+
+                SchedulerSystem.queue(new TaskRunner(new ERPExportSingleDocumentsTask(externalId)));
+            };
+
+        }.start();
+    }
+    
 }

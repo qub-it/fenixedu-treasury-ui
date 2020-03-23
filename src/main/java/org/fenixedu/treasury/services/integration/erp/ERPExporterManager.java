@@ -23,6 +23,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.services.integration.ITreasuryPlatformDependentServices;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation.ReimbursementStateBean;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
@@ -193,29 +195,8 @@ public class ERPExporterManager {
     }
 
     public static void scheduleSingleDocument(final FinantialDocument finantialDocument) {
-        final List<FinantialDocument> documentsToExport =
-                filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
-
-        if (documentsToExport.isEmpty()) {
-            return;
-        }
-
-        final String externalId = documentsToExport.iterator().next().getExternalId();
-
-        new Thread() {
-
-            @Override
-            @Atomic
-            public void run() {
-                try {
-                    Thread.sleep(WAIT_TRANSACTION_TO_FINISH_MS);
-                } catch (InterruptedException e) {
-                }
-
-                SchedulerSystem.queue(new TaskRunner(new ERPExportSingleDocumentsTask(externalId)));
-            };
-
-        }.start();
+        final ITreasuryPlatformDependentServices services = TreasuryPlataformDependentServicesFactory.implementation();
+        services.scheduleDocumentForExportation(finantialDocument);
     }
 
     public static ERPExportOperation exportSingleDocument(final FinantialDocument finantialDocument) {
