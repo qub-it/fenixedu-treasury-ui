@@ -1,4 +1,5 @@
 - Refactor: To split module in domain and ui module, change IForwardPaymentController package
+- Refactor: Get IForwardPaymentController by class registration by online payments implementation
 
 4.6.11 (17-03-2020)
 - Bug Fix: Include referenced customers in settlement those of advance payment credit

@@ -1,13 +1,18 @@
 package org.fenixedu.treasury.ui.document.forwardpayments.implementations;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementation;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
@@ -69,6 +74,17 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
     
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;
+    }
+
+    public static Map<Class<IForwardPaymentImplementation>, Class<IForwardPaymentController>> CONTROLLER_MAP =
+            new HashMap<>();
+    
+    public static void registerForwardPaymentController(Class<IForwardPaymentImplementation> implementationClass, Class<IForwardPaymentController> controllerClass) {
+        CONTROLLER_MAP.put(implementationClass, controllerClass);
+    }
+    
+    public static IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
+        return new TPAVirtualController();
     }
     
 }

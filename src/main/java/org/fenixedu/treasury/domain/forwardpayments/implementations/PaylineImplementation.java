@@ -34,7 +34,6 @@ import org.fenixedu.treasury.services.integration.forwardpayments.payline.OrderD
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Payment;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.WebPaymentAPI;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.WebPaymentAPI_Service;
-import org.fenixedu.treasury.ui.document.forwardpayments.implementations.PaylineController;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -100,7 +99,7 @@ public class PaylineImplementation extends BennuWebServiceClient<WebPaymentAPI> 
 
     @Override
     public IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
-        return new PaylineController();
+        return IForwardPaymentController.getForwardPaymentController(forwardPayment);
     }
 
     public boolean isActionReturn(final String action) {
