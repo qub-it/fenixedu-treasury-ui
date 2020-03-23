@@ -5,9 +5,9 @@ import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentConfigurationBean;
-import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -14,9 +14,7 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
-import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.fenixedu.treasury.ui.document.forwardpayments.implementations.TPAVirtualController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 

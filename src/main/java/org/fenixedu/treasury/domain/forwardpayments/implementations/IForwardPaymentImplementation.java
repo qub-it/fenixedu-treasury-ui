@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
-import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 
 public interface IForwardPaymentImplementation {
 

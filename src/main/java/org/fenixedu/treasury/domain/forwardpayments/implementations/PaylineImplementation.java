@@ -21,7 +21,6 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
-import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Address;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Buyer;
@@ -35,9 +34,7 @@ import org.fenixedu.treasury.services.integration.forwardpayments.payline.OrderD
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Payment;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.WebPaymentAPI;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.WebPaymentAPI_Service;
-import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.fenixedu.treasury.ui.document.forwardpayments.implementations.PaylineController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;

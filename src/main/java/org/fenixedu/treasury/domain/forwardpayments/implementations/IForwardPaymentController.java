@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.ui.document.forwardpayments;
+package org.fenixedu.treasury.domain.forwardpayments.implementations;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
