@@ -1,6 +1,7 @@
 - Refactor: To split module in domain and ui module, change IForwardPaymentController package
 - Refactor: Get IForwardPaymentController by class registration by online payments implementation
 - Refactor: Export single document to ERP is a dependent-platform service 
+- Improvement: Cut SAFT WorkDocument>Line>Description to 200 characters
 
 4.6.11 (17-03-2020)
 - Bug Fix: Include referenced customers in settlement those of advance payment credit

@@ -58,6 +58,7 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
@@ -562,7 +563,7 @@ public class SAPExporter implements IERPExporter {
                 sourceDocument.setInvoiceDate(convertToXMLDate(dataTypeFactory,
                         settlementEntry.getInvoiceEntry().getFinantialDocument().getDocumentDate()));
 
-                sourceDocument.setDescription(settlementEntry.getDescription());
+                sourceDocument.setDescription(StringUtils.abbreviate(settlementEntry.getDescription(), 200));
                 line.getSourceDocumentID().add(sourceDocument);
                 //SettlementAmount
                 line.setSettlementAmount(BigDecimal.ZERO);
@@ -895,7 +896,7 @@ public class SAPExporter implements IERPExporter {
         }
 
         // Description
-        line.setDescription(entry.getDescription());
+        line.setDescription(StringUtils.abbreviate(entry.getDescription(), 200));
         List<OrderReferences> orderReferences = line.getOrderReferences();
 
         //Add the references on the document creditEntries <-> debitEntries
