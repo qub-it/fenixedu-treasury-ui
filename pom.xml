@@ -153,7 +153,7 @@
 		<dependency>
 			<groupId>com.qubit.terra</groupId>
 			<artifactId>qub-docs</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
@@ -193,6 +193,11 @@
 			<groupId>javax.xml.ws</groupId>
 			<artifactId>jaxws-api</artifactId>
 			<version>2.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.60</version>
 		</dependency>
 	</dependencies>
 
