@@ -12,7 +12,7 @@
 
 	<groupId>org.fenixedu</groupId>
 	<artifactId>fenixedu-treasury</artifactId>
-	<version>4.7.0</version>
+	<version>4.7.1</version>
 	<packaging>jar</packaging>
 
 	<name>Treasury</name>
