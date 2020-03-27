@@ -1,3 +1,5 @@
+- Improvement: Also abbreviate Product>ProductDescription in SAFT to 200 characters at most
+
 4.7.0 (26-03-2020)
 - Refactor: To split module in domain and ui module, change IForwardPaymentController package
 - Refactor: Get IForwardPaymentController by class registration by online payments implementation

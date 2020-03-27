@@ -1358,7 +1358,7 @@ public class SAPExporter implements IERPExporter {
         p.setProductCode(product.getCode());
 
         // ProductDescription
-        p.setProductDescription(product.getName().getContent());
+        p.setProductDescription(StringUtils.abbreviate(product.getName().getContent(), 200));
 
         // ProductGroup
         if (product.getProductGroup() != null) {
