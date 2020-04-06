@@ -28,9 +28,12 @@
 package org.fenixedu.treasury.domain.tariff;
 
 import java.math.BigDecimal;
-import java.util.Map;
+import java.math.RoundingMode;
 import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.Optional;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.treasury.domain.Currency;
@@ -39,12 +42,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.Months;
-
-import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
@@ -60,7 +59,7 @@ public class InterestRate extends InterestRate_Base {
 
     protected InterestRate(final Tariff tariff, final DebitEntry debitEntry, final InterestType interestType,
             final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
-            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+            final BigDecimal interestFixedAmount, final BigDecimal rate) {
         this();
 
         setTariff(tariff);
@@ -68,10 +67,8 @@ public class InterestRate extends InterestRate_Base {
         setInterestType(interestType);
         //HACK: Override the numberOfDaysAfterDueDate
         setNumberOfDaysAfterDueDate(1);
-//        setNumberOfDaysAfterDueDate(numberOfDaysAfterDueDate);
         setApplyInFirstWorkday(applyInFirstWorkday);
         setMaximumDaysToApplyPenalty(maximumDaysToApplyPenalty);
-        setMaximumMonthsToApplyPenalty(maximumMonthsToApplyPenalty);
         setInterestFixedAmount(interestFixedAmount);
         setRate(rate);
 
@@ -92,7 +89,7 @@ public class InterestRate extends InterestRate_Base {
             throw new TreasuryDomainException("error.InterestRate.interestType.required");
         }
 
-        if ((getInterestType().isDaily() || getInterestType().isMonthly()) && getRate() == null) {
+        if (getInterestType().isDaily() && getRate() == null) {
             throw new TreasuryDomainException("error.InterestRate.rate.required");
         }
 
@@ -105,290 +102,69 @@ public class InterestRate extends InterestRate_Base {
         return getMaximumDaysToApplyPenalty() > 0;
     }
 
-    public boolean isMaximumMonthsToApplyPenaltyApplied() {
-        return getMaximumMonthsToApplyPenalty() > 0;
-    }
-
     public boolean isApplyInFirstWorkday() {
         return getApplyInFirstWorkday();
     }
 
     @Atomic
-    public void edit(final InterestType interestType, final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday,
-            final int maximumDaysToApplyPenalty, final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount,
-            final BigDecimal rate) {
+    public void edit(InterestType interestType, int numberOfDaysAfterDueDate, boolean applyInFirstWorkday,
+            int maximumDaysToApplyPenalty, BigDecimal interestFixedAmount, BigDecimal rate) {
 
         setInterestType(interestType);
         //HACK: For now override the NumberOfDays - 01/07/2015
         setNumberOfDaysAfterDueDate(1);
         setApplyInFirstWorkday(applyInFirstWorkday);
         setMaximumDaysToApplyPenalty(maximumDaysToApplyPenalty);
-        setMaximumMonthsToApplyPenalty(maximumMonthsToApplyPenalty);
         setInterestFixedAmount(interestFixedAmount);
         setRate(rate);
 
         checkRules();
     }
 
-    public InterestRateBean calculateInterest(final Map<LocalDate, BigDecimal> amountInDebtMap,
-            final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate, final LocalDate paymentDate) {
-
-        TreeMap<LocalDate, BigDecimal> sortedMap = new TreeMap<LocalDate, BigDecimal>();
-        sortedMap.putAll(amountInDebtMap);
-        
-        if(getInterestType().isGlobalRate() && !GlobalInterestRate.findUniqueByYear(dueDate.getYear()).get().isApplyPaymentMonth() ) {
-            final LocalDate lastDayForInterestCalculation = paymentDate.withField(DateTimeFieldType.dayOfMonth(), 1).minusDays(1);
-            
-            for (final LocalDate localDate : Sets.newTreeSet(sortedMap.keySet())) {
-                if(localDate.isAfter(lastDayForInterestCalculation)) {
-                    sortedMap.remove(localDate);
-                }
-            }
-            
-            sortedMap.put(lastDayForInterestCalculation, BigDecimal.ZERO);
-        } else {
-            sortedMap.put(paymentDate, BigDecimal.ZERO);
-        }
-
-        sortedMap = splitDatesWithYearsSpan(sortedMap);
-        
+    public InterestRateBean calculateInterests(LocalDate paymentDate, boolean withAllInterestValues) {
         if (getInterestType().isFixedAmount()) {
-            return calculedForFixedAmount();
+            return calculateForFixedAmount(withAllInterestValues);
         }
 
-        if (getInterestType().isDaily() || getInterestType().isGlobalRate()) {
-            return calculateDaily(createdInterestEntries, dueDate, paymentDate, sortedMap);
-        }
-
-        if (getInterestType().isMonthly()) {
-            return calculateMonthly(createdInterestEntries, dueDate, paymentDate, sortedMap);
-        }
-
-        throw new RuntimeException("unknown interest type formula");
+        return calculateInterestAmount(withAllInterestValues, calculateEvents(paymentDate));
     }
 
-    private TreeMap<LocalDate, BigDecimal> splitDatesWithYearsSpan(final TreeMap<LocalDate, BigDecimal> sortedMap) {
-        
-        final TreeMap<LocalDate, BigDecimal> result = new TreeMap<LocalDate, BigDecimal>();
-        LocalDate startDate = null;
-        
-        for (final Entry<LocalDate, BigDecimal> entry : sortedMap.entrySet()) {
-            if(startDate == null) {
-                result.put(entry.getKey(), entry.getValue());
-                startDate = entry.getKey();
-                continue;
-            }
-            
-            if(startDate.getYear() == entry.getKey().getYear()) {
-                result.put(entry.getKey(), entry.getValue());
-                startDate = entry.getKey();
-                continue;
-            }
-            
-            if(startDate.getYear() == entry.getKey().getYear() - 1) {
-                result.put(entry.getKey(), entry.getValue());
-                startDate = entry.getKey();
-                continue;                                
-            }
-            
-            for(LocalDate a = startDate.plusYears(1), b = entry.getKey(); a.getYear() < b.getYear();) {
-                result.put(TreasuryConstants.firstDayInYear(a.getYear()), sortedMap.get(startDate));
-                a = a.plusYears(1);
-            }
-            
-            result.put(entry.getKey(), entry.getValue());
-            startDate = entry.getKey();
-        }
-        
-        return result;
-    }
-
-    private InterestRateBean calculateMonthly(final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate,
-            final LocalDate paymentDate, final TreeMap<LocalDate, BigDecimal> sortedMap) {
-        LocalDate dueDateToUse = dueDate;
-        if(dueDate.isBefore(paymentDate.minusYears(MAX_YEARS))) {
-            dueDateToUse = paymentDate.minusYears(MAX_YEARS);
-        }
-
-        final InterestRateBean result = new InterestRateBean(getInterestType());
-
-        BigDecimal totalInterestAmount = BigDecimal.ZERO;
-        int totalOfMonths = 0;
-
-        LocalDate startDate = dueDateToUse.plusMonths(1).withDayOfMonth(1);
-
-        // Iterate over amountInDebtMap and calculate amountToPay
-        BigDecimal amountInDebt = null;
-        for (final Entry<LocalDate, BigDecimal> entry : sortedMap.entrySet()) {
-
-            if (entry.getKey().isAfter(paymentDate)) {
-                break;
-            }
-
-            if (entry.getKey().isBefore(startDate)) {
-                amountInDebt = entry.getValue();
-                continue;
-            }
-
-            final LocalDate endDate = entry.getKey();
-            final int numberOfMonths = Months.monthsBetween(startDate, endDate).getMonths();
-            final BigDecimal amountByRate = TreasuryConstants.divide(getRate(), TreasuryConstants.HUNDRED_PERCENT).multiply(amountInDebt);
-            final BigDecimal partialInterestAmount = amountByRate.multiply(new BigDecimal(numberOfMonths));
-
-            if (TreasuryConstants.isPositive(partialInterestAmount)) {
-                result.addDetail(partialInterestAmount, startDate, endDate, amountByRate, amountInDebt);
-            }
-
-            totalInterestAmount = totalInterestAmount.add(partialInterestAmount);
-            totalOfMonths += numberOfMonths;
-
-            amountInDebt = entry.getValue();
-            startDate = endDate;
-        }
-
-        if (createdInterestEntries != null) {
-            final TreeMap<LocalDate, BigDecimal> interestSortedMap = new TreeMap<LocalDate, BigDecimal>();
-            interestSortedMap.putAll(createdInterestEntries);
-
-            for (final Entry<LocalDate, BigDecimal> entry : createdInterestEntries.entrySet()) {
-                result.addCreatedInterestEntry(entry.getKey(), entry.getValue());
-
-                totalInterestAmount = totalInterestAmount.subtract(entry.getValue());
-            }
-        }
-
-        result.setInterestAmount(getRelatedCurrency().getValueWithScale(totalInterestAmount));
-        result.setNumberOfMonths(totalOfMonths);
-
-        return result;
-    }
-
-    private InterestRateBean calculateDaily(final Map<LocalDate, BigDecimal> createdInterestEntries, final LocalDate dueDate,
-            final LocalDate paymentDate, final TreeMap<LocalDate, BigDecimal> sortedMap) {
-        LocalDate dueDateToUse = dueDate;
-        if(dueDate.isBefore(paymentDate.minusYears(MAX_YEARS))) {
-            dueDateToUse = paymentDate.minusYears(MAX_YEARS);
-        }
-
-        final InterestRateBean result = new InterestRateBean(getInterestType());
+    private InterestRateBean calculateInterestAmount(boolean withAllInterestValues,
+            NavigableMap<LocalDate, InterestCalculationEvent> orderedEvents) {
+        InterestRateBean result = new InterestRateBean();
 
         BigDecimal totalInterestAmount = BigDecimal.ZERO;
         int totalOfDays = 0;
 
-        LocalDate startDate = applyOnFirstWorkdayIfNecessary(dueDateToUse.plusDays(numberOfDaysAfterDueDate(dueDateToUse.getYear())));
+        LocalDate key = orderedEvents.firstKey();
+        while (orderedEvents.higherKey(key) != null) {
+            LocalDate eventDate = orderedEvents.higherKey(key);
+            InterestCalculationEvent event = orderedEvents.get(key);
 
-        // Iterate over amountInDebtMap and calculate amountToPay
-        BigDecimal amountInDebt = BigDecimal.ZERO;
-        for (final Entry<LocalDate, BigDecimal> entry : sortedMap.entrySet()) {
+            BigDecimal daysInYear = new BigDecimal(TreasuryConstants.numberOfDaysInYear(key.getYear()));
+            BigDecimal amountPerDay = TreasuryConstants.divide(event.amountToPay, daysInYear);
+            BigDecimal numberOfDays = new BigDecimal(Days.daysBetween(key, eventDate).getDays());
+            BigDecimal partialInterestAmount = event.interestRate.multiply(amountPerDay).multiply(numberOfDays);
 
-            if (entry.getKey().isAfter(paymentDate)) {
-                break;
-            }
-
-            if (entry.getKey().isBefore(startDate)) {
-                amountInDebt = entry.getValue();
-                continue;
-            }
-
-            final LocalDate endDate = entry.getKey();
-
-            int numberOfDays = 0;
-            BigDecimal partialInterestAmount;
-            if (startDate.getYear() != endDate.getYear()) {
-                boolean reachedMaxDays = false;
-
-                int firstYearDays = Days.daysBetween(startDate, TreasuryConstants.lastDayInYear(startDate.getYear())).getDays() + 1;
-                int secondYearDays = Days.daysBetween(TreasuryConstants.firstDayInYear(endDate.getYear()), endDate).getDays() + 1;
-
-                {
-                    if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + firstYearDays >= getMaximumDaysToApplyPenalty()) {
-                        firstYearDays = getMaximumDaysToApplyPenalty() - totalOfDays;
-                        reachedMaxDays = true;
-                    }
-
-                    final BigDecimal amountPerDay =
-                            TreasuryConstants.divide(amountInDebt, new BigDecimal(TreasuryConstants.numberOfDaysInYear(startDate.getYear())));
-
-                    final BigDecimal rate = interestRate(startDate.getYear());
-
-                    partialInterestAmount =
-                            TreasuryConstants.divide(rate, TreasuryConstants.HUNDRED_PERCENT).multiply(amountPerDay)
-                                    .multiply(new BigDecimal(firstYearDays));
-
-                    numberOfDays += firstYearDays;
-
-                    if (TreasuryConstants.isPositive(partialInterestAmount)) {
-                        result.addDetail(partialInterestAmount, startDate, TreasuryConstants.lastDayInYear(startDate.getYear()),
-                                amountPerDay, amountInDebt);
-                    }
-                }
-
-                if (!reachedMaxDays) {
-
-                    if (isMaximumDaysToApplyPenaltyApplied()
-                            && totalOfDays + firstYearDays + secondYearDays >= getMaximumDaysToApplyPenalty()) {
-                        secondYearDays = getMaximumDaysToApplyPenalty() - totalOfDays - firstYearDays;
-                    }
-
-                    final BigDecimal amountPerDay =
-                            TreasuryConstants.divide(amountInDebt, new BigDecimal(TreasuryConstants.numberOfDaysInYear(endDate.getYear())));
-
-                    final BigDecimal rate = interestRate(endDate.getYear());
-
-                    final BigDecimal secondInterestAmount =
-                            TreasuryConstants.divide(rate, TreasuryConstants.HUNDRED_PERCENT).multiply(amountPerDay)
-                                    .multiply(new BigDecimal(secondYearDays));
-
-                    if (TreasuryConstants.isPositive(partialInterestAmount)) {
-                        result.addDetail(secondInterestAmount, TreasuryConstants.firstDayInYear(endDate.getYear()), endDate,
-                                amountPerDay, amountInDebt);
-                    }
-
-                    partialInterestAmount = partialInterestAmount.add(secondInterestAmount);
-
-                    numberOfDays += secondYearDays;
-                }
-
-            } else {
-                numberOfDays = Days.daysBetween(startDate, endDate).getDays() + 1;
-
-                if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays + numberOfDays >= getMaximumDaysToApplyPenalty()) {
-                    numberOfDays = getMaximumDaysToApplyPenalty() - totalOfDays;
-                }
-
-                final BigDecimal amountPerDay =
-                        TreasuryConstants.divide(amountInDebt, new BigDecimal(TreasuryConstants.numberOfDaysInYear(startDate.getYear())));
-
-                final BigDecimal rate = interestRate(startDate.getYear());
-                partialInterestAmount =
-                        TreasuryConstants.divide(rate, TreasuryConstants.HUNDRED_PERCENT).multiply(amountPerDay)
-                                .multiply(new BigDecimal(numberOfDays));
-
-                if (TreasuryConstants.isPositive(partialInterestAmount)) {
-                    result.addDetail(partialInterestAmount, startDate, endDate, amountPerDay, amountInDebt);
-                }
-            }
+            result.addDetail(partialInterestAmount, key, eventDate.minusDays(1), amountPerDay, event.amountToPay,
+                    TreasuryConstants.defaultScale(event.interestRate).multiply(TreasuryConstants.HUNDRED_PERCENT).setScale(4,
+                            RoundingMode.HALF_EVEN));
 
             totalInterestAmount = totalInterestAmount.add(partialInterestAmount);
-            totalOfDays += numberOfDays;
+            totalOfDays += numberOfDays.intValue();
 
-            amountInDebt = entry.getValue();
-            startDate = endDate.plusDays(1);
-
-            if (isMaximumDaysToApplyPenaltyApplied() && totalOfDays >= getMaximumDaysToApplyPenalty()) {
-                break;
-            }
+            key = eventDate;
         }
 
-        if (createdInterestEntries != null) {
-            final TreeMap<LocalDate, BigDecimal> interestSortedMap = new TreeMap<LocalDate, BigDecimal>();
-            interestSortedMap.putAll(createdInterestEntries);
-
-            for (final Entry<LocalDate, BigDecimal> entry : createdInterestEntries.entrySet()) {
+        if (!withAllInterestValues) {
+            for (final Entry<LocalDate, BigDecimal> entry : createdInterestEntriesMap().entrySet()) {
                 result.addCreatedInterestEntry(entry.getKey(), entry.getValue());
-
                 totalInterestAmount = totalInterestAmount.subtract(entry.getValue());
             }
+        }
+        
+        if(TreasuryConstants.isNegative(totalInterestAmount)) {
+            totalInterestAmount = BigDecimal.ZERO;
         }
 
         result.setInterestAmount(getRelatedCurrency().getValueWithScale(totalInterestAmount));
@@ -397,11 +173,151 @@ public class InterestRate extends InterestRate_Base {
         return result;
     }
 
-    private int numberOfDaysAfterDueDate(int year) {
-        if(getInterestType().isGlobalRate()) {
+    private TreeMap<LocalDate, BigDecimal> createdInterestEntriesMap() {
+        TreeMap<LocalDate, BigDecimal> result = new TreeMap<LocalDate, BigDecimal>();
+
+        for (DebitEntry interestDebitEntry : getDebitEntry().getInterestDebitEntriesSet()) {
+            if (interestDebitEntry.isAnnulled()) {
+                continue;
+            }
+            
+            if(!TreasuryConstants.isPositive(interestDebitEntry.getAvailableAmountForCredit())) {
+                continue;
+            }
+            
+            LocalDate interestEntryDateTime = interestDebitEntry.getEntryDateTime().toLocalDate();
+            result.putIfAbsent(interestEntryDateTime, BigDecimal.ZERO);
+            result.put(interestEntryDateTime, result.get(interestEntryDateTime).add(interestDebitEntry.getAvailableAmountForCredit()));
+        }
+
+        return result;
+    }
+
+    private NavigableMap<LocalDate, InterestCalculationEvent> calculateEvents(LocalDate paymentDate) {
+        NavigableMap<LocalDate, BigDecimal> paymentsMap = createPaymentsMap(paymentDate);
+        LocalDate lastPayment = paymentsMap.lastKey();
+
+        final LocalDate firstDayToChargeInterests = calculateFirstDayToChargeInterests(lastPayment);
+        final LocalDate nextDayOfInterestsCharge =
+                calculateLastDayToChargeInterests(lastPayment, firstDayToChargeInterests).plusDays(1);
+
+        BigDecimal amountToPayAtFirstDay = amountInDebtAtDay(paymentsMap, firstDayToChargeInterests.minusDays(1));
+        BigDecimal interestRateAtFirstDay = interestRateValue(firstDayToChargeInterests);
+
+        NavigableMap<LocalDate, InterestCalculationEvent> result = new TreeMap<>();
+        result.put(firstDayToChargeInterests, new InterestCalculationEvent(amountToPayAtFirstDay, interestRateAtFirstDay));
+        result.put(nextDayOfInterestsCharge,
+                new InterestCalculationEvent(BigDecimal.ZERO, interestRateValue(nextDayOfInterestsCharge)));
+
+        paymentsMap.forEach((settlementPaymentDate, paidAmount) -> {
+            LocalDate eventDate = settlementPaymentDate.plusDays(1);
+            if (eventDate.isBefore(firstDayToChargeInterests)) {
+                return;
+            }
+            
+            if(eventDate.isAfter(nextDayOfInterestsCharge)) {
+                return;
+            }
+
+            result.putIfAbsent(eventDate,
+                    new InterestCalculationEvent(amountInDebtAtDay(paymentsMap, eventDate), interestRateValue(eventDate)));
+        });
+
+        GlobalInterestRate.findAll().filter(r -> !r.getFirstDay().isBefore(firstDayToChargeInterests))
+                .filter(r -> !r.getFirstDay().isAfter(nextDayOfInterestsCharge)).forEach(r -> {
+                    LocalDate eventDate = r.getFirstDay();
+                    result.putIfAbsent(eventDate, new InterestCalculationEvent(amountInDebtAtDay(paymentsMap, eventDate),
+                            interestRateValue(eventDate)));
+                });
+
+        return result;
+    }
+
+    private LocalDate calculateFirstDayToChargeInterests(LocalDate lastPayment) {
+        LocalDate firstDayToChargeInterests =
+                applyOnFirstWorkdayIfNecessary(getDebitEntry().getDueDate().plusDays(numberOfDaysAfterDueDate()));
+
+        if (firstDayToChargeInterests.isBefore(lastPayment.minusYears(MAX_YEARS))) {
+            firstDayToChargeInterests = lastPayment.minusYears(MAX_YEARS).plusDays(1);
+        }
+
+        return firstDayToChargeInterests;
+    }
+
+    private LocalDate calculateLastDayToChargeInterests(LocalDate lastPayment, LocalDate firstDayToChargeInterests) {
+        LocalDate nextDayOfPaymentDate = lastPayment;
+        if (!isApplyPaymentMonth(lastPayment)) {
+            nextDayOfPaymentDate = nextDayOfPaymentDate.withDayOfMonth(1).minusDays(1);
+        }
+
+        if (isMaximumDaysToApplyPenaltyApplied()
+                && Days.daysBetween(firstDayToChargeInterests, nextDayOfPaymentDate).getDays() > getMaximumDaysToApplyPenalty()) {
+            nextDayOfPaymentDate = firstDayToChargeInterests.plusDays(getMaximumDaysToApplyPenalty() - 1);
+        }
+        return nextDayOfPaymentDate;
+    }
+
+    private BigDecimal amountInDebtAtDay(NavigableMap<LocalDate, BigDecimal> paymentsMap, LocalDate eventDate) {
+        BigDecimal amountToPay = getDebitEntry().getAmountWithVat();
+
+        for (Entry<LocalDate, BigDecimal> entry : paymentsMap.entrySet()) {
+            if (!entry.getKey().isBefore(eventDate)) {
+                break;
+            }
+
+            amountToPay = amountToPay.subtract(entry.getValue());
+        }
+
+        return amountToPay;
+    }
+
+    private NavigableMap<LocalDate, BigDecimal> createPaymentsMap(LocalDate paymentDate) {
+        NavigableMap<LocalDate, BigDecimal> result = new TreeMap<>();
+
+        getDebitEntry().getSettlementEntriesSet().stream().filter(s -> !s.isAnnulled()).forEach(s -> {
+            LocalDate settlementPaymentDate = s.getSettlementNote().getPaymentDate().toLocalDate();
+            result.putIfAbsent(settlementPaymentDate, BigDecimal.ZERO);
+            result.put(settlementPaymentDate, result.get(settlementPaymentDate).add(s.getAmount()));
+        });
+
+        result.putIfAbsent(paymentDate, BigDecimal.ZERO);
+        result.put(paymentDate, result.get(paymentDate).add(getDebitEntry().getOpenAmount()));
+
+        return result;
+    }
+
+    private boolean isApplyPaymentMonth(final LocalDate date) {
+        if (!getInterestType().isGlobalRate()) {
+            return false;
+        }
+
+        Optional<GlobalInterestRate> globalRate = GlobalInterestRate.findUniqueAppliedForDate(date);
+        if (!globalRate.isPresent()) {
+            throw new TreasuryDomainException("error.InterestRate.rate.not.defined.for.date",
+                    date.toString(TreasuryConstants.DATE_FORMAT_YYYY_MM_DD));
+        }
+
+        return globalRate.get().isApplyPaymentMonth();
+    }
+
+    private BigDecimal interestRateValue(LocalDate date) {
+        if (getInterestType().isGlobalRate()) {
+            Optional<GlobalInterestRate> globalRate = GlobalInterestRate.findUniqueAppliedForDate(date);
+            if (!globalRate.isPresent()) {
+                throw new TreasuryDomainException("error.InterestRate.rate.not.defined.for.date",
+                        date.toString(TreasuryConstants.DATE_FORMAT_YYYY_MM_DD));
+            }
+            return TreasuryConstants.divide(globalRate.get().getRate(), TreasuryConstants.HUNDRED_PERCENT);
+        }
+
+        return TreasuryConstants.divide(getRate(), TreasuryConstants.HUNDRED_PERCENT);
+    }
+
+    private int numberOfDaysAfterDueDate() {
+        if (getInterestType().isGlobalRate()) {
             return 1;
         }
-        
+
         return getNumberOfDaysAfterDueDate();
     }
 
@@ -414,36 +330,38 @@ public class InterestRate extends InterestRate_Base {
         return null;
     }
 
-    private BigDecimal interestRate(final int year) {
-        if (getInterestType().isGlobalRate()) {
-            if (!GlobalInterestRate.findUniqueByYear(year).isPresent()) {
-                throw new TreasuryDomainException("error.InterestRate.global.interest.rate.not.found", String.valueOf(year));
-            };
-
-            return GlobalInterestRate.findUniqueByYear(year).get().getRate();
-        }
-
-        return getRate();
-    }
-
-    private InterestRateBean calculedForFixedAmount() {
+    private InterestRateBean calculateForFixedAmount(boolean withAllInterestValues) {
         final InterestRateBean result = new InterestRateBean(getInterestType());
-        result.setInterestAmount(this.getRelatedCurrency().getValueWithScale(getInterestFixedAmount()));
+        BigDecimal totalInterestAmount = this.getRelatedCurrency().getValueWithScale(getInterestFixedAmount());
 
+        if (!withAllInterestValues) {
+            for (final Entry<LocalDate, BigDecimal> entry : createdInterestEntriesMap().entrySet()) {
+                result.addCreatedInterestEntry(entry.getKey(), entry.getValue());
+                totalInterestAmount = totalInterestAmount.subtract(entry.getValue());
+            }
+        }
+        
+        if(TreasuryConstants.isNegative(totalInterestAmount)) {
+            totalInterestAmount = BigDecimal.ZERO;
+        }
+        
+        result.setInterestAmount(getRelatedCurrency().getValueWithScale(totalInterestAmount));
         return result;
     }
 
     private LocalDate applyOnFirstWorkdayIfNecessary(final LocalDate date) {
         boolean applyInFirstWorkday = isApplyInFirstWorkday();
-        
-        if (getInterestType().isGlobalRate()) {
-            if (!GlobalInterestRate.findUniqueByYear(date.getYear()).isPresent()) {
-                throw new TreasuryDomainException("error.InterestRate.global.interest.rate.not.found", String.valueOf(date.getYear()));
-            };
 
-            applyInFirstWorkday = GlobalInterestRate.findUniqueByYear(date.getYear()).get().getApplyInFirstWorkday();
+        if (getInterestType().isGlobalRate()) {
+            Optional<GlobalInterestRate> globalRate = GlobalInterestRate.findUniqueAppliedForDate(date);
+            if (!globalRate.isPresent()) {
+                throw new TreasuryDomainException("error.InterestRate.rate.not.defined.for.date",
+                        date.toString(TreasuryConstants.DATE_FORMAT_YYYY_MM_DD));
+            }
+
+            applyInFirstWorkday = globalRate.get().getApplyInFirstWorkday();
         }
-        
+
         if (applyInFirstWorkday && isSaturday(date)) {
             return date.plusDays(2);
         } else if (applyInFirstWorkday && isSunday(date)) {
@@ -490,9 +408,9 @@ public class InterestRate extends InterestRate_Base {
     @Atomic
     public static InterestRate createForTariff(final Tariff tariff, final InterestType interestType,
             final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
-            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+            final BigDecimal interestFixedAmount, final BigDecimal rate) {
         return new InterestRate(tariff, null, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
-                maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
+                maximumDaysToApplyPenalty, interestFixedAmount, rate);
     }
 
     public String getUiFullDescription() {
@@ -507,9 +425,6 @@ public class InterestRate extends InterestRate_Base {
                     + getRelatedCurrency().getValueFor(this.getInterestFixedAmount());
         case GLOBAL_RATE:
             return this.getInterestType().getDescriptionI18N().getContent();
-        case MONTHLY:
-            return this.getInterestType().getDescriptionI18N().getContent() + "-" + this.getRate() + "% (Max. Meses="
-                    + this.getMaximumMonthsToApplyPenalty() + ")";
         default:
             return this.getInterestType().getDescriptionI18N().getContent();
         }
@@ -520,7 +435,7 @@ public class InterestRate extends InterestRate_Base {
         if (interestRate != null) {
             return new InterestRate(null, debitEntry, interestRate.getInterestType(), interestRate.getNumberOfDaysAfterDueDate(),
                     interestRate.getApplyInFirstWorkday(), interestRate.getMaximumDaysToApplyPenalty(),
-                    interestRate.getMaximumMonthsToApplyPenalty(), interestRate.getInterestFixedAmount(), interestRate.getRate());
+                    interestRate.getInterestFixedAmount(), interestRate.getRate());
         }
         return null;
     }
@@ -528,8 +443,18 @@ public class InterestRate extends InterestRate_Base {
     @Atomic
     public static InterestRate createForDebitEntry(final DebitEntry debitEntry, final InterestType interestType,
             final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
-            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+            final BigDecimal interestFixedAmount, final BigDecimal rate) {
         return new InterestRate(null, debitEntry, interestType, numberOfDaysAfterDueDate, applyInFirstWorkday,
-                maximumDaysToApplyPenalty, maximumMonthsToApplyPenalty, interestFixedAmount, rate);
+                maximumDaysToApplyPenalty, interestFixedAmount, rate);
+    }
+
+    private class InterestCalculationEvent {
+        private BigDecimal amountToPay;
+        private BigDecimal interestRate;
+
+        InterestCalculationEvent(BigDecimal amountToPay, BigDecimal interestRateAtEventDate) {
+            this.amountToPay = amountToPay;
+            this.interestRate = interestRateAtEventDate;
+        }
     }
 }

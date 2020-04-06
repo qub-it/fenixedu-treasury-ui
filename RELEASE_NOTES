@@ -1,3 +1,5 @@
+- New Fixture: Global Interest Rate by periods based on date instead of year
+
 4.7.1 (27-03-2020)
 - Improvement: Also abbreviate Product>ProductDescription in SAFT to 200 characters at most
 
