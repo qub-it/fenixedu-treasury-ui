@@ -160,6 +160,20 @@ public class DebitNote extends DebitNote_Base {
         checkRules();
     }
 
+    @Atomic
+    public void closeDocument(boolean markDocumentToExport) {
+        setDocumentDueDate(maxDebitEntryDueDate());
+        
+        super.closeDocument(markDocumentToExport);
+    }
+    
+    private LocalDate maxDebitEntryDueDate() {
+        final LocalDate maxDate = getDebitEntries().max(DebitEntry.COMPARE_BY_DUE_DATE).map(DebitEntry::getDueDate)
+                .orElse(getDocumentDueDate());
+        
+        return maxDate.isAfter(getDocumentDate().toLocalDate()) ? maxDate : getDocumentDate().toLocalDate();
+    }
+    
     // @formatter:off
     /* ********
      * SERVICES
