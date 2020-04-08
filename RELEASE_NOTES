@@ -1,3 +1,4 @@
+4.8.1 (08-04-2020)
 - Bug Fix: Set debit note due date when closing the finantial document instead of relying in the automatic debt generation for close debit notes
 
 4.8.0 (06-04-2020)
