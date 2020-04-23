@@ -29,8 +29,6 @@ package org.fenixedu.treasury.ui.document.forwardpayments;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -45,18 +43,16 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
-import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,19 +66,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
 
-import pt.ist.fenixframework.Atomic;
-
 @BennuSpringController(CustomerController.class)
-@RequestMapping(ForwardPaymentController.CONTROLLER_URL)
+@RequestMapping(IForwardPaymentController.CONTROLLER_URL)
 public class ForwardPaymentController extends TreasuryBaseController {
     
     private static final Logger logger = LoggerFactory.getLogger(ForwardPaymentController.class);
     
-    public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/forwardpayment";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment";
 
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
@@ -101,7 +93,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     private static final String CHOOSE_INVOICE_ENTRIES_URI = "/chooseInvoiceEntries/";
-    public static final String CHOOSE_INVOICE_ENTRIES_URL = CONTROLLER_URL + CHOOSE_INVOICE_ENTRIES_URI;
+    public static final String CHOOSE_INVOICE_ENTRIES_URL = IForwardPaymentController.CONTROLLER_URL + CHOOSE_INVOICE_ENTRIES_URI;
 
     protected String readChooseInvoiceEntriesUrl() {
         return CHOOSE_INVOICE_ENTRIES_URL;
@@ -281,7 +273,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     private static final String SUMMARY_URI = "/summary/";
-    public static final String SUMMARY_URL = CONTROLLER_URL + SUMMARY_URI;
+    public static final String SUMMARY_URL = IForwardPaymentController.CONTROLLER_URL + SUMMARY_URI;
 
     protected String readSummaryUrl() {
         return SUMMARY_URL;
@@ -317,14 +309,11 @@ public class ForwardPaymentController extends TreasuryBaseController {
         return jspPage("summary");
     }
 
-    private static final String PROCESS_FORWARD_PAYMENT_URI = "/processforwardpayment";
-    public static final String PROCESS_FORWARD_PAYMENT_URL = CONTROLLER_URL + PROCESS_FORWARD_PAYMENT_URI;
-
     public String readProcessForwardPaymentUrl() {
-        return PROCESS_FORWARD_PAYMENT_URL;
+        return IForwardPaymentController.PROCESS_FORWARD_PAYMENT_URL;
     }
 
-    @RequestMapping(value = PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
+    @RequestMapping(value = IForwardPaymentController.PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String processforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
             final HttpServletResponse response, final HttpSession session) {
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
@@ -342,7 +331,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     private static final String FORWARD_PAYMENT_SUCCESS_URI = "/forwardpaymentsuccess";
-    public static final String FORWARD_PAYMENT_SUCCESS_URL = CONTROLLER_URL + FORWARD_PAYMENT_SUCCESS_URI;
+    public static final String FORWARD_PAYMENT_SUCCESS_URL = IForwardPaymentController.CONTROLLER_URL + FORWARD_PAYMENT_SUCCESS_URI;
 
     @RequestMapping(value = FORWARD_PAYMENT_SUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
@@ -359,7 +348,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     private static final String FORWARD_PAYMENT_INSUCCESS_URI = "/forwardpaymentinsuccess";
-    public static final String FORWARD_PAYMENT_INSUCCESS_URL = CONTROLLER_URL + FORWARD_PAYMENT_INSUCCESS_URI;
+    public static final String FORWARD_PAYMENT_INSUCCESS_URL = IForwardPaymentController.CONTROLLER_URL + FORWARD_PAYMENT_INSUCCESS_URI;
 
     @RequestMapping(value = FORWARD_PAYMENT_INSUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
@@ -375,7 +364,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     private static final String PRINT_SETTLEMENT_NOTE_URI = "/printsettlementnote";
-    public static final String PRINT_SETTLEMENT_NOTE_URL = CONTROLLER_URL + PRINT_SETTLEMENT_NOTE_URI;
+    public static final String PRINT_SETTLEMENT_NOTE_URL = IForwardPaymentController.CONTROLLER_URL + PRINT_SETTLEMENT_NOTE_URI;
 
     protected String readPrintSettlementNoteUrl() {
         return PRINT_SETTLEMENT_NOTE_URL;

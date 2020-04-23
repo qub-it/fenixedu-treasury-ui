@@ -14,6 +14,10 @@ import org.springframework.ui.Model;
 
 public interface IForwardPaymentController {
 
+    public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/forwardpayment";
+    public static final String PROCESS_FORWARD_PAYMENT_URI = "/processforwardpayment";
+    public static final String PROCESS_FORWARD_PAYMENT_URL = CONTROLLER_URL + PROCESS_FORWARD_PAYMENT_URI;
+
     public static Map<Class<? extends IForwardPaymentImplementation>, Class<? extends IForwardPaymentController>> CONTROLLER_MAP =
             new HashMap<>();
     
