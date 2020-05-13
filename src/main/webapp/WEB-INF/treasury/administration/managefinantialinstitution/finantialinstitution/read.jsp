@@ -406,7 +406,7 @@ ${portal.toolkit()}
                         <td>
                             <table>
                                 <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
-                                    <c:set var="documentTemplateFile" value="${ entity.hasDocumentTemplate(type).ativeDocumentTemplateFile }" />
+                                    <c:set var="documentTemplateFile" value="${ entity.getDocumentTemplate(type).ativeDocumentTemplateFile }" />
                                     <tr>
                                         <th><c:out value="${ entity.name.content }" />
                                         <th>
@@ -432,7 +432,7 @@ ${portal.toolkit()}
                         <td>
                             <table>
                                 <c:forEach items="${ finantialInstitution.finantialEntitiesSet }" var="entity">
-                                    <c:set var="documentTemplate" value="${ entity.hasDocumentTemplate(type) }" />
+                                    <c:set var="documentTemplate" value="${ entity.getDocumentTemplate(type) }" />
                                     <tr>
                                         <td>
                                             <%
