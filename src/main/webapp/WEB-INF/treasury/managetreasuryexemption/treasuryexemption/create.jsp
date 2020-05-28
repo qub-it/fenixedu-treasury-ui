@@ -155,8 +155,7 @@ ${portal.angularToolkit()}
 							'$scope',
 							function($scope) {
 
-								$scope.object = angular
-										.fromJson('${treasuryExemptionBeanJson}');
+								$scope.object = ${treasuryExemptionBeanJson};
 								$scope.postBack = createAngularPostbackFunction($scope);
 
 								$scope.onChange = function(model) {

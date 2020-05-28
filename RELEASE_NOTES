@@ -1,3 +1,5 @@
+- Bug fix: Fix JSON issue in exemption creation interface
+
 5.0.1 (13-05-2020)
 - Refactor: Change method signature
 
