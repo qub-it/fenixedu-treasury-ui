@@ -201,16 +201,13 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
                 href="${pageContext.request.contextPath}/treasury/document/manageinvoice/creditnote/update/${creditNote.externalId}"><spring:message code="label.event.update" /></a>
 		&nbsp;
 		</c:if>
-<% 
-if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
-%>  
-        <c:if test="${creditNote.isPreparing()}">
+
+        <c:if test="${creditNote.isPreparing() && !creditNote.isAdvancePayment()}">
             |&nbsp;<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;
             <a class="" href="#" data-toggle="modal" data-target="#anullModal">
             	<spring:message code="label.annul" />
             </a>
 		</c:if>
-<%}%>
 <%}%>
         <c:if test="${creditNote.documentSeriesNumberSet}">
 |

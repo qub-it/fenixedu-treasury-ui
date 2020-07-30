@@ -99,11 +99,6 @@ public class CreditNoteController extends TreasuryBaseController {
         model.addAttribute("creditNote", creditNote);
     }
 
-    @Atomic
-    public void anullCreditNote(CreditNote creditNote, final String reason) {
-        creditNote.anullDocument(reason);
-    }
-
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
@@ -149,15 +144,11 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-            // For now limit this functionality to managers
-            final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-            
-            if (!TreasuryAccessControlAPI.isManager(loggedUsername)) {
-                addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.invoices"), model);
-                throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.invoices"));
+            if(creditNote.isAdvancePayment()) {
+                throw new RuntimeException("error.CreditNoteController.advancedPayment.annulment.not.allowed");
             }
-
-            anullCreditNote(creditNote, reason);
+            
+            creditNote.anullDocument(reason);
             addInfoMessage(treasuryBundle("label.document.manageinvoice.CreditNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
