@@ -219,7 +219,6 @@ ${portal.toolkit()}
                     <th><spring:message code="label.ForwardPayment.customerName" /></th>
                     <th><spring:message code="label.ForwardPayment.amount" /></th>
                     <th><spring:message code="label.ForwardPayment.currentState" /></th>
-                    <th><spring:message code="label.ForwardPayment.transactionId" /></th>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -227,12 +226,11 @@ ${portal.toolkit()}
             <tbody>
 				<c:forEach var="f" items="${forwardPayments}">
 					<tr>
-						<td><c:out value='${f.whenOccured.toString("yyyy-MM-dd")}' /></td>
+						<td><c:out value='${f.requestDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
 						<td><c:out value="${f.orderNumber}" /></td>
 						<td><c:out value="${f.debtAccount.customer.name} [${f.debtAccount.customer.businessIdentification}]" /></td>
-						<td><c:out value="${f.debtAccount.finantialInstitution.currency.getValueFor(f.amount)}" /></td>
-						<td><c:out value="${f.currentState.localizedName.content}" /></td>
-						<td><c:out value="${f.transactionId}" /></td>
+						<td><c:out value="${f.debtAccount.finantialInstitution.currency.getValueFor(f.payableAmount)}" /></td>
+						<td><c:out value="${f.state.localizedName.content}" /></td>
 						<td>
 							<a href="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.VIEW_URL %>/${f.externalId}" class="btn btn-default">
 								<spring:message code="label.view" />
@@ -245,14 +243,11 @@ ${portal.toolkit()}
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">
-
             <p>
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
                 <spring:message code="label.noResultsFound" />
             </p>
-
         </div>
-
     </c:otherwise>
 </c:choose>
 
@@ -266,12 +261,11 @@ ${portal.toolkit()}
 		},
 		
 		"columns": [
-			{ data: 'whenOccured' },
+			{ data: 'requestDate' },
 			{ data: 'orderNumber' },
 			{ data: 'customerName' },
-			{ data: 'amount' },
+			{ data: 'payableAmount' },
 			{ data: 'currentState' },
-			{ data: 'transactionId' },
 			{ data: 'actions',className:"all" }
 			
 		],

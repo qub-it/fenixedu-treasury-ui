@@ -38,8 +38,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -50,10 +48,10 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
-import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
+import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
@@ -61,8 +59,6 @@ import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
-import org.fenixedu.treasury.util.TreasuryConstants;
-import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -73,7 +69,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
@@ -147,21 +142,12 @@ public class DebtAccountController extends TreasuryBaseController {
                 .sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate())).collect(Collectors.toList()));
         model.addAttribute("exemptionDataSet", exemptionEntries);
 
-        final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
-        for (final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
-            if (!invoiceEntry.isDebitNoteEntry()) {
-                continue;
-            }
-
-            usedPaymentCodeTargets.addAll(
-                    MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-
-            if (invoiceEntry.getFinantialDocument() != null) {
-                usedPaymentCodeTargets
-                        .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
-                                .collect(Collectors.<PaymentCodeTarget> toSet()));
-            }
-        }
+        final Set<SibsPaymentRequest> usedPaymentCodeTargets = Sets.newHashSet();
+        pendingInvoiceEntries.stream().filter(InvoiceEntry::isDebitNoteEntry).map(DebitEntry.class::cast)
+                .flatMap(i -> i.getPaymentRequestsSet().stream()).filter(i -> i instanceof SibsPaymentRequest)
+                .map(SibsPaymentRequest.class::cast)
+                .filter(SibsPaymentRequest::isInRequestedState)
+                .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
 
         checkIncompleteAddress(debtAccount, model);
 
@@ -169,6 +155,17 @@ public class DebtAccountController extends TreasuryBaseController {
 
         model.addAttribute("invalidFiscalCode", isInvalidFiscalCode(debtAccount));
 
+        
+        if(findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).isPresent()) {
+            model.addAttribute("forwardPaymentService", 
+                    findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).get());
+        }
+        
+        if(findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).isPresent()) {
+            model.addAttribute("mbwayService", 
+                    findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).get());
+        }
+        
         return "treasury/accounting/managecustomer/debtaccount/read";
     }
 
@@ -202,11 +199,13 @@ public class DebtAccountController extends TreasuryBaseController {
                 model, redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/forwardpayment")
-    public String processReadToForwardPayment(@PathVariable("oid") DebtAccount debtAccount, final Model model,
-            final RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = "/read/{oid}/forwardpayment/{digitalPaymentPlatformId}")
+    public String processReadToForwardPayment(
+            @PathVariable("oid") DebtAccount debtAccount, @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
+            Model model, RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-        return redirect(ForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + getDebtAccount(model).getExternalId(), model,
+        return redirect(String.format("%s%s/%s", ForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL, 
+                getDebtAccount(model).getExternalId(), digitalPaymentPlatform.getExternalId()), model,
                 redirectAttributes);
     }
 
@@ -371,5 +370,16 @@ public class DebtAccountController extends TreasuryBaseController {
             return read(debtAccount, model, redirectAttributes);
         }
     }
+    
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForForwardPaymentService(FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true)
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
+    }
 
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.find(finantialInstitution).filter(DigitalPaymentPlatform::isActive).filter(d -> d.isMbwayServiceSupported())
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
+    }
 }

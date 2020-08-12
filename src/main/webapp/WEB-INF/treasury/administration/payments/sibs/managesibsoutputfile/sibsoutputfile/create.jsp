@@ -114,38 +114,47 @@ ${portal.toolkit()}
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.SibsOutputFile.finantialInstitution" />
+                    <spring:message code="label.SibsOutputFile.finantialInstitution" />
                 </div>
 
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="finantialinstitution"
-                        class="js-example-basic-single"
-                        name="finantialinstitution">
+                    <select id="finantialinstitution" class="js-example-basic-single" name="finantialinstitution">
                     </select>
+
                     <script>
-        <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-        var finantialinstitution_options = [
-            <c:forEach items="${finantialinstitution_options}" var="element"> 
-                {
-                    text :"<c:out value='${element.name}'/>", 
-                    id : "<c:out value='${element.externalId}'/>"
-                },
-            </c:forEach>
-        ];
 
-        //Init Select2_Options
-        initSelect2("#finantialinstitution",finantialinstitution_options, "<c:out value='${param.finantialinstitution}'/>");
+	                    <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+				        var finantialinstitution_options = [
+				            <c:forEach items="${finantialinstitution_options}" var="element"> 
+				                {
+				                    text :"<c:out value='${element.name}'/>", 
+				                    id : "<c:out value='${element.externalId}'/>"
+				                },
+				            </c:forEach>
+				        ];
+				
+				        //Init Select2_Options
+				        initSelect2("#finantialinstitution",finantialinstitution_options, "<c:out value='${param.finantialinstitution}'/>");
+			
+			        </script>
+                </div>
+            </div>
 
-        </script>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.SibsOutputFile.sibsEntityReferenceCode" />
+                </div>
+
+                <div class="col-sm-4">
+                    <input id="sibsOutputFile_sibsEntityReferenceCode" class="form-control" type="text" name="sibsentityreferencecode"
+                        value='<c:out value='${param.sibsentityreferencecode}'/>' />
                 </div>
             </div>
 
         </div>
         <div class="panel-footer">
-            <input type="submit" class="btn btn-default" role="button"
-                value="<spring:message code="label.submit" />" />
+            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
         </div>
     </div>
 </form>

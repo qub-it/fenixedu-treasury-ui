@@ -182,7 +182,7 @@ ${portal.angularToolkit()}
 			<tbody>
 				<tr>
 					<th scope="row" class="col-xs-3"><spring:message code="label.MbwayPaymentRequest.creationDate" /></th>
-					<td><c:out value='${mbwayPaymentRequest.creationDate.toString("yyyy-MM-dd HH:mm")}' /></td>
+					<td><c:out value='${mbwayPaymentRequest.requestDate.toString("yyyy-MM-dd HH:mm")}' /></td>
 				</tr>
 				<tr>
 					<th scope="row" class="col-xs-3"><spring:message code="label.MbwayPaymentRequest.phoneNumber" /></th>
@@ -207,7 +207,5 @@ ${portal.angularToolkit()}
 </div>
 
 <script>
-	$(document).ready(function() {
-
-	});
+	$(document).ready(function() {});
 </script>

@@ -2,13 +2,16 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
+import java.util.HashSet;
+
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -19,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import pt.ist.fenixframework.FenixFramework;
 
 @Component("org.fenixedu.treasury.ui.accounting.managecustomer")
 @BennuSpringController(value = CustomerController.class)
@@ -34,16 +39,18 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     }
 
     private static final String _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI = "/createpaymentcodeforseveraldebitentries";
-    public static final String CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL = CONTROLLER_URL
-            + _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI;
+    public static final String CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL =
+            CONTROLLER_URL + _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI;
 
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI + "/{debtAccountId}", method = RequestMethod.GET)
     public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") final DebtAccount debtAccount,
             final Model model) {
-        
+
         assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
-        
-        final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(PaymentCodePool.findByActive(true, debtAccount.getFinantialInstitution()).findFirst().orElse(null), debtAccount);
+
+        final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(DigitalPaymentPlatform
+                .findForSibsPaymentCodeServiceByActive(debtAccount.getFinantialInstitution(), true).findFirst().orElse(null),
+                debtAccount);
 
         return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
     }
@@ -60,8 +67,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
     private static final String _CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URI =
             "/createpaymentcodeforseveraldebitentriespostback";
-    public static final String CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL = CONTROLLER_URL
-            + _CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URI;
+    public static final String CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL =
+            CONTROLLER_URL + _CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URI;
 
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URI + "/{debtAccountId}",
             method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -83,25 +90,28 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         try {
 
-            if(bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty()) {
+            if (bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty()) {
                 addErrorMessage(treasuryBundle("error.MultipleEntriesPaymentCode.select.at.least.one.debit.entry"), model);
 
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
-            
-            if(bean.getPaymentCodePool() == null) {
+
+            if (bean.getPaymentCodePool() == null) {
                 addErrorMessage(treasuryBundle("error.MultipleEntriesPaymentCode.payment.code.pool.required"), model);
-                
+
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
-            
-            assertUserIsFrontOfficeMember(bean.getSelectedDebitEntries().iterator().next().getDebtAccount().getFinantialInstitution(),
-                    model);
+
+            assertUserIsFrontOfficeMember(
+                    bean.getSelectedDebitEntries().iterator().next().getDebtAccount().getFinantialInstitution(), model);
 
             bean.setUsePaymentAmountWithInterests(false);
-            PaymentReferenceCode.createPaymentReferenceCodeForMultipleDebitEntries(debtAccount, bean);
+            
+            bean.getPaymentCodePool().getSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
+                    new HashSet<>(bean.getSelectedDebitEntries()));
 
-            addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"), model);
+            addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"),
+                    model);
 
             return redirect(String.format(DebtAccountController.READ_URL + "/%s", debtAccount.getExternalId()), model,
                     redirectAttributes);

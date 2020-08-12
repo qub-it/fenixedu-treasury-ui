@@ -300,7 +300,7 @@ ${portal.angularToolkit()}
     <input name="bean" type="hidden" value="{{ object }}" />
 
     <div class="panel-footer">
-		<a href="${pageContext.request.contextPath}${chooseInvoiceEntriesUrl}${settlementNoteBean.debtAccount.externalId}" 
+		<a href="${pageContext.request.contextPath}${chooseInvoiceEntriesUrl}${settlementNoteBean.debtAccount.externalId}/${settlementNoteBean.digitalPaymentPlatform.externalId}"
 			class="btn btn-default">
 			<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"> </span>
 			&nbsp;
@@ -318,16 +318,3 @@ ${portal.angularToolkit()}
 <c:if test="${forwardPaymentConfiguration.isLogosPageDefined()}">
 	<jsp:include page="${logosPage}" /> 
 </c:if>
-
-<c:if test="${forwardPaymentConfiguration.isReimbursementPolicyTextDefined()}">
-	<jsp:include page="${forwardPaymentConfiguration.reimbursementPolicyJspFile}" />
-</c:if>
-
-<c:if test="${forwardPaymentConfiguration.isPrivacyPolicyTextDefined()}">
-	<jsp:include page="${forwardPaymentConfiguration.privacyPolicyJspFile}" />
-</c:if>
-
-<script>
-	$(document).ready(function() {
-	});
-</script>
