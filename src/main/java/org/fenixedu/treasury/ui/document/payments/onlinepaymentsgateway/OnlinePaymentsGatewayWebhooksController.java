@@ -13,14 +13,14 @@ import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommun
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.MbwayPaymentRequest;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGatewayLog;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
+import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
+import org.fenixedu.treasury.domain.payments.PaymentRequest;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayPaymentRequest;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.SibsPaymentsGatewayLog;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +49,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
     @ResponseBody
     public void notification(final HttpServletRequest request, final HttpServletResponse response) {
 
-        final SibsOnlinePaymentsGatewayLog log = createLog();
+        final SibsPaymentsGatewayLog log = createLog();
 
         try {
 
@@ -62,21 +62,20 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                         notificationEncryptedPayload);
             });
             
-            
             if(isTestPayloadForWebhookActivation(notificationInitializationVector, notificationAuthenticationTag,
                     notificationEncryptedPayload)) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
             }
 
-            PaymentStateBean bean = SibsOnlinePaymentsGateway.findAll().iterator().next().handleWebhookNotificationRequest(
+            PaymentStateBean bean = SibsPaymentsGateway.findAll().iterator().next().handleWebhookNotificationRequest(
                     notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
 
             FenixFramework.atomic(() -> {
                 log.logRequestReceiveDateAndData(bean.getTransactionId(), bean.isOperationSuccess(), bean.isPaid(),
                         bean.getPaymentGatewayResultCode(), bean.getPaymentGatewayResultDescription());
-                log.saveRequestAndResponsePayload(bean.getRequestLog(), null);
                 log.savePaymentTypeAndBrand(bean.getPaymentType(), bean.getPaymentBrand());
+                log.saveRequest(bean.getRequestLog());
             });
 
             if (!bean.isOperationSuccess()) {
@@ -93,6 +92,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
             FenixFramework.atomic(() -> {
                 log.saveMerchantTransactionId(bean.getMerchantTransactionId());
+                log.saveTransactionId(bean.getTransactionId());
                 log.saveReferenceId(bean.getReferencedId());
             });
 
@@ -103,11 +103,11 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             }
             
             // Find payment code
-            final Optional<PaymentReferenceCode> referenceCodeOptional = bean.getReferencedId() != null ? 
-                    PaymentReferenceCode.findUniqueBySibsReferenceId(bean.getReferencedId()) : Optional.empty();
+            final Optional<SibsPaymentRequest> referenceCodeOptional = bean.getReferencedId() != null ? 
+                    SibsPaymentRequest.findUniqueBySibsGatewayTransactionId(bean.getReferencedId()) : Optional.empty();
 
             final Optional<MbwayPaymentRequest> mbwayPaymentRequestOptional =
-                    MbwayPaymentRequest.findUniqueBySibsMerchantTransactionId(bean.getMerchantTransactionId());
+                    MbwayPaymentRequest.findUniqueBySibsGatewayMerchantTransactionId(bean.getMerchantTransactionId());
 
             if (referenceCodeOptional.isPresent()) {
                 if(!PaymentType.RC.name().equals(bean.getPaymentType())) {
@@ -119,7 +119,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
                 }
                 
-                final PaymentReferenceCode paymentReferenceCode = referenceCodeOptional.get();
+                final SibsPaymentRequest paymentReferenceCode = referenceCodeOptional.get();
 
                 paymentReferenceCode.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
@@ -137,10 +137,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
             } else {
-                final boolean isForwardPayment = ForwardPayment.findAll()
-                    .filter(p -> p.getSibsMerchantTransactionId() != null)
-                    .filter(p -> p.getSibsMerchantTransactionId().equals(bean.getMerchantTransactionId()))
-                    .findFirst().isPresent();
+                boolean isForwardPayment = ForwardPaymentRequest.findAll()
+                    .anyMatch(p -> bean.getMerchantTransactionId().equals(p.getSibsGatewayMerchantTransactionId()));
                 
                 if(!isForwardPayment) {
                     throw new TreasuryDomainException(
@@ -152,13 +150,14 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
         } catch (Exception e) {
             if (log != null) {
                 FenixFramework.atomic(() -> {
-                    log.markExceptionOccuredAndSaveLog(e);
+                    log.logException(e);
                 });
 
                 if (e instanceof OnlinePaymentsGatewayCommunicationException) {
                     final OnlinePaymentsGatewayCommunicationException oe = (OnlinePaymentsGatewayCommunicationException) e;
                     FenixFramework.atomic(() -> {
-                        log.saveRequestAndResponsePayload(oe.getRequestLog(), oe.getResponseLog());
+                        log.saveRequest(oe.getRequestLog());
+                        log.saveResponse(oe.getResponseLog());
                     });
                 }
             }
@@ -169,10 +168,10 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
         }
     }
 
-    private boolean isTestPayloadForWebhookActivation(final String notificationInitializationVector, final String notificationAuthenticationTag, final String notificationEncryptedPayload) {
+    private boolean isTestPayloadForWebhookActivation(String notificationInitializationVector, String notificationAuthenticationTag, String notificationEncryptedPayload) {
         try {
             
-            String aesKey = SibsOnlinePaymentsGateway.findAll().iterator().next().getAesKey();
+            String aesKey = SibsPaymentsGateway.findAll().iterator().next().getAesKey();
             
             Decryption notification =
                     new Decryption(aesKey, notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
@@ -197,8 +196,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
     }
 
     @Atomic(mode = TxMode.WRITE)
-    private SibsOnlinePaymentsGatewayLog createLog() {
-        return SibsOnlinePaymentsGatewayLog.createLogForWebhookNotification();
+    private SibsPaymentsGatewayLog createLog() {
+        return SibsPaymentsGatewayLog.createLogForWebhookNotification();
     }
 
 }

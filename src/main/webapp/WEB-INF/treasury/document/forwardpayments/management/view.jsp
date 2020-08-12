@@ -1,7 +1,7 @@
+<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest"%>
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPayment"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -87,7 +87,7 @@ ${portal.toolkit()}
 </c:if>
 
 <%
-	ForwardPayment forwardPayment = (ForwardPayment) request.getAttribute("forwardPayment");
+	ForwardPaymentRequest forwardPayment = (ForwardPaymentRequest) request.getAttribute("forwardPayment");
 	FinantialInstitution finantialInstitution = forwardPayment.getDebtAccount().getFinantialInstitution();
 %>
 
@@ -104,11 +104,11 @@ ${portal.toolkit()}
 				<tbody>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.platform" /></th>
-                        <td><c:out value='${forwardPayment.forwardPaymentConfiguration.name}' /></td>
+                        <td><c:out value='${forwardPayment.digitalPaymentPlatform.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.whenOccured" /></th>
-                        <td><c:out value='${forwardPayment.whenOccured.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
+                        <td><c:out value='${forwardPayment.requestDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
                     </tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.orderNumber" /></th>
@@ -124,16 +124,12 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.amount" /></th>
-						<td><c:out value='${forwardPayment.debtAccount.finantialInstitution.currency.getValueFor(forwardPayment.amount)}' /></td>
+						<td><c:out value='${forwardPayment.debtAccount.finantialInstitution.currency.getValueFor(forwardPayment.payableAmount)}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.currentState" /></th>
-						<td><c:out value='${forwardPayment.currentState.localizedName.content}' /></td>
+						<td><c:out value='${forwardPayment.state.localizedName.content}' /></td>
 					</tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.transactionId" /></th>
-                        <td><c:out value='${forwardPayment.transactionId}' /></td>
-                    </tr>
                     
 <%
 	if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
@@ -150,37 +146,33 @@ ${portal.toolkit()}
 	}
 %>
 
-					<c:if test='${not empty forwardPayment.sibsCheckoutId}'>
+					<c:if test='${not empty forwardPayment.sibsGatewayCheckoutId}'>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsCheckoutId" /></th>
-	                        <td><c:out value='${forwardPayment.sibsCheckoutId}' /></td>
+	                        <td><c:out value='${forwardPayment.sibsGatewayCheckoutId}' /></td>
 	                    </tr>             
 					</c:if>
-					<c:if test='${not empty forwardPayment.sibsTransactionId}'>
+					<c:if test='${not empty forwardPayment.sibsGatewayTransactionId}'>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsTransactionId" /></th>
-	                        <td><c:out value='${forwardPayment.sibsTransactionId}' /></td>
+	                        <td><c:out value='${forwardPayment.sibsGatewayTransactionId}' /></td>
 	                    </tr>
 					</c:if>
-					<c:if test='${not empty forwardPayment.sibsMerchantTransactionId}'>
+					<c:if test='${not empty forwardPayment.sibsGatewayMerchantTransactionId}'>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.sibsMerchantTransactionId" /></th>
-	                        <td><c:out value='${forwardPayment.sibsMerchantTransactionId}' /></td>
+	                        <td><c:out value='${forwardPayment.sibsGatewayMerchantTransactionId}' /></td>
 	                    </tr>
 					</c:if>
 					<tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.debitEntries" /></th>
                         <td>
                         	<ul>
-                        		<c:forEach var="d" items="${forwardPayment.debitEntriesSet}">
-	                        		<li><c:out value="${d.description}" /></li>
-                        		</c:forEach>
+                       		<c:forEach var="d" items="${forwardPayment.debitEntriesSet}">
+                        		<li><c:out value="${d.description}" /></li>
+                       		</c:forEach>
                         	</ul>
                         </td>
-					</tr>
-					<tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.justification" /></th>
-                        <td><c:out value='${forwardPayment.justification}' /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -196,7 +188,7 @@ ${portal.toolkit()}
 	if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
 %>
 
-<c:forEach var="log" items="${forwardPayment.orderedForwardPaymentLogs}">
+<c:forEach var="log" items="${forwardPayment.getOrderedPaymentLogs()}">
 	<div class="panel panel-primary">
 		<div class="panel-body">
 			<form method="post" class="form-horizontal">
@@ -204,7 +196,7 @@ ${portal.toolkit()}
 					<tbody>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.type" /></th>
-	                        <td><c:out value='${log.type.localizedName.content}' /></td>
+	                        <td><c:out value='${log.stateDescription.content}' /></td>
 	                    </tr>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.whenOccured" /></th>
@@ -216,16 +208,23 @@ ${portal.toolkit()}
 						</tr>
 						<tr>
 							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.statusLog" /></th>
-							<td><c:out value='${log.statusLog}' /></td>
+							<td><c:out value='${log.statusMessage}' /></td>
 						</tr>
+						
+						<c:if test="${not empty log.requestLogFile}">
 						<tr>
 							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.requestLogFile" /></th>
 							<td><c:out value='${log.requestLogFile.contentAsString}' /></td>
 						</tr>
+						</c:if>
+						
+						<c:if test="${not empty log.responseLogFile}">
 						<tr>
 							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.responseLogFile" /></th>
 							<td><c:out value='${log.responseLogFile.contentAsString}' /></td>
 						</tr>
+						</c:if>
+						
 						<c:if test="${not empty log.exceptionLogFile}">
 						<tr>
 							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.exceptionLogFile" /></th>

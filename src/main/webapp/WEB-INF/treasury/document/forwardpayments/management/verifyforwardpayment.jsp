@@ -1,7 +1,7 @@
+<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest"%>
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPayment"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -28,8 +28,6 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
 <%-- TITLE --%>
@@ -120,7 +118,7 @@ ${portal.toolkit()}
 </c:if>
 
 <%
-	ForwardPayment forwardPayment = (ForwardPayment) request.getAttribute("forwardPayment");
+	ForwardPaymentRequest forwardPayment = (ForwardPaymentRequest) request.getAttribute("forwardPayment");
 	FinantialInstitution finantialInstitution = forwardPayment.getDebtAccount().getFinantialInstitution();
 %>
 
@@ -137,11 +135,11 @@ ${portal.toolkit()}
 				<tbody>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.platform" /></th>
-                        <td><c:out value='${forwardPayment.forwardPaymentConfiguration.name}' /></td>
+                        <td><c:out value='${forwardPayment.digitalPaymentPlatform.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.whenOccured" /></th>
-                        <td><c:out value='${forwardPayment.whenOccured.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
+                        <td><c:out value='${forwardPayment.requestDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
                     </tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.orderNumber" /></th>
@@ -157,16 +155,12 @@ ${portal.toolkit()}
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.amount" /></th>
-						<td><c:out value='${forwardPayment.debtAccount.finantialInstitution.currency.getValueFor(forwardPayment.amount)}' /></td>
+						<td><c:out value='${forwardPayment.debtAccount.finantialInstitution.currency.getValueFor(forwardPayment.payableAmount)}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.currentState" /></th>
-						<td><c:out value='${forwardPayment.currentState.localizedName.content}' /></td>
+						<td><c:out value='${forwardPayment.state.localizedName.content}' /></td>
 					</tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.transactionId" /></th>
-                        <td><c:out value='${forwardPayment.transactionId}' /></td>
-                    </tr>
                     
 <%
 if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
@@ -191,10 +185,6 @@ if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory
                         		</c:forEach>
                         	</ul>
                         </td>
-					</tr>
-					<tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.justification" /></th>
-                        <td><c:out value='${forwardPayment.justification}' /></td>
 					</tr>
 				</tbody>
 			</table>

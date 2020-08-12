@@ -42,7 +42,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
     public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
         checkPermissions(debtAccount, model);
 
-        if (!SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
+        if (!SibsPaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
             throw new TreasuryDomainException("error.MbwayPaymentRequest.not.active");
         }
 
@@ -84,7 +84,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
             @RequestParam("bean") final PaymentReferenceCodeBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
-        if (!SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
+        if (!SibsPaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
             throw new TreasuryDomainException("error.MbwayPaymentRequest.not.active");
         }
 
@@ -92,10 +92,8 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
         try {
 
-            final ForwardPaymentConfiguration forwardPaymentConfiguration =
-                    ForwardPaymentConfiguration.findUniqueActive(debtAccount.getFinantialInstitution()).get();
-            final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway =
-                    forwardPaymentConfiguration.getSibsOnlinePaymentsGateway();
+            SibsPaymentsGateway sibsOnlinePaymentsGateway =
+                    SibsPaymentsGateway.findUniqueActive(debtAccount.getFinantialInstitution()).get();
 
             if ((bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty())
                     && (bean.getSelectedInstallments() == null || bean.getSelectedInstallments().isEmpty())) {
