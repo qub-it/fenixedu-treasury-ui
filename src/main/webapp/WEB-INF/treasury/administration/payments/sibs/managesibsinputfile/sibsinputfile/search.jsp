@@ -69,18 +69,10 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
-        class=""
-        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create"><spring:message
-            code="label.event.create" /></a> &nbsp;|&nbsp;
-	
-	<c:if test="${brokerActive}">
-	<span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span>&nbsp;<a
-        class=""
-        href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/sibspaymentsbroker"><spring:message
-            code="label.SibsPaymentsBroker.import" /></a>
-	</c:if>
-	
+    <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
+    	<a class="" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create">
+        	<spring:message code="label.event.create" />
+        </a>
 </div>
 
 <c:if test="${not empty infoMessages}">

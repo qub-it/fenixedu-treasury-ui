@@ -62,9 +62,7 @@ ${portal.angularToolkit()}
     <div class="alert alert-warning" role="alert">
 
         <c:forEach items="${warningMessages}" var="message">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-            </p>
+            <p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}</p>
         </c:forEach>
 
     </div>
@@ -73,9 +71,7 @@ ${portal.angularToolkit()}
     <div class="alert alert-danger" role="alert">
 
         <c:forEach items="${errorMessages}" var="message">
-            <p>
-                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
-            </p>
+            <p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}</p>
         </c:forEach>
 
     </div>

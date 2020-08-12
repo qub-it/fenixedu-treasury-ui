@@ -36,13 +36,11 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsInputFile;
 import org.fenixedu.treasury.domain.paymentcodes.SibsReportFile;
-import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter;
 import org.fenixedu.treasury.services.payments.sibs.SIBSPaymentsImporter.ProcessResult;
@@ -93,14 +91,13 @@ public class SibsInputFileController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate whenProcessedBySibs, Model model) {
+    public String search(
+            @RequestParam(value = "whenprocessedbysibs",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate whenProcessedBySibs,
+            Model model) {
         List<SibsInputFile> searchsibsinputfileResultsDataSet = filterSearchSibsInputFile(whenProcessedBySibs);
 
         model.addAttribute("searchsibsinputfileResultsDataSet", searchsibsinputfileResultsDataSet);
-        
-        final Boolean brokerActive = FinantialInstitution.findAll().map(f -> f.getSibsConfiguration().isPaymentsBrokerActive()).reduce((a , c) -> a || c).orElse(Boolean.FALSE); 
-        model.addAttribute("brokerActive", brokerActive);
 
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/search";
     }
@@ -110,9 +107,8 @@ public class SibsInputFileController extends TreasuryBaseController {
     }
 
     private List<SibsInputFile> filterSearchSibsInputFile(org.joda.time.LocalDate whenProcessedBySibs) {
-        return getSearchUniverseSearchSibsInputFileDataSet().filter(
-                sibsInputFile -> whenProcessedBySibs == null
-                        || whenProcessedBySibs.equals(sibsInputFile.getWhenProcessedBySibs())).collect(Collectors.toList());
+        return getSearchUniverseSearchSibsInputFileDataSet().filter(sibsInputFile -> whenProcessedBySibs == null
+                || whenProcessedBySibs.equals(sibsInputFile.getWhenProcessedBySibs())).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -162,14 +158,15 @@ public class SibsInputFileController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
-
         return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/create";
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "whenprocessedbysibs", required = false) @DateTimeFormat(
-            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime whenProcessedBySibs, @RequestParam(value = "documentSibsInputFile",
-            required = true) MultipartFile documentSibsInputFile, Model model, RedirectAttributes redirectAttributes) {
+    public String create(
+            @RequestParam(value = "whenprocessedbysibs",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime whenProcessedBySibs,
+            @RequestParam(value = "documentSibsInputFile", required = true) MultipartFile documentSibsInputFile, Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
             assertUserIsFrontOfficeMember(model);
@@ -177,8 +174,8 @@ public class SibsInputFileController extends TreasuryBaseController {
             SibsInputFile sibsInputFile = createSibsInputFile(whenProcessedBySibs, documentSibsInputFile);
 
             if (sibsInputFile.getWhenProcessedBySibs().compareTo(whenProcessedBySibs) != 0) {
-                addWarningMessage(treasuryBundle("warning.SibsInputFileController.whenprocessedbysibs.different.in.file", sibsInputFile
-                                .getWhenProcessedBySibs().toString()), model);
+                addWarningMessage(treasuryBundle("warning.SibsInputFileController.whenprocessedbysibs.different.in.file",
+                        sibsInputFile.getWhenProcessedBySibs().toString()), model);
             }
             model.addAttribute("sibsInputFile", sibsInputFile);
             return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
@@ -190,38 +187,13 @@ public class SibsInputFileController extends TreasuryBaseController {
         return create(model);
     }
 
-    @Atomic
     public SibsInputFile createSibsInputFile(DateTime whenProcessedBySibs, MultipartFile documentSibsInputFile) {
 
-        PaymentCodePool pool = null;
-
         try {
-            SibsIncommingPaymentFile file =
-                    SibsIncommingPaymentFile.parse(documentSibsInputFile.getOriginalFilename(),
-                            documentSibsInputFile.getInputStream());
-            if (file.getHeader().getWhenProcessedBySibs().toDateTimeAtMidnight().compareTo(whenProcessedBySibs) != 0) {
-                whenProcessedBySibs = file.getHeader().getWhenProcessedBySibs().toDateTimeAtMidnight();
-            }
+            SibsInputFile sibsInputFile = SibsInputFile.createSibsInputFile(whenProcessedBySibs,
+                    documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile));
 
-            String entityCode = file.getHeader().getEntityCode();
-
-            pool = PaymentCodePool.findByEntityCode(entityCode).findFirst().orElse(null);
-
-            if (pool == null) {
-                throw new TreasuryDomainException(
-                        "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile.poolNull", entityCode);
-            }
-            
-            SibsInputFile sibsInputFile =
-                    SibsInputFile.create(pool.getFinantialInstitution(), whenProcessedBySibs, documentSibsInputFile.getName(),
-                            documentSibsInputFile.getOriginalFilename(), getContent(documentSibsInputFile), 
-                            TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername());
-            
             return sibsInputFile;
-        } catch (IOException e) {
-            throw new TreasuryDomainException(
-                    "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile",
-                    e.getLocalizedMessage());
         } catch (RuntimeException ex) {
             throw new TreasuryDomainException(
                     "label.error.administration.payments.sibs.managesibsinputfile.error.in.sibs.inputfile",
@@ -237,13 +209,13 @@ public class SibsInputFileController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setSibsInputFile(sibsInputFile, model);
         try {
-            assertUserIsFrontOfficeMember(sibsInputFile.getFinantialInstitution(), model);
-
             SIBSPaymentsImporter importer = new SIBSPaymentsImporter();
             SibsReportFile reportFile = null;
             try {
                 ProcessResult result = importer.processSIBSPaymentFiles(sibsInputFile);
-                if (result.getErrorMessages().isEmpty()) {
+
+                boolean success = result.getErrorMessages().isEmpty();
+                if (success) {
                     addInfoMessage(treasuryBundle("label.success.upload"), model);
                 } else {
                     addErrorMessage(treasuryBundle("label.error.upload"), model);
@@ -273,8 +245,6 @@ public class SibsInputFileController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes, HttpServletResponse response) {
         setSibsInputFile(sibsInputFile, model);
         try {
-            assertUserIsFrontOfficeMember(sibsInputFile.getFinantialInstitution(), model);
-
             response.setContentType(sibsInputFile.getContentType());
             String filename = sibsInputFile.getFilename();
             response.setHeader("Content-disposition", "attachment; filename=" + filename);
@@ -294,45 +264,8 @@ public class SibsInputFileController extends TreasuryBaseController {
         try {
             return requestFile.getBytes();
         } catch (IOException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
-    private static final String _UPDATE_URI = "/update/";
-    public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
-
-    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") SibsInputFile sibsInputFile, Model model) {
-        setSibsInputFile(sibsInputFile, model);
-        return "treasury/administration/payments/sibs/managesibsinputfile/sibsinputfile/update";
-    }
-
-    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") SibsInputFile sibsInputFile, @RequestParam(value = "whenprocessedbysibs",
-            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime whenProcessedBySibs,
-            @RequestParam(value = "transactionstotalamount", required = false) BigDecimal transactionsTotalAmount, @RequestParam(
-                    value = "totalcost", required = false) BigDecimal totalCost, Model model,
-            RedirectAttributes redirectAttributes) {
-
-        setSibsInputFile(sibsInputFile, model);
-
-        try {
-            assertUserIsFrontOfficeMember(sibsInputFile.getFinantialInstitution(), model);
-
-            updateSibsInputFile(whenProcessedBySibs, transactionsTotalAmount, totalCost, model);
-
-            return redirect(READ_URL + getSibsInputFile(model).getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tex) {
-            addErrorMessage(treasuryBundle("label.error.update") + tex.getLocalizedMessage(), model);
-        } catch (Exception ex) {
-            addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
-        }
-        return update(sibsInputFile, model);
-    }
-
-    @Atomic
-    public void updateSibsInputFile(org.joda.time.DateTime whenProcessedBySibs, java.math.BigDecimal transactionsTotalAmount,
-            java.math.BigDecimal totalCost, Model model) {
-        getSibsInputFile(model).setWhenProcessedBySibs(whenProcessedBySibs);
-    }
 }

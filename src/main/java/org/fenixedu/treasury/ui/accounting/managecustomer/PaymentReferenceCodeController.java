@@ -2,11 +2,12 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
+import java.util.HashSet;
+
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.http.HttpStatus;
@@ -42,8 +43,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
         checkPermissions(debtAccount, model);
 
-        PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(
-                PaymentCodePool.findByActive(true, debtAccount.getFinantialInstitution()).findFirst().orElse(null), debtAccount);
+        final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(DigitalPaymentPlatform
+                .findForSibsPaymentCodeServiceByActive(debtAccount.getFinantialInstitution(), true).findFirst().orElse(null),
+                debtAccount);
         bean.setUsePaymentAmountWithInterests(false);
 
         return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
@@ -102,7 +104,8 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
 
-            PaymentReferenceCode.createPaymentReferenceCodeForMultipleDebitEntries(debtAccount, bean);
+            bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
+                    new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>());
 
             addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"),
                     model);

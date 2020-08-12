@@ -53,6 +53,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 //@Component("org.fenixedu.treasury.ui.administration.payments.sibs.manageSibsOutputFile") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.manageSibsOutputFile",
@@ -183,21 +184,16 @@ public class SibsOutputFileController extends TreasuryBaseController {
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(
-            @RequestParam(value = "lastsuccessfulexportation",
-                    required = true) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime lastSuccessfulExportation,
-            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution, Model model,
+            @RequestParam(value = "lastsuccessfulexportation", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") DateTime lastSuccessfulExportation,
+            @RequestParam(value = "finantialinstitution", required = true) FinantialInstitution finantialInstitution, 
+            @RequestParam(value = "sibsentityreferencecode", required = true) String sibsEntityReferenceCode,
+            Model model,
             RedirectAttributes redirectAttributes) {
-        if (finantialInstitution.getSibsConfiguration() == null
-                || finantialInstitution.getSibsConfiguration().isValid() == false) {
-            addErrorMessage(treasuryBundle("error.administration.payments.sibs.managesibsoutputfile.sibsconfiguration.invalid"),
-                    model);
-            return create(model);
-        }
-
         try {
             assertUserIsFrontOfficeMember(finantialInstitution, model);
 
-            SibsOutputFile sibsOutputFile = createSibsOutputFile(lastSuccessfulExportation, finantialInstitution);
+            SibsOutputFile sibsOutputFile = 
+                    FenixFramework.atomic(() -> SibsOutputFile.create(finantialInstitution, sibsEntityReferenceCode, lastSuccessfulExportation));
 
             model.addAttribute("sibsOutputFile", sibsOutputFile);
             return redirect(READ_URL + getSibsOutputFile(model).getExternalId(), model, redirectAttributes);
@@ -209,11 +205,4 @@ public class SibsOutputFileController extends TreasuryBaseController {
         return create(model);
     }
 
-    @Atomic
-    public SibsOutputFile createSibsOutputFile(org.joda.time.DateTime lastSuccessfulExportation,
-            FinantialInstitution finantialInstitution) {
-
-        SibsOutputFile sibsOutputFile = SibsOutputFile.create(finantialInstitution, lastSuccessfulExportation);
-        return sibsOutputFile;
-    }
 }

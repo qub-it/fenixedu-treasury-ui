@@ -29,22 +29,22 @@ package org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentcodep
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.PaymentMethod;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodeGeneratorInstance;
-import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.paymentcodes.integration.SibsPaymentCodePool;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -54,7 +54,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 //@Component("org.fenixedu.treasury.ui.administration.payments.sibs.managePaymentCodePool") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.managePaymentCodePool",
@@ -69,54 +69,35 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         return "forward:" + CONTROLLER_URL + "/";
     }
 
-    private PaymentCodePool getPaymentCodePool(Model model) {
-        return (PaymentCodePool) model.asMap().get("paymentCodePool");
+    private DigitalPaymentPlatform getPaymentCodePool(Model model) {
+        return (DigitalPaymentPlatform) model.asMap().get("paymentCodePool");
     }
 
-    private void setPaymentCodePool(PaymentCodePool paymentCodePool, Model model) {
-        model.addAttribute("paymentCodePool", paymentCodePool);
-    }
-
-    @Atomic
-    public void deletePaymentCodePool(PaymentCodePool paymentCodePool) {
-        // paymentCodePool.delete();
-    }
-
-//				
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
     public String search(
-            @RequestParam(value = "finantialinstitution", required = false) org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution,
             Model model) {
-        List<PaymentCodePool> searchpaymentcodepoolResultsDataSet = filterSearchPaymentCodePool(finantialInstitution);
-
-        //add the results dataSet to the model
-        model.addAttribute("searchpaymentcodepoolResultsDataSet", searchpaymentcodepoolResultsDataSet);
-        model.addAttribute("PaymentCodePool_finantialInstitution_options",
-                FinantialInstitution.findAll().collect(Collectors.toList()));
+        model.addAttribute("searchpaymentcodepoolResultsDataSet", filterSearchPaymentCodePool());
 
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search";
     }
 
-    private Stream<PaymentCodePool> getSearchUniverseSearchPaymentCodePoolDataSet() {
-        return PaymentCodePool.findAll();
-    }
+    private List<DigitalPaymentPlatform> filterSearchPaymentCodePool() {
+        String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
-    private List<PaymentCodePool> filterSearchPaymentCodePool(
-            org.fenixedu.treasury.domain.FinantialInstitution finantialInstitution) {
-
-        return getSearchUniverseSearchPaymentCodePoolDataSet().filter(
-                paymentCodePool -> finantialInstitution == null
-                        || finantialInstitution == paymentCodePool.getFinantialInstitution()).collect(Collectors.toList());
+        return FinantialInstitution.findAll()
+            .filter(f -> TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, f))
+            .flatMap(f -> SibsPaymentCodePool.find(f))
+            .collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
     public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_ACTION_URI;
 
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") PaymentCodePool paymentCodePool, Model model,
+    public String processSearchToViewAction(@PathVariable("oid") DigitalPaymentPlatform paymentCodePool, Model model,
             RedirectAttributes redirectAttributes) {
         return redirect(READ_URL + paymentCodePool.getExternalId(), model, redirectAttributes);
     }
@@ -125,8 +106,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
     @RequestMapping(value = _READ_URI + "{oid}")
-    public String read(@PathVariable("oid") PaymentCodePool paymentCodePool, Model model) {
-        setPaymentCodePool(paymentCodePool, model);
+    public String read(@PathVariable("oid") DigitalPaymentPlatform paymentCodePool, Model model) {
+        model.addAttribute("paymentCodePool", paymentCodePool);
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/read";
     }
 
@@ -135,13 +116,14 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") PaymentCodePool paymentCodePool, Model model, RedirectAttributes redirectAttributes) {
+    public String delete(@PathVariable("oid") DigitalPaymentPlatform paymentCodePool, Model model,
+            RedirectAttributes redirectAttributes) {
 
-        setPaymentCodePool(paymentCodePool, model);
+        model.addAttribute("paymentCodePool", paymentCodePool);
         try {
             assertUserIsManager(model);
 
-            deletePaymentCodePool(paymentCodePool);
+            //paymentCodePool.delete();
 
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect("/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/", model,
@@ -163,44 +145,44 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public String create(Model model) {
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
 
-        model.addAttribute(
-                "PaymentCodePool_documentSeriesForPayments_options",
+        model.addAttribute("PaymentCodePool_documentSeriesForPayments_options",
                 DocumentNumberSeries.findAll()
                         .filter(x -> x.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
                         .filter(x -> x.getSeries().getActive()).collect(Collectors.toList()));
 
-        model.addAttribute("PaymentCodePool_paymentCodeGeneratorInstance_options", 
-                PaymentCodeGeneratorInstance.findAll().collect(Collectors.toSet()));
-        
         model.addAttribute("PaymentCodePool_paymentMethod_options", PaymentMethod.findAll().collect(Collectors.toList()));
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/create";
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "finantialinstitution") FinantialInstitution finantialInstitution, @RequestParam(
-            value = "name") String name,
-            @RequestParam(value = "entityreferencecode", required = false) String entityReferenceCode, @RequestParam(
-                    value = "minreferencecode", required = false) Long minReferenceCode, @RequestParam(
-                    value = "maxreferencecode", required = false) Long maxReferenceCode, @RequestParam(value = "minamount",
-                    required = false) BigDecimal minAmount,
-            @RequestParam(value = "maxamount", required = false) BigDecimal maxAmount, @RequestParam(value = "validfrom",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom, @RequestParam(
-                    value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
-            @RequestParam(value = "active", required = false) Boolean active, @RequestParam(value = "usecheckdigit",
-                    required = false) Boolean useCheckDigit,
-            @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, @RequestParam(
-                    value = "paymentmethod") PaymentMethod paymentMethod, 
-            @RequestParam(value = "paymentcodegeneratorinstance") PaymentCodeGeneratorInstance paymentCodeGeneratorInstance,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(value = "finantialinstitution") FinantialInstitution finantialInstitution,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "entityreferencecode", required = false) String entityReferenceCode,
+            @RequestParam(value = "minreferencecode", required = false) Long minReferenceCode,
+            @RequestParam(value = "maxreferencecode", required = false) Long maxReferenceCode,
+            @RequestParam(value = "minamount", required = false) BigDecimal minAmount,
+            @RequestParam(value = "maxamount", required = false) BigDecimal maxAmount,
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom,
+            @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
+            @RequestParam(value = "active", required = false) boolean active,
+            @RequestParam(value = "usecheckdigit", required = false) boolean useCheckDigit, 
+            @RequestParam(value = "sourceinstitutionid", required = false) String sourceInstitutionId,
+            @RequestParam(value = "destinationinstitutionid", required = false) String destinationInstitutionId,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
             assertUserIsManager(model);
 
-            PaymentCodePool paymentCodePool =
-                    PaymentCodePool.create(name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount, maxAmount,
-                            validFrom, validTo, active, useCheckDigit, finantialInstitution, documentNumberSeries, paymentMethod, paymentCodeGeneratorInstance);
+            FenixFramework.atomic(() -> {
+                SibsPaymentCodePool paymentCodePool =
+                        SibsPaymentCodePool.create(finantialInstitution, name, active, entityReferenceCode, minReferenceCode,
+                                maxReferenceCode, minAmount, maxAmount, validFrom, validTo, useCheckDigit, useCheckDigit,
+                                sourceInstitutionId, destinationInstitutionId);
+                
+                model.addAttribute("paymentCodePool", paymentCodePool);
+            });
 
-            model.addAttribute("paymentCodePool", paymentCodePool);
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
             addErrorMessage(treasuryBundle("label.error.create") + tex.getLocalizedMessage(), model);
@@ -215,49 +197,42 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") PaymentCodePool paymentCodePool, Model model) {
+    public String update(@PathVariable("oid") SibsPaymentCodePool paymentCodePool, Model model) {
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
 
-        model.addAttribute(
-                "PaymentCodePool_documentSeriesForPayments_options",
+        model.addAttribute("PaymentCodePool_documentSeriesForPayments_options",
                 DocumentNumberSeries.findAll()
                         .filter(x -> x.getFinantialDocumentType().equals(FinantialDocumentType.findForSettlementNote()))
                         .collect(Collectors.toList()));
 
         model.addAttribute("PaymentCodePool_paymentMethod_options", PaymentMethod.findAll().collect(Collectors.toList()));
 
-        setPaymentCodePool(paymentCodePool, model);
+        model.addAttribute("paymentCodePool", paymentCodePool);
 
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/update";
 
     }
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") PaymentCodePool paymentCodePool, 
-            @RequestParam(value = "finantialinstitution",required = false) FinantialInstitution finantialInstitution,
-            @RequestParam(value = "name", required = false) String name, 
-            @RequestParam(value = "entityreferencecode", required = false) String entityReferenceCode,
-            @RequestParam(value = "minreferencecode", required = false) Long minReferenceCode, 
-            @RequestParam(value = "maxreferencecode", required = false) Long maxReferenceCode, 
-            @RequestParam(value = "minamount", required = false) BigDecimal minAmount,
-            @RequestParam(value = "maxamount", required = false) BigDecimal maxAmount, 
-            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom, 
+    public String update(@PathVariable("oid") SibsPaymentCodePool paymentCodePool,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "active", required = false) boolean active, 
+            @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom,
             @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
-            @RequestParam(value = "active", required = false) Boolean active, 
-            @RequestParam(value = "usecheckdigit", required = false) Boolean useCheckDigit,
-            @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries, 
-            @RequestParam(value = "paymentmethod") PaymentMethod paymentMethod,
-            Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "sourceinstitutionid", required = false) String sourceInstitutionId,
+            @RequestParam(value = "destinationinstitutionid", required = false) String destinationInstitutionId,
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        setPaymentCodePool(paymentCodePool, model);
+        model.addAttribute("paymentCodePool", paymentCodePool);
 
         try {
             assertUserIsManager(model);
 
-            paymentCodePool.update(finantialInstitution, name, entityReferenceCode, minReferenceCode, maxReferenceCode, minAmount,
-                    maxAmount, validFrom, validTo, active, useCheckDigit, documentNumberSeries, paymentMethod);
-
+            FenixFramework.atomic(() -> {
+                paymentCodePool.edit(name, active, validFrom, validTo, sourceInstitutionId, destinationInstitutionId);
+            });
+            
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
             addErrorMessage(treasuryBundle("label.error.update") + tex.getLocalizedMessage(), model);
@@ -267,5 +242,4 @@ public class PaymentCodePoolController extends TreasuryBaseController {
         return update(paymentCodePool, model);
     }
 
-    
 }

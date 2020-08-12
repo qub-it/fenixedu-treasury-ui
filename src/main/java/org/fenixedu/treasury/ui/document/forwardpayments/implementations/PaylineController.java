@@ -1,20 +1,17 @@
 package org.fenixedu.treasury.ui.document.forwardpayments.implementations;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.exceptions.ForwardPaymentAlreadyPayedException;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
+import org.fenixedu.treasury.domain.forwardpayments.payline.PaylineConfiguration;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.TreasuryConstants;
@@ -34,16 +31,14 @@ import pt.ist.fenixframework.FenixFramework;
 public class PaylineController extends TreasuryBaseController implements IForwardPaymentController {
 
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/payline";
-    private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment/implementations/payline";
 
     @Override
-    public String processforwardpayment(final ForwardPayment forwardPayment, final Model model,
-            final HttpServletResponse response, final HttpSession session) {
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
-        
+    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
+            HttpSession session) {
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
+
         try {
-            final PaylineImplementation paylineImplementation =
-                    (PaylineImplementation) forwardPayment.getForwardPaymentConfiguration().implementation();
+            final PaylineConfiguration paylineImplementation = (PaylineConfiguration) forwardPayment.getDigitalPaymentPlatform();
             final boolean paylineSucess =
                     paylineImplementation.doWebPayment(forwardPayment, readReturnForwardPaymentUrl(), session);
 
@@ -51,11 +46,11 @@ public class PaylineController extends TreasuryBaseController implements IForwar
                 return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
             }
 
-            return "redirect:" + forwardPayment.getPaylineRedirectUrl();
+            return "redirect:" + forwardPayment.getRedirectUrl();
         } catch (Exception e) {
             e.printStackTrace();
-            
-            rejectPayment(forwardPayment, e.getMessage(), e.getLocalizedMessage());
+
+            rejectPaymentAndLogException(forwardPayment, "processforwardpayment", e.getMessage(), e.getLocalizedMessage(), e);
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         }
     }
@@ -68,21 +63,21 @@ public class PaylineController extends TreasuryBaseController implements IForwar
     }
 
     @RequestMapping(value = RETURN_FORWARD_PAYMENT_URI + "/{forwardPaymentId}/{action}/{urlChecksum}", method = RequestMethod.GET)
-    public String returnforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            @PathVariable("action") final String action, @PathVariable("urlChecksum") final String urlChecksum,
-            @RequestParam final Map<String, String> responseData, final Model model, final HttpServletResponse response) {
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
+    public String returnforwardpayment(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment,
+            @PathVariable("action") String action, @PathVariable("urlChecksum") String urlChecksum,
+            @RequestParam Map<String, String> responseData, Model model, HttpServletResponse response) {
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
 
+        String operationCode = String.format("%s[%s]", "returnforwardpayment", action);
         try {
 
             // verify url checksum
             if (Strings.isNullOrEmpty(urlChecksum) || !forwardPayment.getReturnForwardPaymentUrlChecksum().equals(urlChecksum)) {
-                rejectPayment(forwardPayment, "INVALID_CHECKSUM", "Invalid checksum");
+                rejectPayment(forwardPayment, operationCode, "INVALID_CHECKSUM", "Invalid checksum");
                 return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
             }
 
-            final PaylineImplementation paylineImplementation =
-                    (PaylineImplementation) forwardPayment.getForwardPaymentConfiguration().implementation();
+            final PaylineConfiguration paylineImplementation = (PaylineConfiguration) forwardPayment.getDigitalPaymentPlatform();
             boolean success = paylineImplementation.processPayment(forwardPayment, action);
 
             if (success) {
@@ -90,21 +85,22 @@ public class PaylineController extends TreasuryBaseController implements IForwar
             }
 
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
-
-        } catch(final ForwardPaymentAlreadyPayedException e) {
+        } catch (final ForwardPaymentAlreadyPayedException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
 
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         } catch (Exception e) {
             e.printStackTrace();
-            addErrorMessage(TreasuryConstants.treasuryBundle("error.PaylineController.returnforwardpayment.message", e.getMessage()), model);
+            addErrorMessage(
+                    TreasuryConstants.treasuryBundle("error.PaylineController.returnforwardpayment.message", e.getMessage()),
+                    model);
 
             FenixFramework.atomic(() -> {
-        	Map<String, String> requestBodyMap = new HashMap<>();
-        	requestBodyMap.put("action", action);
-        	requestBodyMap.put("urlChecksum", urlChecksum);
-        	
-        	forwardPayment.logException(e, TreasuryConstants.propertiesMapToJson(requestBodyMap), TreasuryConstants.propertiesMapToJson(responseData));
+                Map<String, String> requestBodyMap = new HashMap<>();
+                requestBodyMap.put("action", action);
+                requestBodyMap.put("urlChecksum", urlChecksum);
+                forwardPayment.logException(e, "", "", TreasuryConstants.propertiesMapToJson(requestBodyMap),
+                        TreasuryConstants.propertiesMapToJson(responseData));
             });
             
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
@@ -112,24 +108,26 @@ public class PaylineController extends TreasuryBaseController implements IForwar
     }
 
     @Atomic
-    private void rejectPayment(final ForwardPayment forwardPayment, String code, String message) {
-        forwardPayment.reject(code, message, "", "");
+    private void rejectPayment(ForwardPaymentRequest forwardPayment, String operationCode, String statusCode,
+            String statusMessage) {
+        forwardPayment.reject(operationCode, statusCode, statusMessage, "", "");
     }
 
-    private String jspPage(final String page) {
-        return JSP_PATH + "/" + page;
+    @Atomic
+    private void rejectPaymentAndLogException(ForwardPaymentRequest forwardPayment, String operationCode, String errorCode,
+            String errorMessage, Exception e) {
+        forwardPayment.reject(operationCode, errorCode, errorMessage, null, null).logException(e);
     }
 
+    public static Map<Class<IForwardPaymentPlatformService>, Class<IForwardPaymentController>> CONTROLLER_MAP = new HashMap<>();
 
-    public static Map<Class<IForwardPaymentImplementation>, Class<IForwardPaymentController>> CONTROLLER_MAP =
-            new HashMap<>();
-    
-    public static void registerForwardPaymentController(Class<IForwardPaymentImplementation> implementationClass, Class<IForwardPaymentController> controllerClass) {
+    public static void registerForwardPaymentController(Class<IForwardPaymentPlatformService> implementationClass,
+            Class<IForwardPaymentController> controllerClass) {
         CONTROLLER_MAP.put(implementationClass, controllerClass);
     }
-    
-    public static IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
+
+    public static IForwardPaymentController getForwardPaymentController(final ForwardPaymentRequest forwardPayment) {
         return new PaylineController();
     }
-    
+
 }

@@ -6,12 +6,11 @@ import java.util.HashSet;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.paymentPlan.Installment;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.MbwayPaymentRequest;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.http.HttpStatus;
@@ -42,7 +41,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
     public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
         checkPermissions(debtAccount, model);
 
-        if (!SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
+        if (!SibsPaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
             throw new TreasuryDomainException("error.MbwayPaymentRequest.not.active");
         }
 
@@ -84,7 +83,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
             @RequestParam("bean") final PaymentReferenceCodeBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
-        if (!SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
+        if (!SibsPaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
             throw new TreasuryDomainException("error.MbwayPaymentRequest.not.active");
         }
 
@@ -92,10 +91,8 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
         try {
 
-            final ForwardPaymentConfiguration forwardPaymentConfiguration =
-                    ForwardPaymentConfiguration.findUniqueActive(debtAccount.getFinantialInstitution()).get();
-            final SibsOnlinePaymentsGateway sibsOnlinePaymentsGateway =
-                    forwardPaymentConfiguration.getSibsOnlinePaymentsGateway();
+            SibsPaymentsGateway sibsOnlinePaymentsGateway =
+                    SibsPaymentsGateway.findUniqueActive(debtAccount.getFinantialInstitution()).get();
 
             if ((bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty())
                     && (bean.getSelectedInstallments() == null || bean.getSelectedInstallments().isEmpty())) {
@@ -105,8 +102,8 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
             }
 
             bean.setUsePaymentAmountWithInterests(true);
-            MbwayPaymentRequest mbwayPaymentRequest = MbwayPaymentRequest.create(sibsOnlinePaymentsGateway, debtAccount,
-                    new HashSet<InvoiceEntry>(bean.getSelectedDebitEntries()),
+            MbwayRequest mbwayPaymentRequest = MbwayRequest.create(sibsOnlinePaymentsGateway, debtAccount,
+                    new HashSet<DebitEntry>(bean.getSelectedDebitEntries()),
                     new HashSet<Installment>(bean.getSelectedInstallments()), bean.getPhoneNumberCountryPrefix(),
                     bean.getPhoneNumber());
 
@@ -125,7 +122,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
     @RequestMapping(value = _SHOW_MBWAY_PAYMENT_REQUEST_URI + "/{debtAccountId}/{mbwayPaymentRequestId}")
     public String showmbwaypaymentrequest(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @PathVariable("mbwayPaymentRequestId") final MbwayPaymentRequest mbwayPaymentRequest, final Model model) {
+            @PathVariable("mbwayPaymentRequestId") final MbwayRequest mbwayPaymentRequest, final Model model) {
 
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("mbwayPaymentRequest", mbwayPaymentRequest);

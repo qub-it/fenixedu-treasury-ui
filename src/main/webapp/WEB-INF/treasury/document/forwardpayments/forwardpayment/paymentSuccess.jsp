@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest"%>
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController"%>
@@ -5,9 +6,7 @@
 <%@page import="org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.SettlementNote"%>
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPayment"%>
-<%@page
-    import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
+<%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -28,8 +27,7 @@
 <spring:url var="datatablesI18NUrl"
     value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
 
-<link rel="stylesheet" type="text/css"
-    href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <link
     href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
@@ -51,18 +49,12 @@
 <script
     src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<c:set var="settlementNote" value="${forwardPayment.settlementNote}" /> 
-
 <%
-    ForwardPayment forwardPayment = (ForwardPayment) request.getAttribute("forwardPayment");
+    ForwardPaymentRequest forwardPayment = (ForwardPaymentRequest) request.getAttribute("forwardPayment");
 	FinantialInstitution finantialInstitution = forwardPayment.getDebtAccount().getFinantialInstitution();
 %>
-
-
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -72,40 +64,40 @@ ${portal.toolkit()}
         <div class="well well-sm">
             <p>
                 <strong><spring:message code="label.DebtAccount.finantialInstitution" />: </strong>
-                <c:out value="${settlementNote.debtAccount.finantialInstitution.name}" />
+                <c:out value="${forwardPayment.debtAccount.finantialInstitution.name}" />
             </p>
 			<p>
 				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
-				<c:out value="${settlementNote.debtAccount.finantialInstitution.fiscalNumber}" />
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.fiscalNumber}" />
 			</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.finantialInstitution.address" />: </strong>
-				<c:out value="${settlementNote.debtAccount.finantialInstitution.address}" />,&nbsp;
-				<c:out value="${settlementNote.debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
-				<c:out value="${settlementNote.debtAccount.finantialInstitution.locality}" />,&nbsp;
-				<pf:placeName place="${settlementNote.debtAccount.finantialInstitution.country}" />
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.address}" />,&nbsp;
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.locality}" />,&nbsp;
+				<pf:placeName place="${forwardPayment.debtAccount.finantialInstitution.country}" />
             </p>
 			<p>
 				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
-				<c:out value="${settlementNote.debtAccount.finantialInstitution.telephoneContact}" />
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.telephoneContact}" />
 			</p>
 			<p>
 				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
-				<c:out value="${settlementNote.debtAccount.finantialInstitution.email}" />
+				<c:out value="${forwardPayment.debtAccount.finantialInstitution.email}" />
 			</p>
 
             <p>&nbsp;</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.customer" />: </strong>
-               	<c:out value='${settlementNote.debtAccount.customer.businessIdentification} - ${settlementNote.debtAccount.customer.name}' />
+               	<c:out value='${forwardPayment.debtAccount.customer.businessIdentification} - ${forwardPayment.debtAccount.customer.name}' />
             </p>
             <p>
                 <strong><spring:message code="label.Customer.fiscalNumber" />: </strong>
-                <c:out value='${settlementNote.debtAccount.customer.uiFiscalNumber}' />
+                <c:out value='${forwardPayment.debtAccount.customer.uiFiscalNumber}' />
             </p>
             <p>
             	<strong><spring:message code="label.Customer.address" />: </strong>
-            	<c:out value='${settlementNote.debtAccount.customer.address}' />
+            	<c:out value='${forwardPayment.debtAccount.customer.address}' />
             </p>
         </div>
     </div>
@@ -118,11 +110,6 @@ ${portal.toolkit()}
 	<a class="" href="${pageContext.request.contextPath}${debtAccountUrl}${forwardPayment.debtAccount.externalId}">
 		<spring:message code="label.event.back" />
 	</a>
-	&nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp; 
-    <a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}${printSettlementNoteUrl}/${forwardPayment.externalId}">
-        <spring:message code="label.print" />
-    </a>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -168,17 +155,15 @@ ${portal.toolkit()}
     </p>
 </div>
 
+<c:forEach items="${forwardPayment.paymentTransactionsSet}" var="transaction">
+<c:forEach items="${transaction.settlementNotesSet}" var="settlementNote">
 <div class="panel panel-primary">
     <div class="panel-heading">
-        <h3 class="panel-title">
-            <spring:message code="label.details" />
-        </h3>
+        <h3 class="panel-title"><spring:message code="label.details" /></h3>
     </div>
     <div class="panel-body">
 		<div class="alert alert-info" role="alert">
-			<h5>
-				<spring:message code="label.ForwardPayment.forward.payment.concluded.success" />
-			</h5>
+			<h5><spring:message code="label.ForwardPayment.forward.payment.concluded.success" /></h5>
 		</div>
     
         <form method="post" class="form-horizontal">
@@ -196,7 +181,13 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.documentNumber" /></th>
-                        <td><c:out value='${settlementNote.uiDocumentNumber}' /></td>
+                        <td>
+                        	<c:out value='${settlementNote.uiDocumentNumber}' />
+						    <span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp; 
+						    <a class="" id="printLabel2" target="_blank" href="${pageContext.request.contextPath}${printSettlementNoteUrl}/${settlementNote.externalId}">
+						        <spring:message code="label.print" />
+						    </a>
+                        </td>
                     </tr>
 
                     <tr>
@@ -388,14 +379,10 @@ ${portal.toolkit()}
 </c:choose>
 <% } %>
 
+</c:forEach>
+</c:forEach>
+
 <c:if test="${forwardPaymentConfiguration.isLogosPageDefined()}">
 	<jsp:include page="${logosPage}" />
 </c:if>
 
-<c:if test="${forwardPaymentConfiguration.isReimbursementPolicyTextDefined()}">
-	<jsp:include page="${forwardPaymentConfiguration.reimbursementPolicyJspFile}" />
-</c:if>
-
-<c:if test="${forwardPaymentConfiguration.isPrivacyPolicyTextDefined()}">
-	<jsp:include page="${forwardPaymentConfiguration.privacyPolicyJspFile}" />
-</c:if>

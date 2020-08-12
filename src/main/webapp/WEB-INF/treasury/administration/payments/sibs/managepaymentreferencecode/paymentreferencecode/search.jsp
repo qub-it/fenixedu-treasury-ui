@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest"%>
+<%@page import="org.fenixedu.treasury.domain.paymentcodes.SibsReferenceCode"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -23,33 +25,21 @@
 <%--${portal.angularToolkit()} --%>
 ${portal.toolkit()}
 
-<link
-	href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
-	rel="stylesheet" />
-<script
-	src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link
-	href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
-	rel="stylesheet" />
-<script
-	src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link
-	href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
-	rel="stylesheet" />
-<script
-	src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
-<script
-	src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+<link href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 
 
 <%-- TITLE --%>
 <div class="page-header">
 	<h1>
-		<spring:message
-			code="label.administration.payments.sibs.managePaymentReferenceCode.searchPaymentReferenceCode" />
+		<spring:message code="label.administration.payments.sibs.managePaymentReferenceCode.searchPaymentReferenceCode" />
 		<small></small>
 	</h1>
 </div>
@@ -112,31 +102,6 @@ ${portal.toolkit()}
 				</div>
 			</div>
 			
-			<%--
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.PaymentReferenceCode.beginDate" />
-				</div>
-
-				<div class="col-sm-4">
-					<input id="paymentReferenceCode_beginDate" class="form-control"
-						type="text" name="begindate" bennu-date
-						value='<c:out value='${not empty param.begindate ? param.begindate : paymentReferenceCode.beginDate.toString("yyyy-MM-dd") }'/>' />
-				</div>
-			</div>
-			<div class="form-group row">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.PaymentReferenceCode.endDate" />
-				</div>
-
-				<div class="col-sm-4">
-					<input id="paymentReferenceCode_endDate" class="form-control"
-						type="text" name="enddate" bennu-date
-						value='<c:out value='${not empty param.enddate ? param.enddate : paymentReferenceCode.endDate.toString("yyyy-MM-dd") }'/>' />
-				</div>
-			</div>
-			--%>
-			
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.PaymentReferenceCode.state" />
@@ -152,8 +117,8 @@ ${portal.toolkit()}
 						</c:forEach>
 					</select>
 					<script>
-		$("#paymentReferenceCode_state").val('<c:out value='${not empty param.state ? param.state : paymentReferenceCode.state }'/>');
-	</script>
+						$("#paymentReferenceCode_state").val('<c:out value='${not empty param.state ? param.state : paymentReferenceCode.state }'/>');
+					</script>
 				</div>
 			</div>
 		</div>
@@ -206,8 +171,8 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentReferenceCode.client.name" />
                 </datatables:columnHead>
                 				
- 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.debtAccount != null}">
-					<c:out value="${referenceCode.targetPayment.debtAccount.customer.name}" />
+ 				<c:if test="${referenceCode.debtAccount != null}">
+					<c:out value="${referenceCode.debtAccount.customer.name}" />
  				</c:if>
 			</datatables:column>
 
@@ -216,8 +181,8 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentReferenceCode.client.vatNumber" />
                 </datatables:columnHead>
 				
- 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.debtAccount != null}">
-					<c:out value="${referenceCode.targetPayment.debtAccount.customer.fiscalNumber}" />
+ 				<c:if test="${referenceCode.debtAccount != null}">
+					<c:out value="${referenceCode.debtAccount.customer.fiscalNumber}" />
 				</c:if>
 			</datatables:column>
 
@@ -226,16 +191,20 @@ ${portal.toolkit()}
                     <spring:message code="label.PaymentReferenceCode.client.businessNumber" />
                 </datatables:columnHead>
 		
- 				<c:if test="${referenceCode.targetPayment != null && referenceCode.targetPayment.debtAccount != null}">
-					<c:out value="${referenceCode.targetPayment.debtAccount.customer.businessIdentification}" />
+ 				<c:if test="${referenceCode.debtAccount != null}">
+					<c:out value="${referenceCode.debtAccount.customer.businessIdentification}" />
 				</c:if>
 			</datatables:column>
 
 			
             <datatables:column cssStyle="width:10%">
-                <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/search/view/${referenceCode.externalId}">
-                        <spring:message code="label.view" />
+				<c:set var="referenceCode" value="${referenceCode}" />
+				
+				<% if(referenceCode instanceof SibsPaymentRequest) { %>
+                <a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentreferencecode/paymentreferencecode/read/${referenceCode.externalId}">
+	                <spring:message code="label.view" />
                 </a>
+                <% } %>
 			</datatables:column>
 			
 		</datatables:table>

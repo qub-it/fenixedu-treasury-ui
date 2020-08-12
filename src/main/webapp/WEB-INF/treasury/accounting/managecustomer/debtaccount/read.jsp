@@ -1,12 +1,11 @@
+<%@page import="org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.MbwayPaymentRequestController"%>
-<%@page import="org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway"%>
 <%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
@@ -132,28 +131,23 @@ ${portal.angularToolkit()}
         </button>
         <ul class="dropdown-menu">
 
-            <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"><span
+            <li><a href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createpayment"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createPayment" /></a></li>
 			
-			<%
-						    if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) {
-						%>
+			<c:if test="${not empty forwardPaymentService}">
+            <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/forwardpayment/${forwardPaymentService.externalId}">
+            	<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.forwardPayment" /></a>
+            </li>
+			</c:if>
 			
-            <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/forwardpayment"><span
-                    class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.forwardPayment" /></a></li>
-
-			<%
-			    }
-			%>
-			
-			<%
-						    if(SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) {
-						%>
-			
-            <li><a class="" href="${pageContext.request.contextPath}<%= MbwayPaymentRequestController.CREATE_URL %>/${debtAccount.externalId}"><span
-                    class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.mbwayPaymentRequest" /></a></li>
-
-			<% } %>
+			<c:if test="${not empty mbwayService}">
+            <li>
+            	<a href="${pageContext.request.contextPath}<%= MbwayPaymentRequestController.CREATE_URL %>/${debtAccount.externalId}">
+            		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
+            		<spring:message code="label.event.accounting.manageCustomer.mbwayPaymentRequest" />
+            	</a>
+            </li>
+			</c:if>
 			
             <li><a class="" href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}/createreimbursement"><span
                     class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<spring:message code="label.event.accounting.manageCustomer.createReimbursement" /></a></li>
@@ -267,7 +261,7 @@ ${portal.angularToolkit()}
             </li>
             </c:if>
             
-			<% if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) { %>
+			<c:if test="${not empty forwardPaymentService}">
             <li>
             	<a id="exportintegrationline"
             		href="${pageContext.request.contextPath}<%= ManageForwardPaymentsController.SEARCH_URL %>?customerBusinessId=${debtAccount.customer.businessIdentification}">
@@ -275,7 +269,7 @@ ${portal.angularToolkit()}
             		<spring:message code="label.ManageForwardPayments.search" />
                	</a>
             </li>
-			<% } %>
+            </c:if>
 			
 			<% if(TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
             <li class="dropdown-submenu">
@@ -957,18 +951,10 @@ ${portal.angularToolkit()}
 	                            <spring:message code="label.InvoiceEntry.description" />
 	                    	</datatables:columnHead>
 	
-                        	<c:if test="${target.finantialDocumentPaymentCode}">
+                        	<c:if test="${not empty target.orderedDebitEntries}">
 								<ul>
-									<c:forEach items="${target.finantialDocument.finantialDocumentEntriesSet}" var="entry">
-										<li><c:out value="${entry.description}" /></li>
-									</c:forEach>
-								</ul>
-                        	</c:if>
-                        	
-                        	<c:if test="${target.multipleEntriesPaymentCode}">
-								<ul>
-									<c:forEach items="${target.orderedInvoiceEntries}" var="invoiceEntry">
-									<li><c:out value="${invoiceEntry.description}" /></li>
+									<c:forEach items="${target.orderedDebitEntries}" var="debitEntry">
+										<li><c:out value="${debitEntry.description}" /></li>
 									</c:forEach>
 								</ul>
                         	</c:if>
@@ -982,17 +968,17 @@ ${portal.angularToolkit()}
                         	
                              <div>
                                  <strong><spring:message code="label.customer.PaymentReferenceCode.entity" />: </strong>
-                                 <c:out value="[${target.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
+                                 <c:out value="[${target.digitalPaymentPlatform.entityReferenceCode}]" />
                                  </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
-                                 <c:out value="${target.paymentReferenceCode.formattedCode}" />
+                                 <c:out value="${target.formattedCode}" />
                                  </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
-                                 <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.paymentReferenceCode.payableAmount)}" />
+                                 <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.payableAmount)}" />
                              </div>
 
 						</datatables:column>
 						
 						<datatables:column cssStyle="width:10%">
-							<a href="${pageContext.request.contextPath}<%= org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode.PaymentReferenceCodeController.READ_URL %>/${target.paymentReferenceCode.externalId}" 
+							<a href="${pageContext.request.contextPath}<%= org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentreferencecode.PaymentReferenceCodeController.READ_URL %>/${target.externalId}" 
 								target="_blank" class="btn btn-default">
 								<spring:message code="label.view" />
 							</a>

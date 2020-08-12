@@ -1,19 +1,18 @@
 package org.fenixedu.treasury.ui.document.forwardpayments.implementations;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementation;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementationPlatform;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.springframework.ui.Model;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.tpaReturnForwardPayment", accessGroup = "logged")
 @RequestMapping(TPAVirtualController.CONTROLLER_URL)
 public class TPAVirtualController extends TreasuryBaseController implements IForwardPaymentController {
@@ -31,10 +29,10 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/tpavirtual";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment/implementations/tpavirtual";
 
-    public String processforwardpayment(final ForwardPayment forwardPayment, final Model model,
-            final HttpServletResponse response, final HttpSession session) {
+    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
+            HttpSession session) {
 
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
+        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
         model.addAttribute("forwardPayment", forwardPayment);
         return jspPage("hostedPay");
     }
@@ -44,12 +42,11 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
 
     @RequestMapping(value = RETURN_FORWARD_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.POST,
             produces = "text/html")
-    public String returnforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            @RequestParam final Map<String, String> responseData, final Model model, final HttpServletResponse response) {
-        TPAVirtualImplementation implementation =
-                (TPAVirtualImplementation) forwardPayment.getForwardPaymentConfiguration().implementation();
+    public String returnforwardpayment(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment,
+            @RequestParam Map<String, String> responseData, Model model, HttpServletResponse response) {
+        TPAVirtualImplementationPlatform implementation = (TPAVirtualImplementationPlatform) forwardPayment.getDigitalPaymentPlatform();
 
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
+        model.addAttribute("forwardPaymentConfiguration", implementation);
         try {
             boolean success = implementation.processPayment(forwardPayment, responseData);
 
@@ -68,23 +65,23 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
 
     @RequestMapping(value = CURRENT_FORWARD_PAYMENT_STATE_URI + "/{forwardPaymentId}", method = RequestMethod.POST)
     @ResponseBody
-    public String currentforwardpaymentstate(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment) {
+    public String currentforwardpaymentstate(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment) {
         return forwardPayment.getCurrentState().toString();
     }
-    
+
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;
     }
 
-    public static Map<Class<IForwardPaymentImplementation>, Class<IForwardPaymentController>> CONTROLLER_MAP =
-            new HashMap<>();
-    
-    public static void registerForwardPaymentController(Class<IForwardPaymentImplementation> implementationClass, Class<IForwardPaymentController> controllerClass) {
+    public static Map<Class<IForwardPaymentPlatformService>, Class<IForwardPaymentController>> CONTROLLER_MAP = new HashMap<>();
+
+    public static void registerForwardPaymentController(Class<IForwardPaymentPlatformService> implementationClass,
+            Class<IForwardPaymentController> controllerClass) {
         CONTROLLER_MAP.put(implementationClass, controllerClass);
     }
-    
-    public static IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
+
+    public static IForwardPaymentController getForwardPaymentController(final ForwardPaymentRequest forwardPayment) {
         return new TPAVirtualController();
     }
-    
+
 }

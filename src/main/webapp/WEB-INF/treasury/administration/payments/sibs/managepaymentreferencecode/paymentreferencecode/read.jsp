@@ -130,23 +130,19 @@ ${portal.toolkit()}
                 <tbody>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.finantialInstitution" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.name}' /></td>
+                        <td><c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.name}' /></td>
                     </tr>
-                <c:if test="${not empty paymentReferenceCode.targetPayment.debtAccount}">
-                    <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.client.name" /></th>
-                    <td><c:out value='${paymentReferenceCode.targetPayment.debtAccount.customer.name}' /></td>
-                </c:if>
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.paymentCodePool" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.name}' /></td>
+	                    <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.client.name" /></th>
+	                    <td><c:out value='${paymentReferenceCode.debtAccount.customer.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.paymentCodePool" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.name}' /></td>
+                        <td><c:out value='${paymentReferenceCode.digitalPaymentPlatform.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentCodePool.entityReferenceCode" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.entityReferenceCode}' /></td>
+                        <td><c:out value='${paymentReferenceCode.digitalPaymentPlatform.entityReferenceCode}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.referenceCode" /></th>
@@ -154,24 +150,24 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.payableAmount" /></th>
-                        <td><c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.currency.getValueFor(paymentReferenceCode.payableAmount)}' /></td>
+                        <td><c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.currency.getValueFor(paymentReferenceCode.payableAmount)}' /></td>
                     </tr>
-                    <c:if test='${not paymentReferenceCode.paymentCodePool.useCheckDigit }'>
+                    <c:if test='${not empty paymentReferenceCode.sibsReferenceCode && not paymentReferenceCode.digitalPaymentPlatform.useCheckDigit}'>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.beginDate" /></th>
-	                        <td><c:out value='${paymentReferenceCode.beginDate}' /></td>
+	                        <td><c:out value='${paymentReferenceCode.sibsReferenceCode.validFrom}' /></td>
 	                    </tr>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.endDate" /></th>
-	                        <td><c:out value='${paymentReferenceCode.endDate}' /></td>
+	                        <td><c:out value='${paymentReferenceCode.sibsReferenceCode.validTo}' /></td>
 	                    </tr>
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.minAmount" /></th>
-                            <td><c:out value='${paymentReferenceCode.minAmount}' /></td>
+                            <td><c:out value='${paymentReferenceCode.sibsReferenceCode.minAmount}' /></td>
                         </tr>
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.maxAmount" /></th>
-                            <td><c:out value='${paymentReferenceCode.maxAmount}' /></td>
+                            <td><c:out value='${paymentReferenceCode.sibsReferenceCode.maxAmount}' /></td>
                         </tr>
                     </c:if>
 
@@ -185,36 +181,32 @@ ${portal.toolkit()}
                                 <span class="label label-default">
                             </c:if> <c:if test="${paymentReferenceCode.state=='PROCESSED'}">
                                 <span class="label label-success">
-                            </c:if> <c:out value="${paymentReferenceCode.state.descriptionI18N.content}" /> </span></td>
-
+                            </c:if>
+								<c:out value="${paymentReferenceCode.state.descriptionI18N.content}" /> 
+								</span>
+						</td>
                     </tr>
-                    <c:if test='${not empty paymentReferenceCode.targetPayment }'>
+
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.targetPayment" /></th>
                             <td>
-                            	<c:if test='${paymentReferenceCode.targetPayment.isFinantialDocumentPaymentCode() }'>
-                                    <ul>
-                                        <li><a target="blank_"
-                                            href="${pageContext.request.contextPath}<%=DebitNoteController.READ_URL %>${paymentReferenceCode.targetPayment.finantialDocument.externalId}"><c:out
-                                                    value='${paymentReferenceCode.targetPayment.finantialDocument.uiDocumentNumber}' /></a></li>
-                                        <li><c:out
-                                                value='${paymentReferenceCode.targetPayment.finantialDocument.currency.getValueFor(paymentReferenceCode.targetPayment.finantialDocument.openAmountWithInterests)}' />
-                                        </li>
-                                    </ul>
-                                </c:if>
-                                <c:if test='${paymentReferenceCode.targetPayment.isMultipleEntriesPaymentCode() }'>
-                                    <ul>
-                                    	<c:forEach items="${paymentReferenceCode.targetPayment.getOrderedInvoiceEntries()}" var="invoiceEntry">
-                                        <li><a target="blank_"
-                                            href="${pageContext.request.contextPath}<%=DebitEntryController.READ_URL %>${invoiceEntry.externalId}">
-                                            	<c:out value='${invoiceEntry.finantialDocument.uiDocumentNumber}' /> - <c:out value='${invoiceEntry.description}' /></a>
-                                            	[<c:out value='${invoiceEntry.debtAccount.finantialInstitution.currency.getValueFor(invoiceEntry.openAmount)}' />]
-                                        </li>
-                                        </c:forEach>
-                                    </ul>
-                                </c:if></td>
+                                   <ul>
+                                   	<c:forEach items="${paymentReferenceCode.orderedDebitEntries}" var="invoiceEntry">
+                                       <li><a target="blank_"
+                                           href="${pageContext.request.contextPath}<%=DebitEntryController.READ_URL %>${invoiceEntry.externalId}">
+                                           	<c:out value='${invoiceEntry.finantialDocument.uiDocumentNumber}' /> - <c:out value='${invoiceEntry.description}' /></a>
+                                           	[<c:out value='${invoiceEntry.debtAccount.finantialInstitution.currency.getValueFor(invoiceEntry.openAmount)}' />]
+                                       </li>
+                                       </c:forEach>
+                                       <c:forEach items="${paymentReferenceCode.orderedInstallments}" var="installment">
+										<li>
+											<c:out value='${installment.description.content}' />
+										</li>
+                                       </c:forEach>
+                                   </ul>
+                            </td>
                         </tr>
-                    </c:if>
+
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.versioningCreationDate" /></th>
                         <td>
@@ -222,15 +214,13 @@ ${portal.toolkit()}
                         	<c:out value='${paymentReferenceCode.versioningCreationDate.toString("dd-MM-yyyy HH:mm")}' />
                         </td>
                     </tr>
-                    <c:if test='${not empty paymentReferenceCode.targetPayment}'>
-                    	<tr>
-	                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.targetPayment.versioningCreationDate" /></th>
-	                        <td>
-	                        	[<c:out value='${paymentReferenceCode.targetPayment.versioningCreator}' />]
-	                        	<c:out value='${paymentReferenceCode.targetPayment.versioningCreationDate.toString("dd-MM-yyyy HH:mm")}' />
-	                        </td>
-                    	</tr>
-                    </c:if>
+                   	<tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.PaymentReferenceCode.targetPayment.versioningCreationDate" /></th>
+                        <td>
+                        	[<c:out value='${paymentReferenceCode.requestDate}' />]
+                        	<c:out value='${paymentReferenceCode.requestDate.toString("dd-MM-yyyy HH:mm")}' />
+                        </td>
+                   	</tr>
                 </tbody>
             </table>
         </form>
@@ -268,21 +258,21 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.whenProcessed" />
 					</datatables:columnHead>
-					<c:out value='${detail.whenProcessed.toString("YYYY-MM-dd")}' />
+					<c:out value='${detail.sibsProcessingDate.toString("YYYY-MM-dd")}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.whenRegistered" />
 					</datatables:columnHead>
-					<c:out value='${detail.whenRegistered.toString("YYYY-MM-dd HH:mm:ss")}' />
+					<c:out value='${detail.paymentDate.toString("YYYY-MM-dd HH:mm:ss")}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.amountPayed" />
 					</datatables:columnHead>
-					<c:out value='${paymentReferenceCode.paymentCodePool.finantialInstitution.currency.getValueFor(detail.amountPayed)}' />
+					<c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.currency.getValueFor(detail.paidAmount)}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -290,21 +280,21 @@ ${portal.toolkit()}
 						<spring:message
 							code="label.SibsTransactionDetail.businessIdentification" />
 					</datatables:columnHead>
-					<c:out value="${detail.businessIdentification}" />
+					<c:out value="${detail.paymentRequest.debtAccount.customer.businessIdentification}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.fiscalNumber" />
 					</datatables:columnHead>
-					<c:out value="${detail.fiscalNumber}" />
+					<c:out value="${detail.paymentRequest.debtAccount.customer.uiFiscalNumber}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.customerName" />
 					</datatables:columnHead>
-					<c:out value="${detail.customerName}" />
+					<c:out value="${detail.paymentRequest.debtAccount.customer.name}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -312,7 +302,9 @@ ${portal.toolkit()}
 						<spring:message
 							code="label.SibsTransactionDetail.settlementDocumentNumber" />
 					</datatables:columnHead>
-					<c:out value="${detail.settlementDocumentNumber}" />
+					<c:forEach items="${detail.getSettlementNotesSet()}" var="note">
+						<c:out value="${note.uiDocumentNumber}" />&nbsp;
+					</c:forEach>
 				</datatables:column>
 
 				<datatables:column cssStyle="width:30%">
