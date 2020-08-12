@@ -198,48 +198,32 @@ ${portal.toolkit()}
                         <option value="true"><spring:message code="label.yes" /></option>
                     </select>
                     <script>
-		$("#paymentCodePool_useCheckDigit").val('<c:out value='${not empty param.usecheckdigit ? param.usecheckdigit : paymentCodePool.useCheckDigit }'/>');
-	</script>
+                    	$(document).ready(function() {
+							$("#paymentCodePool_useCheckDigit").val('<c:out value='${not empty param.usecheckdigit ? param.usecheckdigit : paymentCodePool.useCheckDigit }'/>');
+                    	});
+					</script>
                 </div>
             </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.paymentMethod" />
+                    <spring:message code="label.PaymentCodePool.sourceInstitutionId" />
                 </div>
 
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="paymentCodePool_paymentMethod" class="js-example-basic-single" name="paymentmethod">
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.documentSeriesForPayments" />
-                </div>
-
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="paymentCodePool_documentSeriesForPayments" class="js-example-basic-single" name="documentnumberseries">
-                    </select>
+                <div class="col-sm-10">
+                    <input id="paymentCodePool_sourceInstitutionId" class="form-control" type="text" name="sourceinstitutionid"
+                        value='<c:out value='${not empty param.sourceinstitutionid ? param.sourceinstitutionid : paymentCodePool.sourceInstitutionId }'/>' />
                 </div>
             </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.PaymentCodePool.paymentCodeGeneratorInstance" />
+                    <spring:message code="label.PaymentCodePool.destinationInstitutionId" />
                 </div>
 
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select class="js-example-basic-single" name="paymentcodegeneratorinstance">
-	                        <option value=""></option>
-                    	<c:forEach items="${PaymentCodePool_paymentCodeGeneratorInstance_options}" var="o">
-	                        <option value="${o.externalId}">${o.name}</option>
-                    	</c:forEach>
-                    </select>
+                <div class="col-sm-10">
+                    <input id="paymentCodePool_destinationInstitutionId" class="form-control" type="text" name="destinationinstitutionid"
+                        value='<c:out value='${not empty param.destinationinstitutionid ? param.destinationinstitutionid : paymentCodePool.destinationInstitutionId }'/>' />
                 </div>
             </div>
 
@@ -252,24 +236,6 @@ ${portal.toolkit()}
 
 <script>
 $(document).ready(function() {
-    <%-- Block for providing paymentMethod options --%>
-    <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-    paymentMethod_options = [
-        <c:forEach items="${PaymentCodePool_paymentMethod_options}" var="element"> 
-            {
-                text : "<c:out value='${element.name.content}'/>",  
-                id : "<c:out value='${element.externalId}'/>"
-            },
-        </c:forEach>
-    ];
-    $("#paymentCodePool_paymentMethod").select2(
-        {
-            data : paymentMethod_options,
-        }     
-    );
-    $("#paymentCodePool_paymentMethod").select2().select2('val', '<c:out value='${param.paymentmethod}'/>');
-    <%-- End block for providing paymentMethod options --%>
-
 	<%-- Block for providing finantialInstitution options --%>
 	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
 	finantialInstitution_options = [
@@ -287,25 +253,6 @@ $(document).ready(function() {
     );
     $("#paymentCodePool_finantialInstitution").select2().select2('val', '<c:out value='${param.finantialinstitution}'/>');
 	<%-- End block for providing finantialInstitution options --%>
-
-	
-	   <%-- Block for providing documentSeriesForPayments options --%>
-	    <%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	    documentSeriesForPayments_options = [
-	        <c:forEach items="${PaymentCodePool_documentSeriesForPayments_options}" var="element"> 
-	            {
-	                text : "<c:out value='${element.series.finantialInstitution.name} - ${element.series.name.content}'/>",  
-	                id : "<c:out value='${element.externalId}'/>"
-	            },
-	        </c:forEach>
-	    ];
-	    $("#paymentCodePool_documentSeriesForPayments").select2(
-	        {
-	            data : documentSeriesForPayments_options,
-	        }     
-	    );
-	    $("#paymentCodePool_documentSeriesForPayments").select2().select2('val', '<c:out value='${param.documentnumberseries}'/>');
-	    <%-- End block for providing documentSeriesForPayments options --%>
 
 	});
 </script>

@@ -3,6 +3,7 @@ package org.fenixedu.treasury.ui.document.forwardpayments;
 import static java.lang.String.format;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -13,14 +14,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentLog;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentStateType;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
+import org.fenixedu.treasury.domain.payments.PaymentRequestLog;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.fenixedu.treasury.util.TreasuryConstants;
+import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -34,8 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-@SpringFunctionality(app = TreasuryController.class, title = "label.ManageForwardPayments.functionality",
-        accessGroup = "treasuryBackOffice")
+@SpringFunctionality(app = TreasuryController.class, title = "label.ManageForwardPayments.functionality", accessGroup = "treasuryBackOffice")
 @RequestMapping(ManageForwardPaymentsController.CONTROLLER_URL)
 public class ManageForwardPaymentsController extends TreasuryBaseController {
 
@@ -53,76 +56,75 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
     @RequestMapping(value = SEARCH_URI, method = RequestMethod.GET)
     public String search(
-            @RequestParam(value = "beginDate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate beginDate,
-            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate endDate,
-            @RequestParam(value = "customerName", required = false) final String customerName,
-            @RequestParam(value = "customerBusinessId", required = false) final String customerBusinessId,
-            @RequestParam(value = "orderNumber", required = false) final String orderNumber,
-            @RequestParam(value = "withPendingPlatformPayment", required = false) final boolean withPendingPlatformPayment,
-            @RequestParam(value = "forwardPaymentStateType", required = false) final ForwardPaymentStateType type,
-            final Model model) {
+            @RequestParam(value = "beginDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginDate,
+            @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
+            @RequestParam(value = "customerName", required = false) String customerName,
+            @RequestParam(value = "customerBusinessId", required = false) String customerBusinessId,
+            @RequestParam(value = "orderNumber", required = false) String orderNumber,
+            @RequestParam(value = "withPendingPlatformPayment", required = false) boolean withPendingPlatformPayment,
+            @RequestParam(value = "forwardPaymentStateType", required = false) ForwardPaymentStateType stateType,
+            Model model) {
 
-        Stream<ForwardPayment> stream = ForwardPayment.findAll();
-
+        Stream<ForwardPaymentRequest> stream = ForwardPaymentRequest.findAll();
+        
+        
         if (!Strings.isNullOrEmpty(orderNumber)) {
-            stream = stream.filter(i -> orderNumber.trim().equals(String.valueOf(i.getOrderNumber())));
+            stream = stream.filter(p -> orderNumber.trim().equals(String.valueOf(p.getOrderNumber())));
         } else {
             if (beginDate != null) {
-                stream = stream.filter(i -> !i.getWhenOccured().isBefore(beginDate.toDateTimeAtStartOfDay()));
+                stream = stream.filter(p -> !p.getRequestDate().isBefore(beginDate.toDateTimeAtStartOfDay()));
             }
 
             if (endDate != null) {
                 stream = stream
-                        .filter(i -> !i.getWhenOccured().isAfter(endDate.toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1)));
+                        .filter(p -> !p.getRequestDate().isAfter(endDate.toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1)));
             }
 
             if (!Strings.isNullOrEmpty(customerName)) {
-                stream = stream.filter(
-                        i -> TreasuryConstants.stringNormalizedContains(i.getDebtAccount().getCustomer().getName(), customerName));
+                stream = stream.filter(p -> TreasuryConstants.stringNormalizedContains(p.getDebtAccount().getCustomer().getName(),
+                        customerName));
             }
 
             if (!Strings.isNullOrEmpty(customerBusinessId)) {
                 stream = stream
-                        .filter(i -> i.getDebtAccount().getCustomer().getBusinessIdentification().equals(customerBusinessId));
+                        .filter(p -> p.getDebtAccount().getCustomer().getBusinessIdentification().equals(customerBusinessId));
             }
 
-            if (type != null) {
-                stream = stream.filter(i -> i.getCurrentState() == type);
+            if (stateType != null) {
+                stream = stream.filter(p -> p.getState() == stateType);
             }
         }
 
         if (withPendingPlatformPayment) {
-            final List<ForwardPayment> resultList = stream.collect(Collectors.toList());
+            final List<ForwardPaymentRequest> resultList = stream.collect(Collectors.toList());
             stream = resultList.stream();
 
             int MAX_PENDING_POSSIBLE_PAYMENTS = 500;
-            if (resultList.stream()
-                    .filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested())
-                    .count() > MAX_PENDING_POSSIBLE_PAYMENTS) {
+            if (resultList.stream().filter(p -> p.isInRequestedState()).count() > MAX_PENDING_POSSIBLE_PAYMENTS) {
                 addErrorMessage(
                         treasuryBundle("error.ManageForwardPayments.search.withPendingPlatformPayment.limited.narrow.search"),
                         model);
             } else {
-                stream = stream
-                        .filter(i -> i.getCurrentState().isInStateToPostProcessPayment() || i.getCurrentState().isRequested());
-                stream = stream.filter(
-                        i -> i.getForwardPaymentConfiguration().implementation().paymentStatus(i).isAbleToRegisterPostPayment(i));
+                stream = stream.filter(p -> p.isInRequestedState());
+                stream = stream.filter(p -> p.getDigitalPaymentPlatform().getForwardPaymentPlatformService().paymentStatus(p)
+                        .isAbleToRegisterPostPayment(p));
             }
         }
 
-        List<ForwardPayment> forwardPayments =
-                stream.sorted(java.util.Collections.reverseOrder(Comparator.comparing(ForwardPayment::getWhenOccured)))
+        String username = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        stream = stream.filter(p -> TreasuryAccessControlAPI.isBackOfficeMember(username, p.getDigitalPaymentPlatform().getFinantialInstitution()));
+        
+        List<ForwardPaymentRequest> forwardPayments =
+                stream.sorted(Collections.reverseOrder(Comparator.comparing(ForwardPaymentRequest::getRequestDate)))
                         .collect(Collectors.toList());
 
-        boolean canLimitResults =
-                !(beginDate != null && endDate != null && org.joda.time.Days.daysBetween(beginDate, endDate).getDays() <= 1);
+        boolean canLimitResults = !(beginDate != null && endDate != null && Days.daysBetween(beginDate, endDate).getDays() <= 1);
 
         if (canLimitResults && forwardPayments.size() > MAX_SEARCH_SIZE) {
             model.addAttribute("limitResults", true);
             model.addAttribute("limit", MAX_SEARCH_SIZE);
             model.addAttribute("total", forwardPayments.size());
-            
+
             forwardPayments = forwardPayments.subList(0, MAX_SEARCH_SIZE);
         }
 
@@ -137,7 +139,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     public static final String VIEW_URL = CONTROLLER_URL + VIEW_URI;
 
     @RequestMapping(VIEW_URI + "/{forwardPaymentId}")
-    public String view(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model) {
+    public String view(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model) {
         model.addAttribute("forwardPayment", forwardPayment);
 
         return jspPage(VIEW_URI);
@@ -147,12 +149,12 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     public static final String VERIFY_FORWARD_PAYMENT_URL = CONTROLLER_URL + VERIFY_FORWARD_PAYMENT_URI;
 
     @RequestMapping(VERIFY_FORWARD_PAYMENT_URI + "/{forwardPaymentId}")
-    public String verifyforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
-            final RedirectAttributes redirectAttributes) {
+    public String verifyforwardpayment(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
-            List<ForwardPaymentStatusBean> paymentStatusBeanList =
-                    forwardPayment.getForwardPaymentConfiguration().implementation().verifyPaymentStatus(forwardPayment);
+            List<ForwardPaymentStatusBean> paymentStatusBeanList = forwardPayment.getDigitalPaymentPlatform()
+                    .getForwardPaymentPlatformService().verifyPaymentStatus(forwardPayment);
 
             model.addAttribute("forwardPayment", forwardPayment);
             model.addAttribute("paymentStatusBeanList", paymentStatusBeanList);
@@ -168,24 +170,24 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
     public static final String REGISTER_PAYMENT_URL = CONTROLLER_URL + REGISTER_PAYMENT_URI;
 
     @RequestMapping(value = REGISTER_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.POST)
-    public String registerPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            @RequestParam("justification") final String justification, 
-            @RequestParam("transactionId") final String transactionId,
-            final Model model, final RedirectAttributes redirectAttributes) {
+    public String registerPayment(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment,
+            @RequestParam("justification") String justification, @RequestParam("transactionId") String transactionId, Model model,
+            RedirectAttributes redirectAttributes) {
         try {
             ForwardPaymentStatusBean paymentStatusBean =
-                    forwardPayment.getForwardPaymentConfiguration().implementation().paymentStatus(forwardPayment);
+                    forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService().paymentStatus(forwardPayment);
 
-            if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
+            if (!forwardPayment.isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
                 addErrorMessage(treasuryBundle("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform"),
                         model);
                 return String.format("redirect:%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId());
             }
 
-            final IForwardPaymentImplementation implementation = forwardPayment.getForwardPaymentConfiguration().implementation();
+            final IForwardPaymentPlatformService implementation =
+                    forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService();
 
             Optional<String> optionalTransactionId = Optional.empty();
-            if(StringUtils.isNotEmpty(transactionId)) {
+            if (StringUtils.isNotEmpty(transactionId)) {
                 optionalTransactionId = Optional.of(transactionId);
             }
 
@@ -195,23 +197,28 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
         } catch (final Exception e) {
             e.printStackTrace();
             addErrorMessage(e.getLocalizedMessage(), model);
-            return redirect(format("%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId()), model, redirectAttributes);
+            return redirect(format("%s/%s", VERIFY_FORWARD_PAYMENT_URL, forwardPayment.getExternalId()), model,
+                    redirectAttributes);
         }
     }
-    
+
     private static final String DOWNLOAD_EXCEPTION_LOG_URI = "/downloadexceptionlog";
     public static final String DOWNLOAD_EXCEPTION_LOG_URL = CONTROLLER_URL + DOWNLOAD_EXCEPTION_LOG_URI;
-    
-    @RequestMapping(value = DOWNLOAD_EXCEPTION_LOG_URI + "/{forwardPaymentLogId}", method=RequestMethod.GET, produces = "application/octet-stream")
+
+    @RequestMapping(value = DOWNLOAD_EXCEPTION_LOG_URI + "/{forwardPaymentLogId}", method = RequestMethod.GET,
+            produces = "application/octet-stream")
     @ResponseBody
-    public byte[] downloadexceptionlog(@PathVariable("forwardPaymentLogId") final ForwardPaymentLog forwardPaymentLog, final Model model, final HttpServletResponse response) {
+    public byte[] downloadexceptionlog(@PathVariable("forwardPaymentLogId") PaymentRequestLog forwardPaymentLog,
+            final Model model, final HttpServletResponse response) {
         assertUserIsManager(model);
-        
-        response.setHeader("Content-Disposition", "attachment; filename=" + String.format("exceptionLog-%s.txt", forwardPaymentLog.getExternalId()));
-        if(forwardPaymentLog.getExceptionLogFile() != null) {
-            return forwardPaymentLog.getExceptionLogFile().getContent();
+
+        response.setHeader("Content-Disposition",
+                "attachment; filename=" + String.format("exceptionLog-%s.txt", forwardPaymentLog.getExternalId()));
+        if (forwardPaymentLog.getExceptionLogFile() != null) {
+            return TreasuryPlataformDependentServicesFactory.implementation()
+                    .getFileContent(forwardPaymentLog.getExceptionLogFile());
         }
-        
+
         return null;
     }
 

@@ -5,18 +5,15 @@
 <%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<spring:url var="datatablesUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
+<spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl"
-    value="/CSS/dataTables/dataTables.bootstrap.min.css" />
+<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <link rel="stylesheet" href="${datatablesCssUrl}" />
-<spring:url var="datatablesI18NUrl"
-    value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
 <link rel="stylesheet" type="text/css"
     href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
@@ -163,8 +160,7 @@ ${portal.toolkit()}
 
         <c:forEach items="${infoMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon glyphicon-ok-sign"
-                    aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
 
@@ -175,8 +171,7 @@ ${portal.toolkit()}
 
         <c:forEach items="${warningMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
 
@@ -187,8 +182,7 @@ ${portal.toolkit()}
 
         <c:forEach items="${errorMessages}" var="message">
             <p>
-                <span class="glyphicon glyphicon-exclamation-sign"
-                    aria-hidden="true">&nbsp;</span> ${message}
+                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span> ${message}
             </p>
         </c:forEach>
 

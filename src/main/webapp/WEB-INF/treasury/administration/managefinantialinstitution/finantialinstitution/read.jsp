@@ -132,11 +132,6 @@ ${portal.toolkit()}
         href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/update/${finantialInstitution.externalId}"><spring:message
             code="label.event.update" /></a> 
             
-            |&nbsp; 
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-            <a class="" href="${pageContext.request.contextPath}/treasury/administration/managefinantialinstitution/finantialinstitution/read/${finantialInstitution.externalId}/sibsconfigurationupdate">
-        		<spring:message code="label.event.administration.managefinantialinstitution.finantialinstitution.sibsConfigurationUpdate" />
-    		</a>
     		|&nbsp;
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
             <a href="${pageContext.request.contextPath}<%= ManageForwardPaymentConfigurationController.SEARCH_URL %>/${finantialInstitution.externalId}"
