@@ -381,20 +381,22 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
                             <td>
 
                                 <ul>
-                                    <c:forEach var="paymentcode" items="${debitEntry.paymentCodesSet}">
-                                        <li><a target="#"
-                                            href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}">
-                                                <c:out
-                                                    value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" />
-                                        </a> &nbsp; <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
+                                    <c:forEach var="paymentcode" items="${debitEntry.sibsPaymentRequests}">
+                                        <li>
+                                        	<a target="#"
+                                            	href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.externalId}">
+                                                <c:out value="[${paymentcode.digitalPaymentPlatform.entityReferenceCode}] ${paymentcode.formattedCode}" />
+											</a> &nbsp; 
+                                        	<c:if test="${paymentcode.state=='USED'}">
                                                 <span class="label label-primary">
-                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='ANNULLED'}">
+                                            </c:if> <c:if test="${paymentcode.state=='ANNULLED'}">
                                                 <span class="label label-danger">
-                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='UNUSED'}">
+                                            </c:if> <c:if test="${paymentcode.state=='UNUSED'}">
                                                 <span class="label label-default">
-                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='PROCESSED'}">
+                                            </c:if> <c:if test="${paymentcode.state=='PROCESSED'}">
                                                 <span class="label label-success">
-                                            </c:if> <c:out value="${paymentcode.paymentReferenceCode.state.descriptionI18N.content}" /> </span></li>
+                                            </c:if> <c:out value="${paymentcode.state.descriptionI18N.content}" /> </span>
+                                        </li>
                                     </c:forEach>
                                 </ul>
                             </td>

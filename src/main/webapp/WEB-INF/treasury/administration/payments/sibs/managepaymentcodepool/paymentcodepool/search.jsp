@@ -102,113 +102,6 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
-<!-- 
-<div class="panel panel-default">
-    <form method="get" class="form-horizontal">
-        <div class="panel-body">
-
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.PaymentCodePool.finantialInstitution" />
-                </div>
-
-                <div class="col-sm-4">
-                    <select id="paymentCodePool_finantialInstitution"
-                        class="js-example-basic-single"
-                        name="finantialinstitution">
-                        <option value="">&nbsp;</option>
-                    </select>
-                </div>
-            </div>
-            
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.name"/></div> 
-<div class="col-sm-10">
-	<input id="paymentCodePool_name" class="form-control" type="text" name="name"  value='<c:out value='${not empty param.name ? param.name : paymentCodePool.name }'/>' />
-</div>	
-</div>	
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.entityReferenceCode"/></div> 
-<div class="col-sm-10">
-	<input id="paymentCodePool_entityReferenceCode" class="form-control" type="text" name="entityreferencecode"  value='<c:out value='${not empty param.entityreferencecode ? param.entityreferencecode : paymentCodePool.entityReferenceCode }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.minReferenceCode"/></div> 
-<div class="col-sm-10">
-	<input id="paymentCodePool_minReferenceCode" class="form-control" type="text" name="minreferencecode"  value='<c:out value='${not empty param.minreferencecode ? param.minreferencecode : paymentCodePool.minReferenceCode }'/>' />
-</div>	
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.maxReferenceCode"/></div> 
-<div class="col-sm-10">
-	<input id="paymentCodePool_maxReferenceCode" class="form-control" type="text" name="maxreferencecode"  value='<c:out value='${not empty param.maxreferencecode ? param.maxreferencecode : paymentCodePool.maxReferenceCode }'/>' />
-</div>	
-</div>	
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.minAmount"/></div> 
-
-<div class="col-sm-10">
-	<input id="paymentCodePool_minAmount" class="form-control" type="text" name="minamount"  value='<c:out value='${not empty param.minamount ? param.minamount : paymentCodePool.minAmount }'/>' />
-</div>	
-</div>	 
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.maxAmount"/></div> 
-
-<div class="col-sm-10">
-	<input id="paymentCodePool_maxAmount" class="form-control" type="text" name="maxamount"  value='<c:out value='${not empty param.maxamount ? param.maxamount : paymentCodePool.maxAmount }'/>' />
-</div>	
-</div>	
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.validFrom"/></div> 
-
-<div class="col-sm-4">
-	<input id="paymentCodePool_validFrom" class="form-control" type="text" name="validfrom"  bennu-datetime value = '<c:out value='${not empty param.validfrom ? param.validfrom : paymentCodePool.validFrom }'/>' />
-</div>
-</div>	
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.validTo"/></div> 
-
-<div class="col-sm-4">
-	<input id="paymentCodePool_validTo" class="form-control" type="text" name="validto"  bennu-datetime value = '<c:out value='${not empty param.validto ? param.validto : paymentCodePool.validTo }'/>' />
-</div>
-</div>		
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.active"/></div> 
-
-<div class="col-sm-2">
-<select id="paymentCodePool_active" name="active" class="form-control">
-<option value="">&nbsp;</option> 
-<option value="false"><spring:message code="label.no"/></option>
-<option value="true"><spring:message code="label.yes"/></option>				
-</select>
-	<script>
-		$("#paymentCodePool_active").val('<c:out value='${not empty param.active ? param.active : paymentCodePool.active }'/>');
-	</script>	
-</div>
-</div>	
-<div class="form-group row">
-<div class="col-sm-2 control-label"><spring:message code="label.PaymentCodePool.useCheckDigit"/></div> 
-
-<div class="col-sm-2">
-<select id="paymentCodePool_useCheckDigit" name="usecheckdigit" class="form-control">
-<option value="">&nbsp;</option> 
-<option value="false"><spring:message code="label.no"/></option>
-<option value="true"><spring:message code="label.yes"/></option>				
-</select>
-	<script>$("#paymentCodePool_useCheckDigit").val('<c:out value='${not empty param.usecheckdigit ? param.usecheckdigit : paymentCodePool.useCheckDigit }'/>');</script>	
-</div>
-</div> 	
-</div>
-        </div>
-        <div class="panel-footer">
-            <input type="submit" class="btn btn-default" role="button"
-                value="<spring:message code="label.search" />" />
-        </div>
-    </form>
-</div>
--->
 
 <c:choose>
     <c:when test="${not empty searchpaymentcodepoolResultsDataSet}">
@@ -217,24 +110,15 @@ ${portal.toolkit()}
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
-                    <th><spring:message
-                            code="label.PaymentCodePool.finantialInstitution" /></th>
-                    <th><spring:message
-                            code="label.PaymentCodePool.name" /></th>
-                    <th><spring:message
-                             code="label.PaymentCodePool.active" /></th> 
-                    <th><spring:message
-                            code="label.PaymentCodePool.entityReferenceCode" /></th>
-                    <th><spring:message
-                            code="label.PaymentCodePool.minReferenceCode" /></th>
-                    <th><spring:message
-                            code="label.PaymentCodePool.maxReferenceCode" /></th>
-                    <th><spring:message
-                            code="label.PaymentCodePool.validFrom" /></th>
-                    <th><spring:message
-                            code="label.PaymentCodePool.validTo" /></th>
-<%--                     <th><spring:message --%>
-<%--                             code="label.PaymentCodePool.useCheckDigit" /></th> --%>
+                    <th><spring:message code="label.PaymentCodePool.finantialInstitution" /></th>
+                    <th><spring:message code="label.PaymentCodePool.name" /></th>
+                    <th><spring:message code="label.PaymentCodePool.active" /></th> 
+                    <th><spring:message code="label.PaymentCodePool.entityReferenceCode" /></th>
+                    <th><spring:message code="label.PaymentCodePool.minReferenceCode" /></th>
+                    <th><spring:message code="label.PaymentCodePool.maxReferenceCode" /></th>
+                    <th><spring:message code="label.PaymentCodePool.validFrom" /></th>
+                    <th><spring:message code="label.PaymentCodePool.validTo" /></th>
+                    <th><spring:message code="label.PaymentCodePool.useCheckDigit" /></th>
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -264,18 +148,18 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
-"name" : "<c:out value='${searchResult.name}'/>",
-"entityreferencecode" : "<c:out value='${searchResult.entityReferenceCode}'/>",
-"minreferencecode" : "<c:out value='${searchResult.minReferenceCode}'/>",
-"maxreferencecode" : "<c:out value='${searchResult.maxReferenceCode}'/>",
-"validfrom" : "<c:out value='${searchResult.validFrom}'/>",
-"validto" : "<c:out value='${searchResult.validTo}'/>",
- "active" : "<c:if test="${searchResult.active}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.active}"><spring:message code="label.false" /></c:if>",
-// "usecheckdigit" : "<c:if test="${searchResult.useCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.useCheckDigit}"><spring:message code="label.false" /></c:if>",
-"actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-                "" 
+				"finantialinstitution" : "<c:out value='${searchResult.finantialInstitution.name}'/>",
+				"name" : "<c:out value='${searchResult.name}'/>",
+				"active" : "<c:if test="${searchResult.active}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.active}"><spring:message code="label.false" /></c:if>",
+				"entityreferencecode" : "<c:out value='${searchResult.entityReferenceCode}'/>",
+				"minreferencecode" : "<c:out value='${searchResult.minReferenceCode}'/>",
+				"maxreferencecode" : "<c:out value='${searchResult.maxReferenceCode}'/>",
+				"validfrom" : "<c:out value='${searchResult.validFrom}'/>",
+				"validto" : "<c:out value='${searchResult.validTo}'/>",
+				 "usecheckdigit" : "<c:if test="${searchResult.useCheckDigit}"><spring:message code="label.true" /></c:if><c:if test="${not searchResult.useCheckDigit}"><spring:message code="label.false" /></c:if>",
+				 "actions" :
+				  " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+                 "" 
 			},
             </c:forEach>
     ];
@@ -317,7 +201,7 @@ ${portal.toolkit()}
 			{ data: 'maxreferencecode' },
 			{ data: 'validfrom' },
 			{ data: 'validto' },
-// 			{ data: 'usecheckdigit' },
+ 			{ data: 'usecheckdigit' },
 			{ data: 'actions',className:"all" }
 			
 		],

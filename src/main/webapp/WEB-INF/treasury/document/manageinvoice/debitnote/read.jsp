@@ -588,31 +588,6 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
                                 class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span></td>
                         </tr>
                     </c:if>
-<%--                     <c:if test="${debitNote.paymentCodesSet.size()>0 && debitNote.openAmount > 0  }"> --%>
-                        <tr>
-                            <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.payemntCodes" /></th>
-                            <td>
-
-                                <ul>
-                                    <c:forEach var="paymentcode" items="${debitNote.paymentCodesSet}">
-                                        <li><a target="#"
-                                            href="${pageContext.request.contextPath}<%=PaymentReferenceCodeController.READ_URL %>${paymentcode.paymentReferenceCode.externalId}">
-                                                <c:out
-                                                    value="[${paymentcode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentcode.paymentReferenceCode.formattedCode}" />
-                                        </a> &nbsp; <c:if test="${paymentcode.paymentReferenceCode.state=='USED'}">
-                                                <span class="label label-primary">
-                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='ANNULLED'}">
-                                                <span class="label label-danger">
-                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='UNUSED'}">
-                                                <span class="label label-default">
-                                            </c:if> <c:if test="${paymentcode.paymentReferenceCode.state=='PROCESSED'}">
-                                                <span class="label label-success">
-                                            </c:if> <c:out value="${paymentcode.paymentReferenceCode.state.descriptionI18N.content}" /> </span></li>
-                                    </c:forEach>
-                                </ul>
-                            </td>
-                        </tr>
-<%--                     </c:if> --%>
                     <c:if test="${not empty debitNote.relatedSettlementEntries }">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.DebitNote.relatedSettlementEntries" /></th>
@@ -737,14 +712,14 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
             </datatables:column>
         </datatables:table>
         <script>
-									createDataTables(
-											'debitEntries',
-											false,
-											false,
-											false,
-											"${pageContext.request.contextPath}",
-											"${datatablesI18NUrl}");
-								</script>
+			createDataTables(
+					'debitEntries',
+					false,
+					false,
+					false,
+					"${pageContext.request.contextPath}",
+					"${datatablesI18NUrl}");
+		</script>
     </c:when>
     <c:otherwise>
         <div class="alert alert-warning" role="alert">
