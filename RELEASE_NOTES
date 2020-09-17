@@ -1,3 +1,5 @@
+- Bug Fix: Accept in webhook waiting or rejected mbway notification
+
 5.1.1 (16-09-2020)
 - Bug Fix: Fix deserialization of webhook activation message, due to changes in the JSON payload
 

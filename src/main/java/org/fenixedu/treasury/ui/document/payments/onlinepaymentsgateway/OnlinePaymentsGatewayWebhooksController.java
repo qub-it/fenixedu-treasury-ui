@@ -132,14 +132,14 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                     throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
                 }
                 
-                if (!bean.isPaid()) {
-                    throw new TreasuryDomainException(
-                            "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
+                if (bean.isPaid()) {
+                    final MbwayPaymentRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
+                    
+                    mbwayPaymentRequest.processMbwayTransaction(log, bean);
                 }
 
-                final MbwayPaymentRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
-                
-                mbwayPaymentRequest.processMbwayTransaction(log, bean);
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
             } else {
                 final boolean isForwardPayment = ForwardPayment.findAll()
                     .filter(p -> p.getSibsMerchantTransactionId() != null)
