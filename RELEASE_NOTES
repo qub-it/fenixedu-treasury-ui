@@ -1,3 +1,5 @@
+- Improvement: Add CGD logo to display in forward payment
+
 5.1.2 (17-09-2020)
 - Bug Fix: Accept in webhook waiting or rejected mbway notification
 

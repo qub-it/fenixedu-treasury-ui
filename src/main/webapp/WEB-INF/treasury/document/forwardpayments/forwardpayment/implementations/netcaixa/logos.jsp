@@ -16,5 +16,10 @@
 	&nbsp;
 	&nbsp;
 	<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/netcaixa/mb.png" />
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	&nbsp;
+	<img src="${pageContext.request.contextPath}/static/treasury/images/forwardpayments/netcaixa/cgd.jpg" />
 	
 </div>
