@@ -311,6 +311,8 @@
 					</execution>
 				</executions>
 			</plugin>
+			<!-- Dependency needed because we cannot be a child of 2 parent projects 
+				(versioning and webservices) -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxws-maven-plugin</artifactId>
@@ -331,6 +333,87 @@
 							</wsdlFiles>
 							<wsdlLocation>
 								/wsdl/forwardpayments/payline/WebPaymentAPI_V4.wsdl
+							</wsdlLocation>
+							<extension>true</extension>
+							<protocol>Xsoap1.2</protocol>
+							<vmArgs>
+								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+							</vmArgs>
+						</configuration>
+					</execution>
+					<execution>
+						<id>SIAG</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<packageName>org.fenixedu.treasury.services.integration.erp.siag</packageName>
+
+							<!-- <wsdlDirectory> -->
+							<!-- src/main/webapp/wsdl -->
+							<!-- </wsdlDirectory> -->
+							<wsdlFiles>
+								<wsdlFile>
+									${basedir}/src/main/resources/wsdl/SIAGGestaoAcademicaService.wsdl
+								</wsdlFile>
+							</wsdlFiles>
+							<wsdlLocation>
+								/wsdl/SIAGGestaoAcademicaService.wsdl
+							</wsdlLocation>
+							<vmArgs>
+								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+							</vmArgs>
+						</configuration>
+
+					</execution>
+					<execution>
+						<id>SINGAP_WCF</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<packageName>org.fenixedu.treasury.services.integration.erp.singapWCF</packageName>
+
+							<!-- <wsdlDirectory> -->
+							<!-- src/main/webapp/wsdl -->
+							<!-- </wsdlDirectory> -->
+							<wsdlFiles>
+								<wsdlFile>
+									${basedir}/src/main/resources/wsdl/WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.wsdl
+								</wsdlFile>
+							</wsdlFiles>
+							<wsdlLocation>
+								/wsdl/WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.wsdl
+							</wsdlLocation>
+							<extension>true</extension>
+							<protocol>Xsoap1.2</protocol>
+							<vmArgs>
+								<vmArg>-Djavax.xml.accessExternalSchema=all </vmArg>
+							</vmArgs>
+						</configuration>
+
+					</execution>
+					<execution>
+						<id>SAP</id>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>wsimport</goal>
+						</goals>
+						<configuration>
+							<packageName>org.fenixedu.treasury.services.integration.erp.sap</packageName>
+
+							<!-- <wsdlDirectory> -->
+							<!-- src/main/webapp/wsdl -->
+							<!-- </wsdlDirectory> -->
+							<wsdlFiles>
+								<wsdlFile>
+									${basedir}/src/main/resources/wsdl/zulws_faturacaoclientes_blk_2017_01_17.xml
+								</wsdlFile>
+							</wsdlFiles>
+							<wsdlLocation>
+								/wsdl/zulws_faturacaoclientes_blk_2017_01_17.xml
 							</wsdlLocation>
 							<extension>true</extension>
 							<protocol>Xsoap1.2</protocol>

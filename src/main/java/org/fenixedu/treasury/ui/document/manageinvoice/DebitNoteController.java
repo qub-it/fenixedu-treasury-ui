@@ -40,8 +40,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -64,7 +62,6 @@ import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.TreasuryConstants;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -619,7 +616,7 @@ public class DebitNoteController extends TreasuryBaseController {
             debitNote.clearDocumentToExport(reason);
 
             return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
@@ -647,7 +644,7 @@ public class DebitNoteController extends TreasuryBaseController {
             model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
 
             return "treasury/document/manageinvoice/debitnote/updatepayordebtaccount";
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 
@@ -669,7 +666,7 @@ public class DebitNoteController extends TreasuryBaseController {
             } else {
                 addErrorMessage(treasuryBundle("error.DebitNote.updatePayorDebtAccount.payor.not.changed"), model);
             }
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 

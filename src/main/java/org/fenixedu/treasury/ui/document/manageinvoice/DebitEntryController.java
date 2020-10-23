@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.Product;
@@ -145,7 +144,7 @@ public class DebitEntryController extends TreasuryBaseController {
             } else {
                 return redirect(DebtAccountController.READ_URL + account.getExternalId(), model, redirectAttributes);
             }
-        } catch (DomainException ex) {
+        } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }

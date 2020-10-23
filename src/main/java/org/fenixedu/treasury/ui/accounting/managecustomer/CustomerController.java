@@ -32,15 +32,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.springframework.ui.Model;
@@ -178,9 +175,8 @@ public class CustomerController extends TreasuryBaseController {
             delete(customer);
 
             return redirect(SEARCH_FULL_URI, model, redirectAttributes);
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-
             return read(customer, model, redirectAttributes);
         }
     }

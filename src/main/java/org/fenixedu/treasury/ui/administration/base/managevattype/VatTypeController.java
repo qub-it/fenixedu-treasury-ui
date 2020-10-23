@@ -32,8 +32,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -145,9 +143,6 @@ public class VatTypeController extends TreasuryBaseController {
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
 
-        } catch (DomainException ex) {
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
@@ -172,10 +167,6 @@ public class VatTypeController extends TreasuryBaseController {
 
             return redirect("/treasury/administration/base/managevattype/vattype/read/" + getVatType(model).getExternalId(),
                     model, redirectAttributes);
-
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
 
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
@@ -210,10 +201,6 @@ public class VatTypeController extends TreasuryBaseController {
 
             return redirect("/treasury/administration/base/managevattype/vattype/read/" + getVatType(model).getExternalId(),
                     model, redirectAttributes);
-
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
-            return update(vatType, model);
 
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);

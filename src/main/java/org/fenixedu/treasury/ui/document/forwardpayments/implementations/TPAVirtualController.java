@@ -29,11 +29,11 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/tpavirtual";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment/implementations/tpavirtual";
 
-    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
+    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Object model, HttpServletResponse response,
             HttpSession session) {
 
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
-        model.addAttribute("forwardPayment", forwardPayment);
+        ((Model) model).addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
+        ((Model) model).addAttribute("forwardPayment", forwardPayment);
         return jspPage("hostedPay");
     }
 

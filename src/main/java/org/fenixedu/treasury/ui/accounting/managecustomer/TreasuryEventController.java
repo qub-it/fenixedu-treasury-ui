@@ -30,14 +30,8 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -45,7 +39,6 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,10 +46,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
+
+import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.treasury.ui.viewCustomerTreasuryEvents") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.viewCustomerTreasuryEvents",accessGroup = "#managers")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -153,7 +145,7 @@ public class TreasuryEventController extends TreasuryBaseController {
                 debitEntry.annulOnEvent();
             }
 
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 
@@ -173,7 +165,7 @@ public class TreasuryEventController extends TreasuryBaseController {
                 debitEntry.revertEventAnnuled();
             }
 
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 
@@ -200,7 +192,7 @@ public class TreasuryEventController extends TreasuryBaseController {
 
             addInfoMessage(treasuryBundle("label.TreasuryEvent.annulAllDebitEntries.success"), model);
 
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 
@@ -228,7 +220,7 @@ public class TreasuryEventController extends TreasuryBaseController {
             treasuryExemption.delete();
 
             addInfoMessage(treasuryBundle("label.success.delete"), model);
-        } catch (final DomainException ex) {
+        } catch (final Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return read(debtAccount, treasuryEvent, model);
         }

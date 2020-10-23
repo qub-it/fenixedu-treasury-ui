@@ -31,8 +31,6 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -45,7 +43,6 @@ import org.fenixedu.treasury.dto.FixedTariffBean;
 import org.fenixedu.treasury.dto.FixedTariffInterestRateBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.base.manageproduct.ProductController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.ui.Model;
@@ -106,9 +103,6 @@ public class FixedTariffController extends TreasuryBaseController {
 
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(ProductController.READ_URL + productId, model, redirectAttributes);
-        } catch (DomainException ex) {
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
