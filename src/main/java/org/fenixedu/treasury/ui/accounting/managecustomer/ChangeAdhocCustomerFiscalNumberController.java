@@ -2,14 +2,12 @@ package org.fenixedu.treasury.ui.accounting.managecustomer;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -103,9 +101,8 @@ public class ChangeAdhocCustomerFiscalNumberController extends TreasuryBaseContr
             adhocCustomer.changeFiscalNumber(bean);
 
             return "forward:" + CustomerController.READ_URL + adhocCustomer.getExternalId();
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-
             return _changefiscalnumberactionconfirm(adhocCustomer, model, bean);
         }
     }

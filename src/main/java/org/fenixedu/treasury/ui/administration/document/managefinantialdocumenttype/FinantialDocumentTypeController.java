@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
@@ -142,10 +140,6 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
-
-        } catch (DomainException ex) {
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
@@ -177,9 +171,6 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
             model.addAttribute("finantialDocumentType", finantialDocumentType);
             return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
-
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
 
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
@@ -234,8 +225,6 @@ public class FinantialDocumentTypeController extends TreasuryBaseController {
 
             return redirect(READ_URL + getFinantialDocumentType(model).getExternalId(), model, redirectAttributes);
 
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
         }

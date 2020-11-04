@@ -8,10 +8,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
+import org.fenixedu.bennu.core.signals.DomainObjectEvent;
+import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.bennu.io.domain.IGenericFile;
@@ -49,10 +53,13 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import com.google.common.base.Strings;
+import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceAuthenticationLevel;
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceClientConfiguration;
 import com.qubit.solution.fenixedu.bennu.webservices.domain.webservice.WebServiceConfiguration;
 
+import pt.ist.fenixWebFramework.servlets.filters.contentRewrite.GenericChecksumRewriter;
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.DomainObject;
 
 public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatformDependentServices {
 
@@ -213,6 +220,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     @Override
     public Locale defaultLocale() {
         return org.apache.commons.lang.LocaleUtils.toLocale(CoreConfiguration.getConfiguration().defaultLocale());
+    }
+    
+    @Override
+    public Locale currentLocale() {
+        return I18N.getLocale();
     }
     
     @Override
@@ -533,6 +545,41 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         }
 
         order.setDetails(details);
+    }
+
+    @Override
+    public void paylineConfigureWebservice(PaylineConfiguration paylineConfiguration) {
+        WebServiceClientConfiguration configuration = WebServiceConfiguration.readByImplementationClass(
+                "org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineWebServiceClient");
+        
+        configuration.setAuthenticationLevel(WebServiceAuthenticationLevel.BASIC_AUTH);
+        configuration.setUrl(paylineConfiguration.getPaymentURL());
+        configuration.setClientUsername(paylineConfiguration.getPaylineMerchantId());
+        configuration.setClientPassword(paylineConfiguration.getPaylineMerchantAccessKey());
+    }
+    
+    /* Web */
+
+    @Override
+    public String calculateURLChecksum(String urlToChecksum, HttpSession session) {
+        return GenericChecksumRewriter.calculateChecksum(urlToChecksum, session);
+    }
+
+    /* Domain entities events */
+    
+    @Override
+    public void signalsRegisterHandlerForKey(String signalKey, Object handler) {
+        Signal.register(signalKey, handler);
+    }
+
+    @Override
+    public void signalsUnregisterHandlerForKey(String signalKey, Object handler) {
+        Signal.unregister(signalKey, handler);
+    }
+    
+    @Override
+    public void signalsEmitForObject(String signalKey, DomainObject obj) {
+        Signal.emit(signalKey, new DomainObjectEvent<DomainObject>(obj));
     }
 
 }

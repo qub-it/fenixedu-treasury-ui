@@ -1,0 +1,924 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/WCFGenio.WSF">
+<xs:import schemaLocation="WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.xsd2.xsd" namespace="http://schemas.datacontract.org/2004/07/WCFGenio"/>
+<xs:complexType name="FormResponseOneLinhaDeRegistoInicialDaReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q1="http://schemas.datacontract.org/2004/07/WCFGenio" base="q1:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordLinhaDeRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneLinhaDeRegistoInicialDaReceita" nillable="true" type="tns:FormResponseOneLinhaDeRegistoInicialDaReceita"/>
+<xs:complexType name="FormRecordLinhaDeRegistoInicialDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Aiva" nillable="true" type="tns:ArrayAtaxaiva"/>
+<xs:element minOccurs="0" name="Codartiv" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclecr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclorr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclrac" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codffina" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmsiva" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorcam" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codprece" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrica" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrrtf" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Posicao" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prunit" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Qtd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordLinhaDeRegistoInicialDaReceita" nillable="true" type="tns:FormRecordLinhaDeRegistoInicialDaReceita"/>
+<xs:simpleType name="ArrayAtaxaiva">
+<xs:restriction base="xs:string">
+<xs:enumeration value="V23_1"/>
+<xs:enumeration value="V22_2"/>
+<xs:enumeration value="V21_3"/>
+<xs:enumeration value="V20_4"/>
+<xs:enumeration value="V19_5"/>
+<xs:enumeration value="V18_6"/>
+<xs:enumeration value="V17_7"/>
+<xs:enumeration value="V16_8"/>
+<xs:enumeration value="V15_9"/>
+<xs:enumeration value="V14_10"/>
+<xs:enumeration value="V13_11"/>
+<xs:enumeration value="V12_12"/>
+<xs:enumeration value="V10_13"/>
+<xs:enumeration value="V9_14"/>
+<xs:enumeration value="V8_15"/>
+<xs:enumeration value="V6_16"/>
+<xs:enumeration value="V5_17"/>
+<xs:enumeration value="V4_18"/>
+<xs:enumeration value="V0_19"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayAtaxaiva" nillable="true" type="tns:ArrayAtaxaiva"/>
+<xs:complexType name="FormResponseOneRegistoInicialDaReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q2="http://schemas.datacontract.org/2004/07/WCFGenio" base="q2:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneRegistoInicialDaReceita" nillable="true" type="tns:FormResponseOneRegistoInicialDaReceita"/>
+<xs:complexType name="FormRecordRegistoInicialDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Clienvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codender" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codestab" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Contabil" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Cpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Fenix" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Lpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morclivd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Ncontrvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prazodia" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prazorec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Preciva" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Seriextr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tipntcrd" nillable="true" type="tns:ArrayTpntcrd"/>
+<xs:element minOccurs="0" name="Tiporece" nillable="true" type="tns:ArrayTprevisa"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordRegistoInicialDaReceita" nillable="true" type="tns:FormRecordRegistoInicialDaReceita"/>
+<xs:simpleType name="ArrayTpntcrd">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VDescontoFinanceiro_1"/>
+<xs:enumeration value="VDescontoComercial_2"/>
+<xs:enumeration value="VDevolucaoDeVendas_3"/>
+<xs:enumeration value="VDiferencaDeCambio_4"/>
+<xs:enumeration value="VAnulacaoParcial_5"/>
+<xs:enumeration value="VExerciciosAnteriores_6"/>
+<xs:enumeration value="VRestituicoes_7"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayTpntcrd" nillable="true" type="tns:ArrayTpntcrd"/>
+<xs:simpleType name="ArrayTprevisa">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VFatura_1"/>
+<xs:enumeration value="VFaturaSimplificada_2"/>
+<xs:enumeration value="VNotaDeDebito_3"/>
+<xs:enumeration value="VNotaDeCredito_4"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayTprevisa" nillable="true" type="tns:ArrayTprevisa"/>
+<xs:complexType name="FormResponseOneReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q3="http://schemas.datacontract.org/2004/07/WCFGenio" base="q3:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordReceita"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneReceita" nillable="true" type="tns:FormResponseOneReceita"/>
+<xs:complexType name="FormRecordReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Clienvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codender" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codestab" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Cpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Guia" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Loja" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Lpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morclivd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupl2" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupl3" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupl4" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupli" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Ncontrvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Nomecli" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numseqer" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Obs" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tiporece" nillable="true" type="tns:ArrayTreceita"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordReceita" nillable="true" type="tns:FormRecordReceita"/>
+<xs:simpleType name="ArrayTreceita">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VFatura_1"/>
+<xs:enumeration value="VFaturaSimplificada_2"/>
+<xs:enumeration value="VFaturaRecibo_3"/>
+<xs:enumeration value="VNotaDeDebito_4"/>
+<xs:enumeration value="VVdLoja_5"/>
+<xs:enumeration value="VVdEncomenda_6"/>
+<xs:enumeration value="VGuiaDeReceita_7"/>
+<xs:enumeration value="VAnosAnteriores_8"/>
+<xs:enumeration value="VNotaDeCredito_9"/>
+<xs:enumeration value="VAvisoDeDebito_10"/>
+<xs:enumeration value="VReposicaoNaoAbatida_11"/>
+<xs:enumeration value="VTituloDeCobranca_12"/>
+<xs:enumeration value="VGuiaDeDeposito_13"/>
+<xs:enumeration value="VRequisicaoDeFundos_14"/>
+<xs:enumeration value="VSubsidios_15"/>
+<xs:enumeration value="VEmolumentos_16"/>
+<xs:enumeration value="VDiferencasDeCambio_17"/>
+<xs:enumeration value="VJurosCredores_18"/>
+<xs:enumeration value="VNotificacoes_19"/>
+<xs:enumeration value="VCoima_20"/>
+<xs:enumeration value="VRecuperacaoDeIva_21"/>
+<xs:enumeration value="VSaldoDeGerencia_22"/>
+<xs:enumeration value="VCustas_23"/>
+<xs:enumeration value="VDonativos_24"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayTreceita" nillable="true" type="tns:ArrayTreceita"/>
+<xs:complexType name="FormResponseOneRecibo">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q4="http://schemas.datacontract.org/2004/07/WCFGenio" base="q4:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordRecibo"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneRecibo" nillable="true" type="tns:FormResponseOneRecibo"/>
+<xs:complexType name="FormRecordRecibo">
+<xs:sequence>
+<xs:element minOccurs="0" name="Ano" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codestab" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valrcbml" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordRecibo" nillable="true" type="tns:FormRecordRecibo"/>
+<xs:complexType name="FormResponseOneRecebimentosPorClassificadores">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q5="http://schemas.datacontract.org/2004/07/WCFGenio" base="q5:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordRecebimentosPorClassificadores"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneRecebimentosPorClassificadores" nillable="true" type="tns:FormResponseOneRecebimentosPorClassificadores"/>
+<xs:complexType name="FormRecordRecebimentosPorClassificadores">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codclorr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclrac" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codffina" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecei" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecml" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrica" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Posicao" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Vallinha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordRecebimentosPorClassificadores" nillable="true" type="tns:FormRecordRecebimentosPorClassificadores"/>
+<xs:complexType name="FormResponseOneRecebimentoParcial">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q6="http://schemas.datacontract.org/2004/07/WCFGenio" base="q6:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordRecebimentoParcial"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneRecebimentoParcial" nillable="true" type="tns:FormResponseOneRecebimentoParcial"/>
+<xs:complexType name="FormRecordRecebimentoParcial">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codfolha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecei" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Wservi" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordRecebimentoParcial" nillable="true" type="tns:FormRecordRecebimentoParcial"/>
+<xs:complexType name="DBEditResponseSeveralProdutosAcabados">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q7="http://schemas.datacontract.org/2004/07/WCFGenio" base="q7:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordProdutosAcabados"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralProdutosAcabados" nillable="true" type="tns:DBEditResponseSeveralProdutosAcabados"/>
+<xs:complexType name="ArrayOfDBEditRecordProdutosAcabados">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordProdutosAcabados" nillable="true" type="tns:DBEditRecordProdutosAcabados"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordProdutosAcabados" nillable="true" type="tns:ArrayOfDBEditRecordProdutosAcabados"/>
+<xs:complexType name="DBEditRecordProdutosAcabados">
+<xs:sequence>
+<xs:element minOccurs="0" name="Artivweb" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codigopr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrica" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Sewservi" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tipoarti" nillable="true" type="tns:ArrayTipoprsa"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordProdutosAcabados" nillable="true" type="tns:DBEditRecordProdutosAcabados"/>
+<xs:simpleType name="ArrayTipoprsa">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VProdutos_1"/>
+<xs:enumeration value="VServicos_2"/>
+<xs:enumeration value="VOutros_3"/>
+<xs:enumeration value="VImpostos_4"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayTipoprsa" nillable="true" type="tns:ArrayTipoprsa"/>
+<xs:complexType name="DBEditResponseSeveralEnderecos">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q8="http://schemas.datacontract.org/2004/07/WCFGenio" base="q8:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordEnderecos"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralEnderecos" nillable="true" type="tns:DBEditResponseSeveralEnderecos"/>
+<xs:complexType name="ArrayOfDBEditRecordEnderecos">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordEnderecos" nillable="true" type="tns:DBEditRecordEnderecos"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordEnderecos" nillable="true" type="tns:ArrayOfDBEditRecordEnderecos"/>
+<xs:complexType name="DBEditRecordEnderecos">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Cpostal" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Lpostal" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morada" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Mordonde" nillable="true" type="tns:ArrayAmordond"/>
+<xs:element minOccurs="0" name="Morfatur" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morprinc" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Pais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Paisnif" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordEnderecos" nillable="true" type="tns:DBEditRecordEnderecos"/>
+<xs:simpleType name="ArrayAmordond">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VSede_1"/>
+<xs:enumeration value="VEscritorio_2"/>
+<xs:enumeration value="VLoja_3"/>
+<xs:enumeration value="VOficina_4"/>
+<xs:enumeration value="VArmazem_5"/>
+<xs:enumeration value="VFabrica_6"/>
+<xs:enumeration value="VFilial_7"/>
+<xs:enumeration value="VExpositor_8"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayAmordond" nillable="true" type="tns:ArrayAmordond"/>
+<xs:complexType name="DBEditResponseSeveralMovimentosDeTesouraria">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q9="http://schemas.datacontract.org/2004/07/WCFGenio" base="q9:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordMovimentosDeTesouraria"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralMovimentosDeTesouraria" nillable="true" type="tns:DBEditResponseSeveralMovimentosDeTesouraria"/>
+<xs:complexType name="ArrayOfDBEditRecordMovimentosDeTesouraria">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordMovimentosDeTesouraria" nillable="true" type="tns:DBEditRecordMovimentosDeTesouraria"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordMovimentosDeTesouraria" nillable="true" type="tns:ArrayOfDBEditRecordMovimentosDeTesouraria"/>
+<xs:complexType name="DBEditRecordMovimentosDeTesouraria">
+<xs:sequence>
+<xs:element minOccurs="0" name="Clifenix" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codagenc" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Dtfolha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Enviado" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Fenix" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numfolha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tipopaga" nillable="true" type="tns:ArrayTipopags"/>
+<xs:element minOccurs="0" name="Tpfolha" nillable="true" type="tns:ArrayTpfolha"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordMovimentosDeTesouraria" nillable="true" type="tns:DBEditRecordMovimentosDeTesouraria"/>
+<xs:simpleType name="ArrayTipopags">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VCheque_1"/>
+<xs:enumeration value="VNumerario_2"/>
+<xs:enumeration value="VDeposito_3"/>
+<xs:enumeration value="VTransferencia_4"/>
+<xs:enumeration value="VValePostal_5"/>
+<xs:enumeration value="VMultibanco_6"/>
+<xs:enumeration value="VCartaoDeDebitoOuCredito_7"/>
+<xs:enumeration value="VLevantamento_8"/>
+<xs:enumeration value="VDebitoEmConta_9"/>
+<xs:enumeration value="VCreditoEmConta_10"/>
+<xs:enumeration value="VLetra_11"/>
+<xs:enumeration value="VSibs_12"/>
+<xs:enumeration value="VOutros_13"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayTipopags" nillable="true" type="tns:ArrayTipopags"/>
+<xs:simpleType name="ArrayTpfolha">
+<xs:restriction base="xs:string">
+<xs:enumeration value="VPagamento_1"/>
+<xs:enumeration value="VRecebimento_2"/>
+</xs:restriction>
+</xs:simpleType>
+<xs:element name="ArrayTpfolha" nillable="true" type="tns:ArrayTpfolha"/>
+<xs:complexType name="DBEditResponseSeveralTerceiros">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q10="http://schemas.datacontract.org/2004/07/WCFGenio" base="q10:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordTerceiros"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralTerceiros" nillable="true" type="tns:DBEditResponseSeveralTerceiros"/>
+<xs:complexType name="ArrayOfDBEditRecordTerceiros">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordTerceiros" nillable="true" type="tns:DBEditRecordTerceiros"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordTerceiros" nillable="true" type="tns:ArrayOfDBEditRecordTerceiros"/>
+<xs:complexType name="DBEditRecordTerceiros">
+<xs:sequence>
+<xs:element minOccurs="0" name="Cliente" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codigocl" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Contacto" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Email" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Fax" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Integws" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Nif" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Nome" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numentid" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numero" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Site" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Sufixnif" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Telefone" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordTerceiros" nillable="true" type="tns:DBEditRecordTerceiros"/>
+<xs:complexType name="DBEditResponseSeveralAfectacoesAContabilidadeAnalitica">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q11="http://schemas.datacontract.org/2004/07/WCFGenio" base="q11:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordAfectacoesAContabilidadeAnalitica"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralAfectacoesAContabilidadeAnalitica" nillable="true" type="tns:DBEditResponseSeveralAfectacoesAContabilidadeAnalitica"/>
+<xs:complexType name="ArrayOfDBEditRecordAfectacoesAContabilidadeAnalitica">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordAfectacoesAContabilidadeAnalitica" nillable="true" type="tns:DBEditRecordAfectacoesAContabilidadeAnalitica"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordAfectacoesAContabilidadeAnalitica" nillable="true" type="tns:ArrayOfDBEditRecordAfectacoesAContabilidadeAnalitica"/>
+<xs:complexType name="DBEditRecordAfectacoesAContabilidadeAnalitica">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codccust" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclecr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codlrece" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorcam" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codtccus" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Percenta" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Percreal" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordAfectacoesAContabilidadeAnalitica" nillable="true" type="tns:DBEditRecordAfectacoesAContabilidadeAnalitica"/>
+<xs:complexType name="DBEditResponseSeveralLinhasDaReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q12="http://schemas.datacontract.org/2004/07/WCFGenio" base="q12:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordLinhasDaReceita"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralLinhasDaReceita" nillable="true" type="tns:DBEditResponseSeveralLinhasDaReceita"/>
+<xs:complexType name="ArrayOfDBEditRecordLinhasDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordLinhasDaReceita" nillable="true" type="tns:DBEditRecordLinhasDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordLinhasDaReceita" nillable="true" type="tns:ArrayOfDBEditRecordLinhasDaReceita"/>
+<xs:complexType name="DBEditRecordLinhasDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Aiva" nillable="true" type="tns:ArrayAtaxaiva"/>
+<xs:element minOccurs="0" name="Codartiv" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclecr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclorr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclrac" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codffina" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorcam" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpocp" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecei" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prunit" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Qtd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordLinhasDaReceita" nillable="true" type="tns:DBEditRecordLinhasDaReceita"/>
+<xs:complexType name="DBEditResponseSeveralLinhasDeRegistoInicialDaReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q13="http://schemas.datacontract.org/2004/07/WCFGenio" base="q13:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordLinhasDeRegistoInicialDaReceita"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralLinhasDeRegistoInicialDaReceita" nillable="true" type="tns:DBEditResponseSeveralLinhasDeRegistoInicialDaReceita"/>
+<xs:complexType name="ArrayOfDBEditRecordLinhasDeRegistoInicialDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordLinhasDeRegistoInicialDaReceita" nillable="true" type="tns:DBEditRecordLinhasDeRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordLinhasDeRegistoInicialDaReceita" nillable="true" type="tns:ArrayOfDBEditRecordLinhasDeRegistoInicialDaReceita"/>
+<xs:complexType name="DBEditRecordLinhasDeRegistoInicialDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Aiva" nillable="true" type="tns:ArrayAtaxaiva"/>
+<xs:element minOccurs="0" name="Codartiv" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclecr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclorr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclrac" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codffina" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmsiva" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorcam" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codprece" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrica" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrrtf" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Posicao" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prunit" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Qtd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordLinhasDeRegistoInicialDaReceita" nillable="true" type="tns:DBEditRecordLinhasDeRegistoInicialDaReceita"/>
+<xs:complexType name="DBEditResponseSeveralRegistosIniciaisDaReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q14="http://schemas.datacontract.org/2004/07/WCFGenio" base="q14:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordRegistosIniciaisDaReceita"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralRegistosIniciaisDaReceita" nillable="true" type="tns:DBEditResponseSeveralRegistosIniciaisDaReceita"/>
+<xs:complexType name="ArrayOfDBEditRecordRegistosIniciaisDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordRegistosIniciaisDaReceita" nillable="true" type="tns:DBEditRecordRegistosIniciaisDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordRegistosIniciaisDaReceita" nillable="true" type="tns:ArrayOfDBEditRecordRegistosIniciaisDaReceita"/>
+<xs:complexType name="DBEditRecordRegistosIniciaisDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Clienvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codender" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codestab" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Contabil" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Cpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Fenix" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Lpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morclivd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Ncontrvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prazodia" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prazorec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Preciva" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Seriextr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tipntcrd" nillable="true" type="tns:ArrayTpntcrd"/>
+<xs:element minOccurs="0" name="Tiporece" nillable="true" type="tns:ArrayTprevisa"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordRegistosIniciaisDaReceita" nillable="true" type="tns:DBEditRecordRegistosIniciaisDaReceita"/>
+<xs:complexType name="DBEditResponseSeveralReceitas">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q15="http://schemas.datacontract.org/2004/07/WCFGenio" base="q15:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordReceitas"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralReceitas" nillable="true" type="tns:DBEditResponseSeveralReceitas"/>
+<xs:complexType name="ArrayOfDBEditRecordReceitas">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordReceitas" nillable="true" type="tns:DBEditRecordReceitas"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordReceitas" nillable="true" type="tns:ArrayOfDBEditRecordReceitas"/>
+<xs:complexType name="DBEditRecordReceitas">
+<xs:sequence>
+<xs:element minOccurs="0" name="Clienvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codender" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codestab" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Cpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Guia" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Loja" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Lpostvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morclivd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupl2" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupl3" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupl4" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Naodupli" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Ncontrvd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Nomecli" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numseqer" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Obs" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tiporece" nillable="true" type="tns:ArrayTreceita"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordReceitas" nillable="true" type="tns:DBEditRecordReceitas"/>
+<xs:complexType name="DBEditResponseSeveralRecibos">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q16="http://schemas.datacontract.org/2004/07/WCFGenio" base="q16:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordRecibos"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralRecibos" nillable="true" type="tns:DBEditResponseSeveralRecibos"/>
+<xs:complexType name="ArrayOfDBEditRecordRecibos">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordRecibos" nillable="true" type="tns:DBEditRecordRecibos"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordRecibos" nillable="true" type="tns:ArrayOfDBEditRecordRecibos"/>
+<xs:complexType name="DBEditRecordRecibos">
+<xs:sequence>
+<xs:element minOccurs="0" name="Ano" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codestab" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valrcbml" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordRecibos" nillable="true" type="tns:DBEditRecordRecibos"/>
+<xs:complexType name="DBEditResponseSeveralRecebimentosPorClassificador">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q17="http://schemas.datacontract.org/2004/07/WCFGenio" base="q17:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordRecebimentosPorClassificador"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralRecebimentosPorClassificador" nillable="true" type="tns:DBEditResponseSeveralRecebimentosPorClassificador"/>
+<xs:complexType name="ArrayOfDBEditRecordRecebimentosPorClassificador">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordRecebimentosPorClassificador" nillable="true" type="tns:DBEditRecordRecebimentosPorClassificador"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordRecebimentosPorClassificador" nillable="true" type="tns:ArrayOfDBEditRecordRecebimentosPorClassificador"/>
+<xs:complexType name="DBEditRecordRecebimentosPorClassificador">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codclorr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclrac" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codffina" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecei" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecml" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrica" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Posicao" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Vallinha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordRecebimentosPorClassificador" nillable="true" type="tns:DBEditRecordRecebimentosPorClassificador"/>
+<xs:complexType name="DBEditResponseSeveralRecebimentosParciais">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q18="http://schemas.datacontract.org/2004/07/WCFGenio" base="q18:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordRecebimentosParciais"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralRecebimentosParciais" nillable="true" type="tns:DBEditResponseSeveralRecebimentosParciais"/>
+<xs:complexType name="ArrayOfDBEditRecordRecebimentosParciais">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordRecebimentosParciais" nillable="true" type="tns:DBEditRecordRecebimentosParciais"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordRecebimentosParciais" nillable="true" type="tns:ArrayOfDBEditRecordRecebimentosParciais"/>
+<xs:complexType name="DBEditRecordRecebimentosParciais">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codfolha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecei" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Wservi" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordRecebimentosParciais" nillable="true" type="tns:DBEditRecordRecebimentosParciais"/>
+<xs:complexType name="DBEditResponseSeveralLogs">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q19="http://schemas.datacontract.org/2004/07/WCFGenio" base="q19:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="tns:ArrayOfDBEditRecordLogs"/>
+<xs:element minOccurs="0" name="numRecords" type="xs:int"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="DBEditResponseSeveralLogs" nillable="true" type="tns:DBEditResponseSeveralLogs"/>
+<xs:complexType name="ArrayOfDBEditRecordLogs">
+<xs:sequence>
+<xs:element minOccurs="0" maxOccurs="unbounded" name="DBEditRecordLogs" nillable="true" type="tns:DBEditRecordLogs"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="ArrayOfDBEditRecordLogs" nillable="true" type="tns:ArrayOfDBEditRecordLogs"/>
+<xs:complexType name="DBEditRecordLogs">
+<xs:sequence>
+<xs:element minOccurs="0" name="Estado" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Funcao" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Hora" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Mensagem" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Xml" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DBEditRecordLogs" nillable="true" type="tns:DBEditRecordLogs"/>
+<xs:complexType name="FormResponseOneProdutoAcabado">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q20="http://schemas.datacontract.org/2004/07/WCFGenio" base="q20:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordProdutoAcabado"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneProdutoAcabado" nillable="true" type="tns:FormResponseOneProdutoAcabado"/>
+<xs:complexType name="FormRecordProdutoAcabado">
+<xs:sequence>
+<xs:element minOccurs="0" name="Artivweb" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codigopr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Descrica" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Sewservi" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tipoarti" nillable="true" type="tns:ArrayTipoprsa"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordProdutoAcabado" nillable="true" type="tns:FormRecordProdutoAcabado"/>
+<xs:complexType name="FormResponseOneEndereco">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q21="http://schemas.datacontract.org/2004/07/WCFGenio" base="q21:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordEndereco"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneEndereco" nillable="true" type="tns:FormResponseOneEndereco"/>
+<xs:complexType name="FormRecordEndereco">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codforne" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Cpostal" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Lpostal" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morada" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Mordonde" nillable="true" type="tns:ArrayAmordond"/>
+<xs:element minOccurs="0" name="Morfatur" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Morprinc" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Pais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Paisnif" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordEndereco" nillable="true" type="tns:FormRecordEndereco"/>
+<xs:complexType name="FormResponseOneMovimentoDeTesouraria">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q22="http://schemas.datacontract.org/2004/07/WCFGenio" base="q22:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordMovimentoDeTesouraria"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneMovimentoDeTesouraria" nillable="true" type="tns:FormResponseOneMovimentoDeTesouraria"/>
+<xs:complexType name="FormRecordMovimentoDeTesouraria">
+<xs:sequence>
+<xs:element minOccurs="0" name="Clifenix" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codagenc" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Dtfolha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Enviado" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Fenix" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numfolha" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Tipopaga" nillable="true" type="tns:ArrayTipopags"/>
+<xs:element minOccurs="0" name="Tpfolha" nillable="true" type="tns:ArrayTpfolha"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordMovimentoDeTesouraria" nillable="true" type="tns:FormRecordMovimentoDeTesouraria"/>
+<xs:complexType name="FormResponseOneTerceiro">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q23="http://schemas.datacontract.org/2004/07/WCFGenio" base="q23:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordTerceiro"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneTerceiro" nillable="true" type="tns:FormResponseOneTerceiro"/>
+<xs:complexType name="FormRecordTerceiro">
+<xs:sequence>
+<xs:element minOccurs="0" name="Cliente" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codigocl" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpais" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Contacto" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Email" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Fax" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Integws" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Nif" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Nome" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numentid" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Numero" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Site" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Sufixnif" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Telefone" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Vossaref" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordTerceiro" nillable="true" type="tns:FormRecordTerceiro"/>
+<xs:complexType name="FormResponseOneAfectacaoAContabilidadeAnalitica">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q24="http://schemas.datacontract.org/2004/07/WCFGenio" base="q24:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordAfectacaoAContabilidadeAnalitica"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneAfectacaoAContabilidadeAnalitica" nillable="true" type="tns:FormResponseOneAfectacaoAContabilidadeAnalitica"/>
+<xs:complexType name="FormRecordAfectacaoAContabilidadeAnalitica">
+<xs:sequence>
+<xs:element minOccurs="0" name="Codccust" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclecr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codlrece" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorcam" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codtccus" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Percenta" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Percreal" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Valor" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordAfectacaoAContabilidadeAnalitica" nillable="true" type="tns:FormRecordAfectacaoAContabilidadeAnalitica"/>
+<xs:complexType name="FormResponseOneLog">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q25="http://schemas.datacontract.org/2004/07/WCFGenio" base="q25:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordLog"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneLog" nillable="true" type="tns:FormResponseOneLog"/>
+<xs:complexType name="FormRecordLog">
+<xs:sequence>
+<xs:element minOccurs="0" name="Data" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Estado" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Funcao" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Mensagem" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Xml" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordLog" nillable="true" type="tns:FormRecordLog"/>
+<xs:complexType name="FormResponseOneLinhaDaReceita">
+<xs:complexContent mixed="false">
+<xs:extension xmlns:q26="http://schemas.datacontract.org/2004/07/WCFGenio" base="q26:Response">
+<xs:sequence>
+<xs:element minOccurs="0" name="record" nillable="true" type="tns:FormRecordLinhaDaReceita"/>
+</xs:sequence>
+</xs:extension>
+</xs:complexContent>
+</xs:complexType>
+<xs:element name="FormResponseOneLinhaDaReceita" nillable="true" type="tns:FormResponseOneLinhaDaReceita"/>
+<xs:complexType name="FormRecordLinhaDaReceita">
+<xs:sequence>
+<xs:element minOccurs="0" name="Aiva" nillable="true" type="tns:ArrayAtaxaiva"/>
+<xs:element minOccurs="0" name="Codartiv" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclecr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclorr" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codclrac" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codffina" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codmgrec" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorcam" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codorgan" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codpocp" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Codrecei" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Prunit" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="Qtd" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="FormRecordLinhaDaReceita" nillable="true" type="tns:FormRecordLinhaDaReceita"/>
+</xs:schema>

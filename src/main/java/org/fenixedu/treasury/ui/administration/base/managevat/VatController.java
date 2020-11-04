@@ -32,15 +32,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -166,10 +163,6 @@ public class VatController extends TreasuryBaseController {
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect("/treasury/administration/base/managevat/vat/", model, redirectAttributes);
 
-        } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
@@ -207,11 +200,6 @@ public class VatController extends TreasuryBaseController {
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);
-
-        } catch (DomainException de) {
-
-            addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
 
         } catch (Exception de) {
 
@@ -252,11 +240,6 @@ public class VatController extends TreasuryBaseController {
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);
-
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
-            return update(vat, model);
-
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
             return update(vat, model);

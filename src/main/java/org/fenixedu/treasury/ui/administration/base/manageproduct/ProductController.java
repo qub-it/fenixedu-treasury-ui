@@ -31,8 +31,6 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -43,7 +41,6 @@ import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -130,8 +127,6 @@ public class ProductController extends TreasuryBaseController {
 
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
-        } catch (DomainException ex) {
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }

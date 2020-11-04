@@ -1,0 +1,1148 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://tempuri.org/" elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
+<xs:import schemaLocation="WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.xsd2.xsd" namespace="http://schemas.datacontract.org/2004/07/WCFGenio"/>
+<xs:import schemaLocation="WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.xsd3.xsd" namespace="http://schemas.datacontract.org/2004/07/WCFGenio.WSF"/>
+<xs:import schemaLocation="WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.xsd4.xsd" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays"/>
+<xs:import schemaLocation="WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.xsd5.xsd" namespace="http://schemas.datacontract.org/2004/07/WCFGenio.WSF.InteraccaoWS"/>
+<xs:import schemaLocation="WCFGenio.WSF.WCFServiceWSF-1.0.0-15092015.svc.xsd6.xsd" namespace="http://schemas.datacontract.org/2004/07/CSGenio.persistencia"/>
+<xs:element name="FormSelectOneLinhaDeRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q1="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q1:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneLinhaDeRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q2="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneLinhaDeRegistoInicialDaReceitaResult" nillable="true" type="q2:FormResponseOneLinhaDeRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertLinhaDeRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q3="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q3:Authentication"/>
+<xs:element xmlns:q4="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q4:FormRecordLinhaDeRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertLinhaDeRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q5="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertLinhaDeRegistoInicialDaReceitaResult" nillable="true" type="q5:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateLinhaDeRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q6="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q6:Authentication"/>
+<xs:element xmlns:q7="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q7:FormRecordLinhaDeRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateLinhaDeRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q8="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateLinhaDeRegistoInicialDaReceitaResult" nillable="true" type="q8:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteLinhaDeRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q9="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q9:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteLinhaDeRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q10="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteLinhaDeRegistoInicialDaReceitaResult" nillable="true" type="q10:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q11="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q11:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q12="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneRegistoInicialDaReceitaResult" nillable="true" type="q12:FormResponseOneRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q13="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q13:Authentication"/>
+<xs:element xmlns:q14="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q14:FormRecordRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q15="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertRegistoInicialDaReceitaResult" nillable="true" type="q15:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q16="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q16:Authentication"/>
+<xs:element xmlns:q17="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q17:FormRecordRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q18="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateRegistoInicialDaReceitaResult" nillable="true" type="q18:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q19="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q19:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q20="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteRegistoInicialDaReceitaResult" nillable="true" type="q20:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q21="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q21:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q22="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneReceitaResult" nillable="true" type="q22:FormResponseOneReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q23="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q23:Authentication"/>
+<xs:element xmlns:q24="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q24:FormRecordReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q25="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertReceitaResult" nillable="true" type="q25:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q26="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q26:Authentication"/>
+<xs:element xmlns:q27="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q27:FormRecordReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q28="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateReceitaResult" nillable="true" type="q28:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q29="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q29:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q30="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteReceitaResult" nillable="true" type="q30:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRecibo">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q31="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q31:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneReciboResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q32="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneReciboResult" nillable="true" type="q32:FormResponseOneRecibo"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRecibo">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q33="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q33:Authentication"/>
+<xs:element xmlns:q34="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q34:FormRecordRecibo"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertReciboResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q35="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertReciboResult" nillable="true" type="q35:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRecibo">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q36="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q36:Authentication"/>
+<xs:element xmlns:q37="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q37:FormRecordRecibo"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateReciboResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q38="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateReciboResult" nillable="true" type="q38:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRecibo">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q39="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q39:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteReciboResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q40="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteReciboResult" nillable="true" type="q40:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRecebimentosPorClassificadores">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q41="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q41:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRecebimentosPorClassificadoresResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q42="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneRecebimentosPorClassificadoresResult" nillable="true" type="q42:FormResponseOneRecebimentosPorClassificadores"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRecebimentosPorClassificadores">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q43="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q43:Authentication"/>
+<xs:element xmlns:q44="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q44:FormRecordRecebimentosPorClassificadores"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRecebimentosPorClassificadoresResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q45="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertRecebimentosPorClassificadoresResult" nillable="true" type="q45:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRecebimentosPorClassificadores">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q46="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q46:Authentication"/>
+<xs:element xmlns:q47="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q47:FormRecordRecebimentosPorClassificadores"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRecebimentosPorClassificadoresResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q48="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateRecebimentosPorClassificadoresResult" nillable="true" type="q48:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRecebimentosPorClassificadores">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q49="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q49:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRecebimentosPorClassificadoresResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q50="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteRecebimentosPorClassificadoresResult" nillable="true" type="q50:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRecebimentoParcial">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q51="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q51:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneRecebimentoParcialResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q52="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneRecebimentoParcialResult" nillable="true" type="q52:FormResponseOneRecebimentoParcial"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRecebimentoParcial">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q53="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q53:Authentication"/>
+<xs:element xmlns:q54="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q54:FormRecordRecebimentoParcial"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertRecebimentoParcialResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q55="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertRecebimentoParcialResult" nillable="true" type="q55:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRecebimentoParcial">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q56="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q56:Authentication"/>
+<xs:element xmlns:q57="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q57:FormRecordRecebimentoParcial"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateRecebimentoParcialResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q58="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateRecebimentoParcialResult" nillable="true" type="q58:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRecebimentoParcial">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q59="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q59:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteRecebimentoParcialResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q60="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteRecebimentoParcialResult" nillable="true" type="q60:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CalculaJuro">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q61="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q61:Authentication"/>
+<xs:element minOccurs="0" name="guia" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="gera" type="xs:boolean"/>
+<xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CalculaJuroResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q62="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="CalculaJuroResult" nillable="true" type="q62:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ExportarSAFT">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q63="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q63:Authentication"/>
+<xs:element xmlns:q64="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="folhas" nillable="true" type="q64:ArrayOfstring"/>
+<xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ExportarSAFTResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q65="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="ExportarSAFTResult" nillable="true" type="q65:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CarregarSAFT_ON">
+<xs:complexType>
+<xs:sequence>
+<xs:element minOccurs="0" name="buffer" nillable="true" type="xs:base64Binary"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CarregarSAFT_ONResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q66="http://schemas.datacontract.org/2004/07/WCFGenio.WSF.InteraccaoWS" minOccurs="0" name="CarregarSAFT_ONResult" nillable="true" type="q66:ArrayOfResposta"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CarregarSAFT_OFF">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q67="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q67:Authentication"/>
+<xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="CarregarSAFT_OFFResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q68="http://schemas.datacontract.org/2004/07/WCFGenio.WSF.InteraccaoWS" minOccurs="0" name="CarregarSAFT_OFFResult" nillable="true" type="q68:ArrayOfResposta"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ConsultarDivida">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q69="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q69:Authentication"/>
+<xs:element minOccurs="0" name="customerID" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="ConsultarDividaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q70="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="ConsultarDividaResult" nillable="true" type="q70:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="emiteFatura">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q71="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q71:Authentication"/>
+<xs:element minOccurs="0" name="codprece" nillable="true" type="xs:string"/>
+<xs:element xmlns:q72="http://schemas.datacontract.org/2004/07/CSGenio.persistencia" minOccurs="0" name="sp" nillable="true" type="q72:SuportePersistente"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="emiteFaturaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q73="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="emiteFaturaResult" nillable="true" type="q73:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="VerificaEstado">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q74="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q74:Authentication"/>
+<xs:element minOccurs="0" name="documentID" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="VerificaEstadoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q75="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="VerificaEstadoResult" nillable="true" type="q75:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="AtualizaEnder">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q76="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q76:Authentication"/>
+<xs:element minOccurs="0" name="path" nillable="true" type="xs:string"/>
+<xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="AtualizaEnderResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q77="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="AtualizaEnderResult" nillable="true" type="q77:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DoLogin">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q78="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="pedido" nillable="true" type="q78:LoginRequest"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DoLoginResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q79="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="DoLoginResult" type="q79:LoginResponse"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralProdutosAcabados">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q80="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q80:Authentication"/>
+<xs:element xmlns:q81="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q81:LogicalCondition"/>
+<xs:element xmlns:q82="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q82:Paging"/>
+<xs:element xmlns:q83="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q83:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralProdutosAcabadosResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q84="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralProdutosAcabadosResult" nillable="true" type="q84:DBEditResponseSeveralProdutosAcabados"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralEnderecos">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q85="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q85:Authentication"/>
+<xs:element xmlns:q86="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q86:LogicalCondition"/>
+<xs:element xmlns:q87="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q87:Paging"/>
+<xs:element xmlns:q88="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q88:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralEnderecosResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q89="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralEnderecosResult" nillable="true" type="q89:DBEditResponseSeveralEnderecos"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralMovimentosDeTesouraria">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q90="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q90:Authentication"/>
+<xs:element xmlns:q91="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q91:LogicalCondition"/>
+<xs:element xmlns:q92="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q92:Paging"/>
+<xs:element xmlns:q93="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q93:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralMovimentosDeTesourariaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q94="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralMovimentosDeTesourariaResult" nillable="true" type="q94:DBEditResponseSeveralMovimentosDeTesouraria"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralTerceiros">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q95="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q95:Authentication"/>
+<xs:element xmlns:q96="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q96:LogicalCondition"/>
+<xs:element xmlns:q97="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q97:Paging"/>
+<xs:element xmlns:q98="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q98:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralTerceirosResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q99="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralTerceirosResult" nillable="true" type="q99:DBEditResponseSeveralTerceiros"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralAfectacoesAContabilidadeAnalitica">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q100="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q100:Authentication"/>
+<xs:element xmlns:q101="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q101:LogicalCondition"/>
+<xs:element xmlns:q102="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q102:Paging"/>
+<xs:element xmlns:q103="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q103:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralAfectacoesAContabilidadeAnaliticaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q104="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralAfectacoesAContabilidadeAnaliticaResult" nillable="true" type="q104:DBEditResponseSeveralAfectacoesAContabilidadeAnalitica"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralLinhasDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q105="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q105:Authentication"/>
+<xs:element xmlns:q106="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q106:LogicalCondition"/>
+<xs:element xmlns:q107="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q107:Paging"/>
+<xs:element xmlns:q108="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q108:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralLinhasDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q109="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralLinhasDaReceitaResult" nillable="true" type="q109:DBEditResponseSeveralLinhasDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralLinhasDeRegistoInicialDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q110="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q110:Authentication"/>
+<xs:element xmlns:q111="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q111:LogicalCondition"/>
+<xs:element xmlns:q112="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q112:Paging"/>
+<xs:element xmlns:q113="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q113:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralLinhasDeRegistoInicialDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q114="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralLinhasDeRegistoInicialDaReceitaResult" nillable="true" type="q114:DBEditResponseSeveralLinhasDeRegistoInicialDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRegistosIniciaisDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q115="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q115:Authentication"/>
+<xs:element xmlns:q116="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q116:LogicalCondition"/>
+<xs:element xmlns:q117="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q117:Paging"/>
+<xs:element xmlns:q118="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q118:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRegistosIniciaisDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q119="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralRegistosIniciaisDaReceitaResult" nillable="true" type="q119:DBEditResponseSeveralRegistosIniciaisDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralReceitas">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q120="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q120:Authentication"/>
+<xs:element xmlns:q121="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q121:LogicalCondition"/>
+<xs:element xmlns:q122="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q122:Paging"/>
+<xs:element xmlns:q123="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q123:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralReceitasResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q124="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralReceitasResult" nillable="true" type="q124:DBEditResponseSeveralReceitas"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRecibos">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q125="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q125:Authentication"/>
+<xs:element xmlns:q126="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q126:LogicalCondition"/>
+<xs:element xmlns:q127="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q127:Paging"/>
+<xs:element xmlns:q128="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q128:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRecibosResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q129="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralRecibosResult" nillable="true" type="q129:DBEditResponseSeveralRecibos"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRecebimentosPorClassificador">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q130="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q130:Authentication"/>
+<xs:element xmlns:q131="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q131:LogicalCondition"/>
+<xs:element xmlns:q132="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q132:Paging"/>
+<xs:element xmlns:q133="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q133:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRecebimentosPorClassificadorResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q134="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralRecebimentosPorClassificadorResult" nillable="true" type="q134:DBEditResponseSeveralRecebimentosPorClassificador"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRecebimentosParciais">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q135="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q135:Authentication"/>
+<xs:element xmlns:q136="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q136:LogicalCondition"/>
+<xs:element xmlns:q137="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q137:Paging"/>
+<xs:element xmlns:q138="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q138:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralRecebimentosParciaisResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q139="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralRecebimentosParciaisResult" nillable="true" type="q139:DBEditResponseSeveralRecebimentosParciais"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralLogs">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q140="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q140:Authentication"/>
+<xs:element xmlns:q141="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="condition" nillable="true" type="q141:LogicalCondition"/>
+<xs:element xmlns:q142="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="paging" nillable="true" type="q142:Paging"/>
+<xs:element xmlns:q143="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="order" nillable="true" type="q143:Order"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="DBEditSelectSeveralLogsResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q144="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="DBEditSelectSeveralLogsResult" nillable="true" type="q144:DBEditResponseSeveralLogs"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneProdutoAcabado">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q145="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q145:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneProdutoAcabadoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q146="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneProdutoAcabadoResult" nillable="true" type="q146:FormResponseOneProdutoAcabado"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertProdutoAcabado">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q147="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q147:Authentication"/>
+<xs:element xmlns:q148="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q148:FormRecordProdutoAcabado"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertProdutoAcabadoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q149="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertProdutoAcabadoResult" nillable="true" type="q149:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateProdutoAcabado">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q150="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q150:Authentication"/>
+<xs:element xmlns:q151="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q151:FormRecordProdutoAcabado"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateProdutoAcabadoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q152="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateProdutoAcabadoResult" nillable="true" type="q152:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteProdutoAcabado">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q153="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q153:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteProdutoAcabadoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q154="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteProdutoAcabadoResult" nillable="true" type="q154:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneEndereco">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q155="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q155:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneEnderecoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q156="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneEnderecoResult" nillable="true" type="q156:FormResponseOneEndereco"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertEndereco">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q157="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q157:Authentication"/>
+<xs:element xmlns:q158="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q158:FormRecordEndereco"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertEnderecoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q159="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertEnderecoResult" nillable="true" type="q159:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateEndereco">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q160="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q160:Authentication"/>
+<xs:element xmlns:q161="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q161:FormRecordEndereco"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateEnderecoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q162="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateEnderecoResult" nillable="true" type="q162:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteEndereco">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q163="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q163:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteEnderecoResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q164="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteEnderecoResult" nillable="true" type="q164:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneMovimentoDeTesouraria">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q165="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q165:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneMovimentoDeTesourariaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q166="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneMovimentoDeTesourariaResult" nillable="true" type="q166:FormResponseOneMovimentoDeTesouraria"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertMovimentoDeTesouraria">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q167="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q167:Authentication"/>
+<xs:element xmlns:q168="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q168:FormRecordMovimentoDeTesouraria"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertMovimentoDeTesourariaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q169="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertMovimentoDeTesourariaResult" nillable="true" type="q169:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateMovimentoDeTesouraria">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q170="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q170:Authentication"/>
+<xs:element xmlns:q171="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q171:FormRecordMovimentoDeTesouraria"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateMovimentoDeTesourariaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q172="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateMovimentoDeTesourariaResult" nillable="true" type="q172:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteMovimentoDeTesouraria">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q173="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q173:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteMovimentoDeTesourariaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q174="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteMovimentoDeTesourariaResult" nillable="true" type="q174:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneTerceiro">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q175="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q175:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneTerceiroResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q176="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneTerceiroResult" nillable="true" type="q176:FormResponseOneTerceiro"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertTerceiro">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q177="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q177:Authentication"/>
+<xs:element xmlns:q178="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q178:FormRecordTerceiro"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertTerceiroResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q179="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertTerceiroResult" nillable="true" type="q179:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateTerceiro">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q180="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q180:Authentication"/>
+<xs:element xmlns:q181="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q181:FormRecordTerceiro"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateTerceiroResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q182="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateTerceiroResult" nillable="true" type="q182:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteTerceiro">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q183="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q183:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteTerceiroResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q184="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteTerceiroResult" nillable="true" type="q184:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneAfectacaoAContabilidadeAnalitica">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q185="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q185:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneAfectacaoAContabilidadeAnaliticaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q186="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneAfectacaoAContabilidadeAnaliticaResult" nillable="true" type="q186:FormResponseOneAfectacaoAContabilidadeAnalitica"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertAfectacaoAContabilidadeAnalitica">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q187="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q187:Authentication"/>
+<xs:element xmlns:q188="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q188:FormRecordAfectacaoAContabilidadeAnalitica"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertAfectacaoAContabilidadeAnaliticaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q189="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertAfectacaoAContabilidadeAnaliticaResult" nillable="true" type="q189:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateAfectacaoAContabilidadeAnalitica">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q190="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q190:Authentication"/>
+<xs:element xmlns:q191="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q191:FormRecordAfectacaoAContabilidadeAnalitica"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateAfectacaoAContabilidadeAnaliticaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q192="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateAfectacaoAContabilidadeAnaliticaResult" nillable="true" type="q192:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteAfectacaoAContabilidadeAnalitica">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q193="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q193:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteAfectacaoAContabilidadeAnaliticaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q194="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteAfectacaoAContabilidadeAnaliticaResult" nillable="true" type="q194:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneLog">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q195="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q195:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneLogResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q196="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneLogResult" nillable="true" type="q196:FormResponseOneLog"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertLog">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q197="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q197:Authentication"/>
+<xs:element xmlns:q198="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q198:FormRecordLog"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertLogResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q199="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertLogResult" nillable="true" type="q199:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateLog">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q200="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q200:Authentication"/>
+<xs:element xmlns:q201="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q201:FormRecordLog"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateLogResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q202="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateLogResult" nillable="true" type="q202:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteLog">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q203="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q203:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteLogResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q204="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteLogResult" nillable="true" type="q204:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneLinhaDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q205="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q205:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormSelectOneLinhaDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q206="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="FormSelectOneLinhaDaReceitaResult" nillable="true" type="q206:FormResponseOneLinhaDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertLinhaDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q207="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q207:Authentication"/>
+<xs:element xmlns:q208="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q208:FormRecordLinhaDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormInsertLinhaDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q209="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormInsertLinhaDaReceitaResult" nillable="true" type="q209:ResponseInsert"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateLinhaDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q210="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q210:Authentication"/>
+<xs:element xmlns:q211="http://schemas.datacontract.org/2004/07/WCFGenio.WSF" minOccurs="0" name="record" nillable="true" type="q211:FormRecordLinhaDaReceita"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormUpdateLinhaDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q212="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormUpdateLinhaDaReceitaResult" nillable="true" type="q212:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteLinhaDaReceita">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q213="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="authentication" nillable="true" type="q213:Authentication"/>
+<xs:element minOccurs="0" name="primaryKey" nillable="true" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+<xs:element name="FormDeleteLinhaDaReceitaResponse">
+<xs:complexType>
+<xs:sequence>
+<xs:element xmlns:q214="http://schemas.datacontract.org/2004/07/WCFGenio" minOccurs="0" name="FormDeleteLinhaDaReceitaResult" nillable="true" type="q214:Response"/>
+</xs:sequence>
+</xs:complexType>
+</xs:element>
+</xs:schema>

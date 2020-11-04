@@ -31,9 +31,9 @@ public class PaylineController extends TreasuryBaseController implements IForwar
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/payline";
 
     @Override
-    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
+    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Object model, HttpServletResponse response,
             HttpSession session) {
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
+        ((Model) model).addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
 
         try {
             final PaylineConfiguration paylineImplementation = (PaylineConfiguration) forwardPayment.getDigitalPaymentPlatform();
