@@ -1,3 +1,5 @@
+- Bug Fix: In SIBS OPPWA Webhook notification, if notification is of paymentType=PA and paymentBrand=SIBS_Multibanco return HTTP 200 without any check
+
 5.1.3 (21-09-2020)
 - Improvement: Add CGD logo to display in forward payment
 
