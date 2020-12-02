@@ -28,6 +28,7 @@ package org.fenixedu.treasury.ui.administration.base.managevat;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -193,15 +194,15 @@ public class VatController extends TreasuryBaseController {
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
             value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
-            value = "taxrate", required = false) java.math.BigDecimal taxRate, @RequestParam(value = "begindate",
-            required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate, @RequestParam(
-            value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
+            value = "taxrate", required = false) java.math.BigDecimal taxRate, 
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate, 
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
             assertUserIsBackOfficeMember(finantialInstitution, model);
 
-            Vat vat = createVat(vatType, finantialInstitution, taxRate, beginDate, endDate);
+            Vat vat = createVat(vatType, finantialInstitution, taxRate, beginDate, endDate.plusDays(1).minusSeconds(1));
 
             model.addAttribute("vat", vat);
 
@@ -221,8 +222,8 @@ public class VatController extends TreasuryBaseController {
     }
 
     @Atomic
-    public Vat createVat(VatType vatType, FinantialInstitution finantialInstitution, java.math.BigDecimal taxRate,
-            org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate) {
+    public Vat createVat(VatType vatType, FinantialInstitution finantialInstitution, BigDecimal taxRate,
+            DateTime beginDate, DateTime endDate) {
         Vat vat = Vat.create(vatType, finantialInstitution, taxRate, beginDate, endDate);
         return vat;
     }
@@ -238,9 +239,9 @@ public class VatController extends TreasuryBaseController {
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
     public String update(@PathVariable("oid") Vat vat,
-            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate, @RequestParam(value = "begindate",
-                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate, @RequestParam(
-                    value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
+            @RequestParam(value = "taxrate", required = false) BigDecimal taxRate, 
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate, 
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         setVat(vat, model);
@@ -248,7 +249,7 @@ public class VatController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(vat.getFinantialInstitution(), model);
 
-            updateVat(taxRate, beginDate, endDate, model);
+            updateVat(taxRate, beginDate, endDate.plusDays(1).minusSeconds(1), model);
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);

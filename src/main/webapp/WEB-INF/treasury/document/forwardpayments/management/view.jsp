@@ -208,7 +208,7 @@ ${portal.toolkit()}
 	                    </tr>
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.whenOccured" /></th>
-	                        <td><c:out value='${log.whenOccured.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
+	                        <td><c:out value='${log.versioningCreationDate.toString("yyyy-MM-dd HH:mm:ss")}' /></td>
 	                    </tr>
 						<tr>
 							<th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentLog.statusCode" /></th>

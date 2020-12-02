@@ -1,3 +1,6 @@
+- Bug Fix: Show creation date of payment request log
+- Bug Fix: Create Vat with correct time
+
 5.1.4 (10-11-2020)
 - Bug Fix: In SIBS OPPWA Webhook notification, if notification is of paymentType=PA and paymentBrand=SIBS_Multibanco return HTTP 200 without any check
 
