@@ -199,7 +199,15 @@ ${portal.angularToolkit()}
 		</h5>
 			
 		<p>&nbsp;</p>
-		<p><strong><spring:message code="error.ForwardPaymentController.paymentInsuccess" /></strong></p>
+		<c:choose>
+			<c:when test="${exceptionOccured}">
+				<p><strong><spring:message code="error.ForwardPaymentController.paymentInsuccess.error.occured" /></strong></p>			
+			</c:when>
+			<c:otherwise>
+				<p><strong><spring:message code="error.ForwardPaymentController.paymentInsuccess" /></strong></p>
+			</c:otherwise>
+		</c:choose>
+
 		<%-- 
 		<p><c:out value="${forwardPayment.rejectionLog}" /></p>
 		--%>

@@ -1,3 +1,5 @@
+- Improvement: Log error when exception occurs when registering payment in Payline. Show a different message of implying the user to contact Support Team, if an exception occurs.
+
 5.1.5 (02-12-2020)
 - Bug Fix: Show creation date of payment request log
 - Bug Fix: Create Vat with correct time

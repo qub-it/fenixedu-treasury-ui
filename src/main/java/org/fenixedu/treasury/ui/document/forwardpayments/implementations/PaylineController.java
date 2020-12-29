@@ -17,6 +17,7 @@ import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaym
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineImplementation;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.paylineReturnForwardPayment", accessGroup = "logged")
 @RequestMapping(PaylineController.CONTROLLER_URL)
@@ -94,7 +96,18 @@ public class PaylineController extends TreasuryBaseController implements IForwar
 
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            addErrorMessage(TreasuryConstants.treasuryBundle("error.PaylineController.returnforwardpayment.message", e.getMessage()), model);
+
+            FenixFramework.atomic(() -> {
+        	Map<String, String> requestBodyMap = new HashMap<>();
+        	requestBodyMap.put("action", action);
+        	requestBodyMap.put("urlChecksum", urlChecksum);
+        	
+        	forwardPayment.logException(e, TreasuryConstants.propertiesMapToJson(requestBodyMap), TreasuryConstants.propertiesMapToJson(responseData));
+            });
+            
+            return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         }
     }
 

@@ -354,7 +354,11 @@ public class ForwardPaymentController extends TreasuryBaseController {
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
             final Model model) {
         final ForwardPaymentConfiguration forwardPaymentConfiguration = forwardPayment.getForwardPaymentConfiguration();
-
+        
+        if(forwardPayment.getForwardPaymentLogsSet().stream().anyMatch(l -> l.getExceptionOccured())) {
+            model.addAttribute("exceptionOccured", true);
+        }
+        
         model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
         model.addAttribute("logosPage", forwardPaymentConfiguration.implementation().getLogosJspPage(forwardPaymentConfiguration));
