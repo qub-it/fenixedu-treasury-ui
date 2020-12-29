@@ -1,3 +1,4 @@
+5.1.6 (29-12-2020)
 - Improvement: Log error when exception occurs when registering payment in Payline. Show a different message of implying the user to contact Support Team, if an exception occurs.
 
 5.1.5 (02-12-2020)
