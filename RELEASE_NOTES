@@ -1,3 +1,5 @@
+- Improvement: Add warning in using advanced payment partial amount (request from #UL-FC-2233)
+
 5.1.6 (29-12-2020)
 - Improvement: Log error when exception occurs when registering payment in Payline. Show a different message of implying the user to contact Support Team, if an exception occurs.
 
