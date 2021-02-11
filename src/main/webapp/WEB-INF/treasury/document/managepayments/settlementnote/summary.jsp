@@ -277,10 +277,11 @@ ${portal.angularToolkit()}
                     var="interestEntryBean">
                     <c:if test="${ interestEntryBean.included  }">
                         <tr>
-                            <td>---</td>
-                            <td><spring:message code="label.InterestEntry.interest" />
-                                       &nbsp; <c:out
-                                    value="${ interestEntryBean.debitEntry.description }" />
+                            <td></td>
+                            <td>
+                            	<spring:message code="label.InterestEntry.interest" />:
+                            	&nbsp;
+                            	<c:out value="${ interestEntryBean.debitEntry.description }" />
                             </td>
                             <td><c:out value='${ debitNoteDate }' />
                             </td>
@@ -424,84 +425,6 @@ ${portal.angularToolkit()}
         </div>
     </div>
 </div>
-
-<!-- <div class="panel panel-primary">     -->
-<!--     <div class="panel panel-heading"> -->
-<!--         <h3 class="panel-title"> -->
-<%--             <spring:message code="label.Vat.Summary" /> --%>
-<!--         </h3> -->
-<!--     </div> -->
-<!--     <div class="panel-body"> -->
-<!--         <div class="row"> -->
-<!--             <div class="col-md-6 col-lg-6"> -->
-<!--                 <table id="vatTable" -->
-<!--                     class="table responsive table-bordered table-hover" width="100%"> -->
-<!--                     <thead> -->
-<!--                         <tr> -->
-<%--                             <th><spring:message code="label.VatType" /></th> --%>
-<%--                             <th><spring:message code="label.VatType.valueWithoutVat" /></th> --%>
-<%--                             <th><spring:message code="label.VatType.valueOfVat" /></th> --%>
-<!--                         </tr> -->
-<!--                     </thead> -->
-<!--                     <tbody> -->
-<%--                         <c:set var="sumAmount" value="<%= BigDecimal.ZERO %>" /> --%>
-<%--                         <c:set var="sumAmountWithVat" value="<%= BigDecimal.ZERO %>" />                             --%>
-<%--                         <c:forEach items="${ settlementNoteBean.valuesByVat }" var="entry"> --%>
-<%--                             <c:set var="sumAmount" value="${ sumAmount.add(entry.value.amount) }" /> --%>
-<%--                             <c:set var="sumAmountWithVat" value="${ sumAmountWithVat.add(entry.value.amountWithVat) }" />                 --%>
-<!--                             <tr> -->
-<!--                                 <td> -->
-<%--                                     <c:out value="${ entry.key }" /> --%>
-<!--                                 </td> -->
-<!--                                 <td> -->
-<%--                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( entry.value.amount ) }" /> --%>
-<!--                                 </td> -->
-<!--                                 <td> -->
-<%--                                     <c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( entry.value.amountWithVat.subtract(entry.value.amount) ) }" /> --%>
-<!--                                 </td> -->
-<!--                             </tr> -->
-<%--                         </c:forEach> --%>
-<!--                     </tbody> -->
-<!--                 </table> -->
-<!--             </div> -->
-<!--             <div class="col-md-6 col-lg-6"> -->
-<!--                 <p align="center"> -->
-<%--                     <b><spring:message code="label.summary"/></b> --%>
-<!--                 </p> -->
-<!--                 <br> -->
-<!--                 <table id="vatSummaryTable" -->
-<!--                     class="table responsive table-bordered table-hover" width="100%"> -->
-<!--                     <tbody> -->
-<!--                         <tr> -->
-<!--                             <th scope="row" class="col-xs-3"> -->
-<%--                                 <spring:message code="label.VatType.sumValueWithoutVat" /> --%>
-<!--                             </th> -->
-<!--                             <td> -->
-<%--                                 <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( sumAmount ) }' /> --%>
-<!--                             </td> -->
-<!--                         </tr> -->
-<!--                         <tr> -->
-<!--                             <th scope="row" class="col-xs-3"> -->
-<%--                                 <spring:message code="label.VatType.sumValueOfVat" /> --%>
-<!--                             </th> -->
-<!--                             <td> -->
-<%--                                 <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( sumAmountWithVat.subtract(sumAmount) ) }' /> --%>
-<!--                             </td> -->
-<!--                         </tr> -->
-<!--                         <tr> -->
-<!--                             <th scope="row" class="col-xs-3"> -->
-<%--                                 <spring:message code="label.VatType.sumValueWithVat" /> --%>
-<!--                             </th> -->
-<!--                             <td> -->
-<%--                                 <c:out value='${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( sumAmountWithVat ) }' /> --%>
-<!--                             </td> -->
-<!--                         </tr> -->
-<!--                     </tbody> -->
-<!--                 </table> -->
-<!--             </div> -->
-<!--         </div>  -->
-<!--     </div> -->
-<!-- </div> -->
 
 <form id='summaryForm' name='form' method="post" class="form-horizontal"
     ng-app="angularAppSettlementNote"

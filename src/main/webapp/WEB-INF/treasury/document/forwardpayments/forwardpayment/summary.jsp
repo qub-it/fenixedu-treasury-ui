@@ -213,59 +213,77 @@ ${portal.angularToolkit()}
                 </tr>
             </thead>
             <tbody>
-                <c:set var="debitNoteDate"
-                    value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
+                <c:set var="debitNoteDate" value='${settlementNoteBean.debitNoteDate.toString("yyyy-MM-dd")}' />
                 <c:forEach items="${ settlementNoteBean.debitEntries }" var="debitEntryBean">
-                    <c:if
-                        test="${ debitEntryBean.included && empty debitEntryBean.debitEntry.finantialDocument  }">
+                    <c:if test="${ debitEntryBean.included && empty debitEntryBean.invoiceEntry.finantialDocument}">
                         <tr>
-                            <td>---</td>
-                            <td><c:out
-                                    value="${ debitEntryBean.debitEntry.description }" />
+                            <td></td>
+                            <td>
+								<c:choose>
+									<c:when test="${debitEntryBean.forInstallment}">
+										<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
+										<ul style="list-style-type: none;">
+										<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
+											<li><em><c:out value="${entry.debitEntry.description}" /></em></li>
+										</c:forEach>
+										</ul>
+									</c:when>
+									<c:otherwise>
+										<c:out value="${ debitEntryBean.description }" />							
+									</c:otherwise>
+								</c:choose>
                             </td>
-                            <td><c:out value='${ debitNoteDate }' /></td>
-                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }" /></td>
-                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" /></td>
+                            <td><c:out value='${debitNoteDate}' /></td>
+                            <td><c:out value="${debitEntryBean.invoiceEntry.vat.taxRate}" /></td>
+                            <td><c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.settledAmount)}" /></td>
                         </tr>
                     </c:if>
                 </c:forEach>
-                <c:forEach
-                    items="${ settlementNoteBean.interestEntries }"
-                    var="interestEntryBean">
-                    <c:if test="${ interestEntryBean.included  }">
+                <c:forEach items="${settlementNoteBean.interestEntries}" var="interestEntryBean">
+                    <c:if test="${interestEntryBean.included}">
                         <tr>
-                            <td>---</td>
+                            <td></td>
                             <td><spring:message code="label.InterestEntry.interest" />
-                                       &nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" />
+                                       &nbsp; <c:out value="${ interestEntryBean.debitEntry.description}" />
                             </td>
-                            <td><c:out value='${ debitNoteDate }' />
+                            <td><c:out value='${ debitNoteDate}' />
                             </td>
                             <td>0.00</td>
-                            <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
+                            <td><c:out value="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntryBean.interest.interestAmount)}" />
                             </td>
                         </tr>
                     </c:if>
                 </c:forEach>
-                <c:forEach items="${ settlementNoteBean.debitEntries }"
-                    var="debitEntryBean">
+                <c:forEach items="${settlementNoteBean.debitEntries}" var="debitEntryBean">
                     <c:if
-                        test="${ debitEntryBean.included && not empty debitEntryBean.debitEntry.finantialDocument  }">
+                        test="${debitEntryBean.included && not empty debitEntryBean.finantialDocument}">
                         <tr>
                             <td><c:out
-                                    value="${ debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" />
+                                    value="${debitEntryBean.invoiceEntry.finantialDocument.uiDocumentNumber}" />
+                            </td>
+                            <td>
+								<c:choose>
+									<c:when test="${debitEntryBean.forInstallment}">
+										<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
+										<ul style="list-style-type: none;">
+										<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
+											<li><em><c:out value="${entry.debitEntry.description}" /></em></li>
+										</c:forEach>
+										</ul>
+									</c:when>
+									<c:otherwise>
+										<c:out value="${ debitEntryBean.description }" />							
+									</c:otherwise>
+								</c:choose>
                             </td>
                             <td><c:out
-                                    value="${ debitEntryBean.debitEntry.description }" />
+                                    value="${debitEntryBean.dueDate }" />
                             </td>
                             <td><c:out
-                                    value="${ debitEntryBean.documentDueDate }" />
+                                    value="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale(debitEntryBean.invoiceEntry.vat.taxRate)}" />
                             </td>
                             <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueWithScale( debitEntryBean.debitEntry.vat.taxRate) }" />
-                            </td>
-                            <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debtAmountWithVat ) }" />
+                                    value="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.settledAmount)}" />
                             </td>
                         </tr>
                     </c:if>
