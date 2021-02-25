@@ -208,7 +208,8 @@ ${portal.angularToolkit()}
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach items="${ settlementNoteBean.debitEntries}" var="debitEntryBean" varStatus="loop">
+					<c:forEach items="${settlementNoteBean.debitEntries}" var="debitEntryBean" varStatus="loop">
+					<c:if test="${!debitEntryBean.isForDebitEntry() or (debitEntryBean.isForDebitEntry() && !debitEntryBean.debitEntry.inOpenPaymentPlan)}">
 					<tr>
 						<c:if test="${ debitEntryBean.notValid }">
 							<tr class="alert alert-danger">
@@ -222,34 +223,47 @@ ${portal.angularToolkit()}
 							<input class="form-control" ng-model="object.debitEntries[${ loop.index }].isIncluded" type="checkbox" />
 						</td>
 						<td>
-							<c:if test="${not empty debitEntryBean.debitEntry.finantialDocument}">
-								<p><c:out value="${debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></p>
+							<c:if test="${not empty debitEntryBean.finantialDocument}">
+								<p><c:out value="${debitEntryBean.finantialDocument.uiDocumentNumber }" /></p>
 							</c:if>
-							<c:if test="${empty debitEntryBean.debitEntry.finantialDocument}">
-								<p>---</p>
+							<c:if test="${empty debitEntryBean.finantialDocument}">
+								<p></p>
 							</c:if>
-							<c:set var="c" value="${debitEntryBean.debitEntry.debtAccount.customer}" />
+							<c:set var="c" value="${debitEntryBean.invoiceEntry.debtAccount.customer}" />
 							<p><em><c:out value="${c.uiFiscalNumber}" /></em></p>						
 						</td>
 						<td>
-							<c:out value="${ debitEntryBean.debitEntry.description }" />
+							<c:choose>
+								<c:when test="${debitEntryBean.forInstallment}">
+									<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
+									<ul style="list-style-type: none;">
+									<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
+										<li><em><c:out value="${entry.debitEntry.description}" /></em></li>
+									</c:forEach>
+									</ul>
+								</c:when>
+								<c:otherwise>
+									<c:out value="${ debitEntryBean.description }" />							
+								</c:otherwise>
+							</c:choose>
 						</td>
 						<td>
-							<c:out value="${ debitEntryBean.documentDueDate }" />
+							<c:out value="${ debitEntryBean.dueDate }" />
 						</td>
 						<td>
-							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" />
+							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.entryAmount ) }" />
 						</td>
 						<td>
-							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmount ) }" />
+							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.entryOpenAmount ) }" />
 						</td>
 						<td>
-							<c:out value="${ debitEntryBean.debitEntry.vat.taxRate }" />
+							<c:out value="${debitEntryBean.invoiceEntry.vat.taxRate }" />
 						</td>
 						<td>
-							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.debitEntry.openAmount) }" />
+							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.settledAmount) }" />
 						</td>
 					</tr>
+					</c:if>
 					</c:forEach>
 				</tbody>
 			</table>

@@ -251,7 +251,8 @@ ${portal.angularToolkit()}
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach items="${ settlementNoteBean.debitEntries}" var="debitEntryBean" varStatus="loop">
+                    <c:forEach items="${settlementNoteBean.debitEntries}" var="debitEntryBean" varStatus="loop">
+					<c:if test="${debitEntryBean.isForDebitEntry()}">
                     	<tr>
                         <c:if test="${ debitEntryBean.notValid }">
                             <tr class="alert alert-danger">
@@ -308,6 +309,7 @@ ${portal.angularToolkit()}
                             </p>
                         </td>
                         </tr>
+                    </c:if>
                     </c:forEach>
                 </tbody>
             </table>

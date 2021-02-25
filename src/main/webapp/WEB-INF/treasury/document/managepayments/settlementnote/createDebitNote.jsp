@@ -227,9 +227,7 @@ ${portal.angularToolkit()}
                         <c:if test="${ interestEntryBean.included  }">
                             <tr>
                                 <td><spring:message
-                                        code="label.InterestEntry.interest" />
-                                    &nbsp; <c:out
-                                        value="${ interestEntryBean.debitEntry.description }" />
+                                        code="label.InterestEntry.interest" />:&nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" />
                                 </td>
                                 <td>0.00</td>
                                 <td><c:out

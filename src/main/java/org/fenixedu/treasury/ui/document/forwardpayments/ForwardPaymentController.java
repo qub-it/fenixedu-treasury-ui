@@ -45,6 +45,7 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
+import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
@@ -72,14 +73,14 @@ import com.qubit.terra.docs.util.ReportGenerationException;
 @BennuSpringController(CustomerController.class)
 @RequestMapping(IForwardPaymentController.CONTROLLER_URL)
 public class ForwardPaymentController extends TreasuryBaseController {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(ForwardPaymentController.class);
-    
+
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment";
 
     private void setSettlementNoteBean(SettlementNoteBean bean, Model model) {
-        final ForwardPaymentConfiguration activeForwardPaymentConfiguration = ForwardPaymentConfiguration
-                .findUniqueActive(bean.getDebtAccount().getFinantialInstitution()).get();
+        final ForwardPaymentConfiguration activeForwardPaymentConfiguration =
+                ForwardPaymentConfiguration.findUniqueActive(bean.getDebtAccount().getFinantialInstitution()).get();
         final IForwardPaymentImplementation implementation = activeForwardPaymentConfiguration.implementation();
 
         model.addAttribute("settlementNoteBeanJson", getBeanJson(bean));
@@ -154,15 +155,15 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
-            DebitEntryBean debitEntryBean = bean.getDebitEntries().get(i);
+            ISettlementInvoiceEntryBean debitEntryBean = bean.getDebitEntries().get(i);
             if (debitEntryBean.isIncluded()) {
-                invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
+                invoiceEntriesSet.add(debitEntryBean.getInvoiceEntry());
 
-                if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
+                if (debitEntryBean.getSettledAmount().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
-                } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
+                } else if (debitEntryBean.getSettledAmount().compareTo(debitEntryBean.getEntryOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
@@ -170,7 +171,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
                     debitEntryBean.setNotValid(false);
                 }
                 //Always perform the sum, in order to verify if creditSum is not higher than debitSum
-                debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
+                debitSum = debitSum.add(debitEntryBean.getSettledAmount());
             } else {
                 debitEntryBean.setNotValid(false);
             }
@@ -213,7 +214,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
             return jspPage("chooseInvoiceEntries");
         }
 
-        bean.includeAllInterestOfSelectedDebitEntries();        
+        bean.includeAllInterestOfSelectedDebitEntries();
         setSettlementNoteBean(bean, model);
 
         boolean hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage = false;
@@ -252,19 +253,20 @@ public class ForwardPaymentController extends TreasuryBaseController {
                 if (!forwardPayment.getCurrentState().isInStateToPostProcessPayment()) {
                     continue;
                 }
-                
+
                 if (!forwardPayment.getForwardPaymentConfiguration().isActive()) {
                     continue;
                 }
-                
-                final IForwardPaymentImplementation implementation = forwardPayment.getForwardPaymentConfiguration().implementation();
-                
+
+                final IForwardPaymentImplementation implementation =
+                        forwardPayment.getForwardPaymentConfiguration().implementation();
+
                 final ForwardPaymentStatusBean paymentStatusBean = implementation.paymentStatus(forwardPayment);
                 if (paymentStatusBean.isInPayedState()) {
                     return true;
                 }
-                
-            } catch(Exception e) {
+
+            } catch (Exception e) {
                 logger.error(e.getLocalizedMessage(), e);
             }
         }
@@ -296,10 +298,9 @@ public class ForwardPaymentController extends TreasuryBaseController {
                 return redirectToDebtAccountUrl(bean.getDebtAccount(), model, redirectAttributes);
             }
 
-            final ForwardPayment forwardPayment = ForwardPayment.create(bean, 
-                    (ForwardPayment p) -> forwardPaymentSuccessUrl(p), 
+            final ForwardPayment forwardPayment = ForwardPayment.create(bean, (ForwardPayment p) -> forwardPaymentSuccessUrl(p),
                     (ForwardPayment p) -> forwardPaymentInsuccessUrl(p));
-            
+
             return redirect(readProcessForwardPaymentUrl() + "/" + forwardPayment.getExternalId(), model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
@@ -313,7 +314,8 @@ public class ForwardPaymentController extends TreasuryBaseController {
         return IForwardPaymentController.PROCESS_FORWARD_PAYMENT_URL;
     }
 
-    @RequestMapping(value = IForwardPaymentController.PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
+    @RequestMapping(value = IForwardPaymentController.PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}",
+            method = RequestMethod.GET)
     public String processforwardpayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
             final HttpServletResponse response, final HttpSession session) {
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
@@ -331,7 +333,8 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     private static final String FORWARD_PAYMENT_SUCCESS_URI = "/forwardpaymentsuccess";
-    public static final String FORWARD_PAYMENT_SUCCESS_URL = IForwardPaymentController.CONTROLLER_URL + FORWARD_PAYMENT_SUCCESS_URI;
+    public static final String FORWARD_PAYMENT_SUCCESS_URL =
+            IForwardPaymentController.CONTROLLER_URL + FORWARD_PAYMENT_SUCCESS_URI;
 
     @RequestMapping(value = FORWARD_PAYMENT_SUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
@@ -341,27 +344,30 @@ public class ForwardPaymentController extends TreasuryBaseController {
         model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
         model.addAttribute("settlementNote", forwardPayment.getSettlementNote());
-        model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().implementation().getLogosJspPage(forwardPayment.getForwardPaymentConfiguration()));
+        model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().implementation()
+                .getLogosJspPage(forwardPayment.getForwardPaymentConfiguration()));
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
         model.addAttribute("printSettlementNoteUrl", readPrintSettlementNoteUrl());
         return jspPage("paymentSuccess");
     }
 
     private static final String FORWARD_PAYMENT_INSUCCESS_URI = "/forwardpaymentinsuccess";
-    public static final String FORWARD_PAYMENT_INSUCCESS_URL = IForwardPaymentController.CONTROLLER_URL + FORWARD_PAYMENT_INSUCCESS_URI;
+    public static final String FORWARD_PAYMENT_INSUCCESS_URL =
+            IForwardPaymentController.CONTROLLER_URL + FORWARD_PAYMENT_INSUCCESS_URI;
 
     @RequestMapping(value = FORWARD_PAYMENT_INSUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
             final Model model) {
         final ForwardPaymentConfiguration forwardPaymentConfiguration = forwardPayment.getForwardPaymentConfiguration();
-        
-        if(forwardPayment.getForwardPaymentLogsSet().stream().anyMatch(l -> l.getExceptionOccured())) {
+
+        if (forwardPayment.getForwardPaymentLogsSet().stream().anyMatch(l -> l.getExceptionOccured())) {
             model.addAttribute("exceptionOccured", true);
         }
-        
+
         model.addAttribute("forwardPaymentConfiguration", forwardPaymentConfiguration);
         model.addAttribute("forwardPayment", forwardPayment);
-        model.addAttribute("logosPage", forwardPaymentConfiguration.implementation().getLogosJspPage(forwardPaymentConfiguration));
+        model.addAttribute("logosPage",
+                forwardPaymentConfiguration.implementation().getLogosJspPage(forwardPaymentConfiguration));
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
 
         return jspPage("paymentInsuccess");
