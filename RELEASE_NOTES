@@ -1,3 +1,5 @@
+- New Fixture: Payment plans for debit entries
+
 5.1.7 (11-01-2021)
 - Improvement: Add warning in using advanced payment partial amount (request from #UL-FC-2233)
 
