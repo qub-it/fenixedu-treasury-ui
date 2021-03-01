@@ -123,6 +123,24 @@ ${portal.angularToolkit()}
 						$scope.postBack();
 					};
 					
+					$scope.toggleInstallments = function toggleSelection(installmentId) {
+						if($scope.object.selectedInstallments === undefined) {
+							$scope.object.selectedInstallments = [];
+						}
+						
+						var idx = $scope.object.selectedInstallments.indexOf(installmentId);
+						
+						// is currently selected
+						if (idx > -1) {
+						  $scope.object.selectedInstallments.splice(idx, 1);
+						} else {
+							// is newly selected
+						  $scope.object.selectedInstallments.push(installmentId);
+						}
+						
+						$scope.postBack();
+					};
+					
 				} ]);
 </script>
 
@@ -198,33 +216,58 @@ ${portal.angularToolkit()}
                 <tbody>
                     <c:forEach items="${bean.openDebitEntries}" var="debitEntry" varStatus="loop">
                     	<c:if test="${not debitEntry.exportedInERPAndInRestrictedPaymentMixingLegacyInvoices}">
-						<tr>
-	                        <td>
-	                        	<input class="form-control" name="${debitEntry.externalId}" 
-	                        		id="${debitEntry.externalId}" 
-	                        		ng-checked="object.selectedDebitEntries.indexOf('${debitEntry.externalId}') > -1" 
-	                        		ng-click="toggleDebitEntries('${debitEntry.externalId}')" type="checkbox" />
-	                        </td>
-	                        <td><c:out value="${ debitEntry.finantialDocument.uiDocumentNumber }" /></td>
-	                        <td>
-	                        	<p><c:out value="${ debitEntry.description }" /></p>
-	                        	<c:if test="${debitEntry.finantialDocument != null}">
-	                        	<c:if test="${debitEntry.finantialDocument.forPayorDebtAccount}">
-	                        		<p>
-	                        			<em>
-	                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
-	                        				<span><c:out value="${debitEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
-	                        				&nbsp;-&nbsp;
-	                        				<span><c:out value="${debitEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
-	                        			</em>
-	                        	</c:if>
-	                        	</c:if>
-	                        </td>
-	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" /></td>
-	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmountWithInterests) }" /></td>
-                        </tr>
+	                    	<c:if test="${debitEntry.openPaymentPlan == null}">
+								<tr>
+			                        <td>
+			                        	<input class="form-control" name="${debitEntry.externalId}" 
+			                        		id="${debitEntry.externalId}" 
+			                        		ng-checked="object.selectedDebitEntries.indexOf('${debitEntry.externalId}') > -1" 
+			                        		ng-click="toggleDebitEntries('${debitEntry.externalId}')" type="checkbox" />
+			                        </td>
+			                        <td><c:out value="${ debitEntry.finantialDocument.uiDocumentNumber }" /></td>
+			                        <td>
+			                        	<p><c:out value="${ debitEntry.description }" /></p>
+			                        	<c:if test="${debitEntry.finantialDocument != null}">
+			                        	<c:if test="${debitEntry.finantialDocument.forPayorDebtAccount}">
+			                        		<p>
+			                        			<em>
+			                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
+			                        				<span><c:out value="${debitEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
+			                        				&nbsp;-&nbsp;
+			                        				<span><c:out value="${debitEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
+			                        			</em>
+			                        	</c:if>
+			                        	</c:if>
+			                        </td>
+			                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" /></td>
+			                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmountWithInterests) }" /></td>
+		                        </tr>
+	                        </c:if>
                         </c:if>
                     </c:forEach>
+                    
+                    <c:forEach items="${bean.openInstallments}" var="installment" varStatus="loop">
+						<tr>
+	                        <td>
+	                        	<input class="form-control" name="${installment.externalId}" 
+			                        id="${installment.externalId}" 
+			                        ng-checked="object.selectedInstallments.indexOf('${installment.externalId}') > -1" 
+			                        ng-click="toggleInstallments('${installment.externalId}')" type="checkbox" />
+	                        </td>
+	                        <td></td>
+	                        <td>
+	                        	<p><c:out value="${ installment.description.content }" /></p>
+	                        	<ul style="list-style-type: none;">
+									<c:forEach items="${installment.sortedInstallmentEntries}" var="entry">
+										<li><em><c:out value="${entry.debitEntry.description}" /></em></li>
+									</c:forEach>
+								</ul>
+	                        </td>
+	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(installment.openAmount) }" /></td>
+	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(installment.openAmount) }" /></td>
+                        </tr>
+                    </c:forEach>
+                    
                 </tbody>
             </table>
         </div>
