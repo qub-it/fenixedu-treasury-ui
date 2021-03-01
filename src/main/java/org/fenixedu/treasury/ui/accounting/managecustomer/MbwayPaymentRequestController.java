@@ -108,7 +108,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
             bean.setUsePaymentAmountWithInterests(true);
             MbwayPaymentRequest mbwayPaymentRequest = MbwayPaymentRequest.create(sibsOnlinePaymentsGateway, debtAccount,
-                    new HashSet<InvoiceEntry>(bean.getSelectedDebitEntries()), bean.getPhoneNumberCountryPrefix(),
+                    new HashSet<InvoiceEntry>(bean.getSelectedDebitEntries()), new HashSet<>(), bean.getPhoneNumberCountryPrefix(),
                     bean.getPhoneNumber());
 
             return redirect(String.format("%s/%s/%s", getShowMbwayPaymentRequest(), debtAccount.getExternalId(),
