@@ -6,12 +6,11 @@ import java.util.HashSet;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.paymentPlan.Installment;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.MbwayPaymentRequest;
-import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.http.HttpStatus;
@@ -104,7 +103,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
             bean.setUsePaymentAmountWithInterests(true);
             MbwayRequest mbwayPaymentRequest = MbwayRequest.create(sibsOnlinePaymentsGateway, debtAccount,
-                    new HashSet<InvoiceEntry>(bean.getSelectedDebitEntries()),
+                    new HashSet<DebitEntry>(bean.getSelectedDebitEntries()),
                     new HashSet<Installment>(bean.getSelectedInstallments()), bean.getPhoneNumberCountryPrefix(),
                     bean.getPhoneNumber());
 
