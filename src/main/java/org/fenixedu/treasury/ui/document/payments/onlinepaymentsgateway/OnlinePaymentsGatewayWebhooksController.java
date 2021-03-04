@@ -15,8 +15,7 @@ import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
-import org.fenixedu.treasury.domain.payments.PaymentRequest;
-import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayPaymentRequest;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.SibsPaymentsGatewayLog;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -61,8 +60,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 log.saveWebhookNotificationData(notificationInitializationVector, notificationAuthenticationTag,
                         notificationEncryptedPayload);
             });
-            
-            if(isTestPayloadForWebhookActivation(notificationInitializationVector, notificationAuthenticationTag,
+
+            if (isTestPayloadForWebhookActivation(notificationInitializationVector, notificationAuthenticationTag,
                     notificationEncryptedPayload)) {
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
@@ -101,36 +100,38 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
             }
-            
-            // Find payment code
-            final Optional<SibsPaymentRequest> referenceCodeOptional = bean.getReferencedId() != null ? 
-                    SibsPaymentRequest.findUniqueBySibsGatewayTransactionId(bean.getReferencedId()) : Optional.empty();
 
-            final Optional<MbwayPaymentRequest> mbwayPaymentRequestOptional =
-                    MbwayPaymentRequest.findUniqueBySibsGatewayMerchantTransactionId(bean.getMerchantTransactionId());
+            // Find payment code
+            final Optional<SibsPaymentRequest> referenceCodeOptional = bean.getReferencedId() != null ? SibsPaymentRequest
+                    .findUniqueBySibsGatewayTransactionId(bean.getReferencedId()) : Optional.empty();
+
+            final Optional<MbwayRequest> mbwayPaymentRequestOptional =
+                    MbwayRequest.findUniqueBySibsGatewayMerchantTransactionId(bean.getMerchantTransactionId());
 
             if (referenceCodeOptional.isPresent()) {
-                if(!PaymentType.RC.name().equals(bean.getPaymentType())) {
-                    throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.payment.reference.code");
+                if (!PaymentType.RC.name().equals(bean.getPaymentType())) {
+                    throw new TreasuryDomainException(
+                            "error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.payment.reference.code");
                 }
 
                 if (!bean.isPaid()) {
                     throw new TreasuryDomainException(
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
                 }
-                
+
                 final SibsPaymentRequest paymentReferenceCode = referenceCodeOptional.get();
 
                 paymentReferenceCode.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
 
-                if(!PaymentType.DB.name().equals(bean.getPaymentType())) {
-                    throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
+                if (!PaymentType.DB.name().equals(bean.getPaymentType())) {
+                    throw new TreasuryDomainException(
+                            "error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
                 }
-                
+
                 if (bean.isPaid()) {
-                    final MbwayPaymentRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
-                    
+                    final MbwayRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
+
                     mbwayPaymentRequest.processMbwayTransaction(log, bean);
                 }
 
@@ -138,14 +139,14 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 return;
             } else {
                 boolean isForwardPayment = ForwardPaymentRequest.findAll()
-                    .anyMatch(p -> bean.getMerchantTransactionId().equals(p.getSibsGatewayMerchantTransactionId()));
-                
-                if(!isForwardPayment) {
+                        .anyMatch(p -> bean.getMerchantTransactionId().equals(p.getSibsGatewayMerchantTransactionId()));
+
+                if (!isForwardPayment) {
                     throw new TreasuryDomainException(
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.paymentReferenceCode.not.found.by.referenceId");
                 }
             }
-            
+
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             if (log != null) {
@@ -168,27 +169,29 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
         }
     }
 
-    private boolean isTestPayloadForWebhookActivation(String notificationInitializationVector, String notificationAuthenticationTag, String notificationEncryptedPayload) {
+    private boolean isTestPayloadForWebhookActivation(String notificationInitializationVector,
+            String notificationAuthenticationTag, String notificationEncryptedPayload) {
         try {
-            
+
             String aesKey = SibsPaymentsGateway.findAll().iterator().next().getAesKey();
-            
-            Decryption notification =
-                    new Decryption(aesKey, notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
+
+            Decryption notification = new Decryption(aesKey, notificationInitializationVector, notificationAuthenticationTag,
+                    notificationEncryptedPayload);
 
             String decryptedPayload = notification.decryptPayload();
 
             ObjectMapper mapper = new ObjectMapper();
-            
-            Map<String, String> map = mapper.readValue(decryptedPayload, new TypeReference<Map<String, Object>>(){});
-            
-            if(map.containsKey("type") && map.containsKey("action")) {
+
+            Map<String, String> map = mapper.readValue(decryptedPayload, new TypeReference<Map<String, Object>>() {
+            });
+
+            if (map.containsKey("type") && map.containsKey("action")) {
                 String typeValue = map.get("type");
                 String actionValue = map.get("action");
-                
+
                 return "test".equals(typeValue) && "webhook activation".equals(actionValue);
             }
-            
+
             return false;
         } catch (Exception e) {
             return false;

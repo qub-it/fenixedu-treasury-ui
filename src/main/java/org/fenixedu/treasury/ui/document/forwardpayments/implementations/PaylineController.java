@@ -91,14 +91,16 @@ public class PaylineController extends TreasuryBaseController implements IForwar
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
         } catch (Exception e) {
             e.printStackTrace();
-            addErrorMessage(TreasuryConstants.treasuryBundle("error.PaylineController.returnforwardpayment.message", e.getMessage()), model);
+            addErrorMessage(
+                    TreasuryConstants.treasuryBundle("error.PaylineController.returnforwardpayment.message", e.getMessage()),
+                    model);
 
             FenixFramework.atomic(() -> {
-        	Map<String, String> requestBodyMap = new HashMap<>();
-        	requestBodyMap.put("action", action);
-        	requestBodyMap.put("urlChecksum", urlChecksum);
-        	
-        	forwardPayment.logException(e, TreasuryConstants.propertiesMapToJson(requestBodyMap), TreasuryConstants.propertiesMapToJson(responseData));
+                Map<String, String> requestBodyMap = new HashMap<>();
+                requestBodyMap.put("action", action);
+                requestBodyMap.put("urlChecksum", urlChecksum);
+                forwardPayment.logException(e, "", "", TreasuryConstants.propertiesMapToJson(requestBodyMap),
+                        TreasuryConstants.propertiesMapToJson(responseData));
             });
             
             return String.format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());

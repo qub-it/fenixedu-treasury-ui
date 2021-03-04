@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -44,14 +44,11 @@ import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
-import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
-import org.fenixedu.treasury.domain.payments.PaymentTransaction;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
+import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
@@ -73,7 +70,6 @@ import com.google.common.collect.Sets;
 import com.qubit.terra.docs.util.ReportGenerationException;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 @BennuSpringController(CustomerController.class)
 @RequestMapping(IForwardPaymentController.CONTROLLER_URL)
@@ -113,11 +109,10 @@ public class ForwardPaymentController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}/{digitalPaymentPlatformId}", method = RequestMethod.GET)
-    public String chooseInvoiceEntries(
-            @PathVariable("debtAccountId") DebtAccount debtAccount,
+    public String chooseInvoiceEntries(@PathVariable("debtAccountId") DebtAccount debtAccount,
             @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
-            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, 
-            Model model, final RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model,
+            final RedirectAttributes redirectAttributes) {
         try {
             checkPermissions(debtAccount, model);
         } catch (SecurityException e) {
@@ -288,7 +283,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     @Atomic
     private ForwardPaymentRequest createForwardPayment(SettlementNoteBean bean) {
         return ForwardPaymentRequest.create(bean, (ForwardPaymentRequest p) -> forwardPaymentSuccessUrl(p),
-                        (ForwardPaymentRequest p) -> forwardPaymentInsuccessUrl(p));
+                (ForwardPaymentRequest p) -> forwardPaymentInsuccessUrl(p));
     }
 
     public String readProcessForwardPaymentUrl() {
@@ -341,7 +336,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model) {
         IForwardPaymentPlatformService service = forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService();
 
-        if (forwardPayment.getForwardPaymentLogsSet().stream().anyMatch(l -> l.getExceptionOccured())) {
+        if (forwardPayment.getOrderedPaymentLogs().stream().anyMatch(l -> l.getExceptionOccured())) {
             model.addAttribute("exceptionOccured", true);
         }
 
@@ -389,8 +384,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
     private IForwardPaymentPlatformService getActivePlatform(FinantialInstitution finantialInstitution) {
         return (IForwardPaymentPlatformService) DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true)
-                .sorted(DigitalPaymentPlatform.COMPARE_BY_NAME)
-                .findFirst().get();
+                .sorted(DigitalPaymentPlatform.COMPARE_BY_NAME).findFirst().get();
     }
 
 }

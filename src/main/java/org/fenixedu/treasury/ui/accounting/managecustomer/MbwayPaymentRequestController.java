@@ -103,7 +103,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
             }
 
             bean.setUsePaymentAmountWithInterests(true);
-            MbwayPaymentRequest mbwayPaymentRequest = MbwayPaymentRequest.create(sibsOnlinePaymentsGateway, debtAccount,
+            MbwayRequest mbwayPaymentRequest = MbwayRequest.create(sibsOnlinePaymentsGateway, debtAccount,
                     new HashSet<InvoiceEntry>(bean.getSelectedDebitEntries()),
                     new HashSet<Installment>(bean.getSelectedInstallments()), bean.getPhoneNumberCountryPrefix(),
                     bean.getPhoneNumber());
@@ -123,7 +123,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
     @RequestMapping(value = _SHOW_MBWAY_PAYMENT_REQUEST_URI + "/{debtAccountId}/{mbwayPaymentRequestId}")
     public String showmbwaypaymentrequest(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @PathVariable("mbwayPaymentRequestId") final MbwayPaymentRequest mbwayPaymentRequest, final Model model) {
+            @PathVariable("mbwayPaymentRequestId") final MbwayRequest mbwayPaymentRequest, final Model model) {
 
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("mbwayPaymentRequest", mbwayPaymentRequest);

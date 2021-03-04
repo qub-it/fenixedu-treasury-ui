@@ -6,12 +6,10 @@ import java.util.HashSet;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -22,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import pt.ist.fenixframework.FenixFramework;
 
 @Component("org.fenixedu.treasury.ui.accounting.managecustomer")
 @BennuSpringController(value = CustomerController.class)
@@ -106,9 +102,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                     bean.getSelectedDebitEntries().iterator().next().getDebtAccount().getFinantialInstitution(), model);
 
             bean.setUsePaymentAmountWithInterests(false);
-            
+
             bean.getPaymentCodePool().getSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
-                    new HashSet<>(bean.getSelectedDebitEntries()));
+                    new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>());
 
             addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"),
                     model);
