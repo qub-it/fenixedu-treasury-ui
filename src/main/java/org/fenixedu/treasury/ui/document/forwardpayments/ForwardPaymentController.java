@@ -239,7 +239,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         try {
             return ForwardPaymentRequest.find(debitEntry).filter(ForwardPaymentRequest::isInStateToPostProcessPayment)
                     .filter(p -> p.getDigitalPaymentPlatform().isActive()).anyMatch(p -> p.getDigitalPaymentPlatform()
-                            .getForwardPaymentPlatformService().paymentStatus(p).isInPayedState());
+                            .castToForwardPaymentPlatformService().paymentStatus(p).isInPayedState());
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
             return false;
@@ -296,7 +296,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
             HttpServletResponse response, HttpSession session) {
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
         session.setAttribute("debtAccountUrl", readDebtAccountUrl());
-        return forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService()
+        return forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService()
                 .getForwardPaymentController(forwardPayment).processforwardpayment(forwardPayment, model, response, session);
     }
 
@@ -321,7 +321,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         model.addAttribute("settlementNotes",
                 forwardPayment.getPaymentTransactionsSet().iterator().next().getSettlementNotesSet());
         model.addAttribute("logosPage",
-                forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService().getLogosJspPage());
+                forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService().getLogosJspPage());
         model.addAttribute("debtAccountUrl", readDebtAccountUrl());
         model.addAttribute("printSettlementNoteUrl", readPrintSettlementNoteUrl());
 
@@ -334,7 +334,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
     @RequestMapping(value = FORWARD_PAYMENT_INSUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model) {
-        IForwardPaymentPlatformService service = forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService();
+        IForwardPaymentPlatformService service = forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService();
 
         if (forwardPayment.getOrderedPaymentLogs().stream().anyMatch(l -> l.getExceptionOccured())) {
             model.addAttribute("exceptionOccured", true);

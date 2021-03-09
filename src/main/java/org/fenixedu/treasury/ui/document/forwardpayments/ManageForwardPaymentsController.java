@@ -106,7 +106,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
                         model);
             } else {
                 stream = stream.filter(p -> p.isInRequestedState());
-                stream = stream.filter(p -> p.getDigitalPaymentPlatform().getForwardPaymentPlatformService().paymentStatus(p)
+                stream = stream.filter(p -> p.getDigitalPaymentPlatform().castToForwardPaymentPlatformService().paymentStatus(p)
                         .isAbleToRegisterPostPayment(p));
             }
         }
@@ -154,7 +154,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
 
         try {
             List<ForwardPaymentStatusBean> paymentStatusBeanList = forwardPayment.getDigitalPaymentPlatform()
-                    .getForwardPaymentPlatformService().verifyPaymentStatus(forwardPayment);
+                    .castToForwardPaymentPlatformService().verifyPaymentStatus(forwardPayment);
 
             model.addAttribute("forwardPayment", forwardPayment);
             model.addAttribute("paymentStatusBeanList", paymentStatusBeanList);
@@ -175,7 +175,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
             ForwardPaymentStatusBean paymentStatusBean =
-                    forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService().paymentStatus(forwardPayment);
+                    forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService().paymentStatus(forwardPayment);
 
             if (!forwardPayment.isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
                 addErrorMessage(treasuryBundle("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform"),
@@ -184,7 +184,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             }
 
             final IForwardPaymentPlatformService implementation =
-                    forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService();
+                    forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService();
 
             Optional<String> optionalTransactionId = Optional.empty();
             if (StringUtils.isNotEmpty(transactionId)) {
