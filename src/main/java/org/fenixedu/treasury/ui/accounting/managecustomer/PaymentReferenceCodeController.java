@@ -103,7 +103,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
 
             bean.setUsePaymentAmountWithInterests(false);
 
-            bean.getPaymentCodePool().getSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
+            bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
                     new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>());
 
             addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"),

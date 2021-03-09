@@ -167,7 +167,7 @@ public class PostForwardPaymentsTask extends CronTask {
             FenixFramework.atomic(() -> {
 
                 final IForwardPaymentPlatformService service =
-                        forwardPayment.getDigitalPaymentPlatform().getForwardPaymentPlatformService();
+                        forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService();
                 final String justification = treasuryBundle("error.PostForwardPaymentsTask.post.payment.justification");
 
                 final PostProcessPaymentStatusBean postProcessPaymentStatusBean =
