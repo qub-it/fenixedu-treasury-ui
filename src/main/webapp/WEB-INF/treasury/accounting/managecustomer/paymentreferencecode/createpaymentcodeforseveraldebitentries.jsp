@@ -44,7 +44,7 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>/${debtAccount.externalId}"><spring:message
+        href="${pageContext.request.contextPath}${debtAccountUrl}"><spring:message
             code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -122,14 +122,32 @@ ${portal.angularToolkit()}
 						
 						$scope.postBack();
 					};
+
+					$scope.toggleInstallments = function toggleSelection(installmentId) {
+						if($scope.object.selectedInstallments === undefined) {
+							$scope.object.selectedInstallments = [];
+						}
+						
+						var idx = $scope.object.selectedInstallments.indexOf(installmentId);
+						
+						// is currently selected
+						if (idx > -1) {
+						  $scope.object.selectedInstallments.splice(idx, 1);
+						} else {
+							// is newly selected
+						  $scope.object.selectedInstallments.push(installmentId);
+						}
+						
+						$scope.postBack();
+					};
 					
 				} ]);
 </script>
 
 <form name='form' method="post" class="form-horizontal" ng-app="angularAppPaymentReferenceCode" ng-controller="PaymentReferenceCodeController"
-    action='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}'>
+    action='${pageContext.request.contextPath}${createUrl}'>
 
-    <input type="hidden" name="postback" value='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL %>/${debtAccount.externalId}' />
+    <input type="hidden" name="postback" value='${pageContext.request.contextPath}${createPostbackUrl}' />
     <input name="bean" type="hidden" value="{{ object }}" />
 
     <div class="panel panel-default">
@@ -152,6 +170,7 @@ ${portal.angularToolkit()}
                 </thead>
                 <tbody>
                     <c:forEach items="${bean.openDebitEntries}" var="debitEntry" varStatus="loop">
+                    	<c:if test="${debitEntry.openPaymentPlan == null}">
 						<tr>
 	                        <td>
 	                        	<input class="form-control" name="${debitEntry.externalId}" 
@@ -183,9 +202,40 @@ ${portal.angularToolkit()}
 		                        	</c:if>
 	                        	<% } %>
 	                        </td>
-	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" /></td>
+	                        <td>
+	                        	
+	                        	<c:if test="${bean.usePaymentAmountWithInterests}">
+		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmountWithInterests) }" />
+	                        	</c:if>
+	                        	<c:if test="${not bean.usePaymentAmountWithInterests}">
+		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" />
+	                        	</c:if>
+	                        </td>
+                        </tr>
+                        </c:if>
+                    </c:forEach>
+                    
+                    <c:forEach items="${bean.openInstallments}" var="installment" varStatus="loop">
+						<tr>
+	                        <td>
+	                        	<input class="form-control" name="${installment.externalId}" 
+			                        id="${installment.externalId}" 
+			                        ng-checked="object.selectedInstallments.indexOf('${installment.externalId}') > -1" 
+			                        ng-click="toggleInstallments('${installment.externalId}')" type="checkbox" />
+	                        </td>
+	                        <td></td>
+	                        <td>
+	                        	<p><c:out value="${ installment.description.content }" /></p>
+	                        	<ul style="list-style-type: none;">
+									<c:forEach items="${installment.sortedInstallmentEntries}" var="entry">
+										<li><em><c:out value="${entry.debitEntry.description}" /></em></li>
+									</c:forEach>
+								</ul>
+	                        </td>
+	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(installment.openAmount) }" /></td>
                         </tr>
                     </c:forEach>
+                    
                 </tbody>
             </table>
         </div>
@@ -239,6 +289,11 @@ ${portal.angularToolkit()}
                         </div>
                         <input  class="" type="text" ng-model="object.paymentAmount" ng-readonly="object.useCustomPaymentAmount == false" />
                     </div>
+                </div>
+            </div>
+            <div class="form-group row" >
+                <div class="col-sm-10">
+                	<p><spring:message code="label.PaymentReferenceCodeController.after.submission.click.debtaccount.tab" /></p>
                 </div>
             </div>
         </div>
