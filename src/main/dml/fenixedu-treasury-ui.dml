@@ -201,3 +201,15 @@ class TreasuryFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 		}
  	}
  	
+	/* --- PaymentRequestLogFile --- */
+	
+	relation TreasuryFilePaymentRequestLogFile {
+		
+		TreasuryFile playsRole treasuryFile {
+			multiplicity 0..1;
+		}
+ 		
+		.org.fenixedu.treasury.domain.payments.PaymentRequestLogFile playsRole {
+			multiplicity *;
+		} 
+	}
