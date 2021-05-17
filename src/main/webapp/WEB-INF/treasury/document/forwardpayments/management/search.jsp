@@ -134,8 +134,8 @@ ${portal.toolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="businessCustomerId" class="form-control" type="text" name="businessCustomerId" 
-                    	value='<c:out value='${param.businessCustomerId != null ? param.businessCustomerId : businessCustomerId }'/>' />
+                    <input id="customerBusinessId" class="form-control" type="text" name="customerBusinessId" 
+                    	value='<c:out value='${param.customerBusinessId != null ? param.customerBusinessId : customerBusinessId }'/>' />
                 </div>
             </div>
 			<div class="form-group row">
