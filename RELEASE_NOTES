@@ -1,4 +1,5 @@
-- Bug fix: forward payment seacrh by student number correction
+- Bug Fix: Create payment reference code with interests, if bean is specified to create with interests
+- Bug fix: forward payment search by student number correction
 
 7.0.1 (22-04-2021)
 - Bug fix: Create payment reference codes with payment plan installments only
