@@ -44,7 +44,7 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}${debtAccountUrl}"><spring:message
+        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>/${debtAccount.externalId}"><spring:message
             code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -141,9 +141,9 @@ ${portal.angularToolkit()}
 </script>
 
 <form name='form' method="post" class="form-horizontal" ng-app="angularAppPaymentReferenceCode" ng-controller="PaymentReferenceCodeController"
-    action='${pageContext.request.contextPath}${createUrl}'>
+    action='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}'>
 
-    <input type="hidden" name="postback" value='${pageContext.request.contextPath}${createPostbackUrl}' />
+    <input type="hidden" name="postback" value='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL %>/${debtAccount.externalId}' />
     <input name="bean" type="hidden" value="{{ object }}" />
 
     <div class="panel panel-default">

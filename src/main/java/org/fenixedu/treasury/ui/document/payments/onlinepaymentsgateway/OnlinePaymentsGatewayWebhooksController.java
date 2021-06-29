@@ -15,6 +15,9 @@ import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
+import org.fenixedu.treasury.domain.paymentcodes.integration.ISibsPaymentCodePoolService;
+import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
+import org.fenixedu.treasury.domain.payments.PaymentRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.SibsPaymentsGatewayLog;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
@@ -66,10 +69,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
             }
-            
-            if(!SibsPaymentsGateway.findAll().iterator().next().isActive()) {
-                throw new RuntimeException("SIBS Gateway integration is not active");
-            }
 
             PaymentStateBean bean = SibsPaymentsGateway.findAll().iterator().next().handleWebhookNotificationRequest(
                     notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
@@ -77,7 +76,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             FenixFramework.atomic(() -> {
                 log.logRequestReceiveDateAndData(bean.getTransactionId(), bean.isOperationSuccess(), bean.isPaid(),
                         bean.getPaymentGatewayResultCode(), bean.getPaymentGatewayResultDescription());
-                log.savePaymentTypeAndBrand(bean.getPaymentType(), bean.getPaymentBrand());
                 log.saveRequest(bean.getRequestLog());
             });
 
@@ -99,10 +97,16 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 log.saveReferenceId(bean.getReferencedId());
             });
 
-            if (PaymentType.PA.name().equals(bean.getPaymentType()) && "SIBS_MULTIBANCO".equals(bean.getPaymentBrand())) {
+            if (PaymentType.PA.name().equals(bean.getPaymentType())) {
                 // Sibs reference code request
-                response.setStatus(HttpServletResponse.SC_OK);
-                return;
+                final Optional<? extends PaymentRequest> referenceCodeOptional =
+                        bean.getTransactionId() != null ? SibsPaymentRequest
+                                .findUniqueBySibsGatewayTransactionId(bean.getTransactionId()) : Optional.empty();
+                if (referenceCodeOptional.isPresent()) {
+                    // Payment reference code pre authorization (creation of reference code)
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                }
             }
 
             // Find payment code
@@ -123,7 +127,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
                 }
 
-                final SibsPaymentRequest paymentReferenceCode = referenceCodeOptional.get();
+                final ISibsPaymentCodePoolService paymentReferenceCode =
+                        referenceCodeOptional.get().getDigitalPaymentPlatform().castToSibsPaymentCodePoolService();
 
                 paymentReferenceCode.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
@@ -134,7 +139,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 }
 
                 if (bean.isPaid()) {
-                    final MbwayRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
+                    final IMbwayPaymentPlatformService mbwayPaymentRequest =
+                            mbwayPaymentRequestOptional.get().getDigitalPaymentPlatform().castToMbwayPaymentPlatformService();
 
                     mbwayPaymentRequest.processMbwayTransaction(log, bean);
                 }

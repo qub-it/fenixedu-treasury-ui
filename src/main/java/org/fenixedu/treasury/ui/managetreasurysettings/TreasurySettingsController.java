@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and ServiÃ§os Partilhados da
  * Universidade de Lisboa:
  *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -77,16 +77,16 @@ public class TreasurySettingsController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = UPDATE_URI, method = RequestMethod.POST)
-    public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency, @RequestParam(
-            value = "interestproduct", required = true) final Product interestProduct, @RequestParam(
-            value = "advancedpaymentproduct", required = true) final Product advancedPaymentProduct, final Model model,
-            final RedirectAttributes redirectAttributes) {
+    public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency,
+            @RequestParam(value = "interestproduct", required = true) final Product interestProduct,
+            @RequestParam(value = "advancedpaymentproduct", required = true) final Product advancedPaymentProduct,
+            final Model model, final RedirectAttributes redirectAttributes) {
         final TreasurySettings treasurySettings = TreasurySettings.getInstance();
 
         model.addAttribute("treasurySettings", treasurySettings);
 
         try {
-            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct);
+            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct, 10);
 
             return redirect(READ_URL, model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {

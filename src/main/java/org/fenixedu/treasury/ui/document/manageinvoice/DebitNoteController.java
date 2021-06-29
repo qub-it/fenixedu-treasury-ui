@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -40,8 +40,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -55,7 +53,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.dto.InterestRateBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.dto.SettlementInterestEntryBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -64,7 +62,6 @@ import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
 import org.fenixedu.treasury.util.TreasuryConstants;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -141,7 +138,8 @@ public class DebitNoteController extends TreasuryBaseController {
             setDebitNote(debitNote, model);
 
             if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
-                model.addAttribute("anullDebitNoteMessage", treasuryBundle("label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
+                model.addAttribute("anullDebitNoteMessage",
+                        treasuryBundle("label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
             }
 
             final List<String> errorMessages = Lists.newArrayList();
@@ -253,7 +251,9 @@ public class DebitNoteController extends TreasuryBaseController {
             }
             FinantialInstitution finantialInstitution = null;
             if (documentNumberSeries == null && debtAccount == null) {
-                addErrorMessage(treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"), model);
+                addErrorMessage(
+                        treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                        model);
                 return redirect(SEARCH_URL, model, redirectAttributes);
             }
             assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
@@ -261,7 +261,8 @@ public class DebitNoteController extends TreasuryBaseController {
             if (documentNumberSeries != null && debtAccount != null) {
                 if (!documentNumberSeries.getSeries().getFinantialInstitution().getCode()
                         .equals(debtAccount.getFinantialInstitution().getCode())) {
-                    addErrorMessage(treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
+                    addErrorMessage(
+                            treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
                             model);
                     return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
                 }
@@ -295,7 +296,9 @@ public class DebitNoteController extends TreasuryBaseController {
                     model.addAttribute("DebitNote_documentNumberSeries_options", DocumentNumberSeries
                             .applyActiveSelectableAndDefaultSorting(availableSeries.stream()).collect(Collectors.toList()));
                 } else {
-                    addErrorMessage(treasuryBundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+                    addErrorMessage(
+                            treasuryBundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"),
+                            model);
                     return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
                 }
             }
@@ -320,10 +323,10 @@ public class DebitNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         try {
             assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
-            
+
             if (debitEntry != null && debitEntry.getFinantialDocument() == null) {
-                DebitNote.createDebitNoteForDebitEntry(debitEntry, payorDebtAccount, documentNumberSeries, documentDate.toDateTimeAtStartOfDay(),
-                        documentDueDate, originDocumentNumber, documentObservations);
+                DebitNote.createDebitNoteForDebitEntry(debitEntry, payorDebtAccount, documentNumberSeries,
+                        documentDate.toDateTimeAtStartOfDay(), documentDueDate, originDocumentNumber, documentObservations);
             }
 
             model.addAttribute("debitNote", debitEntry.getFinantialDocument());
@@ -428,8 +431,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
             debitNote.anullDebitNoteWithCreditNote(anullReason, false);
 
-            addInfoMessage(treasuryBundle("label.document.manageinvoice.DebitNote.document.anulled.sucess"),
-                    model);
+            addInfoMessage(treasuryBundle("label.document.manageinvoice.DebitNote.document.anulled.sucess"), model);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception de) {
@@ -495,13 +497,14 @@ public class DebitNoteController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.label.DebitNote.create.interest.note.invalid.payment.date");
             }
 
-            List<InterestEntryBean> allInterests = new ArrayList<InterestEntryBean>();
+            List<SettlementInterestEntryBean> allInterests = new ArrayList<SettlementInterestEntryBean>();
 
             for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
                 InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
 
                 if (TreasuryConstants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
-                    InterestEntryBean entryBean = new InterestEntryBean(entry, calculateUndebitedInterestValue);
+                    SettlementInterestEntryBean entryBean =
+                            new SettlementInterestEntryBean(entry, calculateUndebitedInterestValue);
                     allInterests.add(entryBean);
                 }
             }
@@ -516,17 +519,17 @@ public class DebitNoteController extends TreasuryBaseController {
             if (availableSeries.size() > 0) {
                 model.addAttribute("DebitNote_documentNumberSeries_options", availableSeries);
             } else {
-                addErrorMessage(treasuryBundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"), model);
+                addErrorMessage(
+                        treasuryBundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"),
+                        model);
                 return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
             setDebitNote(debitNote, model);
             model.addAttribute("interestRateValues", allInterests);
 
-            addWarningMessage(treasuryBundle("label.warning.document.manageinvoice.calculateinterestvalue.line1"),
-                    model);
-            addWarningMessage(treasuryBundle("label.warning.document.manageinvoice.calculateinterestvalue.line2"),
-                    model);
+            addWarningMessage(treasuryBundle("label.warning.document.manageinvoice.calculateinterestvalue.line1"), model);
+            addWarningMessage(treasuryBundle("label.warning.document.manageinvoice.calculateinterestvalue.line2"), model);
             return "treasury/document/manageinvoice/debitnote/calculateinterestvalue";
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
@@ -552,8 +555,8 @@ public class DebitNoteController extends TreasuryBaseController {
                     .getFinantialInstitution()) {
                 throw new TreasuryDomainException("error.DebitNote.invalid.series.for.interest.debit.note.creation");
             }
-            DebitNote interestDebitNote =
-                    DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries, paymentDate, documentObservations);
+            DebitNote interestDebitNote = DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
+                    paymentDate, documentObservations);
 
             addInfoMessage(treasuryBundle("info.document.manageinfoice.debitnote.success.calculate.interest.value"), model);
 
@@ -575,7 +578,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 final IERPExporter erpExporter = debitNote.getDebtAccount().getFinantialInstitution()
                         .getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
 
-                //Force a check status first of the document 
+                //Force a check status first of the document
                 erpExporter.checkIntegrationDocumentStatus(debitNote);
             } catch (Exception ex) {
             }
@@ -619,7 +622,7 @@ public class DebitNoteController extends TreasuryBaseController {
             debitNote.clearDocumentToExport(reason);
 
             return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return redirect(READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
@@ -647,7 +650,7 @@ public class DebitNoteController extends TreasuryBaseController {
             model.addAttribute("stateValues", org.fenixedu.treasury.domain.document.FinantialDocumentStateType.values());
 
             return "treasury/document/manageinvoice/debitnote/updatepayordebtaccount";
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 
@@ -669,7 +672,7 @@ public class DebitNoteController extends TreasuryBaseController {
             } else {
                 addErrorMessage(treasuryBundle("error.DebitNote.updatePayorDebtAccount.payor.not.changed"), model);
             }
-        } catch (final DomainException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
 

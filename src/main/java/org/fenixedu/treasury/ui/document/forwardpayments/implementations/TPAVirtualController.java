@@ -7,10 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
-import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentImplementation;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.TPAVirtualImplementationPlatform;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -29,11 +27,12 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/tpavirtual";
     private static final String JSP_PATH = "/treasury/document/forwardpayments/forwardpayment/implementations/tpavirtual";
 
-    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
+    @Override
+    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Object model, HttpServletResponse response,
             HttpSession session) {
 
-        model.addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
-        model.addAttribute("forwardPayment", forwardPayment);
+        ((Model) model).addAttribute("forwardPaymentConfiguration", forwardPayment.getDigitalPaymentPlatform());
+        ((Model) model).addAttribute("forwardPayment", forwardPayment);
         return jspPage("hostedPay");
     }
 
@@ -44,7 +43,8 @@ public class TPAVirtualController extends TreasuryBaseController implements IFor
             produces = "text/html")
     public String returnforwardpayment(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment,
             @RequestParam Map<String, String> responseData, Model model, HttpServletResponse response) {
-        TPAVirtualImplementationPlatform implementation = (TPAVirtualImplementationPlatform) forwardPayment.getDigitalPaymentPlatform();
+        TPAVirtualImplementationPlatform implementation =
+                (TPAVirtualImplementationPlatform) forwardPayment.getDigitalPaymentPlatform();
 
         model.addAttribute("forwardPaymentConfiguration", implementation);
         try {

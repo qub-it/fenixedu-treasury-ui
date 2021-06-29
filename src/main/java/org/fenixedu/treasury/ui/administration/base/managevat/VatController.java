@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -33,15 +33,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -95,11 +92,11 @@ public class VatController extends TreasuryBaseController {
         vat.delete();
     }
 
-//				
+//
     @RequestMapping(value = SEARCH_URI)
-    public String search(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
-            value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
-            value = "onlyActive", required = false) Boolean onlyActive, Model model) {
+    public String search(@RequestParam(value = "vatType", required = false) VatType vatType,
+            @RequestParam(value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution,
+            @RequestParam(value = "onlyActive", required = false) Boolean onlyActive, Model model) {
         List<Vat> searchvatResultsDataSet = filterSearchVat(vatType, finantialInstitution, onlyActive);
         model.addAttribute("vatTypeList", VatType.findAll().collect(Collectors.toList()));
         model.addAttribute("finantialInstitutionList", FinantialInstitution.findAll().collect(Collectors.toList()));
@@ -113,15 +110,15 @@ public class VatController extends TreasuryBaseController {
 
     private void checkVatRules(Model model) {
 
-        FinantialInstitution.findAll().forEach(
-                inst -> {
-                    VatType.findAll().forEach(
-                            vatType -> {
-                                if (!Vat.findActiveUnique(vatType, inst, new DateTime()).isPresent()) {
-                                    addErrorMessage(treasuryBundle("label.Vat.missing.vattype.for", inst.getName(), vatType.getName().getContent()), model);
-                                }
-                            });
-                });
+        FinantialInstitution.findAll().forEach(inst -> {
+            VatType.findAll().forEach(vatType -> {
+                if (!Vat.findActiveUnique(vatType, inst, new DateTime()).isPresent()) {
+                    addErrorMessage(
+                            treasuryBundle("label.Vat.missing.vattype.for", inst.getName(), vatType.getName().getContent()),
+                            model);
+                }
+            });
+        });
     }
 
     private Set<Vat> getSearchUniverseSearchVatDataSet() {
@@ -143,11 +140,12 @@ public class VatController extends TreasuryBaseController {
     public String processSearchToViewAction(@PathVariable("oid") Vat vat, Model model, RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
-        // If you selected multiple exists you must choose which one to use below	 
-        return redirect("/treasury/administration/base/managevat/vat/read" + "/" + vat.getExternalId(), model, redirectAttributes);
+        // If you selected multiple exists you must choose which one to use below
+        return redirect("/treasury/administration/base/managevat/vat/read" + "/" + vat.getExternalId(), model,
+                redirectAttributes);
     }
 
-//				
+//
     @RequestMapping(value = READ_URI + "{oid}")
     public String read(@PathVariable("oid") Vat vat, Model model) {
         setVat(vat, model);
@@ -167,10 +165,6 @@ public class VatController extends TreasuryBaseController {
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect("/treasury/administration/base/managevat/vat/", model, redirectAttributes);
 
-        } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
             //Add error messages to the list
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
@@ -181,7 +175,7 @@ public class VatController extends TreasuryBaseController {
                 redirectAttributes);
     }
 
-//				
+//
     @RequestMapping(value = CREATE_URI, method = RequestMethod.GET)
     public String create(Model model) {
         model.addAttribute("vatTypeList", VatType.findAll().collect(Collectors.toList()));
@@ -190,29 +184,26 @@ public class VatController extends TreasuryBaseController {
         return "treasury/administration/base/managevat/vat/create";
     }
 
-//				
+//
     @RequestMapping(value = CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "vatType", required = false) VatType vatType, @RequestParam(
-            value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution, @RequestParam(
-            value = "taxrate", required = false) java.math.BigDecimal taxRate, 
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate, 
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
+    public String create(@RequestParam(value = "vatType", required = false) VatType vatType,
+            @RequestParam(value = "finantialInstitution", required = false) FinantialInstitution finantialInstitution,
+            @RequestParam(value = "taxrate", required = false) java.math.BigDecimal taxRate,
+            @RequestParam(value = "begindate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime beginDate,
+            @RequestParam(value = "enddate",
+                    required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") org.joda.time.DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
             assertUserIsBackOfficeMember(finantialInstitution, model);
 
-            Vat vat = createVat(vatType, finantialInstitution, taxRate, beginDate, endDate.plusDays(1).minusSeconds(1));
+            Vat vat = createVat(vatType, finantialInstitution, taxRate, beginDate, endDate);
 
             model.addAttribute("vat", vat);
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);
-
-        } catch (DomainException de) {
-
-            addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
-            return create(model);
 
         } catch (Exception de) {
 
@@ -222,8 +213,8 @@ public class VatController extends TreasuryBaseController {
     }
 
     @Atomic
-    public Vat createVat(VatType vatType, FinantialInstitution finantialInstitution, BigDecimal taxRate,
-            DateTime beginDate, DateTime endDate) {
+    public Vat createVat(VatType vatType, FinantialInstitution finantialInstitution, java.math.BigDecimal taxRate,
+            org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate) {
         Vat vat = Vat.create(vatType, finantialInstitution, taxRate, beginDate, endDate);
         return vat;
     }
@@ -238,9 +229,8 @@ public class VatController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") Vat vat,
-            @RequestParam(value = "taxrate", required = false) BigDecimal taxRate, 
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate, 
+    public String update(@PathVariable("oid") Vat vat, @RequestParam(value = "taxrate", required = false) BigDecimal taxRate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime beginDate,
             @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime endDate,
             Model model, RedirectAttributes redirectAttributes) {
 
@@ -249,15 +239,10 @@ public class VatController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(vat.getFinantialInstitution(), model);
 
-            updateVat(taxRate, beginDate, endDate.plusDays(1).minusSeconds(1), model);
+            updateVat(taxRate, beginDate, endDate, model);
 
             return redirect("/treasury/administration/base/managevat/vat/read/" + getVat(model).getExternalId(), model,
                     redirectAttributes);
-
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
-            return update(vat, model);
-
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
             return update(vat, model);
@@ -265,7 +250,8 @@ public class VatController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateVat(java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate, Model m) {
+    public void updateVat(java.math.BigDecimal taxRate, org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate,
+            Model m) {
         getVat(m).edit(taxRate, beginDate, endDate);
     }
 

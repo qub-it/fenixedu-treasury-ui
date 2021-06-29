@@ -46,9 +46,9 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
-import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
+import org.fenixedu.treasury.dto.SettlementCreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementDebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
@@ -153,15 +153,15 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
-            ISettlementInvoiceEntryBean debitEntryBean = bean.getDebitEntries().get(i);
+            SettlementDebitEntryBean debitEntryBean = bean.getDebitEntriesByType(SettlementDebitEntryBean.class).get(i);
             if (debitEntryBean.isIncluded()) {
-                invoiceEntriesSet.add(debitEntryBean.getInvoiceEntry());
+                invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
 
-                if (debitEntryBean.getSettledAmount().compareTo(BigDecimal.ZERO) == 0) {
+                if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
-                } else if (debitEntryBean.getSettledAmount().compareTo(debitEntryBean.getEntryOpenAmount()) > 0) {
+                } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
@@ -169,12 +169,12 @@ public class ForwardPaymentController extends TreasuryBaseController {
                     debitEntryBean.setNotValid(false);
                 }
                 //Always perform the sum, in order to verify if creditSum is not higher than debitSum
-                debitSum = debitSum.add(debitEntryBean.getSettledAmount());
+                debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
             } else {
                 debitEntryBean.setNotValid(false);
             }
         }
-        for (CreditEntryBean creditEntryBean : bean.getCreditEntries()) {
+        for (SettlementCreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
                 creditSum = creditSum.add(creditEntryBean.getCreditAmountWithVat());
             }
@@ -335,10 +335,6 @@ public class ForwardPaymentController extends TreasuryBaseController {
     @RequestMapping(value = FORWARD_PAYMENT_INSUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model) {
         IForwardPaymentPlatformService service = forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService();
-
-        if (forwardPayment.getOrderedPaymentLogs().stream().anyMatch(l -> l.getExceptionOccured())) {
-            model.addAttribute("exceptionOccured", true);
-        }
 
         model.addAttribute("forwardPaymentConfiguration", service);
         model.addAttribute("forwardPayment", forwardPayment);

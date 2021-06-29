@@ -295,7 +295,7 @@ ${portal.angularToolkit()}
                                 <tr>
                                     <td>---</td>
                                     <td>
-                                    	<p><spring:message code="label.InterestEntry.interest" />:&nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" /></p>
+                                    	<p><spring:message code="label.InterestEntry.interest" /> &nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" /></p>
 			                        	<c:if test="${interestEntryBean.debitEntry.finantialDocument != null}">
 			                        	<c:if test="${interestEntryBean.debitEntry.finantialDocument.forPayorDebtAccount}">
 			                        		<p>

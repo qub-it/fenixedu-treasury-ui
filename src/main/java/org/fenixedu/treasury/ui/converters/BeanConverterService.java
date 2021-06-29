@@ -30,12 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 
-import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.ITreasuryBean;
-import org.fenixedu.treasury.dto.InstallmentPaymenPlanBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 
@@ -51,14 +46,7 @@ public class BeanConverterService implements ConditionalGenericConverter {
     private GsonBuilder builder;
 
     public BeanConverterService(GsonBuilder builder) {
-        RuntimeTypeAdapterFactory<ISettlementInvoiceEntryBean> adapter = RuntimeTypeAdapterFactory
-                .of(ISettlementInvoiceEntryBean.class)
-                .registerSubtype(DebitEntryBean.class)
-                .registerSubtype(CreditEntryBean.class)
-                .registerSubtype(InterestEntryBean.class)
-                .registerSubtype(InstallmentPaymenPlanBean.class);
-                
-        this.builder = builder.registerTypeAdapterFactory(adapter);
+        this.builder = builder;
     }
 
     @Override

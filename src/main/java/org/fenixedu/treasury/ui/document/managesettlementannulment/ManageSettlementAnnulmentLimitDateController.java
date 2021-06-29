@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalYear;
@@ -87,9 +86,8 @@ public class ManageSettlementAnnulmentLimitDateController extends TreasuryBaseCo
             fiscalYear.editSettlementAnnulmentLimitDate(settlementAnnulmentLimitDate);
             
             return redirect(SEARCH_URL + "/" + finantialInstitution.getExternalId(), model, redirectAttributes);
-        } catch(final DomainException e) {
+        } catch(final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-            
             return jspPage(_UPDATE_URI);
         }
         

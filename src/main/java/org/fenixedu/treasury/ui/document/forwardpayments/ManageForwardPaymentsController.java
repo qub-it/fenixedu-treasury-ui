@@ -38,7 +38,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
-@SpringFunctionality(app = TreasuryController.class, title = "label.ManageForwardPayments.functionality", accessGroup = "treasuryBackOffice")
+@SpringFunctionality(app = TreasuryController.class, title = "label.ManageForwardPayments.functionality",
+        accessGroup = "treasuryBackOffice")
 @RequestMapping(ManageForwardPaymentsController.CONTROLLER_URL)
 public class ManageForwardPaymentsController extends TreasuryBaseController {
 
@@ -62,12 +63,10 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             @RequestParam(value = "customerBusinessId", required = false) String customerBusinessId,
             @RequestParam(value = "orderNumber", required = false) String orderNumber,
             @RequestParam(value = "withPendingPlatformPayment", required = false) boolean withPendingPlatformPayment,
-            @RequestParam(value = "forwardPaymentStateType", required = false) ForwardPaymentStateType stateType,
-            Model model) {
+            @RequestParam(value = "forwardPaymentStateType", required = false) ForwardPaymentStateType stateType, Model model) {
 
         Stream<ForwardPaymentRequest> stream = ForwardPaymentRequest.findAll();
-        
-        
+
         if (!Strings.isNullOrEmpty(orderNumber)) {
             stream = stream.filter(p -> orderNumber.trim().equals(String.valueOf(p.getOrderNumber())));
         } else {
@@ -112,8 +111,9 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
         }
 
         String username = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        stream = stream.filter(p -> TreasuryAccessControlAPI.isBackOfficeMember(username, p.getDigitalPaymentPlatform().getFinantialInstitution()));
-        
+        stream = stream.filter(p -> TreasuryAccessControlAPI.isBackOfficeMember(username,
+                p.getDigitalPaymentPlatform().getFinantialInstitution()));
+
         List<ForwardPaymentRequest> forwardPayments =
                 stream.sorted(Collections.reverseOrder(Comparator.comparing(ForwardPaymentRequest::getRequestDate)))
                         .collect(Collectors.toList());
@@ -153,11 +153,11 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            List<ForwardPaymentStatusBean> paymentStatusBeanList = forwardPayment.getDigitalPaymentPlatform()
-                    .castToForwardPaymentPlatformService().verifyPaymentStatus(forwardPayment);
+//            List<ForwardPaymentStatusBean> paymentStatusBeanList = forwardPayment.getDigitalPaymentPlatform()
+//                    .castToForwardPaymentPlatformService()verifyPaymentStatus(forwardPayment);
 
             model.addAttribute("forwardPayment", forwardPayment);
-            model.addAttribute("paymentStatusBeanList", paymentStatusBeanList);
+//            model.addAttribute("paymentStatusBeanList", paymentStatusBeanList);
 
             return jspPage(VERIFY_FORWARD_PAYMENT_URI);
         } catch (final Exception e) {
@@ -174,8 +174,8 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             @RequestParam("justification") String justification, @RequestParam("transactionId") String transactionId, Model model,
             RedirectAttributes redirectAttributes) {
         try {
-            ForwardPaymentStatusBean paymentStatusBean =
-                    forwardPayment.getDigitalPaymentPlatform().castToForwardPaymentPlatformService().paymentStatus(forwardPayment);
+            ForwardPaymentStatusBean paymentStatusBean = forwardPayment.getDigitalPaymentPlatform()
+                    .castToForwardPaymentPlatformService().paymentStatus(forwardPayment);
 
             if (!forwardPayment.isInStateToPostProcessPayment() || !paymentStatusBean.isInPayedState()) {
                 addErrorMessage(treasuryBundle("label.ManageForwardPayments.forwardPayment.not.created.nor.payed.in.platform"),

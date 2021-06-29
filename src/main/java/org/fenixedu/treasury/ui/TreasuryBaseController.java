@@ -43,18 +43,12 @@ import org.fenixedu.treasury.adapters.MunicipalityAdapter;
 import org.fenixedu.treasury.ui.converters.BeanConverterService;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
-import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.ITreasuryBean;
-import org.fenixedu.treasury.dto.InstallmentPaymenPlanBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.converters.CountryConverterService;
 import org.fenixedu.treasury.ui.converters.DistrictConverterService;
 import org.fenixedu.treasury.ui.converters.MunicipalityConverterService;
-import org.fenixedu.treasury.ui.converters.RuntimeTypeAdapterFactory;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -254,15 +248,6 @@ public class TreasuryBaseController {
         builder.registerTypeAdapter(District.class, new DistrictAdapter());
         builder.registerTypeAdapter(Municipality.class, new MunicipalityAdapter());
         builder.registerTypeHierarchyAdapter(DomainObject.class, new DomainObjectAdapter());
-        
-        RuntimeTypeAdapterFactory<ISettlementInvoiceEntryBean> adapter = RuntimeTypeAdapterFactory
-                .of(ISettlementInvoiceEntryBean.class)
-                .registerSubtype(DebitEntryBean.class)
-                .registerSubtype(CreditEntryBean.class)
-                .registerSubtype(InterestEntryBean.class)
-                .registerSubtype(InstallmentPaymenPlanBean.class);
-                
-        builder.registerTypeAdapterFactory(adapter);
     }
 
     protected String getBeanJson(final ITreasuryBean bean) {

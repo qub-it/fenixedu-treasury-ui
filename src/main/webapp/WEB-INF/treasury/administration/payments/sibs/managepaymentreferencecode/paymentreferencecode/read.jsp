@@ -258,7 +258,7 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.whenProcessed" />
 					</datatables:columnHead>
-					<c:out value='${detail.sibsProcessingDate.toString("YYYY-MM-dd")}' />
+					<c:out value='${detail.whenProcessed.toString("YYYY-MM-dd")}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -272,7 +272,7 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.amountPayed" />
 					</datatables:columnHead>
-					<c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.currency.getValueFor(detail.paidAmount)}' />
+					<c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.currency.getValueFor(detail.amountPaid)}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -280,21 +280,21 @@ ${portal.toolkit()}
 						<spring:message
 							code="label.SibsTransactionDetail.businessIdentification" />
 					</datatables:columnHead>
-					<c:out value="${detail.paymentRequest.debtAccount.customer.businessIdentification}" />
+					<c:out value="${detail.businessIdentification}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.fiscalNumber" />
 					</datatables:columnHead>
-					<c:out value="${detail.paymentRequest.debtAccount.customer.uiFiscalNumber}" />
+					<c:out value="${detail.fiscalNumber}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.customerName" />
 					</datatables:columnHead>
-					<c:out value="${detail.paymentRequest.debtAccount.customer.name}" />
+					<c:out value="${detail.customerName}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -302,9 +302,7 @@ ${portal.toolkit()}
 						<spring:message
 							code="label.SibsTransactionDetail.settlementDocumentNumber" />
 					</datatables:columnHead>
-					<c:forEach items="${detail.getSettlementNotesSet()}" var="note">
-						<c:out value="${note.uiDocumentNumber}" />&nbsp;
-					</c:forEach>
+					<c:out value="${detail.settlementDocumentNumber}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:30%">

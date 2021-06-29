@@ -6,9 +6,8 @@ import java.util.HashSet;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.paymentPlan.Installment;
+import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
@@ -90,12 +89,10 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
         checkPermissions(debtAccount, model);
 
         try {
-
-            SibsPaymentsGateway sibsOnlinePaymentsGateway =
+            IMbwayPaymentPlatformService sibsOnlinePaymentsGateway =
                     SibsPaymentsGateway.findUniqueActive(debtAccount.getFinantialInstitution()).get();
 
-            if ((bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty())
-                    && (bean.getSelectedInstallments() == null || bean.getSelectedInstallments().isEmpty())) {
+            if (bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty()) {
                 addErrorMessage(treasuryBundle("error.MbwayPaymentRequest.invoiceEntriesSet.required"), model);
 
                 return _create(debtAccount, bean, model);
@@ -103,9 +100,8 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
             bean.setUsePaymentAmountWithInterests(true);
             MbwayRequest mbwayPaymentRequest = MbwayRequest.create(sibsOnlinePaymentsGateway, debtAccount,
-                    new HashSet<DebitEntry>(bean.getSelectedDebitEntries()),
-                    new HashSet<Installment>(bean.getSelectedInstallments()), bean.getPhoneNumberCountryPrefix(),
-                    bean.getPhoneNumber());
+                    new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()),
+                    bean.getPhoneNumberCountryPrefix(), bean.getPaymentAmount(), bean.getPhoneNumber());
 
             return redirect(String.format("%s/%s/%s", getShowMbwayPaymentRequest(), debtAccount.getExternalId(),
                     mbwayPaymentRequest.getExternalId()), model, redirectAttributes);
@@ -122,6 +118,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
 
     @RequestMapping(value = _SHOW_MBWAY_PAYMENT_REQUEST_URI + "/{debtAccountId}/{mbwayPaymentRequestId}")
     public String showmbwaypaymentrequest(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+
             @PathVariable("mbwayPaymentRequestId") final MbwayRequest mbwayPaymentRequest, final Model model) {
 
         model.addAttribute("debtAccount", debtAccount);
