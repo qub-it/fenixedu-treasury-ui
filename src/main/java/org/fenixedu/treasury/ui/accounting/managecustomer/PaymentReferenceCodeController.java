@@ -10,6 +10,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
+import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -39,24 +40,27 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
             CONTROLLER_URL + _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI;
 
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI + "/{debtAccountId}", method = RequestMethod.GET)
-    public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            final Model model) {
+    public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") DebtAccount debtAccount, Model model) {
 
-        assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+        checkPermissions(debtAccount, model);
 
         final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(DigitalPaymentPlatform
                 .findForSibsPaymentCodeServiceByActive(debtAccount.getFinantialInstitution(), true).findFirst().orElse(null),
                 debtAccount);
+        bean.setUsePaymentAmountWithInterests(false);
 
         return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
     }
 
-    protected String _createPaymentCodeForSeveralDebitEntries(final DebtAccount debtAccount, final PaymentReferenceCodeBean bean,
-            final Model model) {
+    protected String _createPaymentCodeForSeveralDebitEntries(DebtAccount debtAccount, PaymentReferenceCodeBean bean,
+            Model model) {
 
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("bean", bean);
         model.addAttribute("beanJson", getBeanJson(bean));
+        model.addAttribute("debtAccountUrl", readDebtAccountUrl(debtAccount));
+        model.addAttribute("createUrl", getCreateUrl(debtAccount));
+        model.addAttribute("createPostbackUrl", getCreatePostbackUrl(debtAccount));
 
         return jspPage("createpaymentcodeforseveraldebitentries");
     }
@@ -69,8 +73,10 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URI + "/{debtAccountId}",
             method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<String> createPaymentCodeForSeveralDebitEntriesPostback(
-            @PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @RequestParam("bean") final PaymentReferenceCodeBean bean, final Model model) {
+            @PathVariable("debtAccountId") DebtAccount debtAccount, @RequestParam("bean") PaymentReferenceCodeBean bean,
+            Model model) {
+
+        checkPermissions(debtAccount, model);
 
         bean.updateAmountOnSelectedDebitEntries();
 
@@ -78,15 +84,16 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @RequestParam("bean") final PaymentReferenceCodeBean bean, final Model model,
-            final RedirectAttributes redirectAttributes) {
+    public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") DebtAccount debtAccount,
+            @RequestParam("bean") PaymentReferenceCodeBean bean, Model model, RedirectAttributes redirectAttributes) {
 
-        assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+        checkPermissions(debtAccount, model);
 
         try {
 
-            if (bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty()) {
+            boolean hasSelectedDebitEntries = bean.getSelectedDebitEntries() != null && !bean.getSelectedDebitEntries().isEmpty();
+            boolean hasSelectedInstallments = bean.getSelectedInstallments() != null && !bean.getSelectedInstallments().isEmpty();
+            if (!hasSelectedDebitEntries && !hasSelectedInstallments) {
                 addErrorMessage(treasuryBundle("error.MultipleEntriesPaymentCode.select.at.least.one.debit.entry"), model);
 
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
@@ -98,24 +105,39 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
 
-            assertUserIsFrontOfficeMember(
-                    bean.getSelectedDebitEntries().iterator().next().getDebtAccount().getFinantialInstitution(), model);
-
-            bean.setUsePaymentAmountWithInterests(false);
-
-            bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
-                    new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()));
+            if(bean.isUsePaymentAmountWithInterests()) {
+                bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequestWithInterests(debtAccount,
+                        new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()), new LocalDate());
+            } else {
+                bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
+                        new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()));
+            }
 
             addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"),
                     model);
 
-            return redirect(String.format(DebtAccountController.READ_URL + "/%s", debtAccount.getExternalId()), model,
-                    redirectAttributes);
+            return redirect(String.format(readDebtAccountUrl(debtAccount)), model, redirectAttributes);
         } catch (final TreasuryDomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
 
             return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
         }
+    }
+
+    protected void checkPermissions(DebtAccount debtAccount, Model model) {
+        assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
+    }
+
+    protected String readDebtAccountUrl(DebtAccount debtAccount) {
+        return String.format("%s/%s", DebtAccountController.READ_URL, debtAccount.getExternalId());
+    }
+
+    protected String getCreateUrl(DebtAccount debtAccount) {
+        return CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL + "/" + debtAccount.getExternalId();
+    }
+
+    protected String getCreatePostbackUrl(DebtAccount debtAccount) {
+        return CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL + "/" + debtAccount.getExternalId();
     }
 
     private String jspPage(final String page) {
