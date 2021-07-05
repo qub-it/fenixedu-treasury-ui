@@ -165,57 +165,67 @@ ${portal.angularToolkit()}
                     </tr>
                 </thead>
                 <tbody>
-                    <c:forEach items="${ settlementNoteBean.interestEntries}" var="interestEntryBean" varStatus="loop">
+                    <c:forEach items="${ settlementNoteBean.virtualDebitEntries}" var="interestEntryBean" varStatus="loop">
                         <tr>
                         	<% if(!TreasurySettings.getInstance().isRestrictPaymentMixingLegacyInvoices()) { %>
-                            <td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+                            <td><input class="form-control" ng-model="object.virtualDebitEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
                             <% } else { %>
                             <c:choose>
 	                            <c:when test="${!settlementNoteBean.isIncludedLegacyERPInvoiceEntryBeans()}">
-		                            <td><input class="form-control" ng-model="object.interestEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
+		                            <td><input class="form-control" ng-model="object.virtualDebitEntries[${ loop.index }].isIncluded" type="checkbox" /></td>
 	                       		</c:when>
 	                       		<c:otherwise>
 		                            <td></td>
 	                       		</c:otherwise>
                             </c:choose>
                             <% } %>
-                            <td><spring:message code="label.InterestEntry.interest" />: &nbsp;<c:out value="${ interestEntryBean.debitEntry.description }" /></td>
+                            <td><c:out value="${ interestEntryBean.description }" /></td>
+<%--                             <spring:message code="label.InterestEntry.interest" />: &nbsp; --%>
                             <td>
-                                <p>
-                                    <strong><spring:message code="label.InterestEntry.calculatedInterest" /> </strong>
-                                </p>
-                                <p>&nbsp;</p> 
-                                <c:forEach var="detail" items="${interestEntryBean.interest.interestInformationList}">
-                                    <p>
-                                        [
-                                        <c:out value="${detail.begin}" />
-                                        -
-                                        <c:out value="${detail.end}"  />
-                                        ]: ${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.amount, 4)}
-                                    </p>
-                                    <p style="">
-                                        <em><spring:message code="label.InterestEntry.affectedAmount.description"
-                                                arguments="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.affectedAmount)},${detail.numberOfDays},${detail.interestRate}" /></em>
-                                    </p>
-                                    <p>&nbsp;</p>
-                                </c:forEach>
-                                <p>&nbsp;</p> 
-                                <c:if test='${ not empty  interestEntryBean.interest.createdInterestEntriesList}'>
-                                    <p>
-                                        <strong><spring:message code="label.InterestEntry.createdInterest" /> </strong>
-                                    </p>
-                                    <p>&nbsp;</p>
-                                    <c:forEach var="interestEntry" items="${interestEntryBean.interest.createdInterestEntriesList}">
-                                        <p>
-                                            [
-                                            <joda:format value="${interestEntry.entryDate}" style="S-" />
-                                            ]: ${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntry.amount)}
-                                        </p>
-                                    </c:forEach>
-                                </c:if>
+	                            <c:forEach items="${interestEntryBean.calculationDescription}" var="description" varStatus="loop">
+	                            	<p>
+	                                    <strong><c:out value="${ description.key }" /> &nbsp; </strong>
+	                                </p>
+	                            	<c:forEach items="${ description.value}" var="line" varStatus="loop">
+		                            	<p>
+		                                   <c:out value="${ line }" />
+		                                </p>
+	                            	</c:forEach>
+	                            </c:forEach>
                             </td>
-                            <td><c:out value="${ interestEntryBean.documentDueDate}" /></td>
-                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntryBean.interest.interestAmount) }" /></td>
+
+<!--                                 <p>&nbsp;</p>  -->
+<%--                                 <c:forEach var="detail" items="${interestEntryBean.interest.interestInformationList}"> --%>
+<!--                                     <p> -->
+<!--                                         [ -->
+<%--                                         <c:out value="${detail.begin}" /> --%>
+<!--                                         - -->
+<%--                                         <c:out value="${detail.end}"  /> --%>
+<%--                                         ]: ${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.amount, 4)} --%>
+<!--                                     </p> -->
+<!--                                     <p style=""> -->
+<%--                                         <em><spring:message code="label.InterestEntry.affectedAmount.description" --%>
+<%--                                                 arguments="${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(detail.affectedAmount)},${detail.numberOfDays},${detail.interestRate}" /></em> --%>
+<!--                                     </p> -->
+<!--                                     <p>&nbsp;</p> -->
+<%--                                 </c:forEach> --%>
+<!--                                 <p>&nbsp;</p>  -->
+<%--                                 <c:if test='${ not empty  interestEntryBean.interest.createdInterestEntriesList}'> --%>
+<!--                                     <p> -->
+<%--                                         <strong><spring:message code="label.InterestEntry.createdInterest" /> </strong> --%>
+<!--                                     </p> -->
+<!--                                     <p>&nbsp;</p> -->
+<%--                                     <c:forEach var="interestEntry" items="${interestEntryBean.interest.createdInterestEntriesList}"> --%>
+<!--                                         <p> -->
+<!--                                             [ -->
+<%--                                             <joda:format value="${interestEntry.entryDate}" style="S-" /> --%>
+<%--                                             ]: ${settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntry.amount)} --%>
+<!--                                         </p> -->
+<%--                                     </c:forEach> --%>
+<%--                                 </c:if> --%>
+<!--                             </td> -->
+                            <td><c:out value="${ interestEntryBean.dueDate}" /></td>
+                            <td><c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(interestEntryBean.settledAmount) }" /></td>
                         </tr>
                     </c:forEach>
                 </tbody>

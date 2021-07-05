@@ -296,7 +296,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
         }
 
-        bean.calculateInterestDebitEntries();
+        bean.calculateVirtualDebitEntries();
 
         if (bean.getVirtualDebitEntries().size() == 0) {
             return calculateInterest(bean, model);

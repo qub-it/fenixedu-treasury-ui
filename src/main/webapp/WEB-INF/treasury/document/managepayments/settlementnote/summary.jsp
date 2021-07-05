@@ -273,20 +273,20 @@ ${portal.angularToolkit()}
                     </c:if>
                 </c:forEach>
                 <c:forEach
-                    items="${ settlementNoteBean.interestEntries }"
+                    items="${ settlementNoteBean.virtualDebitEntries }"
                     var="interestEntryBean">
                     <c:if test="${ interestEntryBean.included  }">
                         <tr>
                             <td>---</td>
                             <td><spring:message code="label.InterestEntry.interest" />
                                        &nbsp; <c:out
-                                    value="${ interestEntryBean.debitEntry.description }" />
+                                    value="${ interestEntryBean.description }" />
                             </td>
                             <td><c:out value='${ debitNoteDate }' />
                             </td>
                             <td>0.00</td>
                             <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
+                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.settledAmount ) }" />
                             </td>
                         </tr>
                     </c:if>

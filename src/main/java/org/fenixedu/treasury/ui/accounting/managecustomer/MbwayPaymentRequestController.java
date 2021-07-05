@@ -71,7 +71,6 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
     @ResponseBody
     public ResponseEntity<String> createpostback(@PathVariable("debtAccountId") final DebtAccount debtAccount,
             @RequestParam("bean") final PaymentReferenceCodeBean bean, final Model model) {
-
         bean.updateAmountOnSelectedDebitEntries();
 
         return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);

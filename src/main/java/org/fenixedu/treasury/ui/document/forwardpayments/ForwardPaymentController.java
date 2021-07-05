@@ -212,7 +212,8 @@ public class ForwardPaymentController extends TreasuryBaseController {
             return jspPage("chooseInvoiceEntries");
         }
 
-        bean.includeAllInterestOfSelectedDebitEntries();
+//        bean.includeAllInterestOfSelectedDebitEntries();
+        bean.calculateVirtualDebitEntries();
         setSettlementNoteBean(bean, model);
 
         boolean hasPaymentInStateOfPostPaymentAndPayedOnPlatformWarningMessage = false;

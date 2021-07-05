@@ -10,7 +10,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.joda.time.LocalDate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -47,7 +46,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(DigitalPaymentPlatform
                 .findForSibsPaymentCodeServiceByActive(debtAccount.getFinantialInstitution(), true).findFirst().orElse(null),
                 debtAccount);
-        bean.setUsePaymentAmountWithInterests(false);
+        bean.setUsePaymentAmountWithInterests(true);
 
         return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
     }
@@ -105,13 +104,9 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
 
-            if(bean.isUsePaymentAmountWithInterests()) {
-                bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequestWithInterests(debtAccount,
-                        new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()), new LocalDate());
-            } else {
-                bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
-                        new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()));
-            }
+            bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
+                    new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()),
+                    bean.getPaymentAmount());
 
             addInfoMessage(treasuryBundle("label.document.managepayments.success.create.reference.code.selected.debit.entries"),
                     model);

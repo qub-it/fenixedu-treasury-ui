@@ -210,7 +210,7 @@ ${portal.angularToolkit()}
                         <th class="col-sm-2"><spring:message code="label.DebitEntry.documentNumber" /></th>
                         <th><spring:message code="label.DebitEntry.description" /></th>
                         <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
-                        <th class="col-sm-1"><spring:message code="label.DebitEntry.amountToPayWithInterests" /></th>
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmountWithAdditions" /></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -240,7 +240,7 @@ ${portal.angularToolkit()}
 			                        	</c:if>
 			                        </td>
 			                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" /></td>
-			                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmountWithInterests) }" /></td>
+			                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(bean.getExtraAmount(debitEntry)) }" /></td>
 		                        </tr>
 	                        </c:if>
                         </c:if>

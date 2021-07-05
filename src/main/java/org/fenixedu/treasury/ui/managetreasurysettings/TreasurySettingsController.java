@@ -80,13 +80,14 @@ public class TreasurySettingsController extends TreasuryBaseController {
     public String update(@RequestParam(value = "defaultcurrency", required = true) final Currency defaultCurrency,
             @RequestParam(value = "interestproduct", required = true) final Product interestProduct,
             @RequestParam(value = "advancedpaymentproduct", required = true) final Product advancedPaymentProduct,
+            @RequestParam(value = "numberofpaymentplansperStudent", required = true) final Integer numberOfPaymentPlansPerStudent,
             final Model model, final RedirectAttributes redirectAttributes) {
         final TreasurySettings treasurySettings = TreasurySettings.getInstance();
 
         model.addAttribute("treasurySettings", treasurySettings);
 
         try {
-            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct, 10);
+            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct, numberOfPaymentPlansPerStudent);
 
             return redirect(READ_URL, model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {

@@ -234,7 +234,7 @@ ${portal.angularToolkit()}
 						</td>
 						<td>
 							<c:choose>
-								<c:when test="${debitEntryBean.forInstallment}">
+								<c:when test="${debitEntryBean.isForInstallment()}">
 									<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
 									<ul style="list-style-type: none;">
 									<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
@@ -263,6 +263,7 @@ ${portal.angularToolkit()}
 							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.debitEntry.openAmount) }" />
 						</td>
 					</tr>
+					</c:if>
 					</c:forEach>
 				</tbody>
 			</table>

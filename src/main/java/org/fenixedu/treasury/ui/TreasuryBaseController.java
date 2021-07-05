@@ -1,15 +1,15 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
  *  - Copyright © 2015 Universidade de Lisboa (after any Go-Live phase)
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
- * 
  *
- * 
+ *
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -34,28 +34,29 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.adapters.CountryAdapter;
 import org.fenixedu.treasury.adapters.DistrictAdapter;
 import org.fenixedu.treasury.adapters.DomainObjectAdapter;
 import org.fenixedu.treasury.adapters.LocalizedStringAdapter;
 import org.fenixedu.treasury.adapters.MunicipalityAdapter;
-import org.fenixedu.treasury.ui.converters.BeanConverterService;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.dto.InstallmentPaymenPlanBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
+import org.fenixedu.treasury.dto.PaymentPenaltyEntryBean;
+import org.fenixedu.treasury.dto.SettlementCreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementDebitEntryBean;
+import org.fenixedu.treasury.dto.SettlementInterestEntryBean;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.services.payments.virtualpaymententries.IVirtualPaymentEntryHandler;
+import org.fenixedu.treasury.services.payments.virtualpaymententries.VirtualInterestHandler;
+import org.fenixedu.treasury.services.payments.virtualpaymententries.VirtualPaymentPenaltyHandler;
+import org.fenixedu.treasury.ui.converters.BeanConverterService;
 import org.fenixedu.treasury.ui.converters.CountryConverterService;
 import org.fenixedu.treasury.ui.converters.DistrictConverterService;
 import org.fenixedu.treasury.ui.converters.MunicipalityConverterService;
 import org.fenixedu.treasury.ui.converters.RuntimeTypeAdapterFactory;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -83,7 +84,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsManager(Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isManager(loggedUsername)) {
             return;
         } else {
@@ -94,7 +95,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsBackOfficeMember(Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername)) {
             return;
         } else {
@@ -105,7 +106,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsFrontOfficeMember(Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername)) {
             return;
         } else {
@@ -116,7 +117,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsBackOfficeMember(FinantialInstitution finantialInstitution, Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, finantialInstitution)) {
             return;
         } else {
@@ -127,7 +128,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsAllowToModifySettlements(FinantialInstitution finantialInstitution, Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isAllowToModifySettlements(loggedUsername, finantialInstitution)) {
             return;
         } else {
@@ -138,7 +139,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsAllowToModifyInvoices(FinantialInstitution finantialInstitution, Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isAllowToModifyInvoices(loggedUsername, finantialInstitution)) {
             return;
         } else {
@@ -149,7 +150,7 @@ public class TreasuryBaseController {
 
     protected void assertUserIsFrontOfficeMember(FinantialInstitution finantialInstitution, Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername, finantialInstitution)) {
             return;
         } else {
@@ -159,7 +160,7 @@ public class TreasuryBaseController {
     }
 
     /* From FenixEDUBaseController */
-    
+
     protected static final String ERROR_MESSAGES = "errorMessages";
     protected static final String WARNING_MESSAGES = "warningMessages";
     protected static final String INFO_MESSAGES = "infoMessages";
@@ -254,15 +255,20 @@ public class TreasuryBaseController {
         builder.registerTypeAdapter(District.class, new DistrictAdapter());
         builder.registerTypeAdapter(Municipality.class, new MunicipalityAdapter());
         builder.registerTypeHierarchyAdapter(DomainObject.class, new DomainObjectAdapter());
-        
-        RuntimeTypeAdapterFactory<ISettlementInvoiceEntryBean> adapter = RuntimeTypeAdapterFactory
-                .of(ISettlementInvoiceEntryBean.class)
-                .registerSubtype(DebitEntryBean.class)
-                .registerSubtype(CreditEntryBean.class)
-                .registerSubtype(InterestEntryBean.class)
-                .registerSubtype(InstallmentPaymenPlanBean.class);
-                
+
+        RuntimeTypeAdapterFactory<ISettlementInvoiceEntryBean> adapter =
+                RuntimeTypeAdapterFactory.of(ISettlementInvoiceEntryBean.class).registerSubtype(SettlementDebitEntryBean.class)
+                        .registerSubtype(SettlementCreditEntryBean.class).registerSubtype(SettlementInterestEntryBean.class)
+                        .registerSubtype(InstallmentPaymenPlanBean.class).registerSubtype(PaymentPenaltyEntryBean.class);
+
         builder.registerTypeAdapterFactory(adapter);
+
+        RuntimeTypeAdapterFactory<IVirtualPaymentEntryHandler> virtualHandlerAdapter =
+                RuntimeTypeAdapterFactory.of(IVirtualPaymentEntryHandler.class).registerSubtype(VirtualInterestHandler.class)
+                        .registerSubtype(VirtualPaymentPenaltyHandler.class);
+
+        builder.registerTypeAdapterFactory(virtualHandlerAdapter);
+
     }
 
     protected String getBeanJson(final ITreasuryBean bean) {
@@ -275,6 +281,5 @@ public class TreasuryBaseController {
         jsonTree.getAsJsonObject().addProperty("classname", bean.getClass().getName());
         return jsonTree.toString();
     }
-    
-    
+
 }

@@ -222,7 +222,7 @@ ${portal.angularToolkit()}
                             <td></td>
                             <td>
 								<c:choose>
-									<c:when test="${debitEntryBean.forInstallment}">
+									<c:when test="${debitEntryBean.isForInstallment()}">
 										<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
 										<ul style="list-style-type: none;">
 										<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
@@ -242,19 +242,20 @@ ${portal.angularToolkit()}
                     </c:if>
                 </c:forEach>
                 <c:forEach
-                    items="${ settlementNoteBean.interestEntries }"
+                    items="${ settlementNoteBean.virtualDebitEntries }"
                     var="interestEntryBean">
                     <c:if test="${ interestEntryBean.included  }">
                         <tr>
                             <td>---</td>
                             <td><spring:message code="label.InterestEntry.interest" />
-                                       &nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" />
+                                       &nbsp; <c:out
+                                    value="${ interestEntryBean.description }" />
                             </td>
                             <td><c:out value='${ debitNoteDate }' />
                             </td>
                             <td>0.00</td>
                             <td><c:out
-                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
+                                    value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.settledAmount ) }" />
                             </td>
                         </tr>
                     </c:if>
@@ -269,7 +270,7 @@ ${portal.angularToolkit()}
                             </td>
                             <td>
 								<c:choose>
-									<c:when test="${debitEntryBean.forInstallment}">
+									<c:when test="${debitEntryBean.isForInstallment()}">
 										<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
 										<ul style="list-style-type: none;">
 										<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
