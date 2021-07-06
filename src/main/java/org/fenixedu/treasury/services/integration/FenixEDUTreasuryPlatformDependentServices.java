@@ -26,6 +26,7 @@ import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.TreasuryFile;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -50,6 +51,7 @@ import org.fenixedu.treasury.services.integration.forwardpayments.payline.OrderD
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Payment;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -599,6 +601,12 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
                 String.valueOf(isSuccess), forwardPaymentId, String.valueOf(isException));
         String url = functionalityPath + parameters;
         return url;
+    }
+
+    @Override
+    public void exportDebitsAndCredits(FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
+            LocalDate documentDateTo) {
+
     }
 
 }
