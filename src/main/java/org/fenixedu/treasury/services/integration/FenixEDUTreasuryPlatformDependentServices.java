@@ -604,7 +604,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     @Override
-    public void exportDebitsAndCredits(FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
+    public void exportDocuments(String templateCode, FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
             LocalDate documentDateTo) {
 
     }
