@@ -2,6 +2,7 @@ package org.fenixedu.treasury.domain;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.io.domain.IGenericFile;
 
 public class TreasuryFile extends TreasuryFile_Base {
 
@@ -26,7 +27,7 @@ public class TreasuryFile extends TreasuryFile_Base {
         
         super.delete();
     }
-    
+
     // @formatter:off
     /* ********
      * SERVICES
@@ -37,5 +38,5 @@ public class TreasuryFile extends TreasuryFile_Base {
     public static final TreasuryFile create(final String fileName, final String contentType, final byte[] content) {
         return new TreasuryFile(fileName, contentType, content);
     }
-    
+
 }

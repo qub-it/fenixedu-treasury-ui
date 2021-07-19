@@ -44,7 +44,7 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>/${debtAccount.externalId}"><spring:message
+        href="${pageContext.request.contextPath}${debtAccountUrl}"><spring:message
             code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -141,9 +141,9 @@ ${portal.angularToolkit()}
 </script>
 
 <form name='form' method="post" class="form-horizontal" ng-app="angularAppPaymentReferenceCode" ng-controller="PaymentReferenceCodeController"
-    action='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}'>
+    action='${pageContext.request.contextPath}${createUrl}'>
 
-    <input type="hidden" name="postback" value='${pageContext.request.contextPath}<%= PaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL %>/${debtAccount.externalId}' />
+    <input type="hidden" name="postback" value='${pageContext.request.contextPath}${createPostbackUrl}' />
     <input name="bean" type="hidden" value="{{ object }}" />
 
     <div class="panel panel-default">
@@ -162,7 +162,12 @@ ${portal.angularToolkit()}
                         <th class="col-sm-2"><spring:message code="label.DebitEntry.documentNumber" /></th>
                         <th><spring:message code="label.DebitEntry.description" /></th>
                         <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
+                       	<c:if test="${bean.usePaymentAmountWithInterests}">
                         <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmountWithAdditions" /></th>
+                       	</c:if>
+                       	<c:if test="${not bean.usePaymentAmountWithInterests}">
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
+                       	</c:if>
                     </tr>
                 </thead>
                 <tbody>
@@ -203,7 +208,6 @@ ${portal.angularToolkit()}
 		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" />
 	                        </td>
 	                        <td>
-	                        	
 	                        	<c:if test="${bean.usePaymentAmountWithInterests}">
 		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(bean.getExtraAmount(debitEntry)) }" />
 	                        	</c:if>

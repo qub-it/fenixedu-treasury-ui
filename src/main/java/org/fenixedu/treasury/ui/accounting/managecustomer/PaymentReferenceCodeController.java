@@ -46,7 +46,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
         final PaymentReferenceCodeBean bean = new PaymentReferenceCodeBean(DigitalPaymentPlatform
                 .findForSibsPaymentCodeServiceByActive(debtAccount.getFinantialInstitution(), true).findFirst().orElse(null),
                 debtAccount);
-        bean.setUsePaymentAmountWithInterests(true);
+        bean.setUsePaymentAmountWithInterests(false);
 
         return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
     }

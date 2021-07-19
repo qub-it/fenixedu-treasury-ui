@@ -571,6 +571,23 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         return GenericChecksumRewriter.calculateChecksum(urlToChecksum, session);
     }
 
+    @Override
+    // TODO Check code Refactor/20210624-MergeWithISCTE
+    // The body of this method should in in OmnisTreasuryPlatformDependentServices instead?
+    public String getForwardPaymentURL(String contextPath, Class screenClass, boolean isSuccess, String forwardPaymentId,
+            boolean isException) {
+
+        String UI_LAYER_BACKEND_KEY = "uiLayer";
+
+        MenuFunctionality menuFunctionality = MenuFunctionality.findFunctionality(UI_LAYER_BACKEND_KEY, screenClass.getName());
+
+        String functionalityPath = menuFunctionality.getFullPath();
+        String parameters = String.format("?returnFromPayment=true&success=%s&forwardPaymentId=%s&hasException=%s",
+                String.valueOf(isSuccess), forwardPaymentId, String.valueOf(isException));
+        String url = functionalityPath + parameters;
+        return url;
+    }
+
     /* Domain entities events */
 
     @Override
@@ -586,21 +603,6 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     @Override
     public void signalsEmitForObject(String signalKey, DomainObject obj) {
         Signal.emit(signalKey, new DomainObjectEvent<DomainObject>(obj));
-    }
-
-    @Override
-    public String getForwardPaymentURL(String contextPath, Class screenClass, boolean isSuccess, String forwardPaymentId,
-            boolean isException) {
-
-        String UI_LAYER_BACKEND_KEY = "uiLayer";
-
-        MenuFunctionality menuFunctionality = MenuFunctionality.findFunctionality(UI_LAYER_BACKEND_KEY, screenClass.getName());
-
-        String functionalityPath = menuFunctionality.getFullPath();
-        String parameters = String.format("?returnFromPayment=true&success=%s&forwardPaymentId=%s&hasException=%s",
-                String.valueOf(isSuccess), forwardPaymentId, String.valueOf(isException));
-        String url = functionalityPath + parameters;
-        return url;
     }
 
     @Override

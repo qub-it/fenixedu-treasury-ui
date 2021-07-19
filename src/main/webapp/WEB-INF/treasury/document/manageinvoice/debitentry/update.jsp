@@ -98,7 +98,7 @@ ${portal.angularToolkit()}
                 } ];
 
 	           
-				$scope.object = angular.fromJson('${debitEntryBeanJson}');
+				$scope.object = ${debitEntryBeanJson};
 				$scope.postBack = createAngularPostbackFunction($scope);
 
 				$scope.clear = function($event) {

@@ -10,6 +10,7 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
+import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.http.HttpStatus;
@@ -98,9 +99,10 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
             }
 
             bean.setUsePaymentAmountWithInterests(true);
-            MbwayRequest mbwayPaymentRequest = MbwayRequest.create(sibsOnlinePaymentsGateway, debtAccount,
+
+            MbwayRequest mbwayPaymentRequest = sibsOnlinePaymentsGateway.createMbwayRequest(debtAccount,
                     new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()),
-                    bean.getPhoneNumberCountryPrefix(), bean.getPaymentAmount(), bean.getPhoneNumber());
+                    bean.getPhoneNumberCountryPrefix(), bean.getPhoneNumber());
 
             return redirect(String.format("%s/%s/%s", getShowMbwayPaymentRequest(), debtAccount.getExternalId(),
                     mbwayPaymentRequest.getExternalId()), model, redirectAttributes);

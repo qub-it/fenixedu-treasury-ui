@@ -127,10 +127,15 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
                 }
 
-                final ISibsPaymentCodePoolService paymentReferenceCode =
+                final ISibsPaymentCodePoolService paymentReferenceCodeService =
                         referenceCodeOptional.get().getDigitalPaymentPlatform().castToSibsPaymentCodePoolService();
 
-                paymentReferenceCode.processPaymentReferenceCodeTransaction(log, bean);
+                final SibsPaymentRequest paymentReferenceCode = referenceCodeOptional.get();
+                FenixFramework.atomic(() -> {
+                    log.setPaymentRequest(paymentReferenceCode);
+                });
+                
+                paymentReferenceCodeService.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
 
                 if (!PaymentType.DB.name().equals(bean.getPaymentType())) {
@@ -138,6 +143,11 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
                 }
 
+                MbwayRequest mbwayRequest = mbwayPaymentRequestOptional.get();
+                FenixFramework.atomic(() -> {
+                    log.setPaymentRequest(mbwayRequest);
+                });
+                
                 if (bean.isPaid()) {
                     final IMbwayPaymentPlatformService mbwayPaymentRequest =
                             mbwayPaymentRequestOptional.get().getDigitalPaymentPlatform().castToMbwayPaymentPlatformService();

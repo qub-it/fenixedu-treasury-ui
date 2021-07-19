@@ -119,6 +119,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
             addErrorMessage(treasuryBundle("error.ForwardPaymentController.payment.not.accessible.for.debt.account"), model);
             return redirectToDebtAccountUrl(debtAccount, model, redirectAttributes);
         }
+        
 
         if (bean == null) {
             bean = new SettlementNoteBean(debtAccount, digitalPaymentPlatform, false, true);
@@ -126,8 +127,14 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         setSettlementNoteBean(bean, model);
 
-        final IForwardPaymentPlatformService platform = getActivePlatform(bean.getDebtAccount().getFinantialInstitution());
-        model.addAttribute("forwardPaymentConfiguration", platform);
+        // Payment platform is given in the arguments, just check if it supports forward payment service and is active
+        // final IForwardPaymentPlatformService platform = getActivePlatform(bean.getDebtAccount().getFinantialInstitution());
+        
+        if(!digitalPaymentPlatform.isActive() || !digitalPaymentPlatform.isForwardPaymentServiceSupported()) {
+            throw new TreasuryDomainException("error.ForwardPaymentRequest.invalid.platform.try.again");
+        }
+        
+        model.addAttribute("forwardPaymentConfiguration", digitalPaymentPlatform);
 
         return jspPage("chooseInvoiceEntries");
     }
