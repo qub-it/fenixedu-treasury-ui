@@ -1,6 +1,5 @@
 package org.fenixedu.treasury.services.forwardpayments;
 
-
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.IOException;
@@ -72,28 +71,28 @@ public class PostForwardPaymentsTask extends CronTask {
                     try {
                         List<PostForwardPaymentReportBean> reportBeansList = updateForwardPayment(f, logger);
                         for (PostForwardPaymentReportBean bean : reportBeansList) {
-                            // @formatter:off
+                // @formatter:off
                             logger.info(String.format(
                                     "C\tPAYMENT REQUEST\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n",
-                                    bean.executionDate, 
+                                    bean.executionDate,
                                     bean.forwardPaymentExternalId,
-                                    bean.forwardPaymentOrderNumber, 
-                                    bean.customerCode, 
+                                    bean.forwardPaymentOrderNumber,
+                                    bean.customerCode,
                                     bean.customerName,
-                                    bean.previousStateDescription, 
+                                    bean.previousStateDescription,
                                     bean.nextStateDescription,
-                                    bean.paymentRegisteredWithSuccess, 
+                                    bean.paymentRegisteredWithSuccess,
                                     bean.settlementNote,
-                                    bean.advancedPaymentCreditNote, 
-                                    bean.paymentDate, 
+                                    bean.advancedPaymentCreditNote,
+                                    bean.paymentDate,
                                     bean.paidAmount,
                                     bean.advancedCreditAmount != null ? bean.advancedCreditAmount.toString() : "",
-                                    bean.transactionId, 
-                                    bean.statusCode, 
+                                    bean.transactionId,
+                                    bean.statusCode,
                                     bean.statusMessage,
                                     bean.remarks
                                     ));
-                            
+
                             result.add(bean);
                             // @formatter:on
                         }
@@ -108,50 +107,41 @@ public class PostForwardPaymentsTask extends CronTask {
     private static void writeExcel(List<PostForwardPaymentReportBean> reportBeans, DateTime postForwardPaymentsExecutionDate,
             DateTime beginDate, DateTime endDate) {
 
-        final byte[] content = Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
+        final byte[] content = Spreadsheet.buildSpreadsheetContent(() -> new ExcelSheet[] { new ExcelSheet() {
 
             @Override
-            public ExcelSheet[] getSheets() {
-                return new ExcelSheet[] { new ExcelSheet() {
-
-                    @Override
-                    public String getName() {
-                        return treasuryBundle("label.PostForwardPaymentReportBean.sheet.name");
-                    }
-
-                    @Override
-                    public String[] getHeaders() {
-                        return new String[] { 
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.executionDate"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentExternalId"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentOrderNumber"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentWhenOccured"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.customerCode"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.customerName"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.previousStateDescription"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.nextStateDescription"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.paymentRegisteredWithSuccess"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.settlementNote"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.advancedCreditSettlementNote"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.paymentDate"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.paidAmount"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.advancedCreditAmount"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.transactionId"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.statusCode"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.statusMessage"),
-                                treasuryBundle("label.PostForwardPaymentReportBean.cell.remarks") 
-                        };
-                    }
-
-                    @Override
-                    public Stream<? extends SpreadsheetRow> getRows() {
-                        return reportBeans.stream();
-                    }
-
-                } };
+            public String getName() {
+                return treasuryBundle("label.PostForwardPaymentReportBean.sheet.name");
             }
 
-        }, null);
+            @Override
+            public String[] getHeaders() {
+                return new String[] { treasuryBundle("label.PostForwardPaymentReportBean.cell.executionDate"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentExternalId"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentOrderNumber"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.forwardPaymentWhenOccured"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.customerCode"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.customerName"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.previousStateDescription"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.nextStateDescription"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.paymentRegisteredWithSuccess"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.settlementNote"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.advancedCreditSettlementNote"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.paymentDate"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.paidAmount"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.advancedCreditAmount"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.transactionId"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.statusCode"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.statusMessage"),
+                        treasuryBundle("label.PostForwardPaymentReportBean.cell.remarks") };
+            }
+
+            @Override
+            public Stream<? extends SpreadsheetRow> getRows() {
+                return reportBeans.stream();
+            }
+
+        } }, null);
 
         final String filename = treasuryBundle("label.PostForwardPaymentsReportFile.filename",
                 postForwardPaymentsExecutionDate.toString("yyyy_MM_dd_HH_mm_ss"));
@@ -159,10 +149,10 @@ public class PostForwardPaymentsTask extends CronTask {
         PostForwardPaymentsReportFile.create(postForwardPaymentsExecutionDate, beginDate, endDate, filename, content);
     }
 
-    private static List<PostForwardPaymentReportBean> updateForwardPayment(ForwardPaymentRequest forwardPayment, final Logger logger)
-            throws IOException {
+    private static List<PostForwardPaymentReportBean> updateForwardPayment(ForwardPaymentRequest forwardPayment,
+            final Logger logger) throws IOException {
         final List<PostForwardPaymentReportBean> result = new ArrayList<>();
-        
+
         try {
             FenixFramework.atomic(() -> {
 
@@ -173,13 +163,14 @@ public class PostForwardPaymentsTask extends CronTask {
                 final PostProcessPaymentStatusBean postProcessPaymentStatusBean =
                         service.postProcessPayment(forwardPayment, justification, Optional.empty());
 
-                if(forwardPayment.getPaymentTransactionsSet().isEmpty()) {
+                if (forwardPayment.getPaymentTransactionsSet().isEmpty()) {
                     result.add(new PostForwardPaymentReportBean(forwardPayment, postProcessPaymentStatusBean));
                 }
-                
+
                 for (PaymentTransaction paymentTransaction : forwardPayment.getPaymentTransactionsSet()) {
                     for (SettlementNote settlementNote : paymentTransaction.getSettlementNotesSet()) {
-                        result.add(new PostForwardPaymentReportBean(paymentTransaction, settlementNote, postProcessPaymentStatusBean));
+                        result.add(new PostForwardPaymentReportBean(paymentTransaction, settlementNote,
+                                postProcessPaymentStatusBean));
                     }
                 }
             });
@@ -192,7 +183,7 @@ public class PostForwardPaymentsTask extends CronTask {
             logger.error(exceptionOutput);
             logger.error(stackTrace + "\n");
         }
-        
+
         return result;
     }
 

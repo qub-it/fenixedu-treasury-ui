@@ -223,18 +223,18 @@ ${portal.angularToolkit()}
 							<input class="form-control" ng-model="object.debitEntries[${ loop.index }].isIncluded" type="checkbox" />
 						</td>
 						<td>
-							<c:if test="${not empty debitEntryBean.finantialDocument}">
-								<p><c:out value="${debitEntryBean.finantialDocument.uiDocumentNumber }" /></p>
+							<c:if test="${not empty debitEntryBean.debitEntry.finantialDocument}">
+								<p><c:out value="${debitEntryBean.debitEntry.finantialDocument.uiDocumentNumber }" /></p>
 							</c:if>
-							<c:if test="${empty debitEntryBean.finantialDocument}">
-								<p></p>
+							<c:if test="${empty debitEntryBean.debitEntry.finantialDocument}">
+								<p>---</p>
 							</c:if>
-							<c:set var="c" value="${debitEntryBean.invoiceEntry.debtAccount.customer}" />
+							<c:set var="c" value="${debitEntryBean.debitEntry.debtAccount.customer}" />
 							<p><em><c:out value="${c.uiFiscalNumber}" /></em></p>						
 						</td>
 						<td>
 							<c:choose>
-								<c:when test="${debitEntryBean.forInstallment}">
+								<c:when test="${debitEntryBean.isForInstallment()}">
 									<p><c:out value="${debitEntryBean.installment.description.content}" /></p>
 									<ul style="list-style-type: none;">
 									<c:forEach items="${debitEntryBean.installment.sortedInstallmentEntries}" var="entry">
@@ -248,19 +248,19 @@ ${portal.angularToolkit()}
 							</c:choose>
 						</td>
 						<td>
-							<c:out value="${ debitEntryBean.dueDate }" />
+							<c:out value="${ debitEntryBean.documentDueDate }" />
 						</td>
 						<td>
-							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.entryAmount ) }" />
+							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.amountWithVat ) }" />
 						</td>
 						<td>
-							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.entryOpenAmount ) }" />
+							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( debitEntryBean.debitEntry.openAmount ) }" />
 						</td>
 						<td>
-							<c:out value="${debitEntryBean.invoiceEntry.vat.taxRate }" />
+							<c:out value="${ debitEntryBean.debitEntry.vat.taxRate }" />
 						</td>
 						<td>
-							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.settledAmount) }" />
+							<c:out value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor(debitEntryBean.debitEntry.openAmount) }" />
 						</td>
 					</tr>
 					</c:if>

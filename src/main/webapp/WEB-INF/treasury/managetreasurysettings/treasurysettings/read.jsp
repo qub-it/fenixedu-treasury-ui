@@ -123,6 +123,12 @@ ${portal.toolkit()}
                         </td> 
                     </tr>
                     <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.numberOfPaymentPlansActivesPerStudent"/></th> 
+                        <td>
+                            <c:out value='${treasurySettings.numberOfPaymentPlansActivesPerStudent}'/>
+                        </td> 
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.TreasurySettings.restrictPaymentMixingLegacyInvoices"/></th> 
                         <td>
                         	<spring:message code='label.${treasurySettings.restrictPaymentMixingLegacyInvoices}' />

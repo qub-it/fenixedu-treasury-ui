@@ -288,31 +288,31 @@ ${portal.angularToolkit()}
                             </c:if>
                         </c:forEach>
                         <c:forEach
-                            items="${ settlementNoteBean.interestEntries }"
+                            items="${ settlementNoteBean.virtualDebitEntries }"
                             var="interestEntryBean">
                             <c:if
                                 test="${ interestEntryBean.included  }">
                                 <tr>
                                     <td>---</td>
                                     <td>
-                                    	<p><spring:message code="label.InterestEntry.interest" />:&nbsp; <c:out value="${ interestEntryBean.debitEntry.description }" /></p>
-			                        	<c:if test="${interestEntryBean.debitEntry.finantialDocument != null}">
-			                        	<c:if test="${interestEntryBean.debitEntry.finantialDocument.forPayorDebtAccount}">
-			                        		<p>
-			                        			<em>
-			                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong> 
-			                        				<span><c:out value="${interestEntryBean.debitEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span>
-			                        				&nbsp;-&nbsp;
-			                        				<span><c:out value="${interestEntryBean.debitEntry.finantialDocument.payorDebtAccount.customer.name}" /></span>
-			                        			</em>
-			                        	</c:if>
-			                        	</c:if>
+                                    	<p><c:out value="${ interestEntryBean.description }" /></p>
+<%-- 			                        	<c:if test="${interestEntryBean.debitEntry.finantialDocument != null}"> --%>
+<%-- 			                        	<c:if test="${interestEntryBean.debitEntry.finantialDocument.forPayorDebtAccount}"> --%>
+<!-- 			                        		<p> -->
+<!-- 			                        			<em> -->
+<%-- 			                        				<strong><spring:message code="label.Invoice.payorDebtAccount" />:</strong>  --%>
+<%-- 			                        				<span><c:out value="${interestEntryBean.debitEntry.finantialDocument.payorDebtAccount.customer.fiscalNumber}" /></span> --%>
+<!-- 			                        				&nbsp;-&nbsp; -->
+<%-- 			                        				<span><c:out value="${interestEntryBean.debitEntry.finantialDocument.payorDebtAccount.customer.name}" /></span> --%>
+<!-- 			                        			</em> -->
+<%-- 			                        	</c:if> --%>
+<%-- 			                        	</c:if> --%>
                                     </td>
                                     <td><c:out
                                             value='${ debitNoteDate }' /></td>
                                     <td>0.00</td>
                                     <td><c:out
-                                            value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.interest.interestAmount ) }" />
+                                            value="${ settlementNoteBean.debtAccount.finantialInstitution.currency.getValueFor( interestEntryBean.settledAmount ) }" />
                                     </td>
                                 </tr>
                             </c:if>

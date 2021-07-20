@@ -31,13 +31,10 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -158,10 +155,6 @@ public class CustomerTypeController extends TreasuryBaseController {
             addInfoMessage(treasuryBundle("label.success.delete"), model);
             return redirect("/treasury/administration/base/managecustomertype/customertype/", model, redirectAttributes);
 
-        } catch (DomainException ex) {
-            // Add error messages to the list
-            addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
-
         } catch (Exception ex) {
             // Add error messages to the list
             addErrorMessage(treasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
@@ -204,11 +197,6 @@ public class CustomerTypeController extends TreasuryBaseController {
             return redirect("/treasury/administration/base/managecustomertype/customertype/read/"
                     + getCustomerType(model).getExternalId(), model, redirectAttributes);
 
-        } catch (DomainException tde) {
-
-            addErrorMessage(tde.getLocalizedMessage(), model);
-            return create(model);
-
         } catch (Exception tde) {
 
             addErrorMessage(tde.getLocalizedMessage(), model);
@@ -249,11 +237,6 @@ public class CustomerTypeController extends TreasuryBaseController {
 
             return redirect("/treasury/administration/base/managecustomertype/customertype/read/"
                     + getCustomerType(model).getExternalId(), model, redirectAttributes);
-
-        } catch (DomainException de) {
-            addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
-            return update(customerType, model);
-
         } catch (Exception de) {
             addErrorMessage(treasuryBundle("label.error.update") + de.getLocalizedMessage(), model);
             return update(customerType, model);

@@ -15,6 +15,9 @@ import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
+import org.fenixedu.treasury.domain.paymentcodes.integration.ISibsPaymentCodePoolService;
+import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
+import org.fenixedu.treasury.domain.payments.PaymentRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.SibsPaymentsGatewayLog;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
@@ -66,10 +69,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
             }
-            
-            if(!SibsPaymentsGateway.findAll().iterator().next().isActive()) {
-                throw new RuntimeException("SIBS Gateway integration is not active");
-            }
 
             PaymentStateBean bean = SibsPaymentsGateway.findAll().iterator().next().handleWebhookNotificationRequest(
                     notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
@@ -77,7 +76,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             FenixFramework.atomic(() -> {
                 log.logRequestReceiveDateAndData(bean.getTransactionId(), bean.isOperationSuccess(), bean.isPaid(),
                         bean.getPaymentGatewayResultCode(), bean.getPaymentGatewayResultDescription());
-                log.savePaymentTypeAndBrand(bean.getPaymentType(), bean.getPaymentBrand());
                 log.saveRequest(bean.getRequestLog());
             });
 
@@ -123,9 +121,15 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
                 }
 
-                final SibsPaymentRequest paymentReferenceCode = referenceCodeOptional.get();
+                final ISibsPaymentCodePoolService paymentReferenceCodeService =
+                        referenceCodeOptional.get().getDigitalPaymentPlatform().castToSibsPaymentCodePoolService();
 
-                paymentReferenceCode.processPaymentReferenceCodeTransaction(log, bean);
+                final SibsPaymentRequest paymentReferenceCode = referenceCodeOptional.get();
+                FenixFramework.atomic(() -> {
+                    log.setPaymentRequest(paymentReferenceCode);
+                });
+                
+                paymentReferenceCodeService.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
 
                 if (!PaymentType.DB.name().equals(bean.getPaymentType())) {
@@ -133,8 +137,14 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
                 }
 
+                MbwayRequest mbwayRequest = mbwayPaymentRequestOptional.get();
+                FenixFramework.atomic(() -> {
+                    log.setPaymentRequest(mbwayRequest);
+                });
+                
                 if (bean.isPaid()) {
-                    final MbwayRequest mbwayPaymentRequest = mbwayPaymentRequestOptional.get();
+                    final IMbwayPaymentPlatformService mbwayPaymentRequest =
+                            mbwayPaymentRequestOptional.get().getDigitalPaymentPlatform().castToMbwayPaymentPlatformService();
 
                     mbwayPaymentRequest.processMbwayTransaction(log, bean);
                 }

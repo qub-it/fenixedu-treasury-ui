@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and Serviços Partilhados da
  * Universidade de Lisboa:
  *  - Copyright © 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu Treasury.
  *
  * FenixEdu Treasury is free software: you can redistribute it and/or modify
@@ -58,12 +58,10 @@ import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
-import org.fenixedu.treasury.domain.paymentPlan.InstallmentSettlementEntry_Base;
 import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
+import org.fenixedu.treasury.dto.SettlementCreditEntryBean;
+import org.fenixedu.treasury.dto.SettlementDebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.CreditEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.DebitEntryBean;
-import org.fenixedu.treasury.dto.SettlementNoteBean.InterestEntryBean;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
@@ -170,16 +168,16 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
-            ISettlementInvoiceEntryBean debitEntryBean = bean.getDebitEntries().get(i);
+            SettlementDebitEntryBean debitEntryBean = bean.getDebitEntriesByType(SettlementDebitEntryBean.class).get(i);
             if (debitEntryBean.isIncluded()) {
-                invoiceEntriesSet.add(debitEntryBean.getInvoiceEntry());
+                invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
 
-                if (debitEntryBean.getSettledAmount() == null
-                        || debitEntryBean.getSettledAmount().compareTo(BigDecimal.ZERO) <= 0) {
+                if (debitEntryBean.getDebtAmountWithVat() == null
+                        || debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) <= 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
-                } else if (debitEntryBean.getSettledAmount().compareTo(debitEntryBean.getInvoiceEntry().getOpenAmount()) > 0) {
+                } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
                     debitEntryBean.setNotValid(true);
                     error = true;
                     addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
@@ -188,16 +186,15 @@ public class SettlementNoteController extends TreasuryBaseController {
                 }
 
                 if (!debitEntryBean.isNotValid()) {
-                    // Always perform the sum, in order to verify if creditSum is not higher than
-                    // debitSum
-                    debitSum = debitSum.add(debitEntryBean.getSettledAmount());
+                    //Always perform the sum, in order to verify if creditSum is not higher than debitSum
+                    debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
                 }
             } else {
                 debitEntryBean.setNotValid(false);
             }
         }
         for (int i = 0; i < bean.getCreditEntries().size(); i++) {
-            final CreditEntryBean creditEntryBean = bean.getCreditEntries().get(i);
+            final SettlementCreditEntryBean creditEntryBean = bean.getCreditEntries().get(i);
 
             if (creditEntryBean.isIncluded()) {
                 invoiceEntriesSet.add(creditEntryBean.getCreditEntry());
@@ -299,9 +296,9 @@ public class SettlementNoteController extends TreasuryBaseController {
             return "treasury/document/managepayments/settlementnote/chooseInvoiceEntries";
         }
 
-        bean.calculateInterestDebitEntries();
+        bean.calculateVirtualDebitEntries();
 
-        if (bean.getInterestEntries().size() == 0) {
+        if (bean.getVirtualDebitEntries().size() == 0) {
             return calculateInterest(bean, model);
         }
         setSettlementNoteBean(bean, model);
@@ -322,7 +319,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                 }
             }
 
-            for (InterestEntryBean interestEntryBean : bean.getInterestEntries()) {
+            for (ISettlementInvoiceEntryBean interestEntryBean : bean.getVirtualDebitEntries()) {
                 if (interestEntryBean.isIncluded()) {
                     setSettlementNoteBean(bean, model);
                     return "treasury/document/managepayments/settlementnote/createDebitNote";
@@ -565,7 +562,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
-            getSettlementNote(model).updateSettlementNote(originDocumentNumber, documentObservations);
+            getSettlementNote(model).updateSettlementNote(originDocumentNumber, documentObservations, getSettlementNote(model).getDocumentTermsAndConditions());
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -695,7 +692,7 @@ public class SettlementNoteController extends TreasuryBaseController {
                     required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate documentDateTo,
             Model model) {
 
-        // TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
+        //TODO: THE FILTER TO INTERNAL SERIES SHOULD BE A GET PARAMETER
         List<SettlementNote> notes = filterSearchSettlementNote(finantialInstitution, documentDateFrom, documentDateTo, false);
         model.addAttribute("settlementEntriesDataSet", getSettlementEntriesDataSet(notes));
         model.addAttribute("advancedPaymentEntriesDataSet", getAdvancedPaymentEntriesDataSet(notes));
@@ -762,8 +759,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     private List<SettlementNote> filterSearchSettlementNote(FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
             LocalDate documentDateTo, boolean filterInternalSeriesOnly) {
 
-        // Only filter de SettlementNotes from the "internal" series and from the final
-        // institution
+        //Only filter de SettlementNotes from the "internal" series and from the final institution
         // And appy TimeWindow to the "DOCUMENT_DATE"
         Stream<SettlementNote> streamFilter = SettlementNote.findAll().filter(note -> note.isClosed())
                 .filter(note -> note.getDebtAccount().getFinantialInstitution().equals(finantialInstitution))
@@ -783,7 +779,7 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     private List<SettlementEntry> getSettlementEntriesDataSet(List<SettlementNote> notes) {
         return notes.stream()
-                // Filter only settlement Entries where there was payments / rehimbursments
+                //Filter only settlement Entries where there was payments / rehimbursments
                 .filter(x -> TreasuryConstants.isPositive(x.getTotalPayedAmount())
                         || TreasuryConstants.isPositive(x.getTotalReimbursementAmount()))
                 .map(note -> note.getSettlemetEntries().collect(Collectors.toList()))
@@ -818,7 +814,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             try {
                 final IERPExporter erpExporter = settlementNote.getDebtAccount().getFinantialInstitution()
                         .getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
-                // Force a check status first of the document
+                //Force a check status first of the document
                 erpExporter.checkIntegrationDocumentStatus(settlementNote);
             } catch (Exception ex) {
             }

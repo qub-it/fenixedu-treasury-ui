@@ -31,16 +31,12 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.CustomerType;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -160,7 +156,7 @@ public class AdhocCustomerController extends TreasuryBaseController {
                     bean.getAddressCountryCode(), bean.getIdentificationNumber(), bean.getFinantialInstitutions());
             
             return redirect(CustomerController.READ_URL + adhocCustomer.getExternalId(), model, redirectAttributes);
-        } catch (DomainException ex) {
+        } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
             return _create(bean, model);
         }

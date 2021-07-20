@@ -162,6 +162,12 @@ ${portal.angularToolkit()}
                         <th class="col-sm-2"><spring:message code="label.DebitEntry.documentNumber" /></th>
                         <th><spring:message code="label.DebitEntry.description" /></th>
                         <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
+                       	<c:if test="${bean.usePaymentAmountWithInterests}">
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmountWithAdditions" /></th>
+                       	</c:if>
+                       	<c:if test="${not bean.usePaymentAmountWithInterests}">
+                        <th class="col-sm-1"><spring:message code="label.DebitEntry.openAmount" /></th>
+                       	</c:if>
                     </tr>
                 </thead>
                 <tbody>
@@ -199,9 +205,11 @@ ${portal.angularToolkit()}
 	                        	<% } %>
 	                        </td>
 	                        <td>
-	                        	
+		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" />
+	                        </td>
+	                        <td>
 	                        	<c:if test="${bean.usePaymentAmountWithInterests}">
-		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmountWithInterests) }" />
+		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(bean.getExtraAmount(debitEntry)) }" />
 	                        	</c:if>
 	                        	<c:if test="${not bean.usePaymentAmountWithInterests}">
 		                        	<c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(debitEntry.openAmount) }" />

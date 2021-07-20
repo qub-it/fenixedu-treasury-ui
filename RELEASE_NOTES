@@ -1,3 +1,7 @@
+- New Fixture: Meo Wallet Service
+- New Fixture: Virtual Payment Entry Handler
+- Refactor: Receive Bennu specific service implementations from fenixedu-treasury-base
+
 7.0.2 (24-05-2021)
 - Bug Fix: Create payment reference code with interests, if bean is specified to create with interests
 - Bug fix: forward payment search by student number correction
