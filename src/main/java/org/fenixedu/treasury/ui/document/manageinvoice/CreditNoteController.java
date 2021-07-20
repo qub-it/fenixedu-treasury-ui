@@ -179,7 +179,7 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-            getCreditNote(model).updateCreditNote(originDocumentNumber, documentObservations);
+            getCreditNote(model).updateCreditNote(originDocumentNumber, documentObservations, getCreditNote(model).getDocumentTermsAndConditions());
 
             return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -370,7 +370,7 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
 
-            debitNote.createEquivalentCreditNote(documentDate, documentObservations, false);
+            debitNote.createEquivalentCreditNote(documentDate, documentObservations, null, false);
 
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {

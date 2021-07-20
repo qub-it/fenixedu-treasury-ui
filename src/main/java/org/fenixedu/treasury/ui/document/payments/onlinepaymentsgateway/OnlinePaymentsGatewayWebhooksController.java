@@ -97,16 +97,10 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 log.saveReferenceId(bean.getReferencedId());
             });
 
-            if (PaymentType.PA.name().equals(bean.getPaymentType())) {
+            if (PaymentType.PA.name().equals(bean.getPaymentType()) && "SIBS_MULTIBANCO".equals(bean.getPaymentBrand())) {
                 // Sibs reference code request
-                final Optional<? extends PaymentRequest> referenceCodeOptional =
-                        bean.getTransactionId() != null ? SibsPaymentRequest
-                                .findUniqueBySibsGatewayTransactionId(bean.getTransactionId()) : Optional.empty();
-                if (referenceCodeOptional.isPresent()) {
-                    // Payment reference code pre authorization (creation of reference code)
-                    response.setStatus(HttpServletResponse.SC_OK);
-                    return;
-                }
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
             }
 
             // Find payment code

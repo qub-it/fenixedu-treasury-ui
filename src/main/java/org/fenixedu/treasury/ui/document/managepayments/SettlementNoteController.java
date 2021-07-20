@@ -562,7 +562,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifySettlements(settlementNote.getDebtAccount().getFinantialInstitution(), model);
 
-            getSettlementNote(model).updateSettlementNote(originDocumentNumber, documentObservations);
+            getSettlementNote(model).updateSettlementNote(originDocumentNumber, documentObservations, getSettlementNote(model).getDocumentTermsAndConditions());
 
             return redirect(READ_URL + getSettlementNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {

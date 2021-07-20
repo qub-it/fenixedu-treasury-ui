@@ -89,7 +89,7 @@ ${portal.toolkit()}
             <p>&nbsp;</p>
             <p>
                 <strong><spring:message code="label.DebtAccount.customer" />: </strong>
-               	<c:out value='${forwardPayment.debtAccount.customer.businessIdentification} - ${settlementNote.debtAccount.customer.name}' />
+               	<c:out value='${forwardPayment.debtAccount.customer.businessIdentification} - ${forwardPayment.debtAccount.customer.name}' />
             </p>
             <p>
                 <strong><spring:message code="label.Customer.fiscalNumber" />: </strong>

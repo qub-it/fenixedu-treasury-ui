@@ -326,7 +326,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
             if (debitEntry != null && debitEntry.getFinantialDocument() == null) {
                 DebitNote.createDebitNoteForDebitEntry(debitEntry, payorDebtAccount, documentNumberSeries,
-                        documentDate.toDateTimeAtStartOfDay(), documentDueDate, originDocumentNumber, documentObservations);
+                        documentDate.toDateTimeAtStartOfDay(), documentDueDate, originDocumentNumber, documentObservations, null);
             }
 
             model.addAttribute("debitNote", debitEntry.getFinantialDocument());
@@ -372,7 +372,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
             final DebitNote note = getDebitNote(model);
             note.edit(note.getDocumentDate().toLocalDate(), note.getDocumentDueDate(), originDocumentNumber, documentObservations,
-                    legacyERPCertificateDocumentReference);
+                    debitNote.getDocumentTermsAndConditions(), legacyERPCertificateDocumentReference);
 
             return redirect(READ_URL + getDebitNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -556,7 +556,7 @@ public class DebitNoteController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.DebitNote.invalid.series.for.interest.debit.note.creation");
             }
             DebitNote interestDebitNote = DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
-                    paymentDate, documentObservations);
+                    paymentDate, documentObservations, null);
 
             addInfoMessage(treasuryBundle("info.document.manageinfoice.debitnote.success.calculate.interest.value"), model);
 
