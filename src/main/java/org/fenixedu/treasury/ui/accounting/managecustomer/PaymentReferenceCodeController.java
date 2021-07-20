@@ -104,6 +104,7 @@ public class PaymentReferenceCodeController extends TreasuryBaseController {
                 return _createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model);
             }
 
+            // TODO: Replace invocation with settlement note bean
             bean.getPaymentCodePool().castToSibsPaymentCodePoolService().createSibsPaymentRequest(debtAccount,
                     new HashSet<>(bean.getSelectedDebitEntries()), new HashSet<>(bean.getSelectedInstallments()),
                     bean.getPaymentAmount());

@@ -1,4 +1,4 @@
-package org.fenixedu.treasury.services.integration.erp.serviceimplementation;
+package org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
