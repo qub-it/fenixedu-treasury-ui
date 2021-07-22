@@ -572,20 +572,9 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     @Override
-    // TODO Check code Refactor/20210624-MergeWithISCTE
-    // The body of this method should in in OmnisTreasuryPlatformDependentServices instead?
-    public String getForwardPaymentURL(String contextPath, Class screenClass, boolean isSuccess, String forwardPaymentId,
+    public String getForwardPaymentURL(String contextPath, Class<?> screenClass, boolean isSuccess, String forwardPaymentId,
             boolean isException) {
-
-        String UI_LAYER_BACKEND_KEY = "uiLayer";
-
-        MenuFunctionality menuFunctionality = MenuFunctionality.findFunctionality(UI_LAYER_BACKEND_KEY, screenClass.getName());
-
-        String functionalityPath = menuFunctionality.getFullPath();
-        String parameters = String.format("?returnFromPayment=true&success=%s&forwardPaymentId=%s&hasException=%s",
-                String.valueOf(isSuccess), forwardPaymentId, String.valueOf(isException));
-        String url = functionalityPath + parameters;
-        return url;
+        throw new RuntimeException("not supported");
     }
 
     /* Domain entities events */
