@@ -30,6 +30,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -46,6 +47,8 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
+import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
+import org.fenixedu.treasury.dto.InstallmentPaymenPlanBean;
 import org.fenixedu.treasury.dto.SettlementCreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementDebitEntryBean;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
@@ -119,7 +122,6 @@ public class ForwardPaymentController extends TreasuryBaseController {
             addErrorMessage(treasuryBundle("error.ForwardPaymentController.payment.not.accessible.for.debt.account"), model);
             return redirectToDebtAccountUrl(debtAccount, model, redirectAttributes);
         }
-        
 
         if (bean == null) {
             bean = new SettlementNoteBean(debtAccount, digitalPaymentPlatform, false, true);
@@ -129,11 +131,11 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         // Payment platform is given in the arguments, just check if it supports forward payment service and is active
         // final IForwardPaymentPlatformService platform = getActivePlatform(bean.getDebtAccount().getFinantialInstitution());
-        
-        if(!digitalPaymentPlatform.isActive() || !digitalPaymentPlatform.isForwardPaymentServiceSupported()) {
+
+        if (!digitalPaymentPlatform.isActive() || !digitalPaymentPlatform.isForwardPaymentServiceSupported()) {
             throw new TreasuryDomainException("error.ForwardPaymentRequest.invalid.platform.try.again");
         }
-        
+
         model.addAttribute("forwardPaymentConfiguration", digitalPaymentPlatform);
 
         return jspPage("chooseInvoiceEntries");
@@ -160,32 +162,60 @@ public class ForwardPaymentController extends TreasuryBaseController {
 
         final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
         for (int i = 0; i < bean.getDebitEntries().size(); i++) {
-            SettlementDebitEntryBean debitEntryBean = bean.getDebitEntriesByType(SettlementDebitEntryBean.class).get(i);
-            if (debitEntryBean.isIncluded()) {
-                invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
+            ISettlementInvoiceEntryBean entryBean = bean.getDebitEntries().get(i);
+            if (entryBean.isIncluded()) {
+                if (entryBean.isForDebitEntry()) {
+                    SettlementDebitEntryBean debitEntryBean = (SettlementDebitEntryBean) entryBean;
 
-                if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
-                    debitEntryBean.setNotValid(true);
-                    error = true;
-                    addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
-                } else if (debitEntryBean.getDebtAmountWithVat().compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
-                    debitEntryBean.setNotValid(true);
-                    error = true;
-                    addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
+                    invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
+
+                    if (debitEntryBean.getDebtAmountWithVat().compareTo(BigDecimal.ZERO) == 0) {
+                        debitEntryBean.setNotValid(true);
+                        error = true;
+                        addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
+                    } else if (debitEntryBean.getDebtAmountWithVat()
+                            .compareTo(debitEntryBean.getDebitEntry().getOpenAmount()) > 0) {
+                        debitEntryBean.setNotValid(true);
+                        error = true;
+                        addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
+                    } else {
+                        debitEntryBean.setNotValid(false);
+                    }
+                    //Always perform the sum, in order to verify if creditSum is not higher than debitSum
+                    debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
                 } else {
-                    debitEntryBean.setNotValid(false);
+                    InstallmentPaymenPlanBean installmentBean = (InstallmentPaymenPlanBean) entryBean;
+                    
+                    invoiceEntriesSet.addAll(installmentBean.getInstallment().getInstallmentEntriesSet().stream()
+                            .map(e -> e.getDebitEntry()).collect(Collectors.toSet()));
+
+                    if (installmentBean.getSettledAmount().compareTo(BigDecimal.ZERO) == 0) {
+                        installmentBean.setNotValid(true);
+                        error = true;
+                        addErrorMessage(treasuryBundle("error.DebitEntry.debtAmount.equal.zero", Integer.toString(i + 1)), model);
+                    } else if (installmentBean.getSettledAmount().compareTo(installmentBean.getInstallment().getOpenAmount()) > 0) {
+                        installmentBean.setNotValid(true);
+                        error = true;
+                        addErrorMessage(treasuryBundle("error.DebitEntry.exceeded.openAmount", Integer.toString(i + 1)), model);
+                    } else {
+                        installmentBean.setNotValid(false);
+                    }
+
+                    //Always perform the sum, in order to verify if creditSum is not higher than debitSum
+                    debitSum = debitSum.add(installmentBean.getSettledAmount());
+                    
                 }
-                //Always perform the sum, in order to verify if creditSum is not higher than debitSum
-                debitSum = debitSum.add(debitEntryBean.getDebtAmountWithVat());
             } else {
-                debitEntryBean.setNotValid(false);
+                entryBean.setNotValid(false);
             }
         }
+
         for (SettlementCreditEntryBean creditEntryBean : bean.getCreditEntries()) {
             if (creditEntryBean.isIncluded()) {
                 creditSum = creditSum.add(creditEntryBean.getCreditAmountWithVat());
             }
         }
+
         if (bean.isReimbursementNote() && creditSum.compareTo(debitSum) < 0) {
             error = true;
             addErrorMessage(treasuryBundle("error.SettlementNote.positive.payment.value"), model);
@@ -219,7 +249,6 @@ public class ForwardPaymentController extends TreasuryBaseController {
             return jspPage("chooseInvoiceEntries");
         }
 
-//        bean.includeAllInterestOfSelectedDebitEntries();
         bean.calculateVirtualDebitEntries();
         setSettlementNoteBean(bean, model);
 

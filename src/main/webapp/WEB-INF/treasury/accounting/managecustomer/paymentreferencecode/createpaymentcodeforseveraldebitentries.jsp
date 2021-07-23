@@ -237,6 +237,7 @@ ${portal.angularToolkit()}
 								</ul>
 	                        </td>
 	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(installment.openAmount) }" /></td>
+	                        <td><c:out value="${ debtAccount.finantialInstitution.currency.getValueFor(installment.openAmount) }" /></td>
                         </tr>
                     </c:forEach>
                     

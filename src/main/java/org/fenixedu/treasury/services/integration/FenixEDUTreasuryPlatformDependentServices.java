@@ -434,8 +434,8 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     @Override
-    public PaylineWebServiceResponse paylineDoWebPayment(ForwardPaymentRequest forwardPaymentRequest,
-            String returnControllerURL) {
+    public PaylineWebServiceResponse paylineDoWebPayment(ForwardPaymentRequest forwardPaymentRequest, String returnUrl,
+            String cancelUrl) {
         final int PAYLINE_MAX_PHONE_SIZE = 14;
 
         final DateTimeFormatter DATE_TIME_PATTERN = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
@@ -502,8 +502,8 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 
         request.setPayment(paymentDetails);
         request.setOrder(order);
-        request.setReturnURL(PaylineConfiguration.getReturnURL(forwardPaymentRequest, returnControllerURL));
-        request.setCancelURL(PaylineConfiguration.getCancelURL(forwardPaymentRequest, returnControllerURL));
+        request.setReturnURL(returnUrl);
+        request.setCancelURL(cancelUrl);
 
         final String languageToUse = "en".equals(I18N.getLocale().getLanguage()) ? LANG_EN : LANG_PT;
         request.setLanguageCode(languageToUse);
