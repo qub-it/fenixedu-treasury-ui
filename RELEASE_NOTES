@@ -1,3 +1,4 @@
+8.0.0 (26-07-2021)
 - New Fixture: Meo Wallet Service
 - New Fixture: Virtual Payment Entry Handler
 - Refactor: Receive Bennu specific service implementations from fenixedu-treasury-base
