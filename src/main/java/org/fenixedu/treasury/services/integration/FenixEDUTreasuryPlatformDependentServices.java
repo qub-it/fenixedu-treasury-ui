@@ -572,7 +572,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     @Override
-    public String getForwardPaymentURL(String contextPath, Class<?> screenClass, boolean isSuccess, String forwardPaymentId,
+    public String getForwardPaymentURL(String contextPath, Class screenClass, boolean isSuccess, String forwardPaymentId,
             boolean isException) {
         throw new RuntimeException("not supported");
     }
@@ -595,9 +595,9 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     @Override
-    public void exportDocuments(String templateCode, FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
+    public InputStream exportDocuments(String templateCode, FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
             LocalDate documentDateTo) {
-
+        throw new RuntimeException("not supported");
     }
 
 }
