@@ -600,4 +600,9 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         throw new RuntimeException("not supported");
     }
 
+    @Override
+    public String exportDocumentFileExtension() {
+        throw new RuntimeException("not supported");
+    }
+    
 }
