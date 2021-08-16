@@ -1,3 +1,5 @@
+- Bug Fix: Correction on search of Online Payment Request by student number
+
 8.0.1 (27-07-2021)
 - Improvement: Use service to get transaction summary and debit&credits web docs file extension
 
