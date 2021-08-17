@@ -201,6 +201,11 @@ ${portal.toolkit()}
                                        <c:forEach items="${paymentReferenceCode.orderedInstallments}" var="installment">
 										<li>
 											<c:out value='${installment.description.content}' />
+											<ul>
+												<c:forEach items="${installment.sortedInstallmentEntries}" var="installmentEntry">
+													<li><c:out value="${installmentEntry.debitEntry.description}" /></li>
+												</c:forEach>
+											</ul>
 										</li>
                                        </c:forEach>
                                    </ul>
@@ -258,7 +263,7 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.whenProcessed" />
 					</datatables:columnHead>
-					<c:out value='${detail.whenProcessed.toString("YYYY-MM-dd")}' />
+					<c:out value='${detail.sibsProcessingDate.toString("YYYY-MM-dd")}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -272,7 +277,7 @@ ${portal.toolkit()}
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.amountPayed" />
 					</datatables:columnHead>
-					<c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.currency.getValueFor(detail.amountPaid)}' />
+					<c:out value='${paymentReferenceCode.digitalPaymentPlatform.finantialInstitution.currency.getValueFor(detail.paidAmount)}' />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -280,21 +285,21 @@ ${portal.toolkit()}
 						<spring:message
 							code="label.SibsTransactionDetail.businessIdentification" />
 					</datatables:columnHead>
-					<c:out value="${detail.businessIdentification}" />
+					<c:out value="${detail.paymentRequest.debtAccount.customer.businessIdentification}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.fiscalNumber" />
 					</datatables:columnHead>
-					<c:out value="${detail.fiscalNumber}" />
+					<c:out value="${detail.paymentRequest.debtAccount.customer.uiFiscalNumber}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
 					<datatables:columnHead>
 						<spring:message code="label.SibsTransactionDetail.customerName" />
 					</datatables:columnHead>
-					<c:out value="${detail.customerName}" />
+					<c:out value="${detail.paymentRequest.debtAccount.customer.name}" />
 				</datatables:column>
 
 				<datatables:column cssStyle="width:10%">
@@ -302,7 +307,11 @@ ${portal.toolkit()}
 						<spring:message
 							code="label.SibsTransactionDetail.settlementDocumentNumber" />
 					</datatables:columnHead>
-					<c:out value="${detail.settlementDocumentNumber}" />
+					<ul style="list-style-type: none;">
+						<c:forEach var="settlementNote" items="${detail.settlementNotesSet}">
+							<li><c:out value="${settlementNote.uiDocumentNumber}" /></li>
+						</c:forEach>
+					</ul>
 				</datatables:column>
 
 				<datatables:column cssStyle="width:30%">
