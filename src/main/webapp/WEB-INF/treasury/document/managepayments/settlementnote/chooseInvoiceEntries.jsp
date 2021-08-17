@@ -167,7 +167,7 @@ ${portal.angularToolkit()}
                     <spring:message code="label.date" />
                 </div>
                 <div class="col-sm-4">
-                    <input class="form-control" type="text" bennu-date="object.date" />
+                    <input class="form-control" type="text" bennu-date="object.uiAngularPaymentDate" />
                 </div>
             </div>
             </c:if>

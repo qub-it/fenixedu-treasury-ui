@@ -1,5 +1,6 @@
 - Bug Fix: Correction on search of Online Payment Request by student number
 - Bug Fix: Fix presentation of payment transactions in sibs payment request detail page
+- Bug Fix: Change SettlementNoteBean.date from LocalDate to DateTime, in order to not lose precision in registering automatic payments
 
 8.0.1 (27-07-2021)
 - Improvement: Use service to get transaction summary and debit&credits web docs file extension

@@ -161,6 +161,9 @@ public class SettlementNoteController extends TreasuryBaseController {
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
     public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
+        // First copy SettlementNoteBean.uiAngularPaymentDate to SettlementNoteBean.date
+        bean.setDate(bean.getUiAngularPaymentDate().toDateTimeAtStartOfDay());
+        
         BigDecimal debitSum = BigDecimal.ZERO;
         BigDecimal creditSum = BigDecimal.ZERO;
         boolean error = false;
@@ -254,7 +257,7 @@ public class SettlementNoteController extends TreasuryBaseController {
             addErrorMessage(treasuryBundle("error.DebiEntry.no.debitEntries.selected"), model);
         }
 
-        if (bean.getDate().isAfter(new LocalDate())) {
+        if (bean.getDate().toLocalDate().isAfter(new LocalDate())) {
             error = true;
             addErrorMessage(treasuryBundle("error.SettlementNote.date.is.after"), model);
         }

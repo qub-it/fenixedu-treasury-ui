@@ -232,7 +232,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
             error = true;
             addErrorMessage(treasuryBundle("error.DebiEntry.no.debitEntries.selected"), model);
         }
-        if (bean.getDate().isAfter(new LocalDate())) {
+        if (bean.getDate().toLocalDate().isAfter(new LocalDate())) {
             error = true;
             addErrorMessage(treasuryBundle("error.SettlementNote.date.is.after"), model);
         }
