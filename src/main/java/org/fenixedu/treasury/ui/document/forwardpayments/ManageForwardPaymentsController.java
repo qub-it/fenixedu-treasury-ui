@@ -153,11 +153,11 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         try {
-//            List<ForwardPaymentStatusBean> paymentStatusBeanList = forwardPayment.getDigitalPaymentPlatform()
-//                    .castToForwardPaymentPlatformService()verifyPaymentStatus(forwardPayment);
+            ForwardPaymentStatusBean paymentStatusBean = forwardPayment.getDigitalPaymentPlatform()
+                    .castToForwardPaymentPlatformService().paymentStatus(forwardPayment);
 
             model.addAttribute("forwardPayment", forwardPayment);
-//            model.addAttribute("paymentStatusBeanList", paymentStatusBeanList);
+            model.addAttribute("paymentStatusBeanList", Collections.singletonList(paymentStatusBean));
 
             return jspPage(VERIFY_FORWARD_PAYMENT_URI);
         } catch (final Exception e) {
