@@ -273,6 +273,23 @@ ${portal.toolkit()}
                     	</td>
                     </tr>
                     
+                    <tr>
+                    	<th scope="row" class="col-xs-3">
+                    		<spring:message code="label.ERPConfiguration.closeCreditNoteWhenCreated" />
+                    	</th>
+                    	<td>
+                    		<spring:message code="label.${eRPConfiguration.closeCreditNoteWhenCreated}" />
+                    	</td>
+                    </tr>
+                    
+                    <tr>
+                    	<th scope="row" class="col-xs-3">
+                    		<spring:message code="label.ERPConfiguration.partialReimbursementSupported" />
+                    	</th>
+                    	<td>
+                    		<spring:message code="label.${eRPConfiguration.partialReimbursementSupported}" />
+                    	</td>
+                    </tr>
                     
                 </tbody>
             </table>

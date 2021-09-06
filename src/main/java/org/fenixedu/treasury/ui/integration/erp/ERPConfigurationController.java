@@ -127,9 +127,11 @@ public class ERPConfigurationController extends TreasuryBaseController {
     public void updateERPConfiguration(boolean active, boolean exportOnlyRelatedDocumentsPerExport,
             boolean exportAnnulledRelatedDocuments, String externalURL, String username, String password,
             Series paymentsIntegrationSeries, String implementationClassName, Long maxSizeBytesToExportOnline, String erpIdProcess, Model model) {
-        getERPConfiguration(model).edit(active, paymentsIntegrationSeries, externalURL, username, password,
+        ERPConfiguration erpConfiguration = getERPConfiguration(model);
+        erpConfiguration.edit(active, paymentsIntegrationSeries, externalURL, username, password,
                 exportAnnulledRelatedDocuments, exportOnlyRelatedDocumentsPerExport, implementationClassName,
-                maxSizeBytesToExportOnline, erpIdProcess);
+                maxSizeBytesToExportOnline, erpIdProcess, 
+                erpConfiguration.isToCloseCreditNoteWhenCreated(), erpConfiguration.isPartialReimbursementSupported());
     }
 
     @RequestMapping(value = "/update/{oid}/test")
