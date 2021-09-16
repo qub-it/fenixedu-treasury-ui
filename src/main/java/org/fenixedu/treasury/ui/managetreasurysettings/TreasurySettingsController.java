@@ -87,7 +87,7 @@ public class TreasurySettingsController extends TreasuryBaseController {
         model.addAttribute("treasurySettings", treasurySettings);
 
         try {
-            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct, numberOfPaymentPlansPerStudent);
+            treasurySettings.edit(defaultCurrency, interestProduct, advancedPaymentProduct, numberOfPaymentPlansPerStudent, treasurySettings.getCanRegisterPaymentWithMultipleMethods());
 
             return redirect(READ_URL, model, redirectAttributes);
         } catch (final TreasuryDomainException tde) {
