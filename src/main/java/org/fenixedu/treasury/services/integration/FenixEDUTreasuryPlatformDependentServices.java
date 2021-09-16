@@ -11,6 +11,7 @@ import java.util.Set;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -37,6 +38,7 @@ import org.fenixedu.treasury.domain.forwardpayments.payline.PaylineConfiguration
 import org.fenixedu.treasury.domain.forwardpayments.payline.PaylineWebServiceResponse;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Address;
@@ -67,33 +69,6 @@ import pt.ist.fenixframework.DomainObject;
 public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatformDependentServices {
 
     private static final int WAIT_TRANSACTION_TO_FINISH_MS = 500;
-
-    @Override
-    public void scheduleSingleDocument(final FinantialDocument finantialDocument) {
-        final List<FinantialDocument> documentsToExport = org.fenixedu.treasury.services.integration.erp.ERPExporterManager
-                .filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
-
-        if (documentsToExport.isEmpty()) {
-            return;
-        }
-
-        final String externalId = documentsToExport.iterator().next().getExternalId();
-
-        new Thread() {
-
-            @Override
-            @Atomic
-            public void run() {
-                try {
-                    Thread.sleep(WAIT_TRANSACTION_TO_FINISH_MS);
-                } catch (InterruptedException e) {
-                }
-
-                SchedulerSystem.queue(new TaskRunner(new ERPExportSingleDocumentsTask(externalId)));
-            };
-
-        }.start();
-    }
 
     @Override
     public IERPExternalService getERPExternalServiceImplementation(final ERPConfiguration erpConfiguration) {
@@ -364,10 +339,28 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     /* ERP Integration */
+    // TODO: Check the difference between this method and scheduleSingleDocument
     @Override
     public void scheduleDocumentForExportation(final FinantialDocument finantialDocument) {
+        FinantialInstitution finantialInstitution = finantialDocument.getDebtAccount().getFinantialInstitution();
+
+        if (finantialInstitution.getErpIntegrationConfiguration() == null) {
+            return;
+        }
+
+        if (StringUtils.isEmpty(finantialInstitution.getErpIntegrationConfiguration().getImplementationClassName())) {
+            return;
+        }
+
+        IERPExporter erpExporter =
+                finantialInstitution.getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
+
+        if (erpExporter == null) {
+            return;
+        }
+        
         final List<FinantialDocument> documentsToExport =
-                ERPExporterManager.filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
+                erpExporter.filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
 
         if (documentsToExport.isEmpty()) {
             return;
@@ -604,5 +597,5 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     public String exportDocumentFileExtension() {
         throw new RuntimeException("not supported");
     }
-    
+
 }

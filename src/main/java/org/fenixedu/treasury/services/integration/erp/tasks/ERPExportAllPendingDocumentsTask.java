@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 import org.fenixedu.treasury.domain.Customer;
@@ -111,7 +112,22 @@ public class ERPExportAllPendingDocumentsTask extends CronTask {
                 return result;
             }
 
-            final List<FinantialDocument> sortedDocuments = ERPExporterManager
+            if (finantialInstitution.getErpIntegrationConfiguration() == null) {
+                return result;
+            }
+
+            if (StringUtils.isEmpty(finantialInstitution.getErpIntegrationConfiguration().getImplementationClassName())) {
+                return result;
+            }
+
+            IERPExporter erpExporter =
+                    finantialInstitution.getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
+
+            if (erpExporter == null) {
+                return result;
+            }
+            
+            final List<FinantialDocument> sortedDocuments = erpExporter
                     .filterDocumentsToExport(finantialInstitution.getFinantialDocumentsPendingForExportationSet().stream())
                     .stream()
                     .filter(x -> x.isSettlementNote() == exportSettlementNotes)

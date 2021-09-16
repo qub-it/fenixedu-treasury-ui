@@ -1,4 +1,6 @@
 - Refactor: ERPConfiguration.edit() method change
+- Refactor: Remove scheduleDocumentForExportation from ITreasuryPlatformDependentServices, which is the same as scheduleDocumentForExportation
+- Refactor: Move ERP exporter finantial document filtering to specific integration
 
 8.0.3 (18-08-2021)
 - Bug Fix: Reactivate verify online payment in forward payment controller
