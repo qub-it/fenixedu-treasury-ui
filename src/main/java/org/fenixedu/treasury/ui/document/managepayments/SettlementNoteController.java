@@ -170,7 +170,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         assertUserIsAllowToModifySettlements(bean.getDebtAccount().getFinantialInstitution(), model);
 
         final Set<InvoiceEntry> invoiceEntriesSet = Sets.newHashSet();
-        for (int i = 0; i < bean.getDebitEntries().size(); i++) {
+        for (int i = 0; i < bean.getDebitEntriesByType(SettlementDebitEntryBean.class).size(); i++) {
             SettlementDebitEntryBean debitEntryBean = bean.getDebitEntriesByType(SettlementDebitEntryBean.class).get(i);
             if (debitEntryBean.isIncluded()) {
                 invoiceEntriesSet.add(debitEntryBean.getDebitEntry());
