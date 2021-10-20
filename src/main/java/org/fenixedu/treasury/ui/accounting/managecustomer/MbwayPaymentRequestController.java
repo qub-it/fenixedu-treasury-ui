@@ -10,7 +10,6 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
-import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.springframework.http.HttpStatus;
@@ -92,7 +91,8 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
             IMbwayPaymentPlatformService sibsOnlinePaymentsGateway =
                     SibsPaymentsGateway.findUniqueActive(debtAccount.getFinantialInstitution()).get();
 
-            if (bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty()) {
+            if ((bean.getSelectedDebitEntries() == null || bean.getSelectedDebitEntries().isEmpty())
+                    && (bean.getSelectedInstallments() == null || bean.getSelectedInstallments().isEmpty())) {
                 addErrorMessage(treasuryBundle("error.MbwayPaymentRequest.invoiceEntriesSet.required"), model);
 
                 return _create(debtAccount, bean, model);

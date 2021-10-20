@@ -14,10 +14,10 @@ import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.util.Decryption;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
 import org.fenixedu.treasury.domain.paymentcodes.integration.ISibsPaymentCodePoolService;
 import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
-import org.fenixedu.treasury.domain.payments.PaymentRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.SibsPaymentsGatewayLog;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
@@ -110,6 +110,9 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             final Optional<MbwayRequest> mbwayPaymentRequestOptional =
                     MbwayRequest.findUniqueBySibsGatewayMerchantTransactionId(bean.getMerchantTransactionId());
 
+            Optional<ForwardPaymentRequest> forwardPaymentRequestOptional =
+                    ForwardPaymentRequest.findUniqueByMerchantTransactionId(bean.getMerchantTransactionId());
+
             if (referenceCodeOptional.isPresent()) {
                 if (!PaymentType.RC.name().equals(bean.getPaymentType())) {
                     throw new TreasuryDomainException(
@@ -151,14 +154,21 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 return;
-            } else {
-                boolean isForwardPayment = ForwardPaymentRequest.findAll()
-                        .anyMatch(p -> bean.getMerchantTransactionId().equals(p.getMerchantTransactionId()));
+            } else if (forwardPaymentRequestOptional.isPresent()) {
+                IForwardPaymentPlatformService digitalPaymentPlatform =
+                        (IForwardPaymentPlatformService) forwardPaymentRequestOptional.get().getDigitalPaymentPlatform();
 
-                if (!isForwardPayment) {
-                    throw new TreasuryDomainException(
-                            "error.OnlinePaymentsGatewayWebhooksController.notificationBean.paymentReferenceCode.not.found.by.referenceId");
-                }
+                ForwardPaymentRequest forwardPaymentRequest = forwardPaymentRequestOptional.get();
+                FenixFramework.atomic(() -> {
+                    log.setPaymentRequest(forwardPaymentRequest);
+                });
+                digitalPaymentPlatform.processForwardPaymentFromWebhook(log, bean);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                return;
+            } else {
+                throw new TreasuryDomainException(
+                        "error.OnlinePaymentsGatewayWebhooksController.notificationBean.paymentReferenceCode.not.found.by.referenceId");
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
