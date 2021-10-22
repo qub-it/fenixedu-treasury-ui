@@ -225,12 +225,13 @@ public class SettlementNoteController extends TreasuryBaseController {
                         && creditEntryBean.getCreditEntry().getCreditNote().isAdvancePayment()) {
                     CreditEntry advancedCreditEntry = creditEntryBean.getCreditEntry();
 
-                    if (TreasuryConstants.isLessThan(creditEntryBean.getCreditAmountWithVat(),
-                            advancedCreditEntry.getOpenAmount())) {
-                        addWarningMessage(
-                                treasuryBundle("warning.CreditEntry.advancedPaymentCredit.creditAmount.less.than.openAmount"),
-                                model);
-                    }
+                    // UL-REIT-2569
+//                    if (TreasuryConstants.isLessThan(creditEntryBean.getCreditAmountWithVat(),
+//                            advancedCreditEntry.getOpenAmount())) {
+//                        addWarningMessage(
+//                                treasuryBundle("warning.CreditEntry.advancedPaymentCredit.creditAmount.less.than.openAmount"),
+//                                model);
+//                    }
                 }
             } else {
                 creditEntryBean.setNotValid(false);

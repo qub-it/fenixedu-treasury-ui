@@ -217,7 +217,7 @@ public class TreasuryEventController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.TreasuryExemption.delete.impossible");
             }
             
-            treasuryExemption.delete();
+            treasuryExemption.revertExemption();
 
             addInfoMessage(treasuryBundle("label.success.delete"), model);
         } catch (final Exception ex) {

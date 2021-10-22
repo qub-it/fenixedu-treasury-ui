@@ -1,4 +1,7 @@
 - Bug fix: Allow Mbway payments with payment plan installments only
+- Refactor: Rename TreasuryEvent.getActiveTreasuryEvents() to TreasuryEvent.getActiveTreasuryExemptions()
+- Improvement: Make compatible forward payment request notification handle by webhook and by customer controller, in order to avoid errors due to race conditions arised by handling payment by both ways
+- Refactor: Remove warning message of using partial advanced payment credits (UL-REIT-2569)
 
 8.1.1 (24-09-2021)
 - Bug Fix: Fix bug when creating settlement note in backoffice, when there are open payment plan installments

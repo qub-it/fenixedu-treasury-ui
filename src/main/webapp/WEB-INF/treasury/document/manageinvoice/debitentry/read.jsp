@@ -322,10 +322,16 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
                         <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>
                     </tr>
 					
-					<c:if test="${(debitEntry.finantialDocument == null || !debitEntry.finantialDocument.annulled) && debitEntry.treasuryExemption != null}">
+					<c:if test="${(debitEntry.finantialDocument == null || !debitEntry.finantialDocument.annulled) && !debitEntry.treasuryExemptionsSet.isEmpty()}">
 	                    <tr>
-	                    	<th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.treasuryExemption" /></th>
-	                    	<td><c:out value='${debitEntry.treasuryExemption.treasuryExemptionType.name.content}' /></td>
+	                    	<th scope="row" class="col-xs-3">
+	                    		<spring:message code="label.DebitEntry.treasuryExemption" />
+	                    	</th>
+	                    	<td>
+	                    		<c:forEach items="${debitEntry.treasuryExemptionsSet}" var="exemption">
+	                    			<c:out value='${exemption.treasuryExemptionType.name.content}' />
+	                    		</c:forEach>
+	                    	</td>
 						</tr>
 					</c:if>
 					

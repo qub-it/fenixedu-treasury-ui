@@ -79,12 +79,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 log.saveRequest(bean.getRequestLog());
             });
 
-            if (!bean.isOperationSuccess()) {
-                // Operation with insucess, return ok just to not retry the transaction
-                response.setStatus(HttpServletResponse.SC_OK);
-                return;
-            }
-
             if (!"PAYMENT".equals(bean.getNotificationType())) {
                 // Not payment, ignore
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -114,6 +108,13 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                     ForwardPaymentRequest.findUniqueByMerchantTransactionId(bean.getMerchantTransactionId());
 
             if (referenceCodeOptional.isPresent()) {
+                if (!bean.isOperationSuccess()) {
+                    // TODO Review what to do, for now just return 
+                    // Operation with insucess, return ok just to not retry the transaction
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                }
+
                 if (!PaymentType.RC.name().equals(bean.getPaymentType())) {
                     throw new TreasuryDomainException(
                             "error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.payment.reference.code");
@@ -134,6 +135,12 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 
                 paymentReferenceCodeService.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
+                if (!bean.isOperationSuccess()) {
+                    // TODO Review what to do, for now just return 
+                    // Operation with insucess, return ok just to not retry the transaction
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                }
 
                 if (!PaymentType.DB.name().equals(bean.getPaymentType())) {
                     throw new TreasuryDomainException(

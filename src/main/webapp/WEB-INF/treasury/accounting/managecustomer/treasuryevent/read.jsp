@@ -229,7 +229,7 @@ ${portal.toolkit()}
 		<spring:message code="label.event.create" />
 	</a>
 </p>
-<c:if test="${not empty treasuryEvent.activeTreasuryEvents}">
+<c:if test="${not empty treasuryEvent.activeTreasuryExemptions}">
 
     <script type="text/javascript">
 		function processDelete(externalId) {
@@ -237,7 +237,6 @@ ${portal.toolkit()}
 			$("#deleteForm").attr("action", url);
 			$('#deleteModal').modal('toggle')
 		}
-  
 	</script>
 
     <div class="modal fade" id="deleteModal">
@@ -277,9 +276,8 @@ ${portal.toolkit()}
     </div>
     <!-- /.modal -->
 
-    <datatables:table id="exemptionsTable" row="exemption" data="${treasuryEvent.activeTreasuryEvents}"
-        cssClass="table responsive table-bordered table-hover"
-        cdn="false" cellspacing="2">
+    <datatables:table id="exemptionsTable" row="exemption" data="${treasuryEvent.activeTreasuryExemptions}"
+        cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
         <datatables:column cssStyle="width:15%">
             <datatables:columnHead>
                 <spring:message code="label.TreasuryExemption.treasuryExemptionType" />

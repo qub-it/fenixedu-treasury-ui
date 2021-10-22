@@ -108,6 +108,10 @@ public class TreasuryExemptionController extends TreasuryBaseController {
         try {
             assertUserIsFrontOfficeMember(model);
 
+            if (!bean.getDebitEntry().getTreasuryExemptionsSet().isEmpty()) {
+                throw new TreasuryDomainException("error.TreasuryExemption.debitEntry.already.exempted");
+            }
+
             TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
                     bean.getValuetoexempt(), bean.getDebitEntry());
 
