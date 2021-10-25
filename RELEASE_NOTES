@@ -1,3 +1,4 @@
+8.1.2 (25-10-2021)
 - Bug fix: Allow Mbway payments with payment plan installments only
 - Refactor: Rename TreasuryEvent.getActiveTreasuryEvents() to TreasuryEvent.getActiveTreasuryExemptions()
 - Improvement: Make compatible forward payment request notification handle by webhook and by customer controller, in order to avoid errors due to race conditions arised by handling payment by both ways
