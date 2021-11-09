@@ -31,6 +31,7 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.TreasuryFile;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
+import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineWebServiceClient;
@@ -595,6 +596,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 
     @Override
     public String exportDocumentFileExtension() {
+        throw new RuntimeException("not supported");
+    }
+
+    @Override
+    public InputStream exportPaymentReceipt(String templateCode, SettlementNote settlementNote) {
         throw new RuntimeException("not supported");
     }
 

@@ -1,3 +1,5 @@
+- Improvement: Change Settlement note receipt from odt to webdocs. Add method to treasury dependent platform to conform with interface.
+
 8.1.2 (25-10-2021)
 - Bug fix: Allow Mbway payments with payment plan installments only
 - Refactor: Rename TreasuryEvent.getActiveTreasuryEvents() to TreasuryEvent.getActiveTreasuryExemptions()
