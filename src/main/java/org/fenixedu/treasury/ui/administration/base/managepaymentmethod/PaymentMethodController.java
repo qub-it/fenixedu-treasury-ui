@@ -170,7 +170,7 @@ public class PaymentMethodController extends TreasuryBaseController {
 
     @Atomic
     public PaymentMethod createPaymentMethod(String code, LocalizedString name, boolean availableForPaymentInApplication) {
-        PaymentMethod paymentMethod = PaymentMethod.create(code, name, availableForPaymentInApplication);
+        PaymentMethod paymentMethod = PaymentMethod.create(code, name, availableForPaymentInApplication, false);
         return paymentMethod;
     }
 
@@ -202,7 +202,8 @@ public class PaymentMethodController extends TreasuryBaseController {
 
     @Atomic
     public void updatePaymentMethod(final String code, final LocalizedString name, final boolean availableForPaymentInApplication, Model m) {
-        getPaymentMethod(m).edit(code, name, availableForPaymentInApplication);
+        PaymentMethod paymentMethod = getPaymentMethod(m);
+        paymentMethod.edit(code, name, availableForPaymentInApplication, paymentMethod.getRequirePaymentMethodReference());
     }
 
 }

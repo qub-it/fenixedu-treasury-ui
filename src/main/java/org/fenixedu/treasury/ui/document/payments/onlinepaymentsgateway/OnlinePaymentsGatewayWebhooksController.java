@@ -12,6 +12,7 @@ import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
 import org.fenixedu.onlinepaymentsgateway.exceptions.OnlinePaymentsGatewayCommunicationException;
 import org.fenixedu.onlinepaymentsgateway.sibs.sdk.PaymentType;
 import org.fenixedu.onlinepaymentsgateway.util.Decryption;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentPlatformService;
@@ -70,7 +71,12 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 return;
             }
 
-            PaymentStateBean bean = SibsPaymentsGateway.findAll().iterator().next().handleWebhookNotificationRequest(
+            // TODO: The gateway should be chosen by the one that allows the decription of encryped payload
+
+            SibsPaymentsGateway gateway =
+                    SibsPaymentsGateway.findUniqueActive(FinantialInstitution.findAll().iterator().next()).get();
+
+            PaymentStateBean bean = gateway.handleWebhookNotificationRequest(
                     notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
 
             FenixFramework.atomic(() -> {
@@ -204,7 +210,11 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             String notificationAuthenticationTag, String notificationEncryptedPayload) {
         try {
 
-            String aesKey = SibsPaymentsGateway.findAll().iterator().next().getAesKey();
+            // TODO: The gateway should be chosen by the one that allows the decription of encryped payload
+            SibsPaymentsGateway gateway =
+                    SibsPaymentsGateway.findUniqueActive(FinantialInstitution.findAll().iterator().next()).get();
+
+            String aesKey = gateway.getAesKey();
 
             Decryption notification = new Decryption(aesKey, notificationInitializationVector, notificationAuthenticationTag,
                     notificationEncryptedPayload);

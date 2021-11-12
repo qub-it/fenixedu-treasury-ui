@@ -1,3 +1,6 @@
+- Refactor: Pass "forDigitalPayments" property as false, when creating a new PaymentMethod
+- Improvement: Use an active SibsPaymentsGateway configuration when decrypting notification payloads 
+
 8.2.0 (09-11-2021)
 - Improvement: Change Settlement note receipt from odt to webdocs. Add method to treasury dependent platform to conform with interface.
 
