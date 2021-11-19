@@ -1,3 +1,4 @@
+8.2.1 (19-11-2021)
 - Refactor: Pass "forDigitalPayments" property as false, when creating a new PaymentMethod
 - Improvement: Use an active SibsPaymentsGateway configuration when decrypting notification payloads 
 
