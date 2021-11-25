@@ -9,6 +9,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 
+@Deprecated
 @Task(englishTitle = "Export Pending Documents to ERP Integration", readOnly = true)
 public class ERPExportPendingDocumentsTask extends CronTask {
 

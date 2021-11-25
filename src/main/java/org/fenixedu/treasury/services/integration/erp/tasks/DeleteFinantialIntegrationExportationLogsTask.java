@@ -25,6 +25,7 @@ import pt.ist.fenixframework.Atomic.TxMode;
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
 
+@Deprecated
 @Task(englishTitle = "Delete finantial exportation logs", readOnly = true)
 public class DeleteFinantialIntegrationExportationLogsTask extends CronTask {
 

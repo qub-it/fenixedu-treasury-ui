@@ -2,9 +2,7 @@ package org.fenixedu.treasury.services.integration.erp.tasks;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
 
@@ -24,6 +22,7 @@ import com.google.common.collect.Lists;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
+@Deprecated
 @Task(englishTitle = "Export All Pending Documents to ERP Integration", readOnly = true)
 public class ERPExportAllPendingDocumentsTask extends CronTask {
 

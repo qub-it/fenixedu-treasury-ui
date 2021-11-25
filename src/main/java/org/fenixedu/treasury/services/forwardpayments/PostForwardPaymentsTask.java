@@ -40,6 +40,7 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 import pt.ist.fenixframework.FenixFramework;
 
+@Deprecated
 @Task(englishTitle = "Post forward payments registration", readOnly = true)
 public class PostForwardPaymentsTask extends CronTask {
 

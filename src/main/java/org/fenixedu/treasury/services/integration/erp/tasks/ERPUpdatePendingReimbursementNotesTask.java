@@ -5,6 +5,7 @@ import org.fenixedu.bennu.scheduler.annotation.Task;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 
+@Deprecated
 @Task(englishTitle = "Update pending reimbursement notes", readOnly = true)
 public class ERPUpdatePendingReimbursementNotesTask extends CronTask {
 

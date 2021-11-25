@@ -11,6 +11,7 @@ import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.FenixFramework;
 
+@Deprecated
 @Task(englishTitle = "Export Single Doument to ERP Integration", readOnly = true)
 public class ERPExportSingleDocumentsTask extends CronTask {
 
