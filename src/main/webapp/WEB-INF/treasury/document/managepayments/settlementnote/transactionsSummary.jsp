@@ -7,40 +7,29 @@
 <%@ taglib prefix="datatables"
     uri="http://github.com/dandelion/datatables"%>
 
-<spring:url var="datatablesUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
-<spring:url var="datatablesBootstrapJsUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
-<script type="text/javascript" src="${datatablesUrl}"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+<script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.2.2/css/buttons.dataTables.min.css" />
+
+
+<spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl"
-    value="/CSS/dataTables/dataTables.bootstrap.min.css" />
+
+<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css" />
 <link rel="stylesheet" href="${datatablesCssUrl}" />
-<spring:url var="datatablesI18NUrl"
-    value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
 
-<link rel="stylesheet" type="text/css"
-    href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
+<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<link
-    href="${pageContext.request.contextPath}/static/treasury/css/dataTables.responsive.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/static/treasury/js/dataTables.responsive.js"></script>
-<link
-    href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link
-    href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
-<script type="text/javascript"
-    src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
-<script
-    src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
+<link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
+<script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 <%--${portal.angularToolkit()} --%>
@@ -140,7 +129,7 @@ ${portal.toolkit()}
                 </div>
             </div>
             <div class="form-group row">
-                <div class="col-sm-4 control-label">
+                <div class="col-sm-2 control-label">
                     <spring:message
                         code="label.SettlementNote.documentDate" />
                 </div>
@@ -521,13 +510,42 @@ ${portal.toolkit()}
                         </datatables:column>
                     </datatables:table>
                     <script>
-                createDataTables(
-                        'settlementEntries',
-                        true,
-                        true,
-                        true,
-                        "${pageContext.request.contextPath}",
-                        "${datatablesI18NUrl}");
+                    
+                    
+            		var table = $('#settlementEntries').DataTable({language : {
+            			url : "${datatablesI18NUrl}",			
+            		},
+            		"order": [[ 0, "asc" ]],
+
+            		//Documentation: https://datatables.net/reference/option/dom
+                    //"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+                    //"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+                    //"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+                    dom: '<"col-sm-5"l><"col-sm-3"f><"col-sm-3"B>rtip', //FilterBox = YES && ExportOptions = YES
+                    buttons: [
+                        'copyHtml5',
+                        'excelHtml5',
+                        'csvHtml5',
+                        'pdfHtml5'
+                    ],
+                    "tableTools": {
+                        "sSwfPath": "${pageContext.request.contextPath}/static/treasury/swf/copy_csv_xls_pdf.swf"
+                    }
+            		});
+            		table.columns.adjust().draw();
+            		
+            		  $('#settlementEntries tbody').on( 'click', 'tr', function () {
+            		        $(this).toggleClass('selected');
+            		    } );
+                    
+                    
+//                createDataTables(
+//                        'settlementEntries',
+//                        true,
+//                        true,
+//                        true,
+//                        "${pageContext.request.contextPath}",
+//                        "${datatablesI18NUrl}");
             </script>
                 </div>
             </div>

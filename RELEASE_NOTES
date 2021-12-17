@@ -1,4 +1,5 @@
 - Refactor: Change treasury from CronTask to RuntimeTaskExecutors
+- Bug Fix: Fix settlement notes transaction exportation to excel in datatables
  
 8.2.1 (19-11-2021)
 - Refactor: Pass "forDigitalPayments" property as false, when creating a new PaymentMethod
