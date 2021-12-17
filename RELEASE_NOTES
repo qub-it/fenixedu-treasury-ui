@@ -1,3 +1,4 @@
+8.2.2 (17-12-2021)
 - Refactor: Change treasury from CronTask to RuntimeTaskExecutors
 - Bug Fix: Fix settlement notes transaction exportation to excel in datatables
  
