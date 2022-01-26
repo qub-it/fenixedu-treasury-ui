@@ -1,3 +1,4 @@
+8.3.0 (26-01-2022)
 - Refactor: Implement new methods of ITreasuryPlatformDependentServices interface, getCustomerEmail() and getSaftExporterConfiguration()
 
 8.2.2 (17-12-2021)
