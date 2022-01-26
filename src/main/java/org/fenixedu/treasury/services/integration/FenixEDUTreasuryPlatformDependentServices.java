@@ -25,6 +25,7 @@ import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -41,6 +42,7 @@ import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
+import org.fenixedu.treasury.services.integration.erp.ISaftExporterConfiguration;
 import org.fenixedu.treasury.services.integration.erp.tasks.ERPExportSingleDocumentsTask;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Address;
 import org.fenixedu.treasury.services.integration.forwardpayments.payline.Buyer;
@@ -194,6 +196,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         }
 
         return Authenticate.getUser().getUsername();
+    }
+
+    @Override
+    public String getCustomerEmail(Customer customer) {
+        return null;
     }
 
     /* Locales */
@@ -602,6 +609,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     @Override
     public InputStream exportPaymentReceipt(String templateCode, SettlementNote settlementNote) {
         throw new RuntimeException("not supported");
+    }
+
+    @Override
+    public ISaftExporterConfiguration getSaftExporterConfiguration(ERPConfiguration configuration) {
+        return null;
     }
 
 }
