@@ -628,4 +628,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         throw new RuntimeException("not supported");
     }
 
+    public void certifyDocument(FinantialDocument finantialDocument) {
+        // Do nothing
+    }
 }
