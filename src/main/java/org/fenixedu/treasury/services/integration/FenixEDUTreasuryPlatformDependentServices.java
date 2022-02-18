@@ -57,6 +57,7 @@ import org.fenixedu.treasury.services.integration.forwardpayments.payline.Paymen
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.Partial;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -614,6 +615,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     @Override
     public ISaftExporterConfiguration getSaftExporterConfiguration(ERPConfiguration configuration) {
         return null;
+    }
+
+    @Override
+    public Set<Partial> getHolidays() {
+        throw new RuntimeException("not supported");
     }
 
 }
