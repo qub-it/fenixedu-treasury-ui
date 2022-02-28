@@ -90,6 +90,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
             return false;
         }
 
+        if (settlementNote.getPaymentTransaction() != null && !TreasuryAccessControlAPI.isManager(username)) {
+            return false;
+        }
+
         LocalDate annulmentControlDate = settlementNote.getErpCertificationDate();
 
         if (annulmentControlDate == null) {

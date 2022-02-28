@@ -59,6 +59,10 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
         model.addAttribute("debtAccountUrl", readDebtAccountUrl(debtAccount));
         model.addAttribute("createUrl", getCreateUrl());
         model.addAttribute("createPostbackUrl", getCreatePostbackUrl());
+        IMbwayPaymentPlatformService sibsOnlinePaymentsGateway =
+                SibsPaymentsGateway.findUniqueActive(debtAccount.getFinantialInstitution()).get();
+
+        model.addAttribute("mbwayService", sibsOnlinePaymentsGateway);
 
         return jspPage(_CREATE_URI);
     }
@@ -127,6 +131,7 @@ public class MbwayPaymentRequestController extends TreasuryBaseController {
         model.addAttribute("debtAccountUrl", readDebtAccountUrl(debtAccount));
         model.addAttribute("createUrl", getCreateUrl());
         model.addAttribute("createPostbackUrl", getCreatePostbackUrl());
+        model.addAttribute("mbwayService", mbwayPaymentRequest.getDigitalPaymentPlatform());
 
         return jspPage(_SHOW_MBWAY_PAYMENT_REQUEST_URI);
     }

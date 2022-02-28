@@ -1,3 +1,6 @@
+- Improvement: Block annulation of settlement notes created by digital payments
+- Improvement: Override information of finantial institution info header in online payments
+
 8.3.1 (19-02-2022)
 - Refactor: Service to get holidays from platform
 
