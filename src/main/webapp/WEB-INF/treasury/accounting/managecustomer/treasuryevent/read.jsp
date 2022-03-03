@@ -286,15 +286,9 @@ ${portal.toolkit()}
         </datatables:column>
         <datatables:column cssStyle="width:10%">
             <datatables:columnHead>
-                <spring:message code="label.TreasuryExemption.valueToExempt" />
+                <spring:message code="label.TreasuryExemption.netAmountToExempt" />
             </datatables:columnHead>
-            <c:if test="${exemption.exemptByPercentage}">
-                <c:out value="${exemption.valueToExempt}" /> %
-			</c:if>
-
-            <c:if test="${not exemption.exemptByPercentage}">
-                <c:out value="${exemption.debitEntry.debtAccount.finantialInstitution.currency.getValueFor(exemption.valueToExempt)}" />
-            </c:if>
+            <c:out value="${exemption.debitEntry.debtAccount.finantialInstitution.currency.getValueFor(exemption.netAmountToExempt)}" />
         </datatables:column>
         <datatables:column cssStyle="width:40%">
             <datatables:columnHead>
@@ -513,7 +507,7 @@ ${portal.toolkit()}
                     </datatables:columnHead>
                     <p align=right>
                         <c:out
-                            value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.exemptedAmountWithVat)}" />
+                            value="${debitEntry.debtAccount.finantialInstitution.currency.getValueFor(debitEntry.netExemptedAmount)}" />
                     </p>
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">

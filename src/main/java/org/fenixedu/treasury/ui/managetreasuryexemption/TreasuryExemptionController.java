@@ -113,7 +113,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
             }
 
             TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
-                    bean.getValuetoexempt(), bean.getDebitEntry());
+                    bean.getNetAmountToExempt(), bean.getDebitEntry());
 
             addInfoMessage(treasuryBundle("label.success.create"), model);
 
@@ -140,7 +140,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
             BigDecimal amount = bean.getDebitEntry().getAmountWithVat()
                     .multiply(bean.getTreasuryExemptionType().getDefaultExemptionPercentage().divide(BigDecimal.valueOf(100)));
             amount = bean.getDebitEntry().getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(amount);
-            bean.setValuetoexempt(amount);
+            bean.setNetAmountToExempt(amount);
             bean.setCurrencySymbol(bean.getDebitEntry().getDebtAccount().getFinantialInstitution().getCurrency().getSymbol());
         }
 

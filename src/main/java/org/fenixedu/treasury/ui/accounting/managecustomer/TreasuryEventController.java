@@ -206,7 +206,7 @@ public class TreasuryEventController extends TreasuryBaseController {
     public String processSearchToDeleteAction(@PathVariable("debtAccountId") final DebtAccount debtAccount,
             @PathVariable("oid") final TreasuryExemption treasuryExemption, Model model, RedirectAttributes redirectAttributes) {
 
-        final TreasuryEvent treasuryEvent = treasuryExemption.getTreasuryEvent();
+        final TreasuryEvent treasuryEvent = treasuryExemption.getDebitEntry().getTreasuryEvent();
 
         try {
             assertUserIsFrontOfficeMember(model);

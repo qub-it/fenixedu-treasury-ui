@@ -319,7 +319,7 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
 
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebitEntry.exemptedAmount" /></th>
-                        <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.exemptedAmount)}' /></td>
+                        <td><c:out value='${debitEntry.currency.getValueFor(debitEntry.netExemptedAmount)}' /></td>
                     </tr>
 					
 					<c:if test="${(debitEntry.finantialDocument == null || !debitEntry.finantialDocument.annulled) && !debitEntry.treasuryExemptionsSet.isEmpty()}">

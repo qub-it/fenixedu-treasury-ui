@@ -227,14 +227,14 @@ ${portal.angularToolkit()}
                     <div class="input-group-addon">
                     	<span>{{object.currencySymbol}}</span>
                     </div>
-                    <input id="treasuryExemption_valueToExempt"
+                    <input id="treasuryExemption_netAmountToExempt"
                         class="form-control"
-                        ng-model="object.valuetoexempt" type="text" name="valuetoexempt"
+                        ng-model="object.netAmountToExempt" type="text" name="netAmountToExempt"
                         ng-pattern="/^(0*\.(0[1-9]|[1-9][0-9]?)|[1-9][0-9]*(\.[0-9]{1,2})?)$/"
-                        value='<c:out value='${ param.valuetoexempt }'/>' />
+                        value='<c:out value='${ param.netAmountToExempt }'/>' />
                 </div>
             </div>
-            <div class="form-group row" ng-show="form.valuetoexempt.$error.pattern">
+            <div class="form-group row" ng-show="form.netAmountToExempt.$error.pattern">
                 <div class="col-sm-2 control-label">
                 </div>
                 <div class="col-sm-10">
