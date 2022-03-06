@@ -1,4 +1,6 @@
+- Refactor: Mark TreasuryExemption::valueToExempt as deprecated and replace with TreasuryExemption.netAmountToExempt
 - Refactor: Mark DebitEntry::exemptedAmount as deprecated and replace with DebitEntry::netExemptedAmount
+- Bug Fix: Fix return the default locale of the platform
 
 8.3.2 (28-02-2022)
 - Improvement: Block annulation of settlement notes created by digital payments
