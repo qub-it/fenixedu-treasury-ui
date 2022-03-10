@@ -1,3 +1,6 @@
+- Refactor: Use DebitEntry::getUiPossibleMaximumAmountToExempt method to get the maximum amount available to exempt
+- Refactor: Remove unnecessary recalculation of credit entries
+
 8.3.3 (07-03-2022)
 - Refactor: Mark TreasuryExemption::valueToExempt as deprecated and replace with TreasuryExemption.netAmountToExempt
 - Refactor: Mark DebitEntry::exemptedAmount as deprecated and replace with DebitEntry::netExemptedAmount

@@ -389,8 +389,6 @@ public class CreditNoteController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
             final String saftEncoding = ERPExporterManager.saftEncoding(creditNote.getDebtAccount().getFinantialInstitution());
 
-            creditNote.recalculateAmountValues();
-
             final String output = ERPExporterManager.exportFinantialDocumentToXML(creditNote);
 
             response.setContentType("text/xml");
