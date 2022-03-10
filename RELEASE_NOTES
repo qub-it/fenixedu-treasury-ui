@@ -1,3 +1,4 @@
+8.3.4 (10-03-2022)
 - Refactor: Use DebitEntry::getUiPossibleMaximumAmountToExempt method to get the maximum amount available to exempt
 - Refactor: Remove unnecessary recalculation of credit entries
 
