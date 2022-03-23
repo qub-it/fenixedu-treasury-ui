@@ -39,6 +39,7 @@ import org.fenixedu.treasury.dto.TreasuryExemptionBean;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.TreasuryEventController;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,8 +101,7 @@ public class TreasuryExemptionController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _CREATE_URI + "{debtAccountId}", method = RequestMethod.POST)
-    public String create(
-            @PathVariable("debtAccountId") final DebtAccount debtAccount,
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount,
             @RequestParam(value = "bean", required = true) TreasuryExemptionBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
         setTreasuryExemptionBean(bean, model);
@@ -123,21 +123,28 @@ public class TreasuryExemptionController extends TreasuryBaseController {
         } catch (Exception ex) {
             addErrorMessage(treasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
-        
+
         return create(debtAccount, bean.getTreasuryEvent(), model);
     }
 
     private static final String _CREATEPOSTBACK_URI = "/createPostBack/";
     public static final String CREATEPOSTBACK_URL = CONTROLLER_URL + _CREATEPOSTBACK_URI;
 
-    @RequestMapping(value = _CREATEPOSTBACK_URI + "{debtAccountId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public @ResponseBody String createpostback(
-            @PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @RequestParam(value = "bean", required = true) final TreasuryExemptionBean bean,
-            final Model model) {
-        
+    @RequestMapping(value = _CREATEPOSTBACK_URI + "{debtAccountId}", method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8")
+    public @ResponseBody String createpostback(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = true) final TreasuryExemptionBean bean, final Model model) {
+
         if (bean.getDebitEntry() != null && bean.getTreasuryExemptionType() != null) {
-            BigDecimal amount = bean.getDebitEntry().getUiPossibleMaximumAmountToExempt();
+            BigDecimal defaultExemptionAmount =
+                    bean.getDebitEntry().getDebtAccount().getFinantialInstitution().getCurrency()
+                            .getValueWithScale(bean.getDebitEntry().getNetAmount()
+                                    .multiply(TreasuryConstants.divide(
+                                            bean.getTreasuryExemptionType().getDefaultExemptionPercentage(),
+                                            TreasuryConstants.HUNDRED_PERCENT)));
+
+            BigDecimal amount = defaultExemptionAmount.min(bean.getDebitEntry().getUiPossibleMaximumAmountToExempt());
+
             bean.setNetAmountToExempt(amount);
             bean.setCurrencySymbol(bean.getDebitEntry().getDebtAccount().getFinantialInstitution().getCurrency().getSymbol());
         }
