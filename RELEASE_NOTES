@@ -1,3 +1,4 @@
+8.4.0 (23-03-2022)
 - Improvement: Create webservice configuration for Payline, if does not exists
 - Refactor: Treasury invoice certification, empty services for treasury invoice certification
 - Bug Fix: Fix default value to exempt, presented in the exemption creation form (#UL-FM-2380)
