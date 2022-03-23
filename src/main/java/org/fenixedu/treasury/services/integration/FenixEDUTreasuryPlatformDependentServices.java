@@ -557,6 +557,12 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
 
     @Override
     public void paylineConfigureWebservice(PaylineConfiguration paylineConfiguration) {
+        if (WebServiceConfiguration.readByImplementationClass(
+                "org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineWebServiceClient") == null) {
+            new WebServiceClientConfiguration(
+                    "org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineWebServiceClient");
+        }
+
         WebServiceClientConfiguration configuration = WebServiceConfiguration.readByImplementationClass(
                 "org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineWebServiceClient");
 
