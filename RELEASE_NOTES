@@ -1,4 +1,5 @@
 - Improvement: Create webservice configuration for Payline, if does not exists
+- Refactor: Treasury invoice certification, empty services for treasury invoice certification
 
 8.3.4 (10-03-2022)
 - Refactor: Use DebitEntry::getUiPossibleMaximumAmountToExempt method to get the maximum amount available to exempt
