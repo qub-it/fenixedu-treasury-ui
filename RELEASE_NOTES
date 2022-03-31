@@ -1,3 +1,5 @@
+- Refactor: Implement service to annul certified documents, which is not supported by this module
+
 8.4.0 (23-03-2022)
 - Improvement: Create webservice configuration for Payline, if does not exists
 - Refactor: Treasury invoice certification, empty services for treasury invoice certification

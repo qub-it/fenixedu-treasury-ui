@@ -638,4 +638,9 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         // Do nothing
     }
 
+    @Override
+    public void annulCertifiedDocument(FinantialDocument finantialDocument) {
+        // Do nothing
+    }
+    
 }
