@@ -1,3 +1,6 @@
+- Refactor: Implement service to check if product is certified
+- Refactor: Implement service to check if platform is in development or quality mode
+
 8.4.1 (31-03-2022)
 - Refactor: Implement service to annul certified documents, which is not supported by this module
 

@@ -216,7 +216,7 @@ public class ProductController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.Product.vatExemptionReason.required");
             }
             
-            updateProduct(productGroup, code, name, unitOfMeasure, active, legacy, tuitionInstallmentOrder, finantialInstitutions, vatType,
+            updateProduct(productGroup, name, unitOfMeasure, active, legacy, tuitionInstallmentOrder, finantialInstitutions, vatType,
                     vatExemptionReason, model);
 
             return redirect(READ_URL + getProduct(model).getExternalId(), model, redirectAttributes);
@@ -244,10 +244,10 @@ public class ProductController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateProduct(ProductGroup productGroup, String code, LocalizedString name, LocalizedString unitOfMeasure,
+    public void updateProduct(ProductGroup productGroup, LocalizedString name, LocalizedString unitOfMeasure,
             boolean active, boolean legacy, final int tuitionInstallmentOrder, List<FinantialInstitution> finantialInstitutions, VatType vatType,
             VatExemptionReason vatExemptionReason, Model m) {
-        getProduct(m).edit(code, name, unitOfMeasure, active, legacy, tuitionInstallmentOrder, vatType, productGroup, finantialInstitutions,
+        getProduct(m).edit(name, unitOfMeasure, active, legacy, tuitionInstallmentOrder, vatType, productGroup, finantialInstitutions,
                 vatExemptionReason);
     }
 

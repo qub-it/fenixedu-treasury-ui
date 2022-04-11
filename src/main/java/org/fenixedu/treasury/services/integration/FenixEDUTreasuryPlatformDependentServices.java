@@ -1,11 +1,13 @@
 package org.fenixedu.treasury.services.integration;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.servlet.http.HttpSession;
@@ -29,6 +31,7 @@ import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.TreasuryFile;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -642,5 +645,27 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     public void annulCertifiedDocument(FinantialDocument finantialDocument) {
         // Do nothing
     }
+
+    @Override
+    public boolean isProductCertified(Product product) {
+        return false;
+    }
     
+    /* Development or quality mode */
+
+    @Override
+    public boolean isQualityOrDevelopmentMode() {
+        return CoreConfiguration.getConfiguration().developmentMode() || isQualityMode();
+    }
+
+    private boolean isQualityMode() {
+        try {
+            final Properties properties = new Properties();
+            properties.load(this.getClass().getResourceAsStream("/configuration.properties"));
+            return Boolean.valueOf(properties.getProperty("quality.mode", "true"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
