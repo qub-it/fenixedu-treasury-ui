@@ -2,6 +2,7 @@ package org.fenixedu.treasury.services.accesscontrol.spi;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,12 +11,13 @@ import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.FiscalYear;
+import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControlConfiguration;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlExtension {
+public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlExtension<Object> {
 
     private static final String TREASURY_MANAGERS = "treasuryManagers";
 
@@ -28,6 +30,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isFrontOfficeMember(final String username) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
@@ -35,6 +41,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isFrontOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
@@ -42,6 +52,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isBackOfficeMember(final String username) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
@@ -49,6 +63,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isBackOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
@@ -56,6 +74,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isBackOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).isMember(user);
@@ -63,6 +85,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isManager(final String username) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_MANAGERS).isMember(user);
@@ -70,6 +96,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isAllowToModifySettlements(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
@@ -77,6 +107,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).isMember(user);
@@ -84,6 +118,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isAllowToConditionallyAnnulSettlementNote(final String username, final SettlementNote settlementNote) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final FinantialInstitution finantialInstitution = settlementNote.getDebtAccount().getFinantialInstitution();
 
         if (!TreasuryAccessControlAPI.isAllowToModifySettlements(username, finantialInstitution)) {
@@ -131,6 +169,10 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public boolean isAllowToAnnulSettlementNoteWithoutAnyRestriction(final String username, final SettlementNote settlementNote) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return getOrCreateDynamicGroup(TREASURY_ALLOW_TO_ANNUL_SETTLEMENT_NOTES_WITHOUT_RESTRICTIONS).isMember(user);
@@ -153,18 +195,30 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
 
     @Override
     public Set<String> getFrontOfficeMemberUsernames() {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return Collections.emptySet();
+        }
+        
         return getOrCreateDynamicGroup(TREASURY_FRONT_OFFICE).getMembers().filter(m -> !isNullOrEmpty(m.getUsername()))
                 .map(m -> m.getUsername()).collect(Collectors.toSet());
     }
 
     @Override
     public Set<String> getBackOfficeMemberUsernames() {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return Collections.emptySet();
+        }
+        
         return getOrCreateDynamicGroup(TREASURY_BACK_OFFICE).getMembers().filter(m -> !isNullOrEmpty(m.getUsername()))
                 .map(m -> m.getUsername()).collect(Collectors.toSet());
     }
 
     @Override
     public Set<String> getTreasuryManagerMemberUsernames() {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
+            return Collections.emptySet();
+        }
+        
         return getOrCreateDynamicGroup(TREASURY_MANAGERS).getMembers().filter(m -> !isNullOrEmpty(m.getUsername()))
                 .map(m -> m.getUsername()).collect(Collectors.toSet());
     }
