@@ -1,3 +1,4 @@
+8.4.3 (02-05-2022)
 - Improvement: If the access control configuration is disabled, for using bennu groups as access control, then return false in all query methods for treasury access control
 - Refactor: Invoke default DebtAccount method to transfer balance to default active debt account
 
