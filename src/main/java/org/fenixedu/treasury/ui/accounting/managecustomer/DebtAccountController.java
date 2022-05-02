@@ -353,16 +353,7 @@ public class DebtAccountController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.DebtAccount.transfer.from.must.not.be.active");
             }
 
-            final FinantialInstitution finantialInstitution = debtAccount.getFinantialInstitution();
-
-            Optional<DebtAccount> activeDebtAccount =
-                    DebtAccount.findUnique(finantialInstitution, debtAccount.getCustomer().getActiveCustomer());
-
-            if (!activeDebtAccount.isPresent()) {
-                throw new TreasuryDomainException("error.DebtAccount.active.debt.account.not.found");
-            }
-
-            debtAccount.transferBalance(activeDebtAccount.get());
+            debtAccount.transferBalanceForActiveDebtAccount();
             return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (final Exception ex) {
             ex.printStackTrace();
