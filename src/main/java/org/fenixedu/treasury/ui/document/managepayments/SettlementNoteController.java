@@ -507,11 +507,11 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
         final boolean allowToConditionallyAnnulSettlementNote =
-                !TreasuryDebtProcessMainService.isSettlementAnnullmentActionBlocked(settlementNote) &&
+                !TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote);
 
         final boolean allowToAnnulSettlementNoteWithoutAnyRestriction =
-                !TreasuryDebtProcessMainService.isSettlementAnnullmentActionBlocked(settlementNote) &&
+                !TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToAnnulSettlementNoteWithoutAnyRestriction(loggedUsername, settlementNote);
 
         model.addAttribute("allowToConditionallyAnnulSettlementNote", allowToConditionallyAnnulSettlementNote);
@@ -607,12 +607,12 @@ public class SettlementNoteController extends TreasuryBaseController {
     protected void assertUserIsAllowToAnnulSettlementNote(final SettlementNote settlementNote, final Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
-        if (!TreasuryDebtProcessMainService.isSettlementAnnullmentActionBlocked(settlementNote) &&
+        if (!TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote)) {
             return;
         }
 
-        if (!TreasuryDebtProcessMainService.isSettlementAnnullmentActionBlocked(settlementNote) &&
+        if (!TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToAnnulSettlementNoteWithoutAnyRestriction(loggedUsername, settlementNote)) {
             return;
         }
