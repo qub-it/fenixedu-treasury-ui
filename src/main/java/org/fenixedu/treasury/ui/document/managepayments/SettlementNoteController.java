@@ -58,6 +58,7 @@ import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.domain.treasurydebtprocess.TreasuryDebtProcessMainService;
 import org.fenixedu.treasury.dto.ISettlementInvoiceEntryBean;
 import org.fenixedu.treasury.dto.SettlementCreditEntryBean;
 import org.fenixedu.treasury.dto.SettlementDebitEntryBean;
@@ -506,9 +507,11 @@ public class SettlementNoteController extends TreasuryBaseController {
 
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
         final boolean allowToConditionallyAnnulSettlementNote =
+                !TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote);
 
         final boolean allowToAnnulSettlementNoteWithoutAnyRestriction =
+                !TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToAnnulSettlementNoteWithoutAnyRestriction(loggedUsername, settlementNote);
 
         model.addAttribute("allowToConditionallyAnnulSettlementNote", allowToConditionallyAnnulSettlementNote);
@@ -604,11 +607,13 @@ public class SettlementNoteController extends TreasuryBaseController {
     protected void assertUserIsAllowToAnnulSettlementNote(final SettlementNote settlementNote, final Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
-        if (TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote)) {
+        if (!TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
+                TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote)) {
             return;
         }
 
-        if (TreasuryAccessControlAPI.isAllowToAnnulSettlementNoteWithoutAnyRestriction(loggedUsername, settlementNote)) {
+        if (!TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
+                TreasuryAccessControlAPI.isAllowToAnnulSettlementNoteWithoutAnyRestriction(loggedUsername, settlementNote)) {
             return;
         }
 
