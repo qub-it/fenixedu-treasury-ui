@@ -193,7 +193,7 @@ ${portal.angularToolkit()}
             <c:if test="${not settlementNoteBean.reimbursementNote }">
             <div class="form-group row">
             	<div class="col-sm-2 control-label">
-            		<spring:message code="label.SettlementNote.advancePayment" />
+            		<spring:message code="label.SettlementNote.excessPayment" />
             	</div>
             	<div class="col-sm-4">
 					<select id="settlementNote_advancePayment" name="advancepayment"

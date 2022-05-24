@@ -1,3 +1,5 @@
+- Bug Fix: Fix label of advanced payment in register payment in backoffice (#UL-FMH-2003)
+
 8.4.4 (24-05-2022)
 - Refactor: Restrict settlement note annulment link, in settlement note details page, if it is blocked by some treasury debt process
 
