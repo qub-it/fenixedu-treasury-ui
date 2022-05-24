@@ -1,3 +1,4 @@
+8.4.4 (24-05-2022)
 - Refactor: Restrict settlement note annulment link, in settlement note details page, if it is blocked by some treasury debt process
 
 8.4.3 (02-05-2022)
