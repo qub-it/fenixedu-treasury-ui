@@ -1,3 +1,5 @@
+- Bug Fix: Ignore risk management timeout notifications from SIBS DPG, which cause the forward payment request to be rejected
+
 8.4.5 (24-05-2022)
 - Bug Fix: Fix label of advanced payment in register payment in backoffice (#UL-FMH-2003)
 

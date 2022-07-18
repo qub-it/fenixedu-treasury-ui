@@ -41,6 +41,8 @@ import pt.ist.fenixframework.FenixFramework;
 @RequestMapping(OnlinePaymentsGatewayWebhooksController.CONTROLLER_URL)
 public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseController {
 
+    private static final String RISK_MANAGEMENT_TIMEOUT = "100.380.501";
+
     private static final Logger logger = LoggerFactory.getLogger(OnlinePaymentsGatewayWebhooksController.class);
 
     public static final String CONTROLLER_URL = "/treasury/document/payments/onlinepaymentsgateway";
@@ -170,7 +172,15 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             } else if (forwardPaymentRequestOptional.isPresent()) {
                 IForwardPaymentPlatformService digitalPaymentPlatform =
                         (IForwardPaymentPlatformService) forwardPaymentRequestOptional.get().getDigitalPaymentPlatform();
-
+                
+                if(bean.getResult() != null && RISK_MANAGEMENT_TIMEOUT.equals(bean.getResult().getCode())) {
+                    /* The "risk management transaction timeout" is causing forward payment requests to
+                     * become rejected, and consequently not accepting payment. For now ignore these notifications
+                     */
+                    response.setStatus(HttpServletResponse.SC_OK);
+                    return;
+                }
+                
                 ForwardPaymentRequest forwardPaymentRequest = forwardPaymentRequestOptional.get();
                 FenixFramework.atomic(() -> {
                     log.setPaymentRequest(forwardPaymentRequest);
