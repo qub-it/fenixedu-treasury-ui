@@ -80,7 +80,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
             PaymentStateBean bean = gateway.handleWebhookNotificationRequest(
                     notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
-
+            
             FenixFramework.atomic(() -> {
                 log.logRequestReceiveDateAndData(bean.getTransactionId(), bean.isOperationSuccess(), bean.isPaid(),
                         bean.getPaymentGatewayResultCode(), bean.getPaymentGatewayResultDescription());
@@ -173,6 +173,11 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 IForwardPaymentPlatformService digitalPaymentPlatform =
                         (IForwardPaymentPlatformService) forwardPaymentRequestOptional.get().getDigitalPaymentPlatform();
                 
+                ForwardPaymentRequest forwardPaymentRequest = forwardPaymentRequestOptional.get();
+                FenixFramework.atomic(() -> {
+                    log.setPaymentRequest(forwardPaymentRequest);
+                });
+                
                 if(bean.getResult() != null && RISK_MANAGEMENT_TIMEOUT.equals(bean.getResult().getCode())) {
                     /* The "risk management transaction timeout" is causing forward payment requests to
                      * become rejected, and consequently not accepting payment. For now ignore these notifications
@@ -181,10 +186,6 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                     return;
                 }
                 
-                ForwardPaymentRequest forwardPaymentRequest = forwardPaymentRequestOptional.get();
-                FenixFramework.atomic(() -> {
-                    log.setPaymentRequest(forwardPaymentRequest);
-                });
                 digitalPaymentPlatform.processForwardPaymentFromWebhook(log, bean);
 
                 response.setStatus(HttpServletResponse.SC_OK);
@@ -253,5 +254,4 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
     private SibsPaymentsGatewayLog createLog() {
         return SibsPaymentsGatewayLog.createLogForWebhookNotification();
     }
-
 }
