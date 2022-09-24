@@ -106,6 +106,7 @@ public class TreasuryUIAccessControlExtension implements ITreasuryAccessControlE
     }
 
     @Override
+    @Deprecated
     public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
         if(!TreasuryAccessControlConfiguration.isAccessControlByBennuDynamicGroups()) {
             return false;
