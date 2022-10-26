@@ -1,3 +1,5 @@
+- Refactor: Adapt creation and update of vat exemption reason
+
 8.4.6 (24-09-2022)
 - Bug Fix: Ignore risk management timeout notifications from SIBS DPG, which cause the forward payment request to be rejected
 

@@ -172,7 +172,7 @@ public class VatExemptionReasonController extends TreasuryBaseController {
 
     @Atomic
     public VatExemptionReason createVatExemptionReason(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name) {
-        return VatExemptionReason.create(code, name);
+        return VatExemptionReason.create(code, name, "", true);
     }
 
     @RequestMapping(value = UPDATE_URI + "{oid}", method = RequestMethod.GET)
@@ -201,8 +201,9 @@ public class VatExemptionReasonController extends TreasuryBaseController {
     }
 
     @Atomic
-    public void updateVatExemptionReason(java.lang.String code, org.fenixedu.commons.i18n.LocalizedString name, Model m) {
-        getVatExemptionReason(m).edit(code, name);
+    public void updateVatExemptionReason(String code, LocalizedString name, Model m) {
+        VatExemptionReason vatExemptionReason = getVatExemptionReason(m);
+        vatExemptionReason.edit(code, name, vatExemptionReason.getLegalArticle(), Boolean.TRUE.equals(vatExemptionReason.getActive()));
     }
 
 }
