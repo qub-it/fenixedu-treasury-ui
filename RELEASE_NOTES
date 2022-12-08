@@ -1,3 +1,4 @@
+8.4.8 (08-12-2022)
 - Bug Fix: SAP External Service class for testing the restriction removal of sending invoice entries with quantity above one to ERP
 
 8.4.7 (03-11-2022)
