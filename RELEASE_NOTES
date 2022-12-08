@@ -1,3 +1,5 @@
+- Bug Fix: SAP External Service class for testing the restriction removal of sending invoice entries with quantity above one to ERP
+
 8.4.7 (03-11-2022)
 - Refactor: Adapt creation and update of vat exemption reason
 
