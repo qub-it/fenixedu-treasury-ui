@@ -136,7 +136,6 @@ ${portal.toolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
-			{ data: 'fiscalcountry' },
 			{ data: 'uifiscalnumber' },
 			{ data: 'identificationnumber' },
 			{ data: 'actions',className:"all" }

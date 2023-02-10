@@ -164,7 +164,7 @@ ${portal.toolkit()}
                     <% if(TreasuryAccessControlAPI.isManager(Authenticate.getUser().getUsername())) { %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Customer.countryCode" /></th>
-                        <td><c:out value='${customer.fiscalCountry}' /></td>
+                        <td><c:out value='${customer.addressCountryCode}' /></td>
                     </tr>
                     <% } %>
                     <tr>
