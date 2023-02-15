@@ -22,12 +22,10 @@ import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.bennu.io.domain.GenericFile;
 import org.fenixedu.bennu.io.domain.IGenericFile;
-import org.fenixedu.bennu.portal.domain.MenuFunctionality;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -42,7 +40,6 @@ import org.fenixedu.treasury.domain.forwardpayments.implementations.PaylineWebSe
 import org.fenixedu.treasury.domain.forwardpayments.payline.PaylineConfiguration;
 import org.fenixedu.treasury.domain.forwardpayments.payline.PaylineWebServiceResponse;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
-import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.ISaftExporterConfiguration;
@@ -644,6 +641,11 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     @Override
     public void annulCertifiedDocument(FinantialDocument finantialDocument) {
         // Do nothing
+    }
+    
+    @Override
+    public boolean hasCertifiedDocument(FinantialDocument finantialDocument) {
+        return false;
     }
 
     @Override
