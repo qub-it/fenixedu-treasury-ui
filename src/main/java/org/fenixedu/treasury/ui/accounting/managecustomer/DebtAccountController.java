@@ -50,7 +50,8 @@ import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
-import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.domain.tariff.InterestRateEntry;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -295,12 +296,12 @@ public class DebtAccountController extends TreasuryBaseController {
         //Make some check info for ALERTING USER
         LocalDate now = new LocalDate();
 
-        if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
+        if (InterestRateEntry.findByYear(TreasurySettings.getInstance().getDefaultInterestRateType(), now.getYear()).count() == 0) {
             addWarningMessage(treasuryBundle("warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
         }
 
         if (now.getMonthOfYear() == 12 && now.getDayOfMonth() >= 15) {
-            if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
+            if (InterestRateEntry.findByYear(TreasurySettings.getInstance().getDefaultInterestRateType(), now.getYear() + 1).count() == 0) {
                 addWarningMessage(treasuryBundle("warning.GlobalInterestRate.no.interest.rate.for.next.year"), model);
 
             }
