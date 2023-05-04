@@ -232,21 +232,6 @@ ${portal.angularToolkit()}
                 </div>
             </c:if>
 
-            <!-- <div class="form-group row"> -->
-            <%-- <div class="col-sm-2 control-label"><spring:message code="label.DebitEntry.product"/></div>  --%>
-
-            <!-- <div class="col-sm-4"> -->
-            <%-- Relation to side 1 drop down rendered in input --%>
-            <!-- 		<ui-select id="debitEntry_product" class="form-control" name="product" ng-model="$parent.object.product" theme="bootstrap" ng-disabled="disabled" > -->
-            <!--     						<ui-select-match >{{$select.selected.text}}</ui-select-match> -->
-            <!--     						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search"> -->
-            <!--       							<span ng-bind-html="product.text | highlight: $select.search"></span> -->
-            <!--     						</ui-select-choices> -->
-            <!--   						</ui-select>				 -->
-            <!-- 				</div> -->
-            <!-- </div>		 -->
-
-
         </div>
     </div>
     <div class="panel panel-default">
@@ -296,45 +281,15 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-4">
                     <%-- Relation to side 1 drop down rendered in input --%>
-                    <ui-select id="debitEntry_interestType" name="vattype" ng-model="$parent.object.interestRate.interestType" theme="bootstrap" ng-disabled="disabled">
+                    <ui-select id="debitEntry_interestType" name="vattype" ng-model="$parent.object.interestRate.interestRateType" theme="bootstrap" ng-disabled="disabled">
                     <ui-select-match>{{$select.selected.text}}</ui-select-match> 
                     <ui-select-choices
                         repeat="interestType.id as interestType in object.interestRate.interestTypeDataSource | filter: $select.search"> <span
                         ng-bind-html="interestType.text | highlight: $select.search"></span> </ui-select-choices> </ui-select>
                 </div>
             </div>
-<!--             <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'"> -->
-<!--                 <div class="col-sm-2 control-label"> -->
-<%--                     <spring:message code="label.InterestRate.numberOfDaysAfterDueDate" /> --%>
-<!--                 </div> -->
-<!--                 <div class="col-sm-4"> -->
-<!--                     <input id="debitEntry_numberOfDaysAfterDueDate" class="form-control" type="text" ng-model="object.interestRate.numberOfDaysAfterDueDate" -->
-<!--                         name="numberOfDaysAfterDueDate" pattern="^\d+$" /> -->
-<!--                 </div> -->
-<!--             </div> -->
 
-            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.InterestRate.applyInFirstWorkday" />
-                </div>
-                <div class="col-sm-4">
-                    <select id="debitEntry_applyInFirstWorkday" name="applyInFirstWorkday" class="form-control" ng-model="object.interestRate.applyInFirstWorkday"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='DAILY'">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.InterestRate.maximumDaysToApplyPenalty" />
-                </div>
-                <div class="col-sm-4">
-                    <input id="debitEntry_maximumDaysToApplyPenalty" class="form-control" type="text" ng-model="object.interestRate.maximumDaysToApplyPenalty"
-                        name="maximumDaysToApplyPenalty" pattern="^\d+$" />
-                </div>
-            </div>
-
-            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestType=='FIXED_AMOUNT'">
+            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestRateType.requiresInterestFixedAmount">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.InterestRate.interestFixedAmount" />
                 </div>
@@ -346,16 +301,6 @@ ${portal.angularToolkit()}
                         <input id="debitEntry_interestFixedAmount" class="form-control" type="text" ng-model="object.interestRate.interestFixedAmount" name="interestFixedAmount"
                             pattern="[0-9]+(\.[0-9]{1,3})?" />
                     </div>
-                </div>
-            </div>
-
-            <div class="form-group row" ng-show="object.interestRate.interestType != 'FIXED_AMOUNT' && object.applyInterests && object.interestRate.interestType != 'GLOBAL_RATE'">
-                <div class="col-sm-2 control-label">
-                    <spring:message code="label.InterestRate.rate" />
-                </div>
-                <div class="col-sm-4">
-                    <input id="debitEntry_rate" class="form-control" type="text" ng-model="object.interestRate.rate" name="rate"
-                        pattern="^100(\.0{1,2})?|[0-9]{1,2}(\.[0-9]{1,2})?$" />
                 </div>
             </div>
 
