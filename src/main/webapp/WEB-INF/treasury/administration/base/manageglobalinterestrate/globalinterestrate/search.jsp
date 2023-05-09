@@ -114,7 +114,7 @@ ${portal.toolkit()}
                         <spring:message
                             code="label.GlobalInterestRate.firstDay" />
                     </datatables:columnHead>
-                    <c:out value='${globalInterestRate.firstDay.toString("yyyy-MM-dd")}' />
+                    <c:out value='${globalInterestRate.startDate.toString("yyyy-MM-dd")}' />
                 </datatables:column>
                 <datatables:column cssStyle="width:10%">
                     <datatables:columnHead>

@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ page import="org.fenixedu.treasury.domain.tariff.FixedAmountInterestRateType" %>
+
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -289,7 +291,7 @@ ${portal.angularToolkit()}
                 </div>
             </div>
 
-            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestRateType.requiresInterestFixedAmount">
+            <div class="form-group row" ng-show="object.applyInterests && object.interestRate.interestRateType == '${FixedAmountInterestRateType.findUnique().get().getExternalId()}'">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.InterestRate.interestFixedAmount" />
                 </div>

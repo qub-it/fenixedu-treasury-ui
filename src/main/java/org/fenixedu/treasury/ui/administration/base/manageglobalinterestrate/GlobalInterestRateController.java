@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageGlobalInterestRate") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageGlobalInterestRate",
@@ -104,8 +105,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
                                         && globalInterestRate.getDescription().getContent(locale).toLowerCase()
                                                 .contains(description.getContent(locale).toLowerCase())))
                 .filter(globalInterestRate -> rate == null || rate.equals(globalInterestRate.getRate()))
-                .sorted(InterestRateEntry.FIRST_DATE_COMPARATOR.reversed())
-                .collect(Collectors.toList());
+                .sorted(InterestRateEntry.FIRST_DATE_COMPARATOR.reversed()).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -160,8 +160,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "firstDay", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate firstDay,
+    public String create(@RequestParam(value = "firstDay", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate firstDay,
             @RequestParam(value = "description", required = false) LocalizedString description,
             @RequestParam(value = "rate", required = false) BigDecimal rate,
             @RequestParam(value = "applypaymentmonth", required = false) boolean applyPaymentMonth,
@@ -170,12 +169,15 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
-            GlobalInterestRateType globalInterestRateType = GlobalInterestRateType.findUnique().get();
-            
-            InterestRateEntry globalInterestRate =
-                    InterestRateEntry.create(globalInterestRateType, firstDay, description, rate, applyPaymentMonth, applyInFirstWorkday);
-            
-            model.addAttribute("globalInterestRate", globalInterestRate);
+            FenixFramework.atomic(() -> {
+                GlobalInterestRateType globalInterestRateType = GlobalInterestRateType.findUnique().get();
+                
+                InterestRateEntry globalInterestRate = InterestRateEntry.create(globalInterestRateType, firstDay, description, rate,
+                        applyPaymentMonth, applyInFirstWorkday);
+                
+                model.addAttribute("globalInterestRate", globalInterestRate);
+            });
+
             return redirect(READ_URL + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
@@ -195,14 +197,12 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") InterestRateEntry globalInterestRate,
+    public String update(@PathVariable("oid") InterestRateEntry globalInterestRate,
             @RequestParam(value = "firstDay", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate firstDay,
             @RequestParam(value = "description", required = false) LocalizedString description,
             @RequestParam(value = "rate", required = false) BigDecimal rate,
             @RequestParam(value = "applypaymentmonth", required = false) boolean applyPaymentMonth,
-            @RequestParam(value = "applyinfirstworkday", required = false) boolean applyInFirstWorkday, 
-            Model model,
+            @RequestParam(value = "applyinfirstworkday", required = false) boolean applyInFirstWorkday, Model model,
             RedirectAttributes redirectAttributes) {
 
         setGlobalInterestRate(globalInterestRate, model);
@@ -210,7 +210,8 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
-            getGlobalInterestRate(model).edit(firstDay, description, rate, applyPaymentMonth, applyInFirstWorkday);
+            FenixFramework.atomic(
+                    () -> getGlobalInterestRate(model).edit(firstDay, description, rate, applyPaymentMonth, applyInFirstWorkday));
 
             return redirect(READ_URL + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
