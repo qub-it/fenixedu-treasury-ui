@@ -33,14 +33,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.domain.tariff.GlobalInterestRateType;
+import org.fenixedu.treasury.domain.tariff.InterestRateEntry;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
@@ -52,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.manageGlobalInterestRate") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageGlobalInterestRate",
@@ -66,16 +66,16 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         return "forward:" + CONTROLLER_URL + "/";
     }
 
-    private GlobalInterestRate getGlobalInterestRate(Model model) {
-        return (GlobalInterestRate) model.asMap().get("globalInterestRate");
+    private InterestRateEntry getGlobalInterestRate(Model model) {
+        return (InterestRateEntry) model.asMap().get("globalInterestRate");
     }
 
-    private void setGlobalInterestRate(GlobalInterestRate globalInterestRate, Model model) {
+    private void setGlobalInterestRate(InterestRateEntry globalInterestRate, Model model) {
         model.addAttribute("globalInterestRate", globalInterestRate);
     }
 
     @Atomic
-    public void deleteGlobalInterestRate(GlobalInterestRate globalInterestRate) {
+    public void deleteGlobalInterestRate(InterestRateEntry globalInterestRate) {
         globalInterestRate.delete();
     }
 
@@ -86,17 +86,17 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     @RequestMapping(value = _SEARCH_URI)
     public String search(@RequestParam(value = "description", required = false) LocalizedString description,
             @RequestParam(value = "rate", required = false) BigDecimal rate, Model model) {
-        List<GlobalInterestRate> searchglobalinterestrateResultsDataSet = filterSearchGlobalInterestRate(description, rate);
+        List<InterestRateEntry> searchglobalinterestrateResultsDataSet = filterSearchGlobalInterestRate(description, rate);
 
         model.addAttribute("searchglobalinterestrateResultsDataSet", searchglobalinterestrateResultsDataSet);
         return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/search";
     }
 
-    private Stream<GlobalInterestRate> getSearchUniverseSearchGlobalInterestRateDataSet() {
-        return GlobalInterestRate.findAll();
+    private Stream<InterestRateEntry> getSearchUniverseSearchGlobalInterestRateDataSet() {
+        return GlobalInterestRateType.findUnique().get().getInterestRateEntriesSet().stream();
     }
 
-    private List<GlobalInterestRate> filterSearchGlobalInterestRate(LocalizedString description, BigDecimal rate) {
+    private List<InterestRateEntry> filterSearchGlobalInterestRate(LocalizedString description, BigDecimal rate) {
 
         return getSearchUniverseSearchGlobalInterestRateDataSet()
                 .filter(globalInterestRate -> description == null || description.isEmpty()
@@ -105,15 +105,14 @@ public class GlobalInterestRateController extends TreasuryBaseController {
                                         && globalInterestRate.getDescription().getContent(locale).toLowerCase()
                                                 .contains(description.getContent(locale).toLowerCase())))
                 .filter(globalInterestRate -> rate == null || rate.equals(globalInterestRate.getRate()))
-                .sorted(GlobalInterestRate.FIRST_DATE_COMPARATOR.reversed())
-                .collect(Collectors.toList());
+                .sorted(InterestRateEntry.FIRST_DATE_COMPARATOR.reversed()).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
     public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_ACTION_URI;
 
     @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
+    public String processSearchToViewAction(@PathVariable("oid") InterestRateEntry globalInterestRate, Model model,
             RedirectAttributes redirectAttributes) {
 
         return redirect(READ_URL + globalInterestRate.getExternalId(), model, redirectAttributes);
@@ -123,7 +122,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
     @RequestMapping(value = _READ_URI + "{oid}")
-    public String read(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
+    public String read(@PathVariable("oid") InterestRateEntry globalInterestRate, Model model) {
         setGlobalInterestRate(globalInterestRate, model);
         return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/read";
     }
@@ -132,7 +131,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
 
     @RequestMapping(value = _DELETE_URI + "{oid}", method = RequestMethod.POST)
-    public String delete(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model,
+    public String delete(@PathVariable("oid") InterestRateEntry globalInterestRate, Model model,
             RedirectAttributes redirectAttributes) {
 
         setGlobalInterestRate(globalInterestRate, model);
@@ -161,8 +160,7 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "firstDay", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate firstDay,
+    public String create(@RequestParam(value = "firstDay", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate firstDay,
             @RequestParam(value = "description", required = false) LocalizedString description,
             @RequestParam(value = "rate", required = false) BigDecimal rate,
             @RequestParam(value = "applypaymentmonth", required = false) boolean applyPaymentMonth,
@@ -171,10 +169,15 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
-            GlobalInterestRate globalInterestRate =
-                    GlobalInterestRate.create(firstDay, description, rate, applyPaymentMonth, applyInFirstWorkday);
-            
-            model.addAttribute("globalInterestRate", globalInterestRate);
+            FenixFramework.atomic(() -> {
+                GlobalInterestRateType globalInterestRateType = GlobalInterestRateType.findUnique().get();
+                
+                InterestRateEntry globalInterestRate = InterestRateEntry.create(globalInterestRateType, firstDay, description, rate,
+                        applyPaymentMonth, applyInFirstWorkday);
+                
+                model.addAttribute("globalInterestRate", globalInterestRate);
+            });
+
             return redirect(READ_URL + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(tde.getLocalizedMessage(), model);
@@ -188,20 +191,18 @@ public class GlobalInterestRateController extends TreasuryBaseController {
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
-    public String update(@PathVariable("oid") GlobalInterestRate globalInterestRate, Model model) {
+    public String update(@PathVariable("oid") InterestRateEntry globalInterestRate, Model model) {
         setGlobalInterestRate(globalInterestRate, model);
         return "treasury/administration/base/manageglobalinterestrate/globalinterestrate/update";
     }
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(
-            @PathVariable("oid") GlobalInterestRate globalInterestRate,
+    public String update(@PathVariable("oid") InterestRateEntry globalInterestRate,
             @RequestParam(value = "firstDay", required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate firstDay,
             @RequestParam(value = "description", required = false) LocalizedString description,
             @RequestParam(value = "rate", required = false) BigDecimal rate,
             @RequestParam(value = "applypaymentmonth", required = false) boolean applyPaymentMonth,
-            @RequestParam(value = "applyinfirstworkday", required = false) boolean applyInFirstWorkday, 
-            Model model,
+            @RequestParam(value = "applyinfirstworkday", required = false) boolean applyInFirstWorkday, Model model,
             RedirectAttributes redirectAttributes) {
 
         setGlobalInterestRate(globalInterestRate, model);
@@ -209,7 +210,8 @@ public class GlobalInterestRateController extends TreasuryBaseController {
         try {
             assertUserIsBackOfficeMember(model);
 
-            getGlobalInterestRate(model).edit(firstDay, description, rate, applyPaymentMonth, applyInFirstWorkday);
+            FenixFramework.atomic(
+                    () -> getGlobalInterestRate(model).edit(firstDay, description, rate, applyPaymentMonth, applyInFirstWorkday));
 
             return redirect(READ_URL + getGlobalInterestRate(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {

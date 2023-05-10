@@ -90,7 +90,7 @@ ${portal.toolkit()}
 	                   	type="text" 
 	                   	name="firstDay" 
 	                   	bennu-date
-	                    value='<c:out value='${not empty param.firstDay ? param.firstDay : globalInterestRate.firstDay.toString("yyyy-MM-dd") }'/>'
+	                    value='<c:out value='${not empty param.firstDay ? param.firstDay : globalInterestRate.startDate.toString("yyyy-MM-dd") }'/>'
 	                    required />
                 </div>
             </div>
