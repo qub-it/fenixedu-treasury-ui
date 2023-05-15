@@ -75,12 +75,17 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
             // TODO: The gateway should be chosen by the one that allows the decription of encryped payload
 
-            SibsPaymentsGateway gateway =
-                    SibsPaymentsGateway.findUniqueActive(FinantialInstitution.findAll().iterator().next()).get();
+            SibsPaymentsGateway gateway = SibsPaymentsGateway.findUniqueActive(FinantialInstitution.findAll().iterator().next())
+                    .orElseThrow(() -> new TreasuryDomainException(
+                            "error.OnlinePaymentsGatewayWebhooksController.gateway.is.not.active"));
 
-            PaymentStateBean bean = gateway.handleWebhookNotificationRequest(
-                    notificationInitializationVector, notificationAuthenticationTag, notificationEncryptedPayload);
-            
+            if (!gateway.isActive()) {
+                throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.gateway.is.not.active");
+            }
+
+            PaymentStateBean bean = gateway.handleWebhookNotificationRequest(notificationInitializationVector,
+                    notificationAuthenticationTag, notificationEncryptedPayload);
+
             FenixFramework.atomic(() -> {
                 log.logRequestReceiveDateAndData(bean.getTransactionId(), bean.isOperationSuccess(), bean.isPaid(),
                         bean.getPaymentGatewayResultCode(), bean.getPaymentGatewayResultDescription());
@@ -140,7 +145,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 FenixFramework.atomic(() -> {
                     log.setPaymentRequest(paymentReferenceCode);
                 });
-                
+
                 paymentReferenceCodeService.processPaymentReferenceCodeTransaction(log, bean);
             } else if (mbwayPaymentRequestOptional.isPresent()) {
                 if (!bean.isOperationSuccess()) {
@@ -159,7 +164,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 FenixFramework.atomic(() -> {
                     log.setPaymentRequest(mbwayRequest);
                 });
-                
+
                 if (bean.isPaid()) {
                     final IMbwayPaymentPlatformService mbwayPaymentRequest =
                             mbwayPaymentRequestOptional.get().getDigitalPaymentPlatform().castToMbwayPaymentPlatformService();
@@ -172,20 +177,20 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             } else if (forwardPaymentRequestOptional.isPresent()) {
                 IForwardPaymentPlatformService digitalPaymentPlatform =
                         (IForwardPaymentPlatformService) forwardPaymentRequestOptional.get().getDigitalPaymentPlatform();
-                
+
                 ForwardPaymentRequest forwardPaymentRequest = forwardPaymentRequestOptional.get();
                 FenixFramework.atomic(() -> {
                     log.setPaymentRequest(forwardPaymentRequest);
                 });
-                
-                if(bean.getResult() != null && RISK_MANAGEMENT_TIMEOUT.equals(bean.getResult().getCode())) {
+
+                if (bean.getResult() != null && RISK_MANAGEMENT_TIMEOUT.equals(bean.getResult().getCode())) {
                     /* The "risk management transaction timeout" is causing forward payment requests to
                      * become rejected, and consequently not accepting payment. For now ignore these notifications
                      */
                     response.setStatus(HttpServletResponse.SC_OK);
                     return;
                 }
-                
+
                 digitalPaymentPlatform.processForwardPaymentFromWebhook(log, bean);
 
                 response.setStatus(HttpServletResponse.SC_OK);
