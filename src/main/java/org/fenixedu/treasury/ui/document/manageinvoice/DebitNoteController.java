@@ -500,12 +500,14 @@ public class DebitNoteController extends TreasuryBaseController {
             List<SettlementInterestEntryBean> allInterests = new ArrayList<SettlementInterestEntryBean>();
 
             for (DebitEntry entry : debitNote.getDebitEntriesSet()) {
-                InterestRateBean calculateUndebitedInterestValue = entry.calculateUndebitedInterestValue(paymentDate);
+                List<InterestRateBean> undebitedInterestRateBeansList = entry.calculateUndebitedInterestValue(paymentDate);
 
-                if (TreasuryConstants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
-                    SettlementInterestEntryBean entryBean =
-                            new SettlementInterestEntryBean(entry, calculateUndebitedInterestValue);
-                    allInterests.add(entryBean);
+                for (InterestRateBean calculateUndebitedInterestValue : undebitedInterestRateBeansList) {
+                    if (TreasuryConstants.isGreaterThan(calculateUndebitedInterestValue.getInterestAmount(), BigDecimal.ZERO)) {
+                        SettlementInterestEntryBean entryBean =
+                                new SettlementInterestEntryBean(entry, calculateUndebitedInterestValue);
+                        allInterests.add(entryBean);
+                    }
                 }
             }
 
