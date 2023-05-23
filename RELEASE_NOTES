@@ -1,3 +1,5 @@
+- Refactor: Service to retrieve the certified document number and document date
+
 8.4.13 (15-05-2023)
 - Bug Fix: In SIBS Gateway Webhook, check if SIBS Gateway is active. If not throw exception to reject the notifications
 

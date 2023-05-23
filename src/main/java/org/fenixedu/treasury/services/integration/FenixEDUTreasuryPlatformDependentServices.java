@@ -652,6 +652,16 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     public boolean isProductCertified(Product product) {
         return false;
     }
+
+    @Override
+    public String getCertifiedDocumentNumber(FinantialDocument finantialDocument) {
+        return null;
+    }
+
+    @Override
+    public LocalDate getCertifiedDocumentDate(FinantialDocument finantialDocument) {
+        return null;
+    }
     
     /* Development or quality mode */
 
