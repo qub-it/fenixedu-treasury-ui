@@ -174,41 +174,15 @@ ${portal.angularToolkit()}
                     <c:if test="${ fixedTariff.applyInterests}">
                         <tr>
                             <th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.interestType" /></th>
-                            <td><c:out value='${fixedTariff.interestRate.interestType.descriptionI18N.content}' /></td>
+                            <td><c:out value='${fixedTariff.interestRate.interestRateType.description.content}' /></td>
                         </tr>
-                        <c:if test="${fixedTariff.interestRate.interestType=='DAILY'}">
-                            <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.FixedTariff.numberOfDaysAfterDueDate" /></th>
-                                <td><c:out value='${fixedTariff.interestRate.numberOfDaysAfterDueDate}' /></td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.applyInFirstWorkday" /></th>
-                                <td><c:if test="${fixedTariff.interestRate.applyInFirstWorkday}">
-                                        <spring:message code="label.true" />
-                                    </c:if> <c:if test="${not fixedTariff.interestRate.applyInFirstWorkday}">
-                                        <spring:message code="label.false" />
-                                    </c:if></td>
-                            </tr>
-                            <tr>
-                                <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.maximumDaysToApplyPenalty" /></th>
-                                <td><c:out value='${fixedTariff.interestRate.maximumDaysToApplyPenalty}' /></td>
-                            </tr>
-                        </c:if>
-                        <c:if test="${fixedTariff.interestRate.interestType=='FIXED_AMOUNT' }">
+                        <c:if test="${fixedTariff.interestRate.interestRateType.requiresInterestFixedAmount }">
                             <tr>
                                 <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.interestFixedAmount" /></th>
                                 <td><c:out value='${fixedTariff.interestRate.interestFixedAmount}' /></td>
                             </tr>
                         </c:if>
 
-                        <c:if test="${ fixedTariff.interestRate.interestType != 'FIXED_AMOUNT' }">
-                            <c:if test="${ fixedTariff.interestRate.interestType != 'GLOBAL_RATE' }">
-                                <tr>
-                                    <th scope="row" class="col-xs-3"><spring:message code="label.InterestRate.rate" /></th>
-                                    <td><c:out value='${fixedTariff.interestRate.rate}' /></td>
-                                </tr>
-                            </c:if>
-                        </c:if>
                     </c:if>
                 </tbody>
             </table>

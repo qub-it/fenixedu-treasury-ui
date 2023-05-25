@@ -44,7 +44,9 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
-import org.fenixedu.treasury.domain.tariff.GlobalInterestRate;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
+import org.fenixedu.treasury.domain.tariff.GlobalInterestRateType;
+import org.fenixedu.treasury.domain.tariff.InterestRateEntry;
 import org.fenixedu.treasury.dto.FinantialInstitutionBean;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
@@ -146,18 +148,18 @@ public class FinantialInstitutionController extends TreasuryBaseController {
         return redirect(FinantialInstitutionController.SEARCH_URL, model, redirectAttributes);
     }
 
+    // Removed with 
     private void checkFinantialInstitutionData(Model model) {
         //Make some check info for ALERTING USER
         LocalDate now = new LocalDate();
 
-        if (GlobalInterestRate.findByYear(now.getYear()).count() == 0) {
+        if (InterestRateEntry.findByYear(GlobalInterestRateType.findUnique().get(), now.getYear()).count() == 0) {
             addWarningMessage(treasuryBundle("warning.GlobalInterestRate.no.interest.rate.for.current.year"), model);
         }
 
         if (now.getMonthOfYear() == 12) {
-            if (GlobalInterestRate.findByYear(now.getYear() + 1).count() == 0) {
+            if (InterestRateEntry.findByYear(GlobalInterestRateType.findUnique().get(), now.getYear() + 1).count() == 0) {
                 addWarningMessage(treasuryBundle("warning.GlobalInterestRate.no.interest.rate.for.next.year"), model);
-
             }
         }
 
