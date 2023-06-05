@@ -145,10 +145,8 @@ public class DebtAccountController extends TreasuryBaseController {
         model.addAttribute("exemptionDataSet", exemptionEntries);
 
         final Set<SibsPaymentRequest> usedPaymentCodeTargets = Sets.newHashSet();
-        pendingInvoiceEntries.stream().filter(InvoiceEntry::isDebitNoteEntry).map(DebitEntry.class::cast)
-                .flatMap(i -> i.getPaymentRequestsSet().stream()).filter(i -> i instanceof SibsPaymentRequest)
-                .map(SibsPaymentRequest.class::cast)
-                .filter(SibsPaymentRequest::isInRequestedState)
+        pendingInvoiceEntries.stream().filter(InvoiceEntry::isDebitNoteEntry).map(DebitEntry.class::cast) //
+                .flatMap(i -> i.getActiveSibsPaymentRequestsOfPendingDebitEntries().stream()) //
                 .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
 
         checkIncompleteAddress(debtAccount, model);
