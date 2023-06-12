@@ -137,7 +137,8 @@ public class ERPIntegrationService extends BennuWebService {
             byte[] bytes = Files.toByteArray(externalFile);
             operation = ERPImportOperation.create(filename, bytes, finantialInstitution, null, now, false, false, false);
 
-            IERPImporter erpImporter = finantialInstitution.getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPImporter(operation.getFile().getStream());
+            IERPImporter erpImporter = finantialInstitution.getErpIntegrationConfiguration().getERPExternalServiceImplementation()
+                    .getERPImporter(operation.getFile().getStream());
             erpImporter.processAuditFile(operation);
 
             return operation.getExternalId();
@@ -183,6 +184,10 @@ public class ERPIntegrationService extends BennuWebService {
     }
 
     @WebMethod
+    @Deprecated
+    /*
+     * ANIL 2023-05-11: Not used anymore
+     */
     public InterestRequestValueOuptut getInterestValueFor(InterestRequestValueInput interestRequest) {
         final InterestRequestValueOuptut bean = new InterestRequestValueOuptut();
         validateRequestHeader(interestRequest.getFinantialInstitutionFiscalNumber());
@@ -256,12 +261,24 @@ public class ERPIntegrationService extends BennuWebService {
         }
 
         //3 . calculate the amount of interest for the DebitEntry
-        final InterestRateBean interestRateBean =
+        List<InterestRateBean> allInterestValueBeans =
                 debitEntry.calculateAllInterestValue(interestRequest.convertPaymentDateToLocalDate());
 
+        if (allInterestValueBeans.size() != 1) {
+            throw new RuntimeException("interest rate beans more than one not supported");
+        }
+
+        final InterestRateBean interestRateBean = allInterestValueBeans.iterator().next();
+
         //calculate the amount of UNDEBITTED interest for the DebitEntry
-        final InterestRateBean undebittedInterestRateBean =
+        List<InterestRateBean> undebitedInterestRateBeanList =
                 debitEntry.calculateUndebitedInterestValue(interestRequest.convertPaymentDateToLocalDate());
+        
+        if(undebitedInterestRateBeanList.size() != 1) {
+            throw new RuntimeException("interest rate beans more than one not supported");
+        }
+        
+        final InterestRateBean undebittedInterestRateBean = undebitedInterestRateBeanList.iterator().next();
 
         bean.setInterestAmount(interestRateBean.getInterestAmount());
         bean.setDescription(interestRateBean.getDescription());
@@ -291,100 +308,107 @@ public class ERPIntegrationService extends BennuWebService {
         return bean;
     }
 
-    @WebMethod(operationName="reimbursementStateChange")
+    @WebMethod(operationName = "reimbursementStateChange")
     public IntegrationStatusOutput processReimbursementStateChange(
-                @WebParam(name="finantialInstitution") final String finantialInstitutionFiscalNumber, 
-                @WebParam(name="finantialDocument") final String finantialDocumentNumber,
-                @WebParam(name="exerciseYear") final String exerciseYear, 
-                @WebParam(name="reimbursementStatus") final String reimbursementStatusCode,
-                @WebParam(name="reimbursementStatusDate") final java.util.Calendar reimbursementStatusDate) {
-        
-        if(Strings.isNullOrEmpty(finantialInstitutionFiscalNumber)) {
+            @WebParam(name = "finantialInstitution") final String finantialInstitutionFiscalNumber,
+            @WebParam(name = "finantialDocument") final String finantialDocumentNumber,
+            @WebParam(name = "exerciseYear") final String exerciseYear,
+            @WebParam(name = "reimbursementStatus") final String reimbursementStatusCode,
+            @WebParam(name = "reimbursementStatusDate") final java.util.Calendar reimbursementStatusDate) {
+
+        if (Strings.isNullOrEmpty(finantialInstitutionFiscalNumber)) {
             throw new TreasuryDomainException("error.integration.erp.invalid.fiscalInstitution");
         }
-        
-        if(Strings.isNullOrEmpty(finantialDocumentNumber)) {
+
+        if (Strings.isNullOrEmpty(finantialDocumentNumber)) {
             throw new TreasuryDomainException("error.integration.erp.invalid.fiscalInstitution");
         }
-        
-        if(Strings.isNullOrEmpty(exerciseYear)) {
+
+        if (Strings.isNullOrEmpty(exerciseYear)) {
             throw new TreasuryDomainException("error.integration.erp.invalid.yearExercise");
         }
-        
+
         try {
             Integer.valueOf(exerciseYear);
-        } catch(final NumberFormatException e) {
+        } catch (final NumberFormatException e) {
             throw new TreasuryDomainException("error.integration.erp.invalid.yearExercise");
         }
-        
-        if(Strings.isNullOrEmpty(reimbursementStatusCode) || !ReimbursementProcessStatusType.findUniqueByCode(reimbursementStatusCode).isPresent()) {
+
+        if (Strings.isNullOrEmpty(reimbursementStatusCode)
+                || !ReimbursementProcessStatusType.findUniqueByCode(reimbursementStatusCode).isPresent()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementStatus");
         }
-        
-        if(reimbursementStatusDate == null) {
+
+        if (reimbursementStatusDate == null) {
             throw new TreasuryDomainException("error.integration.erp.invalid.stateDate");
         }
-        
-        if(!FinantialInstitution.findUniqueByFiscalCode(finantialInstitutionFiscalNumber).isPresent()) {
+
+        if (!FinantialInstitution.findUniqueByFiscalCode(finantialInstitutionFiscalNumber).isPresent()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.fiscalInstitution");
         }
-        
-        final FinantialInstitution finantialInstitution = FinantialInstitution.findUniqueByFiscalCode(finantialInstitutionFiscalNumber).get();
 
-        if(!FinantialDocument.findUniqueByDocumentNumber(finantialDocumentNumber).isPresent()) {
+        final FinantialInstitution finantialInstitution =
+                FinantialInstitution.findUniqueByFiscalCode(finantialInstitutionFiscalNumber).get();
+
+        if (!FinantialDocument.findUniqueByDocumentNumber(finantialDocumentNumber).isPresent()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.settlementNote");
         }
-        
+
         final FinantialDocument finantialDocument = FinantialDocument.findUniqueByDocumentNumber(finantialDocumentNumber).get();
-        
-        if(!finantialDocument.isSettlementNote()) {
+
+        if (!finantialDocument.isSettlementNote()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.settlementNote");
         }
-        
+
         final SettlementNote settlementNote = (SettlementNote) finantialDocument;
-        
-        if(!settlementNote.isReimbursement()) {
+
+        if (!settlementNote.isReimbursement()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.settlementNote");
         }
-        
-        if(settlementNote.getDebtAccount().getFinantialInstitution() != finantialInstitution) {
+
+        if (settlementNote.getDebtAccount().getFinantialInstitution() != finantialInstitution) {
             throw new TreasuryDomainException("error.integration.erp.invalid.settlementNote.not.of.finantialInstitution");
         }
-        
-        if(!settlementNote.isClosed()) {
+
+        if (!settlementNote.isClosed()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.state");
         }
-        
-        if(settlementNote.getCurrentReimbursementProcessStatus() == null) {
+
+        if (settlementNote.getCurrentReimbursementProcessStatus() == null) {
             throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.current.status.invalid");
         }
-        
-        if(settlementNote.getCurrentReimbursementProcessStatus().isFinalStatus()) {
+
+        if (settlementNote.getCurrentReimbursementProcessStatus().isFinalStatus()) {
             throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.current.status.is.final");
         }
-        
-        final ReimbursementProcessStatusType reimbursementStatus = ReimbursementProcessStatusType.findUniqueByCode(reimbursementStatusCode).get();
-        
-        if(!reimbursementStatus.isAfter(settlementNote.getCurrentReimbursementProcessStatus())) {
+
+        final ReimbursementProcessStatusType reimbursementStatus =
+                ReimbursementProcessStatusType.findUniqueByCode(reimbursementStatusCode).get();
+
+        if (!reimbursementStatus.isAfter(settlementNote.getCurrentReimbursementProcessStatus())) {
             throw new TreasuryDomainException("error.integration.erp.invalid.reimbursementNote.next.status.invalid");
         }
-        
+
         //settlementNote.processReimbursementStateChange(reimbursementStatus, erpProcessId, exerciseYear, new DateTime(reimbursementStatusDate));
-        
+
         final DocumentStatusWS documentStatusWs = new DocumentStatusWS();
         documentStatusWs.setDocumentNumber(finantialDocumentNumber);
         documentStatusWs.setErrorDescription("");
         documentStatusWs.setIntegrationStatus(StatusType.SUCCESS);
 
         final IntegrationStatusOutput output = new IntegrationStatusOutput();
-        
+
         output.setRequestId("");
         output.setDocumentStatus(Lists.newArrayList(documentStatusWs));
-        
+
         return output;
     }
 
     @Atomic
+    @Deprecated
+    /*
+     * ANIL 2023-05-12: Not used anymore
+     */
     private void processInterestEntries(final DebitEntry debitEntry, final InterestRateBean interestRateBean,
             final LocalDate paymentDate) {
         DocumentNumberSeries debitNoteSeries = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
@@ -397,8 +421,7 @@ public class ERPIntegrationService extends BennuWebService {
                 Optional.<DebitNote> ofNullable(interestDebitNote));
         String documentObservations = treasuryBundle("info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
         documentObservations = documentObservations + " - "
-                + treasuryBundle("info.ERPIntegrationService.interest.rate.payment.date")
-                + paymentDate.toString("YYYY-MM-dd");
+                + treasuryBundle("info.ERPIntegrationService.interest.rate.payment.date") + paymentDate.toString("YYYY-MM-dd");
         interestDebitNote.setDocumentObservations(documentObservations);
         interestDebitNote.closeDocument();
     }
