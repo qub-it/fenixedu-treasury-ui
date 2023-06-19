@@ -908,7 +908,7 @@ public class SettlementNoteController extends TreasuryBaseController {
         try {
             ERPExporterManager.updateReimbursementState(settlementNote);
             return redirect(READ_URL + settlementNote.getExternalId(), model, redirectAttributes);
-        } catch (final DomainException e) {
+        } catch (TreasuryDomainException | DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return read(settlementNote, model);
         }

@@ -1,4 +1,5 @@
 - Improvement: Support calculation of multiple interest calculation and multiple debts creation
+- Bug Fix: Catch exception and present message in executing SettlementNoteController::updatereimbursementstate
 
 9.0.1 (05-06-2023)
 - Improvement: Present active sibs payment requests if expiration date is not set or it is not expired
