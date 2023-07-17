@@ -203,7 +203,7 @@ ${portal.toolkit()}
                                 code="label.TreasuryEvent.amountToPay" />
                         </th>
                         <td><c:out
-                                value='${debtAccount.finantialInstitution.currency.getValueFor(treasuryEvent.amountToPay)}' /></td>
+                                value='${debtAccount.finantialInstitution.currency.getValueFor(treasuryEvent.amountWithVatToPay)}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message
