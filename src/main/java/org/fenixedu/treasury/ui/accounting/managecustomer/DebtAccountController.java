@@ -122,13 +122,11 @@ public class DebtAccountController extends TreasuryBaseController {
         checkFinantialInstitutionData(model);
         List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
         List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
-        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
         allInvoiceEntries.addAll(debtAccount.getInvoiceEntrySet().stream().collect(Collectors.toList()));
 
         paymentEntries = SettlementNote.findByDebtAccount(debtAccount).collect(Collectors.toList());
 
-        exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
 
         pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
 
@@ -142,7 +140,6 @@ public class DebtAccountController extends TreasuryBaseController {
                         .collect(Collectors.toList()));
         model.addAttribute("paymentsDataSet", paymentEntries.stream()
                 .sorted((x, y) -> y.getDocumentDate().compareTo(x.getDocumentDate())).collect(Collectors.toList()));
-        model.addAttribute("exemptionDataSet", exemptionEntries);
 
         final Set<SibsPaymentRequest> usedPaymentCodeTargets = Sets.newHashSet();
         pendingInvoiceEntries.stream().filter(InvoiceEntry::isDebitNoteEntry).map(DebitEntry.class::cast) //
