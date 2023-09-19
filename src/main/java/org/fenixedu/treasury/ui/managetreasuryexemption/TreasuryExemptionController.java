@@ -112,8 +112,8 @@ public class TreasuryExemptionController extends TreasuryBaseController {
                 throw new TreasuryDomainException("error.TreasuryExemption.debitEntry.already.exempted");
             }
 
-            TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getTreasuryEvent(), bean.getReason(),
-                    bean.getNetAmountToExempt(), bean.getDebitEntry());
+            TreasuryExemption.create(bean.getTreasuryExemptionType(), bean.getReason(), bean.getNetAmountToExempt(),
+                    bean.getDebitEntry());
 
             addInfoMessage(treasuryBundle("label.success.create"), model);
 

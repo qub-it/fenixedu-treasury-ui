@@ -477,8 +477,9 @@ public class DebitEntryController extends TreasuryBaseController {
 
         if (debitNote != null && !debitNote.isPreparing()) {
             addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
-            redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
+            return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
+        
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDebtAccount().getFinantialInstitution(), model);
             debitNote.addDebitNoteEntries(debitEntries);

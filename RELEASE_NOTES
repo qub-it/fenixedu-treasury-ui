@@ -1,6 +1,8 @@
+- Refactor: Remove relation between TreasuryEvent and TreasuryExemption. the treasuryEvent can be infered in treasuryExemption by accessing the associated debitEntry
+- Bug Fix: Check if debit note can add debit entries. If not return the redirect URL in web controller
+
 9.0.4 (01-09-2023)
 - Improvement: Remove reading treasuryExemptions in customer debt account read screen, to avoid  TreasuryExemption::find(DebtAccount) which was doing a readAll
-
 
 9.0.3 (18-07-2023)
 - Refactor: Rename invocation of TreasuryEvent::getAmountToPay to TreasuryEvent::getAmountWithVatToPay
