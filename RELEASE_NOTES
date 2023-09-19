@@ -1,3 +1,4 @@
+9.0.5 (19-09-2023)
 - Refactor: Remove relation between TreasuryEvent and TreasuryExemption. the treasuryEvent can be infered in treasuryExemption by accessing the associated debitEntry
 - Bug Fix: Check if debit note can add debit entries. If not return the redirect URL in web controller
 
