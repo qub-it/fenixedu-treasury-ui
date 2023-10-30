@@ -62,10 +62,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             String notificationAuthenticationTag = SIBSOnlinePaymentsGatewayService.notificationAuthenticationTag(request);
             String notificationEncryptedPayload = SIBSOnlinePaymentsGatewayService.notificationEncryptedPayload(request);
 
-            FenixFramework.atomic(() -> {
-                log.saveWebhookNotificationData(notificationInitializationVector, notificationAuthenticationTag,
-                        notificationEncryptedPayload);
-            });
+            FenixFramework.atomic(() -> log.saveWebhookNotificationData(notificationInitializationVector,
+                    notificationAuthenticationTag, notificationEncryptedPayload));
 
             if (isTestPayloadForWebhookActivation(notificationInitializationVector, notificationAuthenticationTag,
                     notificationEncryptedPayload)) {
@@ -201,7 +199,9 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             }
 
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch (Exception e) {
+        } catch (
+
+        Exception e) {
             if (log != null) {
                 FenixFramework.atomic(() -> {
                     log.logException(e);

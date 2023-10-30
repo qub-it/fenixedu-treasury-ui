@@ -207,10 +207,10 @@ if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory
 	                    <tr>
 	                        <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPaymentStatusBean.invocationSuccess" /></th>
 	                        <td>
-	                        	<c:if test="${paymentStatusBean.invocationSuccess}">
+	                        	<c:if test="${paymentStatusBean.operationSuccess}">
 	                        		<spring:message code="label.true" />
 	                        	</c:if> 
-	                        	<c:if test="${not paymentStatusBean.invocationSuccess}">
+	                        	<c:if test="${not paymentStatusBean.operationSuccess}">
 	                        		<spring:message code="label.true" />
 	                        	</c:if> 
 	                        </td>
