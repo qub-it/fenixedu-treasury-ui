@@ -1,3 +1,4 @@
+9.0.6 (31-10-2023)
 - Refactor: Rename method PaymentRequestLog#isInvocationSuccess to PaymentRequestLog#isOperationSuccess [#qubIT-Fenix-4327]
 
 9.0.5 (19-09-2023)
