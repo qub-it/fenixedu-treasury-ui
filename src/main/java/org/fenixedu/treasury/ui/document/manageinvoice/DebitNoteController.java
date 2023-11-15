@@ -34,6 +34,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,6 +53,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
+import org.fenixedu.treasury.domain.tariff.InterestRateType;
 import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.dto.SettlementInterestEntryBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
@@ -557,9 +559,11 @@ public class DebitNoteController extends TreasuryBaseController {
                     .getFinantialInstitution()) {
                 throw new TreasuryDomainException("error.DebitNote.invalid.series.for.interest.debit.note.creation");
             }
-            DebitNote interestDebitNote = DebitNote.createInterestDebitNoteForDebitNote(debitNote, documentNumberSeries,
-                    paymentDate, documentObservations, null);
 
+            Set<DebitNote> interestDebitNotesSet = InterestRateType.createInterestDebitNoteForDebitNote(debitNote,
+                    documentNumberSeries, paymentDate, documentObservations, null, false);
+
+            DebitNote interestDebitNote = interestDebitNotesSet.iterator().next();
             addInfoMessage(treasuryBundle("info.document.manageinfoice.debitnote.success.calculate.interest.value"), model);
 
             return redirect(DebitNoteController.READ_URL + interestDebitNote.getExternalId(), model, redirectAttributes);
