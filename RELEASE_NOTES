@@ -1,3 +1,4 @@
+9.0.8 (05-12-2023)
 - Refactor: Remove the SAP exporter for testing integration of invoice entries with quantity different than one [#UL-ISEG-4541]
 
 9.0.7 (15-11-2023)
