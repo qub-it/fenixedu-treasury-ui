@@ -26,35 +26,23 @@
  */
 package org.fenixedu.treasury.services.integration.erp;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
-
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
 
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.document.DebitEntry;
-import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
-import org.fenixedu.treasury.domain.document.FinantialDocumentEntry;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.document.reimbursement.ReimbursementProcessStatusType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.ERPImportOperation;
 import org.fenixedu.treasury.domain.integration.IntegrationOperationLogBean;
-import org.fenixedu.treasury.dto.InterestRateBean;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS.StatusType;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationInput;
@@ -62,16 +50,12 @@ import org.fenixedu.treasury.services.integration.erp.dto.DocumentsInformationOu
 import org.fenixedu.treasury.services.integration.erp.dto.IntegrationStatusOutput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueInput;
 import org.fenixedu.treasury.services.integration.erp.dto.InterestRequestValueOuptut;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.qubit.solution.fenixedu.bennu.webservices.services.server.BennuWebService;
-
-import pt.ist.fenixframework.Atomic;
 
 @WebService
 public class ERPIntegrationService extends BennuWebService {
@@ -189,123 +173,7 @@ public class ERPIntegrationService extends BennuWebService {
      * ANIL 2023-05-11: Not used anymore
      */
     public InterestRequestValueOuptut getInterestValueFor(InterestRequestValueInput interestRequest) {
-        final InterestRequestValueOuptut bean = new InterestRequestValueOuptut();
-        validateRequestHeader(interestRequest.getFinantialInstitutionFiscalNumber());
-
-        //1. Check if the the lineNumber+DebitNoteNumber is for the Customer of the FinantialInstitution
-        final Optional<? extends FinantialDocument> optionalFinantialDocument =
-                FinantialDocument.findUniqueByDocumentNumber(interestRequest.getDebitNoteNumber());
-
-        if (!optionalFinantialDocument.isPresent()) {
-            throw new RuntimeException(
-                    treasuryBundle("error.ERPIntegrationService.debit.note.not.found", interestRequest.getDebitNoteNumber()));
-        }
-
-        final FinantialDocument finantialDocument = optionalFinantialDocument.get();
-
-        if (!finantialDocument.isDebitNote()) {
-            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.document.is.not.debit.note",
-                    interestRequest.getDebitNoteNumber()));
-        }
-
-        if (!finantialDocument.getDebtAccount().getFinantialInstitution().getFiscalNumber()
-                .equals(interestRequest.getFinantialInstitutionFiscalNumber())) {
-            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.finantial.institution.fiscal.number.invalid",
-                    interestRequest.getFinantialInstitutionFiscalNumber()));
-        }
-
-        if (!finantialDocument.getDebtAccount().getCustomer().getCode().equals(interestRequest.getCustomerCode())) {
-            throw new RuntimeException(
-                    treasuryBundle("error.ERPIntegrationService.customer.code.invalid", interestRequest.getCustomerCode()));
-        }
-
-        //2. Check if the lineNumber+DebitNoteNumber Amount is correct
-        final Optional<? extends FinantialDocumentEntry> optionalDebitEntry =
-                FinantialDocumentEntry.findUniqueByEntryOrder(finantialDocument, interestRequest.getLineNumber());
-
-        if (!optionalDebitEntry.isPresent()) {
-            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.not.found",
-                    String.valueOf(interestRequest.getLineNumber() != null ? interestRequest.getLineNumber() : "null"),
-                    finantialDocument.getUiDocumentNumber()));
-        }
-
-        FinantialDocumentEntry finantialDocumentEntry = optionalDebitEntry.get();
-
-        if (!(finantialDocumentEntry instanceof DebitEntry)) {
-            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.finantial.document.entry.is.not.debit.entry",
-                    String.valueOf(finantialDocumentEntry.getEntryOrder()),
-                    String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
-        }
-
-        final DebitEntry debitEntry = (DebitEntry) finantialDocumentEntry;
-
-        final BigDecimal amountInDebt = debitEntry.getAmountInDebt(interestRequest.convertPaymentDateToLocalDate());
-
-        if (!TreasuryConstants.isPositive(amountInDebt)) {
-            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.with.no.debt",
-                    String.valueOf(finantialDocumentEntry.getEntryOrder()),
-                    String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber())));
-        }
-
-        if (!TreasuryConstants.isEqual(amountInDebt, interestRequest.getAmount())) {
-            throw new RuntimeException(treasuryBundle("error.ERPIntegrationService.debit.entry.amount.is.not.equal",
-                    interestRequest.getAmount() != null ? interestRequest.getAmount().toString() : "null",
-                    String.valueOf(finantialDocumentEntry.getEntryOrder()),
-                    String.valueOf(finantialDocumentEntry.getFinantialDocument().getUiDocumentNumber()),
-                    amountInDebt.toString()));
-        }
-
-        if (interestRequest.getGenerateInterestDebitNote() == true
-                && interestRequest.convertPaymentDateToLocalDate().isAfter(new LocalDate())) {
-            throw new RuntimeException("Cannot generate interest in the FUTURE. Please call without genereateInterestDebitNote");
-        }
-
-        //3 . calculate the amount of interest for the DebitEntry
-        List<InterestRateBean> allInterestValueBeans =
-                debitEntry.calculateAllInterestValue(interestRequest.convertPaymentDateToLocalDate());
-
-        if (allInterestValueBeans.size() != 1) {
-            throw new RuntimeException("interest rate beans more than one not supported");
-        }
-
-        final InterestRateBean interestRateBean = allInterestValueBeans.iterator().next();
-
-        //calculate the amount of UNDEBITTED interest for the DebitEntry
-        List<InterestRateBean> undebitedInterestRateBeanList =
-                debitEntry.calculateUndebitedInterestValue(interestRequest.convertPaymentDateToLocalDate());
-        
-        if(undebitedInterestRateBeanList.size() != 1) {
-            throw new RuntimeException("interest rate beans more than one not supported");
-        }
-        
-        final InterestRateBean undebittedInterestRateBean = undebitedInterestRateBeanList.iterator().next();
-
-        bean.setInterestAmount(interestRateBean.getInterestAmount());
-        bean.setDescription(interestRateBean.getDescription());
-
-        //If we have undebittedInterestDebit and we want to create, genererate debitEntries
-        if (TreasuryConstants.isGreaterThan(undebittedInterestRateBean.getInterestAmount(), BigDecimal.ZERO)
-                && interestRequest.getGenerateInterestDebitNote()) {
-            processInterestEntries(debitEntry, undebittedInterestRateBean, interestRequest.convertPaymentDateToLocalDate());
-        }
-
-        final List<FinantialDocument> interestFinantialDocumentsSet = debitEntry.getInterestDebitEntriesSet().stream()
-                .filter(l -> l.isProcessedInClosedDebitNote()).map(l -> l.getFinantialDocument()).collect(Collectors.toList());
-
-        if (interestFinantialDocumentsSet.size() > 0) {
-            final IERPExporter erpExporter = debitEntry.getDebtAccount().getFinantialInstitution()
-                    .getErpIntegrationConfiguration().getERPExternalServiceImplementation().getERPExporter();
-            final String saftResult = erpExporter.exportFinantialDocumentToXML(
-                    debitEntry.getDebtAccount().getFinantialInstitution(), interestFinantialDocumentsSet);
-
-            try {
-                bean.setInterestDocumentsContent(saftResult.getBytes("UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return bean;
+        throw new RuntimeException("deprecated");
     }
 
     @WebMethod(operationName = "reimbursementStateChange")
@@ -402,28 +270,6 @@ public class ERPIntegrationService extends BennuWebService {
         output.setDocumentStatus(Lists.newArrayList(documentStatusWs));
 
         return output;
-    }
-
-    @Atomic
-    @Deprecated
-    /*
-     * ANIL 2023-05-12: Not used anymore
-     */
-    private void processInterestEntries(final DebitEntry debitEntry, final InterestRateBean interestRateBean,
-            final LocalDate paymentDate) {
-        DocumentNumberSeries debitNoteSeries = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(),
-                debitEntry.getFinantialDocument().getDocumentNumberSeries().getSeries());
-
-        final DebitNote interestDebitNote =
-                DebitNote.create(debitEntry.getDebtAccount(), debitNoteSeries, paymentDate.toDateTimeAtStartOfDay());
-
-        debitEntry.createInterestRateDebitEntry(interestRateBean, paymentDate.toDateTimeAtStartOfDay(),
-                Optional.<DebitNote> ofNullable(interestDebitNote));
-        String documentObservations = treasuryBundle("info.ERPIntegrationService.interest.rate.created.by.ERP.Integration");
-        documentObservations = documentObservations + " - "
-                + treasuryBundle("info.ERPIntegrationService.interest.rate.payment.date") + paymentDate.toString("YYYY-MM-dd");
-        interestDebitNote.setDocumentObservations(documentObservations);
-        interestDebitNote.closeDocument();
     }
 
     private void validateRequestHeader(String finantialInstitution) {
