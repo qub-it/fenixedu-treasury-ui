@@ -1,3 +1,4 @@
+9.0.9 (18-01-2024)
 - Refactor: Upgrades java [#qubIT-Omnis-4749]
 - Improvement: Adds fenixedu OSS DM [#qubIT-Omnis-4736]
 - Refactor: Deprecate creation of credit entry due to association with finantial entity [#qubIT-Fenix-4587]
