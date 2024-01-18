@@ -1,5 +1,6 @@
 - Refactor: Upgrades java [#qubIT-Omnis-4749]
 - Improvement: Adds fenixedu OSS DM [#qubIT-Omnis-4736]
+- Refactor: Deprecate creation of credit entry due to association with finantial entity [#qubIT-Fenix-4587]
 
 9.0.8 (05-12-2023)
 - Refactor: Remove the SAP exporter for testing integration of invoice entries with quantity different than one [#UL-ISEG-4541]

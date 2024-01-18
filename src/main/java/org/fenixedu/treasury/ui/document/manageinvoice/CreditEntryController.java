@@ -29,13 +29,11 @@ package org.fenixedu.treasury.ui.document.manageinvoice;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.CreditNote;
@@ -98,7 +96,8 @@ public class CreditEntryController extends TreasuryBaseController {
         try {
             DebtAccount debtAccount = creditNote.getDebtAccount();
             if (creditNote != null && !creditNote.isPreparing()) {
-                addWarningMessage(treasuryBundle("label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"), model);
+                addWarningMessage(treasuryBundle("label.error.document.manageinvoice.creditentry.invalid.state.add.creditentry"),
+                        model);
                 redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
             }
 
@@ -124,9 +123,8 @@ public class CreditEntryController extends TreasuryBaseController {
         Product product = bean.getProduct();
         if (product != null) {
             bean.setVat(bean.getDebtAccount().getFinantialInstitution().getActiveVat(product.getVatType(), new DateTime()));
-            Tariff tariff =
-                    product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime()).findFirst()
-                            .orElse(null);
+            Tariff tariff = product.getActiveTariffs(bean.getDebtAccount().getFinantialInstitution(), new DateTime()).findFirst()
+                    .orElse(null);
 
             if (tariff != null) {
                 bean.setTariff(tariff);
@@ -134,8 +132,8 @@ public class CreditEntryController extends TreasuryBaseController {
                     bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
                             .getValueWithScale(((FixedTariff) tariff).getAmount()));
                 } else {
-                    bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency()
-                            .getValueWithScale(BigDecimal.ZERO));
+                    bean.setAmount(
+                            bean.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(BigDecimal.ZERO));
 
                 }
             } else {
@@ -162,9 +160,8 @@ public class CreditEntryController extends TreasuryBaseController {
 
             assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
 
-            CreditEntry creditEntry =
-                    createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
-                            bean.getProduct(), bean.getAmount(), bean.getFinantialDocument().getDocumentDueDate());
+            CreditEntry creditEntry = createCreditEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
+                    bean.getProduct(), bean.getAmount(), bean.getFinantialDocument().getDocumentDueDate());
 
             addInfoMessage(treasuryBundle("label.success.create"), model);
 
@@ -185,17 +182,26 @@ public class CreditEntryController extends TreasuryBaseController {
     }
 
     @Atomic
+    // TODO ANIL 2024-01-17: This must not being used. Throw an error to confirm
+    @Deprecated
     public CreditEntry createCreditEntry(CreditNote creditNote, DebtAccount debtAccount, String description,
             org.fenixedu.treasury.domain.Product product, BigDecimal amount, LocalDate dueDate) {
 
-        Optional<Vat> activeVat =
-                Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
+        throw new RuntimeException("deprecated");
 
-        CreditEntry creditEntry =
-                CreditEntry.create(creditNote, description, product, activeVat.orElse(null), amount, new DateTime(), null,
-                        BigDecimal.ONE);
-        
-        return creditEntry;
+//        Optional<Vat> activeVat =
+//                Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
+//
+//        if (FinantialEntity.findAll().count() != 1) {
+//            throw new RuntimeException("error.CreditEntryController.createCreditEntry.not.supported");
+//        }
+//
+//        FinantialEntity finantialEntity = FinantialEntity.findAll().iterator().next();
+//
+//        CreditEntry creditEntry = CreditEntry.create(finantialEntity, creditNote, description, product, activeVat.orElse(null),
+//                amount, new DateTime(), BigDecimal.ONE);
+//
+//        return creditEntry;
     }
 
     private static final String _READ_URI = "/read/";
@@ -217,9 +223,9 @@ public class CreditEntryController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") final CreditEntry creditEntry, 
-            @RequestParam(value = "description", required = true) final String description,
-            final Model model, final RedirectAttributes redirectAttributes) {
+    public String update(@PathVariable("oid") final CreditEntry creditEntry,
+            @RequestParam(value = "description", required = true) final String description, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         setCreditEntry(creditEntry, model);
 
