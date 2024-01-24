@@ -28,6 +28,7 @@ import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.TreasuryFile;
@@ -367,7 +368,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         if (erpExporter == null) {
             return;
         }
-        
+
         final List<FinantialDocument> documentsToExport =
                 erpExporter.filterDocumentsToExport(Collections.singletonList(finantialDocument).stream());
 
@@ -603,8 +604,8 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     }
 
     @Override
-    public InputStream exportDocuments(String templateCode, FinantialInstitution finantialInstitution, LocalDate documentDateFrom,
-            LocalDate documentDateTo) {
+    public InputStream exportDocuments(String templateCode, FinantialInstitution finantialInstitution,
+            FinantialEntity finantialEntity, LocalDate documentDateFrom, LocalDate documentDateTo, String username) {
         throw new RuntimeException("not supported");
     }
 
@@ -642,7 +643,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     public void annulCertifiedDocument(FinantialDocument finantialDocument) {
         // Do nothing
     }
-    
+
     @Override
     public boolean hasCertifiedDocument(FinantialDocument finantialDocument) {
         return false;
@@ -662,7 +663,7 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
     public LocalDate getCertifiedDocumentDate(FinantialDocument finantialDocument) {
         return null;
     }
-    
+
     /* Development or quality mode */
 
     @Override
