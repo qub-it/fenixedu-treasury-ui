@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -172,9 +173,10 @@ public class DebitEntryController extends TreasuryBaseController {
 
             DebitEntryBean bean = new DebitEntryBean();
 
-            bean.setProductDataSource(Product.findAllActive().filter(p -> p.getFinantialInstitutionsSet().contains(debtAccount.getFinantialInstitution()))
+            bean.setProductDataSource(Product.findAllActive()
+                    .filter(p -> p.getFinantialInstitutionsSet().contains(debtAccount.getFinantialInstitution()))
                     .collect(Collectors.toList()));
-            
+
             bean.setDebtAccount(debtAccount);
             bean.setFinantialDocument(debitNote);
             bean.setCurrency(debtAccount.getFinantialInstitution().getCurrency());
@@ -206,7 +208,7 @@ public class DebitEntryController extends TreasuryBaseController {
     @RequestMapping(value = "/createpostback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<String> createpostback(@RequestParam(value = "bean", required = true) DebitEntryBean bean,
             Model model) {
-        
+
         bean.refreshProductsDataSource(bean.getDebtAccount().getFinantialInstitution());
 
         Product product = bean.getProduct();
@@ -236,10 +238,10 @@ public class DebitEntryController extends TreasuryBaseController {
                 bean.setAmount(bean.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(BigDecimal.ZERO));
                 bean.setDueDate(new LocalDate());
             }
-            
+
             bean.setDescription(product.getName().getContent());
         }
-        
+
         return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
     }
 
@@ -250,13 +252,14 @@ public class DebitEntryController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(debtAccount.getFinantialInstitution(), model);
             if (bean.getFinantialDocument() != null && !bean.getFinantialDocument().isPreparing()) {
-                addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+                addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"),
+                        model);
                 redirect(DebitNoteController.READ_URL + bean.getFinantialDocument().getExternalId(), model, redirectAttributes);
             }
 
             DebitEntry debitEntry = createDebitEntry(bean.getFinantialDocument(), bean.getDebtAccount(), bean.getDescription(),
-                    bean.getProduct(), bean.getAmount(), bean.getDueDate(), bean.getEntryDate(),
-                    bean.getTreasuryEvent(), bean.isApplyInterests(), bean.getInterestRate());
+                    bean.getProduct(), bean.getAmount(), bean.getDueDate(), bean.getEntryDate(), bean.getTreasuryEvent(),
+                    bean.isApplyInterests(), bean.getInterestRate());
 
             addInfoMessage(treasuryBundle("label.success.create"), model);
 
@@ -297,20 +300,30 @@ public class DebitEntryController extends TreasuryBaseController {
 
     @Atomic
     public DebitEntry createDebitEntry(DebitNote debitNote, DebtAccount debtAccount, java.lang.String description,
-            org.fenixedu.treasury.domain.Product product, java.math.BigDecimal amount, LocalDate dueDate, DateTime entryDateTime,
-            final TreasuryEvent treasuryEvent, boolean applyInterests, final FixedTariffInterestRateBean interestRateBean) {
+            Product product, BigDecimal amount, LocalDate dueDate, DateTime entryDateTime, final TreasuryEvent treasuryEvent,
+            boolean applyInterests, final FixedTariffInterestRateBean interestRateBean) {
+
+        FinantialEntity finantialEntity = treasuryEvent != null ? treasuryEvent.getAssociatedFinantialEntity() : null;
+
+        if (finantialEntity == null) {
+            if (FinantialEntity.find(debtAccount.getFinantialInstitution()).count() != 1) {
+                throw new RuntimeException("not supported for more than one finantial entity");
+            }
+
+            finantialEntity = FinantialEntity.find(debtAccount.getFinantialInstitution()).findAny().get();
+        }
 
         Optional<Vat> activeVat =
                 Vat.findActiveUnique(product.getVatType(), debtAccount.getFinantialInstitution(), new DateTime());
 
-        DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> ofNullable(debitNote), debtAccount, treasuryEvent,
-                activeVat.orElse(null), amount, dueDate, null, product, description, BigDecimal.ONE, null, entryDateTime);
+        DebitEntry debitEntry = DebitEntry.create(finantialEntity, debtAccount, treasuryEvent, activeVat.orElse(null), amount,
+                dueDate, null, product, description, BigDecimal.ONE, null, entryDateTime, false, false, debitNote);
 
         if (applyInterests) {
             InterestRate interestRate = InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestRateType(),
                     interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
-                    interestRateBean.getMaximumDaysToApplyPenalty(),
-                    interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
+                    interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getInterestFixedAmount(),
+                    interestRateBean.getRate());
             debitEntry.changeInterestRate(interestRate);
         }
 
@@ -355,7 +368,8 @@ public class DebitEntryController extends TreasuryBaseController {
         setDebitEntry(debitEntry, model);
 
         if (!debitEntry.equals(bean.getDebitEntry())) {
-            addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+            addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"),
+                    model);
             redirect(DebitNoteController.READ_URL + debitEntry.getFinantialDocument().getExternalId(), model, redirectAttributes);
 
         }
@@ -415,15 +429,14 @@ public class DebitEntryController extends TreasuryBaseController {
             if (debitEntry.getInterestRate() == null) {
                 InterestRate.createForDebitEntry(debitEntry, interestRateBean.getInterestRateType(),
                         interestRateBean.getNumberOfDaysAfterDueDate(), interestRateBean.getApplyInFirstWorkday(),
-                        interestRateBean.getMaximumDaysToApplyPenalty(),
-                        interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
+                        interestRateBean.getMaximumDaysToApplyPenalty(), interestRateBean.getInterestFixedAmount(),
+                        interestRateBean.getRate());
 
             } else {
                 InterestRate rate = debitEntry.getInterestRate();
                 rate.edit(interestRateBean.getInterestRateType(), interestRateBean.getNumberOfDaysAfterDueDate(),
                         interestRateBean.getApplyInFirstWorkday(), interestRateBean.getMaximumDaysToApplyPenalty(),
-                        interestRateBean.getInterestFixedAmount(),
-                        interestRateBean.getRate());
+                        interestRateBean.getInterestFixedAmount(), interestRateBean.getRate());
             }
         } else {
             if (debitEntry.getInterestRate() != null) {
@@ -476,10 +489,11 @@ public class DebitEntryController extends TreasuryBaseController {
             @RequestParam("debitEntrys") List<DebitEntry> debitEntries, Model model, RedirectAttributes redirectAttributes) {
 
         if (debitNote != null && !debitNote.isPreparing()) {
-            addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"), model);
+            addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.add.debitentry"),
+                    model);
             return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
         }
-        
+
         try {
             assertUserIsAllowToModifyInvoices(debitNote.getDebtAccount().getFinantialInstitution(), model);
             debitNote.addDebitNoteEntries(debitEntries);
@@ -502,11 +516,12 @@ public class DebitEntryController extends TreasuryBaseController {
                 addInfoMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.sucess.remove.debitentry"), model);
                 FinantialDocument debitNote = debitEntry.getFinantialDocument();
                 debitEntry.removeFromDocument();
-                
+
                 return redirect(DebitNoteController.READ_URL + debitNote.getExternalId(), model, redirectAttributes);
             }
 
-            addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.remove.debitentry"), model);
+            addWarningMessage(treasuryBundle("label.error.document.manageinvoice.debitentry.invalid.state.remove.debitentry"),
+                    model);
             return redirect(DebitEntryController.READ_URL + debitEntry.getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
