@@ -192,6 +192,7 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-base</artifactId>
+			<version>12.7.0</version>
 		</dependency>
 	</dependencies>
 
