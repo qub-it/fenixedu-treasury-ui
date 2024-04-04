@@ -47,17 +47,14 @@ import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
-import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.GlobalInterestRateType;
 import org.fenixedu.treasury.domain.tariff.InterestRateEntry;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
-import org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitEntryController;
 import org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController;
 import org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController;
@@ -127,7 +124,6 @@ public class DebtAccountController extends TreasuryBaseController {
 
         paymentEntries = SettlementNote.findByDebtAccount(debtAccount).collect(Collectors.toList());
 
-
         pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
 
         model.addAttribute("pendingDocumentsDataSet",
@@ -152,17 +148,15 @@ public class DebtAccountController extends TreasuryBaseController {
 
         model.addAttribute("invalidFiscalCode", isInvalidFiscalCode(debtAccount));
 
-        
-        if(findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).isPresent()) {
-            model.addAttribute("forwardPaymentService", 
+        if (findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).isPresent()) {
+            model.addAttribute("forwardPaymentService",
                     findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).get());
         }
-        
-        if(findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).isPresent()) {
-            model.addAttribute("mbwayService", 
-                    findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).get());
+
+        if (findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).isPresent()) {
+            model.addAttribute("mbwayService", findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).get());
         }
-        
+
         return "treasury/accounting/managecustomer/debtaccount/read";
     }
 
@@ -197,13 +191,14 @@ public class DebtAccountController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = "/read/{oid}/forwardpayment/{digitalPaymentPlatformId}")
-    public String processReadToForwardPayment(
-            @PathVariable("oid") DebtAccount debtAccount, @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String processReadToForwardPayment(@PathVariable("oid") DebtAccount debtAccount,
+            @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform, Model model,
+            RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
-        return redirect(String.format("%s%s/%s", ForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL, 
-                getDebtAccount(model).getExternalId(), digitalPaymentPlatform.getExternalId()), model,
-                redirectAttributes);
+        return redirect(
+                String.format("%s%s/%s", ForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL,
+                        getDebtAccount(model).getExternalId(), digitalPaymentPlatform.getExternalId()),
+                model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/createdebtentry")
@@ -218,14 +213,6 @@ public class DebtAccountController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
         setDebtAccount(debtAccount, model);
         return redirect(DebitNoteController.CREATE_URL + "?debtaccount=" + getDebtAccount(model).getExternalId(), model,
-                redirectAttributes);
-    }
-
-    @RequestMapping(value = "/read/{oid}/createcreditnote")
-    public String processReadToCreateCreditNote(@PathVariable("oid") DebtAccount debtAccount, Model model,
-            RedirectAttributes redirectAttributes) {
-        setDebtAccount(debtAccount, model);
-        return redirect(CreditNoteController.CREATE_URL + "?debtaccount=" + getDebtAccount(model).getExternalId(), model,
                 redirectAttributes);
     }
 
@@ -358,15 +345,18 @@ public class DebtAccountController extends TreasuryBaseController {
             return read(debtAccount, model, redirectAttributes);
         }
     }
-    
-    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForForwardPaymentService(FinantialInstitution finantialInstitution) {
+
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForForwardPaymentService(
+            FinantialInstitution finantialInstitution) {
         return DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true)
                 .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
                 .findFirst();
     }
 
-    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(FinantialInstitution finantialInstitution) {
-        return DigitalPaymentPlatform.find(finantialInstitution).filter(DigitalPaymentPlatform::isActive).filter(d -> d.isMbwayServiceSupported())
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(
+            FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.find(finantialInstitution).filter(DigitalPaymentPlatform::isActive)
+                .filter(d -> d.isMbwayServiceSupported())
                 .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
                 .findFirst();
     }

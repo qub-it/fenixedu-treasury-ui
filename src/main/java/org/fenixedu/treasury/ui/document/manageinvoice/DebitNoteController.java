@@ -451,13 +451,6 @@ public class DebitNoteController extends TreasuryBaseController {
                 redirectAttributes);
     }
 
-    @RequestMapping(value = "/read/{oid}/createcreditnote")
-    public String processReadToCreateCreditNote(@PathVariable("oid") DebitNote debitNote, Model model,
-            RedirectAttributes redirectAttributes) {
-        setDebitNote(debitNote, model);
-        return redirect(CreditNoteController.CREATE_URL + "?debitNote=" + debitNote.getExternalId(), model, redirectAttributes);
-    }
-
     @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml;charset=Windows-1252")
     public void processReadToExportIntegrationFile(@PathVariable("oid") final DebitNote debitNote, final Model model,
             final RedirectAttributes redirectAttributes, final HttpServletResponse response) {

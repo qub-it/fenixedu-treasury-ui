@@ -1,4 +1,5 @@
 - Refactor: Remove condition if user is treasury manager, in checking if settlement note can be annuled and is associated with payment transaction [#qubIT-Fenix-5097]
+- Refactor: Delete endpoint and page for credit note creation, which it is not used anymore [#qubIT-Fenix-5105]
 
 9.0.11 (31-01-2024)
 - Refactor: Change invocation of DebitEntry#create method to pass the finantial entity [#qubIT-Fenix-4587]

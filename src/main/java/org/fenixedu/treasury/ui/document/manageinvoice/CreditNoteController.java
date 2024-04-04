@@ -34,28 +34,21 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditNote;
-import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
 import org.fenixedu.treasury.domain.document.FinantialDocumentStateType;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPExportOperation;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExporter;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.ui.integration.erp.ERPExportOperationController;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -137,10 +130,10 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-            if(creditNote.isAdvancePayment()) {
+            if (creditNote.isAdvancePayment()) {
                 throw new RuntimeException("error.CreditNoteController.advancedPayment.annulment.not.allowed");
             }
-            
+
             creditNote.anullDocument(reason);
             addInfoMessage(treasuryBundle("label.document.manageinvoice.CreditNote.document.anulled.sucess"), model);
         } catch (Exception ex) {
@@ -179,7 +172,8 @@ public class CreditNoteController extends TreasuryBaseController {
         try {
             assertUserIsAllowToModifyInvoices(creditNote.getDocumentNumberSeries().getSeries().getFinantialInstitution(), model);
 
-            getCreditNote(model).updateCreditNote(originDocumentNumber, documentObservations, getCreditNote(model).getDocumentTermsAndConditions());
+            getCreditNote(model).updateCreditNote(originDocumentNumber, documentObservations,
+                    getCreditNote(model).getDocumentTermsAndConditions());
 
             return redirect(CreditNoteController.READ_URL + getCreditNote(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
@@ -271,115 +265,6 @@ public class CreditNoteController extends TreasuryBaseController {
             RedirectAttributes redirectAttributes) {
 
         return redirect(CreditNoteController.READ_URL + creditNote.getExternalId(), model, redirectAttributes);
-    }
-
-    private static final String _CREATE_URI = "/create";
-    public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
-
-    @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
-    public String create(@RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
-            @RequestParam(value = "debitnote", required = false) DebitNote debitNote, Model model,
-            RedirectAttributes redirectAttributes) {
-
-        FinantialInstitution finantialInstitution = null;
-//        DocumentNumberSeries documentNumberSeries = null;
-        if (debtAccount == null && debitNote == null) {
-            addErrorMessage(
-                    treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
-                    model);
-            return redirectToReferrer(model, redirectAttributes);
-        }
-
-        if (debitNote != null && debtAccount != null) {
-            if (!debitNote.getDebtAccount().equals(debtAccount)) {
-                addErrorMessage(
-                        treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
-                        model);
-                return redirectToReferrer(model, redirectAttributes);
-            }
-        }
-
-        if (debtAccount != null) {
-            finantialInstitution = debtAccount.getFinantialInstitution();
-        }
-        if (debitNote != null) {
-            finantialInstitution = debitNote.getDebtAccount().getFinantialInstitution();
-            debtAccount = debitNote.getDebtAccount();
-//            documentNumberSeries =
-//                    DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), debitNote.getDocumentNumberSeries()
-//                            .getSeries());
-        }
-
-//        if (documentNumberSeries != null) {
-//            model.addAttribute("CreditNote_documentNumberSeries_options", Collections.singletonList(documentNumberSeries));
-//
-//        } else {
-        List<DocumentNumberSeries> availableSeries = org.fenixedu.treasury.domain.document.DocumentNumberSeries
-                .find(FinantialDocumentType.findForCreditNote(), finantialInstitution)
-                .filter(x -> x.getSeries().getActive() == true).collect(Collectors.toList());
-
-        availableSeries = DocumentNumberSeries.applyActiveSelectableAndDefaultSorting(availableSeries.stream())
-                .collect(Collectors.toList());
-        if (availableSeries.size() > 0) {
-            model.addAttribute("CreditNote_documentNumberSeries_options", availableSeries);
-        } else {
-            addErrorMessage(treasuryBundle("label.error.document.manageinvoice.finantialinstitution.no.available.series.found"),
-                    model);
-            return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
-        }
-//        }
-
-        model.addAttribute("debitNote", debitNote);
-        model.addAttribute("debtAccount", debtAccount);
-
-        if (debitNote == null) {
-            this.addWarningMessage(treasuryBundle("label.document.manageinvoice.creditnote.without.debitnote"), model);
-        }
-        return "treasury/document/manageinvoice/creditnote/create";
-    }
-
-    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "debitnote", required = false) DebitNote debitNote,
-            @RequestParam(value = "debtaccount", required = false) DebtAccount debtAccount,
-            @RequestParam(value = "documentnumberseries") DocumentNumberSeries documentNumberSeries,
-            @RequestParam(value = "documentdate") @DateTimeFormat(pattern = "yyyy-MM-dd") DateTime documentDate,
-            @RequestParam(value = "origindocumentnumber", required = false) String originDocumentNumber,
-            @RequestParam(value = "documentobservations", required = false) String documentObservations, Model model,
-            RedirectAttributes redirectAttributes, HttpServletRequest request) {
-
-        if (debtAccount == null && debitNote == null) {
-            addErrorMessage(
-                    treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
-                    model);
-            return redirect(SEARCH_URL, model, redirectAttributes);
-        }
-
-        if (debtAccount == null) {
-            debtAccount = debitNote.getDebtAccount();
-        }
-
-        if (documentNumberSeries != null && debtAccount != null) {
-            if (!documentNumberSeries.getSeries().getFinantialInstitution().equals(debtAccount.getFinantialInstitution())) {
-                addErrorMessage(
-                        treasuryBundle("label.error.document.manageinvoice.finantialinstitution.mismatch.debtaccount.series"),
-                        model);
-                return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
-            }
-        }
-
-        try {
-            assertUserIsAllowToModifyInvoices(documentNumberSeries.getSeries().getFinantialInstitution(), model);
-
-            debitNote.createEquivalentCreditNote(documentDate, documentObservations, null, false);
-
-            return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tde) {
-            addErrorMessage(treasuryBundle("label.error.create") + tde.getLocalizedMessage(), model);
-        } catch (Exception ex) {
-            addErrorMessage(treasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
-        }
-
-        return create(debtAccount, debitNote, model, redirectAttributes);
     }
 
     @RequestMapping(value = "/read/{oid}/exportintegrationfile", produces = "text/xml")
