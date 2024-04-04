@@ -1,3 +1,4 @@
+9.0.12 (04-04-2024)
 - Refactor: Remove condition if user is treasury manager, in checking if settlement note can be annuled and is associated with payment transaction [#qubIT-Fenix-5097]
 - Refactor: Delete endpoint and page for credit note creation, which it is not used anymore [#qubIT-Fenix-5105]
 
