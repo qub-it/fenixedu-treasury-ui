@@ -70,7 +70,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.qubit.terra.docs.util.ReportGenerationException;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -316,7 +315,7 @@ public class DebtAccountController extends TreasuryBaseController {
             assertUserIsFrontOfficeMember(debtAccount.getFinantialInstitution(), model);
             byte[] report = DocumentPrinter.printDebtAccountPaymentPlan(debtAccount, DocumentPrinter.PDF);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
-        } catch (ReportGenerationException rex) {
+        } catch (RuntimeException rex) {
             addErrorMessage(rex.getLocalizedMessage(), model);
             addErrorMessage(rex.getCause().getLocalizedMessage(), model);
             return redirect(READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
