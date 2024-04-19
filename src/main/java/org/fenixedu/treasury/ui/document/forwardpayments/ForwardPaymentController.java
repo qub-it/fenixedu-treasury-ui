@@ -70,7 +70,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Sets;
-import com.qubit.terra.docs.util.ReportGenerationException;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -399,7 +398,7 @@ public class ForwardPaymentController extends TreasuryBaseController {
         try {
             byte[] report = DocumentPrinter.printFinantialDocument(settlementNote, DocumentPrinter.PDF);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
-        } catch (ReportGenerationException rex) {
+        } catch (RuntimeException rex) {
             addErrorMessage(rex.getLocalizedMessage(), model);
             addErrorMessage(rex.getCause().getLocalizedMessage(), model);
 
