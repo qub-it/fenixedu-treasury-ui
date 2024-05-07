@@ -205,6 +205,16 @@ public class FenixEDUTreasuryPlatformDependentServices implements ITreasuryPlatf
         return null;
     }
 
+    @Override
+    public void setCurrentApplicationUser(String username) {
+        throw new RuntimeException("not supported");
+    }
+
+    @Override
+    public void removeCurrentApplicationUser() {
+        throw new RuntimeException("not supported");
+    }
+
     /* Locales */
 
     @Override
