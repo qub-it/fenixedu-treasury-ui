@@ -1,3 +1,4 @@
+9.1.1 (07-05-2024)
 - Refactor: Add platform dependent methods, to set and remove current application user [#qubIT-Fenix-5228]
 
 9.1.0 (19-04-2024)
