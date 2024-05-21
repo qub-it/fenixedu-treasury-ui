@@ -56,10 +56,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
-			<artifactId>bennu-scheduler</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.fenixedu</groupId>
 			<artifactId>bennu-portal</artifactId>
 		</dependency>
 		<dependency>
@@ -78,10 +74,6 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
-		</dependency>
-		<dependency>
-			<groupId>com.qubit.solution.fenixedu</groupId>
-			<artifactId>bennu-webservices-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet.jsp</groupId>
@@ -153,10 +145,6 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.fenixedu</groupId>
-			<artifactId>bennu-renderers</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>eu.europa.ec.taxud</groupId>
