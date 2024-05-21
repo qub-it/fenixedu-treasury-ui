@@ -202,25 +202,6 @@
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>3.0.0</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>${basedir}/target/generated-sources/xsd/</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
 				<executions>
@@ -265,36 +246,6 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>PAYLINE</id>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>wsimport</goal>
-						</goals>
-						<configuration>
-							<packageName>org.fenixedu.treasury.services.integration.forwardpayments.payline</packageName>
-							<wsdlFiles>
-								<wsdlFile>
-									${basedir}/src/main/resources/wsdl/forwardpayments/payline/WebPaymentAPI_V4.wsdl
-								</wsdlFile>
-							</wsdlFiles>
-							<wsdlLocation>
-								/wsdl/forwardpayments/payline/WebPaymentAPI_V4.wsdl
-							</wsdlLocation>
-							<extension>true</extension>
-							<protocol>Xsoap1.2</protocol>
-							<vmArgs>
-								<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-							</vmArgs>
-						</configuration>
-					</execution>
-				</executions>			
 			</plugin>
 		</plugins>
 	</build>
