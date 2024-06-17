@@ -12,7 +12,7 @@
 
 	<groupId>org.fenixedu</groupId>
 	<artifactId>fenixedu-treasury-ui</artifactId>
-	<version>9.2.0</version>
+	<version>9.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>Treasury</name>
@@ -22,7 +22,7 @@
 			<dependency>
 				<groupId>com.qubit.solution.fenixedu</groupId>
 				<artifactId>fenixedu-oss-dependency-management</artifactId>
-				<version>168</version>
+				<version>172</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
