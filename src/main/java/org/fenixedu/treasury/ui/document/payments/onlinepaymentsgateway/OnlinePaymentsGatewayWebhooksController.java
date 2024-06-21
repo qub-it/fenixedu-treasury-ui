@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
@@ -19,9 +20,12 @@ import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaym
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
 import org.fenixedu.treasury.domain.paymentcodes.integration.ISibsPaymentCodePoolService;
 import org.fenixedu.treasury.domain.payments.IMbwayPaymentPlatformService;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.SibsPaymentsGatewayLog;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.integration.SibsPaymentsGateway;
+import org.fenixedu.treasury.services.integration.ITreasuryPlatformDependentServices;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.slf4j.Logger;
@@ -56,6 +60,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
         final SibsPaymentsGatewayLog log = createLog();
 
+        boolean mockedUser = false;
         try {
 
             String notificationInitializationVector = SIBSOnlinePaymentsGatewayService.notificationInitializationVector(request);
@@ -136,6 +141,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.notificationBean.not.paid.check");
                 }
 
+                mockedUser = mockUserIfNeeded(referenceCodeOptional.get().getDigitalPaymentPlatform());
+
                 final ISibsPaymentCodePoolService paymentReferenceCodeService =
                         referenceCodeOptional.get().getDigitalPaymentPlatform().castToSibsPaymentCodePoolService();
 
@@ -158,6 +165,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                             "error.OnlinePaymentsGatewayWebhooksController.unrecognized.payment.type.for.mbway.payment.request");
                 }
 
+                mockedUser = mockUserIfNeeded(mbwayPaymentRequestOptional.get().getDigitalPaymentPlatform());
+
                 MbwayRequest mbwayRequest = mbwayPaymentRequestOptional.get();
                 FenixFramework.atomic(() -> {
                     log.setPaymentRequest(mbwayRequest);
@@ -175,6 +184,8 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             } else if (forwardPaymentRequestOptional.isPresent()) {
                 IForwardPaymentPlatformService digitalPaymentPlatform =
                         (IForwardPaymentPlatformService) forwardPaymentRequestOptional.get().getDigitalPaymentPlatform();
+
+                mockedUser = mockUserIfNeeded(forwardPaymentRequestOptional.get().getDigitalPaymentPlatform());
 
                 ForwardPaymentRequest forwardPaymentRequest = forwardPaymentRequestOptional.get();
                 FenixFramework.atomic(() -> {
@@ -219,6 +230,12 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             logger.error(e.getLocalizedMessage(), e);
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        } finally {
+            if (mockedUser) {
+                TreasuryPlataformDependentServicesFactory.implementation().removeCurrentApplicationUser();
+
+                logger.debug("Unmocked user");
+            }
         }
     }
 
@@ -253,6 +270,22 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
         } catch (Exception e) {
             return false;
         }
+    }
+
+    private boolean mockUserIfNeeded(DigitalPaymentPlatform digitalPaymentPlatform) {
+        ITreasuryPlatformDependentServices treasuryServices = TreasuryPlataformDependentServicesFactory.implementation();
+        boolean needToMockUser =
+                StringUtils.isEmpty(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())
+                        && StringUtils.isNotEmpty(digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
+
+        if (needToMockUser) {
+            treasuryServices.setCurrentApplicationUser(digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
+            logger.debug("Mocked user with " + digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
+
+            return true;
+        }
+
+        return false;
     }
 
     @Atomic(mode = TxMode.WRITE)
