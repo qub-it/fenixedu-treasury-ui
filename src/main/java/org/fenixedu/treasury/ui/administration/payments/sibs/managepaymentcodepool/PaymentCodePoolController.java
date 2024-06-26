@@ -29,7 +29,6 @@ package org.fenixedu.treasury.ui.administration.payments.sibs.managepaymentcodep
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,8 +76,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI)
-    public String search(
-            Model model) {
+    public String search(Model model) {
         model.addAttribute("searchpaymentcodepoolResultsDataSet", filterSearchPaymentCodePool());
 
         return "treasury/administration/payments/sibs/managepaymentcodepool/paymentcodepool/search";
@@ -87,10 +85,8 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     private List<DigitalPaymentPlatform> filterSearchPaymentCodePool() {
         String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
 
-        return FinantialInstitution.findAll()
-            .filter(f -> TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, f))
-            .flatMap(f -> SibsPaymentCodePool.find(f))
-            .collect(Collectors.toList());
+        return FinantialInstitution.findAll().filter(f -> TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, f))
+                .flatMap(f -> SibsPaymentCodePool.find(f)).collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
@@ -165,32 +161,12 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom,
             @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
             @RequestParam(value = "active", required = false) boolean active,
-            @RequestParam(value = "usecheckdigit", required = false) boolean useCheckDigit, 
+            @RequestParam(value = "usecheckdigit", required = false) boolean useCheckDigit,
             @RequestParam(value = "sourceinstitutionid", required = false) String sourceInstitutionId,
-            @RequestParam(value = "destinationinstitutionid", required = false) String destinationInstitutionId,
-            Model model,
+            @RequestParam(value = "destinationinstitutionid", required = false) String destinationInstitutionId, Model model,
             RedirectAttributes redirectAttributes) {
 
-        try {
-            assertUserIsManager(model);
-
-            FenixFramework.atomic(() -> {
-                SibsPaymentCodePool paymentCodePool =
-                        SibsPaymentCodePool.create(finantialInstitution, name, active, entityReferenceCode, minReferenceCode,
-                                maxReferenceCode, minAmount, maxAmount, validFrom, validTo, useCheckDigit, useCheckDigit,
-                                sourceInstitutionId, destinationInstitutionId);
-                
-                model.addAttribute("paymentCodePool", paymentCodePool);
-            });
-
-            return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
-        } catch (TreasuryDomainException tex) {
-            addErrorMessage(treasuryBundle("label.error.create") + tex.getLocalizedMessage(), model);
-        } catch (Exception de) {
-            addErrorMessage(treasuryBundle("label.error.create") + de.getLocalizedMessage(), model);
-        }
-
-        return create(model);
+        throw new RuntimeException("deprecated");
     }
 
     private static final String _UPDATE_URI = "/update/";
@@ -214,14 +190,12 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
-    public String update(@PathVariable("oid") SibsPaymentCodePool paymentCodePool,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "active", required = false) boolean active, 
+    public String update(@PathVariable("oid") SibsPaymentCodePool paymentCodePool, @RequestParam(value = "name") String name,
+            @RequestParam(value = "active", required = false) boolean active,
             @RequestParam(value = "validfrom", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validFrom,
             @RequestParam(value = "validto", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate validTo,
             @RequestParam(value = "sourceinstitutionid", required = false) String sourceInstitutionId,
-            @RequestParam(value = "destinationinstitutionid", required = false) String destinationInstitutionId,
-            Model model,
+            @RequestParam(value = "destinationinstitutionid", required = false) String destinationInstitutionId, Model model,
             RedirectAttributes redirectAttributes) {
 
         model.addAttribute("paymentCodePool", paymentCodePool);
@@ -232,7 +206,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
             FenixFramework.atomic(() -> {
                 paymentCodePool.edit(name, active, validFrom, validTo, sourceInstitutionId, destinationInstitutionId);
             });
-            
+
             return redirect(READ_URL + getPaymentCodePool(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tex) {
             addErrorMessage(treasuryBundle("label.error.update") + tex.getLocalizedMessage(), model);
