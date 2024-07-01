@@ -1,5 +1,6 @@
 package org.fenixedu.treasury.services.forwardpayments;
 
+import static com.qubit.terra.framework.tools.excel.ExcelUtil.createCellWithValue;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.IOException;
@@ -294,24 +295,24 @@ public class PostForwardPaymentsTask extends CronTask {
         public void writeCellValues(final Row row, final IErrorsLog errorsLog) {
             int i = 0;
 
-            row.createCell(i++).setCellValue(executionDate);
-            row.createCell(i++).setCellValue(forwardPaymentExternalId);
-            row.createCell(i++).setCellValue(forwardPaymentOrderNumber);
-            row.createCell(i++).setCellValue(forwardPaymentWhenOccured);
-            row.createCell(i++).setCellValue(customerCode);
-            row.createCell(i++).setCellValue(customerName);
-            row.createCell(i++).setCellValue(previousStateDescription);
-            row.createCell(i++).setCellValue(nextStateDescription);
-            row.createCell(i++).setCellValue(treasuryBundle("label." + paymentRegisteredWithSuccess));
-            row.createCell(i++).setCellValue(settlementNote);
-            row.createCell(i++).setCellValue(advancedPaymentCreditNote);
-            row.createCell(i++).setCellValue(paymentDate);
-            row.createCell(i++).setCellValue(paidAmount);
-            row.createCell(i++).setCellValue(advancedCreditAmount != null ? advancedCreditAmount.toString() : "");
-            row.createCell(i++).setCellValue(transactionId);
-            row.createCell(i++).setCellValue(statusCode);
-            row.createCell(i++).setCellValue(statusMessage);
-            row.createCell(i++).setCellValue(remarks);
+            createCellWithValue(row, i++, executionDate);
+            createCellWithValue(row, i++, forwardPaymentExternalId);
+            createCellWithValue(row, i++, forwardPaymentOrderNumber);
+            createCellWithValue(row, i++, forwardPaymentWhenOccured);
+            createCellWithValue(row, i++, customerCode);
+            createCellWithValue(row, i++, customerName);
+            createCellWithValue(row, i++, previousStateDescription);
+            createCellWithValue(row, i++, nextStateDescription);
+            createCellWithValue(row, i++, treasuryBundle("label." + paymentRegisteredWithSuccess));
+            createCellWithValue(row, i++, settlementNote);
+            createCellWithValue(row, i++, advancedPaymentCreditNote);
+            createCellWithValue(row, i++, paymentDate);
+            createCellWithValue(row, i++, paidAmount);
+            createCellWithValue(row, i++, advancedCreditAmount != null ? advancedCreditAmount.toString() : "");
+            createCellWithValue(row, i++, transactionId);
+            createCellWithValue(row, i++, statusCode);
+            createCellWithValue(row, i++, statusMessage);
+            createCellWithValue(row, i++, remarks);
         }
 
     }
