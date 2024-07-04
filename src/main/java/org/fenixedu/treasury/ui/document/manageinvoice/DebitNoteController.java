@@ -139,7 +139,7 @@ public class DebitNoteController extends TreasuryBaseController {
 
             setDebitNote(debitNote, model);
 
-            if (debitNote.isClosed() && debitNote.getDocumentNumberSeries().getSeries().getCertificated()) {
+            if (debitNote.isClosed()) {
                 model.addAttribute("anullDebitNoteMessage",
                         treasuryBundle("label.document.manageInvoice.readDebitNote.confirmAnullWithCreditNote"));
             }
