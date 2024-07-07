@@ -190,21 +190,23 @@ public class SeriesController extends TreasuryBaseController {
             @RequestParam(value = "selectable", required = false) final boolean selectable, Model model,
             RedirectAttributes redirectAttributes) {
         setSeries(series, model);
+
         try {
             super.assertUserIsBackOfficeMember(series.getFinantialInstitution(), model);
-            updateSeries(code, name, externSeries, certificated, legacy, active, selectable, model);
+            updateSeries(code, name, externSeries, legacy, active, selectable, model);
             return redirect(READ_URL + getSeries(model).getExternalId(), model, redirectAttributes);
         } catch (TreasuryDomainException tde) {
             addErrorMessage(treasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
             addErrorMessage(treasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
+
         return update(series, model, redirectAttributes);
     }
 
-    public void updateSeries(final String code, final LocalizedString name, final boolean externSeries,
-            final boolean certificated, final boolean legacy, final boolean active, final boolean selectable, final Model model) {
-        getSeries(model).edit(code, name, externSeries, certificated, legacy, active, selectable);
+    public void updateSeries(final String code, final LocalizedString name, final boolean externSeries, final boolean legacy,
+            final boolean active, final boolean selectable, final Model model) {
+        throw new RuntimeException("not supported");
     }
 
     public void setSeriesDefault(Model model) {
