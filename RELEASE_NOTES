@@ -1,3 +1,5 @@
+- Bug Fix: Fix error when debts have quotes or double quotes [#qubIT-Fenix-7213]
+
 9.7.0 (25-10-2024)
 - Refactor: Finantial document series by finantial entity [#qubIT-Fenix-5456]
 
