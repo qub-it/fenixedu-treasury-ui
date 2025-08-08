@@ -256,7 +256,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
             ObjectMapper mapper = new ObjectMapper();
 
-            Map<String, String> map = mapper.readValue(decryptedPayload, new TypeReference<Map<String, Object>>() {
+            Map<String, String> map = mapper.readValue(decryptedPayload, new TypeReference<Map<String, String>>() {
             });
 
             if (map.containsKey("type") && map.containsKey("action")) {
