@@ -1,3 +1,5 @@
+- Refactor: Remove dependency of online-payments-gateway module [#qubIT-Fenix-3857]
+
 9.7.1 (07-07-2025)
 - Bug Fix: Fix error when debts have quotes or double quotes [#qubIT-Fenix-7213]
 
