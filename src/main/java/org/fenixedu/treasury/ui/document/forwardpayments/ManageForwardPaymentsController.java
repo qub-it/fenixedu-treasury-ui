@@ -110,7 +110,7 @@ public class ManageForwardPaymentsController extends TreasuryBaseController {
             }
         }
 
-        String username = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        String username = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
         stream = stream.filter(p -> TreasuryAccessControlAPI.isBackOfficeMember(username,
                 p.getDigitalPaymentPlatform().getFinantialInstitution()));
 

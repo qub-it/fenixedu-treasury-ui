@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.onlinepaymentsgateway.api.PaymentStateBean;
 import org.fenixedu.onlinepaymentsgateway.api.SIBSOnlinePaymentsGatewayService;
@@ -28,6 +30,7 @@ import org.fenixedu.treasury.services.integration.ITreasuryPlatformDependentServ
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -67,8 +70,9 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             String notificationAuthenticationTag = SIBSOnlinePaymentsGatewayService.notificationAuthenticationTag(request);
             String notificationEncryptedPayload = SIBSOnlinePaymentsGatewayService.notificationEncryptedPayload(request);
 
-            FenixFramework.atomic(() -> log.saveWebhookNotificationData(notificationInitializationVector,
-                    notificationAuthenticationTag, notificationEncryptedPayload));
+            FenixFramework.atomic(
+                    () -> log.saveWebhookNotificationData(notificationInitializationVector, notificationAuthenticationTag,
+                            notificationEncryptedPayload));
 
             if (isTestPayloadForWebhookActivation(notificationInitializationVector, notificationAuthenticationTag,
                     notificationEncryptedPayload)) {
@@ -86,8 +90,9 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
                 throw new TreasuryDomainException("error.OnlinePaymentsGatewayWebhooksController.gateway.is.not.active");
             }
 
-            PaymentStateBean bean = gateway.handleWebhookNotificationRequest(notificationInitializationVector,
-                    notificationAuthenticationTag, notificationEncryptedPayload);
+            PaymentStateBean bean =
+                    gateway.handleWebhookNotificationRequest(notificationInitializationVector, notificationAuthenticationTag,
+                            notificationEncryptedPayload);
 
             FenixFramework.atomic(() -> {
                 log.logRequestReceiveDateAndData(bean.getTransactionId(), bean.isOperationSuccess(), bean.isPaid(),
@@ -114,8 +119,9 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             }
 
             // Find payment code
-            final Optional<SibsPaymentRequest> referenceCodeOptional = bean.getReferencedId() != null ? SibsPaymentRequest
-                    .findUniqueBySibsGatewayTransactionId(bean.getReferencedId()) : Optional.empty();
+            final Optional<SibsPaymentRequest> referenceCodeOptional =
+                    bean.getReferencedId() != null ? SibsPaymentRequest.findUniqueBySibsGatewayTransactionId(
+                            bean.getReferencedId()) : Optional.empty();
 
             final Optional<MbwayRequest> mbwayPaymentRequestOptional =
                     MbwayRequest.findUniqueBySibsGatewayMerchantTransactionId(bean.getMerchantTransactionId());
@@ -212,7 +218,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (
 
-        Exception e) {
+                Exception e) {
             if (log != null) {
                 FenixFramework.atomic(() -> {
                     log.logException(e);
@@ -232,7 +238,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
             if (mockedUser) {
-                TreasuryPlataformDependentServicesFactory.implementation().removeCurrentApplicationUser();
+                Authenticate.unmock();
 
                 logger.debug("Unmocked user");
             }
@@ -273,19 +279,27 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
     }
 
     private boolean mockUserIfNeeded(DigitalPaymentPlatform digitalPaymentPlatform) {
-        ITreasuryPlatformDependentServices treasuryServices = TreasuryPlataformDependentServicesFactory.implementation();
-        boolean needToMockUser =
-                StringUtils.isEmpty(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())
-                        && StringUtils.isNotEmpty(digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
+        boolean needToMockUser = StringUtils.isEmpty(TreasuryConstants.getAuthenticatedUsername()) && StringUtils.isNotEmpty(
+                digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
 
         if (needToMockUser) {
-            treasuryServices.setCurrentApplicationUser(digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
+            mockApplicationUser(digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
             logger.debug("Mocked user with " + digitalPaymentPlatform.getApplicationUsernameForAutomaticOperations());
 
             return true;
         }
 
         return false;
+    }
+
+    private void mockApplicationUser(String username) {
+        User user = User.findByUsername(username);
+
+        if (user == null) {
+            throw new IllegalArgumentException("user not found: " + username);
+        }
+
+        Authenticate.mock(user, "TODO: CHANGE ME");
     }
 
     @Atomic(mode = TxMode.WRITE)

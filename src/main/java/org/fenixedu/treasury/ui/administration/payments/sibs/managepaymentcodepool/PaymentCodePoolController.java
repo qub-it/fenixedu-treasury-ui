@@ -83,7 +83,7 @@ public class PaymentCodePoolController extends TreasuryBaseController {
     }
 
     private List<DigitalPaymentPlatform> filterSearchPaymentCodePool() {
-        String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         return FinantialInstitution.findAll().filter(f -> TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, f))
                 .flatMap(f -> SibsPaymentCodePool.find(f)).collect(Collectors.toList());

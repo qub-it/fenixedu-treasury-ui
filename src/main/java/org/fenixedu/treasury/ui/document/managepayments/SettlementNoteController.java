@@ -504,7 +504,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     public String read(@PathVariable("oid") final SettlementNote settlementNote, final Model model) {
         setSettlementNote(settlementNote, model);
 
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
         final boolean allowToConditionallyAnnulSettlementNote =
                 !TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote);
@@ -582,7 +582,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     @RequestMapping(value = "/read/{oid}/anullsettlement", method = RequestMethod.POST)
     public String processReadToAnullSettlementNote(@PathVariable("oid") SettlementNote settlementNote,
             @RequestParam("anullReason") String anullReason, Model model, RedirectAttributes redirectAttributes) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         setSettlementNote(settlementNote, model);
 
@@ -604,7 +604,7 @@ public class SettlementNoteController extends TreasuryBaseController {
     }
 
     protected void assertUserIsAllowToAnnulSettlementNote(final SettlementNote settlementNote, final Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (!TreasuryDebtProcessMainService.isFinantialDocumentAnnullmentActionBlocked(settlementNote) &&
                 TreasuryAccessControlAPI.isAllowToConditionallyAnnulSettlementNote(loggedUsername, settlementNote)) {

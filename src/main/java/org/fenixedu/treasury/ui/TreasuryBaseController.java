@@ -83,7 +83,7 @@ import pt.ist.standards.geographic.Municipality;
 public class TreasuryBaseController {
 
     protected void assertUserIsManager(Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isManager(loggedUsername)) {
             return;
@@ -94,7 +94,7 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsBackOfficeMember(Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername)) {
             return;
@@ -105,7 +105,7 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsFrontOfficeMember(Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername)) {
             return;
@@ -116,7 +116,7 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsBackOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, finantialInstitution)) {
             return;
@@ -127,7 +127,7 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsAllowToModifySettlements(FinantialInstitution finantialInstitution, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isAllowToModifySettlements(loggedUsername, finantialInstitution)) {
             return;
@@ -138,7 +138,7 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsAllowToModifyInvoices(FinantialInstitution finantialInstitution, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isAllowToModifyInvoices(loggedUsername, finantialInstitution)) {
             return;
@@ -149,7 +149,7 @@ public class TreasuryBaseController {
     }
 
     protected void assertUserIsFrontOfficeMember(FinantialInstitution finantialInstitution, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
 
         if (TreasuryAccessControlAPI.isFrontOfficeMember(loggedUsername, finantialInstitution)) {
             return;
