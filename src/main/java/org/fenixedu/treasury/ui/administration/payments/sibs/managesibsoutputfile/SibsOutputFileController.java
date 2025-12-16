@@ -26,20 +26,11 @@
  */
 package org.fenixedu.treasury.ui.administration.payments.sibs.managesibsoutputfile;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.servlet.http.HttpServletResponse;
-
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.SibsOutputFile;
-import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.TreasuryController;
 import org.joda.time.DateTime;
@@ -51,9 +42,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 //@Component("org.fenixedu.treasury.ui.administration.payments.sibs.manageSibsOutputFile") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.payments.sibs.manageSibsOutputFile",
@@ -102,7 +100,7 @@ public class SibsOutputFileController extends TreasuryBaseController {
     private List<SibsOutputFile> filterSearchSibsOutputFile(org.joda.time.LocalDate whencreated) {
 
         return getSearchUniverseSearchSibsOutputFileDataSet().filter(sibsOutputFile -> whencreated == null || whencreated.equals(
-                TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(sibsOutputFile).toLocalDate()))
+                        FenixEDUTreasuryPlatformDependentServices.getVersioningCreationDate(sibsOutputFile).toLocalDate()))
                 .collect(Collectors.toList());
     }
 

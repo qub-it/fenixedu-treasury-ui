@@ -26,18 +26,11 @@
  */
 package org.fenixedu.treasury.ui.administration.base.managelog;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
-
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.TreasuryOperationLog;
-import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.services.integration.FenixEDUTreasuryPlatformDependentServices;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.ui.administration.managefinantialinstitution.FinantialInstitutionController;
-import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
@@ -45,9 +38,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import pt.ist.fenixframework.DomainObject;
 import pt.ist.fenixframework.FenixFramework;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 //@Component("org.fenixedu.treasury.ui.administration.base.managelog") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = TreasuryController.class, title = "label.title.administration.base.manageTreasuryOperationLog",
@@ -101,10 +99,10 @@ public class TreasuryOperationLogController extends TreasuryBaseController {
         return getSearchUniverse().filter(log -> oid == null || log.getDomainOid().equals(oid))
                 .filter(log -> type == null || log.getType().equals(type))
                 .filter(log -> {
-                    final LocalDate creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(log).toLocalDate();
+                    final LocalDate creationDate = FenixEDUTreasuryPlatformDependentServices.getVersioningCreationDate(log).toLocalDate();
                     return from == null || !creationDate.isBefore(from);
                 }).filter(log -> {
-                    LocalDate creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(log).toLocalDate();
+                    LocalDate creationDate = FenixEDUTreasuryPlatformDependentServices.getVersioningCreationDate(log).toLocalDate();
                     return to == null || !creationDate.isAfter(to);
                 })
                 .sorted(TreasuryOperationLog.COMPARATOR_BY_CREATION_DATE).limit(SEARCH_LIMIT_SIZE).collect(Collectors.toList());
