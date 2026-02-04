@@ -1,5 +1,4 @@
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest"%>
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
@@ -176,7 +175,7 @@ ${portal.toolkit()}
         <form method="post" class="form-horizontal">
             <table class="table">
                 <tbody>
-<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) { %>
+<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) { %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Series.finantialInstitution" /></th>
                         <td><c:out value='${settlementNote.documentNumberSeries.series.finantialInstitution.name}' /></td>
@@ -205,7 +204,7 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.paymentDate" /></th>
                         <td><joda:format value="${settlementNote.paymentDate}" style="S-" /></td>
                     </tr>
-<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) { %>
+<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) { %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.SettlementNote.originDocumentNumber" /></th>
                         <td><c:out value='${settlementNote.originDocumentNumber}' /></td>
@@ -223,7 +222,7 @@ ${portal.toolkit()}
                             <td><c:out value='${settlementNote.currency.getValueFor(settlementNote.totalPayedAmount)}' /></td>
                         </c:if>
                     </tr>
-<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) { %>
+<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) { %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${settlementNote.getVersioningCreator()}' />] <joda:format value="${settlementNote.getVersioningCreationDate()}" style="SS" /></td>
@@ -236,7 +235,7 @@ ${portal.toolkit()}
     </div>
 </div>
 
-<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) { %>
+<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) { %>
 <p></p>
 <p></p>
 <h2>
@@ -352,7 +351,7 @@ ${portal.toolkit()}
 <p></p>
 <p></p>
 
-<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) { %>
+<% if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) { %>
 <c:choose>
     <c:when test="${not empty settlementNote.paymentEntriesSet}">
         <h2>

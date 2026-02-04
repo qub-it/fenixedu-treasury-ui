@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="java.security.AccessControlContext"%>
 <%@page import="org.fenixedu.bennu.core.groups.Group"%>
@@ -255,7 +254,7 @@ ${portal.toolkit()}
 			                               	</a>
 			                               
 											<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
-											<% if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
+											<% if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) { %>
 											
 											<c:choose>
 												<c:when test="${debtAccount.customer.personCustomer}">
@@ -329,7 +328,7 @@ ${portal.toolkit()}
 												</a>
 												
 			                               		<c:if test="${debtAccount.customer.personCustomer}">
-												<% if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
+												<% if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) { %>
 												<c:if test="${debtAccount.customer.ableToChangeFiscalNumber}">
 												&nbsp;
 												

@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.CreditEntry"%>
@@ -56,7 +55,7 @@ ${portal.toolkit()}
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 
 <% 
-if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>  
     <c:if test="${empty creditEntry.finantialDocument ||  creditEntry.finantialDocument.isPreparing()}">
         |&nbsp;

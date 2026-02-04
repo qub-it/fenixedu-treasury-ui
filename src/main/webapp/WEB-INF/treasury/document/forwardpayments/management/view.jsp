@@ -1,5 +1,4 @@
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest"%>
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ManageForwardPaymentsController"%>
@@ -132,7 +131,7 @@ ${portal.toolkit()}
 					</tr>
                     
 <%
-	if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ForwardPayment.forwardPaymentSuccessUrl" /></th>
@@ -185,7 +184,7 @@ ${portal.toolkit()}
 </h2>
 
 <%
-	if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
 
 <c:forEach var="log" items="${forwardPayment.getOrderedPaymentLogs()}">

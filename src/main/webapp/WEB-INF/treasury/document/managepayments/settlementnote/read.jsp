@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.ReimbursementProcessStateLogController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
@@ -43,7 +42,7 @@ FinantialInstitution finantialInstitution = (FinantialInstitution) settlementNot
 %>
 
 <% 
-if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %> 
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">
@@ -170,7 +169,7 @@ if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDepende
     </h1>
 </div>
 <% 
-	if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %> 
 <div class="modal fade" id="deleteModal">
     <div class="modal-dialog">
@@ -209,7 +208,7 @@ if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDepende
 <!-- /.modal -->
 
 <% 
-	if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
 
 <div class="modal fade" id="clearDocumentToExport">
@@ -263,7 +262,7 @@ if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDepende
         href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${settlementNote.debtAccount.externalId}"><spring:message
             code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 <% 
-	if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>             
             |&nbsp; <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
         class="" href="${pageContext.request.contextPath}/treasury/document/managepayments/settlementnote/update/${settlementNote.externalId}"><spring:message
@@ -326,7 +325,7 @@ if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDepende
                 </li>
                 
 <% 
-	if (settlementNote.isDocumentToExport() && TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (settlementNote.isDocumentToExport() && TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
                 <li>
                 	<a href="#" data-toggle="modal" data-target="#clearDocumentToExport">

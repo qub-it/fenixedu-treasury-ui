@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.AdhocCustomerController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
@@ -41,7 +40,7 @@ ${portal.toolkit()}
     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}<%= AdhocCustomerController.CREATE_URL %>"><spring:message
             code="label.event.create" /></a> &nbsp;
     <%
-        if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
+        if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) {
     %>
     | &nbsp; <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class=""
         href="${pageContext.request.contextPath}<%= DebtAccountController.SEARCHOPENDEBTACCOUNTS_URL %>"><spring:message

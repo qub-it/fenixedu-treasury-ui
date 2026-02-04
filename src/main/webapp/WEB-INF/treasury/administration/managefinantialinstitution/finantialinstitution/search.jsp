@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="java.util.Collection"%>
@@ -42,7 +41,7 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <%
-if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
+if (TreasuryAccessControlAPI.isManager(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) {
 %>
 <div class="well well-sm" style="display: inline-block">
 

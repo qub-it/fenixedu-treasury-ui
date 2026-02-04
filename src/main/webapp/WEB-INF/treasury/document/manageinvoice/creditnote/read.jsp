@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
@@ -51,7 +50,7 @@ ${portal.toolkit()}
 %>
     
 <% 
-    if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+    if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>  
 <div class="modal fade" id="anullModal">
     <div class="modal-dialog">
@@ -138,7 +137,7 @@ ${portal.toolkit()}
 
 
 <% 
-	if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
 
 <div class="modal fade" id="clearDocumentToExport">
@@ -194,7 +193,7 @@ ${portal.toolkit()}
             href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${creditNote.debtAccount.externalId}"><spring:message
                 code="label.document.manageInvoice.readDebitEntry.event.backToDebtAccount" /></a> &nbsp;
 <% 
-if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>  
         <c:if test="${creditNote.isPreparing() || creditNote.isClosed()}">
             |&nbsp;<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a class=""
@@ -242,7 +241,7 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
                     </li>
                     
 <% 
-	if (creditNote.isDocumentToExport() && TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+	if (creditNote.isDocumentToExport() && TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
                     <li>
                     	<a href="#" data-toggle="modal" data-target="#clearDocumentToExport">
@@ -485,7 +484,7 @@ if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentS
 </h2>
 
 <% 
-if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>  
 
 <%} %>

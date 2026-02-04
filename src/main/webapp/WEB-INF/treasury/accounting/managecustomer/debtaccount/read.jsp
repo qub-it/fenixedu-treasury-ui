@@ -1,6 +1,5 @@
 <%@page import="org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.MbwayPaymentRequestController"%>
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.CreditNoteController"%>
 <%@page import="org.fenixedu.treasury.ui.document.manageinvoice.DebitNoteController"%>
@@ -121,7 +120,7 @@ ${portal.angularToolkit()}
     &nbsp;
 
     <%
-        if (TreasuryAccessControlAPI.isAllowToModifySettlements(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+        if (TreasuryAccessControlAPI.isAllowToModifySettlements(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
     %>
     <div class="btn-group">
         <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -158,7 +157,7 @@ ${portal.angularToolkit()}
     %>
     <c:if test='${not debtAccount.getClosed()}'>
         <%
-            if (TreasuryAccessControlAPI.isAllowToModifyInvoices(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution) && debtAccount.getCustomer().isActive()) {
+            if (TreasuryAccessControlAPI.isAllowToModifyInvoices(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution) && debtAccount.getCustomer().isActive()) {
         %>
         <div class="btn-group">
             <button type="button" class=" btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -232,7 +231,7 @@ ${portal.angularToolkit()}
      |&nbsp;
      </c:if>
     <%
-        if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+        if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
     %>
 
     <div class="btn-group">
@@ -271,7 +270,7 @@ ${portal.angularToolkit()}
             </li>
             </c:if>
 			
-			<% if(TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
+			<% if(TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) { %>
             <li class="dropdown-submenu">
 				<a class="" href="#"><span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
 					&nbsp;<spring:message code="label.ERPTuitionInfo.title" />
@@ -293,7 +292,7 @@ ${portal.angularToolkit()}
 			</li>
 			<% } %>
 
-			<% if(TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
+			<% if(TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) { %>
 			<c:if test="${not debtAccount.customer.active}">
             <li>
             	<a href="#" data-toggle="modal" data-target="#transferBalanceModal">

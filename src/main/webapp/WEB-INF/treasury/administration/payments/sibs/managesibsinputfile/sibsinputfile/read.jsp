@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -139,7 +138,7 @@ ${portal.toolkit()}
     &nbsp;|&nbsp;
 	
     <%
-        if (TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) {
+        if (TreasuryAccessControlAPI.isManager(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername())) {
     %>
 	            
     <span

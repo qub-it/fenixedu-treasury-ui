@@ -1,4 +1,3 @@
-<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.document.Series"%>
@@ -160,7 +159,7 @@ ${portal.toolkit()}
     <%
         Series series = (Series) request.getAttribute("series");
   		FinantialInstitution finantialInstitution = series.getFinantialInstitution();
-  		if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+  		if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
     %>
 
 
@@ -285,7 +284,7 @@ ${portal.toolkit()}
 </h3>
 
 <%
-    if (TreasuryAccessControlAPI.isBackOfficeMember(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername(), finantialInstitution)) {
+    if (TreasuryAccessControlAPI.isBackOfficeMember(org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername(), finantialInstitution)) {
 %>
 
 <div class="well well-sm" style="display: inline-block">
@@ -317,7 +316,7 @@ ${portal.toolkit()}
                             href="${pageContext.request.contextPath}<%=DocumentNumberSeriesController.READ_URL%>${documentNumberSeries.externalId}"> <spring:message
                                     code='label.view' />
                         </a> <%
-                        String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+                        String loggedUsername = org.fenixedu.treasury.util.TreasuryConstants.getAuthenticatedUsername();
      if (TreasuryAccessControlAPI.isBackOfficeMember(loggedUsername, finantialInstitution) || TreasuryAccessControlAPI.isManager(loggedUsername)) {
  %> <a class="btn btn-default btn-xs btn-warning" href="#" onClick="javascript:processDelete('${documentNumberSeries.externalId}')"> <spring:message code='label.delete' />
                         </a> <%
