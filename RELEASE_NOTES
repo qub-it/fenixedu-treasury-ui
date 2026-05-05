@@ -1,3 +1,5 @@
+- Bug Fix: Do not allow the creation of debit entries with zero amount [#UL-FM-3316]
+
 9.8.3 (04-02-2026)
 - Refactor: Remove calls for ITreasuryPlatformDependentServices in JSP files [#qubIT-Fenix-7855]
 

@@ -206,7 +206,7 @@ ${portal.angularToolkit()}
                             <c:out value="${debitEntryBean.debtAccount.finantialInstitution.currency.symbol}" />
                         </div>
                         <input id="debitEntry_amount" class="form-control currency" type="number" ng-model="object.amount" data-number-to-fixed="2" step="0.01" data-number-stepfactor="100"
-                            name="amount" />
+                            name="amount" min="0.01" required />
                     </div>
                 </div>
             </div>
