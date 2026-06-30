@@ -52,7 +52,7 @@ public class OnlinePaymentsGatewayWebhooksController extends TreasuryBaseControl
 
     private static final Logger logger = LoggerFactory.getLogger(OnlinePaymentsGatewayWebhooksController.class);
 
-    public static final String CONTROLLER_URL = "/treasury/document/payments/onlinepaymentsgateway";
+    public static final String CONTROLLER_URL = "/treasury/document/payments/onlinepaymentsgateway/deprecated";
 
     private static final String NOTIFICATION_URI = "/notification";
     public static final String NOTIFICATION_URL = CONTROLLER_URL + NOTIFICATION_URI;
