@@ -1,3 +1,5 @@
+- Refactor: Change address of deprecated webhook controller [#qubIT-Fenix-8910]
+
 9.8.4 (05-05-2026)
 - Bug Fix: Do not allow the creation of debit entries with zero amount [#UL-FM-3316]
 
