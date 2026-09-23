@@ -32,7 +32,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.fenixedu.treasury.adapters.CountryAdapter;
 import org.fenixedu.treasury.adapters.DistrictAdapter;
@@ -225,7 +225,7 @@ public class TreasuryBaseController {
         }
 
         //HACK: Forcing the "Messages AS DEFAULT CODE"
-        WebApplicationContext webAppContext = RequestContextUtils.getWebApplicationContext(request);
+        WebApplicationContext webAppContext = RequestContextUtils.findWebApplicationContext(request);
         MessageSource messageSource = (MessageSource) webAppContext.getBean("messageSource");
         if (messageSource != null && messageSource instanceof ReloadableResourceBundleMessageSource) {
             ((ReloadableResourceBundleMessageSource) messageSource).setUseCodeAsDefaultMessage(true);

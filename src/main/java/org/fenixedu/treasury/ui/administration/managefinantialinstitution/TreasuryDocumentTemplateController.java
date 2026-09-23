@@ -31,7 +31,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.io.IOException;
 import java.net.URLEncoder;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.StringNormalizer;

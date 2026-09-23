@@ -76,9 +76,9 @@
 			<version>2.6</version>
 		</dependency>
 		<dependency>
-			<groupId>javax.servlet.jsp</groupId>
-			<artifactId>jsp-api</artifactId>
-			<version>2.1</version>
+			<groupId>jakarta.servlet.jsp</groupId>
+			<artifactId>jakarta.servlet.jsp-api</artifactId>
+			<version>3.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -200,9 +200,9 @@
 							<silent>true</silent>
 							<artifactItems>
 								<artifactItem>
-									<groupId>javax.xml.bind</groupId>
-									<artifactId>jaxb-api</artifactId>
-									<version>2.2.7</version>
+									<groupId>jakarta.xml.bind</groupId>
+									<artifactId>jakarta.xml.bind-api</artifactId>
+									<version>4.0.2</version>
 									<type>jar</type>
 								</artifactItem>
 								<artifactItem>

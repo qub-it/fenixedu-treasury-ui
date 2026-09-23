@@ -1,3 +1,4 @@
+- Refactor: Migrate from javaee to jakarta [#qubIT-Omnis-10960]
 9.8.5 (06-07-2026)
 - Refactor: Change address of deprecated webhook controller [#qubIT-Fenix-8910]
 
