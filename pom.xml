@@ -12,7 +12,7 @@
 
 	<groupId>org.fenixedu</groupId>
 	<artifactId>fenixedu-treasury-ui</artifactId>
-	<version>9.9.1</version>
+	<version>10.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Treasury-spring-ui</name>
